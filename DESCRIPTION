@@ -1,0 +1,16 @@
+Package: ULPwgs
+Title: An implementation of a wrapper for estimating tumor fraction in
+    ultra-low-pass whole genome sequencing (ULP-WGS) for cell-free DNA in
+    GNU/Unix based systems
+Version: 0.0.1
+Authors@R:
+    person(given = "Osvaldas",
+           family = "Vainauskas",
+           role = c("aut", "cre"),
+           email = "osvaldas.v@um.es")
+Description: A convenient way to analyze raw ULP-WGS data from cell-free DNA from scratch.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.0
