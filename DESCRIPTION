@@ -9,7 +9,7 @@ Authors@R:
            role = c("aut", "cre"),
            email = "osvaldas.v@um.es")
 Description: A convenient way to analyze raw ULP-WGS data from cell-free DNA from scratch.
-License: MIT + file LICENSE
+License: GPL-3 + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)

@@ -2,7 +2,21 @@
 
 options(scipen=999)
 
-fastqc=function (bin="./tools/FastQC/bin/fastqc",fastqc_R1="",fastqc_R2="",n_cores=3,output_dir="",verbose=FALSE){
+#' Generate a quality control (QC) report from a fastaqc file
+#'
+#' This function takes a set of sequence files (fastq,SAM,BAM...) and
+#' returns a report in HTML format.
+#'
+#'
+#' @param file_R1 Path to the input file with the sequence.
+#' @param file_R2 [Optional] Path to the input with the reverse read sequence.
+#' @param bin_path Path to fastQC executable. Default path tools/FastQC/bin/fastqc.
+#' @param n_cores Number of CPU cores to use. Default 3.
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @export
+
+fastqc=function (bin="tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_cores=3,output_dir="",verbose=FALSE){
 
   sep="/"
 
@@ -10,11 +24,11 @@ fastqc=function (bin="./tools/FastQC/bin/fastqc",fastqc_R1="",fastqc_R2="",n_cor
     sep=""
   }
 
-  sample_name=get_sample_name(fastqc_R1)
+  sample_name=get_sample_name(file_R1)
 
-  if (!fastqc_R2==""){
-  tmp_name=get_sample_name(fastqc_R2)
-  sample_name=sapply(sapply(c(0:(nchar(tmp_name)-1)),function (i) substr(tmp_name,1,nchar(tmp_name)-i)),function (x) grepl(x,fastqc_R1))
+  if (!file_R2==""){
+  tmp_name=get_sample_name(file_R2)
+  sample_name=sapply(sapply(c(0:(nchar(tmp_name)-1)),function (i) substr(tmp_name,1,nchar(tmp_name)-i)),function (x) grepl(x,file_R1))
   sample_name=which(l)[2]
   output_dir=paste0(output_dir,sep,sample_name)
 
@@ -22,9 +36,9 @@ fastqc=function (bin="./tools/FastQC/bin/fastqc",fastqc_R1="",fastqc_R2="",n_cor
     dir.create(output_dir)
   }
   if(verbose){
-    print(paste(bin,"-o ",output_dir,"-t ",n_cores,"--noextract",fastqc_R1,fastqc_R2))
+    print(paste("./",bin,"-o ",output_dir,"-t ",n_cores,"--noextract",file_R1,file_R2))
   }
-  system(paste(bin,"-o ",output_dir,"-t ",n_cores,"--noextract",fastqc_R1,fastqc_R2))
+  system(paste("./",bin,"-o ",output_dir,"-t ",n_cores,"--noextract",file_R1,file_R2))
 
 }else{
   output_dir=paste0(output_dir,sep,sample_name)
@@ -33,15 +47,30 @@ fastqc=function (bin="./tools/FastQC/bin/fastqc",fastqc_R1="",fastqc_R2="",n_cor
     dir.create(output_dir)
   }
     if(verbose){
-      print(paste(bin,"-o ",output_dir,"-t ",n_cores,"--noextract",fastqc_R1))
+      print(paste("./",bin,"-o ",output_dir,"-t ",n_cores,"--noextract",file_R1))
     }
-    system(paste(bin,"-o ",output_dir,"-t ",n_cores,"--noextract",fastqc_R1))
+    system(paste("./",bin,"-o ",output_dir,"-t ",n_cores,"--noextract",file_R1))
   }
 }
 
 
 
-trimming=function(path="./tools/skewer/skewer",fastqc_R1="",fastqc_R2="",xadapt=NA,yadapt=NA,n_cores=3,output_dir="",verbose=FALSE){
+#' Adapter sequence trimmer
+#'
+#' This function takes a single/multiple fastq (if paired-end reads) files and
+#' trims the adapter sequences found within them.
+#'
+#' @param file_R1 Path to the input file with the sequence.
+#' @param file_R2 [Optional] Path to the input with the reverse read sequence.
+#' @param xadapt [Optional] Adapter sequence/file.
+#' @param yadapt [Optional] Adapter sequence/file.
+#' @param bin_path Path to skewer executable. Default path tools/skewer/skewer.
+#' @param n_cores Number of CPU cores to use. Default 3.
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @export
+
+trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA,yadapt=NA,n_cores=3,output_dir="",verbose=FALSE){
 
   sep="/"
 
@@ -49,45 +78,73 @@ trimming=function(path="./tools/skewer/skewer",fastqc_R1="",fastqc_R2="",xadapt=
     sep=""
   }
 
-  sample_name=get_sample_name(fastqc_R1)
+  sample_name=get_sample_name(file_R1)
   if ((!is.na(xadapt)) & (!is.na(yadapt))){
-    func=paste(path,"-m tail -t",n_cores,"-x", xadapt,"-y", yadapt)
+    func=paste("./",bin_path,"-m tail -t",n_cores,"-x", xadapt,"-y", yadapt)
   }
   else{
-    func=paste(path,"-m tail -t",n_cores)
+    func=paste("./",bin_path,"-m tail -t",n_cores)
   }
-  if (!fastqc_R2==""){
-  tmp_name=get_sample_name(fastqc_R2)
-  sample_name=sapply(sapply(c(0:(nchar(tmp_name)-1)),function (i) substr(tmp_name,1,nchar(tmp_name)-i)),function (x) grepl(x,fastqc_R1))
+  if (!file_R2==""){
+  tmp_name=get_sample_name(file_R2)
+  sample_name=sapply(sapply(c(0:(nchar(tmp_name)-1)),function (i) substr(tmp_name,1,nchar(tmp_name)-i)),function (x) grepl(x,file_R1))
   sample_name=which(l)[2]
   output_dir=paste0(output_dir,sep,sample_name)
 
     if(verbose){
-      print(paste(func,"-z -l 35 -f sanger --quiet -o",output_dir,fastqc_R1,fastqc_R2))
+      print(paste("./",func,"-z -l 35 -f sanger --quiet -o",output_dir,file_R1,file_R2))
     }
-    system(paste(func,"-z -l 35 -f sanger --quiet -o",output_dir,fastqc_R1,fastqc_R2))
+    system(paste("./",func,"-z -l 35 -f sanger --quiet -o",output_dir,file_R1,file_R2))
 
 
   }else{
     output_dir=paste0(output_dir,sep,sample_name)
 
       if(verbose){
-        print(paste(func,"-z -l 35 -f sanger --quiet -o",output_dir,fastqc_R1))
+        print(paste("./",func,"-z -l 35 -f sanger --quiet -o",output_dir,file_R1))
       }
-      system(paste(func,"-z -l 35 -f sanger --quiet -o",output_dir,fastqc_R1))
+      system(paste("./",func,"-z -l 35 -f sanger --quiet -o",output_dir,file_R1))
     }
   }
 
 
-merge=function(path="./tools/samtools/samtools",bam="",bam_dir="",verbose=FALSE){
+#' Merge BAM files in directory
+#'
+#' This function takes a BAM file and merges it with others found within a
+#' directory. This function is still Work In Progress (WIP).
+#'
+#' @param bam Path to the input bam file with the sequence.
+#' @param bam_dir Path to directory with BAM files to merge.
+#' @param verbose Enables progress messages. Default False.
+#' @export
+
+merge=function(bin_path="tools/samtools/samtools",bam="",bam_dir="",verbose=FALSE){
     if(verbose){
-      print(paste(path,"merge",bam, paste0(bam_dir,"*.bam")))
+      print(paste("./",bin_path,"merge",bam, paste0(bam_dir,"*.bam")))
     }
-    system(paste(path,"merge",bam, paste0(bam_dir,"*.bam")))
+    system(paste("./",bin_path,"merge",bam, paste0(bam_dir,"*.bam")))
   }
 
 
-alignment=function(path="./tools/bwa/bwa",path2="./tools/samtools/samtools",fastqc_R1="",fastqc_R2="",n_cores=3,ref_genome="",output_dir="",verbose=F){
+
+
+#' Read alignment
+#'
+#' This function aligns a sequence of reads to a reference genome
+#' using a Burrows-Wheeler aligner. The reference genome has to be previously
+#' been sorted and indexed. It generates a BAM file with the aligned sequence.
+#'
+#' @param file_R1 Path to the input file with the sequence.
+#' @param file_R2 [Optional] Path to the input with the reverse read sequence.
+#' @param bin_path Path to bwa executable. Default path tools/bwa/bwa.
+#' @param bin_path2 Path to samtools executable. Default path tools/samtools/samtools.
+#' @param ref_genome Path to input file with the reference genome sequence.
+#' @param n_cores Number of CPU cores to use. Default 3.
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @export
+
+alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",file_R1="",file_R2="",n_cores=3,ref_genome="",output_dir="",verbose=FALSE){
 
     sep="/"
 
@@ -95,32 +152,45 @@ alignment=function(path="./tools/bwa/bwa",path2="./tools/samtools/samtools",fast
       sep=""
     }
 
-    sample_name=get_sample_name(fastqc_R1)
+    sample_name=get_sample_name(file_R1)
     out_file=paste0(output_dir,sep,sample_name,".bam")
     GPU=paste0("\"@RG\\tID:",sample_name,"\\tPL:ILLUMINA\\tPU:NA\\tLB:",sample_name,"\\tSM:",sample_name,"\"")
 
-    if (!fastqc_R2==""){
-    tmp_name=get_sample_name(fastqc_R2)
-    sample_name=sapply(sapply(c(0:(nchar(tmp_name)-1)),function (i) substr(tmp_name,1,nchar(tmp_name)-i)),function (x) grepl(x,fastqc_R1))
+    if (!file_R2==""){
+    tmp_name=get_sample_name(file_R2)
+    sample_name=sapply(sapply(c(0:(nchar(tmp_name)-1)),function (i) substr(tmp_name,1,nchar(tmp_name)-i)),function (x) grepl(x,file_R1))
     sample_name=which(l)[2]
     GPU=paste0("\"@RG\\tID:",sample_name,"\\tPL:ILLUMINA\\tPU:NA\\tLB:",sample_name,"\\tSM:",sample_name,"\"")
     out_file=paste0(output_dir,sep,sample_name,".bam")
       if(verbose){
-          print(paste(path,"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome, fastqc_R1,fastqc_R2, "|",path2," view -h -b >",out_file))
+          print(paste("./",bin_path,"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome, file_R1,file_R2, "|",bin_path2," view -h -b >",out_file))
       }
-      system(paste(path,"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome, fastqc_R1,fastqc_R2, "| ",path2," view -h -b >",out_file))
+      system(paste("./",bin_path,"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome, file_R1,file_R2, "| ",bin_path2," view -h -b >",out_file))
 
       }
     else{
       if(verbose){
-          print(paste(path,"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome, fastqc_R1, "| ",path2," view -h -b >",out_file))
+          print(paste("./",bin_path,"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome, file_R1, "| ",bin_path2," view -h -b >",out_file))
       }
-      system(paste(path,"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome, fastqc_R1, "| ",path2," view -h -b >",out_file))
+      system(paste("./",bin_path,"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome, file_R1, "| ",bin_path2," view -h -b >",out_file))
 
     }
   }
 
-sort_and_index=function(path="./tools/samtools/samtools",file="",output_dir="",verbose=FALSE){
+
+
+#' Sort and index a sequence file
+#'
+#' This function sorts and indexes genomic sequence files.
+#'
+#' @param file Path to the input file with the sequence.
+#' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @export
+
+
+sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir="",verbose=FALSE){
 
   sep="/"
 
@@ -141,29 +211,44 @@ sort_and_index=function(path="./tools/samtools/samtools",file="",output_dir="",v
 
     if (verbose){
       print("Sorting BAM file:")
-      print(paste0(path," sort ",file," -o ",out_file,".SORTED.",file_ext))
+      print(paste0("./",bin_path," sort ",file," -o ",out_file,".SORTED.",file_ext))
     }
-    system(paste0(path," sort ",file," -o ",out_file,".SORTED.",file_ext))
+    system(paste0("./",bin_path," sort ",file," -o ",out_file,".SORTED.",file_ext))
     file=paste0(out_file,".SORTED.",file_ext)
 
     if (verbose){
       print("Indexing sorted BAM file:")
-      print(paste(path," index",file))
+      print(paste("./",bin_path," index",file))
     }
-    system(paste(path," index",file))
+    system(paste("./",bin_path," index",file))
     if (verbose){
       print("Generating Flag stats:")
-      print(paste0(path," flagstat ",file," > ",paste0(out_file,".flagstat.txt")))
+      print(paste0("./",bin_path," flagstat ",file," > ",paste0(out_file,".flagstat.txt")))
     }
-    system(paste0(path," flagstat ",file," > ",paste0(out_file,".flagstat.txt")))
+    system(paste0("./",bin_path," flagstat ",file," > ",paste0(out_file,".flagstat.txt")))
     if (verbose){
       print("Generating Index stats:")
-      print(paste0(path," idxstats ",file," > ",paste0(out_file,".idxstats.txt")))
+      print(paste0("./",bin_path," idxstats ",file," > ",paste0(out_file,".idxstats.txt")))
     }
-    system(paste0(path," idxstats ",file," > ",paste0(out_file,".idxstats.txt")))
+    system(paste0("./",bin_path," idxstats ",file," > ",paste0(out_file,".idxstats.txt")))
   }
 
-remove_duplicates=function(path="tools/picard/build/libs/picard.jar",file="",output_dir="",verbose=FALSE,ref_genome=""){
+
+
+
+#' Remove duplicated reads
+#'
+#' This function removes duplicated reads (artifacts) found in aligned sequences.
+#'
+#' @param file Path to the input file with the aligned sequence.
+#' @param bin_path Path to picard executable. Default path tools/picard/build/libs/picard.jar.
+#' @param ref_genome Path to input file with the reference genome sequence.
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @export
+
+
+remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file="",output_dir="",ref_genome="",verbose=FALSE){
 
     sep="/"
 
@@ -182,21 +267,29 @@ remove_duplicates=function(path="tools/picard/build/libs/picard.jar",file="",out
     out_file=paste0(out_file,"/",sample_name)
 
     if(verbose){
-      print(paste0("java -jar ",path," MarkDuplicates I=",file, " O=",paste0(out_file,".RMDUP.",file_ext)," M=",paste0(out_file,".picard_rmdup.txt")," REMOVE_DUPLICATES=true AS=true VALIDATION_STRINGENCY=LENIENT"))
+      print(paste0("java -jar ",bin_path," MarkDuplicates I=",file, " O=",paste0(out_file,".RMDUP.",file_ext)," M=",paste0(out_file,".picard_rmdup.txt")," REMOVE_DUPLICATES=true AS=true VALIDATION_STRINGENCY=LENIENT"))
 
     }
-    system(paste0("java -jar ",path," MarkDuplicates I=",file, " O=",paste0(out_file,".RMDUP.",file_ext)," M=",paste0(out_file,".picard_rmdup.txt")," REMOVE_DUPLICATES=true AS=true VALIDATION_STRINGENCY=LENIENT"))
+    system(paste0("java -jar ",bin_path," MarkDuplicates I=",file, " O=",paste0(out_file,".RMDUP.",file_ext)," M=",paste0(out_file,".picard_rmdup.txt")," REMOVE_DUPLICATES=true AS=true VALIDATION_STRINGENCY=LENIENT"))
   }
 
 
-  bam="SORTED.bam/SRR11742820-trimmed.SORTED.bam"
-  ref_genome="/home/osvaldas/Workshop_low_pass/ref/GRCh37.p13.genome.fa.gz"
+
+#' Generate quality control metrics for aligned sequences
+#'
+#' This function generates quality control metrics for an aligned sequence
+#'
+#'
+#' @param bam Path to the BAM file .
+#' @param bin_path Path to samtools executable. Default path tools/samtools/samtools.
+#' @param bin_path2 Path to picard executable. Default path tools/picard/build/libs/picard.jar.
+#' @param ref_genome Path to input file with the reference genome sequence.
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @export
 
 
-
-
-
-qc_metrics=function(path="./tools/samtools/samtools",path2="tools/picard/build/libs/picard.jar",bam="",output_dir="",verbose=FALSE,ref_genome=""){
+qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/build/libs/picard.jar",bam="",output_dir="",ref_genome="",verbose=FALSE){
     sep="/"
 
     if(output_dir==""){
@@ -214,49 +307,64 @@ qc_metrics=function(path="./tools/samtools/samtools",path2="tools/picard/build/l
 
     if (verbose){
       print("Generate MapQ distance map:")
-      print(paste( path,"view",bam," | awk -F", "'\\t'", "'{c[$5]++} END { for (i in c) printf(\"%s\\t%s\\n\",i,c[i]) }'"," | sort -t$'\\t' -k 1 -g >>", paste0(out_file,".mapq_dist.txt")))
+      print(paste( "./",bin_path,"view",bam," | awk -F", "'\\t'", "'{c[$5]++} END { for (i in c) printf(\"%s\\t%s\\n\",i,c[i]) }'"," | sort -t$'\\t' -k 1 -g >>", paste0(out_file,".mapq_dist.txt")))
 
     }
-    system(paste(path,"view",bam," | awk -F", "'\\t'", "'{c[$5]++} END { for (i in c) printf(\"%s\\t%s\\n\",i,c[i]) }'"," | sort -t$'\\t' -k 1 -g >>", paste0(out_file,".mapq_dist.txt")))
+    system(paste("./",bin_path,"view",bam," | awk -F", "'\\t'", "'{c[$5]++} END { for (i in c) printf(\"%s\\t%s\\n\",i,c[i]) }'"," | sort -t$'\\t' -k 1 -g >>", paste0(out_file,".mapq_dist.txt")))
 
     if (verbose){
       print("Generate Alignment Metrics:")
-      print(paste0("java -jar ",path2," CollectAlignmentSummaryMetrics R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_summary.txt")))
+      print(paste0("java -jar ",bin_path2," CollectAlignmentSummaryMetrics R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_summary.txt")))
 
     }
-    system(paste0("java -jar ",path2," CollectAlignmentSummaryMetrics R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_summary.txt")))
+    system(paste0("java -jar ",bin_path2," CollectAlignmentSummaryMetrics R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_summary.txt")))
 
     if (verbose){
       print("Generate Insert Size Metrics:")
-      print(paste0("java -jar ",path2," CollectInsertSizeMetrics R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf")))
+      print(paste0("java -jar ",bin_path2," CollectInsertSizeMetrics R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf")))
 
     }
-    system(paste0("java -jar ",path2, " CollectInsertSizeMetrics R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf")))
+    system(paste0("java -jar ",bin_path2, " CollectInsertSizeMetrics R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf")))
 
     if (verbose){
       print("Generate WGS Metrics for minimum MAPq=0:")
-      print(paste0("java -jar ",path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=0 R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt")))
+      print(paste0("java -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=0 R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt")))
 
     }
-    system(paste0("java -jar ",path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=0 R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt")))
+    system(paste0("java -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=0 R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt")))
 
     if (verbose){
       print("Generate WGS Metrics for minimum MAPq=20:")
-      print(paste0("java -jar ",path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=20 R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_wgs_q20.txt")))
+      print(paste0("java -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=20 R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_wgs_q20.txt")))
 
     }
-    system(paste0("java -jar ",path2, " CollectWgsMetrics MINIMUM_MAPPING_QUALITY=20 R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_wgs_q20.txt")))
+    system(paste0("java -jar ",bin_path2, " CollectWgsMetrics MINIMUM_MAPPING_QUALITY=20 R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_wgs_q20.txt")))
 
     if (verbose){
       print("Generate WGS Metrics for minimum MAPq=37:")
-      print(paste0("java -jar ",path2, " CollectWgsMetrics MINIMUM_MAPPING_QUALITY=37 R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_wgs_q37.txt")))
+      print(paste0("java -jar ",bin_path2, " CollectWgsMetrics MINIMUM_MAPPING_QUALITY=37 R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_wgs_q37.txt")))
 
     }
-    system(paste0("java -jar ",path2, " CollectWgsMetrics MINIMUM_MAPPING_QUALITY=37 R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_wgs_q37.txt")))
+    system(paste0("java -jar ",bin_path2, " CollectWgsMetrics MINIMUM_MAPPING_QUALITY=37 R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_wgs_q37.txt")))
 
   }
 
-read_counter=function(path="./tools/hmmcopy_utils/bin/readCounter",verbose=FALSE,win=500000,bam="",output_dir="",chrm="chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX,chrY"){
+#' Generate a WIG file
+#'
+#' This function generates a WIG file.
+#'
+#'
+#' @param bam Path to the BAM file .
+#' @param bin_path Path to readCounter executable. Default path tools/hmmcopy_utils/bin/readCounter.
+#' @param output_dir Path to the output directory.
+#' @param chr String of chromosomes to include. Default chr1,chr2,chr3,chr4,chr5,
+#'     chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX,chrY
+#' @param win Size of non overlaping windows. Default 500000.
+#' @param verbose Enables progress messages. Default False.
+#' @export
+
+
+read_counter=function(bin_path="tools/hmmcopy_utils/bin/readCounter",win=500000,bam="",output_dir="",chr="chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX,chrY",verbose=FALSE){
 
     sep="/"
 
@@ -274,11 +382,11 @@ read_counter=function(path="./tools/hmmcopy_utils/bin/readCounter",verbose=FALSE
     out_file=paste0(out_file,"/",sample_name)
 
       if (verbose){
-        print(paste(path,"--window", win,"--quality 20 --chromosome",paste0("'",chrm,"'"), bam,">", paste0(out_file,".wig")))
+        print(paste("./",bin_path,"--window", win,"--quality 20 --chromosome",paste0("'",chr,"'"), bam,">", paste0(out_file,".wig")))
       }
-      system(paste(path,"--window", win,"--quality 20 --chromosome",paste0("'",chrm,"'"), bam,">" ,paste0(out_file,".wig")))
+      system(paste("./",bin_path,"--window", win,"--quality 20 --chromosome",paste0("'",chr,"'"), bam,">" ,paste0(out_file,".wig")))
 
-      if (grepl("chr",chrm)){
+      if (grepl("chr",chr)){
         if (verbose){
           print(paste("sed -i 's/chrom=chr/chrom=/g'",paste0(out_file,".wig")))
       }
@@ -286,7 +394,26 @@ read_counter=function(path="./tools/hmmcopy_utils/bin/readCounter",verbose=FALSE
     }
   }
 
-ichorCNA=function(path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",wig="",PLOIDY="2,3",TUMOR_CONTENT="0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9",HOMOZYGOUS_DEL="False",SUBCLONAL_STATES="NULL",gc="tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",output_dir="",verbose=TRUE){
+
+#' Generate report for ULP-WGS samples
+#'
+#' This function generates a report that helps to segment the genome, predict large-scale
+#' copy number alterations, and estimate tumor fraction in ULP-WGS samples.
+#'
+#' @param wig Path to the WIG file.
+#' @param bin_path Path to ichorCNA executable. Default path tools/ichorCNA/scripts/runIchorCNA.R.
+#' @param output_dir Path to the output directory.
+#' @param sample_id String with sample name.
+#' @param ploidy Initial tumour ploidy. Default 2,3
+#' @param tumour_content Initial normal contamination. Default 0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9
+#' @param homozygous_del Include Homozygous deleteions. Default FALSE.
+#' @param gc Path to GC-content WIG with . Default tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig
+#' @param map Path to mappability score WIG with GC content. Default tools/ichorCNA/inst/extdata/map_hg19_500kb.wig
+#' @param centromere Path to file containing centromere locations. Default tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt
+#' @param verbose Enables progress messages. Default False.
+#' @export
+
+ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",wig="",ploidy="2,3",tumor_content="0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9",homozygous_del="False",subclonal_states="NULL",gc="tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",output_dir="",verbose=TRUE){
 
     sep="/"
 
@@ -302,9 +429,8 @@ ichorCNA=function(path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",wig="
         dir.create(out_file)
     }
     if(verbose){
-      print(paste("Rscript",path,"--id",sample_id,"--WIG",wig,"--ploidy",paste0("'c(",PLOIDY,")'"),"--normal",paste0("'c(",TUMOR_CONTENT,")'"),"--maxCN 7 --gcWig", gc,"--mapWig",map,"--centromere",centromere,"--includeHOMD",HOMOZYGOUS_DEL,"--chrs 'c(1:22,\"X\")' --chrTrain \'c(1:22)\' --estimateNormal True --estimatePloidy True --estimateScPrevalence True --outDir",out_file))
+      print(paste("Rscript",bin_path,"--id",sample_id,"--WIG",wig,"--ploidy",paste0("'c(",ploidy,")'"),"--normal",paste0("'c(",tumour_content,")'"),"--maxCN 7 --gcWig", gc,"--mapWig",map,"--centromere",centromere,"--includeHOMD",homozygous_del,"--chrs 'c(1:22,\"X\")' --chrTrain \'c(1:22)\' --estimateNormal True --estimatePloidy True --estimateScPrevalence True --outDir",out_file))
 
     }
-    system(paste("Rscript",path,"--id",sample_id,"--WIG",wig,"--ploidy",paste0("'c(",PLOIDY,")'"),"--normal",paste0("'c(",TUMOR_CONTENT,")'"),"--maxCN 7 --gcWig", gc,"--mapWig",map,"--centromere",centromere,"--includeHOMD",HOMOZYGOUS_DEL,"--chrs 'c(1:22,\"X\")' --chrTrain \'c(1:22)\' --estimateNormal True --estimatePloidy True --estimateScPrevalence True --outDir",out_file))
-
+    system(paste("Rscript",bin_path,"--id",sample_id,"--WIG",wig,"--ploidy",paste0("'c(",ploidy,")'"),"--normal",paste0("'c(",tumour_content,")'"),"--maxCN 7 --gcWig", gc,"--mapWig",map,"--centromere",centromere,"--includeHOMD",homozygous_del,"--chrs 'c(1:22,\"X\")' --chrTrain \'c(1:22)\' --estimateNormal True --estimatePloidy True --estimateScPrevalence True --outDir",out_file))
   }
