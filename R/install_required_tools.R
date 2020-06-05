@@ -5,6 +5,7 @@
 #' all the libraries and dependencies necessary for their succesful installation,
 #' therefore, they have to be installed beforehand as described in the README.md
 #' or at https://github.com/TearsWillFall/ULPwgs.
+#' @export
 
 install_required_tools=function(){
   dir.create("tools")
