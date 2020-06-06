@@ -16,7 +16,7 @@ options(scipen=999)
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-fastqc=function (bin="tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_cores=3,output_dir="",verbose=FALSE){
+fastqc=function (bin_path="tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_cores=3,output_dir="",verbose=FALSE){
 
   sep="/"
 
@@ -36,9 +36,9 @@ fastqc=function (bin="tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_cores=3,o
     dir.create(output_dir)
   }
   if(verbose){
-    print(paste("./",bin,"-o ",output_dir,"-t ",n_cores,"--noextract",file_R1,file_R2))
+    print(paste(paste0("./",bin_path),"-o ",output_dir,"-t ",n_cores,"--noextract",file_R1,file_R2))
   }
-  system(paste("./",bin,"-o ",output_dir,"-t ",n_cores,"--noextract",file_R1,file_R2))
+  system(paste(paste0("./",bin_path),"-o ",output_dir,"-t ",n_cores,"--noextract",file_R1,file_R2))
 
 }else{
   output_dir=paste0(output_dir,sep,sample_name)
@@ -47,9 +47,9 @@ fastqc=function (bin="tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_cores=3,o
     dir.create(output_dir)
   }
     if(verbose){
-      print(paste("./",bin,"-o ",output_dir,"-t ",n_cores,"--noextract",file_R1))
+      print(paste(paste0("./",bin_path),"-o ",output_dir,"-t ",n_cores,"--noextract",file_R1))
     }
-    system(paste("./",bin,"-o ",output_dir,"-t ",n_cores,"--noextract",file_R1))
+    system(paste(paste0("./",bin_path),"-o ",output_dir,"-t ",n_cores,"--noextract",file_R1))
   }
 }
 
@@ -80,10 +80,10 @@ trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA
 
   sample_name=get_sample_name(file_R1)
   if ((!is.na(xadapt)) & (!is.na(yadapt))){
-    func=paste("./",bin_path,"-m tail -t",n_cores,"-x", xadapt,"-y", yadapt)
+    func=paste(paste0("./",bin_path),"-m tail -t",n_cores,"-x", xadapt,"-y", yadapt)
   }
   else{
-    func=paste("./",bin_path,"-m tail -t",n_cores)
+    func=paste(paste0("./",bin_path),"-m tail -t",n_cores)
   }
   if (!file_R2==""){
   tmp_name=get_sample_name(file_R2)
@@ -92,18 +92,18 @@ trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA
   output_dir=paste0(output_dir,sep,sample_name)
 
     if(verbose){
-      print(paste("./",func,"-z -l 35 -f sanger --quiet -o",output_dir,file_R1,file_R2))
+      print(paste(func,"-z -l 35 -f sanger --quiet -o",output_dir,file_R1,file_R2))
     }
-    system(paste("./",func,"-z -l 35 -f sanger --quiet -o",output_dir,file_R1,file_R2))
+    system(paste(func,"-z -l 35 -f sanger --quiet -o",output_dir,file_R1,file_R2))
 
 
   }else{
     output_dir=paste0(output_dir,sep,sample_name)
 
       if(verbose){
-        print(paste("./",func,"-z -l 35 -f sanger --quiet -o",output_dir,file_R1))
+        print(paste(func,"-z -l 35 -f sanger --quiet -o",output_dir,file_R1))
       }
-      system(paste("./",func,"-z -l 35 -f sanger --quiet -o",output_dir,file_R1))
+      system(paste(func,"-z -l 35 -f sanger --quiet -o",output_dir,file_R1))
     }
   }
 
@@ -120,9 +120,9 @@ trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA
 
 merge=function(bin_path="tools/samtools/samtools",bam="",bam_dir="",verbose=FALSE){
     if(verbose){
-      print(paste("./",bin_path,"merge",bam, paste0(bam_dir,"*.bam")))
+      print(paste(paste0("./",bin_path),"merge",bam, paste0(bam_dir,"*.bam")))
     }
-    system(paste("./",bin_path,"merge",bam, paste0(bam_dir,"*.bam")))
+    system(paste(paste0("./",bin_path),"merge",bam, paste0(bam_dir,"*.bam")))
   }
 
 
@@ -163,16 +163,16 @@ alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
     GPU=paste0("\"@RG\\tID:",sample_name,"\\tPL:ILLUMINA\\tPU:NA\\tLB:",sample_name,"\\tSM:",sample_name,"\"")
     out_file=paste0(output_dir,sep,sample_name,".bam")
       if(verbose){
-          print(paste("./",bin_path,"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome, file_R1,file_R2, "|",bin_path2," view -h -b >",out_file))
+          print(paste(paste0("./",bin_path),"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome, file_R1,file_R2, "|",bin_path2," view -h -b >",out_file))
       }
-      system(paste("./",bin_path,"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome, file_R1,file_R2, "| ",bin_path2," view -h -b >",out_file))
+      system(paste(paste0("./",bin_path),"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome, file_R1,file_R2, "| ",bin_path2," view -h -b >",out_file))
 
       }
     else{
       if(verbose){
-          print(paste("./",bin_path,"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome, file_R1, "| ",bin_path2," view -h -b >",out_file))
+          print(paste(paste0("./",bin_path),"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome, file_R1, "| ",paste0("./",bin_path2)," view -h -b >",out_file))
       }
-      system(paste("./",bin_path,"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome, file_R1, "| ",bin_path2," view -h -b >",out_file))
+      system(paste(paste0("./",bin_path),"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome, file_R1, "| ",paste0("./",bin_path2)," view -h -b >",out_file))
 
     }
   }
@@ -211,26 +211,26 @@ sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir=""
 
     if (verbose){
       print("Sorting BAM file:")
-      print(paste0("./",bin_path," sort ",file," -o ",out_file,".SORTED.",file_ext))
+      print(paste0(paste0("./",bin_path)," sort ",file," -o ",out_file,".SORTED.",file_ext))
     }
-    system(paste0("./",bin_path," sort ",file," -o ",out_file,".SORTED.",file_ext))
+    system(paste0(paste0("./",bin_path)," sort ",file," -o ",out_file,".SORTED.",file_ext))
     file=paste0(out_file,".SORTED.",file_ext)
 
     if (verbose){
       print("Indexing sorted BAM file:")
-      print(paste("./",bin_path," index",file))
+      print(paste(paste0("./",bin_path)," index",file))
     }
-    system(paste("./",bin_path," index",file))
+    system(paste(paste0("./",bin_path)," index",file))
     if (verbose){
       print("Generating Flag stats:")
-      print(paste0("./",bin_path," flagstat ",file," > ",paste0(out_file,".flagstat.txt")))
+      print(paste0(paste0("./",bin_path)," flagstat ",file," > ",paste0(out_file,".flagstat.txt")))
     }
-    system(paste0("./",bin_path," flagstat ",file," > ",paste0(out_file,".flagstat.txt")))
+    system(paste0(paste0("./",bin_path)," flagstat ",file," > ",paste0(out_file,".flagstat.txt")))
     if (verbose){
       print("Generating Index stats:")
-      print(paste0("./",bin_path," idxstats ",file," > ",paste0(out_file,".idxstats.txt")))
+      print(paste0(paste0("./",bin_path)," idxstats ",file," > ",paste0(out_file,".idxstats.txt")))
     }
-    system(paste0("./",bin_path," idxstats ",file," > ",paste0(out_file,".idxstats.txt")))
+    system(paste0(paste0("./",bin_path)," idxstats ",file," > ",paste0(out_file,".idxstats.txt")))
   }
 
 
@@ -307,10 +307,10 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
 
     if (verbose){
       print("Generate MapQ distance map:")
-      print(paste( "./",bin_path,"view",bam," | awk -F", "'\\t'", "'{c[$5]++} END { for (i in c) printf(\"%s\\t%s\\n\",i,c[i]) }'"," | sort -t$'\\t' -k 1 -g >>", paste0(out_file,".mapq_dist.txt")))
+      print(paste(paste0("./",bin_path),"view",bam," | awk -F", "'\\t'", "'{c[$5]++} END { for (i in c) printf(\"%s\\t%s\\n\",i,c[i]) }'"," | sort -t$'\\t' -k 1 -g >>", paste0(out_file,".mapq_dist.txt")))
 
     }
-    system(paste("./",bin_path,"view",bam," | awk -F", "'\\t'", "'{c[$5]++} END { for (i in c) printf(\"%s\\t%s\\n\",i,c[i]) }'"," | sort -t$'\\t' -k 1 -g >>", paste0(out_file,".mapq_dist.txt")))
+    system(paste(paste0("./",bin_path),"view",bam," | awk -F", "'\\t'", "'{c[$5]++} END { for (i in c) printf(\"%s\\t%s\\n\",i,c[i]) }'"," | sort -t$'\\t' -k 1 -g >>", paste0(out_file,".mapq_dist.txt")))
 
     if (verbose){
       print("Generate Alignment Metrics:")
@@ -382,9 +382,9 @@ read_counter=function(bin_path="tools/hmmcopy_utils/bin/readCounter",win=500000,
     out_file=paste0(out_file,"/",sample_name)
 
       if (verbose){
-        print(paste("./",bin_path,"--window", win,"--quality 20 --chromosome",paste0("'",chr,"'"), bam,">", paste0(out_file,".wig")))
+        print(paste(paste0("./",bin_path),"--window", win,"--quality 20 --chromosome",paste0("'",chr,"'"), bam,">", paste0(out_file,".wig")))
       }
-      system(paste("./",bin_path,"--window", win,"--quality 20 --chromosome",paste0("'",chr,"'"), bam,">" ,paste0(out_file,".wig")))
+      system(paste(paste0("./",bin_path),"--window", win,"--quality 20 --chromosome",paste0("'",chr,"'"), bam,">" ,paste0(out_file,".wig")))
 
       if (grepl("chr",chr)){
         if (verbose){
