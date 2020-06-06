@@ -10,6 +10,8 @@ Authors@R:
            email = "osvaldas.v@um.es")
 Description: A convenient way to analyze raw ULP-WGS data from cell-free DNA from scratch.
 License: GPL-3 + file LICENSE
+Import:
+    optparse
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
