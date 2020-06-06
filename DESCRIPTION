@@ -14,10 +14,11 @@ Depends:
     R (>= 4.0.0)
 Imports:
     optparse,
-    HMMcopy,
     GenomeInfoDb,
     GenomicRanges,
-    plyr
+    plyr,
+    HMMcopy
+biocViews:
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
