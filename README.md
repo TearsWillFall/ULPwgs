@@ -4,7 +4,7 @@ ULPwgs is a convenient tool that integrates existing tools to help to perform an
 
 ## 1. Description
 
-ULPwgs simplifies the process of analyzing ultra-low-pass Whole Genome Sequencing data (ULP-WGS) by giving a simplified installation process for commonly used bioinformatics tools, as well as providing a series of functions that allow calling these tools in the coding language of R.
+ULPwgs simplifies the process of analyzing ultra-low-pass Whole Genome Sequencing data (ULP-WGS) by giving a simplified installation process for commonly used bioinformatics tools, as well as providing a series of functions that allow calling these tools in R coding language.
 
 **Tools:**
 * [FastQC](https://github.com/s-andrews/FastQC):  A quality control analysis tool for high throughput sequencing data 
@@ -20,15 +20,47 @@ ULPwgs simplifies the process of analyzing ultra-low-pass Whole Genome Sequencin
 Tested on Ubuntu and Arch Linux.
 
 In order to be able to download and compile the source files of all the required tools the following programs are required:
-* GNU make. 
+* make
 * gcc
 * ant
 * cmake
 * autoconf
 
+These programs can and should be installed using the terminal with the following commands:
+
+* **For Ubuntu:**
+
+  ```
+
+  sudo apt install make gcc ant cmake autoconf
+
+  ```
+
+* **For Arch Linux:**
+
+  ```
+  sudo pacman -S ant make cmake gcc autoconf
+
+  ```
+  
+Additional dependencies may need to be installed to install `devtools` package in R:
+  
+* **For Ubuntu:**
+
+  ```
+
+  sudo apt install build-essential libcurl4-gnutls-dev libxml2-dev libssl-dev
+
+  ```
+  
+* **For Arch Linux:**
+
+  ```
+  sudo pacman -S build-essential libcurl-gnutls libxml2-dev openssl
+
+  ```
+
+
 ## 3. Instructions
 
-Before installing the package
 install.packages("devtools")
-If you are in are in a fresh Ubuntu it's very likely sudo apt install build-essential libcurl4-gnutls-dev libxml2-dev libssl-dev
-
