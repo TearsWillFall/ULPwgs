@@ -17,8 +17,7 @@ Imports:
     GenomeInfoDb,
     GenomicRanges,
     plyr,
-    HMMcopy,
-    ichorCNA
+    HMMcopy
 biocViews:
 Encoding: UTF-8
 LazyData: true
