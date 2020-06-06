@@ -20,6 +20,8 @@ install_required_tools=function(){
 
   sapply(urls,function (x) system(paste("git clone",x)))
   setwd("./FastQC")
+  system("sed -i 's/<property name=\"target\" value=\"*.*\"/<property name=\"target\" value=\"1.6\"/' build.xml")
+  system("sed -i 's/<property name=\"source\" value=\"*.*\"/<property name=\"source\" value=\"1.6\"/' build.xml")
   system("ant")
   system("chmod 755 bin/fastqc")
   setwd("..")
