@@ -118,11 +118,40 @@ trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-merge=function(bin_path="tools/samtools/samtools",bam="",bam_dir="",verbose=FALSE){
+merge_bam=function(bin_path="tools/samtools/samtools",bam="",bam_dir="",verbose=FALSE){
     if(verbose){
       print(paste(paste0("./",bin_path),"merge",bam, paste0(bam_dir,"*.bam")))
     }
     system(paste(paste0("./",bin_path),"merge",bam, paste0(bam_dir,"*.bam")))
+  }
+
+
+#' Index reference genome
+#'
+#' This function indexes a reference genome
+#'
+#' @param file Path to the input file with the reference genome in FASTA format.
+#' @param file_R2 [Optional] Path to the input with the reverse read sequence.
+#' @param bin_path Path to bwa executable. Default path tools/bwa/bwa.
+#' @param verbose Enables progress messages. Default False.
+#' @export
+
+
+index_ref=function(bin_path="tools/bwa/bwa",file="",verbose=FALSE){
+
+    sep="/"
+
+    if(output_dir==""){
+      sep=""
+    }
+
+    out_file=paste0(output_dir,sep,"ref_genome")
+    if(verbose){
+        print(paste(paste0("./",bin_path),"index", file) )
+    }
+    system(paste(paste0("./",bin_path),"index", file) )
+
+
   }
 
 

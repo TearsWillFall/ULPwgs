@@ -6,7 +6,7 @@
 #' therefore, they have to be installed beforehand as described in the README.md
 #' or at https://github.com/TearsWillFall/ULPwgs.
 #' @export
-
+install_required_tools()
 install_required_tools=function(){
   dir.create("tools")
 
