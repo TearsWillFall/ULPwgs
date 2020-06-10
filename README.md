@@ -1,6 +1,6 @@
 # ULPwgs
 
-ULPwgs is a convenient tool that integrates existing tools to help to perform analysis of ultra-low-pass Whole Genome Sequencing data (ULP-WGS) in R.
+ULPwgs is a convenient tool that integrates existing tools to help to perform analysis of Ultra-Low-Pass Whole Genome Sequencing data (ULP-WGS) in R.
 
 ## 1. Description
 
@@ -14,12 +14,12 @@ ULPwgs simplifies the process of analyzing ultra-low-pass Whole Genome Sequencin
 * [samtools](https://github.com/samtools/samtools/):Tools (written in C using htslib) for manipulating next-generation sequencing data
 * [picard](https://github.com/broadinstitute/picard): A set of command line tools (in Java) for manipulating high-throughput sequencing (HTS) data and formats such as SAM/BAM/CRAM and VCF
 * [hmmcopy_utils](https://github.com/shahcompbio/hmmcopy_utils): Tools for extracting read counts and gc and mappability statistics in preparation for running HMMCopy
-* [ichorCNA](https://github.com/broadinstitute/ichorCNA): Estimating tumor fraction in cell-free DNA from ultra-low-pass whole genome sequencing
+* [ichorCNA](https://github.com/broadinstitute/ichorCNA): Estimating tumor fraction in cell-free DNA from Ultra-Low-Pass Whole Genome Sequencing
 
 ## 2. System Requirements
 
 
-Tested on fresh Ubuntu and Arch Linux installations. Should be working on other Linux distros too. 
+Tested on fresh Ubuntu and Arch Linux installations. Should be working on other Linux distros too as long as equivalent packages are provided. 
 
 In order to be able to download and compile the source files of all the required tools the following programs are required:
 * make
@@ -42,7 +42,7 @@ These tools can and should be installed using the terminal with the following co
   sudo pacman -S ant make cmake gcc autoconf
   ```
   
-Additional dependencies may need to be installed to succesfully install `devtools` package in R:
+Additional dependencies may be needed to succesfully install `devtools` package in R:
   
 * **For Ubuntu:**
 
@@ -57,7 +57,7 @@ Additional dependencies may need to be installed to succesfully install `devtool
   ```
 
 
-## 3. Instructions
+## 3. Installation Instructions
 
 In order to install `ULPwgs` package we will be using R `devtools`:
 
@@ -67,10 +67,18 @@ devtools::install_github("TearsWillFall/ULPwgs")
 ```
 If `devtools` package installation fails check System Requirements section, as you may be missing a dependency.
 
-Once `ULPwgs` package is installed we can use the function `install_required_tools()` to download and install all the tools required for the bioinformatic analysis. This will create a directory named `tools` in the current working directory.
+Once the `ULPwgs` package is installed we can use the function `install_required_tools()` to download and set up all the tools required for the bioinformatic process. This will create a directory named `tools` in the current working directory with all the tools. **Note: All functions within this package call scripts from the `tools` directory, therefore if this directory is moved, deleted or the current working directory is changed, the function will fail.**
 
 ```
 ULPwgs::install_required_tools()
 ```
+
+Or, alternatively.
+
+```
+library("ULPwgs")
+install_required_tools()
+```
+
 
 
