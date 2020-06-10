@@ -79,6 +79,6 @@ Or, alternatively.
 library("ULPwgs")
 install_required_tools()
 ```
+## 3. Usage
 
-
-
+![Alt text](Graph.pdf?raw=true "Optional Title")
