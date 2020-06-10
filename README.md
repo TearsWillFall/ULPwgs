@@ -80,5 +80,4 @@ library("ULPwgs")
 install_required_tools()
 ```
 ## 3. Usage
-
-![Alt text](Graph.pdf?raw=true "Optional Title")
+![Bioinformatic Workflow example of ULPwgs](https://github.com/TearsWillFall/ULPwgs/blob/master/Graph.png?raw=true)
