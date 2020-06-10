@@ -9,14 +9,15 @@ ichorCNA(
   sample_id = "",
   wig = "",
   ploidy = "2,3",
-  tumor_content = "0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9",
+  tumour_content = "0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9",
   homozygous_del = "False",
   subclonal_states = "NULL",
   gc = "tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",
   map = "tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",
   centromere = "tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",
   output_dir = "",
-  verbose = TRUE
+  verbose = TRUE,
+  libdir = "tools/ichorCNA"
 )
 }
 \arguments{
@@ -27,6 +28,8 @@ ichorCNA(
 \item{wig}{Path to the WIG file.}
 
 \item{ploidy}{Initial tumour ploidy. Default 2,3}
+
+\item{tumour_content}{Initial normal contamination. Default 0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9}
 
 \item{homozygous_del}{Include Homozygous deleteions. Default FALSE.}
 
@@ -40,7 +43,7 @@ ichorCNA(
 
 \item{verbose}{Enables progress messages. Default False.}
 
-\item{tumour_content}{Initial normal contamination. Default 0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9}
+\item{libdir}{Path to dir containing ichorCNA libraries.}
 }
 \description{
 This function generates a report that helps to segment the genome, predict large-scale

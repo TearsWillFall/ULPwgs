@@ -5,7 +5,7 @@
 \title{Generate a quality control (QC) report from a fastaqc file}
 \usage{
 fastqc(
-  bin = "tools/FastQC/bin/fastqc",
+  bin_path = "tools/FastQC/bin/fastqc",
   file_R1 = "",
   file_R2 = "",
   n_cores = 3,
@@ -14,6 +14,8 @@ fastqc(
 )
 }
 \arguments{
+\item{bin_path}{Path to fastQC executable. Default path tools/FastQC/bin/fastqc.}
+
 \item{file_R1}{Path to the input file with the sequence.}
 
 \item{file_R2}{\link{Optional} Path to the input with the reverse read sequence.}
@@ -23,8 +25,6 @@ fastqc(
 \item{output_dir}{Path to the output directory.}
 
 \item{verbose}{Enables progress messages. Default False.}
-
-\item{bin_path}{Path to fastQC executable. Default path tools/FastQC/bin/fastqc.}
 }
 \description{
 This function takes a set of sequence files (fastq,SAM,BAM...) and
