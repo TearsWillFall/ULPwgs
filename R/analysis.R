@@ -211,7 +211,7 @@ sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir=""
 
   sample_name=get_sample_name(file)
   file_ext=get_file_extension(file)
-  out_file=paste0(output_dir,sep,"_SORTED.",toupper(file_ext))
+  out_file=paste0(output_dir,sep,sample_name"_SORTED.",toupper(file_ext))
 
 
   if (!dir.exists(out_file)){
@@ -270,7 +270,7 @@ remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file=""
     sample_name=get_sample_name(file)
     file_ext=get_file_extension(file)
 
-    out_file=paste0(output_dir,sep,"_RMDUP.",toupper(file_ext))
+    out_file=paste0(output_dir,sep,sample_name,"_RMDUP.",toupper(file_ext))
     if (!dir.exists(out_file)){
         dir.create(out_file)
     }
