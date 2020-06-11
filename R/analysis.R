@@ -26,7 +26,7 @@ fastqc=function (bin_path="tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_core
 
   if (!file_R2==""){
   sample_name=intersect_sample_name(file_path=file_R1,file_path2=file_R2)
-  output_dir=paste0(output_dir,sep,sample_name,"-FastQC_report")
+  output_dir=paste0(output_dir,sep,sample_name)
 
   if(!dir.exists(output_dir)){
     dir.create(output_dir)
@@ -83,32 +83,22 @@ trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA
   }
   if (!file_R2==""){
   sample_name=intersect_sample_name(file_path=file_R1,file_path2=file_R2)
-  output_dir=paste0(output_dir,sep,sample_name,"-trimmed")
+  output_dir=paste0(output_dir,sep,sample_name)
 
     if(verbose){
-      print(paste(func,"-z -l 35 -f sanger --quiet -o",sample_name,file_R1,file_R2))
+      print(paste(func,"-z -l 35 -f sanger --quiet -o",output_dir,file_R1,file_R2))
     }
-    system(paste(func,"-z -l 35 -f sanger --quiet -o",sample_name,file_R1,file_R2))
+    system(paste(func,"-z -l 35 -f sanger --quiet -o",output_dir,file_R1,file_R2))
 
 
   }else{
     output_dir=paste0(output_dir,sep,sample_name)
 
       if(verbose){
-        print(paste(func,"-z -l 35 -f sanger --quiet -o",sample_name,file_R1))
+        print(paste(func,"-z -l 35 -f sanger --quiet -o",output_dir,file_R1))
       }
-      system(paste(func,"-z -l 35 -f sanger --quiet -o",sample_name,file_R1))
+      system(paste(func,"-z -l 35 -f sanger --quiet -o",output_dir,file_R1))
     }
-
-    if (!dir.exists(output_dir)){
-        dir.create(output_dir)
-    }
-    if(verbose){
-      print(paste("mv",paste0(sample_name,"-trimmed*"), output_dir))
-    }
-
-    system(paste("mv",paste0(sample_name,"-trimmed*"), output_dir)
-
   }
 
 
@@ -321,7 +311,7 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
 
     sample_name=get_sample_name(bam)
 
-    out_file=paste0(output_dir,sep,"_alignQC")
+    out_file=paste0(output_dir,sep,"alignQC")
     if (!dir.exists(out_file)){
         dir.create(out_file)
     }
@@ -449,7 +439,7 @@ ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",w
       sample_id=get_sample_name(wig)
     }
 
-    out_file=paste0(output_dir,sep,"-CNAreport")
+    out_file=paste0(output_dir,sep,"report")
     if (!dir.exists(out_file)){
         dir.create(out_file)
     }
