@@ -12,6 +12,8 @@
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
+
+
 fastqc=function (bin_path="tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_cores=3,output_dir="",verbose=FALSE){
 
   sep="/"
@@ -23,9 +25,7 @@ fastqc=function (bin_path="tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_core
   sample_name=get_sample_name(file_R1)
 
   if (!file_R2==""){
-  tmp_name=get_sample_name(file_R2)
-  sample_name=sapply(sapply(c(0:(nchar(tmp_name)-1)),function (i) substr(tmp_name,1,nchar(tmp_name)-i)),function (x) grepl(x,file_R1))
-  sample_name=which(sample_name)[2]
+  sample_name=intersect_sample_name(file_path=file_R1,file_path2=file_R2)
   output_dir=paste0(output_dir,sep,sample_name)
 
   if(!dir.exists(output_dir)){
@@ -82,9 +82,7 @@ trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA
     func=paste(paste0("./",bin_path),"-m tail -t",n_cores)
   }
   if (!file_R2==""){
-  tmp_name=get_sample_name(file_R2)
-  sample_name=sapply(sapply(c(0:(nchar(tmp_name)-1)),function (i) substr(tmp_name,1,nchar(tmp_name)-i)),function (x) grepl(x,file_R1))
-  sample_name=which(l)[2]
+  sample_name=intersect_sample_name(file_path=file_R1,file_path2=file_R2)
   output_dir=paste0(output_dir,sep,sample_name)
 
     if(verbose){
@@ -174,9 +172,7 @@ alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
     GPU=paste0("\"@RG\\tID:",sample_name,"\\tPL:ILLUMINA\\tPU:NA\\tLB:",sample_name,"\\tSM:",sample_name,"\"")
 
     if (!file_R2==""){
-    tmp_name=get_sample_name(file_R2)
-    sample_name=sapply(sapply(c(0:(nchar(tmp_name)-1)),function (i) substr(tmp_name,1,nchar(tmp_name)-i)),function (x) grepl(x,file_R1))
-    sample_name=which(l)[2]
+    sample_name=intersect_sample_name(file_path=file_R1,file_path2=file_R2)
     GPU=paste0("\"@RG\\tID:",sample_name,"\\tPL:ILLUMINA\\tPU:NA\\tLB:",sample_name,"\\tSM:",sample_name,"\"")
     out_file=paste0(output_dir,sep,sample_name,".bam")
       if(verbose){
