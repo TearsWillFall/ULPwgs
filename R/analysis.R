@@ -86,7 +86,7 @@ trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA
   output_dir=paste0(output_dir,sep,sample_name,"-trimmed")
 
     if(verbose){
-      print(paste(func,"-z -l 35 -f sanger --quiet -o",smaple_name,file_R1,file_R2))
+      print(paste(func,"-z -l 35 -f sanger --quiet -o",sample_name,file_R1,file_R2))
     }
     system(paste(func,"-z -l 35 -f sanger --quiet -o",sample_name,file_R1,file_R2))
 
