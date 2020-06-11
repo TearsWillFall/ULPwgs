@@ -155,16 +155,17 @@ alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
     }
 
     sample_name=get_sample_name(file_R1)
-    output_dir=paste0(output_dir,sep,sample_name,"BAM")
-    if(!dir.exists(output_dir)){
-      dir.create(output_dir)
-    }
 
     out_file=paste0(output_dir,"/",sample_name,".bam")
     GPU=paste0("\"@RG\\tID:",sample_name,"\\tPL:ILLUMINA\\tPU:NA\\tLB:",sample_name,"\\tSM:",sample_name,"\"")
 
     if (!file_R2==""){
     sample_name=intersect_sample_name(file_path=file_R1,file_path2=file_R2)
+    output_dir=paste0(output_dir,sep,sample_name,"BAM")
+    if(!dir.exists(output_dir)){
+      dir.create(output_dir)
+    }
+
     GPU=paste0("\"@RG\\tID:",sample_name,"\\tPL:ILLUMINA\\tPU:NA\\tLB:",sample_name,"\\tSM:",sample_name,"\"")
     out_file=paste0(output_dir,"/",sample_name,".bam")
       if(verbose){
@@ -174,6 +175,11 @@ alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
 
       }
     else{
+      output_dir=paste0(output_dir,sep,sample_name,"BAM")
+      if(!dir.exists(output_dir)){
+        dir.create(output_dir)
+      }
+
       if(verbose){
           print(paste(paste0("./",bin_path),"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome, file_R1, "| ",paste0("./",bin_path2)," view -h -b >",out_file))
       }
