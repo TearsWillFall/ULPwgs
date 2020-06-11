@@ -134,13 +134,6 @@ merge_bam=function(bin_path="tools/samtools/samtools",bam="",bam_dir="",verbose=
 
 index_ref=function(bin_path="tools/bwa/bwa",file="",verbose=FALSE){
 
-    sep="/"
-
-    if(output_dir==""){
-      sep=""
-    }
-
-    out_file=paste0(output_dir,sep,"ref_genome")
     if(verbose){
         print(paste(paste0("./",bin_path),"index", file) )
     }
