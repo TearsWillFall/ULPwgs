@@ -25,7 +25,7 @@ fastqc=function (bin_path="tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_core
   if (!file_R2==""){
   tmp_name=get_sample_name(file_R2)
   sample_name=sapply(sapply(c(0:(nchar(tmp_name)-1)),function (i) substr(tmp_name,1,nchar(tmp_name)-i)),function (x) grepl(x,file_R1))
-  sample_name=which(l)[2]
+  sample_name=which(sample_name)[2]
   output_dir=paste0(output_dir,sep,sample_name)
 
   if(!dir.exists(output_dir)){
