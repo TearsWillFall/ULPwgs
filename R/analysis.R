@@ -130,29 +130,6 @@ merge_bam=function(bin_path="tools/samtools/samtools",bam="",bam_dir="",verbose=
   }
 
 
-#' Index reference genome
-#'
-#' This function indexes a reference genome
-#'
-#' @param file Path to the input file with the reference genome in FASTA format.
-#' @param bin_path Path to bwa executable. Default path tools/bwa/bwa.
-#' @param verbose Enables progress messages. Default False.
-#' @export
-
-
-index_ref=function(bin_path="tools/bwa/bwa",file="",verbose=FALSE){
-
-    if(verbose){
-        print(paste(paste0("./",bin_path),"index", file) )
-    }
-    system(paste(paste0("./",bin_path),"index", file) )
-
-
-  }
-
-
-
-
 #' Read alignment
 #'
 #' This function aligns a sequence of reads to a reference genome
@@ -178,7 +155,7 @@ alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
     }
 
     sample_name=get_sample_name(file_R1)
-    output_dir=paste0(output_dir,sep,"BAM")
+    output_dir=paste0(output_dir,sep,sample_name,"BAM")
     if(!dir.exists(output_dir)){
       dir.create(output_dir)
     }
@@ -228,7 +205,7 @@ sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir=""
 
   sample_name=get_sample_name(file)
   file_ext=get_file_extension(file)
-  out_file=paste0(output_dir,sep,"SORTED.",file_ext)
+  out_file=paste0(output_dir,sep,"_SORTED.",toupper(file_ext))
 
 
   if (!dir.exists(out_file)){
@@ -287,7 +264,7 @@ remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file=""
     sample_name=get_sample_name(file)
     file_ext=get_file_extension(file)
 
-    out_file=paste0(output_dir,sep,"RMDUP.",file_ext)
+    out_file=paste0(output_dir,sep,"_RMDUP.",toupper(file_ext))
     if (!dir.exists(out_file)){
         dir.create(out_file)
     }
@@ -326,7 +303,7 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
 
     sample_name=get_sample_name(bam)
 
-    out_file=paste0(output_dir,sep,"_alignQC_report")
+    out_file=paste0(output_dir,sep,sample_name,"_alignQC_report")
     if (!dir.exists(out_file)){
         dir.create(out_file)
     }
@@ -403,7 +380,7 @@ read_counter=function(bin_path="tools/hmmcopy_utils/bin/readCounter",win=500000,
 
     sample_name=get_sample_name(bam)
 
-    out_file=paste0(output_dir,sep,"wig")
+    out_file=paste0(output_dir,sep,sample_name,"_WIG")
     if (!dir.exists(out_file)){
         dir.create(out_file)
     }
@@ -454,7 +431,7 @@ ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",w
       sample_id=get_sample_name(wig)
     }
 
-    out_file=paste0(output_dir,sep,"_CNAreport")
+    out_file=paste0(output_dir,sep,sample_name,"_CNAreport")
     if (!dir.exists(out_file)){
         dir.create(out_file)
     }

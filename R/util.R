@@ -6,6 +6,8 @@
 #' @param file_path Path to the input file
 #' @return A string with the name of the file
 #' @export
+
+
 get_sample_name=function(file_path=""){
   sample_name=unlist(strsplit(basename(file_path),"\\."))[1]
   return(sample_name)
@@ -44,3 +46,24 @@ intersect_sample_name=function(file_path="",file_path2=""){
   return(sample_name)
 
 }
+
+
+#' Index reference genome
+#'
+#' This function indexes a reference genome
+#'
+#' @param file Path to the input file with the reference genome in FASTA format.
+#' @param bin_path Path to bwa executable. Default path tools/bwa/bwa.
+#' @param verbose Enables progress messages. Default False.
+#' @export
+
+
+index_ref=function(bin_path="tools/bwa/bwa",file="",verbose=FALSE){
+
+    if(verbose){
+        print(paste(paste0("./",bin_path),"index", file) )
+    }
+    system(paste(paste0("./",bin_path),"index", file) )
+
+
+  }
