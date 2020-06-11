@@ -161,7 +161,7 @@ alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
 
     if (!file_R2==""){
     sample_name=intersect_sample_name(file_path=file_R1,file_path2=file_R2)
-    output_dir=paste0(output_dir,sep,sample_name,"BAM")
+    output_dir=paste0(output_dir,sep,sample_name,"_BAM")
     if(!dir.exists(output_dir)){
       dir.create(output_dir)
     }
@@ -175,7 +175,7 @@ alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
 
       }
     else{
-      output_dir=paste0(output_dir,sep,sample_name,"BAM")
+      output_dir=paste0(output_dir,sep,sample_name,"_BAM")
       if(!dir.exists(output_dir)){
         dir.create(output_dir)
       }
