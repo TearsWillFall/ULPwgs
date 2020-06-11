@@ -189,7 +189,7 @@ alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
     if (!file_R2==""){
     sample_name=intersect_sample_name(file_path=file_R1,file_path2=file_R2)
     GPU=paste0("\"@RG\\tID:",sample_name,"\\tPL:ILLUMINA\\tPU:NA\\tLB:",sample_name,"\\tSM:",sample_name,"\"")
-    out_file=paste0(output_dir,sep,sample_name,".bam")
+    out_file=paste0(output_dir,"/",sample_name,".bam")
       if(verbose){
           print(paste(paste0("./",bin_path),"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome, file_R1,file_R2, "|",bin_path2," view -h -b >",out_file))
       }
