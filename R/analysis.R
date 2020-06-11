@@ -26,7 +26,7 @@ fastqc=function (bin_path="tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_core
 
   if (!file_R2==""){
   sample_name=intersect_sample_name(file_path=file_R1,file_path2=file_R2)
-  output_dir=paste0(output_dir,sep,sample_name)
+  output_dir=paste0(output_dir,sep,sample_name,"_FastQC_reports")
 
   if(!dir.exists(output_dir)){
     dir.create(output_dir)
@@ -83,22 +83,32 @@ trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA
   }
   if (!file_R2==""){
   sample_name=intersect_sample_name(file_path=file_R1,file_path2=file_R2)
-  output_dir=paste0(output_dir,sep,sample_name)
 
     if(verbose){
-      print(paste(func,"-z -l 35 -f sanger --quiet -o",output_dir,file_R1,file_R2))
+      print(paste(func,"-z -l 35 -f sanger --quiet -o",sample_name,file_R1,file_R2))
     }
-    system(paste(func,"-z -l 35 -f sanger --quiet -o",output_dir,file_R1,file_R2))
+    system(paste(func,"-z -l 35 -f sanger --quiet -o",sample_name,file_R1,file_R2))
 
 
   }else{
-    output_dir=paste0(output_dir,sep,sample_name)
+
 
       if(verbose){
-        print(paste(func,"-z -l 35 -f sanger --quiet -o",output_dir,file_R1))
+        print(paste(func,"-z -l 35 -f sanger --quiet -o",sample_name,file_R1))
       }
-      system(paste(func,"-z -l 35 -f sanger --quiet -o",output_dir,file_R1))
+      system(paste(func,"-z -l 35 -f sanger --quiet -o",sample_name,file_R1))
     }
+    output_dir=paste0(output_dir,sep,sample_name,"_trimmed")
+    if(!dir.exists(output_dir)){
+      dir.create(output_dir)
+    }
+
+    if(verbose){
+      print(paste("mv",paste0(sample_name,"-trimmed*"),output_dir))
+    }
+    system(paste("mv",paste0(sample_name,"-trimmed*"),output_dir))
+
+
   }
 
 
@@ -168,7 +178,12 @@ alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
     }
 
     sample_name=get_sample_name(file_R1)
-    out_file=paste0(output_dir,sep,sample_name,".bam")
+    output_dir=paste0(output_dir,sep,"BAM")
+    if(!dir.exists(output_dir)){
+      dir.create(output_dir)
+    }
+
+    out_file=paste0(output_dir,"/",sample_name,".bam")
     GPU=paste0("\"@RG\\tID:",sample_name,"\\tPL:ILLUMINA\\tPU:NA\\tLB:",sample_name,"\\tSM:",sample_name,"\"")
 
     if (!file_R2==""){
@@ -311,7 +326,7 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
 
     sample_name=get_sample_name(bam)
 
-    out_file=paste0(output_dir,sep,"alignQC")
+    out_file=paste0(output_dir,sep,"_alignQC_report")
     if (!dir.exists(out_file)){
         dir.create(out_file)
     }
@@ -439,7 +454,7 @@ ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",w
       sample_id=get_sample_name(wig)
     }
 
-    out_file=paste0(output_dir,sep,"report")
+    out_file=paste0(output_dir,sep,"_CNAreport")
     if (!dir.exists(out_file)){
         dir.create(out_file)
     }
