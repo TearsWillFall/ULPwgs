@@ -36,11 +36,11 @@ get_file_extension=function(file_path=""){
 #' @return A string with the longest common basename
 #' @export
 
-
 intersect_sample_name=function(file_path="",file_path2=""){
   tmp_name=get_sample_name(file_path2)
   sample_name=sapply(sapply(c(0:(nchar(tmp_name)-1)),function (i) substr(tmp_name,1,nchar(tmp_name)-i)),function (x) grepl(x,file_path))
-  sample_name=names(which(sample_name)[2])
+  sample_name=names(which(sample_name)[1])
+  sample_name=sub("(.*)[_.-].*","\\1",sample_name)
   return(sample_name)
 
 }
