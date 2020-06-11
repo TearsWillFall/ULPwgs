@@ -155,8 +155,6 @@ alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
     }
 
     sample_name=get_sample_name(file_R1)
-
-    out_file=paste0(output_dir,"/",sample_name,".bam")
     GPU=paste0("\"@RG\\tID:",sample_name,"\\tPL:ILLUMINA\\tPU:NA\\tLB:",sample_name,"\\tSM:",sample_name,"\"")
 
     if (!file_R2==""){
@@ -176,6 +174,7 @@ alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
       }
     else{
       output_dir=paste0(output_dir,sep,sample_name,"_BAM")
+      out_file=paste0(output_dir,"/",sample_name,".bam")
       if(!dir.exists(output_dir)){
         dir.create(output_dir)
       }
@@ -211,7 +210,7 @@ sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir=""
 
   sample_name=get_sample_name(file)
   file_ext=get_file_extension(file)
-  out_file=paste0(output_dir,sep,sample_name"_SORTED.",toupper(file_ext))
+  out_file=paste0(output_dir,sep,sample_name,"_SORTED.",toupper(file_ext))
 
 
   if (!dir.exists(out_file)){
