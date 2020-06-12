@@ -432,6 +432,7 @@ ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",w
     if(output_dir==""){
       sep=""
     }
+    sample_name=sample_id
     if(sample_id==""){
       sample_id=get_sample_name(wig)
     }
