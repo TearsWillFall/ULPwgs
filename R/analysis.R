@@ -432,9 +432,9 @@ ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",w
     if(output_dir==""){
       sep=""
     }
-    sample_name=sample_id
-    if(sample_id==""){
-      sample_id=get_sample_name(wig)
+    sample_name=get_sample_name(wig)
+    if(!sample_id==""){
+      sample_name=sample_id
     }
 
     out_file=paste0(output_dir,sep,sample_name,"_CNAreport")
