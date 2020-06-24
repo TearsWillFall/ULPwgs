@@ -79,5 +79,5 @@ Or, alternatively.
 library("ULPwgs")
 install_required_tools()
 ```
-## 3. Usage
+## 4. Usage
 ![Bioinformatic Workflow example of ULPwgs](https://github.com/TearsWillFall/ULPwgs/blob/master/Graph.png?raw=true)
