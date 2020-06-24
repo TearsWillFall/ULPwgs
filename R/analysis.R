@@ -62,11 +62,13 @@ fastqc=function (bin_path="tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_core
 #' @param yadapt [Optional] Adapter sequence/file.
 #' @param bin_path Path to skewer executable. Default path tools/skewer/skewer.
 #' @param n_cores Number of CPU cores to use. Default 3.
-#' @param output_dir Path to the output directory.
+#' @param mean_quality Minimum mean quality of reads to be kept.Dedault 0
+#' @param min_length Minimum length of reads to keep.Default 35
+#' @param max_length Maximum length of reads to keep.Default NA.
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA,yadapt=NA,n_cores=3,output_dir="",verbose=FALSE){
+trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA,yadapt=NA,n_cores=3,output_dir="",verbose=FALSE,mean_quality=0,min_length=35,max_length=NA){
 
   sep="/"
 
@@ -76,11 +78,15 @@ trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA
 
   sample_name=get_sample_name(file_R1)
   if ((!is.na(xadapt)) & (!is.na(yadapt))){
-    func=paste(paste0("./",bin_path),"-m tail -t",n_cores,"-x", xadapt,"-y", yadapt)
+    func=paste(paste0("./",bin_path),"-m tail -t",n_cores,"-x", xadapt,"-y", yadapt,"-Q",mean_quality,"-l",min_length)
   }
   else{
-    func=paste(paste0("./",bin_path),"-m tail -t",n_cores)
+    func=paste(paste0("./",bin_path),"-m tail -t",n_cores,"-Q",mean_quality,"-l",min_length)
   }
+  if(!is.na(max_length)){
+    func=paste(func,"-L",max_length)
+  }
+
   if (!file_R2==""){
   sample_name=intersect_sample_name(file_path=file_R1,file_path2=file_R2)
 
@@ -94,9 +100,9 @@ trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA
 
 
       if(verbose){
-        print(paste(func,"-z -l 35 -f sanger --quiet -o",sample_name,file_R1))
+        print(paste(func,"-z -f sanger --quiet -o",sample_name,file_R1))
       }
-      system(paste(func,"-z -l 35 -f sanger --quiet -o",sample_name,file_R1))
+      system(paste(func,"-z -f sanger --quiet -o",sample_name,file_R1))
     }
     output_dir=paste0(output_dir,sep,sample_name,"_trimmed")
     if(!dir.exists(output_dir)){
