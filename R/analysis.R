@@ -92,9 +92,9 @@ trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA
   sample_name=intersect_sample_name(file_path=file_R1,file_path2=file_R2)
 
     if(verbose){
-      print(paste(func,"-z -l 35 -f sanger --quiet -o",sample_name,file_R1,file_R2))
+      print(paste(func,"-z -f sanger --quiet -o",sample_name,file_R1,file_R2))
     }
-    system(paste(func,"-z -l 35 -f sanger --quiet -o",sample_name,file_R1,file_R2))
+    system(paste(func,"-z -f sanger --quiet -o",sample_name,file_R1,file_R2))
 
 
   }else{
