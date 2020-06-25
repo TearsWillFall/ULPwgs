@@ -48,7 +48,7 @@ Additional dependencies may be needed to succesfully install `devtools` package 
 * **For Ubuntu:**
 
   ```
-  sudo apt install build-essential libcurl4-gnutls-dev libxml2-dev libssl-dev
+  sudo apt install build-essential libcurl4-gnutls-dev libxml2-dev openssl
   ```
   
 * **For Arch Linux:**
