@@ -22,6 +22,7 @@ ULPwgs simplifies the process of analyzing ultra-low-pass Whole Genome Sequencin
 Tested on fresh Ubuntu and Arch Linux installations. Should be working on other Linux distros too as long as equivalent packages are provided. 
 
 In order to be able to download and compile the source files of all the required tools the following programs are required:
+* git
 * make
 * gcc
 * ant
