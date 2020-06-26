@@ -34,13 +34,13 @@ These tools can and should be installed using the terminal with the following co
 * **For Ubuntu:**
 
   ```
-  sudo apt install make gcc ant cmake autoconf
+  sudo apt install git make gcc ant cmake autoconf
   ```
 
 * **For Arch Linux:**
 
   ```
-  sudo pacman -S ant make cmake gcc autoconf
+  sudo pacman -S git ant make cmake gcc autoconf
   ```
   
 Additional dependencies may be needed to succesfully install `devtools` package in R:
@@ -68,7 +68,7 @@ devtools::install_github("TearsWillFall/ULPwgs")
 ```
 If `devtools` package installation fails check System Requirements section, as you may be missing a dependency.
 
-Once the `ULPwgs` package is installed we can use the function `install_required_tools()` to download and set up all the tools required for the bioinformatic process. This will create a directory named `tools` in the current working directory with all the tools. **Note: All functions within this package call scripts from the `tools` directory, therefore if this directory is moved, deleted or the current working directory is changed, the function will fail.**
+Once the `ULPwgs` package is installed we can use the function `install_required_tools()` to download and set up all the tools required for the bioinformatic process. This will create a directory named `tools` in the current working directory with all the tools. **Note: All functions within this package call scripts from the `tools` directory, therefore if this directory is moved, deleted or the current working directory is changed, these function will fail.**
 
 ```
 ULPwgs::install_required_tools()
