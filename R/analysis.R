@@ -437,7 +437,7 @@ read_counter=function(bin_path="tools/hmmcopy_utils/bin/readCounter",win=500000,
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",wig="",ploidy="2,3",tumour_content="0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9",homozygous_del="False",subclonal_states="NULL",gc="tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",output_dir="",verbose=TRUE,libdir="tools/ichorCNA"){
+ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",wig="",ploidy="2,3",tumour_content="0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9",homozygous_del="False",subclonal_states="NULL",gc="tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",normal_panel="tools/ichorCNA/inst/extdata/HD_ULP_PoN_hg38_500kb_median_normAutosome_median.rds",output_dir="",verbose=TRUE,libdir="tools/ichorCNA"){
 
     sep="/"
 
@@ -456,8 +456,8 @@ ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",w
         dir.create(out_file)
     }
     if(verbose){
-      print(paste("Rscript",bin_path,"--id",sample_id,"--WIG",wig,"--ploidy",paste0("'c(",ploidy,")'"),"--normal",paste0("'c(",tumour_content,")'"),"--maxCN 7 --gcWig", gc,"--mapWig",map,"--centromere",centromere,"--includeHOMD",homozygous_del,"--chrs 'c(1:22,\"X\")' --chrTrain \'c(1:22)\' --estimateNormal True --estimatePloidy True --estimateScPrevalence True --outDir",out_file,"--libdir",libdir))
+      print(paste("Rscript",bin_path,"--id",sample_id,"--WIG",wig,"--ploidy",paste0("'c(",ploidy,")'"),"--normal",paste0("'c(",tumour_content,")'"),"--maxCN 7 --gcWig", gc,"--mapWig",map,"--centromere",centromere,"--normalPanel",normal_panel,"--includeHOMD",homozygous_del,"--chrs 'c(1:22,\"X\")' --chrTrain \'c(1:22)\' --estimateNormal True --estimatePloidy True --estimateScPrevalence True --outDir",out_file,"--libdir",libdir))
 
     }
-    system(paste("Rscript",bin_path,"--id",sample_id,"--WIG",wig,"--ploidy",paste0("'c(",ploidy,")'"),"--normal",paste0("'c(",tumour_content,")'"),"--maxCN 7 --gcWig", gc,"--mapWig",map,"--centromere",centromere,"--includeHOMD",homozygous_del,"--chrs 'c(1:22,\"X\")' --chrTrain \'c(1:22)\' --estimateNormal True --estimatePloidy True --estimateScPrevalence True --outDir",out_file,"--libdir",libdir))
+    system(paste("Rscript",bin_path,"--id",sample_id,"--WIG",wig,"--ploidy",paste0("'c(",ploidy,")'"),"--normal",paste0("'c(",tumour_content,")'"),"--maxCN 7 --gcWig", gc,"--mapWig",map,"--centromere",centromere,"--normalPanel",normal_panel,"--includeHOMD",homozygous_del,"--chrs 'c(1:22,\"X\")' --chrTrain \'c(1:22)\' --estimateNormal True --estimatePloidy True --estimateScPrevalence True --outDir",out_file,"--libdir",libdir))
   }
