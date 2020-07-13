@@ -322,6 +322,11 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
 
     out_file=paste0(out_file,"/",sample_name)
 
+    ref=""
+    if (!ref_genome==""){
+      ref=paste0("R=",ref_genome)
+    }
+
     if (verbose){
       print("Generate MapQ distance map:")
       print(paste(bin_path,"view",bam," | awk -F", "'\\t'", "'{c[$5]++} END { for (i in c) printf(\"%s\\t%s\\n\",i,c[i]) }'"," | sort -t$'\\t' -k 1 -g >>", paste0(out_file,".mapq_dist.txt")))
@@ -331,38 +336,38 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
 
     if (verbose){
       print("Generate Alignment Metrics:")
-      print(paste0("java -jar ",bin_path2," CollectAlignmentSummaryMetrics R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_summary.txt")))
+      print(paste0("java -jar ",bin_path2," CollectAlignmentSummaryMetrics ",ref," I=",bam," O=",paste0(out_file,".picard_summary.txt")))
 
     }
-    system(paste0("java -jar ",bin_path2," CollectAlignmentSummaryMetrics R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_summary.txt")))
+    system(paste0("java -jar ",bin_path2," CollectAlignmentSummaryMetrics ",ref," I=",bam," O=",paste0(out_file,".picard_summary.txt")))
 
     if (verbose){
       print("Generate Insert Size Metrics:")
-      print(paste0("java -jar ",bin_path2," CollectInsertSizeMetrics R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf")))
+      print(paste0("java -jar ",bin_path2," CollectInsertSizeMetrics ",ref," I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf")))
 
     }
-    system(paste0("java -jar ",bin_path2, " CollectInsertSizeMetrics R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf")))
+    system(paste0("java -jar ",bin_path2, " CollectInsertSizeMetrics ",ref," I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf")))
 
     if (verbose){
       print("Generate WGS Metrics for minimum MAPq=0:")
-      print(paste0("java -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=0 R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt")))
+      print(paste0("java -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=0 ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt")))
 
     }
-    system(paste0("java -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=0 R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt")))
+    system(paste0("java -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=0 ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt")))
 
     if (verbose){
       print("Generate WGS Metrics for minimum MAPq=20:")
-      print(paste0("java -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=20 R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_wgs_q20.txt")))
+      print(paste0("java -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=20 ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q20.txt")))
 
     }
-    system(paste0("java -jar ",bin_path2, " CollectWgsMetrics MINIMUM_MAPPING_QUALITY=20 R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_wgs_q20.txt")))
+    system(paste0("java -jar ",bin_path2, " CollectWgsMetrics MINIMUM_MAPPING_QUALITY=20 ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q20.txt")))
 
     if (verbose){
       print("Generate WGS Metrics for minimum MAPq=37:")
-      print(paste0("java -jar ",bin_path2, " CollectWgsMetrics MINIMUM_MAPPING_QUALITY=37 R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_wgs_q37.txt")))
+      print(paste0("java -jar ",bin_path2, " CollectWgsMetrics MINIMUM_MAPPING_QUALITY=37 ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q37.txt")))
 
     }
-    system(paste0("java -jar ",bin_path2, " CollectWgsMetrics MINIMUM_MAPPING_QUALITY=37 R=",ref_genome," I=",bam," O=",paste0(out_file,".picard_wgs_q37.txt")))
+    system(paste0("java -jar ",bin_path2, " CollectWgsMetrics MINIMUM_MAPPING_QUALITY=37 ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q37.txt")))
 
   }
 
