@@ -6,7 +6,7 @@
 #'
 #' @param file_R1 Path to the input file with the sequence.
 #' @param file_R2 [Optional] Path to the input with the reverse read sequence.
-#' @param bin_path Path to fastQC executable. Default path ~/tools/FastQC/bin/fastqc.
+#' @param bin_path Path to fastQC executable. Default path tools/FastQC/bin/fastqc.
 #' @param n_cores Number of CPU cores to use. Default 3.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
@@ -14,7 +14,7 @@
 
 
 
-fastqc=function (bin_path="~/tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_cores=3,output_dir="",verbose=FALSE){
+fastqc=function (bin_path="tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_cores=3,output_dir="",verbose=FALSE){
 
   sep="/"
 
@@ -60,7 +60,7 @@ fastqc=function (bin_path="~/tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_co
 #' @param file_R2 [Optional] Path to the input with the reverse read sequence.
 #' @param xadapt [Optional] Adapter sequence/file.
 #' @param yadapt [Optional] Adapter sequence/file.
-#' @param bin_path Path to skewer executable. Default path ~/tools/skewer/skewer.
+#' @param bin_path Path to skewer executable. Default path tools/skewer/skewer.
 #' @param n_cores Number of CPU cores to use. Default 3.
 #' @param mean_quality Minimum mean quality of reads to be kept.Dedault 0
 #' @param min_length Minimum length of reads to keep.Default 35
@@ -69,7 +69,7 @@ fastqc=function (bin_path="~/tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_co
 #' @export
 
 
-trimming=function(bin_path="~/tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA,yadapt=NA,n_cores=3,output_dir="",verbose=FALSE,mean_quality=0,min_length=35,max_length=NA){
+trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA,yadapt=NA,n_cores=3,output_dir="",verbose=FALSE,mean_quality=0,min_length=35,max_length=NA){
 
   sep="/"
 
@@ -129,7 +129,7 @@ trimming=function(bin_path="~/tools/skewer/skewer",file_R1="",file_R2="",xadapt=
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-merge_bam=function(bin_path="~/tools/samtools/samtools",bam="",bam_dir="",verbose=FALSE){
+merge_bam=function(bin_path="tools/samtools/samtools",bam="",bam_dir="",verbose=FALSE){
     if(verbose){
       print(paste(bin_path,"merge",bam, paste0(bam_dir,"/*.bam")))
     }
@@ -145,7 +145,7 @@ merge_bam=function(bin_path="~/tools/samtools/samtools",bam="",bam_dir="",verbos
 #'
 #' @param file_R1 Path to the input file with the sequence.
 #' @param file_R2 [Optional] Path to the input with the reverse read sequence.
-#' @param bin_path Path to bwa executable. Default path ~/tools/bwa/bwa.
+#' @param bin_path Path to bwa executable. Default path tools/bwa/bwa.
 #' @param bin_path2 Path to samtools executable. Default path tools/samtools/samtools.
 #' @param ref_genome Path to input file with the reference genome sequence.
 #' @param n_cores Number of CPU cores to use. Default 3.
@@ -153,7 +153,7 @@ merge_bam=function(bin_path="~/tools/samtools/samtools",bam="",bam_dir="",verbos
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-alignment=function(bin_path="~/tools/bwa/bwa",bin_path2="~/tools/samtools/samtools",file_R1="",file_R2="",n_cores=3,ref_genome="",output_dir="",verbose=FALSE){
+alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",file_R1="",file_R2="",n_cores=3,ref_genome="",output_dir="",verbose=FALSE){
 
     sep="/"
 
@@ -201,13 +201,13 @@ alignment=function(bin_path="~/tools/bwa/bwa",bin_path2="~/tools/samtools/samtoo
 #' This function sorts and indexes genomic sequence files.
 #'
 #' @param file Path to the input file with the sequence.
-#' @param bin_path Path to bwa executable. Default path ~/tools/samtools/samtools.
+#' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
 
-sort_and_index=function(bin_path="~/tools/samtools/samtools",file="",output_dir="",verbose=FALSE){
+sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir="",verbose=FALSE){
 
   sep="/"
 
@@ -258,14 +258,14 @@ sort_and_index=function(bin_path="~/tools/samtools/samtools",file="",output_dir=
 #' This function removes duplicated reads (artifacts) found in aligned sequences.
 #'
 #' @param file Path to the input file with the aligned sequence.
-#' @param bin_path Path to picard executable. Default path ~/tools/picard/build/libs/picard.jar.
+#' @param bin_path Path to picard executable. Default path tools/picard/build/libs/picard.jar.
 #' @param ref_genome Path to input file with the reference genome sequence.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
 
-remove_duplicates=function(bin_path="~/tools/picard/build/libs/picard.jar",file="",output_dir="",ref_genome="",verbose=FALSE){
+remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file="",output_dir="",ref_genome="",verbose=FALSE){
 
     sep="/"
 
@@ -298,15 +298,15 @@ remove_duplicates=function(bin_path="~/tools/picard/build/libs/picard.jar",file=
 #'
 #'
 #' @param bam Path to the BAM file .
-#' @param bin_path Path to samtools executable. Default path ~/tools/samtools/samtools.
-#' @param bin_path2 Path to picard executable. Default path ~/tools/picard/build/libs/picard.jar.
+#' @param bin_path Path to samtools executable. Default path tools/samtools/samtools.
+#' @param bin_path2 Path to picard executable. Default path tools/picard/build/libs/picard.jar.
 #' @param ref_genome Path to input file with the reference genome sequence.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
 
-qc_metrics=function(bin_path="~/tools/samtools/samtools",bin_path2="~/tools/picard/build/libs/picard.jar",bam="",output_dir="",ref_genome="",verbose=FALSE){
+qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/build/libs/picard.jar",bam="",output_dir="",ref_genome="",verbose=FALSE){
     sep="/"
 
     if(output_dir==""){
@@ -372,7 +372,7 @@ qc_metrics=function(bin_path="~/tools/samtools/samtools",bin_path2="~/tools/pica
 #'
 #'
 #' @param bam Path to the BAM file .
-#' @param bin_path Path to readCounter executable. Default path ~/tools/hmmcopy_utils/bin/readCounter.
+#' @param bin_path Path to readCounter executable. Default path tools/hmmcopy_utils/bin/readCounter.
 #' @param output_dir Path to the output directory.
 #' @param chr String of chromosomes to include. Default chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX,chrY
 #' @param win Size of non overlaping windows. Default 500000.
@@ -380,7 +380,7 @@ qc_metrics=function(bin_path="~/tools/samtools/samtools",bin_path2="~/tools/pica
 #' @export
 
 
-read_counter=function(bin_path="~/tools/hmmcopy_utils/bin/readCounter",win=500000,bam="",output_dir="",chr="chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX,chrY",verbose=FALSE){
+read_counter=function(bin_path="tools/hmmcopy_utils/bin/readCounter",win=500000,bam="",output_dir="",chr="chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX,chrY",verbose=FALSE){
 
 
     win=format(win,scientific=F)
@@ -419,20 +419,20 @@ read_counter=function(bin_path="~/tools/hmmcopy_utils/bin/readCounter",win=50000
 #' copy number alterations, and estimate tumor fraction in ULP-WGS samples.
 #'
 #' @param wig Path to the WIG file.
-#' @param bin_path Path to ichorCNA executable. Default path ~/tools/ichorCNA/scripts/runIchorCNA.R.
+#' @param bin_path Path to ichorCNA executable. Default path tools/ichorCNA/scripts/runIchorCNA.R.
 #' @param output_dir Path to the output directory.
 #' @param sample_id String with sample name.
 #' @param ploidy Initial tumour ploidy. Default 2,3
 #' @param tumour_content Initial normal contamination. Default 0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9
 #' @param homozygous_del Include Homozygous deleteions. Default FALSE.
-#' @param gc Path to GC-content WIG with . Default ~/tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig
-#' @param map Path to mappability score WIG with GC content. Default ~/tools/ichorCNA/inst/extdata/map_hg19_500kb.wig
-#' @param centromere Path to file containing centromere locations. Default ~/tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt
+#' @param gc Path to GC-content WIG with . Default tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig
+#' @param map Path to mappability score WIG with GC content. Default tools/ichorCNA/inst/extdata/map_hg19_500kb.wig
+#' @param centromere Path to file containing centromere locations. Default tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt
 #' @param libdir Path to dir containing ichorCNA libraries.
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-ichorCNA=function(bin_path="~/tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",wig="",ploidy="2,3",tumour_content="0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9",homozygous_del="False",subclonal_states="NULL",gc="~/tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",map="~/tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",centromere="~/tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",output_dir="",verbose=TRUE,libdir="~/tools/ichorCNA"){
+ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",wig="",ploidy="2,3",tumour_content="0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9",homozygous_del="False",subclonal_states="NULL",gc="tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",output_dir="",verbose=TRUE,libdir="tools/ichorCNA"){
 
     sep="/"
 
