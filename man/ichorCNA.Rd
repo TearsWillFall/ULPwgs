@@ -15,9 +15,13 @@ ichorCNA(
   gc = "tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",
   map = "tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",
   centromere = "tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",
+ 
+    normal_panel = "tools/ichorCNA/inst/extdata/HD_ULP_PoN_hg38_500kb_median_normAutosome_median.rds",
   output_dir = "",
   verbose = TRUE,
-  libdir = "tools/ichorCNA"
+  libdir = "tools/ichorCNA",
+  chrs = "'c(1:22,\\"X\\")'",
+  chrTrain = "'c(1:22)'"
 )
 }
 \arguments{
@@ -39,11 +43,17 @@ ichorCNA(
 
 \item{centromere}{Path to file containing centromere locations. Default tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt}
 
+\item{normal_panel}{Path to file containing normal panel data. Default tools/ichorCNA/inst/extdata/HD_ULP_PoN_hg38_500kb_median_normAutosome_median.rds}
+
 \item{output_dir}{Path to the output directory.}
 
 \item{verbose}{Enables progress messages. Default False.}
 
 \item{libdir}{Path to dir containing ichorCNA libraries.}
+
+\item{chrs}{Chromosomes to analyze. Default 'c(1:22,\"X\")'}
+
+\item{chrsTrain}{Chromosomes to estimate parameters. Default 'c(1:22)'}
 }
 \description{
 This function generates a report that helps to segment the genome, predict large-scale
