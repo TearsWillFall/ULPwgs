@@ -11,7 +11,7 @@ Authors@R:
 Description: A convenient way to analyze raw ULP-WGS data from cell-free DNA from scratch.
 License: GPL-3 + file LICENSE
 Depends:
-    R (>= 4.0.0)
+    R (>= 3.6.0)
 Imports:
     optparse,
     GenomeInfoDb,
