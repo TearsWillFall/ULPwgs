@@ -377,7 +377,8 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
 #'
 #'
 #' @param bam Path to the BAM file .
-#' @param bin_path Path to readCounter executable. Default path tools/hmmcopy_utils/bin/readCounter.
+#' @param bin_path Path to readCounter executable. Default path tools/samtools/samtools.
+#' @param bin_path2 Path to readCounter executable. Default path tools/hmmcopy_utils/bin/readCounter.
 #' @param output_dir Path to the output directory.
 #' @param chr String of chromosomes to include. Default chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX,chrY
 #' @param win Size of non overlaping windows. Default 500000.
