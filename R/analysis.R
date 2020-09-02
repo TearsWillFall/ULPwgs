@@ -425,7 +425,7 @@ read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcop
       if (verbose){
         print(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0(c(1:22,"X","Y"),collapse=","), bam,">", paste0(out_file,".wig")))
       }
-      system(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0(c(1:22,"X","Y")),collapse=","), bam,">" ,paste0(out_file,".wig")))
+      system(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0(c(1:22,"X","Y"),collapse=","), bam,">" ,paste0(out_file,".wig")))
 
 
     }
