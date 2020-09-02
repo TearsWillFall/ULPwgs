@@ -385,7 +385,7 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
 #' @export
 
 
-read_counter=function(bin_path="tools/hmmcopy_utils/bin/readCounter",win=500000,bam="",output_dir="",chr="chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX,chrY",verbose=FALSE){
+read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcopy_utils/bin/readCounter",win=500000,bam="",output_dir="",verbose=FALSE){
 
 
     win=format(win,scientific=F)
@@ -404,16 +404,29 @@ read_counter=function(bin_path="tools/hmmcopy_utils/bin/readCounter",win=500000,
 
     out_file=paste0(out_file,"/",sample_name)
 
-      if (verbose){
-        print(paste(bin_path,"--window", win,"--quality 20 --chromosome",paste0("'",chr,"'"), bam,">", paste0(out_file,".wig")))
-      }
-      system(paste(bin_path,"--window", win,"--quality 20 --chromosome",paste0("'",chr,"'"), bam,">" ,paste0(out_file,".wig")))
+    if (verbose){
+      print(paste(bin_path,"view",bam," | head -n 1 | awk -F \"\t\" '{print $3}'"))
+    }
+    chr=system(paste(bin_path,"view",bam," | head -n 1 | awk -F \"\t\" '{print $3}'"),intern=TRUE)
 
-      if (grepl("chr",chr)){
+    if (grepl("chr",chr)){
+      if (verbose){
+        print(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0("chr",c(1:22,"X","Y"),collapse=","), bam,">", paste0(out_file,".wig")))
+      }
+      system(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0("chr",c(1:22,"X","Y"),collapse=","), bam,">" ,paste0(out_file,".wig")))
+
         if (verbose){
           print(paste("sed -i 's/chrom=chr/chrom=/g'",paste0(out_file,".wig")))
       }
       system(paste("sed -i 's/chrom=chr/chrom=/g'",paste0(out_file,".wig")))
+    }
+    else{
+      if (verbose){
+        print(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0(c(1:22,"X","Y"),collapse=","), bam,">", paste0(out_file,".wig")))
+      }
+      system(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0(c(1:22,"X","Y")),collapse=","), bam,">" ,paste0(out_file,".wig")))
+
+
     }
   }
 
