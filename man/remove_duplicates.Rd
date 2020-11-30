@@ -9,7 +9,8 @@ remove_duplicates(
   file = "",
   output_dir = "",
   ref_genome = "",
-  verbose = FALSE
+  verbose = FALSE,
+  hnd = 1000
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ remove_duplicates(
 \item{ref_genome}{Path to input file with the reference genome sequence.}
 
 \item{verbose}{Enables progress messages. Default False.}
+
+\item{hnd}{Maximum number of handles. 1000}
 }
 \description{
 This function removes duplicated reads (artifacts) found in aligned sequences.

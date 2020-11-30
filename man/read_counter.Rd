@@ -5,17 +5,18 @@
 \title{Generate a WIG file}
 \usage{
 read_counter(
-  bin_path = "tools/hmmcopy_utils/bin/readCounter",
+  bin_path = "tools/samtools/samtools",
+  bin_path2 = "tools/hmmcopy_utils/bin/readCounter",
   win = 5e+05,
   bam = "",
   output_dir = "",
- 
-    chr = "chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX,chrY",
   verbose = FALSE
 )
 }
 \arguments{
-\item{bin_path}{Path to readCounter executable. Default path tools/hmmcopy_utils/bin/readCounter.}
+\item{bin_path}{Path to readCounter executable. Default path tools/samtools/samtools.}
+
+\item{bin_path2}{Path to readCounter executable. Default path tools/hmmcopy_utils/bin/readCounter.}
 
 \item{win}{Size of non overlaping windows. Default 500000.}
 
@@ -23,9 +24,9 @@ read_counter(
 
 \item{output_dir}{Path to the output directory.}
 
-\item{chr}{String of chromosomes to include. Default chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX,chrY}
-
 \item{verbose}{Enables progress messages. Default False.}
+
+\item{chr}{String of chromosomes to include. Default chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX,chrY}
 }
 \description{
 This function generates a WIG file.
