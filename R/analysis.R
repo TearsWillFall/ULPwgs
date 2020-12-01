@@ -262,11 +262,12 @@ sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir=""
 #' @param ref_genome Path to input file with the reference genome sequence.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
-#' @param hnd Maximum number of handles. 1000
+#' @param hnd Maximum number of file handles. Default 1000.
+#' @param ram RAM in GB to use. Default 4 Gb.
 #' @export
 
 
-remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file="",output_dir="",ref_genome="",verbose=FALSE,hnd=1000){
+remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file="",output_dir="",ref_genome="",verbose=FALSE,hnd=1000,ram=4,tmp_dir=""){
 
     sep="/"
 
@@ -284,12 +285,24 @@ remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file=""
 
     out_file=paste0(out_file,"/",sample_name)
 
+
+    if(tmp_dir!=""){
+      if(verbose){
+        print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path," MarkDuplicates I=",file, " O=",paste0(out_file,".RMDUP.",file_ext)," M=",paste0(out_file,".picard_rmdup.txt")," REMOVE_DUPLICATES=true AS=true VALIDATION_STRINGENCY=LENIENT ",paste0("MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=",hnd)))
+
+      }
+      system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path," MarkDuplicates I=",file, " O=",paste0(out_file,".RMDUP.",file_ext)," M=",paste0(out_file,".picard_rmdup.txt")," REMOVE_DUPLICATES=true AS=true VALIDATION_STRINGENCY=LENIENT " ,paste0("MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=",hnd)))
+    }
+  else{
     if(verbose){
-      print(paste0("java -jar ",bin_path," MarkDuplicates I=",file, " O=",paste0(out_file,".RMDUP.",file_ext)," M=",paste0(out_file,".picard_rmdup.txt")," REMOVE_DUPLICATES=true AS=true VALIDATION_STRINGENCY=LENIENT ",paste0("MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=",hnd)))
+      print(paste0("java -Xmx",ram,"g"," -jar ",bin_path," MarkDuplicates I=",file, " O=",paste0(out_file,".RMDUP.",file_ext)," M=",paste0(out_file,".picard_rmdup.txt")," REMOVE_DUPLICATES=true AS=true VALIDATION_STRINGENCY=LENIENT ",paste0("MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=",hnd)))
 
     }
-    system(paste0("java -jar ",bin_path," MarkDuplicates I=",file, " O=",paste0(out_file,".RMDUP.",file_ext)," M=",paste0(out_file,".picard_rmdup.txt")," REMOVE_DUPLICATES=true AS=true VALIDATION_STRINGENCY=LENIENT " ,paste0("MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=",hnd)))
+    system(paste0("java -Xmx",ram,"g"," -jar ",bin_path," MarkDuplicates I=",file, " O=",paste0(out_file,".RMDUP.",file_ext)," M=",paste0(out_file,".picard_rmdup.txt")," REMOVE_DUPLICATES=true AS=true VALIDATION_STRINGENCY=LENIENT " ,paste0("MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=",hnd)))
   }
+
+  }
+ }
 
 
 
