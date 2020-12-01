@@ -318,7 +318,7 @@ remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file=""
 #' @export
 
 
-qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/build/libs/picard.jar",bam="",output_dir="",ref_genome="",verbose=FALSE){
+qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/build/libs/picard.jar",bam="",output_dir="",ref_genome="",verbose=FALSE,ram="",tmp_dir=""){
     sep="/"
 
     if(output_dir==""){
