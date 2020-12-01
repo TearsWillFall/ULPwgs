@@ -8,9 +8,10 @@ remove_duplicates(
   bin_path = "tools/picard/build/libs/picard.jar",
   file = "",
   output_dir = "",
-  ref_genome = "",
   verbose = FALSE,
-  hnd = 1000
+  hnd = 1000,
+  ram = 4,
+  tmp_dir = ""
 )
 }
 \arguments{
@@ -20,11 +21,13 @@ remove_duplicates(
 
 \item{output_dir}{Path to the output directory.}
 
-\item{ref_genome}{Path to input file with the reference genome sequence.}
-
 \item{verbose}{Enables progress messages. Default False.}
 
-\item{hnd}{Maximum number of handles. 1000}
+\item{hnd}{Maximum number of file handles. Default 1000.}
+
+\item{ram}{RAM in GB to use. Default 4 Gb.}
+
+\item{tmp_dir}{Path to tmp directory.}
 }
 \description{
 This function removes duplicated reads (artifacts) found in aligned sequences.

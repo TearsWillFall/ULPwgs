@@ -259,15 +259,15 @@ sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir=""
 #'
 #' @param file Path to the input file with the aligned sequence.
 #' @param bin_path Path to picard executable. Default path tools/picard/build/libs/picard.jar.
-#' @param ref_genome Path to input file with the reference genome sequence.
 #' @param output_dir Path to the output directory.
+#' @param tmp_dir Path to tmp directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param hnd Maximum number of file handles. Default 1000.
 #' @param ram RAM in GB to use. Default 4 Gb.
 #' @export
 
 
-remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file="",output_dir="",ref_genome="",verbose=FALSE,hnd=1000,ram=4,tmp_dir=""){
+remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file="",output_dir="",verbose=FALSE,hnd=1000,ram=4,tmp_dir=""){
 
     sep="/"
 
@@ -285,24 +285,20 @@ remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file=""
 
     out_file=paste0(out_file,"/",sample_name)
 
+    tmp=""
+    if (!tmp_dir==""){
+      tmp=paste0("TMP_DIR=",tmp_dir)
+    }
 
-    if(tmp_dir!=""){
+
       if(verbose){
-        print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path," MarkDuplicates I=",file, " O=",paste0(out_file,".RMDUP.",file_ext)," M=",paste0(out_file,".picard_rmdup.txt")," REMOVE_DUPLICATES=true AS=true VALIDATION_STRINGENCY=LENIENT ",paste0("MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=",hnd),paste0(" TMP_DIR=",tmp_dir)))
+        print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path," MarkDuplicates I=",file, " O=",paste0(out_file,".RMDUP.",file_ext)," M=",paste0(out_file,".picard_rmdup.txt")," REMOVE_DUPLICATES=true AS=true VALIDATION_STRINGENCY=LENIENT ",paste0("MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=",hnd),tmp))
 
       }
-      system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path," MarkDuplicates I=",file, " O=",paste0(out_file,".RMDUP.",file_ext)," M=",paste0(out_file,".picard_rmdup.txt")," REMOVE_DUPLICATES=true AS=true VALIDATION_STRINGENCY=LENIENT " ,paste0("MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=",hnd),paste0(" TMP_DIR=",tmp_dir)))
-    }
-  else{
-    if(verbose){
-      print(paste0("java -Xmx",ram,"g"," -jar ",bin_path," MarkDuplicates I=",file, " O=",paste0(out_file,".RMDUP.",file_ext)," M=",paste0(out_file,".picard_rmdup.txt")," REMOVE_DUPLICATES=true AS=true VALIDATION_STRINGENCY=LENIENT ",paste0("MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=",hnd)))
-
-    }
-    system(paste0("java -Xmx",ram,"g"," -jar ",bin_path," MarkDuplicates I=",file, " O=",paste0(out_file,".RMDUP.",file_ext)," M=",paste0(out_file,".picard_rmdup.txt")," REMOVE_DUPLICATES=true AS=true VALIDATION_STRINGENCY=LENIENT " ,paste0("MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=",hnd)))
-  }
+      system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path," MarkDuplicates I=",file, " O=",paste0(out_file,".RMDUP.",file_ext)," M=",paste0(out_file,".picard_rmdup.txt")," REMOVE_DUPLICATES=true AS=true VALIDATION_STRINGENCY=LENIENT " ,paste0("MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=",hnd),tmp))
 
   }
- 
+
 
 
 
@@ -317,6 +313,8 @@ remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file=""
 #' @param ref_genome Path to input file with the reference genome sequence.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
+#' @param ram RAM in GB to use. Default 4 Gb.
+#' @param tmp_dir Path to tmp directory.
 #' @export
 
 
@@ -340,6 +338,10 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
     if (!ref_genome==""){
       ref=paste0("R=",ref_genome)
     }
+    tmp=""
+    if (!tmp_dir==""){
+      tmp=paste0("TMP_DIR=",tmp_dir)
+    }
 
     if (verbose){
       print("Generate MapQ distance map:")
@@ -350,38 +352,38 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
 
     if (verbose){
       print("Generate Alignment Metrics:")
-      print(paste0("java -jar ",bin_path2," CollectAlignmentSummaryMetrics ",ref," I=",bam," O=",paste0(out_file,".picard_summary.txt")))
+      print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectAlignmentSummaryMetrics ",ref," I=",bam," O=",paste0(out_file,".picard_summary.txt"),tmp))
 
     }
-    system(paste0("java -jar ",bin_path2," CollectAlignmentSummaryMetrics ",ref," I=",bam," O=",paste0(out_file,".picard_summary.txt")))
+    system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectAlignmentSummaryMetrics ",ref," I=",bam," O=",paste0(out_file,".picard_summary.txt"),tmp))
 
     if (verbose){
       print("Generate Insert Size Metrics:")
-      print(paste0("java -jar ",bin_path2," CollectInsertSizeMetrics ",ref," I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf")))
+      print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectInsertSizeMetrics ",ref," I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf"),tmp))
 
     }
-    system(paste0("java -jar ",bin_path2, " CollectInsertSizeMetrics ",ref," I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf")))
+    system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2, " CollectInsertSizeMetrics ",ref," I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf"),tmp))
 
     if (verbose){
       print("Generate WGS Metrics for minimum MAPq=0:")
-      print(paste0("java -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=0 ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt")))
+      print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=0 ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt"),tmp))
 
     }
-    system(paste0("java -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=0 ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt")))
+    system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=0 ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt"),tmp))
 
     if (verbose){
       print("Generate WGS Metrics for minimum MAPq=20:")
-      print(paste0("java -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=20 ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q20.txt")))
+      print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=20 ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q20.txt"),tmp))
 
     }
-    system(paste0("java -jar ",bin_path2, " CollectWgsMetrics MINIMUM_MAPPING_QUALITY=20 ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q20.txt")))
+    system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2, " CollectWgsMetrics MINIMUM_MAPPING_QUALITY=20 ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q20.txt"),tmp))
 
     if (verbose){
       print("Generate WGS Metrics for minimum MAPq=37:")
-      print(paste0("java -jar ",bin_path2, " CollectWgsMetrics MINIMUM_MAPPING_QUALITY=37 ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q37.txt")))
+      print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2, " CollectWgsMetrics MINIMUM_MAPPING_QUALITY=37 ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q37.txt"),tmp))
 
     }
-    system(paste0("java -jar ",bin_path2, " CollectWgsMetrics MINIMUM_MAPPING_QUALITY=37 ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q37.txt")))
+    system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2, " CollectWgsMetrics MINIMUM_MAPPING_QUALITY=37 ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q37.txt"),tmp))
 
   }
 

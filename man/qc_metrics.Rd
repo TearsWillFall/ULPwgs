@@ -25,6 +25,10 @@ qc_metrics(
 \item{ref_genome}{Path to input file with the reference genome sequence.}
 
 \item{verbose}{Enables progress messages. Default False.}
+
+\item{ram}{RAM in GB to use. Default 4 Gb.}
+
+\item{tmp_dir}{Path to tmp directory.}
 }
 \description{
 This function generates quality control metrics for an aligned sequence
