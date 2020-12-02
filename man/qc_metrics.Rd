@@ -10,7 +10,10 @@ qc_metrics(
   bam = "",
   output_dir = "",
   ref_genome = "",
-  verbose = FALSE
+  verbose = FALSE,
+  ram = "",
+  tmp_dir = "",
+  mapq = 0
 )
 }
 \arguments{
@@ -29,6 +32,8 @@ qc_metrics(
 \item{ram}{RAM in GB to use. Default 4 Gb.}
 
 \item{tmp_dir}{Path to tmp directory.}
+
+\item{mapq}{Minimum MapQ for Picard metrics. Default 0.}
 }
 \description{
 This function generates quality control metrics for an aligned sequence

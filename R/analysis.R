@@ -315,10 +315,11 @@ remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file=""
 #' @param verbose Enables progress messages. Default False.
 #' @param ram RAM in GB to use. Default 4 Gb.
 #' @param tmp_dir Path to tmp directory.
+#' @param mapq Minimum MapQ for Picard metrics. Default 0.
 #' @export
 
 
-qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/build/libs/picard.jar",bam="",output_dir="",ref_genome="",verbose=FALSE,ram="",tmp_dir=""){
+qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/build/libs/picard.jar",bam="",output_dir="",ref_genome="",verbose=FALSE,ram="",tmp_dir="",mapq=0){
     sep="/"
 
     if(output_dir==""){
@@ -365,25 +366,11 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
     system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2, " CollectInsertSizeMetrics ",ref," I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf "),tmp))
 
     if (verbose){
-      print("Generate WGS Metrics for minimum MAPq=0:")
-      print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=0 ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt "),tmp))
+      print(paste0("Generate WGS Metrics for minimum MAPq=",mapq,":"))
+      print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=",mapq," ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt "),tmp))
 
     }
-    system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=0 ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt "),tmp))
-
-    if (verbose){
-      print("Generate WGS Metrics for minimum MAPq=20:")
-      print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=20 ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q20.txt "),tmp))
-
-    }
-    system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2, " CollectWgsMetrics MINIMUM_MAPPING_QUALITY=20 ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q20.txt "),tmp))
-
-    if (verbose){
-      print("Generate WGS Metrics for minimum MAPq=37:")
-      print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2, " CollectWgsMetrics MINIMUM_MAPPING_QUALITY=37 ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q37.txt "),tmp))
-
-    }
-    system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2, " CollectWgsMetrics MINIMUM_MAPPING_QUALITY=37 ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q37.txt "),tmp))
+    system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=",mapq," ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt "),tmp))
 
   }
 
