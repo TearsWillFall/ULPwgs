@@ -204,10 +204,12 @@ alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
 #' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
+#' @param threads Number of threads. Default 3
+#' @param ram Ram memory to use per thread in GB. Default 1GB
 #' @export
 
 
-sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir="",verbose=FALSE){
+sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir="",ram=1,verbose=FALSE,threads=3){
 
   sep="/"
 
@@ -228,21 +230,21 @@ sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir=""
 
     if (verbose){
       print("Sorting BAM file:")
-      print(paste0(bin_path," sort ",file," -o ",out_file,".SORTED.",file_ext))
+      print(paste0(bin_path," sort ",file," -@ ",threads," -m ",ram,"G"," -o ",out_file,".SORTED.",file_ext))
     }
-    system(paste0(bin_path," sort ",file," -o ",out_file,".SORTED.",file_ext))
+    system(paste0(bin_path," sort ",file," -@ ",threads," -m ",ram,"G"," -o ",out_file,".SORTED.",file_ext))
     file=paste0(out_file,".SORTED.",file_ext)
 
     if (verbose){
       print("Indexing sorted BAM file:")
-      print(paste(bin_path," index",file))
+      print(paste(bin_path," index",file," -@ ",threads))
     }
-    system(paste(bin_path," index",file))
+    system(paste(bin_path," index",file," -@ ",threads))
     if (verbose){
       print("Generating Flag stats:")
-      print(paste0(bin_path," flagstat ",file," > ",paste0(out_file,".flagstat.txt")))
+      print(paste0(bin_path," flagstat ",file," -@ ",threads," > ",paste0(out_file,".flagstat.txt")))
     }
-    system(paste0(bin_path," flagstat ",file," > ",paste0(out_file,".flagstat.txt")))
+    system(paste0(bin_path," flagstat ",file," -@ ",threads," > ",paste0(out_file,".flagstat.txt")))
     if (verbose){
       print("Generating Index stats:")
       print(paste0(bin_path," idxstats ",file," > ",paste0(out_file,".idxstats.txt")))
