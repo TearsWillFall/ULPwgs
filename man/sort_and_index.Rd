@@ -8,7 +8,9 @@ sort_and_index(
   bin_path = "tools/samtools/samtools",
   file = "",
   output_dir = "",
-  verbose = FALSE
+  ram = 1,
+  verbose = FALSE,
+  threads = 3
 )
 }
 \arguments{
@@ -18,7 +20,11 @@ sort_and_index(
 
 \item{output_dir}{Path to the output directory.}
 
+\item{ram}{Ram memory to use per thread in GB. Default 1GB}
+
 \item{verbose}{Enables progress messages. Default False.}
+
+\item{threads}{Number of threads. Default 3}
 }
 \description{
 This function sorts and indexes genomic sequence files.
