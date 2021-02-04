@@ -32,18 +32,20 @@ plot_coverage_panel=function(on_target="",off_target="",col=c(7,4),height=6,widt
   dat1$type="On_Target"
   dat1=dat1[,c(col[1],ncol(dat1))]
   names(dat1)=c("Coverage","Type")
+  dat1$Coverage=as.numeric(dat1$Coverage)
 
   dat=dat1
   if (off_target!=""){
-  dat2=read.table(off_target)
-  if(is.character(dat2[1,1])){
-    dat2=dat2[-1,]
-  }
-  dat1$type="Off_Target"
-  dat2=dat2[,c(col[2],ncol(dat2))]
-  names(dat2)=c("Coverage","Type")
-  bind_dat=dplyr::bind_rows(dat1,dat2)
-  dat=bind_dat
+    dat2=read.table(off_target)
+    if(is.character(dat2[1,1])){
+      dat2=dat2[-1,]
+    }
+    dat1$type="Off_Target"
+    dat2=dat2[,c(col[2],ncol(dat2))]
+    names(dat2)=c("Coverage","Type")
+    dat2$Coverage=as.numeric(dat2$Coverage)
+    bind_dat=dplyr::bind_rows(dat1,dat2)
+    dat=bind_dat
   }
 
   p=ggplot(dat,aes(x=Type,y=Coverage))+geom_violin(fill=Type,alpha=0.5)+geom_boxplot(width=0.3) + stat_summary(fun.y=median, geom="text", show_guide = FALSE,
