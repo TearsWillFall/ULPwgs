@@ -8,7 +8,7 @@
 #' @param off_target [OPTIONAL] Path to file with off-target region coverage.
 #' @param col [OPTIONAL] Column/s where coverage information is located. Default 7 and 4.
 #' @param height [OPTIONAL] Plot height in inches. Default 6.
-#' @param width [OPTIONAL] Plot width in inches. Default 8.
+#' @param width [OPTIONAL] Plot width in inches. Default 12.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
 #' @param output_dir [OPTIONAL] Output directory path.
 #' @import ggplot2
@@ -17,7 +17,7 @@
 
 
 
-plot_coverage_panel=function(on_target="",off_target="",col=c(7,4),height=6,width=6,verbose=FALSE,output_dir=""){
+plot_coverage_panel=function(on_target="",off_target="",col=c(7,4),height=6,width=12,verbose=FALSE,output_dir=""){
   sep="/"
 
   if(output_dir==""){
@@ -48,9 +48,9 @@ plot_coverage_panel=function(on_target="",off_target="",col=c(7,4),height=6,widt
     dat=bind_dat
   }
 
-  p=ggplot(dat,aes(x=Type,y=Coverage))+geom_violin(aes(fill=Type),alpha=0.5)+geom_boxplot(width=0.3) + stat_summary(fun=median, geom="text", show.legend = FALSE,
+  p=ggplot(dat,aes(x=Type,y=Coverage))+geom_violin(aes(fill=Type),alpha=0.5)+geom_boxplot(width=0.2) + stat_summary(fun=median, geom="text", show.legend = FALSE,
                vjust=0.7,hjust=0.5, aes( label=round(..y.., digits=1)))+theme_classic()
 
-  out_file=paste0(output_dir,sep,paste0(sample_name,"_Region_Coverage.png"))
+  out_file=paste0(output_dir,sep,paste0(sample_name,".Region_Coverage.png"))
   ggsave(out_file,width=width,height=height)
 }
