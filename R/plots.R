@@ -1,0 +1,54 @@
+#' Generate coverage plots for panel on and/or off target regions
+#'
+#' This function takes a tab separated file/s containing coverage information of on-target and/or off-target
+#' regions and generates a plot of the coverage distribution.
+#'
+#'
+#' @param on_target [REQUIRED] Path to file with on-target region coverage.
+#' @param off_target [OPTIONAL] Path to file with off-target region coverage.
+#' @param col [OPTIONAL] Column/s where coverage information is located. Default 7 and 4.
+#' @param height [OPTIONAL] Plot height in inches. Default 6.
+#' @param width [OPTIONAL] Plot width in inches. Default 8.
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param output_dir [OPTIONAL] Output directory path.
+#' @import ggplot2
+#' @export
+
+
+
+
+plot_coverage_panel=function(on_target="",off_target="",col=c(7,4),height=6,width=6,verbose=FALSE){
+  sep="/"
+
+  if(output_dir==""){
+    sep=""
+  }
+
+  sample_name=get_sample_name(on_target)
+  dat1=read.table(on_target)
+  if(is.character(dat1[1,1])){
+    dat1=dat1[-1,]
+  }
+  dat1$type="On_Target"
+  dat1=dat1[,c(col[1],ncol(dat1))]
+  names(dat1)=c("Coverage","Type")
+
+  dat=dat1
+  if (off_target!=""){
+  dat2=read.table(off_target)
+  if(is.character(dat2[1,1])){
+    dat2=dat2[-1,]
+  }
+  dat1$type="Off_Target"
+  dat2=dat2[,c(col[2],ncol(dat2))]
+  names(dat2)=c("Coverage","Type")
+  bind_dat=dplyr::bind_rows(dat1,dat2)
+  dat=bind_dat
+  }
+
+  p=ggplot(dat,aes(x=Type,y=Coverage))+geom_violin(fill=Type,alpha=0.5)+geom_boxplot(width=0.3) + stat_summary(fun.y=median, geom="text", show_guide = FALSE,
+               vjust=-0.7, aes( label=round(..y.., digits=1)))+theme_classic()
+
+  out_file=paste0(output_dir,sep,paste0(sample_name,"_Region_Coverage.png"))
+  ggsave(out_file,width=width,height=height)
+}
