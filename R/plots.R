@@ -49,7 +49,7 @@ plot_coverage_panel=function(on_target="",off_target="",col=c(7,4),height=6,widt
   }
 
   p=ggplot(dat,aes(x=Type,y=Coverage))+geom_violin(aes(fill=Type),alpha=0.5)+geom_boxplot(width=0.1) + stat_summary(fun=median, geom="text", show.legend = FALSE,
-               vjust=30,hjust=2, aes( label=round(..y.., digits=1)))+theme_classic()
+               vjust=1.2,hjust=1.2, aes( label=round(..y.., digits=1)))+theme_classic()
 
   out_file=paste0(output_dir,sep,paste0(sample_name,".Region_Coverage.png"))
   ggsave(out_file,width=width,height=height)
