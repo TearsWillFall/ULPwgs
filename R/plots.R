@@ -40,7 +40,7 @@ plot_coverage_panel=function(on_target="",off_target="",col=c(7,4),height=6,widt
     if(is.character(dat2[1,1])){
       dat2=dat2[-1,]
     }
-    dat1$type="Off_Target"
+    dat2$type="Off_Target"
     dat2=dat2[,c(col[2],ncol(dat2))]
     names(dat2)=c("Coverage","Type")
     dat2$Coverage=as.numeric(dat2$Coverage)
