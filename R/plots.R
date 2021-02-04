@@ -25,7 +25,7 @@ plot_coverage_panel=function(on_target="",off_target="",col=c(7,4),height=6,widt
   }
 
   sample_name=get_sample_name(on_target)
-  dat1=read.table(on_target)
+  dat1=read.table(on_target, stringsAsFactors=FALSE)
   if(is.character(dat1[1,1])){
     dat1=dat1[-1,]
   }
@@ -36,7 +36,7 @@ plot_coverage_panel=function(on_target="",off_target="",col=c(7,4),height=6,widt
 
   dat=dat1
   if (off_target!=""){
-    dat2=read.table(off_target)
+    dat2=read.table(off_target, stringsAsFactors=FALSE)
     if(is.character(dat2[1,1])){
       dat2=dat2[-1,]
     }
@@ -48,8 +48,8 @@ plot_coverage_panel=function(on_target="",off_target="",col=c(7,4),height=6,widt
     dat=bind_dat
   }
 
-  p=ggplot(dat,aes(x=Type,y=Coverage))+geom_violin(aes(fill=Type),alpha=0.5)+geom_boxplot(width=0.2) + stat_summary(fun=median, geom="text", show.legend = FALSE,
-               vjust=0.7,hjust=0.5, aes( label=round(..y.., digits=1)))+theme_classic()
+  p=ggplot(dat,aes(x=Type,y=Coverage))+geom_violin(aes(fill=Type),alpha=0.5)+geom_boxplot(width=0.1) + stat_summary(fun=median, geom="text", show.legend = FALSE,
+               vjust=30,hjust=2, aes( label=round(..y.., digits=1)))+theme_classic()
 
   out_file=paste0(output_dir,sep,paste0(sample_name,".Region_Coverage.png"))
   ggsave(out_file,width=width,height=height)
