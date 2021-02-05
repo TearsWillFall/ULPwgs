@@ -83,9 +83,6 @@ plot_cumulative_cov=function(on_target="",off_target="",col=list(c(2,5),c(2,5)),
 
   sample_name=get_sample_name(on_target)
   dat1=read.table(on_target, stringsAsFactors=FALSE)
-  if(is.character(dat1[1,1])){
-    dat1=dat1[-1,]
-  }
   dat1$type="On_Target"
   dat1=dat1[,c(unlist(col[1]),ncol(dat1))]
   names(dat1)=c("Depth","Fraction","Type")
@@ -96,9 +93,6 @@ plot_cumulative_cov=function(on_target="",off_target="",col=list(c(2,5),c(2,5)),
   dat=dat1
   if (off_target!=""){
     dat2=read.table(off_target, stringsAsFactors=FALSE)
-    if(is.character(dat2[1,1])){
-      dat2=dat2[-1,]
-    }
     dat2$type="Off_Target"
     dat2=dat2[,c(unlist(col[2]),ncol(dat2))]
     names(dat2)=c("Depth","Fraction","Type")
