@@ -84,12 +84,13 @@ index_ref=function(bin_path="tools/bwa/bwa",file="",verbose=FALSE){
 #' @param bed Path to the input bed file.
 #' @param sorted Are the input files sorted. Default TRUE
 #' @param mean Estimate mean coverage per region. Default TRUE. FALSE produces coverage per base per target.
+#' @param hist Enables progress messages. Default False.
 #' @param verbose Enables progress messages. Default False.
 #' @param output_dir Output directory path. Default none.
 #' @export
 
 
-bed_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",bed="",verbose=FALSE,sorted=TRUE,mean=TRUE,output_dir=""){
+bed_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",bed="",verbose=FALSE,sorted=TRUE,mean=TRUE,suffix="",output_dir="",hist=FALSE){
     sep="/"
 
     if(output_dir==""){
@@ -102,14 +103,27 @@ bed_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",bed="",verb
       srt="-sorted"
     }
 
-    mode=""
-    if (mean){
-      mode="-mean"
-      out_file=paste0(output_dir,"/",sample_name,".Per_Region_Coverage.txt")
-    }else{
-      mode="-d"
-      out_file=paste0(output_dir,"/",sample_name,".Per_Base_Coverage.txt")
+
+    if (suffix!=""){
+      suffix=paste0(".",suffix)
     }
+    mode=""
+    if (hist){
+      mode="-hist"
+
+      ## Filter to reduce the size of the output as it produces the coverage per base stats too
+
+      out_file=paste0("| grep \"all\"",">",output_dir,"/",sample_name,suffix,".Histogram_Coverage.txt")
+    }else{
+      if (mean){
+        mode="-mean"
+        out_file=paste0(">",output_dir,"/",sample_name,suffix,".Per_Region_Coverage.txt")
+      }else{
+        mode="-d"
+        out_file=paste0(">",output_dir,"/",sample_name,suffix,".Per_Base_Coverage.txt")
+      }
+    }
+
 
     if (!dir.exists(output_dir)){
         dir.create(output_dir)
@@ -117,8 +131,8 @@ bed_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",bed="",verb
 
 
     if(verbose){
-        system(paste(bin_path,"coverage -hist -a", "-b" ,bed, mode,srt,">",out_file))
+        system(paste(bin_path,"coverage -a", "-b" ,bed, mode,srt,out_file))
     }
-    system(paste(bin_path,"coverage -hist -a", "-b" ,bed, mode,srt,">",out_file))
+    system(paste(bin_path,"coverage  -a", "-b" ,bed, mode,srt,,out_file))
 
     }

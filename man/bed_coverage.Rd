@@ -11,7 +11,9 @@ bed_coverage(
   verbose = FALSE,
   sorted = TRUE,
   mean = TRUE,
-  output_dir = ""
+  suffix = "",
+  output_dir = "",
+  hist = FALSE
 )
 }
 \arguments{
@@ -28,6 +30,8 @@ bed_coverage(
 \item{mean}{Estimate mean coverage per region. Default TRUE. FALSE produces coverage per base per target.}
 
 \item{output_dir}{Output directory path. Default none.}
+
+\item{hist}{Enables progress messages. Default False.}
 }
 \description{
 This function estimates mean/per_base_coverage coverage for regions in bed file.

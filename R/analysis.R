@@ -359,11 +359,6 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
       tmp=paste0("TMP_DIR=",tmp_dir)
     }
 
-    pb=""
-    if(per_base){
-          pb=paste0(" PER_BASE_COVERAGE=", paste0(out_file,".Per_Base_Coverage.txt"))
-    }
-
     if (verbose){
       print("Generate MapQ distance map:")
       print(paste(bin_path,"view",bam," | awk -F", "'\\t'", "'{c[$5]++} END { for (i in c) printf(\"%s\\t%s\\n\",i,c[i]) }'"," | sort -t$'\\t' -k 1 -g >>", paste0(out_file,".mapq_dist.txt")))
@@ -385,23 +380,32 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
     }
     system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2, " CollectInsertSizeMetrics ",ref," I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf "),tmp))
 
-
     if (bi!="" & ti!=""){
       if (verbose){
         print("Generate Panel Metrics:")
-        print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectHsMetrics BI=",bi," TI=",ti,"I=",bam," PER_TARGET_COVERAGE=", paste0(out_file,".Per_Target_Coverage.txt"),pb," THEORETICAL_SENSITIVITY_OUTPUT=",paste0(out_file,".TS.txt"),ref," O=",paste0(out_file,".CollectHSmetrics.txt "),tmp))
+        print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectHsMetrics BI=",bi," TI=",ti,"I=",bam," THEORETICAL_SENSITIVITY_OUTPUT=",paste0(out_file,".TS.txt"),ref," O=",paste0(out_file,".CollectHSmetrics.txt "),tmp))
 
       }
-      system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectHsMetrics BI=",bi," TI=",ti,"I=",bam," PER_TARGET_COVERAGE=", paste0(out_file,".Per_Target_Coverage.txt"), pb," THEORETICAL_SENSITIVITY_OUTPUT=",paste0(out_file,".TS.txt"),ref," O=",paste0(out_file,".CollectHSmetrics.txt "),tmp))
+      system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectHsMetrics BI=",bi," TI=",ti,"I=",bam," THEORETICAL_SENSITIVITY_OUTPUT=",paste0(out_file,".TS.txt"),ref," O=",paste0(out_file,".CollectHSmetrics.txt "),tmp))
 
 
       ## Picard doesn't output coverage stats for off-target regions therefore we have to estimate this manually.
-      ## I use this function to get the mean coverage per off target region.
 
-      bed_coverage(bin_path="tools/bedtools2/bin/bedtools",bam=bam,bed=off_tar,verbose=verbose,sorted=TRUE,mean=TRUE)
-      plot_coverage_panel(on_target=paste0(out_file,".Per_Target_Coverage.txt"),off_target=paste0(out_file,".Per_Region_Coverage.txt"),col=c(7,4),height=6,width=12,output_dir=output_dir)
+      ## I use this function to get the mean coverage per on and off target.
+
+      ## For target regions
+
+      bed_coverage(bin_path="tools/bedtools2/bin/bedtools",bam=bam,bed=on_tar,verbose=verbose,sorted=TRUE,mean=TRUE,hist=TRUE,suffix="on_Target")
+      bed_coverage(bin_path="tools/bedtools2/bin/bedtools",bam=bam,bed=on_tar,verbose=verbose,sorted=TRUE,mean=TRUE,hist=FALSE,suffix="on_Target")
+
+      ## For off target regions
+
+      bed_coverage(bin_path="tools/bedtools2/bin/bedtools",bam=bam,bed=off_tar,verbose=verbose,sorted=TRUE,mean=TRUE,hist=TRUE,suffix="off_Target")
+      bed_coverage(bin_path="tools/bedtools2/bin/bedtools",bam=bam,bed=off_tar,verbose=verbose,sorted=TRUE,mean=TRUE,hist=FALSE,suffix="off_Target")
+
+      plot_coverage_panel(on_target=paste0(out_file,".on_Target.Per_Region_Coverage.txt"),off_target=paste0(out_file,".off_Target.Per_Region_Coverage.txt"),col=c(7,4),height=6,width=12,output_dir=output_dir)
+      
     }else{
-
           if (verbose){
             print(paste0("Generate WGS Metrics for minimum MAPq=",mapq,":"))
             print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=",mapq," ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt "),tmp))
