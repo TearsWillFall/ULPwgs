@@ -85,12 +85,13 @@ index_ref=function(bin_path="tools/bwa/bwa",file="",verbose=FALSE){
 #' @param sorted Are the input files sorted. Default TRUE
 #' @param mean Estimate mean coverage per region. Default TRUE. FALSE produces coverage per base per target.
 #' @param hist Enables progress messages. Default False.
+#' @param fai Indexed genome to which sequece has been aligned. Default none. Only requiref if there is an issue with chromosome naming.
 #' @param verbose Enables progress messages. Default False.
 #' @param output_dir Output directory path. Default none.
 #' @export
 
 
-bed_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",bed="",verbose=FALSE,sorted=TRUE,mean=TRUE,suffix="",output_dir="",hist=FALSE){
+bed_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",bed="",verbose=FALSE,sorted=TRUE,mean=TRUE,fai="",suffix="",output_dir="",hist=FALSE){
     sep="/"
 
     if(output_dir==""){
@@ -109,7 +110,10 @@ bed_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",bed="",verb
       srt="-sorted"
     }
 
-
+    fai=""
+    if (fai!=""){
+      fai=paste("-g",fai)
+    }
     if (suffix!=""){
       suffix=paste0(".",suffix)
     }
@@ -134,8 +138,8 @@ bed_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",bed="",verb
 
 
     if(verbose){
-        print(paste(bin_path,"coverage -a",bed, "-b" ,bam, mode,srt,out_file))
+        print(paste(bin_path,"coverage -a",bed, "-b" ,bam,fai, mode,srt,out_file))
     }
-    system(paste(bin_path,"coverage  -a",bed, "-b" ,bam, mode,srt,out_file))
+    system(paste(bin_path,"coverage  -a",bed, "-b" ,bam,fai, mode,srt,out_file))
 
     }
