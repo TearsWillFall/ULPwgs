@@ -360,6 +360,8 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
       tmp=paste0("TMP_DIR=",tmp_dir)
     }
 
+    ## Generate alignment metrics
+    
     if (verbose){
       print("Generate MapQ distance map:")
       print(paste(bin_path,"view",bam," | awk -F", "'\\t'", "'{c[$5]++} END { for (i in c) printf(\"%s\\t%s\\n\",i,c[i]) }'"," | sort -t$'\\t' -k 1 -g >>", paste0(out_file,".mapq_dist.txt")))
@@ -381,6 +383,8 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
     }
     system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2, " CollectInsertSizeMetrics ",ref," I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf "),tmp))
 
+
+    ## Only call metrics for panel data if bait and target intervals are supplied, Otherwise WGS metrics.
     if (bi!="" & ti!=""){
       if (verbose){
         print("Generate Panel Metrics:")
