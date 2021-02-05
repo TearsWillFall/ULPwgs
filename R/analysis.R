@@ -361,7 +361,7 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
     }
 
     ## Generate alignment metrics
-    
+
     if (verbose){
       print("Generate MapQ distance map:")
       print(paste(bin_path,"view",bam," | awk -F", "'\\t'", "'{c[$5]++} END { for (i in c) printf(\"%s\\t%s\\n\",i,c[i]) }'"," | sort -t$'\\t' -k 1 -g >>", paste0(out_file,".mapq_dist.txt")))
@@ -396,7 +396,7 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
 
       ## Picard doesn't output coverage stats for off-target regions therefore we have to estimate this manually.
 
-      ## I use this function to get the mean coverage per on and off target.
+      ## I use this function to get the mean coverage on and off target.
 
       ## For target regions
 
