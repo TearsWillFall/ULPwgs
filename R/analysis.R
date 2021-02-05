@@ -328,13 +328,14 @@ remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file=""
 #' @param ram RAM in GB to use. Default 4 Gb.
 #' @param tmp_dir Path to tmp directory.
 #' @param mapq Minimum MapQ for Picard Wgs metrics. Default 0.
-#' @param bi Bait capture interval for panel data. Requires ti and off_target arguments. Interval format.
-#' @param ti Target interval for panel data. Requires bi and off_target argmunets. Interval format.
-#' @param off_target Off target region bed file chromosome sorted. Requires bi and ti arguments.
+#' @param off_tar Path to off target regions bed file. Has to be chromosome sorted. Requires bi and ti arguments.
+#' @param on_tar Path to target region bed file. Has to be chromosome sorted. Requires bi and ti arguments.
+#' @param bi Bait capture target interval for panel data. Requires ti and off_target and on_tar arguments. Interval format.
+#' @param ti Primary target intervals for panel data. Requires bi and off_tar and on_tar argmunets. Interval format.
 #' @export
 
 
-qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/build/libs/picard.jar",bam="",output_dir="",ref_genome="",verbose=FALSE,ram="",tmp_dir="",mapq=0,bi="",ti="",off_tar=""){
+qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/build/libs/picard.jar",bam="",output_dir="",ref_genome="",verbose=FALSE,ram="",tmp_dir="",mapq=0,bi="",ti="",off_tar="",on_tar=""){
     sep="/"
 
     if(output_dir==""){
@@ -395,16 +396,19 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
 
       ## For target regions
 
-      bed_coverage(bin_path="tools/bedtools2/bin/bedtools",bam=bam,bed=on_tar,verbose=verbose,sorted=TRUE,mean=TRUE,hist=TRUE,suffix="on_Target")
-      bed_coverage(bin_path="tools/bedtools2/bin/bedtools",bam=bam,bed=on_tar,verbose=verbose,sorted=TRUE,mean=TRUE,hist=FALSE,suffix="on_Target")
+      bed_coverage(bin_path="tools/bedtools2/bin/bedtools",bam=bam,bed=on_tar,verbose=verbose,sorted=TRUE,mean=TRUE,hist=TRUE,fai=paste0(ref_genome,".fai"),suffix="on_Target")
+      bed_coverage(bin_path="tools/bedtools2/bin/bedtools",bam=bam,bed=on_tar,verbose=verbose,sorted=TRUE,mean=TRUE,hist=FALSE,fai=paste0(ref_genome,".fai"),suffix="on_Target")
 
       ## For off target regions
 
-      bed_coverage(bin_path="tools/bedtools2/bin/bedtools",bam=bam,bed=off_tar,verbose=verbose,sorted=TRUE,mean=TRUE,hist=TRUE,suffix="off_Target")
-      bed_coverage(bin_path="tools/bedtools2/bin/bedtools",bam=bam,bed=off_tar,verbose=verbose,sorted=TRUE,mean=TRUE,hist=FALSE,suffix="off_Target")
+      bed_coverage(bin_path="tools/bedtools2/bin/bedtools",bam=bam,bed=off_tar,verbose=verbose,sorted=TRUE,mean=TRUE,hist=TRUE,fai=paste0(ref_genome,".fai"),suffix="off_Target")
+      bed_coverage(bin_path="tools/bedtools2/bin/bedtools",bam=bam,bed=off_tar,verbose=verbose,sorted=TRUE,mean=TRUE,hist=FALSE,fai=paste0(ref_genome,".fai"),suffix="off_Target")
 
-      plot_coverage_panel(on_target=paste0(out_file,".on_Target.Per_Region_Coverage.txt"),off_target=paste0(out_file,".off_Target.Per_Region_Coverage.txt"),col=c(7,4),height=6,width=12,output_dir=output_dir)
+      ## Generate violin and cummulative plots for target and off target regions
       
+      plot_coverage_panel(on_target=paste0(out_file,".on_Target.Per_Region_Coverage.txt"),off_target=paste0(out_file,".off_Target.Per_Region_Coverage.txt"),col=c(5,4),height=6,width=12,output_dir=output_dir)
+      plot_cumulative_cov(on_target=paste0(out_file,".on_Target.Histogram_Coverage.txt"),off_target=paste0(out_file,".off_Target.Histogram_Coverage.txt"),height=6,width=12,output_dir=output_dir)
+
     }else{
           if (verbose){
             print(paste0("Generate WGS Metrics for minimum MAPq=",mapq,":"))
