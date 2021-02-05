@@ -74,7 +74,7 @@ plot_coverage_panel=function(on_target="",off_target="",col=c(4,4),height=6,widt
 #' @export
 
 
-plot_cumulative_cov=function(on_target="",off_target="",col=c(c(2,5),c(2,5)),height=6,width=12,verbose=FALSE,output_dir=""){
+plot_cumulative_cov=function(on_target="",off_target="",col=list(c(2,5),c(2,5)),height=6,width=12,verbose=FALSE,output_dir=""){
   sep="/"
 
   if(output_dir==""){
@@ -87,7 +87,7 @@ plot_cumulative_cov=function(on_target="",off_target="",col=c(c(2,5),c(2,5)),hei
     dat1=dat1[-1,]
   }
   dat1$type="On_Target"
-  dat1=dat1[,c(col[1],ncol(dat1))]
+  dat1=dat1[,c(unlist(col[1]),ncol(dat1))]
   names(dat1)=c("Depth","Fraction","Type")
   dat1$Depth=as.numeric(dat1$Depth)
   dat1$Fraction_targets_above_depth=1-cumsum(dat1$Fraction)
@@ -100,7 +100,7 @@ plot_cumulative_cov=function(on_target="",off_target="",col=c(c(2,5),c(2,5)),hei
       dat2=dat2[-1,]
     }
     dat2$type="Off_Target"
-    dat2=dat2[,c(col[2],ncol(dat2))]
+    dat2=dat2[,c(unlist(col[2]),ncol(dat2))]
     names(dat2)=c("Depth","Fraction","Type")
     dat2$Depth=as.numeric(dat2$Depth)
     dat2$Fraction_targets_above_depth=1-cumsum(dat2$Fraction)
