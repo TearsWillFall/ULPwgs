@@ -371,17 +371,17 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
 
     if (verbose){
       print("Generate Alignment Metrics:")
-      print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectAlignmentSummaryMetrics ",ref," I=",bam," O=",paste0(out_file,".picard_summary.txt "),tmp))
+      print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectAlignmentSummaryMetrics "," I=",bam," O=",paste0(out_file,".picard_summary.txt "),tmp))
 
     }
-    system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectAlignmentSummaryMetrics ",ref," I=",bam," O=",paste0(out_file,".picard_summary.txt "),tmp))
+    system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectAlignmentSummaryMetrics "," I=",bam," O=",paste0(out_file,".picard_summary.txt "),tmp))
 
     if (verbose){
       print("Generate Insert Size Metrics:")
-      print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectInsertSizeMetrics ",ref," I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf "),tmp))
+      print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectInsertSizeMetrics "," I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf "),tmp))
 
     }
-    system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2, " CollectInsertSizeMetrics ",ref," I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf "),tmp))
+    system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2, " CollectInsertSizeMetrics "," I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf "),tmp))
 
 
     ## Only call metrics for panel data if bait and target intervals are supplied, Otherwise WGS metrics.
