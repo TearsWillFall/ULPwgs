@@ -134,8 +134,8 @@ bed_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",bed="",verb
 
 
     if(verbose){
-        print(paste(bin_path,"coverage -a", "-b" ,bed, mode,srt,out_file))
+        print(paste(bin_path,"coverage -a",bam, "-b" ,bed, mode,srt,out_file))
     }
-    system(paste(bin_path,"coverage  -a", "-b" ,bed, mode,srt,out_file))
+    system(paste(bin_path,"coverage  -a",bam, "-b" ,bed, mode,srt,out_file))
 
     }
