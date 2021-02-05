@@ -388,10 +388,10 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
     if (bi!="" & ti!=""){
       if (verbose){
         print("Generate Panel Metrics:")
-        print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectHsMetrics BI=",bi," TI=",ti,"I=",bam," THEORETICAL_SENSITIVITY_OUTPUT=",paste0(out_file,".TS.txt"),ref," O=",paste0(out_file,".CollectHSmetrics.txt "),tmp))
+        print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectHsMetrics BI=",bi," TI=",ti," I=",bam," THEORETICAL_SENSITIVITY_OUTPUT=",paste0(out_file,".TS.txt"),ref," O=",paste0(out_file,".CollectHSmetrics.txt "),tmp))
 
       }
-      system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectHsMetrics BI=",bi," TI=",ti,"I=",bam," THEORETICAL_SENSITIVITY_OUTPUT=",paste0(out_file,".TS.txt"),ref," O=",paste0(out_file,".CollectHSmetrics.txt "),tmp))
+      system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectHsMetrics BI=",bi," TI=",ti," I=",bam," THEORETICAL_SENSITIVITY_OUTPUT=",paste0(out_file,".TS.txt"),ref," O=",paste0(out_file,".CollectHSmetrics.txt "),tmp))
 
 
       ## Picard doesn't output coverage stats for off-target regions therefore we have to estimate this manually.
