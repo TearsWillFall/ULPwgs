@@ -335,7 +335,7 @@ remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file=""
 #' @export
 
 
-qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/build/libs/picard.jar",bam="",output_dir="",ref_genome="",verbose=FALSE,ram="",tmp_dir="",mapq=0,bi="",ti="",off_tar="",on_tar=""){
+qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/build/libs/picard.jar",bin_path3="tools/bedtools2/bin/bedtools",bam="",output_dir="",ref_genome="",verbose=FALSE,ram="",tmp_dir="",mapq=0,bi="",ti="",off_tar="",on_tar=""){
     sep="/"
 
     if(output_dir==""){
@@ -396,16 +396,16 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
 
       ## For target regions
 
-      bed_coverage(bin_path="tools/bedtools2/bin/bedtools",bam=bam,bed=on_tar,verbose=verbose,sorted=TRUE,mean=TRUE,hist=TRUE,fai=paste0(ref_genome,".fai"),suffix="on_Target")
-      bed_coverage(bin_path="tools/bedtools2/bin/bedtools",bam=bam,bed=on_tar,verbose=verbose,sorted=TRUE,mean=TRUE,hist=FALSE,fai=paste0(ref_genome,".fai"),suffix="on_Target")
+      bed_coverage(bin_path=bin_path3,bam=bam,bed=on_tar,verbose=verbose,sorted=TRUE,mean=TRUE,hist=TRUE,fai=paste0(ref_genome,".fai"),suffix="on_Target")
+      bed_coverage(bin_path=bin_path3,bam=bam,bed=on_tar,verbose=verbose,sorted=TRUE,mean=TRUE,hist=FALSE,fai=paste0(ref_genome,".fai"),suffix="on_Target")
 
       ## For off target regions
 
-      bed_coverage(bin_path="tools/bedtools2/bin/bedtools",bam=bam,bed=off_tar,verbose=verbose,sorted=TRUE,mean=TRUE,hist=TRUE,fai=paste0(ref_genome,".fai"),suffix="off_Target")
-      bed_coverage(bin_path="tools/bedtools2/bin/bedtools",bam=bam,bed=off_tar,verbose=verbose,sorted=TRUE,mean=TRUE,hist=FALSE,fai=paste0(ref_genome,".fai"),suffix="off_Target")
+      bed_coverage(bin_path=bin_path3,bam=bam,bed=off_tar,verbose=verbose,sorted=TRUE,mean=TRUE,hist=TRUE,fai=paste0(ref_genome,".fai"),suffix="off_Target")
+      bed_coverage(bin_path=bin_path3,bam=bam,bed=off_tar,verbose=verbose,sorted=TRUE,mean=TRUE,hist=FALSE,fai=paste0(ref_genome,".fai"),suffix="off_Target")
 
       ## Generate violin and cummulative plots for target and off target regions
-      
+
       plot_coverage_panel(on_target=paste0(out_file,".on_Target.Per_Region_Coverage.txt"),off_target=paste0(out_file,".off_Target.Per_Region_Coverage.txt"),col=c(5,4),height=6,width=12,output_dir=output_dir)
       plot_cumulative_cov(on_target=paste0(out_file,".on_Target.Histogram_Coverage.txt"),off_target=paste0(out_file,".off_Target.Histogram_Coverage.txt"),height=6,width=12,output_dir=output_dir)
 
