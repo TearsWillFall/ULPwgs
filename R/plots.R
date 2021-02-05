@@ -104,12 +104,12 @@ plot_cumulative_cov=function(on_target="",off_target="",col=list(c(2,5),c(2,5)),
     names(dat2)=c("Depth","Fraction","Type")
     dat2$Depth=as.numeric(dat2$Depth)
     dat2$Fraction_targets_above_depth=1-cumsum(dat2$Fraction)
-    dat2=dat1[dat2$Depth<20,]
+    dat2=dat2[dat2$Depth<20,]
     bind_dat=dplyr::bind_rows(dat1,dat2)
     dat=bind_dat
   }
 
-  p=ggplot(dat,aes(x=Fraction_targets_above_depth,y=Depth))+geom_line(aes(col=Type),size=2) +theme_classic()+facet_wrap(Type~"Target Group",scales="free")
+  p=ggplot(dat,aes(y=Fraction_targets_above_depth,x=Depth))+geom_line(aes(col=Type),size=2) +theme_classic()+facet_wrap(Type~"Target Group",scales="free")
   out_file=paste0(output_dir,sep,paste0(sample_name,".Cumulative_Region_Coverage.png"))
   ggsave(out_file,width=width,height=height)
 }
