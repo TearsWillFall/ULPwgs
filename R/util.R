@@ -61,9 +61,64 @@ intersect_sample_name=function(file_path="",file_path2=""){
 index_ref=function(bin_path="tools/bwa/bwa",file="",verbose=FALSE){
 
     if(verbose){
-        print(paste(paste0("./",bin_path),"index", file) )
+        print(paste(bin_path,"index", file) )
     }
-    system(paste(paste0("./",bin_path),"index", file) )
+    system(print(paste(bin_path,"index", file) ) )
 
 
   }
+
+
+#' Estimate coverage for BED file
+#'
+#' This function estimates mean/per_base_coverage coverage for regions in bed file.
+#' This function is intended for estimating off target mean coverage in panel data, however it can be used as a standalone.
+#' It is highly recommended to use the sorted option and sort the BED and BAM files beforehand as it highly decreases RAM
+#' consumption and increases computation speed. The easiest way of doing this is using sort -k1,1 -k2,2n on the bed file.
+#' However, this may not work if the BED has been build based on different reference than the BAM. For example, hs37 vs hg19.
+#' For more information: https://bedtools.readthedocs.io/en/latest/content/tools/coverage.html
+#'
+#'
+#' @param bam Path to the input bam file.
+#' @param bin_path Path to bwa executable. Default tools/bedtools2/bin/bedtools.
+#' @param bed Path to the input bed file.
+#' @param sorted Are the input files sorted. Default TRUE
+#' @param mean Estimate mean coverage per region. Default TRUE. FALSE produces coverage per base per target.
+#' @param verbose Enables progress messages. Default False.
+#' @param output_dir Output directory path. Default none.
+#' @export
+
+
+bed_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",bed="",verbose=FALSE,sorted=TRUE,mean=TRUE,output_dir=""){
+    sep="/"
+
+    if(output_dir==""){
+      sep=""
+    }
+
+    sample_name=get_sample_name(bam)
+
+    if (sorted){
+      srt="-sorted"
+    }
+
+    mode=""
+    if (mean){
+      mode="-mean"
+      out_file=paste0(output_dir,"/",sample_name,".Per_Region_Coverage.txt")
+    }else{
+      mode="-d"
+      out_file=paste0(output_dir,"/",sample_name,".Per_Base_Coverage.txt")
+    }
+
+    if (!dir.exists(output_dir)){
+        dir.create(output_dir)
+    }
+
+
+    if(verbose){
+        system(paste(bin_path,"coverage -a", "-b" ,bed, mode,srt,">",out_file))
+    }
+    system(paste(bin_path,"coverage -a", "-b" ,bed, mode,srt,">",out_file))
+
+    }

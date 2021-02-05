@@ -306,22 +306,35 @@ remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file=""
 
 #' Generate quality control metrics for aligned sequences
 #'
-#' This function generates quality control metrics for an aligned sequence
+#' This function generates quality control metrics for an aligned sequence. Works for WGS and Panel data.
+#' WGS metrics will be generated if bait and target intervals are nor given, otherwise Panel metrics will be generateds.
+#' Target and bait BEDs can be converted to interval format using Picards BedToIntervalList functions.
+#' For example java -jar ~/tools/picard/build/libs/picard.jar BedToIntervalList I=PCFv2newchem_primary_targets.bed O=PCFv2newchem_primary_targets.interval_list SD=~/Scratch/RefGenome/hs37d5.fa
+#' For more information about interval format check: https://gatk.broadinstitute.org/hc/en-us/articles/360036883931-BedToIntervalList-Picard-
+#'
+#' Off target BED can be created by generating the complementary regions from the target BED using bedtools complement function.
+#' For example ~/tools/bedtools2/bin/bedtools complement -i PCFv2newchem_capture_targets.bed -g ~/Scratch/RefGenome/hs37d5.fa.fai > Probes_Off_target_regions.bed
+#' Note: This BED has to be sorted using the same reference as the BAM files.
+#' Using different reference to generate the BED from the one used to align the BAM may cause issues even when sorted due to scaffold chromosomes.
 #'
 #'
-#' @param bam Path to the BAM file .
+#' @param bam Path to the BAM file.
 #' @param bin_path Path to samtools executable. Default path tools/samtools/samtools.
 #' @param bin_path2 Path to picard executable. Default path tools/picard/build/libs/picard.jar.
+#' @param bin_path3 Path to bedtools executable. Default path tools/bedtools2/bin/bedtools. Only required if analyzing panel data.
 #' @param ref_genome Path to input file with the reference genome sequence.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param ram RAM in GB to use. Default 4 Gb.
 #' @param tmp_dir Path to tmp directory.
-#' @param mapq Minimum MapQ for Picard metrics. Default 0.
+#' @param mapq Minimum MapQ for Picard Wgs metrics. Default 0.
+#' @param bi Bait capture interval for panel data. Requires ti and off_target arguments. Interval format.
+#' @param ti Target interval for panel data. Requires bi and off_target argmunets. Interval format.
+#' @param off_target Off target region bed file chromosome sorted. Requires bi and ti arguments.
 #' @export
 
 
-qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/build/libs/picard.jar",bam="",output_dir="",ref_genome="",verbose=FALSE,ram="",tmp_dir="",mapq=0){
+qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/build/libs/picard.jar",bam="",output_dir="",ref_genome="",verbose=FALSE,ram="",tmp_dir="",mapq=0,bi="",ti="",off_tar=""){
     sep="/"
 
     if(output_dir==""){
@@ -346,6 +359,11 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
       tmp=paste0("TMP_DIR=",tmp_dir)
     }
 
+    pb=""
+    if(per_base){
+          pb=paste0(" PER_BASE_COVERAGE=", paste0(out_file,".Per_Base_Coverage.txt"))
+    }
+
     if (verbose){
       print("Generate MapQ distance map:")
       print(paste(bin_path,"view",bam," | awk -F", "'\\t'", "'{c[$5]++} END { for (i in c) printf(\"%s\\t%s\\n\",i,c[i]) }'"," | sort -t$'\\t' -k 1 -g >>", paste0(out_file,".mapq_dist.txt")))
@@ -367,12 +385,32 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
     }
     system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2, " CollectInsertSizeMetrics ",ref," I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf "),tmp))
 
-    if (verbose){
-      print(paste0("Generate WGS Metrics for minimum MAPq=",mapq,":"))
-      print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=",mapq," ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt "),tmp))
+
+    if (bi!="" & ti!=""){
+      if (verbose){
+        print("Generate Panel Metrics:")
+        print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectHsMetrics BI=",bi," TI=",ti,"I=",bam," PER_TARGET_COVERAGE=", paste0(out_file,".Per_Target_Coverage.txt"),pb," THEORETICAL_SENSITIVITY_OUTPUT=",paste0(out_file,".TS.txt"),ref," O=",paste0(out_file,".CollectHSmetrics.txt "),tmp))
+
+      }
+      system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectHsMetrics BI=",bi," TI=",ti,"I=",bam," PER_TARGET_COVERAGE=", paste0(out_file,".Per_Target_Coverage.txt"), pb," THEORETICAL_SENSITIVITY_OUTPUT=",paste0(out_file,".TS.txt"),ref," O=",paste0(out_file,".CollectHSmetrics.txt "),tmp))
+
+
+      ## Picard doesn't output coverage stats for off-target regions therefore we have to estimate this manually.
+      ## I use this function to get the mean coverage per off target region.
+
+      bed_coverage(bin_path="tools/bedtools2/bin/bedtools",bam=bam,bed=off_tar,verbose=verbose,sorted=TRUE,mean=TRUE)
+      plot_coverage_panel(on_target=paste0(out_file,".Per_Target_Coverage.txt"),off_target=paste0(out_file,".Per_Region_Coverage.txt"),col=c(7,4),height=6,width=12,output_dir=output_dir)
+    }else{
+
+          if (verbose){
+            print(paste0("Generate WGS Metrics for minimum MAPq=",mapq,":"))
+            print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=",mapq," ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt "),tmp))
+
+          }
+          system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=",mapq," ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt "),tmp))
 
     }
-    system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectWgsMetrics MINIMUM_MAPPING_QUALITY=",mapq," ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt "),tmp))
+
 
   }
 
@@ -385,13 +423,13 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
 #' @param bin_path Path to readCounter executable. Default path tools/samtools/samtools.
 #' @param bin_path2 Path to readCounter executable. Default path tools/hmmcopy_utils/bin/readCounter.
 #' @param output_dir Path to the output directory.
-#' @param chr String of chromosomes to include. Default chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX,chrY
+#' @param chr String of chromosomes to include. c()
 #' @param win Size of non overlaping windows. Default 500000.
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
 
-read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcopy_utils/bin/readCounter",win=500000,bam="",output_dir="",verbose=FALSE){
+read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcopy_utils/bin/readCounter",chr=c(1:22,"X","Y"),win=500000,bam="",output_dir="",verbose=FALSE){
 
 
     win=format(win,scientific=F)
@@ -417,9 +455,9 @@ read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcop
 
     if (grepl("chr",chr)){
       if (verbose){
-        print(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0("chr",c(1:22,"X","Y"),collapse=","), bam,">", paste0(out_file,".wig")))
+        print(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0("chr",chr,collapse=","), bam,">", paste0(out_file,".wig")))
       }
-      system(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0("chr",c(1:22,"X","Y"),collapse=","), bam,">" ,paste0(out_file,".wig")))
+      system(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0("chr",chr,collapse=","), bam,">" ,paste0(out_file,".wig")))
 
         if (verbose){
           print(paste("sed -i 's/chrom=chr/chrom=/g'",paste0(out_file,".wig")))
@@ -428,9 +466,9 @@ read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcop
     }
     else{
       if (verbose){
-        print(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0(c(1:22,"X","Y"),collapse=","), bam,">", paste0(out_file,".wig")))
+        print(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0(chr,collapse=","), bam,">", paste0(out_file,".wig")))
       }
-      system(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0(c(1:22,"X","Y"),collapse=","), bam,">" ,paste0(out_file,".wig")))
+      system(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0(chr,collapse=","), bam,">" ,paste0(out_file,".wig")))
 
 
     }

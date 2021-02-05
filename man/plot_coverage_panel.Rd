@@ -9,8 +9,9 @@ plot_coverage_panel(
   off_target = "",
   col = c(7, 4),
   height = 6,
-  width = 6,
-  verbose = FALSE
+  width = 12,
+  verbose = FALSE,
+  output_dir = ""
 )
 }
 \arguments{
@@ -22,7 +23,7 @@ plot_coverage_panel(
 
 \item{height}{\link{OPTIONAL} Plot height in inches. Default 6.}
 
-\item{width}{\link{OPTIONAL} Plot width in inches. Default 8.}
+\item{width}{\link{OPTIONAL} Plot width in inches. Default 12.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 

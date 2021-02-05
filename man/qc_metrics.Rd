@@ -13,7 +13,10 @@ qc_metrics(
   verbose = FALSE,
   ram = "",
   tmp_dir = "",
-  mapq = 0
+  mapq = 0,
+  bi = "",
+  ti = "",
+  off_tar = ""
 )
 }
 \arguments{
@@ -21,7 +24,7 @@ qc_metrics(
 
 \item{bin_path2}{Path to picard executable. Default path tools/picard/build/libs/picard.jar.}
 
-\item{bam}{Path to the BAM file .}
+\item{bam}{Path to the BAM file.}
 
 \item{output_dir}{Path to the output directory.}
 
@@ -33,8 +36,26 @@ qc_metrics(
 
 \item{tmp_dir}{Path to tmp directory.}
 
-\item{mapq}{Minimum MapQ for Picard metrics. Default 0.}
+\item{mapq}{Minimum MapQ for Picard Wgs metrics. Default 0.}
+
+\item{bi}{Bait capture interval for panel data. Requires ti and off_target arguments. Interval format.}
+
+\item{ti}{Target interval for panel data. Requires bi and off_target argmunets. Interval format.}
+
+\item{bin_path3}{Path to bedtools executable. Default path tools/bedtools2/bin/bedtools. Only required if analyzing panel data.}
+
+\item{off_target}{Off target region bed file chromosome sorted. Requires bi and ti arguments.}
 }
 \description{
-This function generates quality control metrics for an aligned sequence
+This function generates quality control metrics for an aligned sequence. Works for WGS and Panel data.
+WGS metrics will be generated if bait and target intervals are nor given, otherwise Panel metrics will be generateds.
+Target and bait BEDs can be converted to interval format using Picards BedToIntervalList functions.
+For example java -jar ~/tools/picard/build/libs/picard.jar BedToIntervalList I=PCFv2newchem_primary_targets.bed O=PCFv2newchem_primary_targets.interval_list SD=~/Scratch/RefGenome/hs37d5.fa
+For more information about interval format check: https://gatk.broadinstitute.org/hc/en-us/articles/360036883931-BedToIntervalList-Picard-
+}
+\details{
+Off target BED can be created by generating the complementary regions from the target BED using bedtools complement function.
+For example ~/tools/bedtools2/bin/bedtools complement -i PCFv2newchem_capture_targets.bed -g ~/Scratch/RefGenome/hs37d5.fa.fai > Probes_Off_target_regions.bed
+Note: This BED has to be sorted using the same reference as the BAM files.
+Using different reference to generate the BED from the one used to align the BAM may cause issues even when sorted due to scaffold chromosomes.
 }
