@@ -110,7 +110,6 @@ bed_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",bed="",verb
       srt="-sorted"
     }
 
-    fai=""
     if (fai!=""){
       fai=paste("-g",fai)
     }
