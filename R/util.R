@@ -119,14 +119,14 @@ bed_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",bed="",verb
 
       ## Filter to reduce the size of the output as it produces the coverage per base stats too
 
-      out_file=paste0("| grep \"all\"",">",output_dir,"/",sample_name,suffix,".Histogram_Coverage.txt")
+      out_file=paste0("| grep \"all\"",">",output_dir,sep,sample_name,suffix,".Histogram_Coverage.txt")
     }else{
       if (mean){
         mode="-mean"
-        out_file=paste0(">",output_dir,"/",sample_name,suffix,".Per_Region_Coverage.txt")
+        out_file=paste0(">",output_dir,sep,sample_name,suffix,".Per_Region_Coverage.txt")
       }else{
         mode="-d"
-        out_file=paste0(">",output_dir,"/",sample_name,suffix,".Per_Base_Coverage.txt")
+        out_file=paste0(">",output_dir,sep,sample_name,suffix,".Per_Base_Coverage.txt")
       }
     }
 
