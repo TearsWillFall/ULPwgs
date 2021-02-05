@@ -17,7 +17,7 @@
 
 
 
-plot_coverage_panel=function(on_target="",off_target="",col=c(4,4),height=6,width=12,verbose=FALSE,output_dir=""){
+plot_coverage_panel=function(on_target="",off_target="",col=c(5,4),height=6,width=12,verbose=FALSE,output_dir=""){
   sep="/"
 
   if(output_dir==""){
@@ -26,9 +26,7 @@ plot_coverage_panel=function(on_target="",off_target="",col=c(4,4),height=6,widt
 
   sample_name=get_sample_name(on_target)
   dat1=read.table(on_target, stringsAsFactors=FALSE)
-  if(is.character(dat1[1,1])){
-    dat1=dat1[-1,]
-  }
+
   dat1$type="On_Target"
   dat1=dat1[,c(col[1],ncol(dat1))]
   names(dat1)=c("Coverage","Type")
@@ -37,9 +35,7 @@ plot_coverage_panel=function(on_target="",off_target="",col=c(4,4),height=6,widt
   dat=dat1
   if (off_target!=""){
     dat2=read.table(off_target, stringsAsFactors=FALSE)
-    if(is.character(dat2[1,1])){
-      dat2=dat2[-1,]
-    }
+
     dat2$type="Off_Target"
     dat2=dat2[,c(col[2],ncol(dat2))]
     names(dat2)=c("Coverage","Type")
