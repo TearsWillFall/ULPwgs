@@ -104,6 +104,7 @@ bed_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",bed="",verb
 
     sample_name=get_sample_name(bam)
 
+    srt=""
     if (sorted){
       srt="-sorted"
     }
@@ -133,8 +134,8 @@ bed_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",bed="",verb
 
 
     if(verbose){
-        system(paste(bin_path,"coverage -a", "-b" ,bed, mode,srt,out_file))
+        print(paste(bin_path,"coverage -a", "-b" ,bed, mode,srt,out_file))
     }
-    system(paste(bin_path,"coverage  -a", "-b" ,bed, mode,srt,,out_file))
+    system(paste(bin_path,"coverage  -a", "-b" ,bed, mode,srt,out_file))
 
     }
