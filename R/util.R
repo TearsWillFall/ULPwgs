@@ -95,6 +95,11 @@ bed_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",bed="",verb
 
     if(output_dir==""){
       sep=""
+    }else{
+      if (!dir.exists(output_dir)){
+          dir.create(output_dir)
+      }
+
     }
 
     sample_name=get_sample_name(bam)
@@ -125,9 +130,6 @@ bed_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",bed="",verb
     }
 
 
-    if (!dir.exists(output_dir)){
-        dir.create(output_dir)
-    }
 
 
     if(verbose){
