@@ -353,11 +353,11 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
 
     ref=""
     if (!ref_genome==""){
-      ref=paste0("R=",ref_genome)
+      ref=paste0(" R=",ref_genome)
     }
     tmp=""
     if (!tmp_dir==""){
-      tmp=paste0("TMP_DIR=",tmp_dir)
+      tmp=paste0(" TMP_DIR=",tmp_dir)
     }
 
     ## Generate alignment metrics
