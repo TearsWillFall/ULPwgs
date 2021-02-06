@@ -345,8 +345,8 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
     sample_name=get_sample_name(bam)
 
     out_file_dir=paste0(output_dir,sep,sample_name,"_alignQC_report")
-    if (!dir.exists(out_file)){
-        dir.create(out_file)
+    if (!dir.exists(out_file_dir)){
+        dir.create(out_file_dir)
     }
 
     out_file=paste0(out_file_dir,"/",sample_name)
