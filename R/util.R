@@ -221,7 +221,7 @@ apply_BQSR=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",rec_table=""
       dir.create(output_dir)
   }
 
-  out_file=paste0(output_dir,"/",sample_name)
+  out_file=paste0(output_dir,sep,sample_name)
 
   if(verbose){
     system(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome," --bqsr-recal-file ",rec_table," -O ",paste0(out_file,".RECAL.",file_ext)))
