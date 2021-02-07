@@ -18,7 +18,8 @@ Imports:
     GenomicRanges,
     plyr,
     HMMcopy,
-    magrittr
+    magrittr,
+    pbapply
 biocViews:
 Remotes: git::https://github.com/TearsWillFall/BTools.git
 Encoding: UTF-8
