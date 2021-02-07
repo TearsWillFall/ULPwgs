@@ -104,10 +104,10 @@ generate_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome=""
 
   reg=""
   if (region==""){
-      out_file=paste0(out_file,"/",sample_name,".RECAL.table")
+      out_file=paste0(output_dir,sep,sample_name,".RECAL.table")
   }else{
       reg=paste0(" -L ",region)
-      out_file=paste0(out_file,"/",sample_name,".",region,"RECAL.table")
+      out_file=paste0(output_dir,sep,sample_name,".",region,"RECAL.table")
   }
 
   ## Multiple vcf with snps can be given
