@@ -144,7 +144,7 @@ parallel_generate_BQSR=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",
   dat$V2=dat$V2+1
   dat=dat %>% dplyr::mutate(Region=paste0(sub("chr","",V1),":",V2,"-",V3))
   cl=parallel::makeCluster(threads)
-  pbapply(X=dat[,c("Region"),drop=FALSE],1,FUN=generate_BQSR,bin_path=bin_path,bam=bam,ref_genome=ref_genome,snpd=snpd,output_dir=output_dir,verbose=verbose,cl=cl)
+  pbapply(X=dat[,c("Region"),drop=FALSE],1,FUN=generate_BQSR,bin_path=bin_path,bam=bam,ref_genome=ref_genome,snpdb=snpdb,output_dir=output_dir,verbose=verbose,cl=cl)
   on.exit(parallel::stopCluster(cl))
   sample_name=get_sample_name(bam)
   file_ext=get_file_extension(bam)
