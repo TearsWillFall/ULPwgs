@@ -107,7 +107,7 @@ generate_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome=""
       out_file=paste0(output_dir,sep,sample_name,".RECAL.table")
   }else{
       reg=paste0(" -L ",region)
-      out_file=paste0(output_dir,sep,sample_name,".",region,"RECAL.table")
+      out_file=paste0(output_dir,sep,sample_name,".",region,".RECAL.table")
   }
 
   ## Multiple vcf with snps can be given
@@ -117,9 +117,9 @@ generate_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome=""
   }
 
   if(verbose){
-    system(paste0(bin_path," BaseRecalibrator -I ",bam, " -R ", ref_genome,snpdb," -O ",out_file))
+    system(paste0(bin_path," BaseRecalibrator -I ",bam, " -R ", ref_genome,snpdb,reg," -O ",out_file))
   }
-  system(paste0(bin_path," BaseRecalibrator -I ",bam, " -R ", ref_genome,snpdb," -O ",out_file))
+  system(paste0(bin_path," BaseRecalibrator -I ",bam, " -R ", ref_genome,snpdb,reg," -O ",out_file))
 }
 
 #' Multiregion parallelization of generate_BQSR function
