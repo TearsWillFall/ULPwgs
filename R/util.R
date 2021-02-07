@@ -184,9 +184,9 @@ gather_BQSR_reports=function(bin_path="tools/gatk/gatk",reports_dir="",output_na
   files=list.files(reports_dir,full.names=TRUE)
 
   if(verbose){
-    system(paste0(bin_path," GatherBQSRReports ",paste(" -I ",files,collapse=" ")," -O ",paste0(output_dir,sep,sample_name,".RECAL.table")))
+    system(paste0(bin_path," GatherBQSRReports ",paste(" -I ",files,collapse=" ")," -O ",paste0(output_dir,"/",sample_name,".RECAL.table")))
   }
-    print(paste0(bin_path," GatherBQSRReports ",paste(" -I ",files,collapse=" ")," -O ",paste0(output_dir,sep,sample_name,".RECAL.table")))
+    print(paste0(bin_path," GatherBQSRReports ",paste(" -I ",files,collapse=" ")," -O ",paste0(output_dir,"/",sample_name,".RECAL.table")))
 }
 
 
