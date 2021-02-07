@@ -84,7 +84,7 @@ index_ref=function(bin_path="tools/bwa/bwa",file="",verbose=FALSE){
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
 #' @export
 
-generate_BQSR=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",snpdb="",output_dir="",verbose=FALSE){
+generate_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome="",snpdb="",output_dir="",verbose=FALSE){
 
   sep="/"
 
@@ -96,11 +96,19 @@ generate_BQSR=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",snpdb="",
   file_ext=get_file_extension(bam)
 
 
+
+
   if (!dir.exists(output_dir) & output_dir!=""){
       dir.create(output_dir)
   }
 
-  out_file=paste0(output_dir,"/",sample_name)
+  reg=""
+  if (region==""){
+      out_file=paste0(out_file,"/",sample_name,".RECAL.table")
+  }else{
+      reg=paste0(" -L ",region)
+      out_file=paste0(out_file,"/",sample_name,".",region,"RECAL.table")
+  }
 
   ## Multiple vcf with snps can be given
 
@@ -109,10 +117,36 @@ generate_BQSR=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",snpdb="",
   }
 
   if(verbose){
-    system(paste0(bin_path," BaseRecalibrator -I ",bam, " -R ", ref_genome,snpdb," -O ",paste0(out_file,".RECAL.table")))
+    system(paste0(bin_path," BaseRecalibrator -I ",bam, " -R ", ref_genome,snpdb," -O ",out_file))
   }
-  system(paste0(bin_path," BaseRecalibrator -I ",bam, " -R ", ref_genome,snpdb," -O ",paste0(out_file,".RECAL.table")))
+  system(paste0(bin_path," BaseRecalibrator -I ",bam, " -R ", ref_genome,snpdb," -O ",out_file))
 }
+
+#' Multiregion parallelization of generate_BQSR function
+#'
+#' Generates a recalibration table based on various covariates.
+#' This function wraps around gatk BaseRecalibrator function.
+#' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360036898312-BaseRecalibrator
+#'
+#' @param bam [REQUIRED] Path to the BAM file.
+#' @param bin_path [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
+#' @param ref_genome [REQUIRED] Path to reference genome
+#' @param snpdb [REQUIRED] Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @export
+
+parallel_generate_BQSR=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",snpdb="",region_bed="",threads=3,output_dir="",verbose=FALSE){
+  dat=read.table(region_bed)
+  dat$V2=dat$V2+1
+  dat=dat %>% dplyr::mutate(Region=paste0(sub("chr","",V1),":",V2,"-",V3))
+  cl=parallel::makeCluster(threads), digits = 0)
+  pbapply(X=dat[,c("Region"),drop=FALSE],1,FUN=generate_BQSR,bin_path=bin_path,bam=bam,ref_genome=ref_genome,snpd=snpd,output_dir=output_dir,verbose=verbose,cl=cl)
+  on.exit(parallel::stopCluster(cl))
+  sample_name=get_sample_name(bam)
+  file_ext=get_file_extension(bam)
+}
+
 
 #' Wrapper of applyBQSR function gatk
 #'
@@ -217,12 +251,9 @@ bed_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",bed="",verb
       }
     }
 
-
-
-
     if(verbose){
         print(paste(bin_path,"coverage -a",bed, "-b" ,bam,fai, mode,srt,out_file))
     }
     system(paste(bin_path,"coverage  -a",bed, "-b" ,bam,fai, mode,srt,out_file))
 
-    }
+}
