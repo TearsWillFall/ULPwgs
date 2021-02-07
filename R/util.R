@@ -117,7 +117,7 @@ generate_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome=""
   }
 
   if(verbose){
-    system(paste0(bin_path," BaseRecalibrator -I ",bam, " -R ", ref_genome,snpdb,reg," -O ",out_file))
+    print(paste0(bin_path," BaseRecalibrator -I ",bam, " -R ", ref_genome,snpdb,reg," -O ",out_file))
   }
   system(paste0(bin_path," BaseRecalibrator -I ",bam, " -R ", ref_genome,snpdb,reg," -O ",out_file))
 }
@@ -139,7 +139,12 @@ generate_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome=""
 #' @export
 #' @import pbapply
 
+
+
+
+
 parallel_generate_BQSR=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",snpdb="",region_bed="",threads=3,output_dir="",verbose=FALSE){
+
   dat=read.table(region_bed)
   dat$V2=dat$V2+1
   dat=dat %>% dplyr::mutate(Region=paste0(sub("chr","",V1),":",V2,"-",V3))
@@ -147,7 +152,41 @@ parallel_generate_BQSR=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",
   pbapply(X=dat[,c("Region"),drop=FALSE],1,FUN=generate_BQSR,bin_path=bin_path,bam=bam,ref_genome=ref_genome,snpdb=snpdb,output_dir=output_dir,verbose=verbose,cl=cl)
   on.exit(parallel::stopCluster(cl))
   sample_name=get_sample_name(bam)
-  file_ext=get_file_extension(bam)
+  gather_BQSR_reports(report_dir=output_dir,output_name=sample_name)
+
+}
+
+
+
+#' Wrapper around gatk GatherBQSRReports function
+#'
+#' This functions collects the Recalibration reports generated from scattered parallel_generate_BQSR output
+#' This function wraps around gatk GatherBQSRReports function.
+#' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360036829851-GatherBQSRReports
+#'
+#' @param bin_path [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
+#' @param reports_dir [REQUIRED] Path to the directory where reports are stored.
+#' @param output_name [OPTIONAL] Name for the output report file.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @export
+
+gather_BQSR_reports=function(bin_path="tools/gatk/gatk",reports_dir="",output_name="Report",output_dir="",verbose=FALSE){
+
+  if(output_dir==""){
+    output_dir=reports_dir
+  }
+
+  if (!dir.exists(output_dir)){
+      dir.create(output_dir)
+  }
+
+  files=list.files(reports_dir,full.names=TRUE)
+
+  if(verbose){
+    system(paste0(bin_path," GatherBQSRReports ",paste(" -I ",files,collapse=" ")," -O ",paste0(output_dir,sep,sample_name,".RECAL.table")))
+  }
+    print(paste0(bin_path," GatherBQSRReports ",paste(" -I ",files,collapse=" ")," -O ",paste0(output_dir,sep,sample_name,".RECAL.table")))
 }
 
 
