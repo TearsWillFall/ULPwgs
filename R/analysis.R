@@ -306,9 +306,6 @@ remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file=""
 
 
 
-
-
-
 #' Generate quality control metrics for aligned sequences
 #'
 #' This function generates quality control metrics for an aligned sequence. Works for WGS and Panel data.

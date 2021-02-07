@@ -7,7 +7,7 @@
 plot_coverage_panel(
   on_target = "",
   off_target = "",
-  col = c(4, 4),
+  col = c(5, 4),
   height = 6,
   width = 12,
   verbose = FALSE,

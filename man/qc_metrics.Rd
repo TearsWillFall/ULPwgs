@@ -7,6 +7,7 @@
 qc_metrics(
   bin_path = "tools/samtools/samtools",
   bin_path2 = "tools/picard/build/libs/picard.jar",
+  bin_path3 = "tools/bedtools2/bin/bedtools",
   bam = "",
   output_dir = "",
   ref_genome = "",
@@ -16,13 +17,16 @@ qc_metrics(
   mapq = 0,
   bi = "",
   ti = "",
-  off_tar = ""
+  off_tar = "",
+  on_tar = ""
 )
 }
 \arguments{
 \item{bin_path}{Path to samtools executable. Default path tools/samtools/samtools.}
 
 \item{bin_path2}{Path to picard executable. Default path tools/picard/build/libs/picard.jar.}
+
+\item{bin_path3}{Path to bedtools executable. Default path tools/bedtools2/bin/bedtools. Only required if analyzing panel data.}
 
 \item{bam}{Path to the BAM file.}
 
@@ -38,13 +42,13 @@ qc_metrics(
 
 \item{mapq}{Minimum MapQ for Picard Wgs metrics. Default 0.}
 
-\item{bi}{Bait capture interval for panel data. Requires ti and off_target arguments. Interval format.}
+\item{bi}{Bait capture target interval for panel data. Requires ti and off_target and on_tar arguments. Interval format.}
 
-\item{ti}{Target interval for panel data. Requires bi and off_target argmunets. Interval format.}
+\item{ti}{Primary target intervals for panel data. Requires bi and off_tar and on_tar argmunets. Interval format.}
 
-\item{bin_path3}{Path to bedtools executable. Default path tools/bedtools2/bin/bedtools. Only required if analyzing panel data.}
+\item{off_tar}{Path to off target regions bed file. Has to be chromosome sorted. Requires bi and ti arguments.}
 
-\item{off_target}{Off target region bed file chromosome sorted. Requires bi and ti arguments.}
+\item{on_tar}{Path to target region bed file. Has to be chromosome sorted. Requires bi and ti arguments.}
 }
 \description{
 This function generates quality control metrics for an aligned sequence. Works for WGS and Panel data.

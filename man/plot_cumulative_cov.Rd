@@ -7,7 +7,7 @@
 plot_cumulative_cov(
   on_target = "",
   off_target = "",
-  col = c(c(2, 5), c(2, 5)),
+  col = list(c(2, 5), c(2, 5)),
   height = 6,
   width = 12,
   verbose = FALSE,
