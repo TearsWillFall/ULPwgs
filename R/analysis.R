@@ -255,6 +255,8 @@ sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir=""
 
 
 
+
+
 #' Remove duplicated reads
 #'
 #' This function removes duplicated reads (artifacts) found in aligned sequences.
@@ -300,6 +302,9 @@ remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file=""
       system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path," MarkDuplicates I=",file, " O=",paste0(out_file,".RMDUP.",file_ext)," M=",paste0(out_file,".picard_rmdup.txt")," REMOVE_DUPLICATES=true AS=true VALIDATION_STRINGENCY=LENIENT " ,paste0("MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=",hnd)," ",tmp))
 
   }
+
+
+
 
 
 
