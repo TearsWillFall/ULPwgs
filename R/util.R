@@ -136,8 +136,8 @@ generate_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome=""
 #' @param region_bed [OPTIONAL] Number of threads to split the work. Default 3
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
-#' @import pbapply
 #' @export
+#' @import pbapply
 
 parallel_generate_BQSR=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",snpdb="",region_bed="",threads=3,output_dir="",verbose=FALSE){
   dat=read.table(region_bed)
@@ -149,6 +149,7 @@ parallel_generate_BQSR=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",
   sample_name=get_sample_name(bam)
   file_ext=get_file_extension(bam)
 }
+
 
 
 #' Wrapper of applyBQSR function gatk
