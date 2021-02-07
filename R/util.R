@@ -92,8 +92,8 @@ generate_BQSR=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",snpdb="",
     sep=""
   }
 
-  sample_name=get_sample_name(file)
-  file_ext=get_file_extension(file)
+  sample_name=get_sample_name(bam)
+  file_ext=get_file_extension(bam)
 
 
   if (!dir.exists(output_dir) & output_dir!=""){
@@ -137,8 +137,8 @@ apply_BQSR=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",rec_table=""
     sep=""
   }
 
-  sample_name=get_sample_name(file)
-  file_ext=get_file_extension(file)
+  sample_name=get_sample_name(bam)
+  file_ext=get_file_extension(bam)
 
   if (!dir.exists(output_dir) & output_dir!=""){
       dir.create(output_dir)
