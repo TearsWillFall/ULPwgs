@@ -275,7 +275,7 @@ recal_covariates=function(bin_path="tools/gatk/gatk",before="",after="",output_d
     if(verbose){
       print(paste0(bin_path," AnalyzeCovariates -before ",before," -after ",after," -plots ",paste0(out_file,"_covariates_analysis.pdf")))
     }
-    system(paste0(bin_path," AnalyzeCovariates -before ",before," -after",after," -plots ",paste0(out_file,"_covariates_analysis_before_after.pdf")))
+    system(paste0(bin_path," AnalyzeCovariates -before ",before," -after ",after," -plots ",paste0(out_file,"_covariates_analysis_before_after.pdf")))
 
   }
 
