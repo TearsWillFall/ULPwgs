@@ -305,7 +305,7 @@ gather_bam_files=function(bin_path="tools/picard/build/picard.jar",bams_dir="",o
       dir.create(output_dir)
   }
 
-  files=list.files(reports_dir,full.names=TRUE,pattern=":")
+  files=list.files(bams_dir,full.names=TRUE,pattern=":")
   files=naturalsort::naturalsort(files)
 
   if(verbose){
