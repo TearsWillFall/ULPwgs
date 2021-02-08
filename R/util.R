@@ -312,7 +312,6 @@ apply_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome="",re
 #' @param bam [REQUIRED] Path to the BAM file.
 #' @param bin_path [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
 #' @param bin_path2 [REQUIRED] Path to picard executable. Default tools/picard/build/libs/picard.jar
-#' @param bin_path3 [REQUIRED] Path to samtools executable. Default tools/samtools/samtools
 #' @param ref_genome [REQUIRED] Path to reference genome
 #' @param rec_table [REQUIRED] Path to the recalibratio table.
 #' @param region_bed [OPTIONAL] Number of threads to split the work. Default 3
@@ -322,7 +321,7 @@ apply_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome="",re
 #' @export
 #' @import pbapply
 
-parallel_apply_BQSR=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/build/libs/picard.jar",bin_path3="tools/samtools/samtools",bam="",ref_genome="",rec_table="",region_bed="",output_dir="",verbose=FALSE,threads=4){
+parallel_apply_BQSR=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/build/libs/picard.jar",bam="",ref_genome="",rec_table="",region_bed="",output_dir="",verbose=FALSE,threads=4){
   sep="/"
 
   if(output_dir==""){
@@ -339,7 +338,7 @@ parallel_apply_BQSR=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/
   sample_name=get_sample_name(bam)
   gather_bam_files(bin_path=bin_path2,bams_dir=output_dir,output_name=paste0(sample_name,".RECAL.SORTED.RMDUP.SORTED"))
   system(paste0("rm ",output_dir,"/*:*.RECAL*.ba*"))
-  index(bin_path=bin_path3,file=paste0(output_dir,sep,sample_name,".RECAL.SORTED.RMDUP.SORTED.bam"))
+
 }
 
 #' Wrapper around gatk GatherBamFiles function
