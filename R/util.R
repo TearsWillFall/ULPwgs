@@ -339,7 +339,7 @@ parallel_apply_BQSR=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/
   sample_name=get_sample_name(bam)
   gather_bam_files(bin_path=bin_path2,bams_dir=output_dir,output_name=paste0(sample_name,".RECAL.SORTED.RMDUP.SORTED"))
   system(paste0("rm ",output_dir,"/*:*.RECAL*.ba*"))
-  index(bin_path=bin_path3,file=paste0(sample_name,".RECAL.SORTED.RMDUP.SORTED"))
+  index(bin_path=bin_path3,file=paste0(sample_name,".RECAL.SORTED.RMDUP.SORTED.bam"))
 }
 
 #' Wrapper around gatk GatherBamFiles function
@@ -370,9 +370,9 @@ gather_bam_files=function(bin_path="tools/picard/build/libs/picard.jar",bams_dir
   files=naturalsort::naturalsort(files)
 
   if(verbose){
-    print(paste0("java -jar ",bin_path," GatherBamFiles ",paste0(" I=",files,collapse=" ")," O=",paste0(output_dir,"/",output_name,".bam")," --CREATE_INDEX true"))
+    print(paste0("java -jar ",bin_path," GatherBamFiles ",paste0(" I=",files,collapse=" ")," O=",paste0(output_dir,"/",output_name,".bam")))
   }
-    system(paste0("java -jar ",bin_path," GatherBamFiles ",paste0(" I=",files,collapse=" ")," O=",paste0(output_dir,"/",output_name,".bam")," --CREATE_INDEX true"))
+    system(paste0("java -jar ",bin_path," GatherBamFiles ",paste0(" I=",files,collapse=" ")," O=",paste0(output_dir,"/",output_name,".bam")))
 }
 
 #' Wrapper of AnalyzeCovariates function in gatk
