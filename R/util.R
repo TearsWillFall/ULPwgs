@@ -258,7 +258,7 @@ recal_covariates=function(bin_path="tools/gatk/gatk",before="",after="",output_d
     sep=""
   }
 
-  sample_name=get_sample_name(bam)
+  sample_name=get_sample_name(before)
 
   if (!dir.exists(output_dir) & output_dir!=""){
       dir.create(output_dir)
