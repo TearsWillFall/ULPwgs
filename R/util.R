@@ -306,6 +306,7 @@ gather_bam_files=function(bin_path="tools/picard/build/picard.jar",bams_dir="",o
   }
 
   files=list.files(reports_dir,full.names=TRUE,pattern=":")
+  files=naturalsort::naturalsort(files)
 
   if(verbose){
     print(paste0("java -jar ",bin_path," GatherBamFiles ",paste(" -I ",files,collapse=" ")," -O ",paste0(output_dir,"/",output_name,".bam")))

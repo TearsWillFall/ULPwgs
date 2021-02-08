@@ -19,7 +19,8 @@ Imports:
     plyr,
     HMMcopy,
     magrittr,
-    pbapply
+    pbapply,
+    naturalsort
 biocViews:
 Remotes: git::https://github.com/TearsWillFall/BTools.git
 Encoding: UTF-8
