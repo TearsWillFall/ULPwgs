@@ -306,6 +306,7 @@ gather_bam_files=function(bin_path="tools/picard/build/libs/picard.jar",bams_dir
   }
 
   files=list.files(bams_dir,full.names=TRUE,pattern=":")
+  files=files[grepl("bam$",files)]
   files=naturalsort::naturalsort(files)
 
   if(verbose){

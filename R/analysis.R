@@ -301,6 +301,51 @@ remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file=""
   }
 
 
+#' Wrapper for MarkDuplicatesSpark from gatk
+#'
+#' This function removes duplicated reads (artifacts) found in aligned sequences and sorts the output bam.
+#'
+#' @param file Path to the input file with the aligned sequence.
+#' @param bin_path Path to picard executable. Default path tools/picard/build/libs/picard.jar.
+#' @param output_dir Path to the output directory.
+#' @param tmp_dir Path to tmp directory.
+#' @param threads Number of threads to split work.
+#' @param verbose Enables progress messages. Default False.
+#' @export
+
+
+remove_duplicates_gatk=function(bin_path="tools/gatk/gatk",file="",output_dir="",verbose=FALSE,tmp_dir="",threads=3){
+
+      sep="/"
+
+      if(output_dir==""){
+        sep=""
+      }
+
+      sample_name=get_sample_name(file)
+      file_ext=get_file_extension(file)
+
+      out_file=paste0(output_dir,sep,sample_name,"_SORTED.RMDUP.",toupper(file_ext))
+      if (!dir.exists(out_file)){
+          dir.create(out_file)
+      }
+
+      out_file=paste0(out_file,"/",sample_name)
+
+      tmp=""
+      if (!tmp_dir==""){
+        tmp=paste0("--tmp-dir ",tmp_dir)
+      }
+
+      if(verbose){
+        print(paste0(bin_path," MarkDuplicatesSpark -I ",file, " -O ",paste0(out_file,".RMDUP.",file_ext)," -M ",paste0(out_file,".gatk_rmdup.txt")," ",tmp))
+
+      }
+        system(paste0(bin_path," MarkDuplicatesSpark -I ",file, " -O ",paste0(out_file,".RMDUP.",file_ext)," -M ",paste0(out_file,".gatk_rmdup.txt")," ",tmp," --conf \'spark.executor.cores=",threads,"\'"))
+    }
+
+
+
 #' Function for base quality recalibration
 #'
 #' This function recalibrates the base quality of the reads in two steps process based on GATK best practices guides.
@@ -345,7 +390,6 @@ recalibrate_bq=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/build
   parallel_generate_BQSR(bin_path=bin_path,bam=paste0(out_file_dir3,"/",sample_name,".RECAL.",file_ext),ref_genome=ref_genome,snpdb=snpdb,region_bed=region_bed,threads=threads,output_dir=out_file_dir2,verbose=verbose)
   recal_covariates(bin_path=bin_path,before=paste0(out_file_dir,"/",sample_name,".RECAL.table"),after=paste0(out_file_dir2,"/",sample_name,".RECAL.table"),output_dir=out_file_dir3)
 }
-
 
 
 #' Generate quality control metrics for aligned sequences
