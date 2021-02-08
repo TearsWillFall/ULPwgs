@@ -339,7 +339,7 @@ parallel_apply_BQSR=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/
   sample_name=get_sample_name(bam)
   gather_bam_files(bin_path=bin_path2,bams_dir=output_dir,output_name=paste0(sample_name,".RECAL.SORTED.RMDUP.SORTED"))
   system(paste0("rm ",output_dir,"/*:*.RECAL*.ba*"))
-  index(bin_path=bin_path3,file=paste0(sample_name,".RECAL.SORTED.RMDUP.SORTED.bam"))
+  index(bin_path=bin_path3,file=paste0(output_dir,sep,sample_name,".RECAL.SORTED.RMDUP.SORTED.bam"))
 }
 
 #' Wrapper around gatk GatherBamFiles function
