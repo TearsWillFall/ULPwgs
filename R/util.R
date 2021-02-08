@@ -309,13 +309,10 @@ gather_bam_files=function(bin_path="tools/picard/build/libs/picard.jar",bams_dir
   files=naturalsort::naturalsort(files)
 
   if(verbose){
-    print(paste0("java -jar ",bin_path," GatherBamFiles ",paste(" -I ",files,collapse=" ")," -O ",paste0(output_dir,"/",output_name,".bam")))
+    print(paste0("java -jar ",bin_path," GatherBamFiles ",paste0(" I=",files,collapse=" ")," O=",paste0(output_dir,"/",output_name,".bam")))
   }
-    system(paste0("java -jar ",bin_path," GatherBamFiles ",paste(" -I ",files,collapse=" ")," -O ",paste0(output_dir,"/",output_name,".bam")))
+    system(paste0("java -jar ",bin_path," GatherBamFiles ",paste0(" I=",files,collapse=" ")," O=",paste0(output_dir,"/",output_name,".bam")))
 }
-
-
-
 
 #' Wrapper of AnalyzeCovariates function in gatk
 #'
