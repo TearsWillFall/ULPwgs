@@ -70,6 +70,65 @@ index_ref=function(bin_path="tools/bwa/bwa",file="",verbose=FALSE){
 
 
 
+
+#' Sort a BAM file
+#'
+#' This function sorts a genome sequence file (BAM/SAM)
+#'
+#' @param file Path to the input file with the sequence.
+#' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param threads Number of threads. Default 3
+#' @param ram Ram memory to use per thread in GB. Default 1GB
+#' @export
+
+bam_sort=function(bin_path="tools/samtools/samtools",file="",output_dir="",ram=1,verbose=FALSE,threads=3){
+  sep="/"
+
+  if(output_dir==""){
+    sep=""
+  }
+
+  sample_name=get_sample_name(file)
+  file_ext=get_file_extension(file)
+
+  if (!dir.exists(output_dir)){
+      dir.create(output_dir)
+    }
+
+  out_file=paste0(out_file,"/",sample_name)
+
+
+  if (verbose){
+    print("Sorting BAM file:")
+    print(paste0(bin_path," sort ",file," -@ ",threads," -m ",ram,"G"," -o ",out_file,".SORTED.",file_ext))
+  }
+  system(paste0(bin_path," sort ",file," -@ ",threads," -m ",ram,"G"," -o ",out_file,".SORTED.",file_ext))
+}
+
+
+#' Index a BAM file
+#'
+#' This function indexes a genomic sequence file (BAM/SAM).
+#'
+#' @param file Path to the input file with the sequence.
+#' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
+#' @param verbose Enables progress messages. Default False.
+#' @param threads Number of threads. Default 3
+#' @export
+
+index=function(bin_path="tools/samtools/samtools",file="",verbose=FALSE,threads=3){
+  if (verbose){
+    print("Indexing sorted BAM file:")
+    print(paste(bin_path," index",file," -@ ",threads))
+  }
+  system(paste(bin_path," index",file," -@ ",threads))
+}
+
+
+
+
 #' Wrapper of BaseRecalibrator function of gatk
 #'
 #' Generates a recalibration table based on various covariates.
@@ -213,7 +272,6 @@ gather_BQSR_reports=function(bin_path="tools/gatk/gatk",reports_dir="",output_na
 #' @export
 
 
-### To Do. Implement parallel apply_BQSR, although not sure if worth it. Spreading across multiple nodes may require to resort output BAM.
 
 apply_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome="",rec_table="",output_dir="",verbose=FALSE){
 
@@ -279,7 +337,8 @@ parallel_apply_BQSR=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/
   on.exit(parallel::stopCluster(cl))
   sample_name=get_sample_name(bam)
   gather_bam_files(bin_path=bin_path2,bams_dir=output_dir,output_name=paste0(sample_name,".RECAL.SORTED.RMDUP.SORTED"))
-  system(paste0("rm ",output_dir,"/*:*.RECAL*.bam"))
+  system(paste0("rm ",output_dir,"/*:*.RECAL*.bam*"))
+  index(file=paste0(sample_name,".RECAL.SORTED.RMDUP.SORTED"))
 }
 
 #' Wrapper around gatk GatherBamFiles function

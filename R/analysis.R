@@ -208,7 +208,6 @@ alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
 #' @param ram Ram memory to use per thread in GB. Default 1GB
 #' @export
 
-
 sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir="",ram=1,verbose=FALSE,threads=3){
 
   sep="/"
@@ -216,41 +215,29 @@ sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir=""
   if(output_dir==""){
     sep=""
   }
-
   sample_name=get_sample_name(file)
   file_ext=get_file_extension(file)
-  out_file=paste0(output_dir,sep,sample_name,"_SORTED.",toupper(file_ext))
+  out_file_dir=paste0(output_dir,sep,sample_name,"_SORTED.",toupper(file_ext))
 
-
-  if (!dir.exists(out_file)){
-      dir.create(out_file)
-    }
-  out_file=paste0(out_file,"/",sample_name)
-
-
-    if (verbose){
-      print("Sorting BAM file:")
-      print(paste0(bin_path," sort ",file," -@ ",threads," -m ",ram,"G"," -o ",out_file,".SORTED.",file_ext))
-    }
-    system(paste0(bin_path," sort ",file," -@ ",threads," -m ",ram,"G"," -o ",out_file,".SORTED.",file_ext))
-    file=paste0(out_file,".SORTED.",file_ext)
-
-    if (verbose){
-      print("Indexing sorted BAM file:")
-      print(paste(bin_path," index",file," -@ ",threads))
-    }
-    system(paste(bin_path," index",file," -@ ",threads))
-    if (verbose){
-      print("Generating Flag stats:")
-      print(paste0(bin_path," flagstat ",file," -@ ",threads," > ",paste0(out_file,".flagstat.txt")))
-    }
-    system(paste0(bin_path," flagstat ",file," -@ ",threads," > ",paste0(out_file,".flagstat.txt")))
-    if (verbose){
-      print("Generating Index stats:")
-      print(paste0(bin_path," idxstats ",file," > ",paste0(out_file,".idxstats.txt")))
-    }
-    system(paste0(bin_path," idxstats ",file," > ",paste0(out_file,".idxstats.txt")))
+  if (!dir.exists(out_file_dir)){
+      dir.create(out_file_dir)
   }
+
+  bam_sort(bin_path=bin_path,file=file,output_dir=out_file_dir,ram=ram,verbose=verbose,threads=threads)
+  file=paste0(out_file,".SORTED.",file_ext)
+  index(bin_path=bin_path,file=file,verbose=verbose,threads=threads)
+
+  if (verbose){
+    print("Generating Flag stats:")
+    print(paste0(bin_path," flagstat ",file," -@ ",threads," > ",paste0(out_file,".flagstat.txt")))
+  }
+  system(paste0(bin_path," flagstat ",file," -@ ",threads," > ",paste0(out_file,".flagstat.txt")))
+  if (verbose){
+    print("Generating Index stats:")
+    print(paste0(bin_path," idxstats ",file," > ",paste0(out_file,".idxstats.txt")))
+  }
+  system(paste0(bin_path," idxstats ",file," > ",paste0(out_file,".idxstats.txt")))
+}
 
 
 
