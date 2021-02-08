@@ -349,7 +349,7 @@ remove_duplicates_gatk=function(bin_path="tools/gatk/gatk",file="",output_dir=""
 #' @export
 
 
-recalibrate_bq=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/build/libs/picard.jar",bin_path2="tools/samtools/samtools",bam="",ref_genome="",snpdb="",region_bed="",threads=3,output_dir="",verbose=FALSE){
+recalibrate_bq=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/build/libs/picard.jar",bin_path3="tools/samtools/samtools",bam="",ref_genome="",snpdb="",region_bed="",threads=3,output_dir="",verbose=FALSE){
 
   sep="/"
 
