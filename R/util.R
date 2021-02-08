@@ -152,7 +152,7 @@ parallel_generate_BQSR=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",
   pbapply(X=dat[,c("Region"),drop=FALSE],1,FUN=generate_BQSR,bin_path=bin_path,bam=bam,ref_genome=ref_genome,snpdb=snpdb,output_dir=output_dir,verbose=verbose,cl=cl)
   on.exit(parallel::stopCluster(cl))
   sample_name=get_sample_name(bam)
-  gather_BQSR_reports(report_dir=output_dir,output_name=sample_name)
+  gather_BQSR_reports(reports_dir=output_dir,output_name=sample_name)
 
 }
 
