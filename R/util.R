@@ -234,14 +234,14 @@ apply_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome="",re
   if (region==""){
       out_file=paste0(output_dir,sep,sample_name,".RECAL.",file_ext)
   }else{
-      reg=paste0(" -L ",strsplit(region,"_")[[1]][2])
+      reg=paste0(" -L ",strsplit(region,"_")[[1]][2], " ")
       out_file=paste0(output_dir,sep,sample_name,".",region,".RECAL.",file_ext)
   }
 
   if(verbose){
-    print(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome," --bqsr-recal-file ",rec_table," -O ",out_file))
+    print(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome," --bqsr-recal-file ",rec_table,region," -O ",out_file))
   }
-  system(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome," --bqsr-recal-file ",rec_table," -O ",out_file))
+  system(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome," --bqsr-recal-file ",rec_table,region," -O ",out_file))
 }
 
 
