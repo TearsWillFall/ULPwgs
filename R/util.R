@@ -239,9 +239,9 @@ apply_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome="",re
   }
 
   if(verbose){
-    print(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome," --bqsr-recal-file ",rec_table,region," -O ",out_file))
+    print(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome," --bqsr-recal-file ",rec_table,region," -O ",out_file,reg))
   }
-  system(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome," --bqsr-recal-file ",rec_table,region," -O ",out_file))
+  system(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome, " --bqsr-recal-file ",rec_table," -O ",out_file,reg))
 }
 
 
