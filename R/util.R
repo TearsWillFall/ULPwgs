@@ -164,6 +164,7 @@ parallel_generate_BQSR=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",
 
 
 
+
 #' Wrapper around gatk GatherBQSRReports function
 #'
 #' This functions collects the Recalibration reports generated from scattered parallel_generate_BQSR output
@@ -186,6 +187,7 @@ gather_BQSR_reports=function(bin_path="tools/gatk/gatk",reports_dir="",output_na
   if (!dir.exists(output_dir)){
       dir.create(output_dir)
   }
+
 
   files=list.files(reports_dir,full.names=TRUE,pattern=":")
 
@@ -212,7 +214,9 @@ gather_BQSR_reports=function(bin_path="tools/gatk/gatk",reports_dir="",output_na
 #' @export
 
 
-apply_BQSR=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",rec_table="",output_dir="",verbose=FALSE){
+### To Do. Implement parallel apply_BQSR, although not sure if worth it. Spreading across multiple nodes may require to resort output BAM.
+
+apply_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome="",rec_table="",output_dir="",verbose=FALSE){
 
   sep="/"
 
@@ -227,13 +231,89 @@ apply_BQSR=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",rec_table=""
       dir.create(output_dir)
   }
 
-  out_file=paste0(output_dir,sep,sample_name)
+  reg=""
+  if (region==""){
+      out_file=paste0(output_dir,sep,sample_name,".RECAL.",file_ext)
+  }else{
+      reg=paste0(" -L ",strsplit(region,"_")[[1]][2])
+      out_file=paste0(output_dir,sep,sample_name,".",region,".RECAL.",file_ext)
+  }
 
   if(verbose){
-    print(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome," --bqsr-recal-file ",rec_table," -O ",paste0(out_file,".RECAL.",file_ext)))
+    print(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome," --bqsr-recal-file ",rec_table," -O ",out_file))
   }
-  system(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome," --bqsr-recal-file ",rec_table," -O ",paste0(out_file,".RECAL.",file_ext)))
+  system(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome," --bqsr-recal-file ",rec_table," -O ",out_file))
 }
+
+
+#' Multiregion parallelization of apply_BQSR function
+#'
+#' Recalibrates
+#' Applies numerical corrections to each individual basecall based on the covariates analyzed before.
+#' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360050814312-ApplyBQSR
+#'
+#' @param bam [REQUIRED] Path to the BAM file.
+#' @param bin_path [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
+#' @param ref_genome [REQUIRED] Path to reference genome
+#' @param snpdb [REQUIRED] Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.
+#' @param region_bed [REQUIRED] Path to the output directory.
+#' @param region_bed [OPTIONAL] Number of threads to split the work. Default 3
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @export
+#' @import pbapply
+
+parallel_apply_BQSR=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/build/picard.jar",bam="",ref_genome="",rec_table="",region_bed="",output_dir="",verbose=FALSE){
+  sep="/"
+
+  if(output_dir==""){
+    sep=""
+  }
+
+  dat=read.table(region_bed)
+  dat$V2=dat$V2+1
+  dat$pos=1:nrow(dat)
+  dat=dat %>% dplyr::mutate(Region=paste0(pos,"_",sub("chr","",V1),":",V2,"-",V3))
+  cl=parallel::makeCluster(threads)
+  pbapply(X=dat[,c("Region"),drop=FALSE],1,FUN=apply_BQSR,bin_path=bin_path,bam=bam,ref_genome=ref_genome,rec_table=rec_table,output_dir=output_dir,verbose=verbose,cl=cl)
+  on.exit(parallel::stopCluster(cl))
+  sample_name=get_sample_name(bam)
+  gather_bam_files(bin_path=bin_path2,bams_dir=output_dir,output_name=paste0(sample_name,".RECAL.SORTED.RMDUP.SORTED"))
+  system(paste0("rm ",output_dir,"/*:*.RECAL*.bam"))
+}
+
+#' Wrapper around gatk GatherBamFiles function
+#'
+#' This functions collects the Recalibration reports generated from scattered parallel_apply_BQSR output
+#' This function wraps around gatk GatherBamFiles function.
+#' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360037055512-GatherBamFiles-Picard-
+#'
+#' @param bin_path [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
+#' @param bams_dir [REQUIRED] Path to the directory where BAM files are stored.
+#' @param output_name [OPTIONAL] Name for the output file name.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @export
+
+gather_bam_files=function(bin_path="tools/picard/build/picard.jar",bams_dir="",output_name="File",output_dir="",verbose=FALSE){
+
+  if(output_dir==""){
+    output_dir=bams_dir
+  }
+
+  if (!dir.exists(output_dir)){
+      dir.create(output_dir)
+  }
+
+  files=list.files(reports_dir,full.names=TRUE,pattern=":")
+
+  if(verbose){
+    print(paste0("java -jar ",bin_path," GatherBamFiles ",paste(" -I ",files,collapse=" ")," -O ",paste0(output_dir,"/",output_name,".bam")))
+  }
+    system(paste0("java -jar ",bin_path," GatherBamFiles ",paste(" -I ",files,collapse=" ")," -O ",paste0(output_dir,"/",output_name,".bam")))
+}
+
+
 
 
 #' Wrapper of AnalyzeCovariates function in gatk
