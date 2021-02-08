@@ -306,7 +306,7 @@ remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file=""
 #' This function recalibrates the base quality of the reads in two steps process based on GATK best practices guides.
 #'
 #' @param bin_path [REQUIRED] Path to picard executable. Default path tools/gatk/gatk.
-#' @param bin_path2 [REQUIRED] Path to picard executable. Default path tools/picard/build/picard.jar.
+#' @param bin_path2 [REQUIRED] Path to picard executable. Default path tools/picard/build/libs/picard.jar.
 #' @param bam [REQUIRED]  Path to BAM file.
 #' @param ref_genome [REQUIRED]  Path to reference genome.
 #' @param snpdb [REQUIRED] Known variant database.Requires atleast 1.
@@ -317,7 +317,7 @@ remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file=""
 #' @export
 
 
-recalibrate_bq=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/build/picard.jar",bam="",ref_genome="",snpdb="",region_bed="",threads=3,output_dir="",verbose=FALSE){
+recalibrate_bq=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/build/libs/picard.jar",bam="",ref_genome="",snpdb="",region_bed="",threads=3,output_dir="",verbose=FALSE){
 
   sep="/"
 

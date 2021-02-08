@@ -253,7 +253,7 @@ apply_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome="",re
 #'
 #' @param bam [REQUIRED] Path to the BAM file.
 #' @param bin_path [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
-#' @param bin_path2 [REQUIRED] Path to gatk executable. Default tools/picard/build/picard.jar
+#' @param bin_path2 [REQUIRED] Path to gatk executable. Default tools/picard/build/libs/picard.jar
 #' @param ref_genome [REQUIRED] Path to reference genome
 #' @param rec_table [REQUIRED] Path to the recalibratio table.
 #' @param region_bed [OPTIONAL] Number of threads to split the work. Default 3
@@ -263,7 +263,7 @@ apply_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome="",re
 #' @export
 #' @import pbapply
 
-parallel_apply_BQSR=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/build/picard.jar",bam="",ref_genome="",rec_table="",region_bed="",output_dir="",verbose=FALSE,threads=4){
+parallel_apply_BQSR=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/build/libs/picard.jar",bam="",ref_genome="",rec_table="",region_bed="",output_dir="",verbose=FALSE,threads=4){
   sep="/"
 
   if(output_dir==""){
@@ -288,14 +288,14 @@ parallel_apply_BQSR=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/
 #' This function wraps around gatk GatherBamFiles function.
 #' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360037055512-GatherBamFiles-Picard-
 #'
-#' @param bin_path [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
+#' @param bin_path [REQUIRED] Path to gatk executable. Default tools/picard/build/libs/picard.jar.
 #' @param bams_dir [REQUIRED] Path to the directory where BAM files are stored.
 #' @param output_name [OPTIONAL] Name for the output file name.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
 #' @export
 
-gather_bam_files=function(bin_path="tools/picard/build/picard.jar",bams_dir="",output_name="File",output_dir="",verbose=FALSE){
+gather_bam_files=function(bin_path="tools/picard/build/libs/picard.jar",bams_dir="",output_name="File",output_dir="",verbose=FALSE){
 
   if(output_dir==""){
     output_dir=bams_dir
