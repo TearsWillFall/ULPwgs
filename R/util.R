@@ -145,6 +145,12 @@ generate_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome=""
 
 parallel_generate_BQSR=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",snpdb="",region_bed="",threads=3,output_dir="",verbose=FALSE){
 
+  sep="/"
+
+  if(output_dir==""){
+    sep=""
+  }
+
   dat=read.table(region_bed)
   dat$V2=dat$V2+1
   dat=dat %>% dplyr::mutate(Region=paste0(sub("chr","",V1),":",V2,"-",V3))
@@ -152,8 +158,8 @@ parallel_generate_BQSR=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",
   pbapply(X=dat[,c("Region"),drop=FALSE],1,FUN=generate_BQSR,bin_path=bin_path,bam=bam,ref_genome=ref_genome,snpdb=snpdb,output_dir=output_dir,verbose=verbose,cl=cl)
   on.exit(parallel::stopCluster(cl))
   sample_name=get_sample_name(bam)
-  gather_BQSR_reports(reports_dir=output_dir,output_name=sample_name)
-  system(paste0("rm",output_dir,"/*:*.RECAL.table"))
+  gather_BQSR_reports(bin_path=bin_path,reports_dir=output_dir,output_name=sample_name)
+  system(paste0("rm ",output_dir,"/*:*.RECAL.table"))
 }
 
 
