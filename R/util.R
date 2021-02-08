@@ -153,7 +153,7 @@ parallel_generate_BQSR=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",
   on.exit(parallel::stopCluster(cl))
   sample_name=get_sample_name(bam)
   gather_BQSR_reports(reports_dir=output_dir,output_name=sample_name)
-
+  system(paste0("rm",output_dir,"/*:*.RECAL.table"))
 }
 
 
