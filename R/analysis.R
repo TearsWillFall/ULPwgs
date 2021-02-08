@@ -327,7 +327,6 @@ recalibrate_bq=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",snpdb=""
   sample_name=get_sample_name(bam)
   file_ext=get_file_extension(bam)
 
-
   out_file_dir=paste0(output_dir,sep,sample_name,"_RECAL.",toupper(file_ext),"/",sample_name,"_RECAL_before")
   if (!dir.exists(out_file_dir)){
       dir.create(out_file_dir,recursive=TRUE)
@@ -342,7 +341,7 @@ recalibrate_bq=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",snpdb=""
 
   parallel_generate_BQSR(bin_path=bin_path,bam=bam,ref_genome=ref_genome,snpdb=snpdb,region_bed=region_bed,threads=threads,output_dir=out_file_dir,verbose=verbose)
   apply_BQSR(bin_path=bin_path,bam=bam,ref_genome=ref_genome,rec_table=paste0(out_file_dir,"/",sample_name,".RECAL.table"),output_dir=out_file_dir3,verbose=verbose)
-  parallel_generate_BQSR(bin_path=bin_path,bam=paste0(out_file_dir3,".RECAL.",file_ext),ref_genome=ref_genome,snpdb=snpdb,region_bed=region_bed,threads=threads,output_dir=out_file_dir2,verbose=verbose)
+  parallel_generate_BQSR(bin_path=bin_path,bam=paste0(out_file_dir3,"/",sample_name,".RECAL.",file_ext),ref_genome=ref_genome,snpdb=snpdb,region_bed=region_bed,threads=threads,output_dir=out_file_dir2,verbose=verbose)
   recal_covariates(bin_path=bin_path,before=paste0(out_file_dir,"/",sample_name,".RECAL.table"),after=paste0(out_file_dir2,"/",sample_name,".RECAL.table"),output_dir=out_file_dir3)
 }
 
