@@ -6,6 +6,7 @@
 \usage{
 recalibrate_bq(
   bin_path = "tools/gatk/gatk",
+  bin_path2 = "tools/picard/build/picard.jar",
   bam = "",
   ref_genome = "",
   snpdb = "",
@@ -16,7 +17,9 @@ recalibrate_bq(
 )
 }
 \arguments{
-\item{bin_path}{\link{REQUIRED} Path to picard executable. Default path tools/gatk/gatk.jar.}
+\item{bin_path}{\link{REQUIRED} Path to picard executable. Default path tools/gatk/gatk.}
+
+\item{bin_path2}{\link{REQUIRED} Path to picard executable. Default path tools/picard/build/picard.jar.}
 
 \item{bam}{\link{REQUIRED}  Path to BAM file.}
 

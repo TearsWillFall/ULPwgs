@@ -12,7 +12,7 @@ qc_metrics(
   output_dir = "",
   ref_genome = "",
   verbose = FALSE,
-  ram = "",
+  ram = 4,
   tmp_dir = "",
   mapq = 0,
   bi = "",

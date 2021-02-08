@@ -24,7 +24,9 @@ parallel_generate_BQSR(
 
 \item{snpdb}{\link{REQUIRED} Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.}
 
-\item{region_bed}{\link{OPTIONAL} Number of threads to split the work. Default 3}
+\item{region_bed}{\link{OPTIONAL} BED file with genome divided in windows. Used for parallelization.}
+
+\item{threads}{Number of threads to split the work. Default 3}
 
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 

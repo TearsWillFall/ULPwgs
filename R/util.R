@@ -133,13 +133,12 @@ generate_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome=""
 #' @param ref_genome [REQUIRED] Path to reference genome
 #' @param snpdb [REQUIRED] Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.
 #' @param region_bed [REQUIRED] Path to the output directory.
-#' @param region_bed [OPTIONAL] Number of threads to split the work. Default 3
+#' @param threads Number of threads to split the work. Default 3
+#' @param region_bed [OPTIONAL] BED file with genome divided in windows. Used for parallelization.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
 #' @export
 #' @import pbapply
-
-
 
 
 
@@ -254,16 +253,17 @@ apply_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome="",re
 #'
 #' @param bam [REQUIRED] Path to the BAM file.
 #' @param bin_path [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
+#' @param bin_path2 [REQUIRED] Path to gatk executable. Default tools/picard/build/picard.jar
 #' @param ref_genome [REQUIRED] Path to reference genome
-#' @param snpdb [REQUIRED] Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.
-#' @param region_bed [REQUIRED] Path to the output directory.
+#' @param rec_table [REQUIRED] Path to the recalibratio table.
 #' @param region_bed [OPTIONAL] Number of threads to split the work. Default 3
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 3
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
 #' @export
 #' @import pbapply
 
-parallel_apply_BQSR=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/build/picard.jar",bam="",ref_genome="",rec_table="",region_bed="",output_dir="",verbose=FALSE){
+parallel_apply_BQSR=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/build/picard.jar",bam="",ref_genome="",rec_table="",region_bed="",output_dir="",verbose=FALSE,threads=4){
   sep="/"
 
   if(output_dir==""){
