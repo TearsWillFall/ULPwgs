@@ -378,7 +378,7 @@ recalibrate_bq=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",snpdb=""
 #' @export
 
 
-qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/build/libs/picard.jar",bin_path3="tools/bedtools2/bin/bedtools",bam="",output_dir="",ref_genome="",verbose=FALSE,ram="",tmp_dir="",mapq=0,bi="",ti="",off_tar="",on_tar=""){
+qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/build/libs/picard.jar",bin_path3="tools/bedtools2/bin/bedtools",bam="",output_dir="",ref_genome="",verbose=FALSE,ram=4,tmp_dir="",mapq=0,bi="",ti="",off_tar="",on_tar=""){
     sep="/"
 
     if(output_dir==""){

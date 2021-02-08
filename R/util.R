@@ -187,7 +187,7 @@ gather_BQSR_reports=function(bin_path="tools/gatk/gatk",reports_dir="",output_na
       dir.create(output_dir)
   }
 
-  files=list.files(reports_dir,full.names=TRUE)
+  files=list.files(reports_dir,full.names=TRUE,pattern=":")
 
   if(verbose){
     print(paste0(bin_path," GatherBQSRReports ",paste(" -I ",files,collapse=" ")," -O ",paste0(output_dir,"/",output_name,".RECAL.table")))
