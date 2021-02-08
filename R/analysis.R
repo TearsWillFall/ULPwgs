@@ -254,9 +254,6 @@ sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir=""
 
 
 
-
-
-
 #' Remove duplicated reads
 #'
 #' This function removes duplicated reads (artifacts) found in aligned sequences.
@@ -303,6 +300,51 @@ remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file=""
 
   }
 
+
+#' Function for base quality recalibration
+#'
+#' This function recalibrates the base quality of the reads in two steps process based on GATK best practices guides.
+#'
+#' @param bin_path [REQUIRED] Path to picard executable. Default path tools/gatk/gatk.jar.
+#' @param bam [REQUIRED]  Path to BAM file.
+#' @param ref_genome [REQUIRED]  Path to reference genome.
+#' @param snpdb [REQUIRED] Known variant database.Requires atleast 1.
+#' @param region_bed [OPTIONAL] BED file with genome divided in windows. Used for parallelization.
+#' @param threads [OPTIONAL]Number of threads to split the work. Only relevant if region_bed file is given.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @export
+
+
+recalibrate_bq=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",snpdb="",region_bed="",threads=3,output_dir="",verbose=FALSE){
+
+  sep="/"
+
+  if(output_dir==""){
+    sep=""
+  }
+
+  sample_name=get_sample_name(bam)
+  file_ext=get_file_extension(bam)
+
+
+  out_file_dir=paste0(output_dir,sep,sample_name,"_RECAL.",toupper(file_ext),"/",sample_name,"_RECAL_before")
+  if (!dir.exists(out_file_dir)){
+      dir.create(out_file_dir,recursive=TRUE)
+  }
+
+  out_file_dir2=paste0(output_dir,sep,sample_name,"_RECAL.",toupper(file_ext),"/",sample_name,"_RECAL_after")
+  if (!dir.exists(out_file_dir2)){
+      dir.create(out_file_dir2,recursive=TRUE)
+  }
+
+  out_file_dir3=paste0(output_dir,sep,sample_name,"_RECAL.",toupper(file_ext))
+
+  parallel_generate_BQSR(bin_path=bin_path,bam=bam,ref_genome=ref_genome,snpdb=snpdb,region_bed=region_bed,threads=threads,output_dir=out_file_dir,verbose=verbose)
+  apply_BQSR(bin_path=bin_path,bam=bam,ref_genome=ref_genome,rec_table=paste0(out_file_dir,"/",sample_name,".RECAL_table"),output_dir=out_file_dir3,verbose=verbose)
+  parallel_generate_BQSR(bin_path=bin_path,bam=paste0(out_file_dir3,".RECAL.",file_ext),ref_genome=ref_genome,snpdb=snpdb,region_bed=region_bed,threads=threads,output_dir=out_file_dir2,verbose=verbose)
+  recal_covariates(bin_path=bin_path,before=paste0(out_file_dir,"/",sample_name,".RECAL_table"),after=paste0(out_file_dir2,"/",sample_name,".RECAL_table"),output_dir=out_file_dir3)
+}
 
 
 

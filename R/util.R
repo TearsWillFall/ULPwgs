@@ -224,10 +224,62 @@ apply_BQSR=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",rec_table=""
   out_file=paste0(output_dir,sep,sample_name)
 
   if(verbose){
-    system(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome," --bqsr-recal-file ",rec_table," -O ",paste0(out_file,".RECAL.",file_ext)))
+    print(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome," --bqsr-recal-file ",rec_table," -O ",paste0(out_file,".RECAL.",file_ext)))
   }
   system(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome," --bqsr-recal-file ",rec_table," -O ",paste0(out_file,".RECAL.",file_ext)))
 }
+
+
+#' Wrapper of AnalyzeCovariates function in gatk
+#'
+#' Generates a report of the recalibrated values.
+#' This function wraps around gatk AnalyzeCovariates function.
+#' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360037066912-AnalyzeCovariates
+#'
+#' @param bin_path [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
+#' @param before [REQUIRED] Recalibration table produced by generate_BQSR function.
+#' @param after [OPTIONAL] Recalibration table produced by generate_BQSR function.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @export
+
+
+recal_covariates=function(bin_path="tools/gatk/gatk",before="",after="",output_dir="",verbose=FALSE){
+
+  sep="/"
+
+  if(output_dir==""){
+    sep=""
+  }
+
+  sample_name=get_sample_name(bam)
+
+  if (!dir.exists(output_dir) & output_dir!=""){
+      dir.create(output_dir)
+  }
+
+  out_file=paste0(output_dir,sep,sample_name)
+
+  if (before!="" & after==""){
+    if(verbose){
+      print(paste0(bin_path," AnalyzeCovariates -bqsr ",before," -plots ",paste0(out_file,"_covariates_analysis_before.pdf")))
+    }
+    system(paste0(bin_path," AnalyzeCovariates -bqsr ",before," -plots ",paste0(out_file,"_covariates_analysis_before.pdf")))
+  }else{
+    if(verbose){
+      print(paste0(bin_path," AnalyzeCovariates -before ",before," -after ",after," -plots ",paste0(out_file,"_covariates_analysis.pdf")))
+    }
+    system(paste0(bin_path," AnalyzeCovariates -before ",before," -after",after," -plots ",paste0(out_file,"_covariates_analysis_before_after.pdf")))
+
+  }
+
+
+}
+
+
+
+
+
 
 
 #' Estimate coverage for BED file
