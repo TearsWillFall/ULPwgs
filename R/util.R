@@ -197,7 +197,7 @@ generate_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome=""
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
 #' @export
-#' @import snow
+#' @import pbapply
 
 
 
@@ -319,7 +319,7 @@ apply_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome="",re
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
 #' @export
-#' @import snow
+#' @import pbapply
 
 parallel_apply_BQSR=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/build/libs/picard.jar",bam="",ref_genome="",rec_table="",region_bed="",output_dir="",verbose=FALSE,threads=4){
   sep="/"
@@ -333,7 +333,7 @@ parallel_apply_BQSR=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/
   dat$pos=1:nrow(dat)
   dat=dat %>% dplyr::mutate(Region=paste0(pos,"_",sub("chr","",V1),":",V2,"-",V3))
   cl=parallel::makeCluster(threads)
-  snow::clusterApplyLB(x=dat[,c("Region")],fun=apply_BQSR,bin_path=bin_path,bam=bam,ref_genome=ref_genome,rec_table=rec_table,output_dir=output_dir,verbose=verbose,cl=cl)
+  pbapply::pbapply(x=dat[,c("Region")],fun=apply_BQSR,bin_path=bin_path,bam=bam,ref_genome=ref_genome,rec_table=rec_table,output_dir=output_dir,verbose=verbose,cl=cl)
   on.exit(parallel::stopCluster(cl))
   sample_name=get_sample_name(bam)
   gather_bam_files(bin_path=bin_path2,bams_dir=output_dir,output_name=paste0(sample_name,".RECAL.SORTED.RMDUP.SORTED"))
