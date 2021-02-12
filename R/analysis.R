@@ -341,14 +341,15 @@ remove_duplicates_gatk=function(bin_path="tools/gatk/gatk",file="",output_dir=""
 #' @param bam [REQUIRED]  Path to BAM file.
 #' @param ref_genome [REQUIRED]  Path to reference genome.
 #' @param snpdb [REQUIRED] Known variant database.Requires atleast 1.
-#' @param region_bed [REQUIRED] BED file with genome divided in windows. Used for parallelization.
+#' @param region_bed [REQUIRED] BED file with genome divided in windows. Used for parallelization. Recommended to use regions of 40Mb.
+#' @param region_bed2 [REQUIRED] BED file with genome divided in windows. Used for parallelization. Recommended to use chromosomes.
 #' @param threads [REQUIRED]Number of threads to split the work. Only relevant if region_bed file is given.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
 #' @export
 
 
-recalibrate_bq=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/build/libs/picard.jar",bam="",ref_genome="",snpdb="",region_bed="",threads=3,output_dir="",verbose=FALSE){
+recalibrate_bq=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/build/libs/picard.jar",bam="",ref_genome="",snpdb="",region_bed="",region_bed2="",threads=3,output_dir="",verbose=FALSE){
 
   sep="/"
 
@@ -377,7 +378,7 @@ recalibrate_bq=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/build
   out_file_dir4=paste0(output_dir,sep,sample_name,"_RECAL.",toupper(file_ext))
 
   parallel_generate_BQSR(bin_path=bin_path,bam=bam,ref_genome=ref_genome,snpdb=snpdb,region_bed=region_bed,threads=threads,output_dir=out_file_dir,verbose=verbose)
-  parallel_apply_BQSR(bin_path=bin_path,bin_path2=bin_path2,bam=bam,ref_genome=ref_genome,rec_table=paste0(out_file_dir,"/",sample_name,".RECAL.table"),region_bed=region_bed,output_dir=out_file_dir3,verbose=verbose,threads=threads)
+  parallel_apply_BQSR(bin_path=bin_path,bin_path2=bin_path2,bam=bam,ref_genome=ref_genome,rec_table=paste0(out_file_dir,"/",sample_name,".RECAL.table"),region_bed=region_bed2,output_dir=out_file_dir3,verbose=verbose,threads=threads)
   system(paste(paste0("mv ",out_file_dir3,"/*"),out_file_dir4))
   system(paste("rm -rf ",out_file_dir3))
   parallel_generate_BQSR(bin_path=bin_path,bam=paste0(out_file_dir4,"/",sample_name,".RECAL.",file_ext),ref_genome=ref_genome,snpdb=snpdb,region_bed=region_bed,threads=threads,output_dir=out_file_dir2,verbose=verbose)
