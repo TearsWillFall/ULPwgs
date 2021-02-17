@@ -239,8 +239,6 @@ sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir=""
   system(paste0(bin_path," idxstats ",file," > ",paste0(file,".idxstats.txt")))
 }
 
-
-
 #' Remove duplicated reads
 #'
 #' This function removes duplicated reads (artifacts) found in aligned sequences.
