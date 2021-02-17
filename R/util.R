@@ -97,7 +97,7 @@ bam_sort=function(bin_path="tools/samtools/samtools",file="",output_dir="",ram=1
       dir.create(output_dir)
     }
 
-  out_file=paste0(out_file,"/",sample_name)
+  out_file=paste0(output_dir,sep,out_file,"/",sample_name)
 
 
   if (verbose){
