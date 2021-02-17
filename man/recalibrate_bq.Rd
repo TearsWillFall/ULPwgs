@@ -7,11 +7,11 @@
 recalibrate_bq(
   bin_path = "tools/gatk/gatk",
   bin_path2 = "tools/picard/build/libs/picard.jar",
-  bin_path3 = "tools/samtools/samtools",
   bam = "",
   ref_genome = "",
   snpdb = "",
   region_bed = "",
+  region_bed2 = "",
   threads = 3,
   output_dir = "",
   verbose = FALSE
@@ -22,15 +22,15 @@ recalibrate_bq(
 
 \item{bin_path2}{\link{REQUIRED} Path to picard executable. Default path tools/picard/build/libs/picard.jar.}
 
-\item{bin_path3}{\link{REQUIRED} Path to samtools executable. Default path tools/samtools/samtools.}
-
 \item{bam}{\link{REQUIRED}  Path to BAM file.}
 
 \item{ref_genome}{\link{REQUIRED}  Path to reference genome.}
 
 \item{snpdb}{\link{REQUIRED} Known variant database.Requires atleast 1.}
 
-\item{region_bed}{\link{REQUIRED} BED file with genome divided in windows. Used for parallelization.}
+\item{region_bed}{\link{REQUIRED} BED file with genome divided in windows. Used for parallelization. Recommended to use regions of 40Mb.}
+
+\item{region_bed2}{\link{REQUIRED} BED file with genome divided in windows. Used for parallelization. Recommended to use whole chromosomes.}
 
 \item{threads}{\link{REQUIRED}Number of threads to split the work. Only relevant if region_bed file is given.}
 

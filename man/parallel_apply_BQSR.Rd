@@ -7,7 +7,6 @@
 parallel_apply_BQSR(
   bin_path = "tools/gatk/gatk",
   bin_path2 = "tools/picard/build/libs/picard.jar",
-  bin_path3 = "tools/samtools/samtools",
   bam = "",
   ref_genome = "",
   rec_table = "",
@@ -21,8 +20,6 @@ parallel_apply_BQSR(
 \item{bin_path}{\link{REQUIRED} Path to gatk executable. Default tools/gatk/gatk.}
 
 \item{bin_path2}{\link{REQUIRED} Path to picard executable. Default tools/picard/build/libs/picard.jar}
-
-\item{bin_path3}{\link{REQUIRED} Path to samtools executable. Default tools/samtools/samtools}
 
 \item{bam}{\link{REQUIRED} Path to the BAM file.}
 

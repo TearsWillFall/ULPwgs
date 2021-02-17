@@ -324,10 +324,9 @@ remove_duplicates_gatk=function(bin_path="tools/gatk/gatk",file="",output_dir=""
       }
 
       if(verbose){
-        print(paste0(bin_path," MarkDuplicatesSpark -I ",file, " -O ",paste0(out_file,".RMDUP.",file_ext)," -M ",paste0(out_file,".gatk_rmdup.txt")," ",tmp))
-
+      print(paste0(bin_path," MarkDuplicatesSpark -I ",file, " -O ",paste0(out_file,".SORTED.RMDUP.",file_ext)," -M ",paste0(out_file,".gatk_rmdup.txt")," ",tmp," --conf \'spark.executor.cores=",threads,"\'"))
       }
-        system(paste0(bin_path," MarkDuplicatesSpark -I ",file, " -O ",paste0(out_file,".RMDUP.",file_ext)," -M ",paste0(out_file,".gatk_rmdup.txt")," ",tmp," --conf \'spark.executor.cores=",threads,"\'"))
+        system(paste0(bin_path," MarkDuplicatesSpark -I ",file, " -O ",paste0(out_file,".SORTED.RMDUP.",file_ext)," -M ",paste0(out_file,".gatk_rmdup.txt")," ",tmp," --conf \'spark.executor.cores=",threads,"\'"))
     }
 
 
@@ -342,7 +341,7 @@ remove_duplicates_gatk=function(bin_path="tools/gatk/gatk",file="",output_dir=""
 #' @param ref_genome [REQUIRED]  Path to reference genome.
 #' @param snpdb [REQUIRED] Known variant database.Requires atleast 1.
 #' @param region_bed [REQUIRED] BED file with genome divided in windows. Used for parallelization. Recommended to use regions of 40Mb.
-#' @param region_bed2 [REQUIRED] BED file with genome divided in windows. Used for parallelization. Recommended to use chromosomes.
+#' @param region_bed2 [REQUIRED] BED file with genome divided in windows. Used for parallelization. Recommended to use whole chromosomes.
 #' @param threads [REQUIRED]Number of threads to split the work. Only relevant if region_bed file is given.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
