@@ -224,19 +224,19 @@ sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir=""
   }
 
   bam_sort(bin_path=bin_path,file=file,output_dir=out_file_dir,ram=ram,verbose=verbose,threads=threads)
-  file=paste0(out_file,".SORTED.",file_ext)
+  file=paste0(out_file_dir,"/",sample_name,".SORTED.",file_ext)
   index(bin_path=bin_path,file=file,verbose=verbose,threads=threads)
 
   if (verbose){
     print("Generating Flag stats:")
-    print(paste0(bin_path," flagstat ",file," -@ ",threads," > ",paste0(out_file,".flagstat.txt")))
+    print(paste0(bin_path," flagstat ",file," -@ ",threads," > ",paste0(file,".flagstat.txt")))
   }
-  system(paste0(bin_path," flagstat ",file," -@ ",threads," > ",paste0(out_file,".flagstat.txt")))
+  system(paste0(bin_path," flagstat ",file," -@ ",threads," > ",paste0(file,".flagstat.txt")))
   if (verbose){
     print("Generating Index stats:")
-    print(paste0(bin_path," idxstats ",file," > ",paste0(out_file,".idxstats.txt")))
+    print(paste0(bin_path," idxstats ",file," > ",paste0(file,".idxstats.txt")))
   }
-  system(paste0(bin_path," idxstats ",file," > ",paste0(out_file,".idxstats.txt")))
+  system(paste0(bin_path," idxstats ",file," > ",paste0(file,".idxstats.txt")))
 }
 
 
