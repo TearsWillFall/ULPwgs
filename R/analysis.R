@@ -514,14 +514,13 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
 #' @param bin_path Path to readCounter executable. Default path tools/samtools/samtools.
 #' @param bin_path2 Path to readCounter executable. Default path tools/hmmcopy_utils/bin/readCounter.
 #' @param output_dir Path to the output directory.
-#' @param chr String of chromosomes to include. c()
+#' @param chrs String of chromosomes to include. c()
 #' @param win Size of non overlaping windows. Default 500000.
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
 
-read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcopy_utils/bin/readCounter",chr=c(1:22,"X","Y"),win=500000,bam="",output_dir="",verbose=FALSE){
-
+read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcopy_utils/bin/readCounter",chrs=c(1:22,"X","Y"),win=500000,bam="",output_dir="",verbose=FALSE){
 
     win=format(win,scientific=F)
     sep="/"
@@ -546,20 +545,20 @@ read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcop
 
     if (grepl("chr",chr)){
       if (verbose){
-        print(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0("chr",chr,collapse=","), bam,">", paste0(out_file,".wig")))
+        print(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0("chr",chrs,collapse=","), bam,">", paste0(out_file,".wig")))
       }
-      system(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0("chr",chr,collapse=","), bam,">" ,paste0(out_file,".wig")))
+      system(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0("chr",chrs,collapse=","), bam,">" ,paste0(out_file,".wig")))
 
-        if (verbose){
+      if (verbose){
           print(paste("sed -i 's/chrom=chr/chrom=/g'",paste0(out_file,".wig")))
       }
       system(paste("sed -i 's/chrom=chr/chrom=/g'",paste0(out_file,".wig")))
     }
     else{
       if (verbose){
-        print(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0(chr,collapse=","), bam,">", paste0(out_file,".wig")))
+        print(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0(chrs,collapse=","), bam,">", paste0(out_file,".wig")))
       }
-      system(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0(chr,collapse=","), bam,">" ,paste0(out_file,".wig")))
+      system(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0(chrs,collapse=","), bam,">" ,paste0(out_file,".wig")))
 
 
     }
