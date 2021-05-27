@@ -366,7 +366,7 @@ gather_bam_files=function(bin_path="tools/picard/build/libs/picard.jar",bams_dir
 
   files=list.files(bams_dir,full.names=TRUE,pattern=":")
   files=files[grepl("bam$",files)]
-  files=naturalsort::naturalsort(files)
+  files=files[order(as.numeric(lapply(lapply(lapply(lapply(lapply(lapply(basename(files),FUN=strsplit,split="\\."),FUN="[[",index=1),FUN="[",index=2),FUN=strsplit,split="_"),FUN="[[",index=1),FUN="[",index=1)))]
 
   if(verbose){
     print(paste0("java -jar ",bin_path," GatherBamFiles CREATE_INDEX=true ",paste0(" I=",files,collapse=" ")," O=",paste0(output_dir,"/",output_name,".bam")))
