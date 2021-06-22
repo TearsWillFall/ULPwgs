@@ -532,12 +532,12 @@ read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcop
 
     sample_name=get_sample_name(bam)
 
-    out_file=paste0(output_dir,sep,sample_name,"_WIG")
-    if (!dir.exists(out_file)){
-        dir.create(out_file)
+    out_file_dir=paste0(output_dir,sep,sample_name,"_WIG")
+    if (!dir.exists(out_file_dir)){
+        dir.create(out_file_dir)
     }
 
-    out_file=paste0(out_file,"/",sample_name)
+    out_file=paste0(out_file_dir,"/",sample_name)
 
 
     ## Check if bam is aligned against hg19 or hg37. If chr notation in chromosomes
@@ -555,7 +555,7 @@ read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcop
           system(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0("chr",chrs[x],collapse=","), bam,">" ,paste0(out_file,".",x,".wig")))
         },mc.cores=threads
       )
-      system(paste0("ls -v ",out_file," | xargs cat >",out_file,".wig"))
+      system(paste0("ls -v ",out_file_dir," | xargs cat >",out_file,".wig"))
       system(paste0("rm ",out_file,".*.wig"))
       }else{
         if (verbose){
@@ -576,7 +576,7 @@ read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcop
           system(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0(chrs[x],collapse=","), bam,">" ,paste0(out_file,".",x,".wig")))
         },mc.cores=threads
       )
-      system(paste0("ls -v ",out_file," | xargs cat >",out_file,".wig"))
+      system(paste0("ls -v ",out_file_dir," | xargs cat >",out_file,".wig"))
       system(paste0("rm ",out_file,".*.wig"))
       }else{
         if (verbose){
