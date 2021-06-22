@@ -516,11 +516,12 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
 #' @param output_dir Path to the output directory.
 #' @param chrs String of chromosomes to include. c()
 #' @param win Size of non overlaping windows. Default 500000.
+#' @param threads Number of threads to use. Default 3
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
 
-read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcopy_utils/bin/readCounter",chrs=c(1:22,"X","Y"),win=500000,bam="",output_dir="",verbose=FALSE){
+read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcopy_utils/bin/readCounter",chrs=c(1:22,"X","Y"),win=500000,bam="",output_dir="",verbose=FALSE,threads=3){
 
     win=format(win,scientific=F)
     sep="/"
@@ -538,28 +539,51 @@ read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcop
 
     out_file=paste0(out_file,"/",sample_name)
 
+
+    ## Check if bam is aligned against hg19 or hg37. If chr notation in chromosomes
     if (verbose){
       print(paste(bin_path,"view",bam," | head -n 1 | awk -F \"\t\" '{print $3}'"))
     }
     chr=system(paste(bin_path,"view",bam," | head -n 1 | awk -F \"\t\" '{print $3}'"),intern=TRUE)
 
     if (grepl("chr",chr)){
-      if (verbose){
-        print(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0("chr",chrs,collapse=","), bam,">", paste0(out_file,".wig")))
+      if (threads>1){
+        parallel::mclapply(1:length(chrs),FUN=function(x){
+          if (verbose){
+            print(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0("chr",chrs[x],collapse=","), bam,">", paste0(out_file,".",x,".wig")))
+          }
+          system(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0("chr",chrs[x],collapse=","), bam,">" ,paste0(out_file,".",x,".wig")))
+        }
+      )
+      system(paste0("cat ",out_file,"* >",out_file,".wig"))
+      system(paste0("rm ",out_file,".*.wig"))
+      }else{
+        if (verbose){
+          print(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0("chr",chrs,collapse=","), bam,">", paste0(out_file,".wig")))
+        }
+        system(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0("chr",chrs,collapse=","), bam,">" ,paste0(out_file,".wig")))
       }
-      system(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0("chr",chrs,collapse=","), bam,">" ,paste0(out_file,".wig")))
-
       if (verbose){
           print(paste("sed -i 's/chrom=chr/chrom=/g'",paste0(out_file,".wig")))
       }
       system(paste("sed -i 's/chrom=chr/chrom=/g'",paste0(out_file,".wig")))
-    }
-    else{
-      if (verbose){
-        print(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0(chrs,collapse=","), bam,">", paste0(out_file,".wig")))
+    }else{
+      if (threads>1){
+        parallel::mclapply(1:length(chrs),FUN=function(x){
+          if (verbose){
+            print(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0(chrs[x],collapse=","), bam,">", paste0(out_file,".",x,".wig")))
+          }
+          system(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0(chrs[x],collapse=","), bam,">" ,paste0(out_file,".",x,".wig")))
+        }
+      )
+      system(paste0("cat ",out_file,"* >",out_file,".wig"))
+      system(paste0("rm ",out_file,".*.wig"))
+      }else{
+        if (verbose){
+          print(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0(chrs,collapse=","), bam,">", paste0(out_file,".wig")))
+        }
+        system(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0(chrs,collapse=","), bam,">" ,paste0(out_file,".wig")))
       }
-      system(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0(chrs,collapse=","), bam,">" ,paste0(out_file,".wig")))
-
 
     }
   }

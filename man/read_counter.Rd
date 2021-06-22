@@ -7,11 +7,12 @@
 read_counter(
   bin_path = "tools/samtools/samtools",
   bin_path2 = "tools/hmmcopy_utils/bin/readCounter",
-  chr = c(1:22, "X", "Y"),
+  chrs = c(1:22, "X", "Y"),
   win = 5e+05,
   bam = "",
   output_dir = "",
-  verbose = FALSE
+  verbose = FALSE,
+  threads = 3
 )
 }
 \arguments{
@@ -19,7 +20,7 @@ read_counter(
 
 \item{bin_path2}{Path to readCounter executable. Default path tools/hmmcopy_utils/bin/readCounter.}
 
-\item{chr}{String of chromosomes to include. c()}
+\item{chrs}{String of chromosomes to include. c()}
 
 \item{win}{Size of non overlaping windows. Default 500000.}
 
@@ -28,6 +29,8 @@ read_counter(
 \item{output_dir}{Path to the output directory.}
 
 \item{verbose}{Enables progress messages. Default False.}
+
+\item{threads}{Number of threads to use. Default 3}
 }
 \description{
 This function generates a WIG file.
