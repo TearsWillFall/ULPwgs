@@ -553,7 +553,7 @@ read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcop
             print(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0("chr",chrs[x],collapse=","), bam,">", paste0(out_file,".",x,".wig")))
           }
           system(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0("chr",chrs[x],collapse=","), bam,">" ,paste0(out_file,".",x,".wig")))
-        }
+        },mc.cores=threads
       )
       system(paste0("cat ",out_file,"* >",out_file,".wig"))
       system(paste0("rm ",out_file,".*.wig"))
@@ -574,7 +574,7 @@ read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcop
             print(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0(chrs[x],collapse=","), bam,">", paste0(out_file,".",x,".wig")))
           }
           system(paste(bin_path2,"--window", win,"--quality 20 --chromosome",paste0(chrs[x],collapse=","), bam,">" ,paste0(out_file,".",x,".wig")))
-        }
+        },mc.cores=threads
       )
       system(paste0("cat ",out_file,"* >",out_file,".wig"))
       system(paste0("rm ",out_file,".*.wig"))
