@@ -381,21 +381,20 @@ gather_bam_files=function(bin_path="tools/picard/build/libs/picard.jar",bams_dir
 #' This function wraps around samtools addreplacerg function
 #'
 #' @param bin_path [REQUIRED] Path to santools binary. Default tools/samtools/samtools.
-#' @param bams [REQUIRED] Path to the BAM file/s.
-#' @param output_name [OPTIONAL] Name for the output file name.
+#' @param bam [REQUIRED] Path to the BAM file/s.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
 #' @param index [OPTIONAL] Generate an indexed file. Default False.
-#' @param ID [REQUIRED] ID tag for RG tag line
-#' @param PL [OPTIONAL] PL tag for RG tag line
-#' @param PU [OPTIONAL] PU tag for RG tag line
-#' @param LB [OPTIONAL] LB tag for RG tag line
-#' @param SM [OPTIONAL] SM tag for RG tag line
-#' @param threads [OPTIONAL] Number of threads per jobs
-#' @param jobs [OPTIONAL] Number of jobs to run
+#' @param ID [REQUIRED] ID tag for RG tag line.
+#' @param PL [OPTIONAL] PL tag for RG tag line.
+#' @param PU [OPTIONAL] PU tag for RG tag line.
+#' @param LB [OPTIONAL] LB tag for RG tag line.
+#' @param SM [OPTIONAL] SM tag for RG tag line.
+#' @param threads [OPTIONAL] Number of threads per jobs.
+#' @param jobs [OPTIONAL] Number of jobs to run.
 #' @export
 
-raplace_rg=function(bin_path="tools/samtools/samtools",bam="",output_dir="",verbose=FALSE,index=TRUE,ID="",PL="",PU="",LB="",SM="",threads=3,jobs=1{
+replace_rg=function(bin_path="tools/samtools/samtools",bam="",output_dir="",verbose=FALSE,index=TRUE,ID="",PL="",PU="",LB="",SM="",threads=3,jobs=1){
 
   sep="/"
 
