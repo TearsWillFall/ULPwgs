@@ -374,6 +374,83 @@ gather_bam_files=function(bin_path="tools/picard/build/libs/picard.jar",bams_dir
     system(paste0("java -jar ",bin_path," GatherBamFiles CREATE_INDEX=true ",paste0(" I=",files,collapse=" ")," O=",paste0(output_dir,"/",output_name,".bam")))
 }
 
+
+#' Wrapper around samtools addreplacerg function
+#'
+#' This functions add/replaces RG tags lines in BAM files
+#' This function wraps around samtools addreplacerg function
+#'
+#' @param bin_path [REQUIRED] Path to santools binary. Default tools/samtools/samtools.
+#' @param bams [REQUIRED] Path to the BAM file/s.
+#' @param output_name [OPTIONAL] Name for the output file name.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param index [OPTIONAL] Generate an indexed file. Default False.
+#' @param ID [REQUIRED] ID tag for RG tag line
+#' @param PL [OPTIONAL] PL tag for RG tag line
+#' @param PU [OPTIONAL] PU tag for RG tag line
+#' @param LB [OPTIONAL] LB tag for RG tag line
+#' @param SM [OPTIONAL] SM tag for RG tag line
+#' @param threads [OPTIONAL] Number of threads per jobs
+#' @param jobs [OPTIONAL] Number of jobs to run
+#' @export
+
+raplace_rg=function(bin_path="tools/samtools/samtools",bam="",output_dir="",verbose=FALSE,index=TRUE,ID="",PL="",PU="",LB="",SM="",threads=3,jobs=1{
+
+  sep="/"
+
+  if(output_dir==""){
+    sep=""
+  }
+
+  if (!dir.exists(output_dir)){
+      dir.create(output_dir)
+  }
+
+  if(ID!=""){
+    ID=paste0("ID:",ID)
+  }
+
+  if(PL!=""){
+    PL=paste0("PL:",PL)
+  }
+
+  if(PU!=""){
+    PU=paste0("PU:",PU)
+  }
+
+  if(LB!=""){
+    LB=paste0("LB:",LB)
+  }
+
+  if(SM!=""){
+    SM=paste0("SM:",SM)
+  }
+
+  tag=c(ID,PL,PU,LB,SM)
+  tag=tag[!tag==""]
+
+  tag=paste0(" -r ",paste0(tag,collapse=" -r "))
+
+  parallel::mclapply(1:length(bams),FUN=function(x){
+    if(verbose){
+      print(paste(bin_path," addreplacerg ",tag," -o ",paste0(output_dir,"/",basename(sub("bam","rh.bam",bams[x]))), " -@ ",threads,bams[x]))
+    }
+      system(paste(bin_path," addreplacerg ",tag," -o ",paste0(output_dir,"/",basename(sub("bam","rh.bam",bams[x]))), " -@ ",threads,bams[x]))
+
+    if(index){
+      index(bin_path=bin_path,file=paste0(output_dir,"/",basename(sub("bam","rh.bam",bams[x]))),verbose=verbose,threads=threads)
+    }
+  },mc.cores=jobs)
+}
+
+
+
+
+
+
+
+
 #' Wrapper of AnalyzeCovariates function in gatk
 #'
 #' Generates a report of the recalibrated values.
