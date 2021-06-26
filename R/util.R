@@ -433,9 +433,9 @@ replace_rg=function(bin_path="tools/samtools/samtools",bam="",output_dir="",verb
 
   parallel::mclapply(1:length(bam),FUN=function(x){
     if(verbose){
-      print(paste(bin_path," addreplacerg ",tag," -o ",paste0(output_dir,"/",basename(sub("bam","rh.bam",bam[x]))), " -@ ",threads,bams[x]))
+      print(paste(bin_path," addreplacerg ",tag," -o ",paste0(output_dir,"/",basename(sub("bam","rh.bam",bam[x]))), " -@ ",threads,bam[x]))
     }
-      system(paste(bin_path," addreplacerg ",tag," -o ",paste0(output_dir,"/",basename(sub("bam","rh.bam",bam[x]))), " -@ ",threads,bams[x]))
+      system(paste(bin_path," addreplacerg ",tag," -o ",paste0(output_dir,"/",basename(sub("bam","rh.bam",bam[x]))), " -@ ",threads,bam[x]))
 
     if(index){
       index(bin_path=bin_path,file=paste0(output_dir,"/",basename(sub("bam","rh.bam",bam[x]))),verbose=verbose,threads=threads)
