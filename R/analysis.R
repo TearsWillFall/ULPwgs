@@ -137,6 +137,28 @@ merge_bam=function(bin_path="tools/samtools/samtools",bam="",bam_dir="",verbose=
   }
 
 
+
+#' Concatenate BAM files in directory.
+#'
+#' This function takes a BAM file and merges it with others found within a
+#' directory. The ouput file is a non-sorted bam file
+#'
+#' @param bam Path to the input bam file with the sequence.
+#' @param bam_dir Path to directory with BAM files to merge.
+#' @param threads Number of threads to use.Default 3.
+#' @param output_name Output file name
+#' @param verbose Enables progress messages. Default False.
+#' @export
+
+concatenate_bams=function(bin_path="tools/samtools/samtools",bams="",output_name="",verbose=FALSE,threads=3){
+    if(verbose){
+      print(paste(bin_path,"cat -o",paste0(output_name,".bam"),paste(bams,collapse=" "), " -@",threads))
+    }
+    system(paste(bin_path,"cat -o",paste0(output_name,".bam"),paste(bams,collapse=" "), " -@",threads))
+  }
+
+
+
 #' Read alignment
 #'
 #' This function aligns a sequence of reads to a reference genome
