@@ -13,7 +13,6 @@
 #' @export
 
 
-
 fastqc=function (bin_path="tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_cores=3,output_dir="",verbose=FALSE){
 
   sep="/"
