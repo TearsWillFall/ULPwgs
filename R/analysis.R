@@ -44,7 +44,7 @@ fastqc=function (bin_path="tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_core
       if(verbose){
         print(paste(bin_path,"-o ",output_dir,"-t ",n_cores,"--noextract",file_R1))
       }
-      #' This function takes a single/multiple fastq (if paired-end reads) files and
+
       system(paste(bin_path,"-o ",output_dir,"-t ",n_cores,"--noextract",file_R1))
     }
 }
