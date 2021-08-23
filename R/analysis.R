@@ -556,7 +556,6 @@ read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcop
 
     out_file=paste0(out_file_dir,"/",sample_name)
 
-
     ## Check if bam is aligned against hg19 or hg37. If chr notation in chromosomes
     if (verbose){
       print(paste(bin_path,"view",bam," | head -n 1 | awk -F \"\t\" '{print $3}'"))
