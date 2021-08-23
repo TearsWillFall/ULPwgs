@@ -31,6 +31,8 @@ trimming(
 
 \item{n_cores}{Number of CPU cores to use. Default 3.}
 
+\item{output_dir}{Path to the output directory.}
+
 \item{verbose}{Enables progress messages. Default False.}
 
 \item{mean_quality}{Minimum mean quality of reads to be kept.Dedault 0}
@@ -40,6 +42,5 @@ trimming(
 \item{max_length}{Maximum length of reads to keep.Default NA.}
 }
 \description{
-This function takes a single/multiple fastq (if paired-end reads) files and
 trims the adapter sequences found within them.
 }

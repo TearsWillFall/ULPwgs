@@ -27,5 +27,5 @@ sort_and_index(
 \item{threads}{Number of threads. Default 3}
 }
 \description{
-This function sorts and indexes genomic sequence files.
+Sort and index a sequence file
 }
