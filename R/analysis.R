@@ -29,7 +29,7 @@ fastqc=function (bin_path="tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_core
   output_dir=paste0(output_dir,sep,sample_name,"_FastQC_reports")
 
   if(!dir.exists(output_dir)){
-    dir.create(output_dir)
+    dir.create(output_dir,recursive=TRUE)
   }
   if(verbose){
     print(paste(bin_path,"-o ",output_dir,"-t ",n_cores,"--noextract",file_R1,file_R2))
@@ -40,11 +40,12 @@ fastqc=function (bin_path="tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_core
   output_dir=paste0(output_dir,sep,sample_name)
 
   if(!dir.exists(output_dir)){
-    dir.create(output_dir)
+    dir.create(output_dir,recursive=TRUE)
   }
     if(verbose){
       print(paste(bin_path,"-o ",output_dir,"-t ",n_cores,"--noextract",file_R1))
     }
+    #' This function takes a single/multiple fastq (if paired-end reads) files and
     system(paste(bin_path,"-o ",output_dir,"-t ",n_cores,"--noextract",file_R1))
   }
 }
@@ -53,7 +54,6 @@ fastqc=function (bin_path="tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_core
 
 #' Adapter sequence trimmer
 #'
-#' This function takes a single/multiple fastq (if paired-end reads) files and
 #' trims the adapter sequences found within them.
 #'
 #' @param file_R1 Path to the input file with the sequence.
@@ -73,20 +73,21 @@ trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA
 
   sep="/"
 
+}
   if(output_dir==""){
     sep=""
   }
 
   output_dir=paste0(output_dir,sep,sample_name,"_trimmed")
   if(!dir.exists(output_dir)){
-    dir.create(output_dir)
-  }
+    dir.create(output_dir,recursive=TRUE)
 
 
   sample_name=get_sample_name(file_R1)
   if ((!is.na(xadapt)) & (!is.na(yadapt))){
     func=paste(bin_path,"-m tail -t",n_cores,"-x", xadapt,"-y", yadapt,"-Q",mean_quality,"-l",min_length)
   }
+
   else{
     func=paste(bin_path,"-m tail -t",n_cores,"-Q",mean_quality,"-l",min_length)
   }
@@ -112,7 +113,6 @@ trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA
       system(paste(func,"-z -f sanger --quiet -o",,paste0(output_dir,"/",sample_name),file_R1))
     }
   }
-
 
 #' Merge BAM files in directory
 #'
@@ -142,6 +142,7 @@ merge_bam=function(bin_path="tools/samtools/samtools",bam="",bam_dir="",verbose=
 #' @param bam_dir Path to directory with BAM files to merge.
 #' @param threads Number of threads to use.Default 3.
 #' @param output_name Output file name
+#' This function sorts and indexes genomic sequence files.
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
@@ -185,7 +186,7 @@ alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
     sample_name=intersect_sample_name(file_path=file_R1,file_path2=file_R2)
     output_dir=paste0(output_dir,sep,sample_name,"_BAM")
     if(!dir.exists(output_dir)){
-      dir.create(output_dir)
+      dir.create(output_dir,recursive=TRUE)
     }
 
     GPU=paste0("\"@RG\\tID:",sample_name,"\\tPL:ILLUMINA\\tPU:NA\\tLB:",sample_name,"\\tSM:",sample_name,"\"")
@@ -200,7 +201,7 @@ alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
       output_dir=paste0(output_dir,sep,sample_name,"_BAM")
       out_file=paste0(output_dir,"/",sample_name,".bam")
       if(!dir.exists(output_dir)){
-        dir.create(output_dir)
+        dir.create(output_dir,recursive=TRUE)
       }
 
       if(verbose){
@@ -215,7 +216,6 @@ alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
 
 #' Sort and index a sequence file
 #'
-#' This function sorts and indexes genomic sequence files.
 #'
 #' @param file Path to the input file with the sequence.
 #' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
@@ -237,7 +237,7 @@ sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir=""
   out_file_dir=paste0(output_dir,sep,sample_name,"_SORTED.",toupper(file_ext))
 
   if (!dir.exists(out_file_dir)){
-      dir.create(out_file_dir)
+      dir.create(out_file_dir,recursive=TRUE)
   }
 
   bam_sort(bin_path=bin_path,file=file,output_dir=out_file_dir,ram=ram,verbose=verbose,threads=threads)
@@ -281,12 +281,12 @@ remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file=""
     sample_name=get_sample_name(file)
     file_ext=get_file_extension(file)
 
-    out_file=paste0(output_dir,sep,sample_name,"_RMDUP.",toupper(file_ext))
-    if (!dir.exists(out_file)){
-        dir.create(out_file)
+    out_file_dir=paste0(output_dir,sep,sample_name,"_RMDUP.",toupper(file_ext))
+    if (!dir.exists(out_file_dir)){
+        dir.create(out_file_dir,recursive=TRUE)
     }
 
-    out_file=paste0(out_file,"/",sample_name)
+    out_file=paste0(out_file_dir,"/",sample_name)
 
     tmp=""
     if (!tmp_dir==""){
@@ -326,12 +326,12 @@ remove_duplicates_gatk=function(bin_path="tools/gatk/gatk",file="",output_dir=""
       sample_name=get_sample_name(file)
       file_ext=get_file_extension(file)
 
-      out_file=paste0(output_dir,sep,sample_name,"_SORTED.RMDUP.",toupper(file_ext))
-      if (!dir.exists(out_file)){
-          dir.create(out_file)
+      out_file_dir=paste0(output_dir,sep,sample_name,"_SORTED.RMDUP.",toupper(file_ext))
+      if (!dir.exists(out_file_dir)){
+          dir.create(out_file_dir,recursive=TRUE)
       }
 
-      out_file=paste0(out_file,"/",sample_name)
+      out_file=paste0(out_file_dir,"/",sample_name)
 
       tmp=""
       if (!tmp_dir==""){
@@ -442,7 +442,7 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
 
     out_file_dir=paste0(output_dir,sep,sample_name,"_alignQC_report")
     if (!dir.exists(out_file_dir)){
-        dir.create(out_file_dir)
+        dir.create(out_file_dir,recursive=TRUE)
     }
 
     out_file=paste0(out_file_dir,"/",sample_name)
