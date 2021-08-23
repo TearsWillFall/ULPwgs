@@ -80,10 +80,11 @@ index_ref=function(bin_path="tools/bwa/bwa",file="",verbose=FALSE){
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param threads Number of threads. Default 3
+#' @param coord_sort Generate a coord sorted file. Otherwise queryname sorted. Default TRUE
 #' @param ram Ram memory to use per thread in GB. Default 1GB
 #' @export
 
-bam_sort=function(bin_path="tools/samtools/samtools",file="",output_dir="",ram=1,verbose=FALSE,threads=3){
+bam_sort=function(bin_path="tools/samtools/samtools",file="",output_dir="",ram=1,verbose=FALSE,threads=3,coord_sort=TRUE){
   sep="/"
 
   if(output_dir==""){
@@ -99,12 +100,16 @@ bam_sort=function(bin_path="tools/samtools/samtools",file="",output_dir="",ram=1
 
   out_file=paste0(output_dir,sep,sample_name)
 
+  mode=""
+  if(!coord_sort){
+    mode=" -n "
+  }
 
   if (verbose){
     print("Sorting BAM file:")
-    print(paste0(bin_path," sort ",file," -@ ",threads," -m ",ram,"G"," -o ",out_file,".SORTED.",file_ext))
+    print(paste0(bin_path," sort ",mode,file," -@ ",threads," -m ",ram,"G"," -o ",out_file,".SORTED.",file_ext))
   }
-  system(paste0(bin_path," sort ",file," -@ ",threads," -m ",ram,"G"," -o ",out_file,".SORTED.",file_ext))
+  system(paste0(bin_path," sort ",mode,file," -@ ",threads," -m ",ram,"G"," -o ",out_file,".SORTED.",file_ext))
 }
 
 

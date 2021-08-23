@@ -10,7 +10,8 @@ bam_sort(
   output_dir = "",
   ram = 1,
   verbose = FALSE,
-  threads = 3
+  threads = 3,
+  coord_sort = TRUE
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ bam_sort(
 \item{verbose}{Enables progress messages. Default False.}
 
 \item{threads}{Number of threads. Default 3}
+
+\item{coord_sort}{Generate a coord sorted file. Otherwise queryname sorted. Default TRUE}
 }
 \description{
 This function sorts a genome sequence file (BAM/SAM)

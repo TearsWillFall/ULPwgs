@@ -220,10 +220,11 @@ alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param threads Number of threads. Default 3
+#' @param coord_sort Generate a coord sorted file. Otherwise queryname sorted. Default TRUE
 #' @param ram Ram memory to use per thread in GB. Default 1GB
 #' @export
 
-sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir="",ram=1,verbose=FALSE,threads=3){
+sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir="",ram=1,verbose=FALSE,threads=3,coord_sort=TRUE){
 
   sep="/"
 
@@ -238,20 +239,24 @@ sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir=""
       dir.create(out_file_dir,recursive=TRUE)
   }
 
-  bam_sort(bin_path=bin_path,file=file,output_dir=out_file_dir,ram=ram,verbose=verbose,threads=threads)
+  bam_sort(bin_path=bin_path,file=file,output_dir=out_file_dir,ram=ram,verbose=verbose,threads=threads,coord_sort=coord_sort)
   file=paste0(out_file_dir,"/",sample_name,".SORTED.",file_ext)
-  index(bin_path=bin_path,file=file,verbose=verbose,threads=threads)
 
-  if (verbose){
-    print("Generating Flag stats:")
-    print(paste0(bin_path," flagstat ",file," -@ ",threads," > ",paste0(file,".flagstat.txt")))
+  if (coord_sort){
+
+    index(bin_path=bin_path,file=file,verbose=verbose,threads=threads)
+
+    if (verbose){
+      print("Generating Flag stats:")
+      print(paste0(bin_path," flagstat ",file," -@ ",threads," > ",paste0(file,".flagstat.txt")))
+    }
+    system(paste0(bin_path," flagstat ",file," -@ ",threads," > ",paste0(file,".flagstat.txt")))
+    if (verbose){
+      print("Generating Index stats:")
+      print(paste0(bin_path," idxstats ",file," > ",paste0(file,".idxstats.txt")))
+    }
+    system(paste0(bin_path," idxstats ",file," > ",paste0(file,".idxstats.txt")))
   }
-  system(paste0(bin_path," flagstat ",file," -@ ",threads," > ",paste0(file,".flagstat.txt")))
-  if (verbose){
-    print("Generating Index stats:")
-    print(paste0(bin_path," idxstats ",file," > ",paste0(file,".idxstats.txt")))
-  }
-  system(paste0(bin_path," idxstats ",file," > ",paste0(file,".idxstats.txt")))
 }
 
 #' Remove duplicated reads
