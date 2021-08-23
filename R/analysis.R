@@ -141,7 +141,6 @@ merge_bam=function(bin_path="tools/samtools/samtools",bam="",bam_dir="",verbose=
 #' @param bam_dir Path to directory with BAM files to merge.
 #' @param threads Number of threads to use.Default 3.
 #' @param output_name Output file name
-#' This function sorts and indexes genomic sequence files.
 #' @param verbose Enables progress messages. Default False.
 #' @export
 

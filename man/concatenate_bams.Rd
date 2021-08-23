@@ -13,8 +13,7 @@ concatenate_bams(
 )
 }
 \arguments{
-\item{output_name}{Output file name
-This function sorts and indexes genomic sequence files.}
+\item{output_name}{Output file name}
 
 \item{verbose}{Enables progress messages. Default False.}
 
