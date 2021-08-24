@@ -622,7 +622,7 @@ read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcop
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-filter_bam=function(bin_path="tools/samtools/samtools",bam="",position="",bed="",verbose=FALSE,ouput_name="Filtered",threads=1){
+filter_bam=function(bin_path="tools/samtools/samtools",bam="",position="",bed="",verbose=FALSE,output_name="Filtered",threads=1){
   if (position!="" &bed!=""){
     print("Position and bed arguments are mutually exclusive")
     quit()
