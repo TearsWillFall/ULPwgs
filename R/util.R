@@ -151,7 +151,7 @@ complement_bed=function(bin_path="tools/bedtools2/bin/bedtools",bed="",pad=10,ou
     if(verbose){
       print(paste0(bin_path," complement -i ",paste0(ULPwgs::get_sample_name(bed),"_",pad,".bed"), " -g ", genome, " > ",paste0(output_name,".bed")))
     }
-    system(paste0(bin_path," complement-i ",paste0(ULPwgs::get_sample_name(bed),"_",pad,".bed"), " -g ", genome, " > ",paste0(output_name,".bed")))
+    system(paste0(bin_path," complement -i ",paste0(ULPwgs::get_sample_name(bed),"_",pad,".bed"), " -g ", genome, " > ",paste0(output_name,".bed")))
     file.remove(paste0(ULPwgs::get_sample_name(bed),"_",pad,".bed"))
   }else{
     if(verbose){
