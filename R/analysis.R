@@ -623,6 +623,7 @@ read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcop
 #' @export
 
 filter_bam=function(bin_path="tools/samtools/samtools",bam="",position="",bed="",verbose=FALSE,output_name="Filtered",threads=1){
+
   if (position!="" &bed!=""){
     print("Position and bed arguments are mutually exclusive")
     quit()
@@ -635,7 +636,7 @@ filter_bam=function(bin_path="tools/samtools/samtools",bam="",position="",bed=""
   if (verbose){
     print(paste(bin_path,"view -b",bed,"-@",threads,bam,position,">", paste0(output_name,".bam")))
   }
-  system(paste0(bin_path,"view -b",bed,"-@",threads,bam,position,">" ,paste0(output_name,".bam")))
+  system(paste(bin_path,"view -b",bed,"-@",threads,bam,position,">" ,paste0(output_name,".bam")))
 }
 
 
