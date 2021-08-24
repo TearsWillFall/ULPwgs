@@ -607,6 +607,37 @@ read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcop
     }
   }
 
+#' Filter BAM to specific regions
+#'
+#' This function takes a BAM file and filter it to genomic coordinate or otherwise BED file with
+#' multiple genomic coordinates. The output is a BAM file with reads for inputed genomic region/s
+#'
+#'
+#' @param bin_path Path to readCounter executable. Default path tools/samtools/samtools.
+#' @param bam Path to the BAM file .
+#' @param position String of genomic position to filter. Ex chr6:1000-100000
+#' @param output_name Name of the output file.
+#' @param bed Size of non overlaping windows. Default 500000.
+#' @param threads Number of threads to use. Default 1
+#' @param verbose Enables progress messages. Default False.
+#' @export
+
+filter_bam=function(bin_path="tools/samtools/samtools",bam="",position="",bed="",verbose=FALSE,ouput_name="Filtered",threads=1){
+  if (position!="" &bed!=""){
+    print("Position and bed arguments are mutually exclusive")
+    quit()
+  }
+
+  if(bed!=""){
+    bed=paste("-L",bed)
+  }
+
+  if (verbose){
+    print(paste(bin_path,"view -b",bed,"-@",threads,bam,position,">", paste0(output_name,".bam")))
+  }
+  system(paste0(bin_path,"view -b",bed,"-@",threads,bam,position,">" ,paste0(output_name,".bam")))
+}
+
 
 #' Generate report for ULP-WGS samples
 #'
