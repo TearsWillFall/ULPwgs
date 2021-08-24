@@ -149,15 +149,15 @@ complement_bed=function(bin_path="tools/bedtools2/bin/bedtools",bed="",pad=10,ou
   if (pad!=0){
     pad_bed(bin_path=bin_path,bed=bed,pad=pad,output_name=paste0(ULPwgs::get_sample_name(bed),"_",pad),genome=genome,verbose=verbose)
     if(verbose){
-      print(paste0(bin_path," complementBed -i ",paste0(ULPwgs::get_sample_name(bed),"_",pad,".bed"), " -g ", genome, " > ",paste0(output_name,".bed")))
+      print(paste0(bin_path," complement -i ",paste0(ULPwgs::get_sample_name(bed),"_",pad,".bed"), " -g ", genome, " > ",paste0(output_name,".bed")))
     }
-    system(paste0(bin_path," complementBed -i ",paste0(ULPwgs::get_sample_name(bed),"_",pad,".bed"), " -g ", genome, " > ",paste0(output_name,".bed")))
+    system(paste0(bin_path," complement-i ",paste0(ULPwgs::get_sample_name(bed),"_",pad,".bed"), " -g ", genome, " > ",paste0(output_name,".bed")))
     file.remove(paste0(ULPwgs::get_sample_name(bed),"_",pad,".bed"))
   }else{
     if(verbose){
-      print(paste0(bin_path," complementBed -i ",bed, " -g ", genome, " > ",paste0(output_name,".bed")))
+      print(paste0(bin_path," complement -i ",bed, " -g ", genome, " > ",paste0(output_name,".bed")))
     }
-    system(paste0(bin_path," complementBed -i ",bed, " -g ", genome, " > ",paste0(output_name,".bed")))
+    system(paste0(bin_path," complement -i ",bed, " -g ", genome, " > ",paste0(output_name,".bed")))
   }
 }
 
@@ -176,9 +176,9 @@ complement_bed=function(bin_path="tools/bedtools2/bin/bedtools",bed="",pad=10,ou
 pad_bed=function(bin_path="tools/bedtools2/bin/bedtools",bed="",pad=10,output_name="Padded",genome="",verbose=FALSE){
 
   if(verbose){
-    print(paste0(bin_path," slopBed -i ",bed, " -g ", genome," -b ",pad, " > ",paste0(output_name,".bed")))
+    print(paste0(bin_path," slop -i ",bed, " -g ", genome," -b ",pad, " > ",paste0(output_name,".bed")))
   }
-  system(paste0(bin_path," slopBed -i ",bed, " -g ", genome," -b ",pad, " > ",paste0(output_name,".bed")))
+  system(paste0(bin_path," slop -i ",bed, " -g ", genome," -b ",pad, " > ",paste0(output_name,".bed")))
 
 }
 
