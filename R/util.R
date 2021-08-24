@@ -132,6 +132,56 @@ index=function(bin_path="tools/samtools/samtools",file="",verbose=FALSE,threads=
 }
 
 
+#' Create BED with antitarget regions with padding
+#'
+#' This function indexes a genomic sequence file (BAM/SAM).
+#'
+#' @param bin_path Path to bwa executable. Default path tools/bedtools2/bin/bedtools.
+#' @param bed Path to the input file with the sequence.
+#' @param pad Pad distance. Default 10
+#' @param output_name Output file name.
+#' @param genome Path to genome fa.fai file
+#' @param verbose Enables progress messages. Default False.
+#' @export
+
+complement_bed=function(bin_path="tools/bedtools2/bin/bedtools",bed="",pad=10,output_name="Complement",genome="",verbose=FALSE){
+
+  if (pad!=0){
+    pad_bed(bin_path=bin_path,bed=bed,pad=pad,output_name=paste0(ULPwgs::get_sample_name(bed),"_",pad),genome=genome,verbose=verbose)
+    if(verbose){
+      print(paste0(bin_path," complementBed -i ",paste0(ULPwgs::get_sample_name(bed),"_",pad,".bed"), " -g ", genome, " > ",paste0(output_name,".bed")))
+    }
+    system(paste0(bin_path," complementBed -i ",paste0(ULPwgs::get_sample_name(bed),"_",pad,".bed"), " -g ", genome, " > ",paste0(output_name,".bed")))
+    file.remove(paste0(ULPwgs::get_sample_name(bed),"_",pad,".bed"))
+  }else{
+    if(verbose){
+      print(paste0(bin_path," complementBed -i ",bed, " -g ", genome, " > ",paste0(output_name,".bed")))
+    }
+    system(paste0(bin_path," complementBed -i ",bed, " -g ", genome, " > ",paste0(output_name,".bed")))
+  }
+}
+
+#' Pad a BED file
+#'
+#' This function takes a BED file and pad each regions in both directions
+#'
+#' @param bed Path to the input file with the sequence.
+#' @param bin_path Path to bwa executable. Default path tools/bedtools2/bin/bedtools.
+#' @param pad Pad distance. Default 10
+#' @param output_name Output file name.
+#' @param genome Path to genome fa.fai file
+#' @param verbose Enables progress messages. Default False.
+#' @export
+
+pad_bed=function(bin_path="tools/bedtools2/bin/bedtools",bed="",pad=10,output_name="Padded",genome="",verbose=FALSE){
+
+  if(verbose){
+    print(paste0(bin_path," slopBed -i ",bed, " -g ", genome," -b ",pad, " > ",paste0(output_name,".bed")))
+  }
+  system(paste0(bin_path," slopBed -i ",bed, " -g ", genome," -b ",pad, " > ",paste0(output_name,".bed")))
+
+}
+
 
 
 #' Wrapper of BaseRecalibrator function of gatk
