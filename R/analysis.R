@@ -715,7 +715,7 @@ ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",w
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-panel_of_normals_ichorCNA=function(bin_path="tools/ichorCNA/scripts/createPanelOfNormals",wigs_dir="",wigs="",bed="",
+panel_of_normals_ichorCNA=function(bin_path="tools/ichorCNA/scripts/createPanelOfNormals.R",wigs_dir="",wigs="",bed="",
 output_name="PoN_ichorCNA",gc="tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",
 centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",verbose=TRUE){
 
