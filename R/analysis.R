@@ -646,8 +646,10 @@ filter_bam=function(bin_path="tools/samtools/samtools",bam="",position="",bed=""
 #' copy number alterations, and estimate tumor fraction in ULP-WGS samples.
 #'
 #' @param wig Path to the WIG file.
+#' @param normal_wig Path to normal WIG file.
 #' @param bin_path Path to ichorCNA executable. Default path tools/ichorCNA/scripts/runIchorCNA.R.
 #' @param output_dir Path to the output directory.
+#' @param bed Path to BED file with target regions.
 #' @param sample_id String with sample name.
 #' @param ploidy Initial tumour ploidy. Default 2,3
 #' @param tumour_content Initial normal contamination. Default 0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9
@@ -662,7 +664,7 @@ filter_bam=function(bin_path="tools/samtools/samtools",bam="",position="",bed=""
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",wig="",ploidy="2,3",tumour_content="0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9",homozygous_del="False",subclonal_states="NULL",gc="tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",normal_panel="tools/ichorCNA/inst/extdata/HD_ULP_PoN_hg38_500kb_median_normAutosome_median.rds",output_dir="",verbose=TRUE,libdir="tools/ichorCNA",chrs="'c(1:22,\"X\")'",chrTrain="'c(1:22)'"){
+ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",wig="",normal_wig="",bed="",ploidy="2,3",tumour_content="0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9",homozygous_del="False",subclonal_states="NULL",gc="tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",normal_panel="tools/ichorCNA/inst/extdata/HD_ULP_PoN_hg38_500kb_median_normAutosome_median.rds",output_dir="",verbose=TRUE,libdir="tools/ichorCNA",chrs="'c(1:22,\"X\")'",chrTrain="'c(1:22)'"){
 
     sep="/"
 
@@ -680,9 +682,72 @@ ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",w
     if (!dir.exists(out_file)){
         dir.create(out_file)
     }
+    if (norm_wig!=""){
+      norm_wig=paste0("--NORMWIG ",norm_wig)
+    }
+
+    if (bed!=""){
+      bed=paste0("--exons.bed ",bed)
+    }
+
     if(verbose){
-      print(paste("Rscript",bin_path,"--id",sample_id,"--WIG",wig,"--ploidy",paste0("'c(",ploidy,")'"),"--normal",paste0("'c(",tumour_content,")'"),"--maxCN 7 --gcWig", gc,"--mapWig",map,"--centromere",centromere,"--normalPanel",normal_panel,"--includeHOMD",homozygous_del,"--chrs",chrs,"--chrTrain",chrTrain,"--estimateNormal True --estimatePloidy True --estimateScPrevalence True --outDir",out_file,"--libdir",libdir))
+      print(paste("Rscript",bin_path,"--id",sample_id,"--WIG",wig,norm_wig,bed,"--ploidy",paste0("'c(",ploidy,")'"),"--normal",paste0("'c(",tumour_content,")'"),"--maxCN 7 --gcWig", gc,"--mapWig",map,"--centromere",centromere,"--normalPanel",normal_panel,"--includeHOMD",homozygous_del,"--chrs",chrs,"--chrTrain",chrTrain,"--estimateNormal True --estimatePloidy True --estimateScPrevalence True --outDir",out_file,"--libdir",libdir))
 
     }
-    system(paste("Rscript",bin_path,"--id",sample_id,"--WIG",wig,"--ploidy",paste0("'c(",ploidy,")'"),"--normal",paste0("'c(",tumour_content,")'"),"--maxCN 7 --gcWig", gc,"--mapWig",map,"--centromere",centromere,"--normalPanel",normal_panel,"--includeHOMD",homozygous_del,"--chrs",chrs,"--chrTrain",chrTrain,"--estimateNormal True --estimatePloidy True --estimateScPrevalence True --outDir",out_file,"--libdir",libdir))
+    system(paste("Rscript",bin_path,"--id",sample_id,"--WIG",wig,norm_wig,bed,"--ploidy",paste0("'c(",ploidy,")'"),"--normal",paste0("'c(",tumour_content,")'"),"--maxCN 7 --gcWig", gc,"--mapWig",map,"--centromere",centromere,"--normalPanel",normal_panel,"--includeHOMD",homozygous_del,"--chrs",chrs,"--chrTrain",chrTrain,"--estimateNormal True --estimatePloidy True --estimateScPrevalence True --outDir",out_file,"--libdir",libdir))
   }
+
+
+#' Generate panel of normals for ichorCNA
+#'
+#' This function generates a report that helps to segment the genome, predict large-scale
+#' copy number alterations, and estimate tumor fraction in ULP-WGS samples.
+#'
+#' @param wigs Path to the WIG files.
+#' @param wigs_dir Path to dir with WIG files.
+#' @param bin_path Path to ichorCNA executable. Default path tools/ichorCNA/scripts/createPanelOfNormals.
+#' @param output_dir Path to the output directory.
+#' @param bed Path to BED file with target regions.
+#' @param output_name File output name.
+#' @param gc Path to GC-content WIG with . Default tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig
+#' @param map Path to mappability score WIG with GC content. Default tools/ichorCNA/inst/extdata/map_hg19_500kb.wig
+#' @param centromere Path to file containing centromere locations. Default tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt
+#' @param verbose Enables progress messages. Default False.
+#' @export
+
+panel_of_normals_ichorCNA=function(bin_path="tools/ichorCNA/scripts/createPanelOfNormals",wigs_dir="",wigs="",bed="",output_name="PoN_ichorCNA",
+gc="tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",
+centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",
+normal_panel="tools/ichorCNA/inst/extdata/HD_ULP_PoN_hg38_500kb_median_normAutosome_median.rds",verbose=TRUE){
+    if (wigs!="" && wigs_dir!=""){
+      print("Arguments wigs and wigs_dir are mutually exclusive")
+      quit()
+    }
+
+    if (wigs!=""){
+      if (bed!=""){
+          writeLines(wigs,file(paste0("ichorCNAnormalList",ULPwgs::get_sample_name(bed),".tmp")))
+      }else{
+          writeLines(wigs,file(paste0("ichorCNAnormalList.tmp")))
+      }
+
+    }
+
+    if (wigs_dir!=""){
+      files=list.files(wigs_dir,pattern=".wig",recursive=TRUE,full.names=TRUE)
+      if (bed!=""){
+          writeLines(files,file(paste0("ichorCNAnormalList",ULPwgs::get_sample_name(bed),".tmp")))
+      }else{
+          writeLines(files,file(paste0("ichorCNAnormalList.tmp")))
+      }
+    }
+    if (bed!=""){
+      bed=paste0("--exons.bed ",bed)
+    }
+
+    if(verbose){
+      print(paste("Rscript",bin_path,"--filelist",wig_list,bed," --gcWig", gc,"--mapWig",map,"--centromere",centromere," --outfile",out_file))
+
+    }
+    system(paste("Rscript",bin_path,"--filelist",wig_list,bed," --gcWig", gc,"--mapWig",map,"--centromere",centromere," --outfile",out_file))
+}

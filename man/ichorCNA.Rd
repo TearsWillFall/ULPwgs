@@ -8,6 +8,8 @@ ichorCNA(
   bin_path = "tools/ichorCNA/scripts/runIchorCNA.R",
   sample_id = "",
   wig = "",
+  normal_wig = "",
+  bed = "",
   ploidy = "2,3",
   tumour_content = "0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9",
   homozygous_del = "False",
@@ -30,6 +32,10 @@ ichorCNA(
 \item{sample_id}{String with sample name.}
 
 \item{wig}{Path to the WIG file.}
+
+\item{normal_wig}{Path to normal WIG file.}
+
+\item{bed}{Path to BED file with target regions.}
 
 \item{ploidy}{Initial tumour ploidy. Default 2,3}
 
