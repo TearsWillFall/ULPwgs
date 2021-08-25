@@ -664,7 +664,7 @@ filter_bam=function(bin_path="tools/samtools/samtools",bam="",position="",bed=""
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",wig="",norm_wig="",bed="",ploidy="2,3",tumour_content="0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9",homozygous_del="False",subclonal_states="NULL",gc="tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",normal_panel="tools/ichorCNA/inst/extdata/HD_ULP_PoN_hg38_500kb_median_normAutosome_median.rds",output_dir="",verbose=TRUE,libdir="tools/ichorCNA",chrs="'c(1:22,\"X\")'",chrTrain="'c(1:22)'"){
+ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",wig="",norm_wig="",bed="",ploidy="2,3",tumour_content="0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9",homozygous_del="False",subclonal_states="NULL",gc="tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",normal_panel="tools/ichorCNA/inst/extdata/HD_ULP_PoN_500kb_median_normAutosome_mapScoreFiltered_median.rds",output_dir="",verbose=TRUE,libdir="tools/ichorCNA",chrs="'c(1:22,\"X\")'",chrTrain="'c(1:22)'"){
 
     sep="/"
 
@@ -715,8 +715,8 @@ ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",w
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-panel_of_normals_ichorCNA=function(bin_path="tools/ichorCNA/scripts/createPanelOfNormals",wigs_dir="",wigs="",bed="",output_name="PoN_ichorCNA",
-gc="tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",
+panel_of_normals_ichorCNA=function(bin_path="tools/ichorCNA/scripts/createPanelOfNormals",wigs_dir="",wigs="",bed="",
+output_name="PoN_ichorCNA",gc="tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",
 centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",verbose=TRUE){
 
     if (wigs!="" && wigs_dir!=""){
@@ -738,7 +738,7 @@ centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt"
       files=list.files(wigs_dir,pattern=".wig",recursive=TRUE,full.names=TRUE)
       writeLines(wigs,file(wig_list))
     }
-    
+
     if (bed!=""){
       bed=paste0("--exons.bed ",bed)
     }
