@@ -747,7 +747,6 @@ normal_panel="tools/ichorCNA/inst/extdata/HD_ULP_PoN_hg38_500kb_median_normAutos
 
     if(verbose){
       print(paste("Rscript",bin_path,"--filelist",wig_list,bed," --gcWig", gc,"--mapWig",map,"--centromere",centromere," --outfile",out_file))
-
     }
     system(paste("Rscript",bin_path,"--filelist",wig_list,bed," --gcWig", gc,"--mapWig",map,"--centromere",centromere," --outfile",out_file))
 }
