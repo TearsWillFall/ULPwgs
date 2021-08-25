@@ -744,7 +744,7 @@ centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt"
     }
 
     if(verbose){
-      print(paste("Rscript",bin_path,"--filelist",wig_list,bed," --gcWig", gc,"--mapWig",map,"--centromere",centromere," --outfile",out_file))
+      print(paste("Rscript",bin_path,"--filelist",wig_list,bed," --gcWig", gc,"--mapWig",map,"--centromere",centromere," --outfile",output_name))
     }
-    system(paste("Rscript",bin_path,"--filelist",wig_list,bed," --gcWig", gc,"--mapWig",map,"--centromere",centromere," --outfile",out_file))
+    system(paste("Rscript",bin_path,"--filelist",wig_list,bed," --gcWig", gc,"--mapWig",map,"--centromere",centromere," --outfile",output_name))
 }
