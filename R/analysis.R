@@ -646,7 +646,7 @@ filter_bam=function(bin_path="tools/samtools/samtools",bam="",position="",bed=""
 #' copy number alterations, and estimate tumor fraction in ULP-WGS samples.
 #'
 #' @param wig Path to the WIG file.
-#' @param normal_wig Path to normal WIG file.
+#' @param norm_wig Path to normal WIG file.
 #' @param bin_path Path to ichorCNA executable. Default path tools/ichorCNA/scripts/runIchorCNA.R.
 #' @param output_dir Path to the output directory.
 #' @param bed Path to BED file with target regions.
@@ -664,7 +664,7 @@ filter_bam=function(bin_path="tools/samtools/samtools",bam="",position="",bed=""
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",wig="",normal_wig="",bed="",ploidy="2,3",tumour_content="0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9",homozygous_del="False",subclonal_states="NULL",gc="tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",normal_panel="tools/ichorCNA/inst/extdata/HD_ULP_PoN_hg38_500kb_median_normAutosome_median.rds",output_dir="",verbose=TRUE,libdir="tools/ichorCNA",chrs="'c(1:22,\"X\")'",chrTrain="'c(1:22)'"){
+ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",wig="",norm_wig="",bed="",ploidy="2,3",tumour_content="0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9",homozygous_del="False",subclonal_states="NULL",gc="tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",normal_panel="tools/ichorCNA/inst/extdata/HD_ULP_PoN_hg38_500kb_median_normAutosome_median.rds",output_dir="",verbose=TRUE,libdir="tools/ichorCNA",chrs="'c(1:22,\"X\")'",chrTrain="'c(1:22)'"){
 
     sep="/"
 
