@@ -738,6 +738,7 @@ centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt"
       files=list.files(wigs_dir,pattern=".wig",recursive=TRUE,full.names=TRUE)
       writeLines(wigs,file(wig_list))
     }
+    
     if (bed!=""){
       bed=paste0("--exons.bed ",bed)
     }
