@@ -717,29 +717,26 @@ ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",w
 
 panel_of_normals_ichorCNA=function(bin_path="tools/ichorCNA/scripts/createPanelOfNormals",wigs_dir="",wigs="",bed="",output_name="PoN_ichorCNA",
 gc="tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",
-centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",
-normal_panel="tools/ichorCNA/inst/extdata/HD_ULP_PoN_hg38_500kb_median_normAutosome_median.rds",verbose=TRUE){
+centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",verbose=TRUE){
+
     if (wigs!="" && wigs_dir!=""){
       print("Arguments wigs and wigs_dir are mutually exclusive")
       quit()
     }
 
-    if (wigs!=""){
-      if (bed!=""){
-          writeLines(wigs,file(paste0("ichorCNAnormalList",ULPwgs::get_sample_name(bed),".tmp")))
-      }else{
-          writeLines(wigs,file(paste0("ichorCNAnormalList.tmp")))
-      }
+    if (bed!=""){
+      wig_list=paste0("ichorCNAnormalList",ULPwgs::get_sample_name(bed),".tmp")
+    }else{
+      wig_list=paste0("ichorCNAnormalList.tmp")
+    }
 
+    if (wigs!=""){
+          writeLines(wigs,file(wig_list))
     }
 
     if (wigs_dir!=""){
       files=list.files(wigs_dir,pattern=".wig",recursive=TRUE,full.names=TRUE)
-      if (bed!=""){
-          writeLines(files,file(paste0("ichorCNAnormalList",ULPwgs::get_sample_name(bed),".tmp")))
-      }else{
-          writeLines(files,file(paste0("ichorCNAnormalList.tmp")))
-      }
+      writeLines(wigs,file(wig_list))
     }
     if (bed!=""){
       bed=paste0("--exons.bed ",bed)
