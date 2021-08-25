@@ -5,7 +5,7 @@
 \title{Generate panel of normals for ichorCNA}
 \usage{
 panel_of_normals_ichorCNA(
-  bin_path = "tools/ichorCNA/scripts/createPanelOfNormals",
+  bin_path = "tools/ichorCNA/scripts/createPanelOfNormals.R",
   wigs_dir = "",
   wigs = "",
   bed = "",
@@ -13,8 +13,6 @@ panel_of_normals_ichorCNA(
   gc = "tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",
   map = "tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",
   centromere = "tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",
- 
-    normal_panel = "tools/ichorCNA/inst/extdata/HD_ULP_PoN_hg38_500kb_median_normAutosome_median.rds",
   verbose = TRUE
 )
 }
