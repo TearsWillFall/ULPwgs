@@ -692,7 +692,7 @@ normal_panel="tools/ichorCNA/inst/extdata/HD_ULP_PoN_500kb_median_normAutosome_m
 
     if (bed!=""){
       bed=paste0("--exons.bed ",bed)
-      if (sc_states!="")
+    }
     if (subclonal_states!=NULL){
       subclonal_states=paste("--scStates",paste0("'c(",subclonal_states,")'"))
     }else{
