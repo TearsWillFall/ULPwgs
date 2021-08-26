@@ -666,7 +666,7 @@ filter_bam=function(bin_path="tools/samtools/samtools",bam="",position="",bed=""
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",wig="",norm_wig="",bed="",ploidy="2,3",tumour_content="0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9",homozygous_del="False",subclonal_states="NULL",
+ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",wig="",norm_wig="",bed="",ploidy="2,3",tumour_content="0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9",homozygous_del="False",subclonal_states=NULL,
 gc="tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",
 normal_panel="tools/ichorCNA/inst/extdata/HD_ULP_PoN_500kb_median_normAutosome_mapScoreFiltered_median.rds",output_dir="",verbose=TRUE,libdir="tools/ichorCNA",male_tresh=0.0001,chrs="'c(1:22,\"X\")'",chrTrain="'c(1:22)'"){
 
@@ -693,14 +693,16 @@ normal_panel="tools/ichorCNA/inst/extdata/HD_ULP_PoN_500kb_median_normAutosome_m
     if (bed!=""){
       bed=paste0("--exons.bed ",bed)
       if (sc_states!="")
-
-
-
+    if (subclonal_states!=NULL){
+      subclonal_states=paste("--scStates",paste0("'c(",subclonal_states,")'"))
+    }else{
+      subclonal_states=""
+    }
 
     if(verbose){
-      print(paste("Rscript",bin_path,"--id",sample_id,"--WIG",wig,norm_wig,bed,"--ploidy",paste0("'c(",ploidy,")'"),"--normal",paste0("'c(",tumour_content,")'"),"--maxCN 7 --gcWig", gc,"--mapWig",map,"--centromere",centromere,"--scStates",paste0("'c(",subclonal_states,")'"),"--normalPanel",normal_panel,"--includeHOMD",homozygous_del,"--chrs",chrs,"--fracReadsInChrYForMale",male_tresh,"--chrTrain",chrTrain,"--estimateNormal True --estimatePloidy True --estimateScPrevalence True --outDir",out_file,"--libdir",libdir))
+      print(paste("Rscript",bin_path,"--id",sample_id,"--WIG",wig,norm_wig,bed,"--ploidy",paste0("'c(",ploidy,")'"),"--normal",paste0("'c(",tumour_content,")'"),"--maxCN 7 --gcWig", gc,"--mapWig",map,"--centromere",centromere,subclonal_states,"--normalPanel",normal_panel,"--includeHOMD",homozygous_del,"--chrs",chrs,"--fracReadsInChrYForMale",male_tresh,"--chrTrain",chrTrain,"--estimateNormal True --estimatePloidy True --estimateScPrevalence True --outDir",out_file,"--libdir",libdir))
     }
-    system(paste("Rscript",bin_path,"--id",sample_id,"--WIG",wig,norm_wig,bed,"--ploidy",paste0("'c(",ploidy,")'"),"--normal",paste0("'c(",tumour_content,")'"),"--maxCN 7 --gcWig", gc,"--mapWig",map,"--centromere",centromere,"--scStates",paste0("'c(",subclonal_states,")'"),"--normalPanel",normal_panel,"--includeHOMD",homozygous_del,"--chrs",chrs,"--fracReadsInChrYForMale",male_tresh,"--chrTrain",chrTrain,"--estimateNormal True --estimatePloidy True --estimateScPrevalence True --outDir",out_file,"--libdir",libdir))
+    system(paste("Rscript",bin_path,"--id",sample_id,"--WIG",wig,norm_wig,bed,"--ploidy",paste0("'c(",ploidy,")'"),"--normal",paste0("'c(",tumour_content,")'"),"--maxCN 7 --gcWig", gc,"--mapWig",map,"--centromere",centromere,subclonal_states,"--normalPanel",normal_panel,"--includeHOMD",homozygous_del,"--chrs",chrs,"--fracReadsInChrYForMale",male_tresh,"--chrTrain",chrTrain,"--estimateNormal True --estimatePloidy True --estimateScPrevalence True --outDir",out_file,"--libdir",libdir))
   }
 
 
