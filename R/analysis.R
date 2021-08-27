@@ -720,12 +720,13 @@ normal_panel="tools/ichorCNA/inst/extdata/HD_ULP_PoN_500kb_median_normAutosome_m
 #' @param gc Path to GC-content WIG with . Default tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig
 #' @param map Path to mappability score WIG with GC content. Default tools/ichorCNA/inst/extdata/map_hg19_500kb.wig
 #' @param centromere Path to file containing centromere locations. Default tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt
+#' @param male_tresh Minimum percentage of reads in chromosome Y to call male. Default 0.0001
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
 panel_of_normals_ichorCNA=function(bin_path="tools/ichorCNA/scripts/createPanelOfNormals.R",wigs_dir="",wigs="",bed="",
 output_name="PoN_ichorCNA",gc="tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",
-centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",verbose=TRUE){
+centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",male_tresh=0.0001,verbose=TRUE){
 
     if (wigs!="" && wigs_dir!=""){
       print("Arguments wigs and wigs_dir are mutually exclusive")
@@ -753,9 +754,9 @@ centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt"
 
 
     if(verbose){
-      print(paste("Rscript",bin_path,"--filelist",wig_list,bed," --gcWig", gc,"--mapWig",map,"--centromere",centromere," --outfile",output_name))
+      print(paste("Rscript",bin_path,"--filelist",wig_list,bed," --gcWig", gc,"--mapWig",map,"--centromere",centromere,"--fracReadsInChrYForMale",male_tresh," --outfile",output_name))
     }
-    system(paste("Rscript",bin_path,"--filelist",wig_list,bed," --gcWig", gc,"--mapWig",map,"--centromere",centromere," --outfile",output_name))
+    system(paste("Rscript",bin_path,"--filelist",wig_list,bed," --gcWig", gc,"--mapWig",map,"--centromere",centromere,"--fracReadsInChrYForMale",male_tresh," --outfile",output_name))
     system(paste("rm",wig_list))
 
 }
