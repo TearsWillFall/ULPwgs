@@ -77,12 +77,7 @@ trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA
     sep=""
   }
 
-  output_dir=paste0(output_dir,sep,sample_name,"_trimmed")
-  if(!dir.exists(output_dir)){
-    dir.create(output_dir,recursive=TRUE)
 
-  }
-  sample_name=get_sample_name(file_R1)
   if ((!is.na(xadapt)) & (!is.na(yadapt))){
     func=paste(bin_path,"-m tail -t",n_cores,"-x", xadapt,"-y", yadapt,"-Q",mean_quality,"-l",min_length)
   }
@@ -104,8 +99,6 @@ trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA
 
 
   }else{
-
-
       if(verbose){
         print(paste(func,"-z -f sanger --quiet -o",paste0(output_dir,"/",sample_name),file_R1))
       }
