@@ -91,8 +91,13 @@ trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA
 
   if (!file_R2==""){
   sample_name=intersect_sample_name(file_path=file_R1,file_path2=file_R2)
+  output_dir=paste0(output_dir,sep,sample_name,"_trimmed")
 
-    if(verbose){
+  if(!dir.exists(output_dir)){
+    dir.create(output_dir,recursive=TRUE)
+  }
+
+  if(verbose){
       print(paste(func,"-z -f sanger --quiet -o",paste0(output_dir,"/",sample_name),file_R1,file_R2))
     }
     system(paste(func,"-z -f sanger --quiet -o",paste0(output_dir,"/",sample_name),file_R1,file_R2))
