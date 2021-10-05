@@ -144,10 +144,10 @@ merge_bam=function(bin_path="tools/samtools/samtools",bam="",bam_dir="",verbose=
 
 concatenate_bams=function(bin_path="tools/samtools/samtools",bams="",output_name="",verbose=FALSE,threads=3){
     if(verbose){
-      print(paste(bin_path,"cat -o",paste0(output_name,".bam"),paste(bams,collapse=" "), " -@",threads))
+      print(paste(bin_path,"cat -o",paste0(output_name,".bam"), " --threads",threads,paste(bams,collapse=" ")))
     }
-    system(paste(bin_path,"cat -o",paste0(output_name,".bam"),paste(bams,collapse=" "), " -@",threads))
-  }
+    system(paste(bin_path,"cat -o",paste0(output_name,".bam")," --threads",threads,paste(bams,collapse=" ")))
+}
 
 
 
