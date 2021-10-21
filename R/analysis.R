@@ -431,7 +431,6 @@ recalibrate_bq=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/build
 #' @param ti Primary target intervals for panel data. Requires bi and off_tar and on_tar argmunets. Interval format.
 #' @export
 
-
 qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/build/libs/picard.jar",bin_path3="tools/bedtools2/bin/bedtools",bam="",output_dir="",ref_genome="",verbose=FALSE,ram=4,tmp_dir="",mapq=0,bi="",ti="",off_tar="",on_tar=""){
     sep="/"
 
@@ -468,27 +467,27 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
 
     if (verbose){
       print("Generate Alignment Metrics:")
-      print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectAlignmentSummaryMetrics ","VALIDATION_STRINGENCY=LENIENT I=",bam," O=",paste0(out_file,".picard_summary.txt "),tmp))
+      print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectAlignmentSummaryMetrics ","VALIDATION_STRINGENCY=SILENT I=",bam," O=",paste0(out_file,".picard_summary.txt "),tmp))
 
     }
-    system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectAlignmentSummaryMetrics ","VALIDATION_STRINGENCY=LENIENT I=",bam," O=",paste0(out_file,".picard_summary.txt "),tmp))
+    system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectAlignmentSummaryMetrics ","VALIDATION_STRINGENCY=SILENT I=",bam," O=",paste0(out_file,".picard_summary.txt "),tmp))
 
     if (verbose){
       print("Generate Insert Size Metrics:")
-      print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectInsertSizeMetrics ","VALIDATION_STRINGENCY=LENIENT I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf "),tmp))
+      print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectInsertSizeMetrics ","VALIDATION_STRINGENCY=SILENT I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf "),tmp))
 
     }
-    system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2, " CollectInsertSizeMetrics ","VALIDATION_STRINGENCY=LENIENT I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf "),tmp))
+    system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2, " CollectInsertSizeMetrics ","VALIDATION_STRINGENCY=SILENT I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf "),tmp))
 
 
     ## Only call metrics for panel data if bait and target intervals are supplied, Otherwise WGS metrics.
     if (bi!="" & ti!=""){
       if (verbose){
         print("Generate Panel Metrics:")
-        print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectHsMetrics VALIDATION_STRINGENCY=LENIENT BI=",bi," TI=",ti," I=",bam," THEORETICAL_SENSITIVITY_OUTPUT=",paste0(out_file,".TS.txt"),ref," O=",paste0(out_file,".CollectHSmetrics.txt "),tmp))
+        print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectHsMetrics VALIDATION_STRINGENCY=SILENT BI=",bi," TI=",ti," I=",bam," THEORETICAL_SENSITIVITY_OUTPUT=",paste0(out_file,".TS.txt"),ref," O=",paste0(out_file,".CollectHSmetrics.txt "),tmp))
 
       }
-      system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectHsMetrics VALIDATION_STRINGENCY=LENIENT BI=",bi," TI=",ti," I=",bam," THEORETICAL_SENSITIVITY_OUTPUT=",paste0(out_file,".TS.txt"),ref," O=",paste0(out_file,".CollectHSmetrics.txt "),tmp))
+      system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectHsMetrics VALIDATION_STRINGENCY=SILENT BI=",bi," TI=",ti," I=",bam," THEORETICAL_SENSITIVITY_OUTPUT=",paste0(out_file,".TS.txt"),ref," O=",paste0(out_file,".CollectHSmetrics.txt "),tmp))
 
 
       ## Picard doesn't output coverage stats for off-target regions therefore we have to estimate this manually.
@@ -513,10 +512,10 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
     }else{
           if (verbose){
             print(paste0("Generate WGS Metrics for minimum MAPq=",mapq,":"))
-            print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectWgsMetrics VALIDATION_STRINGENCY=LENIENT MINIMUM_MAPPING_QUALITY=",mapq," ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt "),tmp))
+            print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectWgsMetrics VALIDATION_STRINGENCY=SILENT MINIMUM_MAPPING_QUALITY=",mapq," ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt "),tmp))
 
           }
-          system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectWgsMetrics VALIDATION_STRINGENCY=LENIENT MINIMUM_MAPPING_QUALITY=",mapq," ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt "),tmp))
+          system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectWgsMetrics VALIDATION_STRINGENCY=SILENT MINIMUM_MAPPING_QUALITY=",mapq," ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt "),tmp))
 
     }
 
