@@ -550,7 +550,7 @@ read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcop
 
     sample_name=get_sample_name(bam)
 
-    out_file_dir=paste0(output_dir,sep,sample_name,"_WIG")
+    out_file_dir=paste0(output_dir,sep,sample_name,ifelse(format=="wig","_WIG",ifelse(format=="seg","_SEG",NA)))
     if (!dir.exists(out_file_dir)){
         dir.create(out_file_dir)
     }
