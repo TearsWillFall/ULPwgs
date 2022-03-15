@@ -516,7 +516,7 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
       if (verbose){
 
         print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectRnaSeqMetrics
-         VALIDATION_STRINGENCY=SILENT STRAND_SPECIFICITY='NONE' REF_FLAT=",ref," I=",bam," O=",paste0(out_file,".CollectRNAseqMetrics.txt "),tmp))
+         VALIDATION_STRINGENCY=SILENT STRAND_SPECIFICITY='NONE' REF_FLAT=",ref_flat," I=",bam," O=",paste0(out_file,".CollectRNAseqMetrics.txt "),tmp))
 
       }
       system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectRnaSeqMetrics
