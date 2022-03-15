@@ -427,11 +427,12 @@ recalibrate_bq=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/build
 #' @param mapq Minimum MapQ for Picard Wgs metrics. Default 0.
 #' @param off_tar Path to off target regions bed file. Has to be chromosome sorted. Requires bi and ti arguments.
 #' @param on_tar Path to target region bed file. Has to be chromosome sorted. Requires bi and ti arguments.
+#' @param rib_interval Path to ribosomal intervals file. Only for RNAseq.
 #' @param bi Bait capture target interval for panel data. Requires ti and off_target and on_tar arguments. Interval format.
 #' @param ti Primary target intervals for panel data. Requires bi and off_tar and on_tar argmunets. Interval format.
 #' @export
 
-qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/build/libs/picard.jar",bin_path3="tools/bedtools2/bin/bedtools",bam="",output_dir="",ref_genome="",verbose=FALSE,ram=4,tmp_dir="",mapq=0,bi="",ti="",off_tar="",on_tar=""){
+qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/build/libs/picard.jar",bin_path3="tools/bedtools2/bin/bedtools",bam="",output_dir="",ref_genome="",verbose=FALSE,ram=4,tmp_dir="",mapq=0,bi="",ti="",off_tar="",on_tar="",rib_interval=""){
     sep="/"
 
     if(output_dir==""){
@@ -508,6 +509,16 @@ qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/b
 
       plot_coverage_panel(on_target=paste0(out_file,".on_Target.Per_Region_Coverage.txt"),off_target=paste0(out_file,".off_Target.Per_Region_Coverage.txt"),col=c(5,4),height=6,width=12,output_dir=out_file_dir)
       plot_cumulative_cov(on_target=paste0(out_file,".on_Target.Histogram_Coverage.txt"),off_target=paste0(out_file,".off_Target.Histogram_Coverage.txt"),height=6,width=12,output_dir=out_file_dir)
+
+    }else if (rib_interval!=""){
+      if (verbose){
+
+        print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectRnaSeqMetrics
+         VALIDATION_STRINGENCY=SILENT STRAND_SPECIFICITY='NONE' ",ref," I=",bam," O=",paste0(out_file,".CollectRNAseqMetrics.txt "),tmp))
+
+      }
+      system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectRnaSeqMetrics
+           VALIDATION_STRINGENCY=SILENT STRAND_SPECIFICITY='NONE' ",ref," I=",bam," O=",paste0(out_file,".CollectRNAseqMetrics.txt "),tmp))
 
     }else{
           if (verbose){
