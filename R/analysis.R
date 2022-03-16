@@ -517,12 +517,15 @@ bam="",output_dir="",ref_genome="",verbose=FALSE,ram=4,tmp_dir="",mapq=0,bi="",t
       if (verbose){
 
         print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2,
-        " CollectRnaSeqMetrics VALIDATION_STRINGENCY=SILENT STRAND_SPECIFICITY='NONE' REF_FLAT=", ref_flat,
+        " CollectRnaSeqMetrics VALIDATION_STRINGENCY=SILENT STRAND_SPECIFICITY='NONE' REF_FLAT=",
+         ref_flat, " RIBOSOMAL_INTERVALS=",rib_interval,
+
          " I=",bam," O=",paste0(out_file,".CollectRNAseqMetrics.txt "),tmp))
 
       }
       system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2,
-      " CollectRnaSeqMetrics VALIDATION_STRINGENCY=SILENT STRAND_SPECIFICITY='NONE' REF_FLAT=", ref_flat,
+      " CollectRnaSeqMetrics VALIDATION_STRINGENCY=SILENT STRAND_SPECIFICITY='NONE' REF_FLAT=",
+      ref_flat, " RIBOSOMAL_INTERVALS=",rib_interval,
            " I=",bam," O=",paste0(out_file,".CollectRNAseqMetrics.txt "),tmp))
 
     }else{
