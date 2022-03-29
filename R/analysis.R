@@ -118,14 +118,17 @@ trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA
 #'
 #' @param bam Path to the input bam file with the sequence.
 #' @param bam_dir Path to directory with BAM files to merge.
+#' @param threads Number of threads to use.Default 3.
+#' @param output_name Output file name
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-merge_bam=function(bin_path="tools/samtools/samtools",bam="",bam_dir="",verbose=FALSE){
+
+merge_bam=function(bin_path="tools/samtools/samtools",bams="",output_name="",verbose=FALSE,threads=3){
     if(verbose){
-      print(paste(bin_path,"merge",bam, paste0(bam_dir,"/*.bam")))
+      print(paste(bin_path,"merge -o",paste0(output_name,".bam"), " --threads",threads,paste(bams,collapse=" ")))
     }
-    system(paste(bin_path,"merge",bam, paste0(bam_dir,"/*.bam")))
+    system(paste(bin_path,"merge -o",paste0(output_name,".bam"), " --threads",threads,paste(bams,collapse=" ")))
   }
 
 
@@ -519,7 +522,6 @@ bam="",output_dir="",ref_genome="",verbose=FALSE,ram=4,tmp_dir="",mapq=0,bi="",t
         print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2,
         " CollectRnaSeqMetrics VALIDATION_STRINGENCY=SILENT STRAND_SPECIFICITY='NONE' REF_FLAT=",
          ref_flat, " RIBOSOMAL_INTERVALS=",rib_interval,
-
          " I=",bam," O=",paste0(out_file,".CollectRNAseqMetrics.txt "),tmp))
 
       }
@@ -558,7 +560,8 @@ bam="",output_dir="",ref_genome="",verbose=FALSE,ram=4,tmp_dir="",mapq=0,bi="",t
 #' @export
 
 
-read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcopy_utils/bin/readCounter",chrs=c(1:22,"X","Y"),win=500000, format="wig", bam="",output_dir="",verbose=FALSE,threads=3){
+read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcopy_utils/bin/readCounter",
+chrs=c(1:22,"X","Y"),win=500000, format="wig", bam="",output_dir="",verbose=FALSE,threads=3){
 
     win=format(win,scientific=F)
     sep="/"
