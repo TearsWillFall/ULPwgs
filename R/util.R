@@ -644,11 +644,11 @@ get_bam_reference_chr=function(bin_path="tools/samtools/samtools",bam="",verbose
   if(verbose){
     print(paste0(bin_path," view -H ",bam," | grep @SQ"))
   }
-  chr=read.table(text=system(paste0(bin_path," view -H ",bam," | grep @SQ"),intern=TRUE),stringsAsFactors=FALSE)
-  chr=chr[,2]
+  SQ=read.table(text=system(paste0(bin_path," view -H ",bam," | grep @SQ"),intern=TRUE),stringsAsFactors=FALSE)
+  chr=SQ[,2]
   chr=unlist(lapply(chr,FUN=function(x){strsplit(x,":")[[1]][2]}))
 
-  size=chr[,3]
+  size=SQ[,3]
   size=unlist(lapply(size,FUN=function(x){strsplit(x,":")[[1]][2]}))
 
   ref_chr=data.frame(chr=chr,start=0,end=size)
