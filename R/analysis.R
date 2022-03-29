@@ -124,7 +124,7 @@ trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA
 #' @export
 
 
-merge_bam=function(bin_path="tools/samtools/samtools",bams="",output_name="",verbose=FALSE,threads=3){
+merge_bams=function(bin_path="tools/samtools/samtools",bams="",output_name="",verbose=FALSE,threads=3){
     if(verbose){
       print(paste(bin_path,"merge -o",paste0(output_name,".bam"), " --threads",threads,paste(bams,collapse=" ")))
     }
