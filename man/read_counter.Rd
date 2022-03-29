@@ -9,6 +9,7 @@ read_counter(
   bin_path2 = "tools/hmmcopy_utils/bin/readCounter",
   chrs = c(1:22, "X", "Y"),
   win = 5e+05,
+  format = "wig",
   bam = "",
   output_dir = "",
   verbose = FALSE,
@@ -23,6 +24,8 @@ read_counter(
 \item{chrs}{String of chromosomes to include. c()}
 
 \item{win}{Size of non overlaping windows. Default 500000.}
+
+\item{format}{Output format \link{wig/seg} . Default wig}
 
 \item{bam}{Path to the BAM file .}
 

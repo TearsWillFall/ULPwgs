@@ -18,7 +18,9 @@ qc_metrics(
   bi = "",
   ti = "",
   off_tar = "",
-  on_tar = ""
+  on_tar = "",
+  rib_interval = "",
+  ref_flat = ""
 )
 }
 \arguments{
@@ -49,6 +51,10 @@ qc_metrics(
 \item{off_tar}{Path to off target regions bed file. Has to be chromosome sorted. Requires bi and ti arguments.}
 
 \item{on_tar}{Path to target region bed file. Has to be chromosome sorted. Requires bi and ti arguments.}
+
+\item{rib_interval}{Path to ribosomal intervals file. Only for RNAseq.}
+
+\item{ref_flat}{Path to flat refrence. Only for RNAseq.}
 }
 \description{
 This function generates quality control metrics for an aligned sequence. Works for WGS and Panel data.

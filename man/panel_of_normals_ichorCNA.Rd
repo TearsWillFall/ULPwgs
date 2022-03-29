@@ -13,6 +13,7 @@ panel_of_normals_ichorCNA(
   gc = "tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",
   map = "tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",
   centromere = "tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",
+  male_tresh = 1e-04,
   verbose = TRUE
 )
 }
@@ -32,6 +33,8 @@ panel_of_normals_ichorCNA(
 \item{map}{Path to mappability score WIG with GC content. Default tools/ichorCNA/inst/extdata/map_hg19_500kb.wig}
 
 \item{centromere}{Path to file containing centromere locations. Default tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt}
+
+\item{male_tresh}{Minimum percentage of reads in chromosome Y to call male. Default 0.0001}
 
 \item{verbose}{Enables progress messages. Default False.}
 
