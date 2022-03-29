@@ -627,3 +627,30 @@ bed_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",bed="",verb
     system(paste(bin_path,"coverage  -a",bed, "-b" ,bam,fai, mode,srt,out_file))
 
 }
+
+
+
+#' Function to collect chromosome data in bam
+#'
+#' This function takes a BAM file and collects the chr names from the bam
+#' file.
+#'
+#' @param bin_path Path to samtools executable. Default path tools/samtools/samtools.
+#' @param bam Path to directory with BAM files to merge.
+#' @param verbose Enables progress messages. Default False.
+#' @export
+
+get_bam_reference_chr=function(bin_path="tools/samtools/samtools",bam="",verbose=FALSE){
+  if(verbose){
+    print(paste0(bin_path," view -H ",bam," | grep @SQ"))
+  }
+  chr=read.table(text=system(paste0(bin_path," view -H ",bam," | grep @SQ"),intern=TRUE),stringsAsFactors=FALSE)
+  chr=chr[,2]
+  chr=unlist(lapply(chr,FUN=function(x){strsplit(x,":")[[1]][2]}))
+
+  size=chr[,3]
+  size=unlist(lapply(size,FUN=function(x){strsplit(x,":")[[1]][2]}))
+
+  ref_chr=data.frame(chr=chr,start=0,end=size)
+  return(ref_chr)
+}
