@@ -281,9 +281,9 @@ output_dir="",verbose=FALSE,bin_size=40000000){
   dat$start=dat$start+1
   dat=dat %>% dplyr::mutate(Region=paste0(chr,":",start,"-",end))
 
-  parallel::mclapply(dat[,c("Region"),drop=FALSE],FUN=function(x){generate_BQSR(region=region,
+  parallel::mclapply(dat[,c("Region"),drop=FALSE],FUN=function(x){ generate_BQSR(region=region,
   bin_path=bin_path2,bam=bam,ref_genome=ref_genome,snpdb=snpdb,
-  output_dir=output_dir,verbose=verbose))
+  output_dir=output_dir,verbose=verbose)})
   sample_name=get_sample_name(bam)
   gather_BQSR_reports(bin_path=bin_path2,reports_dir=output_dir,output_name=sample_name)
   system(paste0("rm ",output_dir,"/*:*.RECAL.table"))
@@ -417,7 +417,7 @@ output_dir="",verbose=FALSE,threads=4,bin_size=40000000){
 
   parallel::mclapply(dat[,c("Region"),drop=FALSE],FUN=function(x){apply_BQSR(region=x,
   bin_path=bin_path2,bam=bam,ref_genome=ref_genome,
-  rec_table=rec_table,output_dir=output_dir,verbose=verbose))
+  rec_table=rec_table,output_dir=output_dir,verbose=verbose)})
 
   sample_name=get_sample_name(bam)
 
