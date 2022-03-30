@@ -280,11 +280,10 @@ output_dir="",verbose=FALSE,bin_size=40000000){
   dat=get_bam_reference_chr(bin_path=bin_path,bam=bam,verbose=verbose)
   dat$start=dat$start+1
   dat=dat %>% dplyr::mutate(Region=paste0(chr,":",start,"-",end))
-  cl=parallel::makeCluster(threads)
-  pbapply::pbapply(X=dat[,c("Region"),drop=FALSE],1,FUN=generate_BQSR,
+
+  parallel::mclapply(dat[,c("Region"),drop=FALSE],FUN=function(x){generate_BQSR(region=region,
   bin_path=bin_path2,bam=bam,ref_genome=ref_genome,snpdb=snpdb,
-  output_dir=output_dir,verbose=verbose,cl=cl)
-  on.exit(parallel::stopCluster(cl))
+  output_dir=output_dir,verbose=verbose))
   sample_name=get_sample_name(bam)
   gather_BQSR_reports(bin_path=bin_path2,reports_dir=output_dir,output_name=sample_name)
   system(paste0("rm ",output_dir,"/*:*.RECAL.table"))
@@ -414,13 +413,12 @@ output_dir="",verbose=FALSE,threads=4,bin_size=40000000){
   dat$pos=1:nrow(dat)
   dat=dat %>% dplyr::mutate(Region=paste0(pos,"_",chr,":",start,"-",end))
 
-  cl=parallel::makeCluster(threads)
 
-  pbapply::pbapply(X=dat[,c("Region"),drop=FALSE],1,FUN=apply_BQSR,
+
+  parallel::mclapply(dat[,c("Region"),drop=FALSE],FUN=function(x){apply_BQSR(region=x,
   bin_path=bin_path2,bam=bam,ref_genome=ref_genome,
-  rec_table=rec_table,output_dir=output_dir,verbose=verbose,cl=cl)
+  rec_table=rec_table,output_dir=output_dir,verbose=verbose))
 
-  on.exit(parallel::stopCluster(cl))
   sample_name=get_sample_name(bam)
 
   gather_bam_files(bin_path=bin_path3,bams_dir=output_dir,
