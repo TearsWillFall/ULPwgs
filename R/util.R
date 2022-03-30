@@ -277,6 +277,8 @@ output_dir="",verbose=FALSE,bin_size=40000000){
     sep=""
   }
 
+  sample_name=get_sample_name(bam)
+
   dat=get_bam_reference_chr(bin_path=bin_path,bam=bam,verbose=verbose)
   dat$start=dat$start+1
   dat=dat %>% dplyr::mutate(Region=paste0(chr,":",start,"-",end))
@@ -284,7 +286,12 @@ output_dir="",verbose=FALSE,bin_size=40000000){
   parallel::mclapply(dat[,c("Region"),drop=FALSE],FUN=function(x){ generate_BQSR(region=x,
   bin_path=bin_path2,bam=bam,ref_genome=ref_genome,snpdb=snpdb,
   output_dir=output_dir,verbose=verbose)})
-  sample_name=get_sample_name(bam)
+  n_files=0
+  while(n_files!=nrow(dat)){
+    Sys.sleep(30)
+    print("Sleeping...")
+    n_files=system(paste("ls",output_dir,"|wc -l"),intern=TRUE)
+  }
   gather_BQSR_reports(bin_path=bin_path2,reports_dir=output_dir,output_name=sample_name)
   system(paste0("rm ",output_dir,"/*:*.RECAL.table"))
 }
@@ -407,7 +414,7 @@ output_dir="",verbose=FALSE,threads=4,bin_size=40000000){
   if(output_dir==""){
     sep=""
   }
-
+  sample_name=get_sample_name(bam)
   dat=bin_chromosomes(bin_path=bin_path,bam=bam,verbose=verbose,bin_size=bin_size)
   dat$start=dat$start+1
   dat$pos=1:nrow(dat)
@@ -419,7 +426,13 @@ output_dir="",verbose=FALSE,threads=4,bin_size=40000000){
   bin_path=bin_path2,bam=bam,ref_genome=ref_genome,
   rec_table=rec_table,output_dir=output_dir,verbose=verbose)})
 
-  sample_name=get_sample_name(bam)
+  n_files=0
+  while(n_files!=nrow(dat)){
+    Sys.sleep(30)
+    print("Sleeping...")
+    n_files=system(paste("ls",output_dir,"|wc -l"),intern=TRUE)
+  }
+  
 
   gather_bam_files(bin_path=bin_path3,bams_dir=output_dir,
   output_name=paste0(sample_name,".RECAL.SORTED.RMDUP.SORTED"))
