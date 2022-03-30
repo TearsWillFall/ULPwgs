@@ -269,6 +269,8 @@ parallel_generate_BQSR=function(bin_path="tools/samtools/samtools",
 bin_path2="tools/gatk/gatk",bam="",ref_genome="",snpdb="",threads=3,
 output_dir="",verbose=FALSE,bin_size=40000000){
 
+  options(scipen = 999)
+
   sep="/"
 
   if(output_dir==""){
@@ -398,6 +400,8 @@ rec_table="",output_dir="",verbose=FALSE){
 parallel_apply_BQSR=function(bin_path="tools/samtools/samtools",bin_path2="tools/gatk/gatk",
 bin_path3="tools/picard/build/libs/picard.jar",bam="",ref_genome="",rec_table="",
 output_dir="",verbose=FALSE,threads=4,bin_size=40000000){
+
+  options(scipen = 999)
 
   sep="/"
 
@@ -683,6 +687,7 @@ verbose=FALSE,sorted=TRUE,mean=TRUE,fai="",suffix="",output_dir="",hist=FALSE){
 #' @export
 
 get_bam_reference_chr=function(bin_path="tools/samtools/samtools",bam="",verbose=FALSE){
+  options(scipen = 999)
   if(verbose){
     print(paste0(bin_path," view -H ",bam," | grep @SQ"))
   }
@@ -737,6 +742,7 @@ seqlast <- function (from, to, by)
 
 bin_chromosomes <- function(bin_path="tools/samtools/samtools",bam="",verbose=FALSE,
 bin_size=40000000){
+  options(scipen = 999)
   chr=get_bam_reference_chr(bin_path=bin_path,bam=bam,verbose=verbose)
   bed=chr%>% dplyr::group_by(chr) %>%
   dplyr::summarise(start=seqlast(start,end,bin_size)) %>%
