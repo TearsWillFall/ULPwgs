@@ -738,8 +738,8 @@ seqlast <- function (from, to, by)
 bin_chromosomes <- function(bin_path="tools/samtools/samtools",bam="",verbose=FALSE,
 bin_size=40000000){
   chr=get_bam_reference_chr(bin_path=bin_path,bam=bam,verbose=verbose)
-  bed=chr%>% group_by(chr) %>%
-  summarise(start=seqlast(start,end,window_size)) %>%
-  mutate(end=lead(start_x)) %>% tidyr::drop_na()
+  bed=chr%>% dplyr::group_by(chr) %>%
+  dplyr::summarise(start=seqlast(start,end,window_size)) %>%
+  dplyr::mutate(end=lead(start_x)) %>% tidyr::drop_na()
   return(bed)
 }
