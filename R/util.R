@@ -740,6 +740,6 @@ bin_size=40000000){
   chr=get_bam_reference_chr(bin_path=bin_path,bam=bam,verbose=verbose)
   bed=chr%>% group_by(chr) %>%
   summarise(start=seqlast(start,end,window_size)) %>%
-  mutate(end=lead(start_x)) %>% dplyr::drop_na()
+  mutate(end=lead(start_x)) %>% tidyr::drop_na()
   return(bed)
 }
