@@ -40,7 +40,8 @@ get_file_extension=function(file_path=""){
 
 intersect_sample_name=function(file_path="",file_path2=""){
   tmp_name=get_sample_name(file_path2)
-  sample_name=sapply(sapply(c(0:(nchar(tmp_name)-1)),function (i) substr(tmp_name,1,nchar(tmp_name)-i)),function (x) grepl(x,file_path))
+  sample_name=sapply(sapply(c(0:(nchar(tmp_name)-1)),
+  function (i) substr(tmp_name,1,nchar(tmp_name)-i)),function (x) grepl(x,file_path))
   sample_name=names(which(sample_name)[1])
   sample_name=sub("(.*)[_.-].*","\\1",sample_name)
   return(sample_name)
@@ -84,7 +85,8 @@ index_ref=function(bin_path="tools/bwa/bwa",file="",verbose=FALSE){
 #' @param ram Ram memory to use per thread in GB. Default 1GB
 #' @export
 
-bam_sort=function(bin_path="tools/samtools/samtools",file="",output_dir="",ram=1,verbose=FALSE,threads=3,coord_sort=TRUE){
+bam_sort=function(bin_path="tools/samtools/samtools",file="",output_dir="",ram=1,
+verbose=FALSE,threads=3,coord_sort=TRUE){
   sep="/"
 
   if(output_dir==""){
@@ -144,14 +146,18 @@ index=function(bin_path="tools/samtools/samtools",file="",verbose=FALSE,threads=
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-complement_bed=function(bin_path="tools/bedtools2/bin/bedtools",bed="",pad=10,output_name="Complement",genome="",verbose=FALSE){
+complement_bed=function(bin_path="tools/bedtools2/bin/bedtools",bed="",pad=10,
+output_name="Complement",genome="",verbose=FALSE){
 
   if (pad!=0){
-    pad_bed(bin_path=bin_path,bed=bed,pad=pad,output_name=paste0(ULPwgs::get_sample_name(bed),"_",pad),genome=genome,verbose=verbose)
+    pad_bed(bin_path=bin_path,bed=bed,pad=pad,output_name=paste0(ULPwgs::get_sample_name(bed),"_",pad),
+    genome=genome,verbose=verbose)
     if(verbose){
-      print(paste0(bin_path," complement -i ",paste0(ULPwgs::get_sample_name(bed),"_",pad,".bed"), " -g ", genome, " > ",paste0(output_name,".bed")))
+      print(paste0(bin_path," complement -i ",paste0(ULPwgs::get_sample_name(bed),"_",pad,".bed"),
+       " -g ", genome, " > ",paste0(output_name,".bed")))
     }
-    system(paste0(bin_path," complement -i ",paste0(ULPwgs::get_sample_name(bed),"_",pad,".bed"), " -g ", genome, " > ",paste0(output_name,".bed")))
+    system(paste0(bin_path," complement -i ",paste0(ULPwgs::get_sample_name(bed),"_",pad,".bed"),
+     " -g ", genome, " > ",paste0(output_name,".bed")))
     file.remove(paste0(ULPwgs::get_sample_name(bed),"_",pad,".bed"))
   }else{
     if(verbose){
@@ -176,9 +182,11 @@ complement_bed=function(bin_path="tools/bedtools2/bin/bedtools",bed="",pad=10,ou
 pad_bed=function(bin_path="tools/bedtools2/bin/bedtools",bed="",pad=10,output_name="Padded",genome="",verbose=FALSE){
 
   if(verbose){
-    print(paste0(bin_path," slop -i ",bed, " -g ", genome," -b ",pad, " > ",paste0(output_name,".bed")))
+    print(paste0(bin_path," slop -i ",bed, " -g ", genome," -b ",pad, " > ",
+    paste0(output_name,".bed")))
   }
-  system(paste0(bin_path," slop -i ",bed, " -g ", genome," -b ",pad, " > ",paste0(output_name,".bed")))
+  system(paste0(bin_path," slop -i ",bed, " -g ", genome," -b ",pad, " > ",
+  paste0(output_name,".bed")))
 
 }
 
@@ -198,7 +206,8 @@ pad_bed=function(bin_path="tools/bedtools2/bin/bedtools",bed="",pad=10,output_na
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
 #' @export
 
-generate_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome="",snpdb="",output_dir="",verbose=FALSE){
+generate_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome="",
+snpdb="",output_dir="",verbose=FALSE){
 
   sep="/"
 
@@ -243,12 +252,12 @@ generate_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome=""
 #' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360036898312-BaseRecalibrator
 #'
 #' @param bam [REQUIRED] Path to the BAM file.
-#' @param bin_path [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
+#' @param bin_path [REQUIRED] Path to gatk executable. Default tools/samtools/samtools.
+#' @param bin_path2 [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
 #' @param ref_genome [REQUIRED] Path to reference genome
 #' @param snpdb [REQUIRED] Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.
 #' @param region_bed [REQUIRED] Path to the output directory.
 #' @param threads Number of threads to split the work. Default 3
-#' @param region_bed [OPTIONAL] BED file with genome divided in windows. Used for parallelization.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
 #' @export
@@ -256,7 +265,9 @@ generate_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome=""
 
 
 
-parallel_generate_BQSR=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",snpdb="",region_bed="",threads=3,output_dir="",verbose=FALSE){
+parallel_generate_BQSR=function(bin_path="tools/samtools/samtools",
+bin_path2="tools/gatk/gatk",bam="",ref_genome="",snpdb="",threads=3,
+output_dir="",verbose=FALSE,bin_size=40000000){
 
   sep="/"
 
@@ -264,14 +275,16 @@ parallel_generate_BQSR=function(bin_path="tools/gatk/gatk",bam="",ref_genome="",
     sep=""
   }
 
-  dat=read.table(region_bed)
-  dat$V2=dat$V2+1
-  dat=dat %>% dplyr::mutate(Region=paste0(sub("chr","",V1),":",V2,"-",V3))
+  dat=get_bam_reference_chr(bin_path=bin_path,bam=bam,verbose=verbose)
+  dat$start=dat$start+1
+  dat=dat %>% dplyr::mutate(Region=paste0(chr,":",start,"-",end))
   cl=parallel::makeCluster(threads)
-  pbapply::pbapply(X=dat[,c("Region"),drop=FALSE],1,FUN=generate_BQSR,bin_path=bin_path,bam=bam,ref_genome=ref_genome,snpdb=snpdb,output_dir=output_dir,verbose=verbose,cl=cl)
+  pbapply::pbapply(X=dat[,c("Region"),drop=FALSE],1,FUN=generate_BQSR,
+  bin_path=bin_path2,bam=bam,ref_genome=ref_genome,snpdb=snpdb,
+  output_dir=output_dir,verbose=verbose,cl=cl)
   on.exit(parallel::stopCluster(cl))
   sample_name=get_sample_name(bam)
-  gather_BQSR_reports(bin_path=bin_path,reports_dir=output_dir,output_name=sample_name)
+  gather_BQSR_reports(bin_path=bin_path2,reports_dir=output_dir,output_name=sample_name)
   system(paste0("rm ",output_dir,"/*:*.RECAL.table"))
 }
 
@@ -305,9 +318,11 @@ gather_BQSR_reports=function(bin_path="tools/gatk/gatk",reports_dir="",output_na
   files=list.files(reports_dir,full.names=TRUE,pattern=":")
 
   if(verbose){
-    print(paste0(bin_path," GatherBQSRReports ",paste(" -I ",files,collapse=" ")," -O ",paste0(output_dir,"/",output_name,".RECAL.table")))
+    print(paste0(bin_path," GatherBQSRReports ",paste(" -I ",files,collapse=" "),
+    " -O ",paste0(output_dir,"/",output_name,".RECAL.table")))
   }
-    system(paste0(bin_path," GatherBQSRReports ",paste(" -I ",files,collapse=" ")," -O ",paste0(output_dir,"/",output_name,".RECAL.table")))
+    system(paste0(bin_path," GatherBQSRReports ",paste(" -I ",files,collapse=" "),
+    " -O ",paste0(output_dir,"/",output_name,".RECAL.table")))
 }
 
 
@@ -328,7 +343,8 @@ gather_BQSR_reports=function(bin_path="tools/gatk/gatk",reports_dir="",output_na
 
 
 
-apply_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome="",rec_table="",output_dir="",verbose=FALSE){
+apply_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome="",
+rec_table="",output_dir="",verbose=FALSE){
 
   sep="/"
 
@@ -352,9 +368,11 @@ apply_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome="",re
   }
 
   if(verbose){
-    print(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome," --bqsr-recal-file ",rec_table,region," -O ",out_file,reg))
+    print(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome,
+    " --bqsr-recal-file ",rec_table,region," -O ",out_file,reg))
   }
-  system(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome, " --bqsr-recal-file ",rec_table," -O ",out_file,reg))
+  system(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome,
+  " --bqsr-recal-file ",rec_table," -O ",out_file,reg))
 }
 
 
@@ -365,33 +383,44 @@ apply_BQSR=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome="",re
 #' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360050814312-ApplyBQSR
 #'
 #' @param bam [REQUIRED] Path to the BAM file.
-#' @param bin_path [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
-#' @param bin_path2 [REQUIRED] Path to picard executable. Default tools/picard/build/libs/picard.jar
+#' @param bin_path [REQUIRED] Path to samtools executable. Default tools/samtools/samtools.
+#' @param bin_path2 [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
+#' @param bin_path3 [REQUIRED] Path to picard executable. Default tools/picard/build/libs/picard.jar
 #' @param ref_genome [REQUIRED] Path to reference genome
 #' @param rec_table [REQUIRED] Path to the recalibratio table.
-#' @param region_bed [OPTIONAL] Number of threads to split the work. Default 3
-#' @param threads [OPTIONAL] Number of threads to split the work. Default 3
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param bin_size [OPTIONAL] Chunk size to split genome for parallelizing. Default 40000000.
 #' @export
 #' @import pbapply
 
-parallel_apply_BQSR=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/build/libs/picard.jar",bam="",ref_genome="",rec_table="",region_bed="",output_dir="",verbose=FALSE,threads=4){
+parallel_apply_BQSR=function(bin_path="tools/samtools/samtools",bin_path2="tools/gatk/gatk",
+bin_path3="tools/picard/build/libs/picard.jar",bam="",ref_genome="",rec_table="",
+output_dir="",verbose=FALSE,threads=4,bin_size=40000000){
+
   sep="/"
 
   if(output_dir==""){
     sep=""
   }
 
-  dat=read.table(region_bed)
-  dat$V2=dat$V2+1
+  dat=bin_chromosomes(bin_path=bin_path,bam=bam,verbose=verbose,bin_size=bin_size)
+  dat$start=dat$start+1
   dat$pos=1:nrow(dat)
-  dat=dat %>% dplyr::mutate(Region=paste0(pos,"_",sub("chr","",V1),":",V2,"-",V3))
+  dat=dat %>% dplyr::mutate(Region=paste0(pos,"_",chr,":",start,"-",end))
+
   cl=parallel::makeCluster(threads)
-  pbapply::pbapply(X=dat[,c("Region"),drop=FALSE],1,FUN=apply_BQSR,bin_path=bin_path,bam=bam,ref_genome=ref_genome,rec_table=rec_table,output_dir=output_dir,verbose=verbose,cl=cl)
+
+  pbapply::pbapply(X=dat[,c("Region"),drop=FALSE],1,FUN=apply_BQSR,
+  bin_path=bin_path2,bam=bam,ref_genome=ref_genome,
+  rec_table=rec_table,output_dir=output_dir,verbose=verbose,cl=cl)
+
   on.exit(parallel::stopCluster(cl))
   sample_name=get_sample_name(bam)
-  gather_bam_files(bin_path=bin_path2,bams_dir=output_dir,output_name=paste0(sample_name,".RECAL.SORTED.RMDUP.SORTED"))
+
+  gather_bam_files(bin_path=bin_path3,bams_dir=output_dir,
+  output_name=paste0(sample_name,".RECAL.SORTED.RMDUP.SORTED"))
   system(paste0("rm ",output_dir,"/*:*.RECAL*.ba*"))
 
 }
@@ -409,7 +438,8 @@ parallel_apply_BQSR=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
 #' @export
 
-gather_bam_files=function(bin_path="tools/picard/build/libs/picard.jar",bams_dir="",output_name="File",output_dir="",verbose=FALSE){
+gather_bam_files=function(bin_path="tools/picard/build/libs/picard.jar",bams_dir="",
+  output_name="File",output_dir="",verbose=FALSE){
 
   if(output_dir==""){
     output_dir=bams_dir
@@ -421,12 +451,15 @@ gather_bam_files=function(bin_path="tools/picard/build/libs/picard.jar",bams_dir
 
   files=list.files(bams_dir,full.names=TRUE,pattern=":")
   files=files[grepl("bam$",files)]
-  files=files[order(as.numeric(lapply(lapply(lapply(lapply(lapply(lapply(basename(files),FUN=strsplit,split="\\."),FUN="[[",index=1),FUN="[",index=2),FUN=strsplit,split="_"),FUN="[[",index=1),FUN="[",index=1)))]
+  files=files[order(as.numeric(lapply(lapply(lapply(lapply(lapply(lapply(basename(files),
+  FUN=strsplit,split="\\."),FUN="[[",index=1),FUN="[",index=2),FUN=strsplit,split="_"),FUN="[[",index=1),FUN="[",index=1)))]
 
   if(verbose){
-    print(paste0("java -jar ",bin_path," GatherBamFiles CREATE_INDEX=true ",paste0(" I=",files,collapse=" ")," O=",paste0(output_dir,"/",output_name,".bam")))
+    print(paste0("java -jar ",bin_path," GatherBamFiles CREATE_INDEX=true ",
+    paste0(" I=",files,collapse=" ")," O=",paste0(output_dir,"/",output_name,".bam")))
   }
-    system(paste0("java -jar ",bin_path," GatherBamFiles CREATE_INDEX=true ",paste0(" I=",files,collapse=" ")," O=",paste0(output_dir,"/",output_name,".bam")))
+    system(paste0("java -jar ",bin_path," GatherBamFiles CREATE_INDEX=true ",
+    paste0(" I=",files,collapse=" ")," O=",paste0(output_dir,"/",output_name,".bam")))
 }
 
 
@@ -449,7 +482,8 @@ gather_bam_files=function(bin_path="tools/picard/build/libs/picard.jar",bams_dir
 #' @param jobs [OPTIONAL] Number of jobs to run.
 #' @export
 
-replace_rg=function(bin_path="tools/samtools/samtools",bam="",output_dir="",verbose=FALSE,index=TRUE,ID="",PL="",PU="",LB="",SM="",threads=3,jobs=1){
+replace_rg=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
+  verbose=FALSE,index=TRUE,ID="",PL="",PU="",LB="",SM="",threads=3,jobs=1){
 
   sep="/"
 
@@ -488,12 +522,15 @@ replace_rg=function(bin_path="tools/samtools/samtools",bam="",output_dir="",verb
 
   parallel::mclapply(1:length(bam),FUN=function(x){
     if(verbose){
-      print(paste(bin_path," addreplacerg ",tag," -o ",paste0(output_dir,"/",basename(sub("bam","rh.bam",bam[x]))), " -@ ",threads,bam[x]))
+      print(paste(bin_path," addreplacerg ",tag," -o ",paste0(output_dir,"/",
+      basename(sub("bam","rh.bam",bam[x]))), " -@ ",threads,bam[x]))
     }
-      system(paste(bin_path," addreplacerg ",tag," -o ",paste0(output_dir,"/",basename(sub("bam","rh.bam",bam[x]))), " -@ ",threads,bam[x]))
+      system(paste(bin_path," addreplacerg ",tag," -o ",paste0(output_dir,"/",
+      basename(sub("bam","rh.bam",bam[x]))), " -@ ",threads,bam[x]))
 
     if(index){
-      index(bin_path=bin_path,file=paste0(output_dir,"/",basename(sub("bam","rh.bam",bam[x]))),verbose=verbose,threads=threads)
+      index(bin_path=bin_path,file=paste0(output_dir,"/",
+      basename(sub("bam","rh.bam",bam[x]))),verbose=verbose,threads=threads)
     }
   },mc.cores=jobs)
 }
@@ -537,14 +574,18 @@ recal_covariates=function(bin_path="tools/gatk/gatk",before="",after="",output_d
 
   if (before!="" & after==""){
     if(verbose){
-      print(paste0(bin_path," AnalyzeCovariates -bqsr ",before," -plots ",paste0(out_file,"_covariates_analysis_before.pdf")))
+      print(paste0(bin_path," AnalyzeCovariates -bqsr ",before," -plots ",
+      paste0(out_file,"_covariates_analysis_before.pdf")))
     }
-    system(paste0(bin_path," AnalyzeCovariates -bqsr ",before," -plots ",paste0(out_file,"_covariates_analysis_before.pdf")))
+    system(paste0(bin_path," AnalyzeCovariates -bqsr ",before," -plots ",
+    paste0(out_file,"_covariates_analysis_before.pdf")))
   }else{
     if(verbose){
-      print(paste0(bin_path," AnalyzeCovariates -before ",before," -after ",after," -plots ",paste0(out_file,"_covariates_analysis.pdf")))
+      print(paste0(bin_path," AnalyzeCovariates -before ",before," -after ",after,
+      " -plots ",paste0(out_file,"_covariates_analysis.pdf")))
     }
-    system(paste0(bin_path," AnalyzeCovariates -before ",before," -after ",after," -plots ",paste0(out_file,"_covariates_analysis_before_after.pdf")))
+    system(paste0(bin_path," AnalyzeCovariates -before ",before," -after ",after,
+    " -plots ",paste0(out_file,"_covariates_analysis_before_after.pdf")))
 
   }
 
@@ -573,13 +614,14 @@ recal_covariates=function(bin_path="tools/gatk/gatk",before="",after="",output_d
 #' @param sorted Are the input files sorted. Default TRUE
 #' @param mean Estimate mean coverage per region. Default TRUE. FALSE produces coverage per base per target.
 #' @param hist Enables progress messages. Default False.
-#' @param fai Indexed genome to which sequece has been aligned. Default none. Only requiref if there is an issue with chromosome naming.
+#' @param fai Indexed genome to which sequece has been aligned. Default none. Only require if there is an issue with chromosome naming.
 #' @param verbose Enables progress messages. Default False.
 #' @param output_dir Output directory path. Default none.
 #' @export
 
 
-bed_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",bed="",verbose=FALSE,sorted=TRUE,mean=TRUE,fai="",suffix="",output_dir="",hist=FALSE){
+bed_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",bed="",
+verbose=FALSE,sorted=TRUE,mean=TRUE,fai="",suffix="",output_dir="",hist=FALSE){
     sep="/"
 
     if(output_dir==""){
@@ -653,4 +695,51 @@ get_bam_reference_chr=function(bin_path="tools/samtools/samtools",bam="",verbose
 
   ref_chr=data.frame(chr=chr,start=0,end=size)
   return(ref_chr)
+}
+
+
+
+#' Function to generate seq with trailing ner
+#'
+#' This functions genereates a sequence of number
+#'
+#'
+#' @param from Start of sequence
+#' @param to End of sequence
+#' @param by Step size
+#' @export
+
+
+
+seqlast <- function (from, to, by)
+{
+  vec <- do.call(what = seq, args = list(from, to, by))
+  if ( tail(vec, 1) != to ) {
+    return(c(vec, to))
+  } else {
+    return(vec)
+  }
+}
+
+
+
+#' Split chromosomes into bins
+#'
+#' This functions takes a BED file of chromosome positions for BAM file input
+#'
+#'
+#' @param bin_path Path to samtools executable. Default path tools/samtools/samtools.
+#' @param bam Path to directory with BAM files to merge.
+#' @param verbose Enables progress messages. Default False.
+#' @param bin_size Bin size. Default 400000000 pb
+#' @export
+
+
+bin_chromosomes <- function(bin_path="tools/samtools/samtools",bam="",verbose=FALSE,
+bin_size=40000000){
+  chr=get_bam_reference_chr(bin_path=bin_path,bam=bam,verbose=verbose)
+  bed=chr%>% group_by(chr) %>%
+  summarise(start=seqlast(start,end,window_size)) %>%
+  mutate(end=lead(start_x)) %>% drop_na()
+  return(bed)
 }

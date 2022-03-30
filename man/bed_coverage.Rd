@@ -30,7 +30,7 @@ bed_coverage(
 
 \item{mean}{Estimate mean coverage per region. Default TRUE. FALSE produces coverage per base per target.}
 
-\item{fai}{Indexed genome to which sequece has been aligned. Default none. Only requiref if there is an issue with chromosome naming.}
+\item{fai}{Indexed genome to which sequece has been aligned. Default none. Only require if there is an issue with chromosome naming.}
 
 \item{output_dir}{Output directory path. Default none.}
 

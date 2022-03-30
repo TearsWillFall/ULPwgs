@@ -13,7 +13,8 @@
 #' @export
 
 
-fastqc=function (bin_path="tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_cores=3,output_dir="",verbose=FALSE){
+fastqc=function (bin_path="tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_cores=3,
+output_dir="",verbose=FALSE){
 
   sep="/"
 
@@ -69,7 +70,8 @@ fastqc=function (bin_path="tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_core
 #' @export
 
 
-trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA,yadapt=NA,n_cores=3,output_dir="",verbose=FALSE,mean_quality=0,min_length=35,max_length=NA){
+trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA,
+yadapt=NA,n_cores=3,output_dir="",verbose=FALSE,mean_quality=0,min_length=35,max_length=NA){
 
   sep="/"
 
@@ -124,11 +126,14 @@ trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA
 #' @export
 
 
-merge_bams=function(bin_path="tools/samtools/samtools",bams="",output_name="",verbose=FALSE,threads=3){
+merge_bams=function(bin_path="tools/samtools/samtools",bams="",output_name="",
+  verbose=FALSE,threads=3){
     if(verbose){
-      print(paste(bin_path,"merge ",paste0(output_name,".bam"), " --threads",threads,paste(bams,collapse=" ")))
+      print(paste(bin_path,"merge ",paste0(output_name,".bam"), " --threads",
+      threads,paste(bams,collapse=" ")))
     }
-    system(paste(bin_path,"merge ",paste0(output_name,".bam"), " --threads",threads,paste(bams,collapse=" ")))
+    system(paste(bin_path,"merge ",paste0(output_name,".bam"), " --threads",
+    threads,paste(bams,collapse=" ")))
   }
 
 
@@ -145,11 +150,14 @@ merge_bams=function(bin_path="tools/samtools/samtools",bams="",output_name="",ve
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-concatenate_bams=function(bin_path="tools/samtools/samtools",bams="",output_name="",verbose=FALSE,threads=3){
+concatenate_bams=function(bin_path="tools/samtools/samtools",bams="",output_name="",
+verbose=FALSE,threads=3){
     if(verbose){
-      print(paste(bin_path,"cat -o",paste0(output_name,".bam"), " --threads",threads,paste(bams,collapse=" ")))
+      print(paste(bin_path,"cat -o",paste0(output_name,".bam"), " --threads",
+      threads,paste(bams,collapse=" ")))
     }
-    system(paste(bin_path,"cat -o",paste0(output_name,".bam")," --threads",threads,paste(bams,collapse=" ")))
+    system(paste(bin_path,"cat -o",paste0(output_name,".bam")," --threads",
+    threads,paste(bams,collapse=" ")))
 }
 
 
@@ -170,7 +178,8 @@ concatenate_bams=function(bin_path="tools/samtools/samtools",bams="",output_name
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",file_R1="",file_R2="",n_cores=3,ref_genome="",output_dir="",verbose=FALSE){
+alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
+file_R1="",file_R2="",n_cores=3,ref_genome="",output_dir="",verbose=FALSE){
 
     sep="/"
 
@@ -179,7 +188,8 @@ alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
     }
 
     sample_name=get_sample_name(file_R1)
-    GPU=paste0("\"@RG\\tID:",sample_name,"\\tPL:ILLUMINA\\tPU:NA\\tLB:",sample_name,"\\tSM:",sample_name,"\"")
+    GPU=paste0("\"@RG\\tID:",sample_name,"\\tPL:ILLUMINA\\tPU:NA\\tLB:",
+    sample_name,"\\tSM:",sample_name,"\"")
 
     if (!file_R2==""){
     sample_name=intersect_sample_name(file_path=file_R1,file_path2=file_R2)
@@ -188,12 +198,15 @@ alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
       dir.create(output_dir,recursive=TRUE)
     }
 
-    GPU=paste0("\"@RG\\tID:",sample_name,"\\tPL:ILLUMINA\\tPU:NA\\tLB:",sample_name,"\\tSM:",sample_name,"\"")
+    GPU=paste0("\"@RG\\tID:",sample_name,"\\tPL:ILLUMINA\\tPU:NA\\tLB:",
+    sample_name,"\\tSM:",sample_name,"\"")
     out_file=paste0(output_dir,"/",sample_name,".bam")
       if(verbose){
-          print(paste(bin_path,"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome, file_R1,file_R2, "|",bin_path2," view -h -b >",out_file))
+          print(paste(bin_path,"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome,
+          file_R1,file_R2, "|",bin_path2," view -h -b >",out_file))
       }
-      system(paste(bin_path,"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome, file_R1,file_R2, "| ",bin_path2," view -h -b >",out_file))
+      system(paste(bin_path,"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome,#
+      file_R1,file_R2, "| ",bin_path2," view -h -b >",out_file))
 
       }
     else{
@@ -204,9 +217,11 @@ alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
       }
 
       if(verbose){
-          print(paste(bin_path,"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome, file_R1, "| ",paste0("./",bin_path2)," view -h -b >",out_file))
+          print(paste(bin_path,"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome,
+          file_R1, "| ",paste0("./",bin_path2)," view -h -b >",out_file))
       }
-      system(paste(bin_path,"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome, file_R1, "| ",paste0("./",bin_path2)," view -h -b >",out_file))
+      system(paste(bin_path,"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome,
+      file_R1, "| ",paste0("./",bin_path2)," view -h -b >",out_file))
 
     }
   }
@@ -225,7 +240,8 @@ alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
 #' @param ram Ram memory to use per thread in GB. Default 1GB
 #' @export
 
-sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir="",ram=1,verbose=FALSE,threads=3,coord_sort=TRUE){
+sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir="",
+ram=1,verbose=FALSE,threads=3,coord_sort=TRUE){
 
   sep="/"
 
@@ -240,7 +256,8 @@ sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir=""
       dir.create(out_file_dir,recursive=TRUE)
   }
 
-  bam_sort(bin_path=bin_path,file=file,output_dir=out_file_dir,ram=ram,verbose=verbose,threads=threads,coord_sort=coord_sort)
+  bam_sort(bin_path=bin_path,file=file,output_dir=out_file_dir,ram=ram,
+  verbose=verbose,threads=threads,coord_sort=coord_sort)
   file=paste0(out_file_dir,"/",sample_name,".SORTED.",file_ext)
 
   if (coord_sort){
@@ -249,9 +266,11 @@ sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir=""
 
     if (verbose){
       print("Generating Flag stats:")
-      print(paste0(bin_path," flagstat ",file," -@ ",threads," > ",paste0(file,".flagstat.txt")))
+      print(paste0(bin_path," flagstat ",file," -@ ",threads," > ",
+      paste0(file,".flagstat.txt")))
     }
-    system(paste0(bin_path," flagstat ",file," -@ ",threads," > ",paste0(file,".flagstat.txt")))
+    system(paste0(bin_path," flagstat ",file," -@ ",threads," > ",
+    paste0(file,".flagstat.txt")))
     if (verbose){
       print("Generating Index stats:")
       print(paste0(bin_path," idxstats ",file," > ",paste0(file,".idxstats.txt")))
@@ -274,7 +293,8 @@ sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir=""
 #' @export
 
 
-remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file="",output_dir="",verbose=FALSE,hnd=1000,ram=4,tmp_dir=""){
+remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file="",
+output_dir="",verbose=FALSE,hnd=1000,ram=4,tmp_dir=""){
 
     sep="/"
 
@@ -299,10 +319,18 @@ remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file=""
 
 
     if(verbose){
-      print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path," MarkDuplicates I=",file, " O=",paste0(out_file,".RMDUP.",file_ext)," M=",paste0(out_file,".picard_rmdup.txt")," REMOVE_DUPLICATES=true AS=true VALIDATION_STRINGENCY=LENIENT ",paste0("MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=",hnd)," ",tmp))
+      print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",
+      bin_path," MarkDuplicates I=",file, " O=",paste0(out_file,".RMDUP.",file_ext),
+      " M=",paste0(out_file,".picard_rmdup.txt"),
+      " REMOVE_DUPLICATES=true AS=true VALIDATION_STRINGENCY=LENIENT ",
+      paste0("MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=",hnd)," ",tmp))
 
     }
-    system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path," MarkDuplicates I=",file, " O=",paste0(out_file,".RMDUP.",file_ext)," M=",paste0(out_file,".picard_rmdup.txt")," REMOVE_DUPLICATES=true AS=true VALIDATION_STRINGENCY=LENIENT " ,paste0("MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=",hnd)," ",tmp))
+    system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",
+    bin_path," MarkDuplicates I=",file, " O=",paste0(out_file,".RMDUP.",file_ext),
+    " M=",paste0(out_file,".picard_rmdup.txt"),
+    " REMOVE_DUPLICATES=true AS=true VALIDATION_STRINGENCY=LENIENT " ,
+    paste0("MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=",hnd)," ",tmp))
 
   }
 
@@ -319,7 +347,8 @@ remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file=""
 #' @export
 
 
-remove_duplicates_gatk=function(bin_path="tools/gatk/gatk",file="",output_dir="",verbose=FALSE,tmp_dir="",threads=3){
+remove_duplicates_gatk=function(bin_path="tools/gatk/gatk",file="",output_dir="",
+verbose=FALSE,tmp_dir="",threads=3){
 
       sep="/"
 
@@ -343,9 +372,13 @@ remove_duplicates_gatk=function(bin_path="tools/gatk/gatk",file="",output_dir=""
       }
 
       if(verbose){
-      print(paste0(bin_path," MarkDuplicatesSpark -I ",file, " -O ",paste0(out_file,".SORTED.RMDUP.",file_ext)," -M ",paste0(out_file,".gatk_rmdup.txt")," ",tmp," --conf \'spark.executor.cores=",threads,"\'"))
+      print(paste0(bin_path," MarkDuplicatesSpark -I ",file, " -O ",
+      paste0(out_file,".SORTED.RMDUP.",file_ext)," -M ",paste0(out_file,".gatk_rmdup.txt"),
+      " ",tmp," --conf \'spark.executor.cores=",threads,"\'"))
       }
-        system(paste0(bin_path," MarkDuplicatesSpark -I ",file, " -O ",paste0(out_file,".SORTED.RMDUP.",file_ext)," -M ",paste0(out_file,".gatk_rmdup.txt")," ",tmp," --conf \'spark.executor.cores=",threads,"\'"))
+        system(paste0(bin_path," MarkDuplicatesSpark -I ",file, " -O ",
+        paste0(out_file,".SORTED.RMDUP.",file_ext)," -M ",paste0(out_file,".gatk_rmdup.txt"),
+        " ",tmp," --conf \'spark.executor.cores=",threads,"\'"))
     }
 
 
@@ -354,20 +387,21 @@ remove_duplicates_gatk=function(bin_path="tools/gatk/gatk",file="",output_dir=""
 #'
 #' This function recalibrates the base quality of the reads in two steps process based on GATK best practices guides.
 #'
-#' @param bin_path [REQUIRED] Path to picard executable. Default path tools/gatk/gatk.
-#' @param bin_path2 [REQUIRED] Path to picard executable. Default path tools/picard/build/libs/picard.jar.
+#' @param bin_path [REQUIRED] Path to picard executable. Default path tools/samtools/samtools.
+#' @param bin_path2 [REQUIRED] Path to picard executable. Default path tools/gatk/gatk.
+#' @param bin_path3 [REQUIRED] Path to picard executable. Default path tools/picard/build/libs/picard.jar.
 #' @param bam [REQUIRED]  Path to BAM file.
 #' @param ref_genome [REQUIRED]  Path to reference genome.
 #' @param snpdb [REQUIRED] Known variant database.Requires atleast 1.
-#' @param region_bed [REQUIRED] BED file with genome divided in windows. Used for parallelization. Recommended to use regions of 40Mb.
-#' @param region_bed2 [REQUIRED] BED file with genome divided in windows. Used for parallelization. Recommended to use whole chromosomes.
 #' @param threads [REQUIRED]Number of threads to split the work. Only relevant if region_bed file is given.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
 #' @export
 
 
-recalibrate_bq=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/build/libs/picard.jar",bam="",ref_genome="",snpdb="",region_bed="",region_bed2="",threads=3,output_dir="",verbose=FALSE){
+recalibrate_bq=function(bin_path="tools/samtools/samtools",bin_path2="tools/gatk/gatk",
+bin_path3="tools/picard/build/libs/picard.jar",bam="",ref_genome="",snpdb="",
+region_bed="",region_bed2="",threads=3,output_dir="",verbose=FALSE){
 
   sep="/"
 
@@ -378,29 +412,43 @@ recalibrate_bq=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/build
   sample_name=get_sample_name(bam)
   file_ext=get_file_extension(bam)
 
-  out_file_dir=paste0(output_dir,sep,sample_name,"_RECAL.",toupper(file_ext),"/",sample_name,"_RECAL_before")
+  out_file_dir=paste0(output_dir,sep,sample_name,"_RECAL.",toupper(file_ext),"/",
+  sample_name,"_RECAL_before")
   if (!dir.exists(out_file_dir)){
       dir.create(out_file_dir,recursive=TRUE)
   }
 
-  out_file_dir2=paste0(output_dir,sep,sample_name,"_RECAL.",toupper(file_ext),"/",sample_name,"_RECAL_after")
+  out_file_dir2=paste0(output_dir,sep,sample_name,"_RECAL.",toupper(file_ext),"/",
+  sample_name,"_RECAL_after")
   if (!dir.exists(out_file_dir2)){
       dir.create(out_file_dir2,recursive=TRUE)
   }
 
-  out_file_dir3=paste0(output_dir,sep,sample_name,"_RECAL.",toupper(file_ext),"/",sample_name,"_tmp")
+  out_file_dir3=paste0(output_dir,sep,sample_name,"_RECAL.",toupper(file_ext),"/",
+  sample_name,"_tmp")
   if (!dir.exists(out_file_dir3)){
       dir.create(out_file_dir3,recursive=TRUE)
   }
 
   out_file_dir4=paste0(output_dir,sep,sample_name,"_RECAL.",toupper(file_ext))
 
-  parallel_generate_BQSR(bin_path=bin_path,bam=bam,ref_genome=ref_genome,snpdb=snpdb,region_bed=region_bed,threads=threads,output_dir=out_file_dir,verbose=verbose)
-  parallel_apply_BQSR(bin_path=bin_path,bin_path2=bin_path2,bam=bam,ref_genome=ref_genome,rec_table=paste0(out_file_dir,"/",sample_name,".RECAL.table"),region_bed=region_bed2,output_dir=out_file_dir3,verbose=verbose,threads=threads)
+  parallel_generate_BQSR(bin_path=bin_path,bin_path2=bin_path2,bam=bam,
+    ref_genome=ref_genome,snpdb=snpdb,
+    threads=threads,output_dir=out_file_dir,verbose=verbose)
+
+  parallel_apply_BQSR(bin_path=bin_path,bin_path2=bin_path2,bin_path3=bin_path3,
+    bam=bam,ref_genome=ref_genome,rec_table=paste0(out_file_dir,"/",sample_name,".RECAL.table"),
+    output_dir=out_file_dir3,verbose=verbose,threads=threads)
+
   system(paste(paste0("mv ",out_file_dir3,"/*"),out_file_dir4))
   system(paste("rm -rf ",out_file_dir3))
-  parallel_generate_BQSR(bin_path=bin_path,bam=paste0(out_file_dir4,"/",sample_name,".RECAL.",file_ext),ref_genome=ref_genome,snpdb=snpdb,region_bed=region_bed,threads=threads,output_dir=out_file_dir2,verbose=verbose)
-  recal_covariates(bin_path=bin_path,before=paste0(out_file_dir,"/",sample_name,".RECAL.table"),after=paste0(out_file_dir2,"/",sample_name,".RECAL.table"),output_dir=out_file_dir4)
+
+  parallel_generate_BQSR(bin_path=bin_path,bin_path2=bin_path2,
+    bam=paste0(out_file_dir4,"/",sample_name,".RECAL.",file_ext),
+    ref_genome=ref_genome,snpdb=snpdb,threads=threads,output_dir=out_file_dir2,verbose=verbose)
+
+  recal_covariates(bin_path=bin_path2,before=paste0(out_file_dir,"/",sample_name,".RECAL.table"),
+    after=paste0(out_file_dir2,"/",sample_name,".RECAL.table"),output_dir=out_file_dir4)
 }
 
 
@@ -436,8 +484,10 @@ recalibrate_bq=function(bin_path="tools/gatk/gatk",bin_path2="tools/picard/build
 #' @param ti Primary target intervals for panel data. Requires bi and off_tar and on_tar argmunets. Interval format.
 #' @export
 
-qc_metrics=function(bin_path="tools/samtools/samtools",bin_path2="tools/picard/build/libs/picard.jar",bin_path3="tools/bedtools2/bin/bedtools",
-bam="",output_dir="",ref_genome="",verbose=FALSE,ram=4,tmp_dir="",mapq=0,bi="",ti="",off_tar="",on_tar="",rib_interval="",ref_flat=""){
+qc_metrics=function(bin_path="tools/samtools/samtools",
+bin_path2="tools/picard/build/libs/picard.jar",bin_path3="tools/bedtools2/bin/bedtools",
+bam="",output_dir="",ref_genome="",verbose=FALSE,ram=4,tmp_dir="",mapq=0,bi="",
+ti="",off_tar="",on_tar="",rib_interval="",ref_flat=""){
     sep="/"
 
     if(output_dir==""){
@@ -466,34 +516,55 @@ bam="",output_dir="",ref_genome="",verbose=FALSE,ram=4,tmp_dir="",mapq=0,bi="",t
 
     if (verbose){
       print("Generate MapQ distance map:")
-      print(paste(bin_path,"view",bam," | awk -F", "'\\t'", "'{c[$5]++} END { for (i in c) printf(\"%s\\t%s\\n\",i,c[i]) }'"," | sort -t$'\\t' -k 1 -g >>", paste0(out_file,".mapq_dist.txt")))
+      print(paste(bin_path,"view",bam," | awk -F", "'\\t'",
+      "'{c[$5]++} END { for (i in c) printf(\"%s\\t%s\\n\",i,c[i]) }'",
+      " | sort -t$'\\t' -k 1 -g >>", paste0(out_file,".mapq_dist.txt")))
 
     }
-    system(paste(bin_path,"view",bam," | awk -F", "'\\t'", "'{c[$5]++} END { for (i in c) printf(\"%s\\t%s\\n\",i,c[i]) }'"," | sort -t$'\\t' -k 1 -g >>", paste0(out_file,".mapq_dist.txt")))
+    system(paste(bin_path,"view",bam," | awk -F", "'\\t'",
+     "'{c[$5]++} END { for (i in c) printf(\"%s\\t%s\\n\",i,c[i]) }'",
+     " | sort -t$'\\t' -k 1 -g >>", paste0(out_file,".mapq_dist.txt")))
 
     if (verbose){
       print("Generate Alignment Metrics:")
-      print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectAlignmentSummaryMetrics ","VALIDATION_STRINGENCY=SILENT I=",bam," O=",paste0(out_file,".picard_summary.txt "),tmp))
+      print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir,
+      " -jar ",bin_path2," CollectAlignmentSummaryMetrics ",
+      "VALIDATION_STRINGENCY=SILENT I=",bam," O=",paste0(out_file,".picard_summary.txt "),tmp))
 
     }
-    system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectAlignmentSummaryMetrics ","VALIDATION_STRINGENCY=SILENT I=",bam," O=",paste0(out_file,".picard_summary.txt "),tmp))
+    system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir,
+    " -jar ",bin_path2," CollectAlignmentSummaryMetrics ",
+    "VALIDATION_STRINGENCY=SILENT I=",bam," O=",paste0(out_file,".picard_summary.txt "),tmp))
 
     if (verbose){
       print("Generate Insert Size Metrics:")
-      print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectInsertSizeMetrics ","VALIDATION_STRINGENCY=SILENT I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf "),tmp))
+      print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",
+      bin_path2," CollectInsertSizeMetrics ","VALIDATION_STRINGENCY=SILENT I=",
+      bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",
+      paste0(out_file,".picard_insert_size.pdf "),tmp))
 
     }
-    system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2, " CollectInsertSizeMetrics ","VALIDATION_STRINGENCY=SILENT I=",bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",paste0(out_file,".picard_insert_size.pdf "),tmp))
+    system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",
+    bin_path2, " CollectInsertSizeMetrics ","VALIDATION_STRINGENCY=SILENT I=",
+    bam," O=",paste0(out_file,".picard_insert_size.txt")," H=",
+    paste0(out_file,".picard_insert_size.pdf "),tmp))
 
 
     ## Only call metrics for panel data if bait and target intervals are supplied, Otherwise WGS metrics.
     if (bi!="" & ti!=""){
       if (verbose){
         print("Generate Panel Metrics:")
-        print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectHsMetrics VALIDATION_STRINGENCY=SILENT BI=",bi," TI=",ti," I=",bam," THEORETICAL_SENSITIVITY_OUTPUT=",paste0(out_file,".TS.txt"),ref," O=",paste0(out_file,".CollectHSmetrics.txt "),tmp))
+        print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir,
+        " -jar ",bin_path2," CollectHsMetrics VALIDATION_STRINGENCY=SILENT BI=",
+        bi," TI=",ti," I=",bam," THEORETICAL_SENSITIVITY_OUTPUT=",
+        paste0(out_file,".TS.txt"),ref," O=",
+        paste0(out_file,".CollectHSmetrics.txt "),tmp))
 
       }
-      system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectHsMetrics VALIDATION_STRINGENCY=SILENT BI=",bi," TI=",ti," I=",bam," THEORETICAL_SENSITIVITY_OUTPUT=",paste0(out_file,".TS.txt"),ref," O=",paste0(out_file,".CollectHSmetrics.txt "),tmp))
+      system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",
+      tmp_dir," -jar ",bin_path2," CollectHsMetrics VALIDATION_STRINGENCY=SILENT BI=",
+      bi," TI=",ti," I=",bam," THEORETICAL_SENSITIVITY_OUTPUT=",paste0(out_file,".TS.txt"),
+      ref," O=",paste0(out_file,".CollectHSmetrics.txt "),tmp))
 
 
       ## Picard doesn't output coverage stats for off-target regions therefore we have to estimate this manually.
@@ -502,18 +573,24 @@ bam="",output_dir="",ref_genome="",verbose=FALSE,ram=4,tmp_dir="",mapq=0,bi="",t
 
       ## For target regions
 
-      bed_coverage(bin_path=bin_path3,bam=bam,bed=on_tar,verbose=verbose,sorted=TRUE,mean=TRUE,hist=TRUE,fai=paste0(ref_genome,".fai"),suffix="on_Target",output_dir=out_file_dir)
-      bed_coverage(bin_path=bin_path3,bam=bam,bed=on_tar,verbose=verbose,sorted=TRUE,mean=TRUE,hist=FALSE,fai=paste0(ref_genome,".fai"),suffix="on_Target",output_dir=out_file_dir)
+      bed_coverage(bin_path=bin_path3,bam=bam,bed=on_tar,verbose=verbose,sorted=TRUE,
+        mean=TRUE,hist=TRUE,fai=paste0(ref_genome,".fai"),suffix="on_Target",output_dir=out_file_dir)
+      bed_coverage(bin_path=bin_path3,bam=bam,bed=on_tar,verbose=verbose,sorted=TRUE,
+        mean=TRUE,hist=FALSE,fai=paste0(ref_genome,".fai"),suffix="on_Target",output_dir=out_file_dir)
 
       ## For off target regions
 
-      bed_coverage(bin_path=bin_path3,bam=bam,bed=off_tar,verbose=verbose,sorted=TRUE,mean=TRUE,hist=TRUE,fai=paste0(ref_genome,".fai"),suffix="off_Target",output_dir=out_file_dir)
-      bed_coverage(bin_path=bin_path3,bam=bam,bed=off_tar,verbose=verbose,sorted=TRUE,mean=TRUE,hist=FALSE,fai=paste0(ref_genome,".fai"),suffix="off_Target",output_dir=out_file_dir)
+      bed_coverage(bin_path=bin_path3,bam=bam,bed=off_tar,verbose=verbose,sorted=TRUE,
+        mean=TRUE,hist=TRUE,fai=paste0(ref_genome,".fai"),suffix="off_Target",output_dir=out_file_dir)
+      bed_coverage(bin_path=bin_path3,bam=bam,bed=off_tar,verbose=verbose,sorted=TRUE,
+        mean=TRUE,hist=FALSE,fai=paste0(ref_genome,".fai"),suffix="off_Target",output_dir=out_file_dir)
 
       ## Generate violin and cummulative plots for target and off target regions
 
-      plot_coverage_panel(on_target=paste0(out_file,".on_Target.Per_Region_Coverage.txt"),off_target=paste0(out_file,".off_Target.Per_Region_Coverage.txt"),col=c(5,4),height=6,width=12,output_dir=out_file_dir)
-      plot_cumulative_cov(on_target=paste0(out_file,".on_Target.Histogram_Coverage.txt"),off_target=paste0(out_file,".off_Target.Histogram_Coverage.txt"),height=6,width=12,output_dir=out_file_dir)
+      plot_coverage_panel(on_target=paste0(out_file,".on_Target.Per_Region_Coverage.txt"),
+      off_target=paste0(out_file,".off_Target.Per_Region_Coverage.txt"),col=c(5,4),height=6,width=12,output_dir=out_file_dir)
+      plot_cumulative_cov(on_target=paste0(out_file,".on_Target.Histogram_Coverage.txt"),
+      off_target=paste0(out_file,".off_Target.Histogram_Coverage.txt"),height=6,width=12,output_dir=out_file_dir)
 
     }else if (rib_interval!="" & ref_flat!=""){
 
@@ -533,10 +610,14 @@ bam="",output_dir="",ref_genome="",verbose=FALSE,ram=4,tmp_dir="",mapq=0,bi="",t
     }else{
           if (verbose){
             print(paste0("Generate WGS Metrics for minimum MAPq=",mapq,":"))
-            print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectWgsMetrics VALIDATION_STRINGENCY=SILENT MINIMUM_MAPPING_QUALITY=",mapq," ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt "),tmp))
+            print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",
+            bin_path2," CollectWgsMetrics VALIDATION_STRINGENCY=SILENT MINIMUM_MAPPING_QUALITY=",
+            mapq," ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt "),tmp))
 
           }
-          system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path2," CollectWgsMetrics VALIDATION_STRINGENCY=SILENT MINIMUM_MAPPING_QUALITY=",mapq," ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt "),tmp))
+          system(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",
+          bin_path2," CollectWgsMetrics VALIDATION_STRINGENCY=SILENT MINIMUM_MAPPING_QUALITY=",
+          mapq," ",ref," I=",bam," O=",paste0(out_file,".picard_wgs_q00.txt "),tmp))
 
     }
 
@@ -596,18 +677,22 @@ chrs=c(1:22,"X","Y"),win=500000, format="wig", bam="",output_dir="",verbose=FALS
       if (threads>1){
         parallel::mclapply(1:length(chrs),FUN=function(x){
           if (verbose){
-            print(paste(bin_path2,fmt,"--window", win,"--quality 20 --chromosome",paste0("chr",chrs[x],collapse=","), bam,">", paste0(out_file,".",x,".",format)))
+            print(paste(bin_path2,fmt,"--window", win,"--quality 20 --chromosome",
+            paste0("chr",chrs[x],collapse=","), bam,">", paste0(out_file,".",x,".",format)))
           }
-          system(paste(bin_path2,fmt,"--window", win,"--quality 20 --chromosome",paste0("chr",chrs[x],collapse=","), bam,">" ,paste0(out_file,".",x,".",format)))
+          system(paste(bin_path2,fmt,"--window", win,"--quality 20 --chromosome",
+          paste0("chr",chrs[x],collapse=","), bam,">" ,paste0(out_file,".",x,".",format)))
         },mc.cores=threads
       )
       system(paste0("ls -v -d ",out_file_dir,"/* | xargs cat >",out_file,".",format))
       system(paste0("rm ",out_file,".*.",format))
       }else{
         if (verbose){
-          print(paste(bin_path2,fmt,"--window", win,"--quality 20 --chromosome",paste0("chr",chrs,collapse=","), bam,">", paste0(out_file,".",format)))
+          print(paste(bin_path2,fmt,"--window", win,"--quality 20 --chromosome",
+          paste0("chr",chrs,collapse=","), bam,">", paste0(out_file,".",format)))
         }
-        system(paste(bin_path2,fmt,"--window", win,"--quality 20 --chromosome",paste0("chr",chrs,collapse=","), bam,">" ,paste0(out_file,".",format)))
+        system(paste(bin_path2,fmt,"--window", win,"--quality 20 --chromosome",
+        paste0("chr",chrs,collapse=","), bam,">" ,paste0(out_file,".",format)))
       }
       if (verbose){
           print(paste("sed -i 's/chrom=chr/chrom=/g'",paste0(out_file,".",format)))
@@ -617,18 +702,22 @@ chrs=c(1:22,"X","Y"),win=500000, format="wig", bam="",output_dir="",verbose=FALS
       if (threads>1){
         parallel::mclapply(1:length(chrs),FUN=function(x){
           if (verbose){
-            print(paste(bin_path2,fmt,"--window", win,"--quality 20 --chromosome",paste0(chrs[x],collapse=","), bam,">", paste0(out_file,".",x,".",format)))
+            print(paste(bin_path2,fmt,"--window", win,"--quality 20 --chromosome",
+            paste0(chrs[x],collapse=","), bam,">", paste0(out_file,".",x,".",format)))
           }
-          system(paste(bin_path2,fmt,"--window", win,"--quality 20 --chromosome",paste0(chrs[x],collapse=","), bam,">" ,paste0(out_file,".",x,".",format)))
+          system(paste(bin_path2,fmt,"--window", win,"--quality 20 --chromosome",
+          paste0(chrs[x],collapse=","), bam,">" ,paste0(out_file,".",x,".",format)))
         },mc.cores=threads
       )
       system(paste0("ls -v -d ",out_file_dir,"/* | xargs cat >",out_file,".",format))
       system(paste0("rm ",out_file,".*.",format))
       }else{
         if (verbose){
-          print(paste(bin_path2,fmt,"--window", win,"--quality 20 --chromosome",paste0(chrs,collapse=","), bam,">", paste0(out_file,".",format)))
+          print(paste(bin_path2,fmt,"--window", win,"--quality 20 --chromosome",
+          paste0(chrs,collapse=","), bam,">", paste0(out_file,".",format)))
         }
-        system(paste(bin_path2,fmt,"--window", win,"--quality 20 --chromosome",paste0(chrs,collapse=","), bam,">" ,paste0(out_file,".",format)))
+        system(paste(bin_path2,fmt,"--window", win,"--quality 20 --chromosome",
+        paste0(chrs,collapse=","), bam,">" ,paste0(out_file,".",format)))
       }
 
     }
@@ -649,7 +738,8 @@ chrs=c(1:22,"X","Y"),win=500000, format="wig", bam="",output_dir="",verbose=FALS
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-filter_bam=function(bin_path="tools/samtools/samtools",bam="",position="",bed="",verbose=FALSE,output_name="Filtered",threads=1){
+filter_bam=function(bin_path="tools/samtools/samtools",bam="",position="",bed="",
+verbose=FALSE,output_name="Filtered",threads=1){
 
   if (position!="" &bed!=""){
     print("Position and bed arguments are mutually exclusive")
@@ -693,9 +783,14 @@ filter_bam=function(bin_path="tools/samtools/samtools",bam="",position="",bed=""
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",wig="",norm_wig="",bed="",ploidy="2,3",tumour_content="0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9",homozygous_del="False",subclonal_states=NULL,
-gc="tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",
-normal_panel="tools/ichorCNA/inst/extdata/HD_ULP_PoN_500kb_median_normAutosome_mapScoreFiltered_median.rds",output_dir="",verbose=TRUE,libdir="tools/ichorCNA",male_tresh=0.0001,chrs="'c(1:22,\"X\")'",chrTrain="'c(1:22)'"){
+ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",
+wig="",norm_wig="",bed="",ploidy="2,3",tumour_content="0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9",
+homozygous_del="False",subclonal_states=NULL,
+gc="tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",
+map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",
+centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",
+normal_panel="tools/ichorCNA/inst/extdata/HD_ULP_PoN_500kb_median_normAutosome_mapScoreFiltered_median.rds",
+output_dir="",verbose=TRUE,libdir="tools/ichorCNA",male_tresh=0.0001,chrs="'c(1:22,\"X\")'",chrTrain="'c(1:22)'"){
 
     sep="/"
 
@@ -727,9 +822,19 @@ normal_panel="tools/ichorCNA/inst/extdata/HD_ULP_PoN_500kb_median_normAutosome_m
     }
 
     if(verbose){
-      print(paste("Rscript",bin_path,"--id",sample_id,"--WIG",wig,norm_wig,bed,"--ploidy",paste0("'c(",ploidy,")'"),"--normal",paste0("'c(",tumour_content,")'"),"--maxCN 7 --gcWig", gc,"--mapWig",map,"--centromere",centromere,subclonal_states,"--normalPanel",normal_panel,"--includeHOMD",homozygous_del,"--chrs",chrs,"--fracReadsInChrYForMale",male_tresh,"--chrTrain",chrTrain,"--estimateNormal True --estimatePloidy True --estimateScPrevalence True --outDir",out_file,"--libdir",libdir))
+      print(paste("Rscript",bin_path,"--id",sample_id,"--WIG",wig,norm_wig,bed,
+      "--ploidy",paste0("'c(",ploidy,")'"),"--normal",paste0("'c(",tumour_content,")'"),
+      "--maxCN 7 --gcWig", gc,"--mapWig",map,"--centromere",centromere,subclonal_states,
+      "--normalPanel",normal_panel,"--includeHOMD",homozygous_del,"--chrs",chrs,
+      "--fracReadsInChrYForMale",male_tresh,"--chrTrain",chrTrain,
+      "--estimateNormal True --estimatePloidy True --estimateScPrevalence True --outDir",out_file,"--libdir",libdir))
     }
-    system(paste("Rscript",bin_path,"--id",sample_id,"--WIG",wig,norm_wig,bed,"--ploidy",paste0("'c(",ploidy,")'"),"--normal",paste0("'c(",tumour_content,")'"),"--maxCN 7 --gcWig", gc,"--mapWig",map,"--centromere",centromere,subclonal_states,"--normalPanel",normal_panel,"--includeHOMD",homozygous_del,"--chrs",chrs,"--fracReadsInChrYForMale",male_tresh,"--chrTrain",chrTrain,"--estimateNormal True --estimatePloidy True --estimateScPrevalence True --outDir",out_file,"--libdir",libdir))
+    system(paste("Rscript",bin_path,"--id",sample_id,"--WIG",wig,norm_wig,bed,
+    "--ploidy",paste0("'c(",ploidy,")'"),"--normal",paste0("'c(",tumour_content,")'"),
+    "--maxCN 7 --gcWig", gc,"--mapWig",map,"--centromere",centromere,subclonal_states,
+    "--normalPanel",normal_panel,"--includeHOMD",homozygous_del,"--chrs",chrs,
+    "--fracReadsInChrYForMale",male_tresh,"--chrTrain",chrTrain,
+    "--estimateNormal True --estimatePloidy True --estimateScPrevalence True --outDir",out_file,"--libdir",libdir))
   }
 
 
@@ -781,9 +886,11 @@ centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt"
 
 
     if(verbose){
-      print(paste("Rscript",bin_path,"--filelist",wig_list,bed," --gcWig", gc,"--mapWig",map,"--centromere",centromere,"--fracReadsInChrYForMale",male_tresh," --outfile",output_name))
+      print(paste("Rscript",bin_path,"--filelist",wig_list,bed," --gcWig", gc,
+      "--mapWig",map,"--centromere",centromere,"--fracReadsInChrYForMale",male_tresh," --outfile",output_name))
     }
-    system(paste("Rscript",bin_path,"--filelist",wig_list,bed," --gcWig", gc,"--mapWig",map,"--centromere",centromere,"--fracReadsInChrYForMale",male_tresh," --outfile",output_name))
+    system(paste("Rscript",bin_path,"--filelist",wig_list,bed," --gcWig", gc,
+    "--mapWig",map,"--centromere",centromere,"--fracReadsInChrYForMale",male_tresh," --outfile",output_name))
     system(paste("rm",wig_list))
 
 }

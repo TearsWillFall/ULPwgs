@@ -5,21 +5,24 @@
 \title{Multiregion parallelization of apply_BQSR function}
 \usage{
 parallel_apply_BQSR(
-  bin_path = "tools/gatk/gatk",
-  bin_path2 = "tools/picard/build/libs/picard.jar",
+  bin_path = "tools/samtools/samtools",
+  bin_path2 = "tools/gatk/gatk",
+  bin_path3 = "tools/picard/build/libs/picard.jar",
   bam = "",
   ref_genome = "",
   rec_table = "",
-  region_bed = "",
   output_dir = "",
   verbose = FALSE,
-  threads = 4
+  threads = 4,
+  bin_size = 4e+07
 )
 }
 \arguments{
-\item{bin_path}{\link{REQUIRED} Path to gatk executable. Default tools/gatk/gatk.}
+\item{bin_path}{\link{REQUIRED} Path to samtools executable. Default tools/samtools/samtools.}
 
-\item{bin_path2}{\link{REQUIRED} Path to picard executable. Default tools/picard/build/libs/picard.jar}
+\item{bin_path2}{\link{REQUIRED} Path to gatk executable. Default tools/gatk/gatk.}
+
+\item{bin_path3}{\link{REQUIRED} Path to picard executable. Default tools/picard/build/libs/picard.jar}
 
 \item{bam}{\link{REQUIRED} Path to the BAM file.}
 
@@ -27,13 +30,13 @@ parallel_apply_BQSR(
 
 \item{rec_table}{\link{REQUIRED} Path to the recalibratio table.}
 
-\item{region_bed}{\link{OPTIONAL} Number of threads to split the work. Default 3}
-
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
-\item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 3}
+\item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
+
+\item{bin_size}{\link{OPTIONAL} Chunk size to split genome for parallelizing. Default 40000000.}
 }
 \description{
 Recalibrates

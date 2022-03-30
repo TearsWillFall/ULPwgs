@@ -5,18 +5,21 @@
 \title{Multiregion parallelization of generate_BQSR function}
 \usage{
 parallel_generate_BQSR(
-  bin_path = "tools/gatk/gatk",
+  bin_path = "tools/samtools/samtools",
+  bin_path2 = "tools/gatk/gatk",
   bam = "",
   ref_genome = "",
   snpdb = "",
-  region_bed = "",
   threads = 3,
   output_dir = "",
-  verbose = FALSE
+  verbose = FALSE,
+  bin_size = 4e+07
 )
 }
 \arguments{
-\item{bin_path}{\link{REQUIRED} Path to gatk executable. Default tools/gatk/gatk.}
+\item{bin_path}{\link{REQUIRED} Path to gatk executable. Default tools/samtools/samtools.}
+
+\item{bin_path2}{\link{REQUIRED} Path to gatk executable. Default tools/gatk/gatk.}
 
 \item{bam}{\link{REQUIRED} Path to the BAM file.}
 
@@ -24,13 +27,13 @@ parallel_generate_BQSR(
 
 \item{snpdb}{\link{REQUIRED} Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.}
 
-\item{region_bed}{\link{OPTIONAL} BED file with genome divided in windows. Used for parallelization.}
-
 \item{threads}{Number of threads to split the work. Default 3}
 
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
+
+\item{region_bed}{\link{REQUIRED} Path to the output directory.}
 }
 \description{
 Generates a recalibration table based on various covariates.

@@ -5,8 +5,9 @@
 \title{Function for base quality recalibration}
 \usage{
 recalibrate_bq(
-  bin_path = "tools/gatk/gatk",
-  bin_path2 = "tools/picard/build/libs/picard.jar",
+  bin_path = "tools/samtools/samtools",
+  bin_path2 = "tools/gatk/gatk",
+  bin_path3 = "tools/picard/build/libs/picard.jar",
   bam = "",
   ref_genome = "",
   snpdb = "",
@@ -18,19 +19,17 @@ recalibrate_bq(
 )
 }
 \arguments{
-\item{bin_path}{\link{REQUIRED} Path to picard executable. Default path tools/gatk/gatk.}
+\item{bin_path}{\link{REQUIRED} Path to picard executable. Default path tools/samtools/samtools.}
 
-\item{bin_path2}{\link{REQUIRED} Path to picard executable. Default path tools/picard/build/libs/picard.jar.}
+\item{bin_path2}{\link{REQUIRED} Path to picard executable. Default path tools/gatk/gatk.}
+
+\item{bin_path3}{\link{REQUIRED} Path to picard executable. Default path tools/picard/build/libs/picard.jar.}
 
 \item{bam}{\link{REQUIRED}  Path to BAM file.}
 
 \item{ref_genome}{\link{REQUIRED}  Path to reference genome.}
 
 \item{snpdb}{\link{REQUIRED} Known variant database.Requires atleast 1.}
-
-\item{region_bed}{\link{REQUIRED} BED file with genome divided in windows. Used for parallelization. Recommended to use regions of 40Mb.}
-
-\item{region_bed2}{\link{REQUIRED} BED file with genome divided in windows. Used for parallelization. Recommended to use whole chromosomes.}
 
 \item{threads}{\link{REQUIRED}Number of threads to split the work. Only relevant if region_bed file is given.}
 
