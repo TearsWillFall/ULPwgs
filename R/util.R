@@ -281,7 +281,7 @@ output_dir="",verbose=FALSE,bin_size=40000000){
   dat$start=dat$start+1
   dat=dat %>% dplyr::mutate(Region=paste0(chr,":",start,"-",end))
 
-  parallel::mclapply(dat[,c("Region"),drop=FALSE],FUN=function(x){ generate_BQSR(region=region,
+  parallel::mclapply(dat[,c("Region"),drop=FALSE],FUN=function(x){ generate_BQSR(region=x,
   bin_path=bin_path2,bam=bam,ref_genome=ref_genome,snpdb=snpdb,
   output_dir=output_dir,verbose=verbose)})
   sample_name=get_sample_name(bam)
