@@ -693,7 +693,7 @@ get_bam_reference_chr=function(bin_path="tools/samtools/samtools",bam="",verbose
   size=SQ[,3]
   size=unlist(lapply(size,FUN=function(x){strsplit(x,":")[[1]][2]}))
 
-  ref_chr=data.frame(chr=chr,start=0,end=size)
+  ref_chr=data.frame(chr=chr,start=0,end=as.numeric(size))
   return(ref_chr)
 }
 
