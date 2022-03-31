@@ -371,10 +371,10 @@ rec_table="",output_dir="",verbose=FALSE){
 
   if(verbose){
     print(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome,
-    " --bqsr-recal-file ",rec_table,region," -O ",out_file,reg, wait=TRUE))
+    " --bqsr-recal-file ",rec_table,region," -O ",out_file,reg))
   }
   system(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome,
-  " --bqsr-recal-file ",rec_table," -O ",out_file,reg,wait=TRUE))
+  " --bqsr-recal-file ",rec_table," -O ",out_file,reg),wait=TRUE)
 }
 
 
@@ -752,5 +752,6 @@ bin_size=40000000){
   bed=chr%>% dplyr::group_by(chr) %>%
   dplyr::summarise(start=seqlast(start,end,bin_size)) %>%
   dplyr::mutate(end=dplyr::lead(start)) %>% tidyr::drop_na()
+  bed=bed[str_order(paste0(bed$chr,"_",bed$start), numeric = TRUE),]
   return(bed)
 }
