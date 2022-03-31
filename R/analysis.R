@@ -401,7 +401,7 @@ verbose=FALSE,tmp_dir="",threads=3){
 
 recalibrate_bq=function(bin_path="tools/samtools/samtools",bin_path2="tools/gatk/gatk",
 bin_path3="tools/picard/build/libs/picard.jar",bam="",ref_genome="",snpdb="",
-threads=3,output_dir="",verbose=FALSE){
+threads=3,ram=4,output_dir="",verbose=FALSE){
 
   sep="/"
 
@@ -443,8 +443,14 @@ threads=3,output_dir="",verbose=FALSE){
   system(paste(paste0("mv ",out_file_dir3,"/*"),out_file_dir4))
   system(paste("rm -rf ",out_file_dir3))
 
+  bam_sort(bin_path=bin_path,file=paste0(out_file_dir4,"/",
+  sample_name,".RECAL.",file_ext),output_dir=out_file_dir4,ram=ram,
+  verbose=verbose,threads=threads)
+  index(bin_path=bin_path,file=paste0(out_file_dir4,"/",
+  sample_name,".RECAL.",file_ext),verbose=verbose,threads=threads)
+
   parallel_generate_BQSR(bin_path=bin_path,bin_path2=bin_path2,
-    bam=paste0(out_file_dir4,"/",sample_name,".RECAL.",file_ext),
+    bam=paste0(out_file_dir4,"/",sample_name,".SORTED.RECAL.",file_ext),
     ref_genome=ref_genome,snpdb=snpdb,threads=threads,output_dir=out_file_dir2,verbose=verbose)
 
   recal_covariates(bin_path=bin_path2,before=paste0(out_file_dir,"/",sample_name,".RECAL.table"),

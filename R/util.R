@@ -460,10 +460,10 @@ gather_bam_files=function(bin_path="tools/picard/build/libs/picard.jar",bams_dir
   FUN=strsplit,split="\\."),FUN="[[",index=1),FUN="[",index=2),FUN=strsplit,split="_"),FUN="[[",index=1),FUN="[",index=1)))]
 
   if(verbose){
-    print(paste0("java -jar ",bin_path," GatherBamFiles CREATE_INDEX=true ",
+    print(paste0("java -jar ",bin_path," GatherBamFiles ",
     paste0(" I=",files,collapse=" ")," O=",paste0(output_dir,"/",output_name,".bam")))
   }
-    system(paste0("java -jar ",bin_path," GatherBamFiles CREATE_INDEX=true ",
+    system(paste0("java -jar ",bin_path," GatherBamFiles ",
     paste0(" I=",files,collapse=" ")," O=",paste0(output_dir,"/",output_name,".bam")))
 }
 
