@@ -375,7 +375,7 @@ rec_table="",output_dir="",verbose=FALSE){
 
   if(verbose){
     print(paste(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome,
-    " --bqsr-recal-file ",rec_table, region," -O ",out_file,reg))
+    " --bqsr-recal-file ",rec_table, " -O ",out_file,reg))
   }
   system(paste(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome,
   " --bqsr-recal-file ",rec_table," -O ",out_file, reg),wait=TRUE)
