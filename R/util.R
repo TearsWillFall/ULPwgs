@@ -752,6 +752,6 @@ bin_size=40000000){
   bed=chr%>% dplyr::group_by(chr) %>%
   dplyr::summarise(start=seqlast(start,end,bin_size)) %>%
   dplyr::mutate(end=dplyr::lead(start)) %>% tidyr::drop_na()
-  bed=bed[str_order(paste0(bed$chr,"_",bed$start), numeric = TRUE),]
+  bed=bed[stringr::str_order(paste0(bed$chr,"_",bed$start), numeric = TRUE),]
   return(bed)
 }

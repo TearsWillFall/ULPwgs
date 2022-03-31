@@ -21,6 +21,7 @@ Imports:
     magrittr,
     pbapply,
     naturalsort,
+    stringr,
     snow
 biocViews:
 Remotes: git::https://github.com/TearsWillFall/BTools.git
