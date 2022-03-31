@@ -447,7 +447,7 @@ threads=3,ram=4,output_dir="",verbose=FALSE){
   sample_name,".RECAL.",file_ext),output_dir=out_file_dir4,ram=ram,
   verbose=verbose,threads=threads)
   index(bin_path=bin_path,file=paste0(out_file_dir4,"/",
-  sample_name,".RECAL.",file_ext),verbose=verbose,threads=threads)
+  sample_name,".SORTED.RECAL.",file_ext),verbose=verbose,threads=threads)
 
   parallel_generate_BQSR(bin_path=bin_path,bin_path2=bin_path2,
     bam=paste0(out_file_dir4,"/",sample_name,".SORTED.RECAL.",file_ext),
