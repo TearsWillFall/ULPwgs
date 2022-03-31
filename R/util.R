@@ -242,7 +242,7 @@ snpdb="",output_dir="",verbose=FALSE){
   if(verbose){
     print(paste0(bin_path," BaseRecalibrator -I ",bam, " -R ", ref_genome,snpdb,reg," -O ",out_file))
   }
-  system(paste0(bin_path," BaseRecalibrator -I ",bam, " -R ", ref_genome,snpdb,reg," -O ",out_file))
+  system(paste0(bin_path," BaseRecalibrator -I ",bam, " -R ", ref_genome,snpdb,reg," -O ",out_file),wait=TRUE)
 }
 
 #' Multiregion parallelization of generate_BQSR function
@@ -286,12 +286,6 @@ output_dir="",verbose=FALSE,bin_size=40000000){
   parallel::mclapply(dat$Region,FUN=function(x){generate_BQSR(region=x,
   bin_path=bin_path2,bam=bam,ref_genome=ref_genome,snpdb=snpdb,
   output_dir=output_dir,verbose=verbose)},mc.cores=threads)
-  n_files=0
-  while(n_files!=nrow(dat)){
-    Sys.sleep(30)
-    print("Sleeping...")
-    n_files=system(paste("ls",output_dir,"|wc -l"),intern=TRUE)
-  }
   gather_BQSR_reports(bin_path=bin_path2,reports_dir=output_dir,output_name=sample_name)
   system(paste0("rm ",output_dir,"/*:*.RECAL.table"))
 }
@@ -377,10 +371,10 @@ rec_table="",output_dir="",verbose=FALSE){
 
   if(verbose){
     print(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome,
-    " --bqsr-recal-file ",rec_table,region," -O ",out_file,reg))
+    " --bqsr-recal-file ",rec_table,region," -O ",out_file,reg, wait=TRUE))
   }
   system(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome,
-  " --bqsr-recal-file ",rec_table," -O ",out_file,reg))
+  " --bqsr-recal-file ",rec_table," -O ",out_file,reg,wait=TRUE))
 }
 
 
