@@ -455,6 +455,9 @@ threads=3,ram=4,output_dir="",verbose=FALSE){
 
   recal_covariates(bin_path=bin_path2,before=paste0(out_file_dir,"/",sample_name,".RECAL.table"),
     after=paste0(out_file_dir2,"/",sample_name,".RECAL.table"),output_dir=out_file_dir4)
+
+
+  system(paste0("rm ",paste0(out_file_dir4,"/",sample_name,".RECAL.",file_ext)))
 }
 
 
