@@ -283,10 +283,14 @@ output_dir="",verbose=FALSE,bin_size=40000000){
   dat$start=dat$start+1
   dat=dat %>% dplyr::mutate(Region=paste0(chr,":",start,"-",end))
 
-  parallel::mclapply(dat$Region,FUN=function(x){generate_BQSR(region=x,
+  parallel::mclapply(dat$Region,FUN=function(x){ generate_BQSR(region=x,
   bin_path=bin_path2,bam=bam,ref_genome=ref_genome,snpdb=snpdb,
   output_dir=output_dir,verbose=verbose)},mc.cores=threads)
-  gather_BQSR_reports(bin_path=bin_path2,reports_dir=output_dir,output_name=sample_name)
+
+
+
+  gather_BQSR_reports(bin_path=bin_path2,reports_dir=output_dir,
+  output_name=sample_name,verbose=verbose)
   system(paste0("rm ",output_dir,"/*:*.RECAL.table"))
 }
 
@@ -363,7 +367,7 @@ rec_table="",output_dir="",verbose=FALSE){
 
   reg=""
   if (region==""){
-      out_file=paste0(output_dir,sep,sample_name,".RECAL.",file_ext)
+      out_file=paste0(" ", output_dir,sep,sample_name,".RECAL.",file_ext)
   }else{
       reg=paste0(" -L ",strsplit(region,"_")[[1]][2], " ")
       out_file=paste0(output_dir,sep,sample_name,".",region,".RECAL.",file_ext)
@@ -374,7 +378,7 @@ rec_table="",output_dir="",verbose=FALSE){
     " --bqsr-recal-file ",rec_table,region," -O ",out_file,reg))
   }
   system(paste0(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome,
-  " --bqsr-recal-file ",rec_table," -O ",out_file,reg),wait=TRUE)
+  " --bqsr-recal-file ",rec_table," -O ",out_file, reg),wait=TRUE)
 }
 
 
@@ -416,9 +420,10 @@ output_dir="",verbose=FALSE,threads=4,bin_size=40000000){
 
 
 
-  parallel::mclapply(dat$Region,FUN=function(x){apply_BQSR(region=x,
+  parallel::mclapply(dat$Region,FUN=function(x){ apply_BQSR(region=x,
   bin_path=bin_path2,bam=bam,ref_genome=ref_genome,
-  rec_table=rec_table,output_dir=output_dir,verbose=verbose)},mc.cores=threads)
+  rec_table=rec_table, output_dir=output_dir,verbose=verbose)},mc.cores=threads)
+  
   gather_bam_files(bin_path=bin_path3,bams_dir=output_dir,
   output_name=paste0(sample_name,".RECAL.SORTED.RMDUP.SORTED"))
   system(paste0("rm ",output_dir,"/*:*.RECAL*.ba*"))

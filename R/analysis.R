@@ -401,7 +401,7 @@ verbose=FALSE,tmp_dir="",threads=3){
 
 recalibrate_bq=function(bin_path="tools/samtools/samtools",bin_path2="tools/gatk/gatk",
 bin_path3="tools/picard/build/libs/picard.jar",bam="",ref_genome="",snpdb="",
-region_bed="",region_bed2="",threads=3,output_dir="",verbose=FALSE){
+threads=3,output_dir="",verbose=FALSE){
 
   sep="/"
 
