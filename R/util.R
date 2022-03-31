@@ -427,7 +427,7 @@ output_dir="",verbose=FALSE,threads=4,bin_size=40000000){
   rec_table=rec_table,output_dir=output_dir,verbose=verbose)},mc.cores=threads)
 
   n_files=0
-  while(n_files/2!=nrow(dat)){
+  while(as.numeric(n_files)/2!=nrow(dat)){
     Sys.sleep(30)
     print("Sleeping...")
     n_files=system(paste("ls",output_dir,"|wc -l"),intern=TRUE)
