@@ -419,15 +419,6 @@ output_dir="",verbose=FALSE,threads=4,bin_size=40000000){
   parallel::mclapply(dat$Region,FUN=function(x){apply_BQSR(region=x,
   bin_path=bin_path2,bam=bam,ref_genome=ref_genome,
   rec_table=rec_table,output_dir=output_dir,verbose=verbose)},mc.cores=threads)
-
-  n_files=0
-  while(as.numeric(n_files)/2!=nrow(dat)){
-    Sys.sleep(30)
-    print("Sleeping...")
-    n_files=system(paste("ls",output_dir,"|wc -l"),intern=TRUE)
-  }
-
-
   gather_bam_files(bin_path=bin_path3,bams_dir=output_dir,
   output_name=paste0(sample_name,".RECAL.SORTED.RMDUP.SORTED"))
   system(paste0("rm ",output_dir,"/*:*.RECAL*.ba*"))
