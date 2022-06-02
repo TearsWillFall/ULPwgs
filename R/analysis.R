@@ -22,11 +22,10 @@ output_dir="",verbose=FALSE){
     sep=""
   }
 
-  sample_name=get_sample_name(file_R1)
 
   if (!file_R2==""){
-    sample_name=intersect_sample_name(file_path=file_R1,file_path2=file_R2)
-    output_dir=paste0(output_dir,sep,sample_name,"_FastQC_reports")
+
+    output_dir=paste0(output_dir,sep,"fastqc_reports")
 
     if(!dir.exists(output_dir)){
       dir.create(output_dir,recursive=TRUE)
@@ -37,7 +36,7 @@ output_dir="",verbose=FALSE){
     system(paste(bin_path,"-o ",output_dir,"-t ",n_cores,"--noextract",file_R1,file_R2))
 
   }else{
-    output_dir=paste0(output_dir,sep,sample_name)
+    output_dir=paste0(output_dir,sep,"fastqc_reports")
 
     if(!dir.exists(output_dir)){
       dir.create(output_dir,recursive=TRUE)
@@ -93,7 +92,7 @@ yadapt=NA,n_cores=3,output_dir="",verbose=FALSE,mean_quality=0,min_length=35,max
 
   if (!file_R2==""){
   sample_name=intersect_sample_name(file_path=file_R1,file_path2=file_R2)
-  output_dir=paste0(output_dir,sep,sample_name,"_trimmed")
+  output_dir=paste0(output_dir,sep,"skewer")
 
   if(!dir.exists(output_dir)){
     dir.create(output_dir,recursive=TRUE)
@@ -193,7 +192,7 @@ file_R1="",file_R2="",n_cores=3,ref_genome="",output_dir="",verbose=FALSE){
 
     if (!file_R2==""){
     sample_name=intersect_sample_name(file_path=file_R1,file_path2=file_R2)
-    output_dir=paste0(output_dir,sep,sample_name,"_BAM")
+    output_dir=paste0(output_dir,sep,"bwa")
     if(!dir.exists(output_dir)){
       dir.create(output_dir,recursive=TRUE)
     }
@@ -210,7 +209,7 @@ file_R1="",file_R2="",n_cores=3,ref_genome="",output_dir="",verbose=FALSE){
 
       }
     else{
-      output_dir=paste0(output_dir,sep,sample_name,"_BAM")
+      output_dir=paste0(output_dir,sep,"bwa")
       out_file=paste0(output_dir,"/",sample_name,".bam")
       if(!dir.exists(output_dir)){
         dir.create(output_dir,recursive=TRUE)
@@ -250,7 +249,7 @@ ram=1,verbose=FALSE,threads=3,coord_sort=TRUE){
   }
   sample_name=get_sample_name(file)
   file_ext=get_file_extension(file)
-  out_file_dir=paste0(output_dir,sep,sample_name,"_SORTED.",toupper(file_ext))
+  out_file_dir=paste0(output_dir,sep,"sorted")
 
   if (!dir.exists(out_file_dir)){
       dir.create(out_file_dir,recursive=TRUE)
@@ -258,7 +257,7 @@ ram=1,verbose=FALSE,threads=3,coord_sort=TRUE){
 
   bam_sort(bin_path=bin_path,file=file,output_dir=out_file_dir,ram=ram,
   verbose=verbose,threads=threads,coord_sort=coord_sort)
-  file=paste0(out_file_dir,"/",sample_name,".SORTED.",file_ext)
+  file=paste0(out_file_dir,"/",sample_name,".sorted.",file_ext)
 
   if (coord_sort){
 
@@ -305,7 +304,7 @@ output_dir="",verbose=FALSE,hnd=1000,ram=4,tmp_dir=""){
     sample_name=get_sample_name(file)
     file_ext=get_file_extension(file)
 
-    out_file_dir=paste0(output_dir,sep,sample_name,"_RMDUP.",toupper(file_ext))
+    out_file_dir=paste0(output_dir,sep,"mark_dups")
     if (!dir.exists(out_file_dir)){
         dir.create(out_file_dir,recursive=TRUE)
     }
@@ -359,7 +358,7 @@ verbose=FALSE,tmp_dir="",threads=3){
       sample_name=get_sample_name(file)
       file_ext=get_file_extension(file)
 
-      out_file_dir=paste0(output_dir,sep,sample_name,"_SORTED.RMDUP.",toupper(file_ext))
+      out_file_dir=paste0(output_dir,sep,"mark_dups")
       if (!dir.exists(out_file_dir)){
           dir.create(out_file_dir,recursive=TRUE)
       }
@@ -412,52 +411,49 @@ threads=3,ram=4,output_dir="",verbose=FALSE){
   sample_name=get_sample_name(bam)
   file_ext=get_file_extension(bam)
 
-  out_file_dir=paste0(output_dir,sep,sample_name,"_RECAL.",toupper(file_ext),"/",
-  sample_name,"_RECAL_before")
+  out_file_dir=paste0(output_dir,sep,"gatk_recal/gatk_recal_before")
   if (!dir.exists(out_file_dir)){
       dir.create(out_file_dir,recursive=TRUE)
   }
 
-  out_file_dir2=paste0(output_dir,sep,sample_name,"_RECAL.",toupper(file_ext),"/",
-  sample_name,"_RECAL_after")
+  out_file_dir2=paste0(output_dir,sep,sample_name,"gatk_recal/gatk_recal_after")
   if (!dir.exists(out_file_dir2)){
       dir.create(out_file_dir2,recursive=TRUE)
   }
 
-  out_file_dir3=paste0(output_dir,sep,sample_name,"_RECAL.",toupper(file_ext),"/",
-  sample_name,"_tmp")
+  out_file_dir3=paste0(output_dir,sep,sample_name,"gatk_recal/gatk_recal_tmp")
   if (!dir.exists(out_file_dir3)){
       dir.create(out_file_dir3,recursive=TRUE)
   }
 
-  out_file_dir4=paste0(output_dir,sep,sample_name,"_RECAL.",toupper(file_ext))
+  out_file_dir4=paste0(output_dir,sep,sample_name,"gatk_recal")
 
   parallel_generate_BQSR(bin_path=bin_path,bin_path2=bin_path2,bam=bam,
     ref_genome=ref_genome,snpdb=snpdb,
     threads=threads,output_dir=out_file_dir,verbose=verbose)
 
   parallel_apply_BQSR(bin_path=bin_path,bin_path2=bin_path2,bin_path3=bin_path3,
-    bam=bam,ref_genome=ref_genome,rec_table=paste0(out_file_dir,"/",sample_name,".RECAL.table"),
+    bam=bam,ref_genome=ref_genome,rec_table=paste0(out_file_dir,"/",sample_name,".recal.table"),
     output_dir=out_file_dir3,verbose=verbose,threads=threads)
 
   system(paste(paste0("mv ",out_file_dir3,"/*"),out_file_dir4))
   system(paste("rm -rf ",out_file_dir3))
 
   bam_sort(bin_path=bin_path,file=paste0(out_file_dir4,"/",
-  sample_name,".RECAL.",file_ext),output_dir=out_file_dir4,ram=ram,
+  sample_name,".recal.",file_ext),output_dir=out_file_dir4,ram=ram,
   verbose=verbose,threads=threads)
   index(bin_path=bin_path,file=paste0(out_file_dir4,"/",
-  sample_name,".SORTED.RECAL.",file_ext),verbose=verbose,threads=threads)
+  sample_name,".sorted.recal.",file_ext),verbose=verbose,threads=threads)
 
   parallel_generate_BQSR(bin_path=bin_path,bin_path2=bin_path2,
-    bam=paste0(out_file_dir4,"/",sample_name,".SORTED.RECAL.",file_ext),
+    bam=paste0(out_file_dir4,"/",sample_name,".sorted.recal.",file_ext),
     ref_genome=ref_genome,snpdb=snpdb,threads=threads,output_dir=out_file_dir2,verbose=verbose)
 
-  recal_covariates(bin_path=bin_path2,before=paste0(out_file_dir,"/",sample_name,".RECAL.table"),
-    after=paste0(out_file_dir2,"/",sample_name,".RECAL.table"),output_dir=out_file_dir4)
+  recal_covariates(bin_path=bin_path2,before=paste0(out_file_dir,"/",sample_name,".recal.table"),
+    after=paste0(out_file_dir2,"/",sample_name,".recal.table"),output_dir=out_file_dir4)
 
 
-  system(paste0("rm ",paste0(out_file_dir4,"/",sample_name,".RECAL.",file_ext)))
+  system(paste0("rm ",paste0(out_file_dir4,"/",sample_name,".recal.",file_ext)))
 }
 
 
@@ -505,7 +501,7 @@ ti="",off_tar="",on_tar="",rib_interval="",ref_flat=""){
 
     sample_name=get_sample_name(bam)
 
-    out_file_dir=paste0(output_dir,sep,sample_name,"_alignQC_report")
+    out_file_dir=paste0(output_dir,sep,"align_report")
     if (!dir.exists(out_file_dir)){
         dir.create(out_file_dir,recursive=TRUE)
     }
@@ -662,7 +658,7 @@ chrs=c(1:22,"X","Y"),win=500000, format="wig", bam="",output_dir="",verbose=FALS
 
     sample_name=get_sample_name(bam)
 
-    out_file_dir=paste0(output_dir,sep,sample_name,ifelse(format=="wig","_WIG",ifelse(format=="seg","_SEG",NA)))
+    out_file_dir=paste0(output_dir,sep,"read_counter/",format))
     if (!dir.exists(out_file_dir)){
         dir.create(out_file_dir)
     }
@@ -813,7 +809,7 @@ output_dir="",verbose=TRUE,libdir="tools/ichorCNA",male_tresh=0.0001,chrs="'c(1:
       sample_id=sample_name
     }
 
-    out_file=paste0(output_dir,sep,sample_name,"_CNAreport")
+    out_file=paste0(output_dir,sep,"ichorcna")
     if (!dir.exists(out_file)){
         dir.create(out_file)
     }

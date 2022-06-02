@@ -227,10 +227,10 @@ snpdb="",output_dir="",verbose=FALSE){
 
   reg=""
   if (region==""){
-      out_file=paste0(output_dir,sep,sample_name,".RECAL.table")
+      out_file=paste0(output_dir,sep,sample_name,".recal.table")
   }else{
       reg=paste0(" -L ",region)
-      out_file=paste0(output_dir,sep,sample_name,".",region,".RECAL.table")
+      out_file=paste0(output_dir,sep,sample_name,".",region,".recal.table")
   }
 
   ## Multiple vcf with snps can be given
@@ -291,7 +291,7 @@ output_dir="",verbose=FALSE,bin_size=40000000){
 
   gather_BQSR_reports(bin_path=bin_path2,reports_dir=output_dir,
   output_name=sample_name,verbose=verbose)
-  system(paste0("rm ",output_dir,"/*:*.RECAL.table"))
+  system(paste0("rm ",output_dir,"/*:*.recal.table"))
 }
 
 
@@ -367,10 +367,10 @@ rec_table="",output_dir="",verbose=FALSE){
 
   reg=""
   if (region==""){
-      out_file=paste0(" ", output_dir,sep,sample_name,".RECAL.",file_ext)
+      out_file=paste0(" ", output_dir,sep,sample_name,".recal.",file_ext)
   }else{
       reg=paste0(" -L ",strsplit(region,"_")[[1]][2], " ")
-      out_file=paste0(output_dir,sep,sample_name,".",region,".RECAL.",file_ext)
+      out_file=paste0(output_dir,sep,sample_name,".",region,".recal.",file_ext)
   }
 
   if(verbose){
@@ -425,7 +425,7 @@ output_dir="",verbose=FALSE,threads=4,bin_size=40000000){
   rec_table=rec_table, output_dir=output_dir,verbose=verbose)},mc.cores=threads)
 
   gather_bam_files(bin_path=bin_path3,bams_dir=output_dir,
-  output_name=paste0(sample_name,".RECAL.SORTED.RMDUP.SORTED"))
+  output_name=paste0(sample_name,".recal.sorted.rmdup"))
   system(paste0("rm ",output_dir,"/*:*.RECAL*.ba*"))
 
 }
