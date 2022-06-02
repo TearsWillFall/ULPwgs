@@ -658,7 +658,7 @@ chrs=c(1:22,"X","Y"),win=500000, format="wig", bam="",output_dir="",verbose=FALS
 
     sample_name=get_sample_name(bam)
 
-    out_file_dir=paste0(output_dir,sep,"read_counter/",format))
+    out_file_dir=paste0(output_dir,sep,"read_counter/",format)
     if (!dir.exists(out_file_dir)){
         dir.create(out_file_dir)
     }
