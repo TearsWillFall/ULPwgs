@@ -108,10 +108,116 @@ verbose=FALSE,threads=3,coord_sort=TRUE){
   }
 
   if (verbose){
-    print("Sorting BAM file:")
     print(paste0(bin_path," sort ",mode,file," -@ ",threads," -m ",ram,"G"," -o ",out_file,".SORTED.",file_ext))
   }
   system(paste0(bin_path," sort ",mode,file," -@ ",threads," -m ",ram,"G"," -o ",out_file,".SORTED.",file_ext))
+}
+
+
+#' Generate BAM file flag and index stats
+#'
+#'
+#' @param file Path to the input file with the sequence.
+#' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param threads Number of threads. Default 3
+#' @param stats Generate BAM stats. Default all. Options ["all","flag","index",""]
+#' @export
+
+
+bam_stats=function(bin_path="tools/samtools/samtools",file="",output_dir="",
+verbose=FALSE,threads=3,stats="all"){
+    sep="/"
+
+    if(output_dir==""){
+      sep=""
+    }
+    if(stats=="all"|stats=="flag"){
+      bam_flagstat(bin_path=bin_path,file=file,output_dir=paste0(output_dir,sep,"stats"),
+      verbose=verbose,threads=threads)
+    }
+    if(stats=="all"|stats=="index"){
+      bam_indexstat(bin_path=bin_path,file=file,output_dir=paste0(output_dir,sep,"stats"),
+      verbose=verbose,threads=threads)
+    }
+}
+
+#' Generate BAM file flagstats
+#'
+#'
+#' @param file Path to the input file with the sequence.
+#' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param threads Number of threads. Default 3
+#' @export
+
+
+bam_flagstat=function(bin_path="tools/samtools/samtools",file="",output_dir="",
+verbose=FALSE,threads=3){
+
+      sep="/"
+
+      if(output_dir==""){
+        sep=""
+      }
+
+      out_file_dir=paste0(output_dir,sep,"flag")
+
+
+      sample_name=get_sample_name(file)
+      file_ext=get_file_extension(file)
+
+      if (!dir.exists(out_file_dir)){
+        dir.create(out_file_dir,recursive=TRUE)
+      }
+
+      if (verbose){
+        print(paste0(bin_path," flagstat ",file," -@ ",threads," > ",
+        paste0(file,".flagstat.txt")))
+      }
+      system(paste0(bin_path," flagstat ",file," -@ ",threads," > ",
+      paste0(file,".flagstat.txt")))
+}
+
+#' Generate BAM file indexstats
+#'
+#'
+#' @param file Path to the input file with the sequence.
+#' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param threads Number of threads. Default 3
+#' @export
+
+
+bam_indexstat=function(bin_path="tools/samtools/samtools",file="",output_dir="",
+verbose=FALSE,threads=3){
+
+      sep="/"
+
+      if(output_dir==""){
+        sep=""
+      }
+
+      out_file_dir=paste0(output_dir,sep,"index")
+
+
+      sample_name=get_sample_name(file)
+      file_ext=get_file_extension(file)
+
+      if (!dir.exists(out_file_dir)){
+        dir.create(out_file_dir,recursive=TRUE)
+      }
+
+      if (verbose){
+        print("Generating Index stats:")
+        print(paste0(bin_path," idxstats ",file," > ",paste0(file,".idxstats.txt")))
+      }
+      system(paste0(bin_path," idxstats ",file," > ",paste0(file,".idxstats.txt")))
+
+
 }
 
 

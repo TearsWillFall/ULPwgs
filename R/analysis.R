@@ -13,7 +13,7 @@
 #' @export
 
 
-fastqc=function (bin_path="tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_cores=3,
+qc_fastqc=function (bin_path="tools/FastQC/bin/fastqc",file_R1="",file_R2="",n_cores=3,
 output_dir="",verbose=FALSE){
 
   sep="/"
@@ -51,9 +51,9 @@ output_dir="",verbose=FALSE){
 
 
 
-#' Adapter sequence trimmer
+#' Adapter sequence trimmer using skewer
 #'
-#' trims the adapter sequences found within them.
+#' Detects and removes adapter sequences from single and paired read data
 #'
 #' @param file_R1 Path to the input file with the sequence.
 #' @param file_R2 [Optional] Path to the input with the reverse read sequence.
@@ -69,7 +69,7 @@ output_dir="",verbose=FALSE){
 #' @export
 
 
-trimming=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA,
+trimming_skewer=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA,
 yadapt=NA,n_cores=3,output_dir="",verbose=FALSE,mean_quality=0,min_length=35,max_length=NA){
 
   sep="/"
@@ -92,7 +92,7 @@ yadapt=NA,n_cores=3,output_dir="",verbose=FALSE,mean_quality=0,min_length=35,max
 
   if (!file_R2==""){
   sample_name=intersect_sample_name(file_path=file_R1,file_path2=file_R2)
-  output_dir=paste0(output_dir,sep,"skewer")
+  output_dir=paste0(output_dir,sep,"skewer_reports")
 
   if(!dir.exists(output_dir)){
     dir.create(output_dir,recursive=TRUE)
@@ -161,7 +161,7 @@ verbose=FALSE,threads=3){
 
 
 
-#' Read alignment
+#' Read alignment using BWA
 #'
 #' This function aligns a sequence of reads to a reference genome
 #' using a Burrows-Wheeler aligner. The reference genome has to be previously
@@ -172,34 +172,41 @@ verbose=FALSE,threads=3){
 #' @param bin_path Path to bwa executable. Default path tools/bwa/bwa.
 #' @param bin_path2 Path to samtools executable. Default path tools/samtools/samtools.
 #' @param ref_genome Path to input file with the reference genome sequence.
+#' @param id_tag Read group identifier. Default NA.
+#' @param pu_tag Platform unit identifier. Default NA.
+#' @param sm_tag Sample name tag. If not given will use sample name as default.
+#' @param pl_tag Platform/technology used to produce the read. Default "ILLUMINA". Options ["ILLUMINA","SOLID", "LS454", "HELICOS","PACBIO"]
+#' @param lb_tag DNA preparation library identifier. 
+#' @param sort Sort aligned file. Default TRUE.
+#' @param coord_sort Sort BAM file by coordinate. Alternatively sort by name. Default TRUE.
+#' @param index Generate index file if BAM sorted by coordinate. Default TRUE.
+#' @param ram RAM memory to use for sorting and indexing. Provided in GB.
 #' @param n_cores Number of CPU cores to use. Default 3.
+#' @param stats Generate BAM stats. Default all. Options ["all","flag","index",""
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-alignment=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
-file_R1="",file_R2="",n_cores=3,ref_genome="",output_dir="",verbose=FALSE){
-
+alignment_bwa=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
+file_R1="",file_R2="",n_cores=3,ram=1,id_tag="NA",pu_tag="NA",pl_tag="ILLUMINA",lb_tag="NA",
+sm_tag="",sort=TRUE,coord_sort=TRUE,index=TRUE,stats="all",ref_genome="",output_dir="",
+verbose=FALSE){
+    
     sep="/"
 
     if(output_dir==""){
       sep=""
     }
-
-    sample_name=get_sample_name(file_R1)
-    GPU=paste0("\"@RG\\tID:",sample_name,"\\tPL:ILLUMINA\\tPU:NA\\tLB:",
-    sample_name,"\\tSM:",sample_name,"\"")
-
-    if (!file_R2==""){
-    sample_name=intersect_sample_name(file_path=file_R1,file_path2=file_R2)
-    output_dir=paste0(output_dir,sep,"bwa")
+    output_dir=paste0(output_dir,sep,"bwa_reports")
     if(!dir.exists(output_dir)){
       dir.create(output_dir,recursive=TRUE)
     }
+    sm_tag=ifelse(sm_tag=="",intersect_sample_name(file_R1,file_R2),sm_tag)
 
-    GPU=paste0("\"@RG\\tID:",sample_name,"\\tPL:ILLUMINA\\tPU:NA\\tLB:",
-    sample_name,"\\tSM:",sample_name,"\"")
-    out_file=paste0(output_dir,"/",sample_name,".bam")
+    if (!file_R2==""){
+      GPU=paste0("\"@RG\\tID:",id_tag,"\\tPL:",pl_tag,"\\tPU:",pu_tag,"\\tLB:",
+      lb_tag,"\\tSM:",sm_tag,"\"")
+      out_file=paste0(output_dir,"/",sm_tag,".bam")
       if(verbose){
           print(paste(bin_path,"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome,
           file_R1,file_R2, "|",bin_path2," view -h -b >",out_file))
@@ -207,14 +214,8 @@ file_R1="",file_R2="",n_cores=3,ref_genome="",output_dir="",verbose=FALSE){
       system(paste(bin_path,"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome,#
       file_R1,file_R2, "| ",bin_path2," view -h -b >",out_file))
 
-      }
-    else{
-      output_dir=paste0(output_dir,sep,"bwa")
-      out_file=paste0(output_dir,"/",sample_name,".bam")
-      if(!dir.exists(output_dir)){
-        dir.create(output_dir,recursive=TRUE)
-      }
-
+      }else{
+        
       if(verbose){
           print(paste(bin_path,"mem -t", n_cores," -v 2 -R",GPU,"-M",ref_genome,
           file_R1, "| ",paste0("./",bin_path2)," view -h -b >",out_file))
@@ -223,6 +224,12 @@ file_R1="",file_R2="",n_cores=3,ref_genome="",output_dir="",verbose=FALSE){
       file_R1, "| ",paste0("./",bin_path2)," view -h -b >",out_file))
 
     }
+
+    if(sort){
+      sort_and_index(bin_path=bin_path2,file=out_file,output_dir=output_dir,
+      ram=ram,verbose=verbose,threads=threads,coord_sort=coord_sort,index=index)
+    }
+
   }
 
 
@@ -237,10 +244,12 @@ file_R1="",file_R2="",n_cores=3,ref_genome="",output_dir="",verbose=FALSE){
 #' @param threads Number of threads. Default 3
 #' @param coord_sort Generate a coord sorted file. Otherwise queryname sorted. Default TRUE
 #' @param ram Ram memory to use per thread in GB. Default 1GB
+#' @param index Generate an index file for sorted BAM. Default TRUE
+#' @param stats Generate BAM stats. Default all. Options ["all","flag","index",""]
 #' @export
 
 sort_and_index=function(bin_path="tools/samtools/samtools",file="",output_dir="",
-ram=1,verbose=FALSE,threads=3,coord_sort=TRUE){
+ram=1,verbose=FALSE,threads=3,coord_sort=TRUE,index=TRUE,stats="all") {
 
   sep="/"
 
@@ -257,24 +266,22 @@ ram=1,verbose=FALSE,threads=3,coord_sort=TRUE){
 
   bam_sort(bin_path=bin_path,file=file,output_dir=out_file_dir,ram=ram,
   verbose=verbose,threads=threads,coord_sort=coord_sort)
+
   file=paste0(out_file_dir,"/",sample_name,".sorted.",file_ext)
 
   if (coord_sort){
 
-    index(bin_path=bin_path,file=file,verbose=verbose,threads=threads)
-
-    if (verbose){
-      print("Generating Flag stats:")
-      print(paste0(bin_path," flagstat ",file," -@ ",threads," > ",
-      paste0(file,".flagstat.txt")))
+    if(index){
+          index(bin_path=bin_path,file=file,verbose=verbose,threads=threads)
+      if(stats){
+        bam_stats(bin_path=bin_path,file=file,output_dir=output_dir,
+        verbose=verbose,threads=threads,stats=stats)
+      }
+     
+    }else{
+        bam_stats(bin_path=bin_path,file=file,output_dir=output_dir,
+        verbose=verbose,threads=threads,stats="flag")
     }
-    system(paste0(bin_path," flagstat ",file," -@ ",threads," > ",
-    paste0(file,".flagstat.txt")))
-    if (verbose){
-      print("Generating Index stats:")
-      print(paste0(bin_path," idxstats ",file," > ",paste0(file,".idxstats.txt")))
-    }
-    system(paste0(bin_path," idxstats ",file," > ",paste0(file,".idxstats.txt")))
   }
 }
 
@@ -292,7 +299,7 @@ ram=1,verbose=FALSE,threads=3,coord_sort=TRUE){
 #' @export
 
 
-remove_duplicates=function(bin_path="tools/picard/build/libs/picard.jar",file="",
+remove_duplicates_picard=function(bin_path="tools/picard/build/libs/picard.jar",file="",
 output_dir="",verbose=FALSE,hnd=1000,ram=4,tmp_dir=""){
 
     sep="/"
@@ -398,7 +405,7 @@ verbose=FALSE,tmp_dir="",threads=3){
 #' @export
 
 
-recalibrate_bq=function(bin_path="tools/samtools/samtools",bin_path2="tools/gatk/gatk",
+recalibrate_bq_gatk=function(bin_path="tools/samtools/samtools",bin_path2="tools/gatk/gatk",
 bin_path3="tools/picard/build/libs/picard.jar",bam="",ref_genome="",snpdb="",
 threads=3,ram=4,output_dir="",verbose=FALSE){
 
@@ -489,7 +496,7 @@ threads=3,ram=4,output_dir="",verbose=FALSE){
 #' @param ti Primary target intervals for panel data. Requires bi and off_tar and on_tar argmunets. Interval format.
 #' @export
 
-qc_metrics=function(bin_path="tools/samtools/samtools",
+alignment_qc_metrics_picard=function(bin_path="tools/samtools/samtools",
 bin_path2="tools/picard/build/libs/picard.jar",bin_path3="tools/bedtools2/bin/bedtools",
 bam="",output_dir="",ref_genome="",verbose=FALSE,ram=4,tmp_dir="",mapq=0,bi="",
 ti="",off_tar="",on_tar="",rib_interval="",ref_flat=""){
