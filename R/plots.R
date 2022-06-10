@@ -17,14 +17,11 @@
 
 
 
-plot_coverage_panel=function(on_target="",off_target="",col=c(5,4),height=6,width=12,verbose=FALSE,output_dir=""){
-  sep="/"
+plot_coverage_panel=function(on_target="",off_target="",col=c(5,4),
+height=6,width=12,verbose=FALSE,output_dir=""){
+  
+  out_file_dir=set_dir(dir=output_dir,name="plots")
 
-  if(output_dir==""){
-    sep=""
-  }
-
-  sample_name=get_sample_name(on_target)
   dat1=read.table(on_target, stringsAsFactors=FALSE)
 
   dat1$type="On_Target"
@@ -44,11 +41,11 @@ plot_coverage_panel=function(on_target="",off_target="",col=c(5,4),height=6,widt
     dat=bind_dat
   }
 
-  p=ggplot(dat,aes(x=Type,y=Coverage))+geom_violin(aes(fill=Type),alpha=0.5)+geom_boxplot(width=0.1) + stat_summary(fun=median, geom="text", show.legend = FALSE,
+  p=ggplot(dat,aes(x=Type,y=Coverage))+geom_violin(aes(fill=Type),alpha=0.5)+geom_boxplot(width=0.1) +
+   stat_summary(fun=median, geom="text", show.legend = FALSE,
                vjust=-1.2,hjust=-1.4, aes( label=round(..y.., digits=1)))+theme_classic()
 
-  out_file=paste0(output_dir,sep,paste0(sample_name,".Region_Coverage.png"))
-  ggsave(out_file,width=width,height=height)
+  ggsave(paste0(out_file_dir,"/",get_file_name(on_target),".Region_Coverage.png"),width=width,height=height)
 }
 
 
@@ -70,14 +67,11 @@ plot_coverage_panel=function(on_target="",off_target="",col=c(5,4),height=6,widt
 #' @export
 
 
-plot_cumulative_cov=function(on_target="",off_target="",col=list(c(2,5),c(2,5)),height=6,width=12,verbose=FALSE,output_dir=""){
-  sep="/"
+plot_cumulative_cov=function(on_target="",off_target="",col=list(c(2,5),c(2,5)),
+height=6,width=12,verbose=FALSE,output_dir=""){
+  
+  out_file_dir=set_dir(dir=output_dir,name="plots")
 
-  if(output_dir==""){
-    sep=""
-  }
-
-  sample_name=get_sample_name(on_target)
   dat1=read.table(on_target, stringsAsFactors=FALSE)
   dat1$type="On_Target"
   dat1=dat1[,c(unlist(col[1]),ncol(dat1))]
@@ -99,7 +93,11 @@ plot_cumulative_cov=function(on_target="",off_target="",col=list(c(2,5),c(2,5)),
     dat=bind_dat
   }
 
-  p=ggplot(dat,aes(y=Fraction_targets_above_depth,x=Depth))+geom_hline(aes(yintercept=0.9),linetype="dotted",alpha=0.75)+geom_hline(aes(yintercept=0.5),linetype="dotted",alpha=0.75)+geom_line(aes(col=Type),size=2) +theme_classic()+facet_wrap(Type~.,scales="free")
-  out_file=paste0(output_dir,sep,paste0(sample_name,".Cumulative_Region_Coverage.png"))
-  ggsave(out_file,width=width,height=height)
+  p=ggplot(dat,aes(y=Fraction_targets_above_depth,x=Depth))+geom_hline(aes(yintercept=0.9),linetype="dotted",
+  alpha=0.75)+geom_hline(aes(yintercept=0.5),
+  linetype="dotted",alpha=0.75)+geom_line(aes(col=Type),size=2) +
+  theme_classic()+facet_wrap(Type~.,scales="free")
+  
+  ggsave(paste0(out_file_dir,"/",get_file_name(on_target),
+  ".Cumulative_Region_Coverage.png"),width=width,height=height)
 }

@@ -10,7 +10,7 @@ trimming_skewer(
   file_R2 = "",
   xadapt = NA,
   yadapt = NA,
-  n_cores = 3,
+  threads = 3,
   output_dir = "",
   verbose = FALSE,
   mean_quality = 0,
@@ -29,7 +29,7 @@ trimming_skewer(
 
 \item{yadapt}{\link{Optional} Adapter sequence/file.}
 
-\item{n_cores}{Number of CPU cores to use. Default 3.}
+\item{threads}{Number of CPU cores to use. Default 3.}
 
 \item{output_dir}{Path to the output directory.}
 

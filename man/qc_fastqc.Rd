@@ -8,7 +8,7 @@ qc_fastqc(
   bin_path = "tools/FastQC/bin/fastqc",
   file_R1 = "",
   file_R2 = "",
-  n_cores = 3,
+  threads = 3,
   output_dir = "",
   verbose = FALSE
 )
@@ -20,7 +20,7 @@ qc_fastqc(
 
 \item{file_R2}{\link{Optional} Path to the input with the reverse read sequence.}
 
-\item{n_cores}{Number of CPU cores to use. Default 3.}
+\item{threads}{Number of CPU cores to use. Default 3.}
 
 \item{output_dir}{Path to the output directory.}
 

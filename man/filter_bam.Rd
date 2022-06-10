@@ -10,7 +10,7 @@ filter_bam(
   position = "",
   bed = "",
   verbose = FALSE,
-  output_name = "Filtered",
+  output_dir = "",
   threads = 1
 )
 }
@@ -25,9 +25,11 @@ filter_bam(
 
 \item{verbose}{Enables progress messages. Default False.}
 
-\item{output_name}{Name of the output file.}
+\item{output_dir}{Path to output directory.}
 
 \item{threads}{Number of threads to use. Default 1}
+
+\item{output_name}{Name of the output file.}
 }
 \description{
 This function takes a BAM file and filter it to genomic coordinate or otherwise BED file with

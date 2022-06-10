@@ -9,7 +9,7 @@ alignment_bwa(
   bin_path2 = "tools/samtools/samtools",
   file_R1 = "",
   file_R2 = "",
-  n_cores = 3,
+  threads = 3,
   ram = 1,
   id_tag = "NA",
   pu_tag = "NA",
@@ -34,7 +34,7 @@ alignment_bwa(
 
 \item{file_R2}{\link{Optional} Path to the input with the reverse read sequence.}
 
-\item{n_cores}{Number of CPU cores to use. Default 3.}
+\item{threads}{Number of CPU cores to use. Default 3.}
 
 \item{ram}{RAM memory to use for sorting and indexing. Provided in GB.}
 

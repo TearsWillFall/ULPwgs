@@ -20,8 +20,6 @@ bed_coverage(
 \arguments{
 \item{bin_path}{Path to bwa executable. Default tools/bedtools2/bin/bedtools.}
 
-\item{bam}{Path to the input bam file.}
-
 \item{bed}{Path to the input bed file.}
 
 \item{verbose}{Enables progress messages. Default False.}
@@ -35,6 +33,8 @@ bed_coverage(
 \item{output_dir}{Output directory path. Default none.}
 
 \item{hist}{Enables progress messages. Default False.}
+
+\item{file}{Path to the input BAM file.}
 }
 \description{
 This function estimates mean/per_base_coverage coverage for regions in bed file.
