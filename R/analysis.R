@@ -434,7 +434,7 @@ alignment_qc_metrics=function(bin_path="tools/samtools/samtools",
     verbose=verbose,threads=threads,tmp_dir=tmp_dir,ram=ram)
     
     bam_metrics_insertsize_picard(bin_path=bin_path2,bam=bam,output_dir=out_file_dir,
-    verbose=verbose,tmp_dir=tmp_dir,ram=ram,bi=bi,ti=ti)
+    verbose=verbose,tmp_dir=tmp_dir,ram=ram)
 
 
     ## Only call metrics for panel data if bait and target intervals are supplied, Otherwise WGS metrics.
@@ -442,7 +442,7 @@ alignment_qc_metrics=function(bin_path="tools/samtools/samtools",
     if (mode=="tg"){
    
       bam_metrics_tg_summary_picard(bin_path=bin_path2,bam=bam,output_dir=out_file_dir,
-      verbose=verbose,tmp_dir=".",ram=4,bi="",ti="")
+      verbose=verbose,tmp_dir=tmp_dir,ram=ram,bi=bi,ti=ti)
       ## Picard doesn't output coverage stats for off-target regions therefore we have to estimate this manually.
 
       ## I use this function to get the mean coverage on and off target.

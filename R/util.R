@@ -296,8 +296,8 @@ bam="",output_dir="",verbose=FALSE,tmp_dir=".",ram=4){
 
   exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",
       bin_path," CollectInsertSizeMetrics ","VALIDATION_STRINGENCY=SILENT I=",
-      file," O=",paste0(out_file_dir,"/",get_file_name(file_,".picard_insert_size.txt")," H=",
-      paste0(out_file_dir,"/",get_file_name(bam),".picard_insert_size.pdf "),tmp))
+      file," O=",paste0(out_file_dir,"/",get_file_name(bam),".picard_insert_size.txt")," H=",
+      paste0(out_file_dir,"/",get_file_name(bam),".picard_insert_size.pdf "),tmp)
 
   if(verbose){
       print(exec_code)
