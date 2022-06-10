@@ -2,7 +2,7 @@
 #' This function takes the absolute/relative path to a file and
 #' returns its base name without the file extension suffix.
 #'
-#' @param file_path Path to the input file
+#' @param bam_path Path to the input file
 #' @return A string with the name of the file
 #' @export
 
@@ -99,7 +99,7 @@ exec_code=paste(bin_path,"index", file)
 #'
 #' This function sorts a genome sequence file (BAM/SAM)
 #'
-#' @param file Path to the input file with the sequence.
+#' @param bam Path to the input file with the sequence.
 #' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
@@ -113,12 +113,12 @@ verbose=FALSE,threads=3,coord_sort=TRUE){
 
   out_file_dir=set_dir(dir=output_dir,name="sorted")
 
-  mode=""
+  sort_type=""
   
   if(!coord_sort){
-    mode=" -n "
+    sort_type=" -n "
   }
-  exec_code=paste0(bin_path," sort ",mode,file," -@ ",threads," -m ",ram,"G"," -o ",
+  exec_code=paste0(bin_path," sort ",sort_type, bam," -@ ",threads," -m ",ram,"G"," -o ",
   paste0(out_file_dir,"/",get_file_name(bam),".sorted.",get_file_ext(bam)))
   if (verbose){
     print(exec_code)
@@ -130,7 +130,7 @@ verbose=FALSE,threads=3,coord_sort=TRUE){
 #' Generate BAM file flag and index stats
 #'
 #'
-#' @param file Path to the input file with the sequence.
+#' @param bam Path to the input file with the sequence.
 #' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
@@ -158,7 +158,7 @@ verbose=FALSE,threads=3,stats="all"){
 #' Generate BAM file flagstats
 #'
 #'
-#' @param file Path to the input file with the sequence.
+#' @param bam Path to the input file with the sequence.
 #' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
@@ -187,7 +187,7 @@ verbose=FALSE,threads=3){
 #' Generate BAM file indexstats
 #'
 #'
-#' @param file Path to the input file with the sequence.
+#' @param bam Path to the input file with the sequence.
 #' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
@@ -211,7 +211,7 @@ verbose=FALSE,threads=3){
 #' Generate BAM MapQ metrics
 #'
 #'
-#' @param file Path to the input file with the sequence.
+#' @param bam Path to the input file with the sequence.
 #' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
@@ -240,7 +240,7 @@ verbose=FALSE,threads=3){
 #' Generate BAM General Summary Metrics
 #'
 #'
-#' @param file Path to the input file with the sequence.
+#' @param bam Path to the input file with the sequence.
 #' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
@@ -275,7 +275,7 @@ verbose=FALSE,threads=3,tmp_dir=".",ram=4){
 #' Generate BAM Insert Size Metrics
 #'
 #'
-#' @param file Path to the input file with the sequence.
+#' @param bam Path to the input file with the sequence.
 #' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
@@ -312,7 +312,7 @@ bam="",output_dir="",verbose=FALSE,tmp_dir=".",ram=4){
 #' Generate BAM Summary for Targeted data
 #'
 #'
-#' @param file Path to the input file with the sequence.
+#' @param bam Path to the input file with the sequence.
 #' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
@@ -351,7 +351,7 @@ verbose=FALSE,tmp_dir=".",ram=4,bi="",ti=""){
 #' Generate BAM Summary for RNAseq data
 #'
 #'
-#' @param file Path to the input file with the sequence.
+#' @param bam Path to the input file with the sequence.
 #' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
@@ -389,7 +389,7 @@ bam="",output_dir="",verbose=FALSE,tmp_dir=".",ram=4,ri="",ref_flat=""){
 #' Generate BAM Summary for WGS data
 #'
 #'
-#' @param file Path to the input file with the sequence.
+#' @param bam Path to the input file with the sequence.
 #' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
@@ -427,14 +427,14 @@ bam="",output_dir="",verbose=FALSE,tmp_dir=".",ram=4){
 #'
 #' This function indexes a genomic sequence file (BAM/SAM).
 #'
-#' @param file Path to the input file with the sequence.
+#' @param bam Path to the input file with the sequence.
 #' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
 #' @param verbose Enables progress messages. Default False.
 #' @param threads Number of threads. Default 3
 #' @export
 
 bam_index_samtools=function(bin_path="tools/samtools/samtools",bam="",verbose=FALSE,threads=3){
-  
+
   exec_code=paste(bin_path," index",file," -@ ",threads)
   if (verbose){
     print(exec_code)
@@ -510,7 +510,7 @@ output_name="Padded",genome="",verbose=FALSE){
 #' This function wraps around gatk BaseRecalibrator function.
 #' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360036898312-BaseRecalibrator
 #'
-#' @param file [REQUIRED] Path to the BAM file.
+#' @param bam [REQUIRED] Path to the BAM file.
 #' @param bin_path [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
 #' @param ref_genome [REQUIRED] Path to reference genome
 #' @param snpdb [REQUIRED] Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.
@@ -551,7 +551,7 @@ snpdb="",output_dir="",verbose=FALSE){
 #' This function wraps around gatk BaseRecalibrator function.
 #' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360036898312-BaseRecalibrator
 #'
-#' @param file [REQUIRED] Path to the BAM file.
+#' @param bam [REQUIRED] Path to the BAM file.
 #' @param bin_path [REQUIRED] Path to gatk executable. Default tools/samtools/samtools.
 #' @param bin_path2 [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
 #' @param ref_genome [REQUIRED] Path to reference genome
@@ -625,7 +625,7 @@ output_name="Report",output_dir="",verbose=FALSE){
 #' This function wraps around gatk applyBQSR  function.
 #' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360050814312-ApplyBQSR
 #'
-#' @param file [REQUIRED] Path to the BAM file.
+#' @param bam [REQUIRED] Path to the BAM file.
 #' @param bin_path [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
 #' @param ref_genome [REQUIRED] Path to reference genome
 #' @param rec_table [REQUIRED] Path to covariates table generated by generate_BSQR.
@@ -852,7 +852,7 @@ recal_covariates=function(bin_path="tools/gatk/gatk",before="",after="",output_d
 #' For more information: https://bedtools.readthedocs.io/en/latest/content/tools/coverage.html
 #'
 #'
-#' @param file Path to the input BAM file.
+#' @param bam Path to the input BAM file.
 #' @param bin_path Path to bwa executable. Default tools/bedtools2/bin/bedtools.
 #' @param bed Path to the input bed file.
 #' @param sorted Are the input files sorted. Default TRUE
