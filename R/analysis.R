@@ -180,7 +180,7 @@ verbose=FALSE){
     lb_tag,"\\tSM:",sm_tag,"\"")
 
     exec_code=paste(bin_path,"mem -t", threads," -v 2 -R",GPU,"-M",ref_genome,
-        input_files, "| ",paste0("./",bin_path2)," view -h -b >",out_file)
+        input_files, "| ",paste0(bin_path2)," view -h -b >",out_file)
     if(verbose){
         print(exec_code)
     }
@@ -189,6 +189,7 @@ verbose=FALSE){
     if(sort){
       sort_and_index_samtools(bin_path=bin_path2,bam=out_file,output_dir=out_file_dir,
       ram=ram,verbose=verbose,threads=threads,coord_sort=coord_sort,index=index)
+      system(paste0("rm ",out_file))
     }
 
   }
