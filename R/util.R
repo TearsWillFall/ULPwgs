@@ -433,11 +433,13 @@ bam="",output_dir="",verbose=FALSE,tmp_dir=".",ram=4){
 #' @param threads Number of threads. Default 3
 #' @export
 
-index_samtools=function(bin_path="tools/samtools/samtools",bam="",verbose=FALSE,threads=3){
+bam_index_samtools=function(bin_path="tools/samtools/samtools",bam="",verbose=FALSE,threads=3){
+  
+  exec_code=paste(bin_path," index",file," -@ ",threads)
   if (verbose){
-    print(paste(bin_path," index",file," -@ ",threads))
+    print(exec_code)
   }
-  system(paste(bin_path," index",file," -@ ",threads))
+  system(exec_code)
 }
 
 
