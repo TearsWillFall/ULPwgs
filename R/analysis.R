@@ -223,6 +223,7 @@ ram=1,verbose=FALSE,threads=3,coord_sort=TRUE,index=TRUE,stats="all"){
   if (coord_sort){
    
      bam=paste0(out_file_dir,"/",get_file_name(bam),".sorted.",get_file_ext(bam))
+     
     if(index){
         bam_index_samtools(bin_path=bin_path,bam=bam,verbose=verbose,threads=threads)
       if(stats){
