@@ -33,7 +33,13 @@ output_dir="",verbose=FALSE){
       print(exec_code)
   }
 
-    system(exec_code)
+  error=system(exec_code)
+  if(error!=0){
+    stop("fastqc failed to run due to unknown error.
+    Check std error for more information.")
+  }
+  
+
   }
 
 
@@ -82,7 +88,12 @@ yadapt=NA,threads=3,output_dir="",verbose=FALSE,mean_quality=0,min_length=35,max
   if(verbose){
       print(exec_code)
     }
-    system(exec_code)
+  error=system(exec_code)
+  if(error!=0){
+    stop("skewer failed to run due to unknown error.
+    Check std error for more information.")
+  }
+  
 }
 
 #' Merge BAM files in directory
@@ -186,6 +197,12 @@ verbose=FALSE){
     }
     system(exec_code)
 
+    error=system(exec_code)
+    if(error!=0){
+      stop("bwa failed to run due to unknown error.
+      Check std error for more information.")
+    }
+
     if(sort){
       sort_and_index_samtools(bin_path=bin_path2,bam=out_file,output_dir=out_file_dir,
       ram=ram,verbose=verbose,threads=threads,coord_sort=coord_sort,index=index,stats=stats)
@@ -217,6 +234,7 @@ ram=1,verbose=FALSE,threads=3,coord_sort=TRUE,index=TRUE,stats="all"){
 
   bam_sort_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,ram=ram,
   verbose=verbose,threads=threads,coord_sort=coord_sort)
+
 
   out_file_dir=set_dir(dir=output_dir,name="sorted")
   
@@ -282,7 +300,12 @@ output_dir="",verbose=FALSE,hnd=1000,ram=4,tmp_dir="",remove_duplicates=TRUE){
       print(exec_code)
 
     }
-    system(exec_code)
+
+    error=system(exec_code)
+    if(error!=0){
+      stop("markdups failed to run due to unknown error.
+      Check std error for more information.")
+    }
 
   }
 
@@ -322,9 +345,13 @@ verbose=FALSE,tmp_dir="",threads=3,remove_duplicates=TRUE){
       if(verbose){
         print(exec_code)
       }
-        system(exec_code)
-    }
+      error=system(exec_code)
+      if(error!=0){
+        stop("markdups failed to run due to unknown error.
+        Check std error for more information.")
+      }
 
+    }
 
 
 #' Function for base quality recalibration

@@ -37,6 +37,10 @@ set_dir=function(dir="",name=""){
   return(new_dir)
 }
 
+
+
+
+
 #' Get the extension of a file
 #'
 #' This function takes the absolute/relative path to a file and
@@ -89,7 +93,12 @@ exec_code=paste(bin_path,"index", file)
   if(verbose){
     print(exec_code)
   }
-    system(exec_code)
+  error=system(exec_code)
+  if(error!=0){
+    stop("bwa failed to run due to unknown error.
+    Check std error for more information.")
+  }
+
 }
 
 
@@ -123,7 +132,11 @@ verbose=FALSE,threads=3,coord_sort=TRUE){
   if (verbose){
     print(exec_code)
   }
-  system(exec_code)
+  error=system(exec_code)
+  if(error!=0){
+    stop("samtools failed to run due to unknown error.
+    Check std error for more information.")
+  }
 }
 
 
@@ -177,7 +190,13 @@ verbose=FALSE,threads=3){
   if (verbose){
     print(exec_code)
   }
-  system(exec_code)
+
+
+   error=system(exec_code)
+  if(error!=0){
+    stop("samtools failed to run due to unknown error.
+    Check std error for more information.")
+  }
 }
 
 #' Generate BAM file indexstats
@@ -200,7 +219,11 @@ verbose=FALSE,threads=3){
   if (verbose){
     print(exec_code)
   }
-  system(exec_code)
+     error=system(exec_code)
+  if(error!=0){
+    stop("samtools failed to run due to unknown error.
+    Check std error for more information.")
+  }
 
 }
 
@@ -229,7 +252,11 @@ verbose=FALSE,threads=3){
     print(exec_code)
   }
 
-  system(exec_code)
+    error=system(exec_code)
+  if(error!=0){
+    stop("samtools failed to run due to unknown error.
+    Check std error for more information.")
+  }
 }
 
 
@@ -262,7 +289,11 @@ verbose=FALSE,threads=3,tmp_dir=".",ram=4){
         print(exec_code)
 
   }
-    system(exec_code)
+  error=system(exec_code)
+  if(error!=0){
+    stop("samtools failed to run due to unknown error.
+    Check std error for more information.")
+  }
 
 }
 
@@ -298,7 +329,11 @@ bam="",output_dir="",verbose=FALSE,tmp_dir=".",ram=4){
   if(verbose){
       print(exec_code)
   }
-  system(exec_code)
+    error=system(exec_code)
+  if(error!=0){
+    stop("picard failed to run due to unknown error.
+    Check std error for more information.")
+  }
 
 }
 
@@ -338,7 +373,11 @@ verbose=FALSE,tmp_dir=".",ram=4,bi="",ti=""){
    if (verbose){
         print(exec_code)
       }
-      system(exec_code)
+       error=system(exec_code)
+  if(error!=0){
+    stop("picard failed to run due to unknown error.
+    Check std error for more information.")
+  }
 
 
 }
@@ -377,7 +416,11 @@ bam="",output_dir="",verbose=FALSE,tmp_dir=".",ram=4,ri="",ref_flat=""){
       print(exec_code)
 
   }
-      system(exec_code)
+      error=system(exec_code)
+  if(error!=0){
+    stop("picard failed to run due to unknown error.
+    Check std error for more information.")
+  }
 }
 
 
@@ -411,7 +454,11 @@ bam="",output_dir="",verbose=FALSE,tmp_dir=".",ram=4){
  if (verbose){
       print(exec_code)
  }
-      system(exec_code)
+      error=system(exec_code)
+  if(error!=0){
+    stop("picard failed to run due to unknown error.
+    Check std error for more information.")
+  }
 }
 
 
@@ -435,7 +482,11 @@ bam_index_samtools=function(bin_path="tools/samtools/samtools",bam="",verbose=FA
   if (verbose){
     print(exec_code)
   }
-  system(exec_code)
+     error=system(exec_code)
+  if(error!=0){
+    stop("samtools failed to run due to unknown error.
+    Check std error for more information.")
+  }
 }
 
 
@@ -464,14 +515,22 @@ output_name="Complement",genome="",verbose=FALSE){
     if(verbose){
       print(exec_code)
     }
-    system(exec_code)
+         error=system(exec_code)
+  if(error!=0){
+    stop("bedtools failed to run due to unknown error.
+    Check std error for more information.")
+  }
 
   }else{
     exec_code=paste0(bin_path," complement -i ",bed, " -g ", genome, " > ",paste0(output_name,".bed"))
     if(verbose){
       print(exec_code)
     }
-    system(exec_code)
+          error=system(exec_code)
+  if(error!=0){
+    stop("bedtools failed to run due to unknown error.
+    Check std error for more information.")
+  }
   }
 }
 
@@ -495,7 +554,11 @@ output_name="Padded",genome="",verbose=FALSE){
   if(verbose){
     print(exec_code)
   }
-  system(exec_code)
+  error=system(exec_code)
+  if(error!=0){
+    stop("bedtools failed to run due to unknown error.
+    Check std error for more information.")
+  }
 }
 
 
@@ -538,7 +601,11 @@ snpdb="",output_dir="",verbose=FALSE){
   if(verbose){
     print(exec_code)
   }
-  system(exec_code,wait=TRUE)
+      error=system(exec_code)
+  if(error!=0){
+    stop("gatk failed to run due to unknown error.
+    Check std error for more information.")
+  }
 }
 
 #' Multiregion parallelization of generate_BQSR function
@@ -610,7 +677,11 @@ output_name="Report",output_dir="",verbose=FALSE){
   if(verbose){
     print(exec_code)
   }
-    system(exec_code)
+  error=system(exec_code)
+  if(error!=0){
+    stop("gatk failed to run due to unknown error.
+    Check std error for more information.")
+  }
 }
 
 
@@ -648,7 +719,11 @@ rec_table="",output_dir="",verbose=FALSE){
   if(verbose){
     print(exec_code)
   }
-  system(exec_code,wait=TRUE)
+  error=system(exec_code)
+  if(error!=0){
+    stop("gatk failed to run due to unknown error.
+    Check std error for more information.")
+  }
 }
 
 
@@ -728,7 +803,11 @@ gather_bam_files=function(bin_path="tools/picard/build/libs/picard.jar",bams_dir
     print(exec_code)
   }
 
-  system(exec_code)
+    error=system(exec_code)
+  if(error!=0){
+    stop("picard failed to run due to unknown error.
+    Check std error for more information.")
+  }
 }
 
 
@@ -823,14 +902,22 @@ recal_covariates=function(bin_path="tools/gatk/gatk",before="",after="",output_d
     if(verbose){
       print(exec_code)
     }
-    system(exec_code)
+  error=system(exec_code)
+  if(error!=0){
+    stop("gatk failed to run due to unknown error.
+    Check std error for more information.")
+  }
   }else{
     exec_code=paste0(bin_path," AnalyzeCovariates -before ",before," -after ",after,
       " -plots ",paste0(out_file_dir,"/",get_file_name(before),"_covariates_analysis.pdf"))
     if(verbose){
       print(exec_code)
     }
-    system(exec_code)
+        error=system(exec_code)
+  if(error!=0){
+    stop("gatk failed to run due to unknown error.
+    Check std error for more information.")
+  }
 
   }
 
@@ -897,7 +984,11 @@ verbose=FALSE,sorted=TRUE,mean=TRUE,fai="",suffix="",output_dir="",hist=FALSE){
     if(verbose){
         print(exec_code)
     }
-    system(exec_code)
+        error=system(exec_code)
+  if(error!=0){
+    stop("bedtools failed to run due to unknown error.
+    Check std error for more information.")
+  }
 
 }
 
