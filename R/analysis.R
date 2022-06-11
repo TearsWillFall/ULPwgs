@@ -261,7 +261,7 @@ ram=1,verbose=FALSE,threads=3,coord_sort=TRUE,index=TRUE,stats="all"){
 #'
 #' This function marks duplicated reads (artifacts) found in aligned sequences.
 #'
-#'@param bam Path to the input file with the aligned sequence.
+#' @param bam Path to the input file with the aligned sequence.
 #' @param bin_path Path to picard executable. Default path tools/picard/build/libs/picard.jar.
 #' @param output_dir Path to the output directory.
 #' @param tmp_dir Path to tmp directory.
@@ -272,7 +272,7 @@ ram=1,verbose=FALSE,threads=3,coord_sort=TRUE,index=TRUE,stats="all"){
 #' @export
 
 
-mark_duplicates_picard=function(bin_path="tools/picard/build/libs/picard.jar",bam="",
+markdups_picard=function(bin_path="tools/picard/build/libs/picard.jar",bam="",
 output_dir="",verbose=FALSE,hnd=1000,ram=4,tmp_dir="",remove_duplicates=TRUE){
 
 
@@ -323,7 +323,7 @@ output_dir="",verbose=FALSE,hnd=1000,ram=4,tmp_dir="",remove_duplicates=TRUE){
 #' @export
 
 
-mark_duplicates_gatk=function(bin_path="tools/gatk/gatk",bam="",output_dir="",
+markdups_gatk=function(bin_path="tools/gatk/gatk",bam="",output_dir="",
 verbose=FALSE,tmp_dir="",threads=3,remove_duplicates=TRUE){
 
       out_file_dir=set_dir(dir=output_dir,name="markdups_reports")
