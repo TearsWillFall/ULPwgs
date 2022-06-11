@@ -17,6 +17,8 @@ generate_BQSR_gatk(
 \arguments{
 \item{bin_path}{\link{REQUIRED} Path to gatk executable. Default tools/gatk/gatk.}
 
+\item{bam}{\link{REQUIRED} Path to the BAM file.}
+
 \item{ref_genome}{\link{REQUIRED} Path to reference genome}
 
 \item{snpdb}{\link{REQUIRED} Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.}
@@ -24,8 +26,6 @@ generate_BQSR_gatk(
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
-
-\item{file}{\link{REQUIRED} Path to the BAM file.}
 }
 \description{
 Generates a recalibration table based on various covariates.

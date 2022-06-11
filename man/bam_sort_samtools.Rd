@@ -17,6 +17,8 @@ bam_sort_samtools(
 \arguments{
 \item{bin_path}{Path to bwa executable. Default path tools/samtools/samtools.}
 
+\item{bam}{Path to the input file with the sequence.}
+
 \item{output_dir}{Path to the output directory.}
 
 \item{ram}{Ram memory to use per thread in GB. Default 1GB}
@@ -26,8 +28,6 @@ bam_sort_samtools(
 \item{threads}{Number of threads. Default 3}
 
 \item{coord_sort}{Generate a coord sorted file. Otherwise queryname sorted. Default TRUE}
-
-\item{file}{Path to the input file with the sequence.}
 }
 \description{
 This function sorts a genome sequence file (BAM/SAM)

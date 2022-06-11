@@ -17,6 +17,8 @@ bam_metrics_summary_picard(
 \arguments{
 \item{bin_path}{Path to bwa executable. Default path tools/samtools/samtools.}
 
+\item{bam}{Path to the input file with the sequence.}
+
 \item{output_dir}{Path to the output directory.}
 
 \item{verbose}{Enables progress messages. Default False.}
@@ -24,8 +26,6 @@ bam_metrics_summary_picard(
 \item{tmp_dir}{Path to TMP directory. Default .}
 
 \item{ram}{RAM memory to use in GB. Default 4.}
-
-\item{file}{Path to the input file with the sequence.}
 }
 \description{
 Generate BAM General Summary Metrics

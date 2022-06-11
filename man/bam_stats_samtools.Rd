@@ -16,6 +16,8 @@ bam_stats_samtools(
 \arguments{
 \item{bin_path}{Path to bwa executable. Default path tools/samtools/samtools.}
 
+\item{bam}{Path to the input file with the sequence.}
+
 \item{output_dir}{Path to the output directory.}
 
 \item{verbose}{Enables progress messages. Default False.}
@@ -23,8 +25,6 @@ bam_stats_samtools(
 \item{threads}{Number of threads. Default 3}
 
 \item{stats}{Generate BAM stats. Default all. Options \link{"all","flag","index",""}}
-
-\item{file}{Path to the input file with the sequence.}
 }
 \description{
 Generate BAM file flag and index stats

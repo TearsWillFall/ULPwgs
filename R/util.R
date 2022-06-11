@@ -171,11 +171,7 @@ verbose=FALSE,threads=3){
 
   out_file_dir=set_dir(dir=output_dir,name="flag")
 
-  if (!dir.exists(out_file_dir)){
-    dir.create(out_file_dir,recursive=TRUE)
-  }
-
-  exec_code=paste0(bin_path," flagstat ",get_file_name(bam)," -@ ",threads," > ",
+  exec_code=paste0(bin_path," flagstat ",bam," -@ ",threads," > ",
     paste0(out_file_dir,"/",get_file_name(bam),".flagstat.txt"))
   
   if (verbose){
@@ -200,7 +196,7 @@ verbose=FALSE,threads=3){
 
   out_file_dir=set_dir(dir=output_dir,name="index")
 
-  exec_code=paste0(bin_path," idxstats ",file," > ",paste0(out_file_dir,"/",get_file_name(bam),".idxstats.txt"))
+  exec_code=paste0(bin_path," idxstats ",bam," > ",paste0(out_file_dir,"/",get_file_name(bam),".idxstats.txt"))
   if (verbose){
     print(exec_code)
   }
@@ -225,7 +221,7 @@ verbose=FALSE,threads=3){
   out_file_dir=set_dir(dir=output_dir,name="mapq")
 
 
-  exec_code=paste(bin_path,"view",file," -@ ",threads, " | awk -F", "'\\t'",
+  exec_code=paste(bin_path,"view",bam," -@ ",threads, " | awk -F", "'\\t'",
     "'{c[$5]++} END { for (i in c) printf(\"%s\\t%s\\n\",i,c[i]) }'",
     " | sort -t$'\\t' -k 1 -g >>", paste0(out_file_dir,"/",get_file_name(bam),".mapq_dist.txt"))
   
@@ -296,7 +292,7 @@ bam="",output_dir="",verbose=FALSE,tmp_dir=".",ram=4){
 
   exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",
       bin_path," CollectInsertSizeMetrics ","VALIDATION_STRINGENCY=SILENT I=",
-      file," O=",paste0(out_file_dir,"/",get_file_name(bam),".picard_insert_size.txt")," H=",
+      bam," O=",paste0(out_file_dir,"/",get_file_name(bam),".picard_insert_size.txt")," H=",
       paste0(out_file_dir,"/",get_file_name(bam),".picard_insert_size.pdf "),tmp)
 
   if(verbose){
@@ -335,7 +331,7 @@ verbose=FALSE,tmp_dir=".",ram=4,bi="",ti=""){
 
   exec_code=print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir,
         " -jar ",bin_path," CollectHsMetrics VALIDATION_STRINGENCY=SILENT BI=",
-        bi," TI=",ti," I=",file," THEORETICAL_SENSITIVITY_OUTPUT=",
+        bi," TI=",ti," I=",bam," THEORETICAL_SENSITIVITY_OUTPUT=",
         paste0(out_file_dir,"/",get_file_name(bam),".picard_TS.txt"),ref," O=",
         paste0(out_file_dir,"/",get_file_name(bam),".picard_CollectHSmetrics.txt "),tmp))
 
@@ -410,7 +406,7 @@ bam="",output_dir="",verbose=FALSE,tmp_dir=".",ram=4){
 
   exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",
             bin_path," CollectWgsMetrics VALIDATION_STRINGENCY=SILENT MINIMUM_MAPPING_QUALITY=",
-            mapq," I=",file," O=",paste0(out_file_dir,"/",get_file_name(bam),".picard_wgs_q00.txt "),tmp)
+            mapq," I=",bam," O=",paste0(out_file_dir,"/",get_file_name(bam),".picard_wgs_q00.txt "),tmp)
 
  if (verbose){
       print(exec_code)
@@ -537,7 +533,7 @@ snpdb="",output_dir="",verbose=FALSE){
     snpdb=paste(" --known-sites ",snpdb,collapse=" ")
   }
 
-  exec_code=paste0(bin_path," BaseRecalibrator -I ",file, " -R ", ref_genome,snpdb,reg," -O ",out_file)
+  exec_code=paste0(bin_path," BaseRecalibrator -I ",bam, " -R ", ref_genome,snpdb,reg," -O ",out_file)
 
   if(verbose){
     print(exec_code)
@@ -647,7 +643,7 @@ rec_table="",output_dir="",verbose=FALSE){
       reg=paste0(" -L ",strsplit(region,"_")[[1]][2], " ")
       out_file=paste0(out_file_dir,"/", get_file_name(bam),".",region,".recal.",get_file_ext(bam))
   }
-  exec_code=paste(bin_path," ApplyBQSR -I ",file, " -R ", ref_genome,
+  exec_code=paste(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome,
     " --bqsr-recal-file ",rec_table, " -O ",out_file,reg)
   if(verbose){
     print(exec_code)

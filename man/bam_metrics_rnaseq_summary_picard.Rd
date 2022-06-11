@@ -18,6 +18,8 @@ bam_metrics_rnaseq_summary_picard(
 \arguments{
 \item{bin_path}{Path to bwa executable. Default path tools/samtools/samtools.}
 
+\item{bam}{Path to the input file with the sequence.}
+
 \item{output_dir}{Path to the output directory.}
 
 \item{verbose}{Enables progress messages. Default False.}
@@ -29,8 +31,6 @@ bam_metrics_rnaseq_summary_picard(
 \item{ri}{Ribosomal interval for RNAseq data. Interval format.}
 
 \item{ref_flat}{Path to flat refrence. Interval format.}
-
-\item{file}{Path to the input file with the sequence.}
 }
 \description{
 Generate BAM Summary for RNAseq data

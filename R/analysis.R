@@ -199,7 +199,7 @@ verbose=FALSE){
 #' Sort and index a sequence file
 #'
 #'
-#' @param file Path to the input file with the sequence.
+#'@param bam Path to the input file with the sequence.
 #' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
@@ -240,7 +240,7 @@ ram=1,verbose=FALSE,threads=3,coord_sort=TRUE,index=TRUE,stats="all"){
 #'
 #' This function marks duplicated reads (artifacts) found in aligned sequences.
 #'
-#' @param file Path to the input file with the aligned sequence.
+#'@param bam Path to the input file with the aligned sequence.
 #' @param bin_path Path to picard executable. Default path tools/picard/build/libs/picard.jar.
 #' @param output_dir Path to the output directory.
 #' @param tmp_dir Path to tmp directory.
@@ -269,7 +269,7 @@ output_dir="",verbose=FALSE,hnd=1000,ram=4,tmp_dir="",remove_duplicates=TRUE){
     }
 
     exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",
-      bin_path," MarkDuplicates I=",file, " O=",paste0(out_file_dir,"/",
+      bin_path," MarkDuplicates I=",bam, " O=",paste0(out_file_dir,"/",
       get_file_name(bam),".rmdup.",get_file_ext(bam)),
       " M=",paste0(out_file_dir,"/",
       get_file_name(bam),".picard_rmdup.txt"),
@@ -287,7 +287,7 @@ output_dir="",verbose=FALSE,hnd=1000,ram=4,tmp_dir="",remove_duplicates=TRUE){
 #'
 #' This function removes duplicated reads (artifacts) found in aligned sequences and sorts the output bam.
 #'
-#' @param file Path to the input file with the aligned sequence.
+#' @param bam Path to the input file with the aligned sequence.
 #' @param bin_path Path to picard executable. Default path tools/picard/build/libs/picard.jar.
 #' @param output_dir Path to the output directory.
 #' @param tmp_dir Path to tmp directory.
@@ -312,14 +312,14 @@ verbose=FALSE,tmp_dir="",threads=3,remove_duplicates=TRUE){
           dups="--remove-all-duplicates"
       }
     
+      exec_code=paste0(bin_path," MarkDuplicatesSpark -I ",bam, " -O ",
+        paste0(out_file,".sorted.rmdup.",get_file_ext(bam))," -M ",paste0(out_file_dir,"/",get_file_name(bam),".gatk_rmdup.txt"),
+        " ",tmp," --conf \'spark.executor.cores=",threads,"\'", dups)
+      
       if(verbose){
-        print(paste0(bin_path," MarkDuplicatesSpark -I ",file, " -O ",
-        paste0(out_file,".sorted.rmdup.",get_file_ext(bam))," -M ",paste0(out_file_dir,"/",get_file_name(bam),".gatk_rmdup.txt"),
-        " ",tmp," --conf \'spark.executor.cores=",threads,"\'"), dups)
+        print(exec_code)
       }
-        system(paste0(bin_path," MarkDuplicatesSpark -I ",file, " -O ",
-        paste0(out_file,".sorted.rmdup.",get_file_ext(bam))," -M ",paste0(out_file_dir,"/",get_file_name(bam),".gatk_rmdup.txt"),
-        " ",tmp," --conf \'spark.executor.cores=",threads,"\'"), dups)
+        system(exec_code)
     }
 
 

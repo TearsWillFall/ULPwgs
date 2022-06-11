@@ -15,13 +15,13 @@ bam_stats_index(
 \arguments{
 \item{bin_path}{Path to bwa executable. Default path tools/samtools/samtools.}
 
+\item{bam}{Path to the input file with the sequence.}
+
 \item{output_dir}{Path to the output directory.}
 
 \item{verbose}{Enables progress messages. Default False.}
 
 \item{threads}{Number of threads. Default 3}
-
-\item{file}{Path to the input file with the sequence.}
 }
 \description{
 Generate BAM file indexstats

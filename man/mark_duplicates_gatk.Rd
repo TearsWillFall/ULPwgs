@@ -17,6 +17,8 @@ mark_duplicates_gatk(
 \arguments{
 \item{bin_path}{Path to picard executable. Default path tools/picard/build/libs/picard.jar.}
 
+\item{bam}{Path to the input file with the aligned sequence.}
+
 \item{output_dir}{Path to the output directory.}
 
 \item{verbose}{Enables progress messages. Default False.}
@@ -26,8 +28,6 @@ mark_duplicates_gatk(
 \item{threads}{Number of threads to split work.}
 
 \item{remove_duplicates}{Remove all sequencing duplicates from BAM file. Default TRUE.}
-
-\item{file}{Path to the input file with the aligned sequence.}
 }
 \description{
 This function removes duplicated reads (artifacts) found in aligned sequences and sorts the output bam.

@@ -9,7 +9,7 @@ returns its base name without the file extension suffix.}
 get_file_name(file_path = "")
 }
 \arguments{
-\item{file_path}{Path to the input file}
+\item{bam_path}{Path to the input file}
 }
 \value{
 A string with the name of the file

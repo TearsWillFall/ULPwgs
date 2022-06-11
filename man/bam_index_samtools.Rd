@@ -14,11 +14,11 @@ bam_index_samtools(
 \arguments{
 \item{bin_path}{Path to bwa executable. Default path tools/samtools/samtools.}
 
+\item{bam}{Path to the input file with the sequence.}
+
 \item{verbose}{Enables progress messages. Default False.}
 
 \item{threads}{Number of threads. Default 3}
-
-\item{file}{Path to the input file with the sequence.}
 }
 \description{
 This function indexes a genomic sequence file (BAM/SAM).

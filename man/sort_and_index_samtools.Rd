@@ -19,6 +19,8 @@ sort_and_index_samtools(
 \arguments{
 \item{bin_path}{Path to bwa executable. Default path tools/samtools/samtools.}
 
+\item{bam}{Path to the input file with the sequence.}
+
 \item{output_dir}{Path to the output directory.}
 
 \item{ram}{Ram memory to use per thread in GB. Default 1GB}
@@ -32,8 +34,6 @@ sort_and_index_samtools(
 \item{index}{Generate an index file for sorted BAM. Default TRUE}
 
 \item{stats}{Generate BAM stats. Default all. Options \link{"all","flag","index",""}}
-
-\item{file}{Path to the input file with the sequence.}
 }
 \description{
 Sort and index a sequence file
