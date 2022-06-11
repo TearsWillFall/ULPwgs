@@ -431,7 +431,7 @@ bam="",output_dir="",verbose=FALSE,tmp_dir=".",ram=4){
 
 bam_index_samtools=function(bin_path="tools/samtools/samtools",bam="",verbose=FALSE,threads=3){
 
-  exec_code=paste(bin_path," index",file," -@ ",threads)
+  exec_code=paste(bin_path," index",bam," -@ ",threads)
   if (verbose){
     print(exec_code)
   }
