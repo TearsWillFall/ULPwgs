@@ -218,10 +218,11 @@ ram=1,verbose=FALSE,threads=3,coord_sort=TRUE,index=TRUE,stats="all"){
   bam_sort_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,ram=ram,
   verbose=verbose,threads=threads,coord_sort=coord_sort)
 
-  bam=paste0(out_file_dir,"/",get_file_name(bam),".sorted.",get_file_ext(bam))
-
+  out_file_dir=set_dir(dir=output_dir,name="sorted")
+  
   if (coord_sort){
-     out_file_dir=set_dir(dir=output_dir,name="sorted")
+   
+     bam=paste0(out_file_dir,"/",get_file_name(bam),".sorted.",get_file_ext(bam))
     if(index){
         bam_index_samtools(bin_path=bin_path,bam=bam,verbose=verbose,threads=threads)
       if(stats){
@@ -230,7 +231,7 @@ ram=1,verbose=FALSE,threads=3,coord_sort=TRUE,index=TRUE,stats="all"){
       }
      
     }else{
-        bam_stats_samtools(bin_path=bin_path,bam=bam,output_dir=,
+        bam_stats_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
         verbose=verbose,threads=threads,stats="flag")
     }
   }
