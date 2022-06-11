@@ -217,7 +217,7 @@ verbose=FALSE){
 #' Sort and index a sequence file
 #'
 #'
-#'@param bam Path to the input file with the sequence.
+#' @param bam Path to the input file with the sequence.
 #' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
@@ -303,6 +303,7 @@ output_dir="",verbose=FALSE,hnd=1000,ram=4,tmp_dir="",remove_duplicates=TRUE){
     }
 
     error=system(exec_code)
+    
     if(error!=0){
       stop("markdups failed to run due to unknown error.
       Check std error for more information.")
@@ -372,7 +373,7 @@ verbose=FALSE,tmp_dir="",threads=3,remove_duplicates=TRUE){
 #' @export
 
 
-recalibrate_bq_gatk=function(bin_path="tools/samtools/samtools",bin_path2="tools/gatk/gatk",
+recal_gatk=function(bin_path="tools/samtools/samtools",bin_path2="tools/gatk/gatk",
 bin_path3="tools/picard/build/libs/picard.jar",bam="",ref_genome="",snpdb="",
 threads=3,ram=4,output_dir="",verbose=FALSE){
 
@@ -442,7 +443,7 @@ threads=3,ram=4,output_dir="",verbose=FALSE){
 #' @param mode Type of data to generate metrics for. Default tg. Options ["wgs","tg","rna"]
 #' @export
 
-alignment_qc_metrics=function(bin_path="tools/samtools/samtools",
+align_qc_metrics=function(bin_path="tools/samtools/samtools",
   bin_path2="tools/picard/build/libs/picard.jar",bin_path3="tools/bedtools2/bin/bedtools",
   bam="",output_dir="",ref_genome="",verbose=FALSE,ram=4,tmp_dir=".",mapq=0,bi="",
   ti="",off_tar="",on_tar="",ri="",ref_flat="",mode="tg"){
