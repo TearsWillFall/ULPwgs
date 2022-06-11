@@ -339,7 +339,8 @@ verbose=FALSE,tmp_dir="",threads=3,remove_duplicates=TRUE){
       }
     
       exec_code=paste0(bin_path," MarkDuplicatesSpark -I ",bam, " -O ",
-        paste0(out_file,".sorted.rmdup.",get_file_ext(bam))," -M ",paste0(out_file_dir,"/",get_file_name(bam),".gatk_rmdup.txt"),
+        paste0(out_file_dir,"/",get_file_name(bam),".sorted.rmdup.",
+        get_file_ext(bam))," -M ",paste0(out_file_dir,"/",get_file_name(bam),".gatk_rmdup.txt"),
         " ",tmp," --conf \'spark.executor.cores=",threads,"\'", dups)
       
       if(verbose){
