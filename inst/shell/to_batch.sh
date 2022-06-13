@@ -1,2 +1,2 @@
 #!/bin/bash -l
-RScript -e $1
+Rscript -e $1
