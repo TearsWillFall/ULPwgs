@@ -647,15 +647,15 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1){
     
    
   parallel::mclapply(1:nrow(dat),FUN=function(x){
-
-  if(mode=="local"){
-         generate_BQSR_gatk(region=tmp$Region,
+    tmp=dat[x,]
+    if(mode=="local"){
+        generate_BQSR_gatk(region=tmp$Region,
         bin_path=bin_path2,bam=bam,ref_genome=ref_genome,dbsnp=dbsnp,
         output_dir=out_file_dir,verbose=verbose)
 
 
       }else if (mode=="batch"){
-         tmp=dat[x,]
+    
         exec_code=paste("qsub -N ",paste0("BQSR_",x,"_",tmp$chr,"_",tmp$start,"_",tmp$end),paste0(" -l h_rt=",time),
         paste0(" -l mem=",ram,"G"), paste0(" -pe smp 5"), paste0(" -wd ."),
          fun, tmp$Region, bin_path,
