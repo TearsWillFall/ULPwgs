@@ -645,7 +645,7 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1){
 
   if(mode=="local"){
     tmp=dat[1,]
-    print(tmp$Region,bin_path2,bam,ref_genome,snpdb,out_file_dir,verbose)
+    print(paste0(tmp$Region,bin_path2,bam,ref_genome,snpdb,out_file_dir,verbose))
     generate_BQSR_gatk(region=tmp$Region,
     bin_path=bin_path2,bam=bam,ref_genome=ref_genome,snpdb=snpdb,
     output_dir=out_file_dir,verbose=verbose)
