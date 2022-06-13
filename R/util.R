@@ -797,7 +797,7 @@ output_dir="",verbose=FALSE,threads=4,update_time=60){
   options(scipen = 999)
 
   out_file_dir=set_dir(dir=output_dir)
-  dat=bin_chromosomes(bin_path=bin_path,bam=bam,verbose=verbose,bin_size=bin_size)
+  dat=get_bam_reference_chr(bin_path=bin_path,bam=bam,verbose=verbose)
   dat$start=dat$start+1
   dat$pos=1:nrow(dat)
   dat=dat %>% dplyr::mutate(Region=paste0(pos,"_",chr,":",start,"-",end))
