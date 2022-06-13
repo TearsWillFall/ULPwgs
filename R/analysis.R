@@ -405,7 +405,7 @@ time="48:0:0",ram=4){
 
   sort_and_index_samtools(bin_path=bin_path,bam=paste0(out_file_dir4,"/",
   get_file_name(bam),".recal.",get_file_ext(bam)),output_dir=out_file_dir4,
-  ram=ram,verbose=verbose,threads=threads,coord_sort=FALSE,sort=FALSE,index=TRUE)
+  ram=ram,verbose=verbose,threads=threads,sort=FALSE,index=TRUE)
 
   parallel_generate_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,
     bam=paste0(out_file_dir4,"/",get_file_name(bam),".sorted.recal.",get_file_ext(bam)),

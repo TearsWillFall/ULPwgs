@@ -463,9 +463,6 @@ bam="",output_dir="",verbose=FALSE,tmp_dir=".",ram=4){
 
 
 
-
-
-
 #' Index a BAM file
 #'
 #' This function indexes a genomic sequence file (BAM/SAM).
