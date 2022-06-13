@@ -862,6 +862,9 @@ batch_job_validator=function(job="",time=10,verbose=FALSE){
     }
     Sys.sleep(time)
   }
+  if(error){
+    stop("One or more jobs failed")
+  }
   return()
 }
 
