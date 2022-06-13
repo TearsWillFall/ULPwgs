@@ -11,7 +11,8 @@ apply_BQSR_gatk(
   ref_genome = "",
   rec_table = "",
   output_dir = "",
-  verbose = FALSE
+  verbose = FALSE,
+  batch = ""
 )
 }
 \arguments{
@@ -26,6 +27,8 @@ apply_BQSR_gatk(
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
+
+\item{batch}{\link{OPTIONAL} Parameter to submit to grid.}
 }
 \description{
 Applies numerical corrections to each individual basecall based on the covariates analyzed before.

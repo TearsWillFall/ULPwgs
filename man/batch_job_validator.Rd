@@ -4,7 +4,7 @@
 \alias{batch_job_validator}
 \title{Validate job submited on batch on sungrid based cluster}
 \usage{
-batch_job_validator(job = "", time = 10, verbose = FALSE)
+batch_job_validator(job = "", time = 10, verbose = FALSE, threads = 3)
 }
 \arguments{
 \item{job}{Name of job or jobs.}
@@ -12,6 +12,8 @@ batch_job_validator(job = "", time = 10, verbose = FALSE)
 \item{time}{Time in seconds between checks. Default 10.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
+
+\item{threads}{\link{OPTIONAL} Number of threads to use to. Default 3.}
 }
 \description{
 Validate job submited on batch on sungrid based cluster

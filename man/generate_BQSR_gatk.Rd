@@ -11,7 +11,8 @@ generate_BQSR_gatk(
   ref_genome = "",
   dbsnp = "",
   output_dir = "",
-  verbose = FALSE
+  verbose = FALSE,
+  batch = ""
 )
 }
 \arguments{
@@ -26,6 +27,8 @@ generate_BQSR_gatk(
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
+
+\item{batch}{\link{OPTIONAL} Parameter to submit to grid.}
 }
 \description{
 Generates a recalibration table based on various covariates.
