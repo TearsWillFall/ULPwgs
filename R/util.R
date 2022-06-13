@@ -655,19 +655,21 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1,update_time=60){
 
   job_name=paste0(c(task_name, input_name,task_id),collapse="_")
   
+    if(mode=="batch"){
+     out_file_dir2=set_dir(dir=out_file_dir,name="batch_std_out")
+  }
   parallel::mclapply(1:nrow(dat),FUN=function(x){
     tmp=dat[x,]
     if(mode=="local"){
   
         exec_code=""
     }else if (mode=="batch"){
-
         batch_name=paste0(c(tmp$chr,tmp$start,tmp$end),collapse="_")
         full_name=paste0(c(job_name,batch_name),collapse="_")
         exec_code=paste("qsub -N ",full_name,paste0(" -l h_rt=",time),
         paste0(" -l mem=",ram,"G"), paste0(" -pe smp 1"), paste0(" -wd ",getwd()), 
-        paste0(" -o ",out_file_dir,"/",full_name,".std_out"),
-        paste0(" -e ",out_file_dir,"/",full_name,".std_error"))
+        paste0(" -o ",out_file_dir2,"/",full_name,".std_out"),
+        paste0(" -e ",out_file_dir2,"/",full_name,".std_error"))
       
     }else{
       stop("Wrong Mode supplied. Available modes are ['local','batch']")
@@ -814,20 +816,23 @@ output_dir="",verbose=FALSE,threads=4,mode="local",time="48:0:0",ram=4,update_ti
 
   job_name=paste0(c(task_name, input_name,task_id),collapse="_")
 
-  
+  if(mode=="batch"){
+     out_file_dir2=set_dir(dir=out_file_dir,name="batch_std_out")
+  }
  
   parallel::mclapply(1:nrow(dat),FUN=function(x){
     tmp=dat[x,]
     if(mode=="local"){
       exec_code=""
     }else if(mode=="batch"){
+     
       batch_name=paste0(c(tmp$chr,tmp$start,tmp$end),collapse="_")
       full_name=paste0(c(job_name,batch_name),collapse="_")
       exec_code=paste(" qsub -N ",full_name,
           paste0(" -l h_rt=",time), paste0(" -l mem=",ram,"G"), paste0(" -pe smp 1"),
            paste0(" -wd ",getwd()),
-          paste0(" -o ",out_file_dir,"/",full_name,".std_out"),
-          paste0(" -e ",out_file_dir,"/",full_name,".std_error "))
+          paste0(" -o ",out_file_dir2,"/",full_name,".std_out"),
+          paste0(" -e ",out_file_dir2,"/",full_name,".std_error "))
      
     }else{
         stop("Wrong Mode supplied. Available modes are ['local','batch']")
