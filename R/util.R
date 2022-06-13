@@ -660,9 +660,9 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1,update_time=60){
 
       }else if (mode=="batch"){
 
-        sub_fun=paste0("generate_BQSR_gatk(region=",tmp$Region,
+        sub_fun=paste0("\"generate_BQSR_gatk(region=",tmp$Region,
         ",bin_path=",bin_path2,",bam=",bam,",ref_genome=",ref_genome,",dbsnp=",
-        dbsnp,",output_dir=",dbsnp,",verbose=",verbose,")")
+        dbsnp,",output_dir=",dbsnp,",verbose=",verbose,")\"")
 
         batch_name=paste0(c(tmp$chr,tmp$start,tmp$end),collapse="_")
         full_name=paste0(c(job_name,batch_name),collapse="_")
