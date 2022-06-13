@@ -649,7 +649,7 @@ time="48:0:0",ram=1){
 
     generate_BQSR_gatk(region=dat[1,]$Region,
     bin_path=bin_path2,bam=bam,ref_genome=ref_genome,snpdb=snpdb,
-    output_dir=out_file_dir,verbose=verbose)}
+    output_dir=out_file_dir,verbose=verbose)
 
   }else if (mode=="batch"){
     fun <- system.file("shell", "generate_BQSR_gatk.sh", package = "ULPwgs")
