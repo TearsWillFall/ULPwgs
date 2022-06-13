@@ -656,7 +656,7 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1){
 
       }else if (mode=="batch"){
     
-        exec_code=paste("qsub -N ",paste0("BQSR_",x,"_",tmp$chr,"_",tmp$start,"_",tmp$end),paste0(" -l h_rt=",time),
+        exec_code=paste("qsub -N ",paste0("generate_BQSR_",x,"_",tmp$chr,"_",tmp$start,"_",tmp$end),paste0(" -l h_rt=",time),
         paste0(" -l mem=",ram,"G"), paste0(" -pe smp 2"), paste0(" -wd ."),
          fun, tmp$Region, bin_path,
          bam, ref_genome, dbsnp, out_file_dir,verbose)
@@ -780,9 +780,9 @@ rec_table="",output_dir="",verbose=FALSE){
 #' @export
 #' @import pbapply
 
-parallel_apply_BQSR=function(bin_path="tools/samtools/samtools",bin_path2="tools/gatk/gatk",
+parallel_apply_BQSR_gatk=function(bin_path="tools/samtools/samtools",bin_path2="tools/gatk/gatk",
 bin_path3="tools/picard/build/libs/picard.jar",bam="",ref_genome="",rec_table="",
-output_dir="",verbose=FALSE,threads=4,bin_size=40000000){
+output_dir="",verbose=FALSE,threads=4){
 
   options(scipen = 999)
 
@@ -794,14 +794,71 @@ output_dir="",verbose=FALSE,threads=4,bin_size=40000000){
 
 
 
-  parallel::mclapply(dat$Region,FUN=function(x){ apply_BQSR_gatk(region=x,
-  bin_path=bin_path2,bam=bam,ref_genome=ref_genome,
-  rec_table=rec_table, output_dir=out_file_dir,verbose=verbose)},mc.cores=threads)
+
+
+
+  jobs=""
+  parallel::mclapply(1:nrow(dat),FUN=function(x){
+  tmp=dat[x,]
+
+
+  if(mode=="local"){
+    apply_BQSR_gatk(region=x,
+    bin_path=bin_path2,bam=bam,ref_genome=ref_genome,
+    rec_table=rec_table, output_dir=out_file_dir,verbose=verbose)
+  }else if (mode=="batch"){
+     exec_code=paste("qsub -N ",paste0("apply_BQSR_",x,"_",tmp$chr,"_",tmp$start,"_",tmp$end),
+        paste0(" -l h_rt=",time), paste0(" -l mem=",ram,"G"), paste0(" -pe smp 2"), paste0(" -wd ."),
+         fun, tmp$Region, bin_path,
+         bam, ref_genome, dbsnp, out_file_dir,verbose)
+        if(verbose){
+          print(exec_code)
+        }
+
+        error=system(exec_code)
+        if(error!=0){
+          stop("gatk failed to run due to unknown error.
+          Check std error for more information.")
+        }
+
+  }else{
+    stop("Wrong Mode supplied. Available modes are ['local','batch']")
+  } 
+
+    
+  },mc.cores=threads)
+    
+    
+  
 
   gather_bam_files(bin_path=bin_path3,bams_dir=out_file_dir,
   output_name=paste0(get_file_name(bam),".recal.sorted.rmdup"))
   system(paste0("rm ", out_file_dir,"/*:*.recal*.ba*"))
 
+}
+
+
+#' Validate job submited on batch on sungrid based cluster
+#'
+#' @param job Name of job or jobs.
+#' @param time Time in seconds between checks. Default 10.
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @export
+
+
+batch_job_validator=function(job="",time=10,verbose=FALSE){
+
+  exec_code="qstat -xml | tr '\n' ' ' | 
+  sed 's#<job_list[^>]*>#\n#g'   | sed 's#<[^>]*>##g' | grep \" \" | column -t"
+  dat_info=read.table(system(exec_code,intern=TRUE))
+  while(nrow(dat_info)!=0){
+    if(verbose){
+          print(dat_info)
+    }
+    dat_info=read.table(system(exec_code,intern=TRUE))
+    sleep(time)
+  }
+  return()
 }
 
 
@@ -837,7 +894,11 @@ gather_bam_files=function(bin_path="tools/picard/build/libs/picard.jar",bams_dir
     print(exec_code)
   }
 
-    error=system(exec_code)
+  error=system(exec_code)
+
+
+
+
   if(error!=0){
     stop("picard failed to run due to unknown error.
     Check std error for more information.")

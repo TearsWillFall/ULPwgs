@@ -9,11 +9,10 @@ parallel_generate_BQSR_gatk(
   bin_path2 = "tools/gatk/gatk",
   bam = "",
   ref_genome = "",
-  snpdb = "",
+  dbsnp = "",
   threads = 3,
   output_dir = "",
   verbose = FALSE,
-  bin_size = 4e+07,
   mode = "local",
   time = "48:0:0",
   ram = 1
@@ -28,7 +27,7 @@ parallel_generate_BQSR_gatk(
 
 \item{ref_genome}{\link{REQUIRED} Path to reference genome}
 
-\item{snpdb}{\link{REQUIRED} Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.}
+\item{dbsnp}{\link{REQUIRED} Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.}
 
 \item{threads}{Number of threads to split the work. Default 3}
 
@@ -41,8 +40,6 @@ parallel_generate_BQSR_gatk(
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 
 \item{ram}{\link{OPTIONAL} If batch mode. RAM memory in GB per job. Default 1}
-
-\item{region_bed}{\link{REQUIRED} Path to the output directory.}
 }
 \description{
 Generates a recalibration table based on various covariates.

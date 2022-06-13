@@ -10,7 +10,7 @@ recal_gatk(
   bin_path3 = "tools/picard/build/libs/picard.jar",
   bam = "",
   ref_genome = "",
-  snpdb = "",
+  dbsnp = "",
   threads = 3,
   output_dir = "",
   verbose = FALSE,
@@ -30,7 +30,7 @@ recal_gatk(
 
 \item{ref_genome}{\link{REQUIRED}  Path to reference genome.}
 
-\item{snpdb}{\link{REQUIRED} Known variant database.Requires atleast 1.}
+\item{dbsnp}{\link{REQUIRED} Known variant database.Requires atleast 1.}
 
 \item{threads}{\link{REQUIRED}Number of threads to split the work. Only relevant if region_bed file is given.}
 

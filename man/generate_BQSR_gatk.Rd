@@ -9,7 +9,7 @@ generate_BQSR_gatk(
   bin_path = "tools/gatk/gatk",
   bam = "",
   ref_genome = "",
-  snpdb = "",
+  dbsnp = "",
   output_dir = "",
   verbose = FALSE
 )
@@ -21,7 +21,7 @@ generate_BQSR_gatk(
 
 \item{ref_genome}{\link{REQUIRED} Path to reference genome}
 
-\item{snpdb}{\link{REQUIRED} Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.}
+\item{dbsnp}{\link{REQUIRED} Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.}
 
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
