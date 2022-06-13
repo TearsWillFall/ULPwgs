@@ -786,13 +786,16 @@ rec_table="",output_dir="",verbose=FALSE){
 #' @param threads [OPTIONAL] Number of threads to split the work. Default 4
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param ram [OPTIONAL] If batch mode. RAM memory in GB per job. Default 1
 #' @param update_time [OPTIONAL] If batch mode. Show job updates every update time. Default 60
 #' @export
 #' @import pbapply
 
 parallel_apply_BQSR_gatk=function(bin_path="tools/samtools/samtools",bin_path2="tools/gatk/gatk",
 bin_path3="tools/picard/build/libs/picard.jar",bam="",ref_genome="",rec_table="",
-output_dir="",verbose=FALSE,threads=4,update_time=60){
+output_dir="",verbose=FALSE,threads=4,mode="local",time="48:0:0",ram=4,update_time=60){
 
   options(scipen = 999)
 
@@ -820,7 +823,7 @@ output_dir="",verbose=FALSE,threads=4,update_time=60){
       exec_code=paste("qsub -N ",paste0(c(job_name,batch_name),collapse="_"),
           paste0(" -l h_rt=",time), paste0(" -l mem=",ram,"G"), paste0(" -pe smp 2"), paste0(" -wd ."),
           fun, tmp$Region, bin_path,
-          bam, ref_genome, dbsnp, out_file_dir,verbose)
+          bam, ref_genome, recal_table, out_file_dir,verbose)
           if(verbose){
             print(exec_code)
           }
