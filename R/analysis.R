@@ -369,13 +369,16 @@ verbose=FALSE,tmp_dir="",threads=3,remove_duplicates=TRUE){
 #' @param snpdb [REQUIRED] Known variant database.Requires atleast 1.
 #' @param threads [REQUIRED]Number of threads to split the work. Only relevant if region_bed file is given.
 #' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
 #' @export
 
 
 recal_gatk=function(bin_path="tools/samtools/samtools",bin_path2="tools/gatk/gatk",
 bin_path3="tools/picard/build/libs/picard.jar",bam="",ref_genome="",snpdb="",
-threads=3,ram=4,output_dir="",mode,verbose=FALSE){
+threads=3,output_dir="",verbose=FALSE,mode="local",
+time="48:0:0",ram=4){
 
   out_file_dir=set_dir(dir=output_dir,name="recal_reports/recal_before")
   out_file_dir2=set_dir(dir=output_dir,name="recal_reports/recal_after")
@@ -385,7 +388,7 @@ threads=3,ram=4,output_dir="",mode,verbose=FALSE){
 
   parallel_generate_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,bam=bam,
     ref_genome=ref_genome,snpdb=snpdb,
-    threads=threads,output_dir=out_file_dir,verbose=verbose,mode=mode)
+    threads=threads,output_dir=out_file_dir,verbose=verbose,mode=mode,ram=ram,time=time)
 
   parallel_apply_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,bin_path3=bin_path3,
     bam=bam,ref_genome=ref_genome,rec_table=paste0(out_file_dir,"/",get_file_name(bam),".recal.table"),

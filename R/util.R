@@ -624,7 +624,7 @@ snpdb="",output_dir="",verbose=FALSE){
 #' @param threads Number of threads to split the work. Default 3
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
-#' @param mode [OPTIONAL] Where to parallelize. Default local. Options ["local","batch"]
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
 #' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
 #' @param ram [OPTIONAL] If batch mode. RAM memory in GB per job. Default 1
 #' @export
@@ -651,7 +651,7 @@ time="48:0:0",ram=1){
     bin_path=bin_path2,bam=bam,ref_genome=ref_genome,snpdb=snpdb,
     output_dir=out_file_dir,verbose=verbose)},mc.cores=threads)
 
-  }else{
+  }else if (mode=="batch"){
     fun <- system.file("shell", "generate_BQSR_gatk.sh", package = "ULPwgs")
     
     parallel::mclapply(dat$Region,FUN=function(x){
@@ -671,6 +671,9 @@ time="48:0:0",ram=1){
         }
 
     },mc.cores=threads)
+
+  }else{
+      stop("Missing Mode argument. Options ['local','batch']")
 
   }
 

@@ -12,10 +12,11 @@ recal_gatk(
   ref_genome = "",
   snpdb = "",
   threads = 3,
-  ram = 4,
   output_dir = "",
-  mode,
-  verbose = FALSE
+  verbose = FALSE,
+  mode = "local",
+  time = "48:0:0",
+  ram = 4
 )
 }
 \arguments{
@@ -36,6 +37,10 @@ recal_gatk(
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
+
+\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 }
 \description{
 This function recalibrates the base quality of the reads in two steps process based on GATK best practices guides.

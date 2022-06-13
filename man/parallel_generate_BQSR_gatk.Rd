@@ -36,7 +36,7 @@ parallel_generate_BQSR_gatk(
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
-\item{mode}{\link{OPTIONAL} Where to parallelize. Default local. Options \link{"local","batch"}}
+\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 
