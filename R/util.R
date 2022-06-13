@@ -620,7 +620,6 @@ snpdb="",output_dir="",verbose=FALSE){
 #' @param bin_path2 [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
 #' @param ref_genome [REQUIRED] Path to reference genome
 #' @param snpdb [REQUIRED] Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.
-#' @param region_bed [REQUIRED] Path to the output directory.
 #' @param threads Number of threads to split the work. Default 3
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
@@ -634,8 +633,7 @@ snpdb="",output_dir="",verbose=FALSE){
 
 parallel_generate_BQSR_gatk=function(bin_path="tools/samtools/samtools",
 bin_path2="tools/gatk/gatk",bam="",ref_genome="",snpdb="",threads=3,
-output_dir="",verbose=FALSE,bin_size=40000000,mode="local",
-time="48:0:0",ram=1){
+output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1){
 
   options(scipen = 999)
 
@@ -646,8 +644,9 @@ time="48:0:0",ram=1){
   dat=dat %>% dplyr::mutate(Region=paste0(chr,":",start,"-",end))
 
   if(mode=="local"){
-
-    generate_BQSR_gatk(region=dat[1,]$Region,
+    tmp=dat[1,]
+    print(tmp$Region,bin_path2,bam,ref_genome,snpdb,out_file_dir,verbose)
+    generate_BQSR_gatk(region=tmp$Region,
     bin_path=bin_path2,bam=bam,ref_genome=ref_genome,snpdb=snpdb,
     output_dir=out_file_dir,verbose=verbose)
 
