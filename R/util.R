@@ -599,7 +599,7 @@ dbsnp="",output_dir="",verbose=FALSE,batch=""){
 
 
   if(batch!=""){
-    exec_code=paste(batch,"|",exec_code)
+    exec_code=paste("echo \"~/.bashrc;",exec_code,"\"|",batch)
   }
 
 
@@ -648,10 +648,7 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1,update_time=60){
   dat$start=dat$start+1
   dat=dat %>% dplyr::mutate(Region=paste0(chr,":",start,"-",end))
 
-  fun <- system.file("shell", "to_batch.sh", package = "ULPwgs")
-    
   
-
   task_id=sample(1:10000000,1)
   task_name="generate_BQSR"
   input_name=get_file_name(bam)
@@ -761,7 +758,7 @@ rec_table="",output_dir="",verbose=FALSE,batch=""){
     " --bqsr-recal-file ",rec_table, " -O ",out_file,reg)
 
   if(batch!=""){
-    exec_code=paste(batch,"|",exec_code)
+    exec_code=paste("echo \"~/.bashrc;",exec_code,"\"|",batch)
   }
 
   if(verbose){
@@ -825,11 +822,11 @@ output_dir="",verbose=FALSE,threads=4,mode="local",time="48:0:0",ram=4,update_ti
     }else if(mode=="batch"){
       batch_name=paste0(c(tmp$chr,tmp$start,tmp$end),collapse="_")
       full_name=paste0(c(job_name,batch_name),collapse="_")
-      exec_code=paste("echo \";~/.bashrc;qsub -N ",full_name,
+      exec_code=paste(" qsub -N ",full_name,
           paste0(" -l h_rt=",time), paste0(" -l mem=",ram,"G"), paste0(" -pe smp 1"),
            paste0(" -wd ",thisFile(),"/",out_file_dir),
           paste0(" -o ",full_name,".std_out"),
-          paste0(" -e ",full_name,".std_error \""))
+          paste0(" -e ",full_name,".std_error "))
      
     }else{
         stop("Wrong Mode supplied. Available modes are ['local','batch']")
