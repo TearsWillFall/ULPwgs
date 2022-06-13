@@ -643,18 +643,19 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1){
   dat$start=dat$start+1
   dat=dat %>% dplyr::mutate(Region=paste0(chr,":",start,"-",end))
 
-  if(mode=="local"){
-    tmp=dat[1,]
-    print(paste0(tmp$Region,bin_path2,bam,ref_genome,dbsnp,out_file_dir,verbose))
-    generate_BQSR_gatk(region=tmp$Region,
-    bin_path=bin_path2,bam=bam,ref_genome=ref_genome,dbsnp=dbsnp,
-    output_dir=out_file_dir,verbose=verbose)
-
-  }else if (mode=="batch"){
-    fun <- system.file("shell", "generate_BQSR_gatk.sh", package = "ULPwgs")
+  fun <- system.file("shell", "generate_BQSR_gatk.sh", package = "ULPwgs")
     
-    parallel::mclapply(1:nrow(dat),FUN=function(x){
-        tmp=dat[x,]
+   
+  parallel::mclapply(1:nrow(dat),FUN=function(x){
+
+  if(mode=="local"){
+         generate_BQSR_gatk(region=tmp$Region,
+        bin_path=bin_path2,bam=bam,ref_genome=ref_genome,dbsnp=dbsnp,
+        output_dir=out_file_dir,verbose=verbose)
+
+
+      }else if (mode=="batch"){
+         tmp=dat[x,]
         exec_code=paste("qsub -N ",paste0("BQSR_",x,"_",tmp$chr,"_",tmp$start,"_",tmp$end),paste0(" -l h_rt=",time),
         paste0(" -l mem=",ram,"G"), paste0(" -pe smp 5"), paste0(" -wd ."),
          fun, tmp$Region, bin_path,
@@ -669,12 +670,13 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1){
           Check std error for more information.")
         }
 
-    },mc.cores=threads)
-
-  }else{
-      stop("Missing Mode argument. Options ['local','batch']")
-
-  }
+    }else{
+      stop("Wrong Mode supplied. Available modes are ['local','batch']")
+    }
+  })
+   
+  
+  
 
   gather_BQSR_reports_gatk(bin_path=bin_path2,reports_dir=out_file_dir,
   output_name=get_file_name(bam),verbose=verbose)
