@@ -857,7 +857,7 @@ batch_job_validator=function(job="",time=10,verbose=FALSE){
     }
     dat_info=read.table(text=system(exec_code,intern=TRUE))
     names(dat_info)=col_names
-    if(grepl("qw",dat_info$status)|grepl("r",dat_info$status)){
+    if(!grepl("qw",dat_info$status)|!grepl("r",dat_info$status)){
       error=TRUE
     }
     Sys.sleep(time)
