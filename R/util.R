@@ -686,7 +686,7 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1,update_time=60){
   })
 
   if(mode=="batch"){
-    batch_job_validator(job=job_name,time=update_time,verbose=verbose)
+    batch_job_validator(job=job_name,time=update_time,verbose=verbose,threads=threads)
   }
    
 
@@ -849,7 +849,7 @@ output_dir="",verbose=FALSE,threads=4,mode="local",time="48:0:0",ram=4,update_ti
   },mc.cores=threads)
     
   if(mode=="batch"){
-    batch_job_validator(job=job_name,time=update_time,verbose=verbose)
+    batch_job_validator(job=job_name,time=update_time,verbose=verbose,threads=threads)
   }
     
   
@@ -866,10 +866,11 @@ output_dir="",verbose=FALSE,threads=4,mode="local",time="48:0:0",ram=4,update_ti
 #' @param job Name of job or jobs.
 #' @param time Time in seconds between checks. Default 10.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param threads [OPTIONAL] Number of threads to use to. Default 3.
 #' @export
 
 
-batch_job_validator=function(job="",time=10,verbose=FALSE){
+batch_job_validator=function(job="",time=10,verbose=FALSE,threads=3){
   error=FALSE
   col_names=c("job_id","job_priority","job_name","user","status","start_time","cores")
   exec_code="qstat -xml | tr '\n' ' ' | sed 's#<job_list[^>]*>#\\n#g'   | sed 's#<[^>]*>##g' | grep \" \" | column -t"
@@ -886,12 +887,16 @@ batch_job_validator=function(job="",time=10,verbose=FALSE){
     }
     dat_info=read.table(text=system(exec_code,intern=TRUE))
     names(dat_info)=col_names
-    if(any(!grepl("qw",dat_info$status)&!grepl("r",dat_info$status))){
+    if(any(!grepl("E",dat_info$status))){
       error=TRUE
     }
     Sys.sleep(time)
   }
   if(error){
+    parallel::mclapply(1:nrow(dat_info),FUN=function(x){
+      system(paste0("qdel ",dat_info[x,]$job_id))
+    },mc.cores=threads)
+  
     stop("One or more jobs failed")
   }
   return()
