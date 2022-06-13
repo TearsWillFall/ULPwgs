@@ -851,12 +851,15 @@ batch_job_validator=function(job="",time=10,verbose=FALSE){
   exec_code="qstat -xml | tr '\n' ' ' | sed 's#<job_list[^>]*>#\\n#g'   | sed 's#<[^>]*>##g' | grep \" \" | column -t"
   dat_info=read.table(text=system(exec_code,intern=TRUE))
   names(dat_info)=col_names
-  while(nrow(dat_info)!=0){
+  while(nrow(dat_info)!=0& !error){
     if(verbose){
           print(dat_info)
     }
     dat_info=read.table(text=system(exec_code,intern=TRUE))
     names(dat_info)=col_names
+    if(grepl("qw",dat_info$status)|grepl("r",dat_info$status)){
+      error=TRUE
+    }
     Sys.sleep(time)
   }
   return()
