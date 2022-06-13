@@ -599,7 +599,7 @@ dbsnp="",output_dir="",verbose=FALSE,batch=""){
 
 
   if(batch!=""){
-    exec_code=paste0("echo \"~/.bashrc;",exec_code,"\"|",batch)
+    exec_code=paste0("echo \"source ~/.bashrc;",exec_code,"\"|",batch)
   }
 
 
@@ -758,7 +758,7 @@ rec_table="",output_dir="",verbose=FALSE,batch=""){
     " --bqsr-recal-file ",rec_table, " -O ",out_file,reg)
 
   if(batch!=""){
-    exec_code=paste("echo \"~/.bashrc;",exec_code,"\"|",batch)
+    exec_code=paste("echo \"source ~/.bashrc;",exec_code,"\"|",batch)
   }
 
   if(verbose){
