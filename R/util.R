@@ -661,8 +661,8 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1,update_time=60){
       }else if (mode=="batch"){
 
         sub_fun=paste0("generate_BQSR_gatk(region=",tmp$Region,
-        "bin_path=",bin_path2,"bam=",bam,"ref_genome=",ref_genome,"dbsnp=",
-        dbsnp,"output_dir=",dbsnp,"verbose=",verbose,")")
+        ",bin_path=",bin_path2,",bam=",bam,",ref_genome=",ref_genome,",dbsnp=",
+        dbsnp,",output_dir=",dbsnp,",verbose=",verbose,")")
 
         batch_name=paste0(c(tmp$chr,tmp$start,tmp$end),collapse="_")
         full_name=paste0(c(job_name,batch_name),collapse="_")
@@ -825,12 +825,17 @@ output_dir="",verbose=FALSE,threads=4,mode="local",time="48:0:0",ram=4,update_ti
     }else if (mode=="batch"){
       batch_name=paste0(c(tmp$chr,tmp$start,tmp$end),collapse="_")
       full_name=paste0(c(job_name,batch_name),collapse="_")
+
+      
+      sub_fun=paste0("apply_BQSR_gatk(region=",tmp$Region,
+        ",bin_path=",bin_path2,",bam=",bam,",ref_genome=",ref_genome,",rec_table=",
+        rec_table,",output_dir=",dbsnp,",verbose=",verbose,")")
+
       exec_code=paste("qsub -N ",full_name,
           paste0(" -l h_rt=",time), paste0(" -l mem=",ram,"G"), paste0(" -pe smp 1"), paste0(" -wd ",out_file_dir),
           paste0(" -o ",full_name,".std_out"),
           paste0(" -e ",full_name,".std_error"),
-          fun, tmp$Region, bin_path,
-          bam, ref_genome, rec_table, out_file_dir,verbose)
+          fun, sub_fun)
           if(verbose){
             print(exec_code)
           }
