@@ -849,13 +849,13 @@ output_dir="",verbose=FALSE,threads=4){
 batch_job_validator=function(job="",time=10,verbose=FALSE){
   col_names=c("job_id","job_priority","job_name","user","status","start_time","cores")
   exec_code="qstat -xml | tr '\n' ' ' | sed 's#<job_list[^>]*>#\\n#g'   | sed 's#<[^>]*>##g' | grep \" \" | column -t"
-  dat_info=read.table(system(exec_code,intern=TRUE))
+  dat_info=read.table(text=system(exec_code,intern=TRUE))
   names(dat_info)=col_names
   while(nrow(dat_info)!=0){
     if(verbose){
           print(dat_info)
     }
-    dat_info=read.table(system(exec_code,intern=TRUE))
+    dat_info=read.table(text=system(exec_code,intern=TRUE))
     names(dat_info)=col_names
     sleep(time)
   }
