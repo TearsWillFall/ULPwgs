@@ -15,7 +15,8 @@ parallel_generate_BQSR_gatk(
   verbose = FALSE,
   mode = "local",
   time = "48:0:0",
-  ram = 1
+  ram = 1,
+  update_time = 60
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ parallel_generate_BQSR_gatk(
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 
 \item{ram}{\link{OPTIONAL} If batch mode. RAM memory in GB per job. Default 1}
+
+\item{update_time}{\link{OPTIONAL} If batch mode. Show job updates every update time. Default 60}
 }
 \description{
 Generates a recalibration table based on various covariates.

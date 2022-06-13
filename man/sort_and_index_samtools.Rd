@@ -11,6 +11,7 @@ sort_and_index_samtools(
   ram = 1,
   verbose = FALSE,
   threads = 3,
+  sort = TRUE,
   coord_sort = TRUE,
   index = TRUE,
   stats = "all"
@@ -28,6 +29,8 @@ sort_and_index_samtools(
 \item{verbose}{Enables progress messages. Default False.}
 
 \item{threads}{Number of threads. Default 3}
+
+\item{sort}{Sort BAM file. Default TRUE.}
 
 \item{coord_sort}{Generate a coord sorted file. Otherwise queryname sorted. Default TRUE}
 
