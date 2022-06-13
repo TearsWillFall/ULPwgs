@@ -572,13 +572,13 @@ output_name="Padded",genome="",verbose=FALSE){
 #' @param bam [REQUIRED] Path to the BAM file.
 #' @param bin_path [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
 #' @param ref_genome [REQUIRED] Path to reference genome
-#' @param snpdb [REQUIRED] Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.
+#' @param dbsnp [REQUIRED] Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
 #' @export
 
 generate_BQSR_gatk=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome="",
-snpdb="",output_dir="",verbose=FALSE){
+dbsnp="",output_dir="",verbose=FALSE){
 
   out_file_dir=set_dir(dir=output_dir)
 
@@ -592,11 +592,11 @@ snpdb="",output_dir="",verbose=FALSE){
 
   ## Multiple vcf with snps can be given
 
-  if (snpdb!=""){
-    snpdb=paste(" --known-sites ",snpdb,collapse=" ")
+  if (dbsnp!=""){
+    dbsnp=paste(" --known-sites ",dbsnp,collapse=" ")
   }
 
-  exec_code=paste0(bin_path," BaseRecalibrator -I ",bam, " -R ", ref_genome,snpdb,
+  exec_code=paste0(bin_path," BaseRecalibrator -I ",bam, " -R ", ref_genome,dbsnp,
   reg," -O ",out_file)
 
   if(verbose){
@@ -619,7 +619,7 @@ snpdb="",output_dir="",verbose=FALSE){
 #' @param bin_path [REQUIRED] Path to gatk executable. Default tools/samtools/samtools.
 #' @param bin_path2 [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
 #' @param ref_genome [REQUIRED] Path to reference genome
-#' @param snpdb [REQUIRED] Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.
+#' @param dbsnp [REQUIRED] Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.
 #' @param threads Number of threads to split the work. Default 3
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
@@ -632,7 +632,7 @@ snpdb="",output_dir="",verbose=FALSE){
 
 
 parallel_generate_BQSR_gatk=function(bin_path="tools/samtools/samtools",
-bin_path2="tools/gatk/gatk",bam="",ref_genome="",snpdb="",threads=3,
+bin_path2="tools/gatk/gatk",bam="",ref_genome="",dbsnp="",threads=3,
 output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1){
 
   options(scipen = 999)
@@ -645,9 +645,9 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1){
 
   if(mode=="local"){
     tmp=dat[1,]
-    print(paste0(tmp$Region,bin_path2,bam,ref_genome,snpdb,out_file_dir,verbose))
+    print(paste0(tmp$Region,bin_path2,bam,ref_genome,dbsnp,out_file_dir,verbose))
     generate_BQSR_gatk(region=tmp$Region,
-    bin_path=bin_path2,bam=bam,ref_genome=ref_genome,snpdb=snpdb,
+    bin_path=bin_path2,bam=bam,ref_genome=ref_genome,dbsnp=dbsnp,
     output_dir=out_file_dir,verbose=verbose)
 
   }else if (mode=="batch"){
@@ -658,7 +658,7 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1){
         exec_code=paste("qsub -N ",paste0("BQSR_",x,"_",tmp$chr,"_",tmp$start,"_",tmp$end),paste0(" -l h_rt=",time),
         paste0(" -l mem=",ram,"G"), paste0(" -pe smp 5"), paste0(" -wd ."),
          fun, tmp$Region, bin_path,
-         bam, ref_genome, snpdb, out_file_dir,verbose)
+         bam, ref_genome, dbsnp, out_file_dir,verbose)
         if(verbose){
           print(exec_code)
         }

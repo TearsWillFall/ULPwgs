@@ -366,7 +366,7 @@ verbose=FALSE,tmp_dir="",threads=3,remove_duplicates=TRUE){
 #' @param bin_path3 [REQUIRED] Path to picard executable. Default path tools/picard/build/libs/picard.jar.
 #' @param bam [REQUIRED]  Path to BAM file.
 #' @param ref_genome [REQUIRED]  Path to reference genome.
-#' @param snpdb [REQUIRED] Known variant database.Requires atleast 1.
+#' @param dbsnp [REQUIRED] Known variant database.Requires atleast 1.
 #' @param threads [REQUIRED]Number of threads to split the work. Only relevant if region_bed file is given.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
@@ -376,7 +376,7 @@ verbose=FALSE,tmp_dir="",threads=3,remove_duplicates=TRUE){
 
 
 recal_gatk=function(bin_path="tools/samtools/samtools",bin_path2="tools/gatk/gatk",
-bin_path3="tools/picard/build/libs/picard.jar",bam="",ref_genome="",snpdb="",
+bin_path3="tools/picard/build/libs/picard.jar",bam="",ref_genome="",dbsnp="",
 threads=3,output_dir="",verbose=FALSE,mode="local",
 time="48:0:0",ram=4){
 
@@ -387,7 +387,7 @@ time="48:0:0",ram=4){
 
 
   parallel_generate_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,bam=bam,
-    ref_genome=ref_genome,snpdb=snpdb,
+    ref_genome=ref_genome,dbsnp=dbsnp,
     threads=threads,output_dir=out_file_dir,
     verbose=verbose,mode=mode,ram=ram,time=time)
 
@@ -404,7 +404,7 @@ time="48:0:0",ram=4){
 
   parallel_generate_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,
     bam=paste0(out_file_dir4,"/",get_file_name(bam),".sorted.recal.",get_file_ext(bam)),
-    ref_genome=ref_genome,snpdb=snpdb,threads=threads,output_dir=out_file_dir2,verbose=verbose)
+    ref_genome=ref_genome,dbsnp=dbsnp,threads=threads,output_dir=out_file_dir2,verbose=verbose)
 
   recal_covariates_gatk(bin_path=bin_path2,before=paste0(out_file_dir,"/",get_file_name(bam),".recal.table"),
     after=paste0(out_file_dir2,"/",get_file_name(bam),".recal.table"),output_dir=out_file_dir4)
