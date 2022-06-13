@@ -812,11 +812,11 @@ output_dir="",verbose=FALSE,threads=4,update_time=60){
   parallel::mclapply(1:nrow(dat),FUN=function(x){
     tmp=dat[x,]
     if(mode=="local"){
-      batch_name=paste0(c(tmp$chr,tmp$start,tmp$end),collapse="_")
       apply_BQSR_gatk(region=x,
       bin_path=bin_path2,bam=bam,ref_genome=ref_genome,
       rec_table=rec_table, output_dir=out_file_dir,verbose=verbose)
     }else if (mode=="batch"){
+      batch_name=paste0(c(tmp$chr,tmp$start,tmp$end),collapse="_")
       exec_code=paste("qsub -N ",paste0(c(job_name,batch_name),collapse="_"),
           paste0(" -l h_rt=",time), paste0(" -l mem=",ram,"G"), paste0(" -pe smp 2"), paste0(" -wd ."),
           fun, tmp$Region, bin_path,
