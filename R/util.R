@@ -850,7 +850,12 @@ batch_job_validator=function(job="",time=10,verbose=FALSE){
   error=FALSE
   col_names=c("job_id","job_priority","job_name","user","status","start_time","cores")
   exec_code="qstat -xml | tr '\n' ' ' | sed 's#<job_list[^>]*>#\\n#g'   | sed 's#<[^>]*>##g' | grep \" \" | column -t"
-  dat_info=read.table(text=system(exec_code,intern=TRUE))
+  tryCatch({
+      dat_info=read.table(text=system(exec_code,intern=TRUE))},error=function(x){
+        return()
+      }
+  )
+  
   names(dat_info)=col_names
   while(nrow(dat_info)!=0& !error){
     if(verbose){
