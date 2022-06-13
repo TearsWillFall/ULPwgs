@@ -845,7 +845,7 @@ output_dir="",verbose=FALSE,threads=4,mode="local",time="48:0:0",ram=4,update_ti
   
 
   gather_bam_files(bin_path=bin_path3,bams_dir=out_file_dir,output_dir=out_file_dir,
-  output_name=paste0(get_file_name(bam),".recal.sorted.rmdup"))
+  output_name=paste0(get_file_name(bam),".recal.sorted.rmdup.sorted"))
   system(paste0("rm ", out_file_dir,"/*:*.recal*.ba*"))
 
 }
