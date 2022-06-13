@@ -408,7 +408,7 @@ time="48:0:0",ram=4){
   ram=ram,verbose=verbose,threads=threads,sort=FALSE,index=TRUE)
 
   parallel_generate_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,
-    bam=paste0(out_file_dir4,"/",get_file_name(bam),".sorted.recal.",get_file_ext(bam)),
+    bam=paste0(out_file_dir4,"/",get_file_name(bam),".recal.",get_file_ext(bam)),
     ref_genome=ref_genome,dbsnp=dbsnp,threads=threads,output_dir=out_file_dir2,verbose=verbose)
 
   recal_covariates_gatk(bin_path=bin_path2,before=paste0(out_file_dir,"/",get_file_name(bam),".recal.table"),
