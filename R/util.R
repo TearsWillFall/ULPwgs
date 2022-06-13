@@ -626,6 +626,7 @@ dbsnp="",output_dir="",verbose=FALSE){
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
 #' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
 #' @param ram [OPTIONAL] If batch mode. RAM memory in GB per job. Default 1
+#' @param update_time [OPTIONAL] If batch mode. Show job updates every update time. Default 60
 #' @export
 #' @import pbapply
 
@@ -633,7 +634,7 @@ dbsnp="",output_dir="",verbose=FALSE){
 
 parallel_generate_BQSR_gatk=function(bin_path="tools/samtools/samtools",
 bin_path2="tools/gatk/gatk",bam="",ref_genome="",dbsnp="",threads=3,
-output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1){
+output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1,update_time=60){
 
   options(scipen = 999)
 
@@ -645,7 +646,14 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1){
 
   fun <- system.file("shell", "generate_BQSR_gatk.sh", package = "ULPwgs")
     
-   
+  
+
+  task_id=sample(1:10000000,1)
+  task_name="generate_BQSR"
+  input_name=get_file_name(bam)
+
+  job_name=paste0(c(task_id,task_name, input_name),collapse="_")
+
   parallel::mclapply(1:nrow(dat),FUN=function(x){
     tmp=dat[x,]
     if(mode=="local"){
@@ -655,8 +663,8 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1){
 
 
       }else if (mode=="batch"){
-    
-        exec_code=paste("qsub -N ",paste0("generate_BQSR_",x,"_",tmp$chr,"_",tmp$start,"_",tmp$end),paste0(" -l h_rt=",time),
+        batch_name=paste0(c(tmp$chr,tmp$start,tmp$end),collapse="_")
+        exec_code=paste("qsub -N ",paste0(c(job_name,batch_name),collapse="_"),paste0(" -l h_rt=",time),
         paste0(" -l mem=",ram,"G"), paste0(" -pe smp 2"), paste0(" -wd ."),
          fun, tmp$Region, bin_path,
          bam, ref_genome, dbsnp, out_file_dir,verbose)
@@ -674,11 +682,13 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1){
       stop("Wrong Mode supplied. Available modes are ['local','batch']")
     }
   })
-   
-  
-  
 
-  gather_BQSR_reports_gatk(bin_path=bin_path2,reports_dir=out_file_dir,
+  if(mode=="batch"){
+    batch_job_validator(job=job_name,time=update_time,verbose=verbose)
+  }
+   
+
+  gather_BQSR_reports_gatk(bin_path=bin_path2,reports_dir=out_file_dir,ouput_dir=out_file_dir,
   output_name=get_file_name(bam),verbose=verbose)
   system(paste0("rm ",out_file_dir,"/*:*.recal.table"))
 }
@@ -776,13 +786,13 @@ rec_table="",output_dir="",verbose=FALSE){
 #' @param threads [OPTIONAL] Number of threads to split the work. Default 4
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
-#' @param bin_size [OPTIONAL] Chunk size to split genome for parallelizing. Default 40000000.
+#' @param update_time [OPTIONAL] If batch mode. Show job updates every update time. Default 60
 #' @export
 #' @import pbapply
 
 parallel_apply_BQSR_gatk=function(bin_path="tools/samtools/samtools",bin_path2="tools/gatk/gatk",
 bin_path3="tools/picard/build/libs/picard.jar",bam="",ref_genome="",rec_table="",
-output_dir="",verbose=FALSE,threads=4){
+output_dir="",verbose=FALSE,threads=4,update_time=60){
 
   options(scipen = 999)
 
@@ -793,45 +803,48 @@ output_dir="",verbose=FALSE,threads=4){
   dat=dat %>% dplyr::mutate(Region=paste0(pos,"_",chr,":",start,"-",end))
 
 
+  task_id=sample(1:10000000,1)
+  task_name="apply_BQSR"
+  input_name=get_file_name(bam)
 
-
-
-
-  jobs=""
+  job_name=paste0(c(task_id,task_name, input_name),collapse="_")
+ 
   parallel::mclapply(1:nrow(dat),FUN=function(x){
-  tmp=dat[x,]
+    tmp=dat[x,]
+    if(mode=="local"){
+      batch_name=paste0(c(tmp$chr,tmp$start,tmp$end),collapse="_")
+      apply_BQSR_gatk(region=x,
+      bin_path=bin_path2,bam=bam,ref_genome=ref_genome,
+      rec_table=rec_table, output_dir=out_file_dir,verbose=verbose)
+    }else if (mode=="batch"){
+      exec_code=paste("qsub -N ",paste0(c(job_name,batch_name),collapse="_"),
+          paste0(" -l h_rt=",time), paste0(" -l mem=",ram,"G"), paste0(" -pe smp 2"), paste0(" -wd ."),
+          fun, tmp$Region, bin_path,
+          bam, ref_genome, dbsnp, out_file_dir,verbose)
+          if(verbose){
+            print(exec_code)
+          }
 
+          error=system(exec_code)
+          if(error!=0){
+            stop("gatk failed to run due to unknown error.
+            Check std error for more information.")
+          }
 
-  if(mode=="local"){
-    apply_BQSR_gatk(region=x,
-    bin_path=bin_path2,bam=bam,ref_genome=ref_genome,
-    rec_table=rec_table, output_dir=out_file_dir,verbose=verbose)
-  }else if (mode=="batch"){
-     exec_code=paste("qsub -N ",paste0("apply_BQSR_",x,"_",tmp$chr,"_",tmp$start,"_",tmp$end),
-        paste0(" -l h_rt=",time), paste0(" -l mem=",ram,"G"), paste0(" -pe smp 2"), paste0(" -wd ."),
-         fun, tmp$Region, bin_path,
-         bam, ref_genome, dbsnp, out_file_dir,verbose)
-        if(verbose){
-          print(exec_code)
-        }
-
-        error=system(exec_code)
-        if(error!=0){
-          stop("gatk failed to run due to unknown error.
-          Check std error for more information.")
-        }
-
-  }else{
-    stop("Wrong Mode supplied. Available modes are ['local','batch']")
-  } 
+    }else{
+      stop("Wrong Mode supplied. Available modes are ['local','batch']")
+    } 
 
     
   },mc.cores=threads)
     
+  if(mode=="batch"){
+    batch_job_validator(job=job_name,time=update_time,verbose=verbose)
+  }
     
   
 
-  gather_bam_files(bin_path=bin_path3,bams_dir=out_file_dir,
+  gather_bam_files(bin_path=bin_path3,bams_dir=out_file_dir,output_dir=out_file_dir,
   output_name=paste0(get_file_name(bam),".recal.sorted.rmdup"))
   system(paste0("rm ", out_file_dir,"/*:*.recal*.ba*"))
 
@@ -855,7 +868,7 @@ batch_job_validator=function(job="",time=10,verbose=FALSE){
         return()
       }
   )
-  
+
   names(dat_info)=col_names
   while(nrow(dat_info)!=0& !error){
     if(verbose){
