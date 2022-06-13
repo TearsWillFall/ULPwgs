@@ -649,7 +649,7 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1,update_time=60){
   task_name="generate_BQSR"
   input_name=get_file_name(bam)
 
-  job_name=paste0(c(task_id,task_name, input_name),collapse="_")
+  job_name=paste0(c(task_name, input_name,task_id),collapse="_")
 
   parallel::mclapply(1:nrow(dat),FUN=function(x){
     tmp=dat[x,]
@@ -657,7 +657,6 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1,update_time=60){
         generate_BQSR_gatk(region=tmp$Region,
         bin_path=bin_path2,bam=bam,ref_genome=ref_genome,dbsnp=dbsnp,
         output_dir=out_file_dir,verbose=verbose)
-
 
       }else if (mode=="batch"){
         batch_name=paste0(c(tmp$chr,tmp$start,tmp$end),collapse="_")
@@ -807,7 +806,7 @@ output_dir="",verbose=FALSE,threads=4,mode="local",time="48:0:0",ram=4,update_ti
   task_name="apply_BQSR"
   input_name=get_file_name(bam)
 
-  job_name=paste0(c(task_id,task_name, input_name),collapse="_")
+  job_name=paste0(c(task_name, input_name,task_id),collapse="_")
  
   parallel::mclapply(1:nrow(dat),FUN=function(x){
     tmp=dat[x,]
