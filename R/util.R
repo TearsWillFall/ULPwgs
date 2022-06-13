@@ -1011,7 +1011,7 @@ replace_rg=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
 #' @export
 
 
-recal_covariates=function(bin_path="tools/gatk/gatk",before="",after="",output_dir="",verbose=FALSE){
+recal_covariates_gatk=function(bin_path="tools/gatk/gatk",before="",after="",output_dir="",verbose=FALSE){
 
   out_file_dir=set_dir(name=output_dir)
  
