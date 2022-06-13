@@ -642,11 +642,13 @@ time="48:0:0",ram=1){
   out_file_dir=set_dir(dir=output_dir)
 
   dat=get_bam_reference_chr(bin_path=bin_path,bam=bam,verbose=verbose)
+  dat$start=dat$start+1
   dat=dat %>% dplyr::mutate(Region=paste0(chr,":",start,"-",end))
 
   if(mode=="local"){
-    print(dat)
-    parallel::mclapply(dat$Region,FUN=function(x){generate_BQSR_gatk(region=x,
+    parallel::mclapply(1:nrow(dat),FUN=function(x){
+    tmp=dat[x,]
+    generate_BQSR_gatk(region=tmp$Region,
     bin_path=bin_path2,bam=bam,ref_genome=ref_genome,snpdb=snpdb,
     output_dir=out_file_dir,verbose=verbose)},mc.cores=threads)
 
@@ -654,10 +656,10 @@ time="48:0:0",ram=1){
     fun <- system.file("shell", "generate_BQSR_gatk.sh", package = "ULPwgs")
     
     parallel::mclapply(1:nrow(dat),FUN=function(x){
-        tmp=dat[1,]
-        exec_code=system(paste("qsub -N ",paste(tmp$chr,"_",tmp$start,"_",tmp$end,"_BSQR"),paste0(" -l h_rt ",time),
+        tmp=dat[x,]
+        exec_code=system(paste("qsub -N ",paste(x,"_",tmp$chr,"_",tmp$start,"_",tmp$end,"_BSQR"),paste0(" -l h_rt ",time),
         paste0(" -l mem ",ram,"G"), paste0(" -pe smp 5"), paste0(" -wd ",out_file_dir),
-         fun, x, bin_path,
+         fun, tmp$Region, bin_path,
          bam, ref_genome, snpdb, out_file_dir,verbose))
         if(verbose){
           print(exec_code)
