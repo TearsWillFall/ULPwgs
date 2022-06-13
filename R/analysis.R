@@ -222,6 +222,7 @@ verbose=FALSE){
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param threads Number of threads. Default 3
+#' @param sort Sort BAM file. Default TRUE.
 #' @param coord_sort Generate a coord sorted file. Otherwise queryname sorted. Default TRUE
 #' @param ram Ram memory to use per thread in GB. Default 1GB
 #' @param index Generate an index file for sorted BAM. Default TRUE
@@ -229,28 +230,32 @@ verbose=FALSE){
 #' @export
 
 sort_and_index_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
-ram=1,verbose=FALSE,threads=3,coord_sort=TRUE,index=TRUE,stats="all"){
+ram=1,verbose=FALSE,threads=3,sort=TRUE,coord_sort=TRUE,index=TRUE,stats="all"){
 
   out_file_dir=set_dir(dir=output_dir)
 
-  bam_sort_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,ram=ram,
-  verbose=verbose,threads=threads,coord_sort=coord_sort)
+  if(sort){
+      bam_sort_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,ram=ram,
+      verbose=verbose,threads=threads,coord_sort=coord_sort)
 
-
-  out_file_dir=set_dir(dir=output_dir,name="sorted")
+      out_file_dir=set_dir(dir=output_dir,name="sorted")
   
-  if (coord_sort){
-   
-    bam=paste0(out_file_dir,"/",get_file_name(bam),".sorted.",get_file_ext(bam))
+      if (coord_sort){
+      
+        bam=paste0(out_file_dir,"/",get_file_name(bam),".sorted.",get_file_ext(bam))
 
-    if(index){
-        bam_index_samtools(bin_path=bin_path,bam=bam,verbose=verbose,threads=threads)
-      if(stats=="index"|stats=="all"){
-          bam_stats_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
-          verbose=verbose,threads=threads,stats="index")
+        if(index){
+            bam_index_samtools(bin_path=bin_path,bam=bam,verbose=verbose,threads=threads)
+          if(stats=="index"|stats=="all"){
+              bam_stats_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
+              verbose=verbose,threads=threads,stats="index")
+          }
+        }
       }
-    }
+  }else{
+     bam_index_samtools(bin_path=bin_path,bam=bam,verbose=verbose,threads=threads)
   }
+
 
   if(stats=="flag"|stats=="all"){
       bam_stats_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
@@ -400,7 +405,7 @@ time="48:0:0",ram=4){
 
   sort_and_index_samtools(bin_path=bin_path,bam=paste0(out_file_dir4,"/",
   get_file_name(bam),".recal.",get_file_ext(bam)),output_dir=out_file_dir4,
-  ram=ram,verbose=verbose,threads=threads,coord_sort=TRUE,index=TRUE)
+  ram=ram,verbose=verbose,threads=threads,coord_sort=FALSE,sort=FALSE,index=TRUE)
 
   parallel_generate_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,
     bam=paste0(out_file_dir4,"/",get_file_name(bam),".sorted.recal.",get_file_ext(bam)),
