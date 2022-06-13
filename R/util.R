@@ -641,7 +641,7 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1,update_time=60){
   dat$start=dat$start+1
   dat=dat %>% dplyr::mutate(Region=paste0(chr,":",start,"-",end))
 
-  fun <- system.file("shell", "generate_BQSR_gatk.sh", package = "ULPwgs")
+  fun <- system.file("shell", "to_batch.sh", package = "ULPwgs")
     
   
 
@@ -659,11 +659,17 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1,update_time=60){
         output_dir=out_file_dir,verbose=verbose)
 
       }else if (mode=="batch"){
+
+        sub_fun=paste0("generate_BQSR_gatk(region=",tmp$Region,
+        "bin_path=",bin_path2,"bam=",bam,"ref_genome=",ref_genome,"dbsnp=",
+        dbsnp,"output_dir=",dbsnp,"verbose=",verbose,")")
+
         batch_name=paste0(c(tmp$chr,tmp$start,tmp$end),collapse="_")
-        exec_code=paste("qsub -N ",paste0(c(job_name,batch_name),collapse="_"),paste0(" -l h_rt=",time),
-        paste0(" -l mem=",ram,"G"), paste0(" -pe smp 2"), paste0(" -wd ."),
-         fun, tmp$Region, bin_path,
-         bam, ref_genome, dbsnp, out_file_dir,verbose)
+        full_name=paste0(c(job_name,batch_name),collapse="_")
+        exec_code=paste("qsub -N ",full_name,paste0(" -l h_rt=",time),
+        paste0(" -l mem=",ram,"G"), paste0(" -pe smp 2"), paste0(" -wd ",out_file_dir), paste0(" -o ",full_name,".std_out"),
+        paste0(" -e ",full_name,".std_error"),
+         fun, sub_fun)
         if(verbose){
           print(exec_code)
         }
@@ -807,6 +813,8 @@ output_dir="",verbose=FALSE,threads=4,mode="local",time="48:0:0",ram=4,update_ti
   input_name=get_file_name(bam)
 
   job_name=paste0(c(task_name, input_name,task_id),collapse="_")
+
+  fun <- system.file("shell", "to_batch.sh", package = "ULPwgs")
  
   parallel::mclapply(1:nrow(dat),FUN=function(x){
     tmp=dat[x,]
@@ -816,8 +824,11 @@ output_dir="",verbose=FALSE,threads=4,mode="local",time="48:0:0",ram=4,update_ti
       rec_table=rec_table, output_dir=out_file_dir,verbose=verbose)
     }else if (mode=="batch"){
       batch_name=paste0(c(tmp$chr,tmp$start,tmp$end),collapse="_")
-      exec_code=paste("qsub -N ",paste0(c(job_name,batch_name),collapse="_"),
-          paste0(" -l h_rt=",time), paste0(" -l mem=",ram,"G"), paste0(" -pe smp 2"), paste0(" -wd ."),
+      full_name=paste0(c(job_name,batch_name),collapse="_")
+      exec_code=paste("qsub -N ",full_name,
+          paste0(" -l h_rt=",time), paste0(" -l mem=",ram,"G"), paste0(" -pe smp 1"), paste0(" -wd ",out_file_dir),
+          paste0(" -o ",full_name,".std_out"),
+          paste0(" -e ",full_name,".std_error"),
           fun, tmp$Region, bin_path,
           bam, ref_genome, rec_table, out_file_dir,verbose)
           if(verbose){
