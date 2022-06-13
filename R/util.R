@@ -648,6 +648,7 @@ time="48:0:0",ram=1){
   if(mode=="local"){
     parallel::mclapply(1:nrow(dat),FUN=function(x){
     tmp=dat[x,]
+    print(tmp)
     generate_BQSR_gatk(region=tmp$Region,
     bin_path=bin_path2,bam=bam,ref_genome=ref_genome,snpdb=snpdb,
     output_dir=out_file_dir,verbose=verbose)},mc.cores=threads)
@@ -657,7 +658,7 @@ time="48:0:0",ram=1){
     
     parallel::mclapply(1:nrow(dat),FUN=function(x){
         tmp=dat[x,]
-        exec_code=paste("qsub -N ",paste0(x,"_",tmp$chr,"_",tmp$start,"_",tmp$end,"_BSQR"),paste0(" -l h_rt ",time),
+        exec_code=paste("qsub -N ",paste0("BQSR_",x,"_",tmp$chr,"_",tmp$start,"_",tmp$end),paste0(" -l h_rt ",time),
         paste0(" -l mem ",ram,"G"), paste0(" -pe smp 5"), paste0(" -wd ",out_file_dir),
          fun, tmp$Region, bin_path,
          bam, ref_genome, snpdb, out_file_dir,verbose)
