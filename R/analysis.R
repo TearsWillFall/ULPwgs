@@ -388,7 +388,8 @@ time="48:0:0",ram=4){
 
   parallel_generate_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,bam=bam,
     ref_genome=ref_genome,snpdb=snpdb,
-    threads=threads,output_dir=out_file_dir,verbose=verbose,mode=mode,ram=ram,time=time)
+    threads=threads,output_dir=out_file_dir,
+    verbose=verbose,mode=mode,ram=ram,time=time)
 
   parallel_apply_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,bin_path3=bin_path3,
     bam=bam,ref_genome=ref_genome,rec_table=paste0(out_file_dir,"/",get_file_name(bam),".recal.table"),
