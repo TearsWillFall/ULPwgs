@@ -815,7 +815,7 @@ output_dir="",verbose=FALSE,threads=4,mode="local",time="48:0:0",ram=4,update_ti
   parallel::mclapply(1:nrow(dat),FUN=function(x){
     tmp=dat[x,]
     if(mode=="local"){
-      apply_BQSR_gatk(region=tmp,
+      apply_BQSR_gatk(region=tmp$Region,
       bin_path=bin_path2,bam=bam,ref_genome=ref_genome,
       rec_table=rec_table, output_dir=out_file_dir,verbose=verbose)
     }else if (mode=="batch"){
