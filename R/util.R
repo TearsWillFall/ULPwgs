@@ -857,7 +857,7 @@ batch_job_validator=function(job="",time=10,verbose=FALSE){
     }
     dat_info=read.table(text=system(exec_code,intern=TRUE))
     names(dat_info)=col_names
-    sleep(time)
+    Sys.sleep(time)
   }
   return()
 }
