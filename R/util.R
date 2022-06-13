@@ -662,7 +662,7 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1,update_time=60){
 
         sub_fun=paste0("\"generate_BQSR_gatk(region=",tmp$Region,
         ",bin_path=",bin_path2,",bam=",bam,",ref_genome=",ref_genome,",dbsnp=",
-        dbsnp,",output_dir=",dbsnp,",verbose=",verbose,")\"")
+        dbsnp,",output_dir=",out_file_dir,",verbose=",verbose,")\"")
 
         batch_name=paste0(c(tmp$chr,tmp$start,tmp$end),collapse="_")
         full_name=paste0(c(job_name,batch_name),collapse="_")
@@ -829,7 +829,7 @@ output_dir="",verbose=FALSE,threads=4,mode="local",time="48:0:0",ram=4,update_ti
       
       sub_fun=paste0("apply_BQSR_gatk(region=",tmp$Region,
         ",bin_path=",bin_path2,",bam=",bam,",ref_genome=",ref_genome,",rec_table=",
-        rec_table,",output_dir=",dbsnp,",verbose=",verbose,")")
+        rec_table,",output_dir=",out_file_dir,",verbose=",verbose,")")
 
       exec_code=paste("qsub -N ",full_name,
           paste0(" -l h_rt=",time), paste0(" -l mem=",ram,"G"), paste0(" -pe smp 1"), paste0(" -wd ",out_file_dir),
