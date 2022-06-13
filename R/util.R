@@ -688,7 +688,7 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1,update_time=60){
   }
    
 
-  gather_BQSR_reports_gatk(bin_path=bin_path2,reports_dir=out_file_dir,ouput_dir=out_file_dir,
+  gather_BQSR_reports_gatk(bin_path=bin_path2,reports_dir=out_file_dir,output_dir=out_file_dir,
   output_name=get_file_name(bam),verbose=verbose)
   system(paste0("rm ",out_file_dir,"/*:*.recal.table"))
 }
