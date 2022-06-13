@@ -657,7 +657,7 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1){
       }else if (mode=="batch"){
     
         exec_code=paste("qsub -N ",paste0("BQSR_",x,"_",tmp$chr,"_",tmp$start,"_",tmp$end),paste0(" -l h_rt=",time),
-        paste0(" -l mem=",ram,"G"), paste0(" -pe smp 5"), paste0(" -wd ."),
+        paste0(" -l mem=",ram,"G"), paste0(" -pe smp 2"), paste0(" -wd ."),
          fun, tmp$Region, bin_path,
          bam, ref_genome, dbsnp, out_file_dir,verbose)
         if(verbose){
