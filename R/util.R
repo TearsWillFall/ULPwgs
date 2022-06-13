@@ -815,7 +815,7 @@ output_dir="",verbose=FALSE,threads=4,mode="local",time="48:0:0",ram=4,update_ti
   parallel::mclapply(1:nrow(dat),FUN=function(x){
     tmp=dat[x,]
     if(mode=="local"){
-      apply_BQSR_gatk(region=x,
+      apply_BQSR_gatk(region=tmp,
       bin_path=bin_path2,bam=bam,ref_genome=ref_genome,
       rec_table=rec_table, output_dir=out_file_dir,verbose=verbose)
     }else if (mode=="batch"){
@@ -823,7 +823,7 @@ output_dir="",verbose=FALSE,threads=4,mode="local",time="48:0:0",ram=4,update_ti
       exec_code=paste("qsub -N ",paste0(c(job_name,batch_name),collapse="_"),
           paste0(" -l h_rt=",time), paste0(" -l mem=",ram,"G"), paste0(" -pe smp 2"), paste0(" -wd ."),
           fun, tmp$Region, bin_path,
-          bam, ref_genome, recal_table, out_file_dir,verbose)
+          bam, ref_genome, rec_table, out_file_dir,verbose)
           if(verbose){
             print(exec_code)
           }
