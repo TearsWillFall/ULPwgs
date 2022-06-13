@@ -588,7 +588,7 @@ snpdb="",output_dir="",verbose=FALSE){
   }else{
       reg=paste0(" -L ",region)
       out_file=paste0(out_file_dir,get_file_name(bam),".",region,".recal.table")
-}
+  }
 
   ## Multiple vcf with snps can be given
 
@@ -596,12 +596,13 @@ snpdb="",output_dir="",verbose=FALSE){
     snpdb=paste(" --known-sites ",snpdb,collapse=" ")
   }
 
-  exec_code=paste0(bin_path," BaseRecalibrator -I ",bam, " -R ", ref_genome,snpdb,reg," -O ",out_file)
+  exec_code=paste0(bin_path," BaseRecalibrator -I ",bam, " -R ", ref_genome,snpdb,
+  reg," -O ",out_file)
 
   if(verbose){
     print(exec_code)
   }
-      error=system(exec_code)
+  error=system(exec_code)
   if(error!=0){
     stop("gatk failed to run due to unknown error.
     Check std error for more information.")
@@ -623,6 +624,9 @@ snpdb="",output_dir="",verbose=FALSE){
 #' @param threads Number of threads to split the work. Default 3
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [OPTIONAL] Where to parallelize. Default local. Options ["local","batch"]
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param ram [OPTIONAL] If batch mode. RAM memory in GB per job. Default 1
 #' @export
 #' @import pbapply
 
@@ -630,7 +634,8 @@ snpdb="",output_dir="",verbose=FALSE){
 
 parallel_generate_BQSR_gatk=function(bin_path="tools/samtools/samtools",
 bin_path2="tools/gatk/gatk",bam="",ref_genome="",snpdb="",threads=3,
-output_dir="",verbose=FALSE,bin_size=40000000){
+output_dir="",verbose=FALSE,bin_size=40000000,mode="local",
+time="48:0:0",ram=1){
 
   options(scipen = 999)
 
@@ -640,9 +645,34 @@ output_dir="",verbose=FALSE,bin_size=40000000){
   dat$start=dat$start+1
   dat=dat %>% dplyr::mutate(Region=paste0(chr,":",start,"-",end))
 
-  parallel::mclapply(dat$Region,FUN=function(x){generate_BQSR_gatk(region=x,
-  bin_path=bin_path2,bam=bam,ref_genome=ref_genome,snpdb=snpdb,
-  output_dir=out_file_dir,verbose=verbose)},mc.cores=threads)
+  if(mode=="local"){
+
+    parallel::mclapply(dat$Region,FUN=function(x){generate_BQSR_gatk(region=x,
+    bin_path=bin_path2,bam=bam,ref_genome=ref_genome,snpdb=snpdb,
+    output_dir=out_file_dir,verbose=verbose)},mc.cores=threads)
+
+  }else{
+    fun <- system.file("shell", "generate_BQSR_gatk.sh", package = "ULPwgs")
+    
+    parallel::mclapply(dat$Region,FUN=function(x){
+
+        exec_code=system(paste("qsub -N ",paste(x,"_BSQR"),paste0(" -l h_rt ",time),
+        paste0(" -l mem ",ram,"G"), paste0(" -pe smp ",threads), paste0(" -wd ",out_file_dir),
+         fun, x, bin_path,
+         bam, ref_genome, snpdb, out_file_dir,verbose))
+        if(verbose){
+          print(exec_code)
+        }
+
+        error=system(exec_code)
+        if(error!=0){
+          stop("gatk failed to run due to unknown error.
+          Check std error for more information.")
+        }
+
+    },mc.cores=threads)
+
+  }
 
   gather_BQSR_reports_gatk(bin_path=bin_path2,reports_dir=out_file_dir,
   output_name=get_file_name(bam),verbose=verbose)

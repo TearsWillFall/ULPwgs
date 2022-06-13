@@ -13,7 +13,10 @@ parallel_generate_BQSR_gatk(
   threads = 3,
   output_dir = "",
   verbose = FALSE,
-  bin_size = 4e+07
+  bin_size = 4e+07,
+  mode = "local",
+  time = "48:0:0",
+  ram = 1
 )
 }
 \arguments{
@@ -32,6 +35,12 @@ parallel_generate_BQSR_gatk(
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
+
+\item{mode}{\link{OPTIONAL} Where to parallelize. Default local. Options \link{"local","batch"}}
+
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+
+\item{ram}{\link{OPTIONAL} If batch mode. RAM memory in GB per job. Default 1}
 
 \item{region_bed}{\link{REQUIRED} Path to the output directory.}
 }

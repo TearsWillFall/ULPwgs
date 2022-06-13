@@ -14,6 +14,7 @@ recal_gatk(
   threads = 3,
   ram = 4,
   output_dir = "",
+  mode,
   verbose = FALSE
 )
 }
