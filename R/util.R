@@ -665,8 +665,9 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1,update_time=60){
         batch_name=paste0(c(tmp$chr,tmp$start,tmp$end),collapse="_")
         full_name=paste0(c(job_name,batch_name),collapse="_")
         exec_code=paste("qsub -N ",full_name,paste0(" -l h_rt=",time),
-        paste0(" -l mem=",ram,"G"), paste0(" -pe smp 1"), paste0(" -wd ",getwd(),"/",out_file_dir), paste0(" -o ",full_name,".std_out"),
-        paste0(" -e ",full_name,".std_error"))
+        paste0(" -l mem=",ram,"G"), paste0(" -pe smp 1"), paste0(" -wd ",getwd()), 
+        paste0(" -o ",out_file_dir,"/",full_name,".std_out"),
+        paste0(" -e ",out_file_dir,"/",full_name,".std_error"))
       
     }else{
       stop("Wrong Mode supplied. Available modes are ['local','batch']")
@@ -824,9 +825,9 @@ output_dir="",verbose=FALSE,threads=4,mode="local",time="48:0:0",ram=4,update_ti
       full_name=paste0(c(job_name,batch_name),collapse="_")
       exec_code=paste(" qsub -N ",full_name,
           paste0(" -l h_rt=",time), paste0(" -l mem=",ram,"G"), paste0(" -pe smp 1"),
-           paste0(" -wd ",getwd(),"/",out_file_dir),
-          paste0(" -o ",full_name,".std_out"),
-          paste0(" -e ",full_name,".std_error "))
+           paste0(" -wd ",getwd()),
+          paste0(" -o ",out_file_dir,"/",full_name,".std_out"),
+          paste0(" -e ",out_file_dir,"/",full_name,".std_error "))
      
     }else{
         stop("Wrong Mode supplied. Available modes are ['local','batch']")
