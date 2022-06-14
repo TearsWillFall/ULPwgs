@@ -884,14 +884,19 @@ batch_job_validator=function(job="",time=10,verbose=FALSE,threads=3){
 
 
   names(dat_info)=col_names
-  while(jobs!=0 & !error){
+  while(!error){
     if(verbose){
           print("----------------------------------")
           print(dat_info)
           print("----------------------------------")
     }
-    dat_info=read.table(text=system(exec_code,intern=TRUE),fill=TRUE)
-    jobs=nrow(dat_info)
+       
+    tryCatch({
+      dat_info=read.table(text=system(exec_code,intern=TRUE),fill=TRUE)
+      },error=function(e){
+      break
+    }
+    )
     
   
     names(dat_info)=col_names
