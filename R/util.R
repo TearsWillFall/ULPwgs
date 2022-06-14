@@ -882,7 +882,7 @@ batch_job_validator=function(job="",time=10,verbose=FALSE,threads=3){
   })
 
   names(dat_info)=col_names
-  while(nrow(dat_info)!=0 & !error){
+  while(!error){
     if(verbose){
           print("----------------------------------")
           print(dat_info)
