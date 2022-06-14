@@ -884,25 +884,23 @@ batch_job_validator=function(job="",time=10,verbose=FALSE,threads=3){
 
 
   names(dat_info)=col_names
-  while(jobs!=0&!error){
+  while(jobs!=0 & !error){
     if(verbose){
           print("----------------------------------")
           print(dat_info)
           print("----------------------------------")
     }
-    tryCatch({
-      dat_info=read.table(text=system(exec_code,intern=TRUE),fill=TRUE)
-      jobs=nrow(dat_info)
-    },error=function(e){
-      jobs=0
-    })
+    dat_info=read.table(text=system(exec_code,intern=TRUE),fill=TRUE)
+    jobs=nrow(dat_info)
     
+  
     names(dat_info)=col_names
     if(any(grepl("E",dat_info$status))){
       error=TRUE
     }
     Sys.sleep(time)
   }
+
   if(error){
     print("----------------------------------")
     print(dat_info)
