@@ -872,9 +872,14 @@ output_dir="",verbose=FALSE,threads=4,mode="local",time="48:0:0",ram=4,update_ti
 
 batch_job_validator=function(job="",time=10,verbose=FALSE,threads=3){
   error=FALSE
-  col_names=c("job_id","job_priority","job_name","user","status","start_time","cores")
+  col_names=c("job_id","job_priority","job_name","user","status","start_time","nodes")
   exec_code="qstat -xml | tr '\n' ' ' | sed 's#<job_list[^>]*>#\\n#g'   | sed 's#<[^>]*>##g' | grep \" \" | column -t"
-  dat_info=read.table(text=system(exec_code,intern=TRUE),fill=TRUE)
+  
+   tryCatch({
+      dat_info=read.table(text=system(exec_code,intern=TRUE),fill=TRUE)
+    },error=function(e){
+      return()
+  })
 
   names(dat_info)=col_names
   while(nrow(dat_info)!=0 & !error){
@@ -883,7 +888,12 @@ batch_job_validator=function(job="",time=10,verbose=FALSE,threads=3){
           print(dat_info)
           print("----------------------------------")
     }
-    dat_info=read.table(text=system(exec_code,intern=TRUE),fill=TRUE)
+    tryCatch({
+      dat_info=read.table(text=system(exec_code,intern=TRUE),fill=TRUE)
+    },error=function(e){
+      return()
+    })
+    
     names(dat_info)=col_names
     if(any(grepl("E",dat_info$status))){
       error=TRUE
