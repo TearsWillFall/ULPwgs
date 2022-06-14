@@ -884,7 +884,7 @@ batch_job_validator=function(job="",time=10,verbose=FALSE,threads=3){
 
 
   names(dat_info)=col_names
-  while(!error){
+  while(jobs && !error){
     if(verbose){
           print("----------------------------------")
           print(dat_info)
@@ -894,7 +894,7 @@ batch_job_validator=function(job="",time=10,verbose=FALSE,threads=3){
     tryCatch({
       dat_info=read.table(text=system(exec_code,intern=TRUE),fill=TRUE)
       },error=function(e){
-      break
+      jobs=FALSE
     }
     )
     
