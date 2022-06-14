@@ -641,6 +641,7 @@ bin_path2="tools/gatk/gatk",bam="",ref_genome="",dbsnp="",threads=3,
 output_dir="",verbose=FALSE,mode="local",time="48:0:0",ram=1,update_time=60){
 
   options(scipen = 999)
+  options(warn = -1)
 
   out_file_dir=set_dir(dir=output_dir)
 
@@ -803,6 +804,7 @@ bin_path3="tools/picard/build/libs/picard.jar",bam="",ref_genome="",rec_table=""
 output_dir="",verbose=FALSE,threads=4,mode="local",time="48:0:0",ram=4,update_time=60){
 
   options(scipen = 999)
+  options(warn = -1)
 
   out_file_dir=set_dir(dir=output_dir)
   dat=get_bam_reference_chr(bin_path=bin_path,bam=bam,verbose=verbose)
