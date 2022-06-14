@@ -376,14 +376,15 @@ verbose=FALSE,tmp_dir="",threads=3,remove_duplicates=TRUE){
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
 #' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
-#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.#
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
 #' @export
 
 
 recal_gatk=function(bin_path="tools/samtools/samtools",bin_path2="tools/gatk/gatk",
 bin_path3="tools/picard/build/libs/picard.jar",bam="",ref_genome="",dbsnp="",
 threads=3,output_dir="",verbose=FALSE,mode="local",
-time="48:0:0",ram=4){
+time="48:0:0",ram=4,update_time=60){
 
   out_file_dir=set_dir(dir=output_dir,name="recal_reports/recal_before")
   out_file_dir2=set_dir(dir=output_dir,name="recal_reports/recal_after")
@@ -394,11 +395,12 @@ time="48:0:0",ram=4){
   parallel_generate_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,bam=bam,
     ref_genome=ref_genome,dbsnp=dbsnp,
     threads=threads,output_dir=out_file_dir,
-    verbose=verbose,mode=mode,ram=ram,time=time)
+    verbose=verbose,mode=mode,ram=ram,time=time,update_time=update_time)
 
   parallel_apply_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,bin_path3=bin_path3,
     bam=bam,ref_genome=ref_genome,rec_table=paste0(out_file_dir,"/",get_file_name(bam),".recal.table"),
-    output_dir=out_file_dir3,verbose=verbose,threads=threads)
+    output_dir=out_file_dir3,verbose=verbose,threads=threads,mode=mode,ram=ram,time=time,
+    update_time=update_time)
 
   system(paste(paste0("mv ",out_file_dir3,"/*"),out_file_dir4))
   system(paste("rm -rf ",out_file_dir3))
@@ -409,7 +411,8 @@ time="48:0:0",ram=4){
 
   parallel_generate_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,
     bam=paste0(out_file_dir4,"/",get_file_name(bam),".recal.",get_file_ext(bam)),
-    ref_genome=ref_genome,dbsnp=dbsnp,threads=threads,output_dir=out_file_dir2,verbose=verbose)
+    ref_genome=ref_genome,dbsnp=dbsnp,threads=threads,output_dir=out_file_dir2,verbose=verbose,
+    mode=mode,ram=ram,time=time,update_time=update_time)
 
   recal_covariates_gatk(bin_path=bin_path2,before=paste0(out_file_dir,"/",get_file_name(bam),".recal.table"),
     after=paste0(out_file_dir2,"/",get_file_name(bam),".recal.table"),output_dir=out_file_dir4)
