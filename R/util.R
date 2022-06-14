@@ -712,6 +712,7 @@ output_name="Report",output_dir="",verbose=FALSE){
 
   out_file_dir=set_dir(dir=output_dir)
   files=list.files(reports_dir,full.names=TRUE,pattern=":")
+  files=files[grepl(".recal.table",files)]
 
 
   exec_code=paste0(bin_path," GatherBQSRReports ",paste(" -I ",files,collapse=" "),
@@ -843,7 +844,6 @@ output_dir="",verbose=FALSE,threads=4,mode="local",time="48:0:0",ram=4,update_ti
     rec_table=rec_table, output_dir=out_file_dir,verbose=verbose,
     batch=exec_code)
 
-    
   },mc.cores=threads)
     
   if(mode=="batch"){
@@ -872,20 +872,16 @@ batch_job_validator=function(job="",time=10,verbose=FALSE,threads=3){
   error=FALSE
   col_names=c("job_id","job_priority","job_name","user","status","start_time","cores")
   exec_code="qstat -xml | tr '\n' ' ' | sed 's#<job_list[^>]*>#\\n#g'   | sed 's#<[^>]*>##g' | grep \" \" | column -t"
-  tryCatch({
-      dat_info=read.table(text=system(exec_code,intern=TRUE))},error=function(x){
-        return()
-      }
-  )
+  dat_info=read.table(text=system(exec_code,intern=TRUE),fill=TRUE)
 
   names(dat_info)=col_names
-  while(nrow(dat_info)!=0& !error){
+  while(nrow(dat_info)!=0 & !error){
     if(verbose){
           print("----------------------------------")
           print(dat_info)
           print("----------------------------------")
     }
-    dat_info=read.table(text=system(exec_code,intern=TRUE))
+    dat_info=read.table(text=system(exec_code,intern=TRUE),fill=TRUE)
     names(dat_info)=col_names
     if(any(grepl("E",dat_info$status))){
       error=TRUE
