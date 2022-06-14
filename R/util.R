@@ -878,7 +878,7 @@ batch_job_validator=function(job="",time=10,verbose=FALSE,threads=3){
    tryCatch({
       dat_info=read.table(text=system(exec_code,intern=TRUE),fill=TRUE)
     },error=function(e){
-      return()
+      message("Job hasn't been submmited.")
   })
 
   names(dat_info)=col_names
