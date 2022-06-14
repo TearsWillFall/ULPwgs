@@ -884,39 +884,43 @@ batch_job_validator=function(job="",time=10,verbose=FALSE,threads=3){
 
 
   names(dat_info)=col_names
-  while(jobs && !error){
+  while(!error){
     if(verbose){
           print("----------------------------------")
           print(dat_info)
           print("----------------------------------")
     }
-       
-    tryCatch({
-      dat_info=read.table(text=system(exec_code,intern=TRUE),fill=TRUE)
-      },error=function(e){
-      jobs=FALSE
-    }
-    )
+
     
-  
-    names(dat_info)=col_names
-    if(any(grepl("E",dat_info$status))){
-      error=TRUE
+       
+    dat_info=try({
+      dat_info=read.table(text=system(exec_code,intern=TRUE),fill=TRUE)
+      },silent=TRUE)
+
+    if (inherits(dat_info, "try-error")) {
+      break
+    }else{
+      names(dat_info)=col_names
+      if(any(grepl("E",dat_info$status))){
+        error=TRUE
+      }
+      Sys.sleep(time)
     }
-    Sys.sleep(time)
   }
 
   if(error){
-    print("----------------------------------")
-    print(dat_info)
-    print("----------------------------------")
-    parallel::mclapply(1:nrow(dat_info),FUN=function(x){
-      system(paste0("qdel ",dat_info[x,]$job_id))
-    },mc.cores=threads)
-  
-    stop("One or more jobs failed")
+      print("----------------------------------")
+      print(dat_info)
+      print("----------------------------------")
+      parallel::mclapply(1:nrow(dat_info),FUN=function(x){
+        system(paste0("qdel ",dat_info[x,]$job_id))
+      },mc.cores=threads)
+    
+      stop("One or more jobs failed")
   }
-  return()
+
+return()
+    
 }
 
 
