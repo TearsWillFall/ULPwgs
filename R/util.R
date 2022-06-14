@@ -877,12 +877,14 @@ batch_job_validator=function(job="",time=10,verbose=FALSE,threads=3){
   
    tryCatch({
       dat_info=read.table(text=system(exec_code,intern=TRUE),fill=TRUE)
+      jobs=nrow(dat_info)
     },error=function(e){
       message("Job hasn't been submmited.")
   })
 
+
   names(dat_info)=col_names
-  while(!error){
+  while(jobs!=0&!error){
     if(verbose){
           print("----------------------------------")
           print(dat_info)
@@ -890,8 +892,9 @@ batch_job_validator=function(job="",time=10,verbose=FALSE,threads=3){
     }
     tryCatch({
       dat_info=read.table(text=system(exec_code,intern=TRUE),fill=TRUE)
+      jobs=nrow(dat_info)
     },error=function(e){
-      return()
+      jobs=0
     })
     
     names(dat_info)=col_names
