@@ -269,7 +269,7 @@ verbose=FALSE,mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
     bin_path=bin_path2,bam=bam,ref_genome=ref_genome,
     dbsnp=dbsnp,output_dir=out_file_dir,verbose=verbose,
     executor=executor,task=make_unique_id("generateBQSR"),mode=mode,time=local,
-    threads=subthreads,ram=ram,update_time=update_time,wait=FALSE,hold=hold)   
+    threads=threads,ram=ram,update_time=update_time,wait=FALSE,hold=hold)   
   },mc.cores=ifelse(mode=="local",threads,3))
   
 
