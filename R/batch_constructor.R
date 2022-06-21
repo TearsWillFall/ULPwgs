@@ -34,32 +34,23 @@ job_validator=function(job="",time=10,verbose=FALSE,threads=3){
   col_names=c("job_id","job_priority","job_name","user","status","start_time","nodes")
   exec_code="qstat -xml | tr '\n' ' ' | sed 's#<job_list[^>]*>#\\n#g'   | sed 's#<[^>]*>##g' | grep \" \" | column -t"
   
-   tryCatch({
-      dat_info=read.table(text=system(exec_code,intern=TRUE),fill=TRUE)
-      jobs=nrow(dat_info)
-    },error=function(e){
-      message("Job hasn't been submmited.")
-  })
-
-
-  names(dat_info)=col_names
   while(!error){
-    if(verbose){
+   
+    dat_info=try({
+      dat_info=read.table(text=system(exec_code,intern=TRUE),fill=TRUE)
+      names(dat_info)=col_names
+      dat_info=dat_info[dat_info$job_name %in% job,]
+      jobs=nrow(dat_info)
+      },silent=TRUE)
+
+    if (inherits(dat_info, "try-error")|jobs==0) {
+      break
+    }else{
+      if(verbose){
           print("----------------------------------")
           print(dat_info)
           print("----------------------------------")
-    }
-
-    
-       
-    dat_info=try({
-      dat_info=read.table(text=system(exec_code,intern=TRUE),fill=TRUE)
-      },silent=TRUE)
-
-    if (inherits(dat_info, "try-error")) {
-      break
-    }else{
-      names(dat_info)=col_names
+      }
       if(any(grepl("E",dat_info$status))){
         error=TRUE
       }

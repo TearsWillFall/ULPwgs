@@ -21,8 +21,9 @@
 
 
 trimming_skewer=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt=NA,
-yadapt=NA,threads=3,output_dir="",verbose=FALSE,mean_quality=0,min_length=35,max_length=NA,
-mode="local",time="48:0:0",update_time=60,wait=FALSE){
+yadapt=NA,threads=3,ram=4,output_dir="",verbose=FALSE,mean_quality=0,min_length=35,max_length=NA,
+mode="local",executor=make_unique_id("trimmingSkewer"),task="trimmingSkewer",time="48:0:0",
+update_time=60,wait=FALSE,hold=""){
 
   out_file_dir=set_dir(dir=output_dir,name="skewer_reports")
 
@@ -43,14 +44,14 @@ mode="local",time="48:0:0",update_time=60,wait=FALSE){
     exec_code=paste(func,"-z -f sanger --quiet -o",paste0(out_file_dir,"/",get_file_name(file_R1)),file_R1)
   }
 
-  job_name="skewer"
 
+  job=build_job(executor=executor,task=make_unique_id(task))
   if(mode=="batch"){
     out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-    job_name=build_job(task="skewer",input_name=get_file_name(bam))
-    batch_code=build_job_exec(job_name=job_name,time=time,ram=ram,threads=1,output_dir=out_file_dir2)
+    batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,output_dir=out_file_dir2)
     exec_code=paste0("echo 'source ~/.bashrc;",exec_code,"'|",batch_code)
   }
+  
 
   if(verbose){
       print(exec_code)
@@ -62,10 +63,10 @@ mode="local",time="48:0:0",update_time=60,wait=FALSE){
   }
 
    if(wait&&mode=="batch"){
-    batch_validator(job=paste(job_name,"_batch"),
+    batch_validator(job=job,
     time=update_time,verbose=verbose,threads=threads)
   }
 
-  return(job_name)
+  return(job)
   
 }

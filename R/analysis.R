@@ -1,6 +1,4 @@
 
-
-
 #' Merge BAM files in directory
 #'
 #' This function takes a BAM file and merges it with others found within a

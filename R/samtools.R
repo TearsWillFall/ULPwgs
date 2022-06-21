@@ -23,9 +23,8 @@
 #' @export
 
 sort_and_index_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
-ram=1,verbose=FALSE,threads=3,sort=TRUE,executor="sortANDindex",task="sortANDindex",
-coord_sort=TRUE,index=TRUE,stats="all", clean=FALSE,
-mode="local",time="48:0:0",update_time=60,wait=FALSE){
+verbose=FALSE,threads=3,ram=1,sort=TRUE,coord_sort=TRUE,index=TRUE,stats="all", clean=FALSE,
+mode="local",executor=make_unique_id("sortANDindex"),task="sortANDindex",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   out_file_dir=set_dir(dir=output_dir)
 
@@ -90,7 +89,8 @@ mode="local",time="48:0:0",update_time=60,wait=FALSE){
 #' @export
 
 sort_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",ram=1,
-verbose=FALSE,threads=3,coord_sort=TRUE,mode="local",time="48:0:0",update_time=60,wait=FALSE){
+verbose=FALSE,threads=3,coord_sort=TRUE,mode="local",executor=make_unique_id("sortBAM"),
+task="sortBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   out_file_dir=set_dir(dir=output_dir,name="sorted")
 
@@ -101,6 +101,15 @@ verbose=FALSE,threads=3,coord_sort=TRUE,mode="local",time="48:0:0",update_time=6
   }
   exec_code=paste0(bin_path," sort ",sort_type, bam," -@ ",threads," -m ",ram,"G"," -o ",
   paste0(out_file_dir,"/",get_file_name(bam),".sorted.",get_file_ext(bam)))
+
+  job=build_job(executor=executor,task=make_unique_id(task))
+  if(mode=="batch"){
+    out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+    batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,output_dir=out_file_dir2)
+    exec_code=paste0("echo 'source ~/.bashrc;",exec_code,"'|",batch_code)
+  }
+    
+    
   if (verbose){
     print(exec_code)
   }
@@ -109,13 +118,14 @@ verbose=FALSE,threads=3,coord_sort=TRUE,mode="local",time="48:0:0",update_time=6
     stop("samtools failed to run due to unknown error.
     Check std error for more information.")
   }
+
+  if(wait&&mode=="batch"){
+      job_validator(job=job,
+      time=update_time,verbose=verbose,threads=threads)
+  }
+
+  return(job)
 }
-
-
-
-
-
-
 
 
 
@@ -134,7 +144,8 @@ verbose=FALSE,threads=3,coord_sort=TRUE,mode="local",time="48:0:0",update_time=6
 #' @export
 
 sort_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",ram=1,
-verbose=FALSE,threads=3,coord_sort=TRUE,mode="local",time="48:0:0",update_time=60,wait=FALSE){
+verbose=FALSE,threads=3,coord_sort=TRUE,mode="local",executor=make_unique_id("sortBAM"),
+task="sortBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   out_file_dir=set_dir(dir=output_dir,name="sorted")
 
@@ -145,6 +156,14 @@ verbose=FALSE,threads=3,coord_sort=TRUE,mode="local",time="48:0:0",update_time=6
   }
   exec_code=paste0(bin_path," sort ",sort_type, bam," -@ ",threads," -m ",ram,"G"," -o ",
   paste0(out_file_dir,"/",get_file_name(bam),".sorted.",get_file_ext(bam)))
+
+  job=build_job(executor=executor,task=make_unique_id(task))
+  if(mode=="batch"){
+    out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+    batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,output_dir=out_file_dir2)
+    exec_code=paste0("echo 'source ~/.bashrc;",exec_code,"'|",batch_code)
+  }
+    
   if (verbose){
     print(exec_code)
   }
@@ -153,6 +172,13 @@ verbose=FALSE,threads=3,coord_sort=TRUE,mode="local",time="48:0:0",update_time=6
     stop("samtools failed to run due to unknown error.
     Check std error for more information.")
   }
+
+  if(wait&&mode=="batch"){
+      job_validator(job=job,
+      time=update_time,verbose=verbose,threads=threads)
+  }
+
+  return(job)
 }
 
 
@@ -167,9 +193,18 @@ verbose=FALSE,threads=3,coord_sort=TRUE,mode="local",time="48:0:0",update_time=6
 #' @param threads Number of threads. Default 3
 #' @export
 
-index_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",verbose=FALSE,threads=3){
+index_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",verbose=FALSE,threads=3,
+mode="local",executor=make_unique_id("indexBAM"),task="indexBAM",time="48:0:0",update_time=60,
+wait=FALSE,hold=""){
 
   exec_code=paste(bin_path," index",bam," -@ ",threads)
+  job=build_job(executor=executor,task=make_unique_id(task))
+  if(mode=="batch"){
+    out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+    batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,output_dir=out_file_dir2)
+    exec_code=paste0("echo 'source ~/.bashrc;",exec_code,"'|",batch_code)
+  }
+    
   if (verbose){
     print(exec_code)
   }
@@ -178,6 +213,13 @@ index_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",verbose=FA
     stop("samtools failed to run due to unknown error.
     Check std error for more information.")
   }
+
+  if(wait&&mode=="batch"){
+      job_validator(job=job,
+      time=update_time,verbose=verbose,threads=threads)
+  }
+
+  return(job)
 }
 
 
@@ -198,24 +240,30 @@ index_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",verbose=FA
 
 
 stats_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
-verbose=FALSE,threads=3,stats="all",mode="local",time="48:0:0",update_time=60,wait=FALSE){
+verbose=FALSE,threads=3,ram=4,stats="all",mode="local",executor=make_unique_id("statsBAM"),
+task="statsBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
 
   out_file_dir=set_dir(dir=output_dir,name="stats")
 
   if(stats=="all"|stats=="flag"){
-    stats_flag_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
-    verbose=verbose,threads=threads,mode=mode,time=time,update_time=update_time,wait=FALSE)
+    job1=stats_flag_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
+    verbose=verbose,threads=threads,mode=mode,time=time,update_time=update_time,wait=FALSE,hold=hold)
   }
 
 
   if(stats=="all"|stats=="index"){
-    stats_index_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
-    verbose=verbose,threads=threads,mode=mode,time=time,update_time=update_time,wait=FALSE)
+    job2=stats_index_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
+    verbose=verbose,threads=threads,mode=mode,time=time,update_time=update_time,wait=FALSE,hold=hold)
   }
 
   
-  
+  if(wait&&mode=="batch"){
+      job_validator(job=c(job1,job2),
+      time=update_time,verbose=verbose,threads=threads)
+  }
+
+  return(c(job1,job2))
 }
 
 #' Generate BAM file flagstats
@@ -231,12 +279,21 @@ verbose=FALSE,threads=3,stats="all",mode="local",time="48:0:0",update_time=60,wa
 
 
 stats_flag_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
-verbose=FALSE,threads=3){
+verbose=FALSE,threads=3,ram=4,mode="local",executor=make_unique_id("statsFlag"),
+task="statsFlag",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   out_file_dir=set_dir(dir=output_dir,name="flag")
 
   exec_code=paste0(bin_path," flagstat ",bam," -@ ",threads," > ",
     paste0(out_file_dir,"/",get_file_name(bam),".flagstat.txt"))
+
+  job=build_job(executor=executor,task=make_unique_id(task))
+  if(mode=="batch"){
+    out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+    batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,output_dir=out_file_dir2)
+    exec_code=paste0("echo 'source ~/.bashrc;",exec_code,"'|",batch_code)
+  }
+    
   
   if (verbose){
     print(exec_code)
@@ -248,6 +305,14 @@ verbose=FALSE,threads=3){
     stop("samtools failed to run due to unknown error.
     Check std error for more information.")
   }
+
+  
+  if(wait&&mode=="batch"){
+      job_validator(job=job,
+      time=update_time,verbose=verbose,threads=threads)
+  }
+
+  return(job)
 }
 
 
@@ -263,11 +328,21 @@ verbose=FALSE,threads=3){
 
 
 stats_index_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
-verbose=FALSE,threads=3){
+verbose=FALSE,threads=3,ram=4,mode="local",executor=make_unique_id("statsINDEX"),
+task="statsINDEX",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   out_file_dir=set_dir(dir=output_dir,name="index")
 
   exec_code=paste0(bin_path," idxstats ",bam," > ",paste0(out_file_dir,"/",get_file_name(bam),".idxstats.txt"))
+
+
+  job=build_job(executor=executor,task=make_unique_id(task))
+  if(mode=="batch"){
+    out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+    batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,output_dir=out_file_dir2)
+    exec_code=paste0("echo 'source ~/.bashrc;",exec_code,"'|",batch_code)
+  }
+    
   if (verbose){
     print(exec_code)
   }
@@ -276,6 +351,14 @@ verbose=FALSE,threads=3){
     stop("samtools failed to run due to unknown error.
     Check std error for more information.")
   }
+
+  
+  if(wait&&mode=="batch"){
+      job_validator(job=job,
+      time=update_time,verbose=verbose,threads=threads)
+  }
+
+  return(job)
 
 }
 
@@ -291,7 +374,8 @@ verbose=FALSE,threads=3){
 #' @export
 
 metrics_mapq_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
-verbose=FALSE,threads=3){
+verbose=FALSE,threads=3,ram=4,mode="local",executor=make_unique_id("metricsMAPQ"),
+task="metricsMAPQ",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
 
   out_file_dir=set_dir(dir=output_dir,name="mapq")
@@ -300,6 +384,14 @@ verbose=FALSE,threads=3){
   exec_code=paste(bin_path,"view",bam," -@ ",threads, " | awk -F", "'\\t'",
     "'{c[$5]++} END { for (i in c) printf(\"%s\\t%s\\n\",i,c[i]) }'",
     " | sort -t$'\\t' -k 1 -g >>", paste0(out_file_dir,"/",get_file_name(bam),".mapq_dist.txt"))
+
+  job=build_job(executor=executor,task=make_unique_id(task))
+  if(mode=="batch"){
+    out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+    batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,output_dir=out_file_dir2)
+    exec_code=paste0("echo 'source ~/.bashrc;",exec_code,"'|",batch_code)
+  }
+    
   
   if (verbose){
     print(exec_code)
@@ -310,6 +402,13 @@ verbose=FALSE,threads=3){
     stop("samtools failed to run due to unknown error.
     Check std error for more information.")
   }
+  
+  if(wait&&mode=="batch"){
+      job_validator(job=job,
+      time=update_time,verbose=verbose,threads=threads)
+  }
+
+  return(job)
 }
 
 
