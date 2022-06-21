@@ -476,7 +476,7 @@ time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE, hold=""){
     tmp=dat[x,]
     apply_BQSR_gatk(region=tmp$region,bin_path=bin_path2,bam=bam,ref_genome=ref_genome,
     executor=executor,task=make_unique_id("applyBQSR"),rec_table=rec_table,
-    output_dir=out_file_dir, verbose=verbose,mode=mode,time=time,threads=threads,
+    output_dir=out_file_dir,verbose=verbose,mode=mode,time=time,threads=threads,
     ram=ram,update_time=update_time,hold=hold,wait=FALSE)},mc.cores=ifelse(mode=="local",threads,3))
    
 
