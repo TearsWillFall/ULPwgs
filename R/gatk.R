@@ -17,7 +17,7 @@
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.#
 #' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
 #' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
-#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
 #' @export
 
 

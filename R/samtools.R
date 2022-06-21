@@ -9,17 +9,19 @@
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param threads Number of threads. Default 3
+#' @param ram Ram memory to use per thread in GB. Default 1GB
 #' @param sort Sort BAM file. Default TRUE.
 #' @param coord_sort Generate a coord sorted file. Otherwise queryname sorted. Default TRUE
-#' @param ram Ram memory to use per thread in GB. Default 1GB
 #' @param index Generate an index file for sorted BAM. Default TRUE
 #' @param clean Remove input files. Default FALSE
 #' @param stats Generate BAM stats. Default all. Options ["all","flag","index",""]
-#' @param stats Generate BAM stats. Default all. Options ["all","flag","index",""]
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor Name of the executor. Default "mardupsGATK"
+#' @param task Name of the task. Default "mardupsGATK"
 #' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
 #' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
 #' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
 #' @export
 
 sort_and_index_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
@@ -85,8 +87,15 @@ update_time=60,wait=FALSE,hold=""){
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param threads Number of threads. Default 3
-#' @param coord_sort Generate a coord sorted file. Otherwise queryname sorted. Default TRUE
 #' @param ram Ram memory to use per thread in GB. Default 1GB
+#' @param coord_sort Generate a coord sorted file. Otherwise queryname sorted. Default TRUE
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor Name of the executor. Default "mardupsGATK"
+#' @param task Name of the task. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
 #' @export
 
 sort_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
@@ -144,8 +153,15 @@ task="sortBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param threads Number of threads. Default 3
-#' @param coord_sort Generate a coord sorted file. Otherwise queryname sorted. Default TRUE
 #' @param ram Ram memory to use per thread in GB. Default 1GB
+#' @param coord_sort Generate a coord sorted file. Otherwise queryname sorted. Default TRUE
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor Name of the executor. Default "mardupsGATK"
+#' @param task Name of the task. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
 #' @export
 
 sort_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
@@ -196,6 +212,14 @@ task="sortBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
 #' @param verbose Enables progress messages. Default False.
 #' @param threads Number of threads. Default 3
+#' @param ram RAM per thread to use. Default 4.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor Name of the executor. Default "mardupsGATK"
+#' @param task Name of the task. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
 #' @export
 
 index_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",verbose=FALSE,threads=3,ram=4,
@@ -240,7 +264,15 @@ wait=FALSE,hold=""){
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param threads Number of threads. Default 3
+#' @param ram RAM per thread to use. Default 4.
 #' @param stats Generate BAM stats. Default all. Options ["all","flag","index",""]
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor Name of the executor. Default "mardupsGATK"
+#' @param task Name of the task. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID.
 #' @export
 
 
@@ -279,6 +311,14 @@ task="statsBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param threads Number of threads. Default 3
+#' @param ram RAM per thread to use. Default 4.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor Name of the executor. Default "mardupsGATK"
+#' @param task Name of the task. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
 #' @export
 
 
@@ -329,6 +369,14 @@ task="statsFlag",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param threads Number of threads. Default 3
+#' @param ram RAM per thread to use. Default 4.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor Name of the executor. Default "mardupsGATK"
+#' @param task Name of the task. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
 #' @export
 
 
@@ -376,6 +424,13 @@ task="statsINDEX",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param threads Number of threads. Default 3
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor Name of the executor. Default "mardupsGATK"
+#' @param task Name of the task. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
 #' @export
 
 metrics_mapq_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
