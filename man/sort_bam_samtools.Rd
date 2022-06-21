@@ -10,27 +10,11 @@ sort_bam_samtools(
   output_dir = "",
   verbose = FALSE,
   threads = 3,
-  ram = 4,
+  ram = 1,
   coord_sort = TRUE,
   mode = "local",
   executor = make_unique_id("sortBAM"),
-  task = "sortBAM",
-  time = "48:0:0",
-  update_time = 60,
-  wait = FALSE,
-  hold = ""
-)
-
-sort_bam_samtools(
-  bin_path = "tools/samtools/samtools",
-  bam = "",
-  output_dir = "",
-  verbose = FALSE,
-  threads = 3,
-  ram = 4,
-  coord_sort = TRUE,
-  mode = "local",
-  executor = make_unique_id("sortBAM"),
+  clean = FALSE,
   task = "sortBAM",
   time = "48:0:0",
   update_time = 60,
@@ -57,6 +41,8 @@ sort_bam_samtools(
 
 \item{executor}{Name of the executor. Default "mardupsGATK"}
 
+\item{clean}{Remove input files. Default FALSE}
+
 \item{task}{Name of the task. Default "mardupsGATK"}
 
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
@@ -66,11 +52,7 @@ sort_bam_samtools(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} Hold job until job is finished. Job ID.}
-
-\item{clean}{Remove input files. Default FALSE}
 }
 \description{
-This function sorts a genome sequence file (BAM/SAM)
-
 This function sorts a genome sequence file (BAM/SAM)
 }

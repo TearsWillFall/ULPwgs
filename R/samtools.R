@@ -32,8 +32,8 @@ update_time=60,wait=FALSE,hold=""){
   out_file_dir=set_dir(dir=output_dir)
 
   if(sort){
-      job=sort_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,ram=ram,
-      verbose=verbose,threads=threads,coord_sort=coord_sort,clean=clean,
+      job=sort_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
+      ram=ram,verbose=verbose,threads=threads,coord_sort=coord_sort,clean=clean,
       executor=executor,task="sortBAM",mode=mode,time=time,
       update_time=update_time,wait=FALSE,hold=hold)
 
@@ -100,8 +100,9 @@ update_time=60,wait=FALSE,hold=""){
 #' @export
 
 sort_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
-verbose=FALSE,threads=3,ram=1,coord_sort=TRUE,mode="local",executor=make_unique_id("sortBAM"),
-clean=FALSE,task="sortBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""){
+verbose=FALSE,threads=3,ram=1,coord_sort=TRUE,mode="local",
+executor=make_unique_id("sortBAM"),clean=FALSE,task="sortBAM",
+time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   out_file_dir=set_dir(dir=output_dir,name="sorted")
 
@@ -145,83 +146,7 @@ clean=FALSE,task="sortBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
 
 
-#' Sort a BAM file
-#'
-#' This function sorts a genome sequence file (BAM/SAM)
-#'
-#' @param bam Path to the input file with the sequence.
-#' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
-#' @param output_dir Path to the output directory.
-#' @param verbose Enables progress messages. Default False.
-#' @param threads Number of threads. Default 3
-#' @param ram Ram memory to use per thread in GB. Default 1GB
-#' @param coord_sort Generate a coord sorted file. Otherwise queryname sorted. Default TRUE
-#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
-#' @param executor Name of the executor. Default "mardupsGATK"
-#' @param task Name of the task. Default "mardupsGATK"
-#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
-#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
-#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
-#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
-#' @export
 
-sort_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
-verbose=FALSE,threads=3,ram=4,coord_sort=TRUE,mode="local",executor=make_unique_id("sortBAM"),
-task="sortBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""){
-
-  out_file_dir=set_dir(dir=output_dir,name="sorted")
-
-  sort_type=""
-  
-  if(!coord_sort){
-    sort_type=" -n "
-  }
-  exec_code=paste0(bin_path," sort ",sort_type, bam," -@ ",threads," -m ",ram,"G"," -o ",
-  paste0(out_file_dir,"/",get_file_name(bam),".sorted.",get_file_ext(bam)))
-
-  job=build_job(executor=executor,task=make_unique_id(task))
-  if(mode=="batch"){
-    out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-    batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,output_dir=out_file_dir2)
-    exec_code=paste0("echo 'source ~/.bashrc;",exec_code,"'|",batch_code)
-  }
-    
-  if (verbose){
-    print(exec_code)
-  }
-  error=system(exec_code)
-  if(error!=0){
-    stop("samtools failed to run due to unknown error.
-    Check std error for more information.")
-  }
-
-  if(wait&&mode=="batch"){
-      job_validator(job=job,
-      time=update_time,verbose=verbose,threads=threads)
-  }
-
-  return(job)
-}
-
-
-
-#' Index a BAM file
-#'
-#' This function indexes a genomic sequence file (BAM/SAM).
-#'
-#' @param bam Path to the input file with the sequence.
-#' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
-#' @param verbose Enables progress messages. Default False.
-#' @param threads Number of threads. Default 3
-#' @param ram RAM per thread to use. Default 4.
-#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
-#' @param executor Name of the executor. Default "mardupsGATK"
-#' @param task Name of the task. Default "mardupsGATK"
-#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
-#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
-#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
-#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
-#' @export
 
 index_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",verbose=FALSE,threads=3,ram=4,
 mode="local",executor=make_unique_id("indexBAM"),task="indexBAM",time="48:0:0",update_time=60,
