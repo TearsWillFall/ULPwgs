@@ -260,7 +260,7 @@ verbose=FALSE,mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
   dat=get_bam_reference_chr(bin_path=bin_path,bam=bam,verbose=verbose)
   dat$start=dat$start+1
   dat=dat %>% dplyr::mutate(region=paste0(chr,":",start,"-",end),
-  report_loc=paste0(out_file_dir,region,".recal.table"))
+  report_loc=paste0(out_file_dir,paste0(chr,":",start,"-",end),".recal.table"))
 
 
   jobs=parallel::mclapply(1:nrow(dat),FUN=function(x){
