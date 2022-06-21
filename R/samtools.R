@@ -24,7 +24,8 @@
 
 sort_and_index_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
 verbose=FALSE,threads=3,ram=1,sort=TRUE,coord_sort=TRUE,index=TRUE,stats="all", clean=FALSE,
-mode="local",executor=make_unique_id("sortANDindex"),task="sortANDindex",time="48:0:0",update_time=60,wait=FALSE,hold=""){
+mode="local",executor=make_unique_id("sortANDindex"),task="sortANDindex",time="48:0:0",
+update_time=60,wait=FALSE,hold=""){
 
   out_file_dir=set_dir(dir=output_dir)
 
@@ -88,8 +89,8 @@ mode="local",executor=make_unique_id("sortANDindex"),task="sortANDindex",time="4
 #' @param ram Ram memory to use per thread in GB. Default 1GB
 #' @export
 
-sort_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",ram=1,
-verbose=FALSE,threads=3,coord_sort=TRUE,mode="local",executor=make_unique_id("sortBAM"),
+sort_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
+verbose=FALSE,threads=3,ram=1,coord_sort=TRUE,mode="local",executor=make_unique_id("sortBAM"), clean=TRUE,
 task="sortBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   out_file_dir=set_dir(dir=output_dir,name="sorted")
@@ -101,6 +102,10 @@ task="sortBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""){
   }
   exec_code=paste0(bin_path," sort ",sort_type, bam," -@ ",threads," -m ",ram,"G"," -o ",
   paste0(out_file_dir,"/",get_file_name(bam),".sorted.",get_file_ext(bam)))
+
+  if(clean){
+    exec_code=paste(exec_code," && rm",paste(bam,collapse=" "))
+  }
 
   job=build_job(executor=executor,task=make_unique_id(task))
   if(mode=="batch"){
@@ -143,8 +148,8 @@ task="sortBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @param ram Ram memory to use per thread in GB. Default 1GB
 #' @export
 
-sort_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",ram=1,
-verbose=FALSE,threads=3,coord_sort=TRUE,mode="local",executor=make_unique_id("sortBAM"),
+sort_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
+verbose=FALSE,threads=3,ram=4,coord_sort=TRUE,mode="local",executor=make_unique_id("sortBAM"),
 task="sortBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   out_file_dir=set_dir(dir=output_dir,name="sorted")
@@ -193,7 +198,7 @@ task="sortBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @param threads Number of threads. Default 3
 #' @export
 
-index_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",verbose=FALSE,threads=3,
+index_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",verbose=FALSE,threads=3,ram=4,
 mode="local",executor=make_unique_id("indexBAM"),task="indexBAM",time="48:0:0",update_time=60,
 wait=FALSE,hold=""){
 

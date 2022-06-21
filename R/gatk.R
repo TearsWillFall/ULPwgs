@@ -112,7 +112,7 @@ task="recalGATK",mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   job=parallel_generate_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,bam=bam,
     ref_genome=ref_genome,dbsnp=dbsnp,
-    threads=threads,output_dir=out_file_dir,
+    output_dir=out_file_dir,
     verbose=verbose,executor=executor,mode=mode,threads=threads,ram=ram,
     time=time,update_time=update_time,wait=FALSE,hold=hold)
 
@@ -314,7 +314,7 @@ verbose=FALSE,mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
 gather_BQSR_reports_gatk=function(bin_path="tools/gatk/gatk",report="",reports_dir="",
 executor=make_unique_id("gatherBQSR"),task="gatherBQSR",output_name="Report", clean=TRUE,
-output_dir="",verbose=FALSE,mode="local",time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE){
+output_dir="",verbose=FALSE,mode="local",time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE,hold=""){
 
   out_file_dir=set_dir(dir=output_dir)
   if(report==""){
@@ -334,9 +334,10 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",threads=4,ram=4,update_ti
     exec_code=paste(exec_code," && rm",paste(files,collapse=" "))
   }
 
-  out_file_dir2=set_dir(dir=out_file_dir,name="batch")
   job=build_job(executor = executor,task=make_unique_id(task))
   if(mode=="batch"){
+    
+      out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)

@@ -8,7 +8,7 @@ options(scipen = 999)
 
 
 
-build_job_exec=function(job="",time="48:0:0",ram=3,threads=1,output_dir=""){
+build_job_exec=function(job="",time="48:0:0",ram=3,threads=1,output_dir="",hold=""){
   
   if(hold!=""){
     hold=paste0(" -hold_jid",paste0(hold,collapse=","))
