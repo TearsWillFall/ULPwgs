@@ -17,7 +17,8 @@ parallel_apply_BQSR_gatk(
   mode = "local",
   time = "48:0:0",
   ram = 4,
-  update_time = 60
+  update_time = 60,
+  wait = FALSE
 )
 }
 \arguments{
@@ -46,6 +47,8 @@ parallel_apply_BQSR_gatk(
 \item{ram}{\link{OPTIONAL} If batch mode. RAM memory in GB per job. Default 1}
 
 \item{update_time}{\link{OPTIONAL} If batch mode. Show job updates every update time. Default 60}
+
+\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 }
 \description{
 Recalibrates

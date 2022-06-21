@@ -14,7 +14,11 @@ sort_and_index_samtools(
   sort = TRUE,
   coord_sort = TRUE,
   index = TRUE,
-  stats = "all"
+  stats = "all",
+  mode = "local",
+  time = "48:0:0",
+  update_time = 60,
+  wait = FALSE
 )
 }
 \arguments{
@@ -37,6 +41,14 @@ sort_and_index_samtools(
 \item{index}{Generate an index file for sorted BAM. Default TRUE}
 
 \item{stats}{Generate BAM stats. Default all. Options \link{"all","flag","index",""}}
+
+\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+
+\item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
+
+\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 }
 \description{
 Sort and index a sequence file

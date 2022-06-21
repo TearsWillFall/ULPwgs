@@ -22,7 +22,11 @@ alignment_bwa(
   stats = "all",
   ref_genome = "",
   output_dir = "",
-  verbose = FALSE
+  verbose = FALSE,
+  mode = "local",
+  time = "48:0:0",
+  update_time = 60,
+  wait = FALSE
 )
 }
 \arguments{
@@ -54,13 +58,21 @@ alignment_bwa(
 
 \item{index}{Generate index file if BAM sorted by coordinate. Default TRUE.}
 
-\item{stats}{Generate BAM stats. Default all. Options ["all","flag","index",""}
+\item{stats}{Generate BAM stats. Default all. Options \link{"all","flag","index",""}}
 
 \item{ref_genome}{Path to input file with the reference genome sequence.}
 
 \item{output_dir}{Path to the output directory.}
 
 \item{verbose}{Enables progress messages. Default False.}
+
+\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+
+\item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
+
+\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 }
 \description{
 This function aligns a sequence of reads to a reference genome

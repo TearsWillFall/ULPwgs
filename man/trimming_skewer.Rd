@@ -15,7 +15,11 @@ trimming_skewer(
   verbose = FALSE,
   mean_quality = 0,
   min_length = 35,
-  max_length = NA
+  max_length = NA,
+  mode = "local",
+  time = "48:0:0",
+  update_time = 60,
+  wait = FALSE
 )
 }
 \arguments{
@@ -40,6 +44,14 @@ trimming_skewer(
 \item{min_length}{Minimum length of reads to keep.Default 35}
 
 \item{max_length}{Maximum length of reads to keep.Default NA.}
+
+\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+
+\item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
+
+\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 }
 \description{
 Detects and removes adapter sequences from single and paired read data

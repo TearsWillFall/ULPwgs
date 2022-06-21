@@ -9,7 +9,14 @@ gather_bam_files(
   bams_dir = "",
   output_name = "File",
   output_dir = "",
-  verbose = FALSE
+  verbose = FALSE,
+  job_name = "GatherBAM",
+  batch_name = "batch",
+  mode = "local",
+  time = "48:0:0",
+  ram = 4,
+  update_time = 60,
+  wait = FALSE
 )
 }
 \arguments{
@@ -22,6 +29,18 @@ gather_bam_files(
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
+
+\item{job_name}{\link{OPTIONAL} Job name to submit. Default "GatherBAM"}
+
+\item{batch_name}{\link{OPTIONAL} Batch name to submit. Default "batch"}
+
+\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+
+\item{ram}{\link{OPTIONAL} If batch mode. RAM memory in GB per job. Default 1}
+
+\item{update_time}{\link{OPTIONAL} If batch mode. Show job updates every update time. Default 60}
 }
 \description{
 This functions collects the Recalibration reports generated from scattered parallel_apply_BQSR output

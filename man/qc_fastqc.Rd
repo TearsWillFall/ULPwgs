@@ -10,7 +10,11 @@ qc_fastqc(
   file_R2 = "",
   threads = 3,
   output_dir = "",
-  verbose = FALSE
+  verbose = FALSE,
+  mode = "local",
+  time = "48:0:0",
+  update_time = 60,
+  wait = FALSE
 )
 }
 \arguments{
@@ -25,6 +29,14 @@ qc_fastqc(
 \item{output_dir}{Path to the output directory.}
 
 \item{verbose}{Enables progress messages. Default False.}
+
+\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+
+\item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
+
+\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 }
 \description{
 This function takes a set of sequence files (fastq,SAM,BAM...) and

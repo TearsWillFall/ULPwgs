@@ -7,9 +7,16 @@
 gather_BQSR_reports_gatk(
   bin_path = "tools/gatk/gatk",
   reports_dir = "",
+  job_name = "gather_BQSR_reports",
+  batch_name = "batch",
   output_name = "Report",
   output_dir = "",
-  verbose = FALSE
+  verbose = FALSE,
+  mode = "local",
+  time = "48:0:0",
+  ram = 4,
+  update_time = 60,
+  wait = FALSE
 )
 }
 \arguments{
@@ -17,11 +24,25 @@ gather_BQSR_reports_gatk(
 
 \item{reports_dir}{\link{REQUIRED} Path to the directory where reports are stored.}
 
+\item{job_name}{\link{OPTIONAL} Job name. Default "gather_BQSR_reports"}
+
+\item{batch_name}{\link{OPTIONAL} Batch name. Default "batch"}
+
 \item{output_name}{\link{OPTIONAL} Name for the output report file.}
 
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
+
+\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+
+\item{ram}{\link{OPTIONAL} If batch mode. RAM memory in GB per job. Default 1}
+
+\item{update_time}{\link{OPTIONAL} If batch mode. Show job updates every update time. Default 60}
+
+\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 }
 \description{
 This functions collects the Recalibration reports generated from scattered parallel_generate_BQSR output

@@ -12,7 +12,11 @@ generate_BQSR_gatk(
   dbsnp = "",
   output_dir = "",
   verbose = FALSE,
-  batch = ""
+  mode = "local",
+  time = "48:0:0",
+  ram = 4,
+  update_time = 60,
+  wait = FALSE
 )
 }
 \arguments{
@@ -27,6 +31,14 @@ generate_BQSR_gatk(
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
+
+\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+
+\item{ram}{\link{OPTIONAL} If batch mode. RAM memory in GB per job. Default 1}
+
+\item{update_time}{\link{OPTIONAL} If batch mode. Show job updates every update time. Default 60}
 
 \item{batch}{\link{OPTIONAL} Parameter to submit to grid.}
 }
