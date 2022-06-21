@@ -100,8 +100,8 @@ update_time=60,wait=FALSE,hold=""){
 #' @export
 
 sort_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
-verbose=FALSE,threads=3,ram=1,coord_sort=TRUE,mode="local",executor=make_unique_id("sortBAM"), clean=FALSE,
-task="sortBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""){
+verbose=FALSE,threads=3,ram=1,coord_sort=TRUE,mode="local",executor=make_unique_id("sortBAM"),
+clean=FALSE,task="sortBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   out_file_dir=set_dir(dir=output_dir,name="sorted")
 

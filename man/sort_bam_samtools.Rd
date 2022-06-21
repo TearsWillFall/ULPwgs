@@ -66,6 +66,8 @@ sort_bam_samtools(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} Hold job until job is finished. Job ID.}
+
+\item{clean}{Remove input files. Default FALSE}
 }
 \description{
 This function sorts a genome sequence file (BAM/SAM)
