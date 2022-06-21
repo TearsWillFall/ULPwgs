@@ -1,8 +1,9 @@
 build_job=function(executor="executor",task="task"){
 options(scipen = 999)
   executor=paste0("E__",executor)
-  job_name=paste0(c(executor,paste0("T__",task)),collapse="____")
-  return(job_name)
+  task=paste0("T__",task)
+  job=paste0(c(executor,task),collapse="____")
+  return(job)
 }
 
 
@@ -10,7 +11,7 @@ options(scipen = 999)
 build_job_exec=function(job="",time="48:0:0",ram=3,threads=1,output_dir="",hold=""){
   
   if(hold!=""){
-    hold=paste0(" -hold_jid",paste0(hold,collapse=","))
+    hold=paste0(" -hold_jid ",paste0(hold,collapse=","))
   }
   exec_code=paste("qsub -N ",job, paste0(" -l h_rt=",time),
   paste0(" -l mem=",ram,"G"), paste0(" -pe smp ",threads), paste0(" -wd ",getwd()), 

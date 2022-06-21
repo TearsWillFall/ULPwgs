@@ -268,13 +268,13 @@ verbose=FALSE,mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
     id=generate_BQSR_gatk(region=tmp$region,
     bin_path=bin_path2,bam=bam,ref_genome=ref_genome,
     dbsnp=dbsnp,output_dir=out_file_dir,verbose=verbose,
-    executor=executor,task=make_unique_id("generateBQSR"),mode=mode,time=time,
+    executor=executor,task="generateBQSR",mode=mode,time=time,
     threads=threads,ram=ram,update_time=update_time,wait=FALSE,hold=hold)   
   },mc.cores=ifelse(mode=="local",threads,3))
   
 
   job=gather_BQSR_reports_gatk(bin_path=bin_path2,report=dat$report_loc,
-  executor=executor,task=make_unique_id("gatherBQSR"),output_dir=out_file_dir,
+  executor=executor,task="gatherBQSR",output_dir=out_file_dir,
   output_name=get_file_name(bam),verbose=verbose,mode=mode,time=time,
   threads=threads,ram=ram,update_time=update_time,wait=FALSE,hold=jobs)
   
@@ -338,7 +338,8 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",threads=4,ram=4,update_ti
   if(mode=="batch"){
     
       out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-       exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
+       exec_batch=build_job_exec(job=job,
+       time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
   }
@@ -407,6 +408,7 @@ update_time=60,wait=TRUE,hold=""){
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
+       executor=executor,task=task,
        output_dir=out_file_dir2,hold=hold)
        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
   }
@@ -475,14 +477,14 @@ time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE, hold=""){
   jobs=parallel::mclapply(1:nrow(dat),FUN=function(x){
     tmp=dat[x,]
     apply_BQSR_gatk(region=tmp$region,bin_path=bin_path2,bam=bam,ref_genome=ref_genome,
-    executor=executor,task=make_unique_id("applyBQSR"),rec_table=rec_table,
+    executor=executor,task="applyBQSR",rec_table=rec_table,
     output_dir=out_file_dir,verbose=verbose,mode=mode,time=time,threads=threads,
     ram=ram,update_time=update_time,hold=hold,wait=FALSE)},mc.cores=ifelse(mode=="local",threads,3))
    
 
   job=gather_bam_files(bin_path=bin_path3,bam=dat$bam_loc,output_dir=out_file_dir,
   output_name=paste0(get_file_name(bam),".recal.sorted.rmdup.sorted"),executor=executor,
-  task=make_unique_id("GatherBAM"),hold=jobs,mode=time,time=time,threads=threads,ram=ram,
+  task="GatherBAM",hold=jobs,mode=time,time=time,threads=threads,ram=ram,
   update_time=update_time,wait=FALSE)
 
   if(wait&&mode=="batch"){
