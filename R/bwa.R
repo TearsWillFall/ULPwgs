@@ -56,7 +56,7 @@ update_time=60,wait=FALSE){
     job=build_job(executor=executor,task=make_unique_id(task))
     if(mode=="batch"){
       out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-      batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,output_dir=out_file_dir2)
+      batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,output_dir=out_file_dir2,hold=hold)
       exec_code=paste0("echo 'source ~/.bashrc;",exec_code,"'|",batch_code)
     }
     
@@ -115,7 +115,7 @@ update_time=60,wait=FALSE,hold=""){
   if(mode=="batch"){
 
     out_file_dir2=set_dir(dir=".",name="batch")
-    batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,output_dir=out_file_dir2)
+    batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,output_dir=out_file_dir2,hold=hold)
     exec_code=paste0("echo 'source ~/.bashrc;",exec_code,"'|",batch_code)
   }
 
