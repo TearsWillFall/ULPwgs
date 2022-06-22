@@ -9,8 +9,10 @@ parallel_apply_BQSR_gatk(
   bin_path2 = "tools/gatk/gatk",
   bin_path3 = "tools/picard/build/libs/picard.jar",
   bam = "",
+  regions = "",
   ref_genome = "",
   rec_table = "",
+  clean = FALSE,
   output_dir = "",
   verbose = FALSE,
   mode = "local",
@@ -33,9 +35,13 @@ parallel_apply_BQSR_gatk(
 
 \item{bam}{\link{REQUIRED} Path to the BAM file.}
 
+\item{regions}{\link{OPTIONAL} Regions to parallelize through.}
+
 \item{ref_genome}{\link{REQUIRED} Path to reference genome}
 
 \item{rec_table}{\link{REQUIRED} Path to the recalibratio table.}
+
+\item{clean}{Clean input files. Default TRUE.}
 
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 

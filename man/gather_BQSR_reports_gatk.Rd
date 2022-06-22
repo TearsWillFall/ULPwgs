@@ -11,7 +11,7 @@ gather_BQSR_reports_gatk(
   executor = make_unique_id("gatherBQSR"),
   task = "gatherBQSR",
   output_name = "Report",
-  clean = TRUE,
+  clean = FALSE,
   output_dir = "",
   verbose = FALSE,
   mode = "local",

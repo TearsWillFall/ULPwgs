@@ -80,8 +80,6 @@ verbose=FALSE,threads=3){
 #' @param ram RAM in GB to use. Default 4 Gb.
 #' @param tmp_dir Path to tmp directory.
 #' @param mapq Minimum MapQ for Picard Wgs metrics. Default 0.
-#' @param off_tar Path to off target regions bed file. Has to be chromosome sorted. Requires bi and ti arguments.
-#' @param on_tar Path to target region bed file. Has to be chromosome sorted. Requires bi and ti arguments.
 #' @param ri Path to ribosomal intervals file. Only for RNAseq.
 #' @param ref_flat Path to flat refrence. Only for RNAseq.
 #' @param bi Bait capture target interval for panel data. Requires ti and off_target and on_tar arguments. Interval format.
@@ -91,8 +89,9 @@ verbose=FALSE,threads=3){
 
 align_qc_metrics=function(bin_path="tools/samtools/samtools",
   bin_path2="tools/picard/build/libs/picard.jar",bin_path3="tools/bedtools2/bin/bedtools",
-  bam="",output_dir="",ref_genome="",verbose=FALSE,ram=4,tmp_dir=".",mapq=0,bi="",
-  ti="",off_tar="",on_tar="",ri="",ref_flat="",mode="tg"){
+  bam="",output_dir="",ref_genome="",verbose=FALSE,tmp_dir=".",mapq=0,bi="",
+  ti="",ri="",ref_flat="",method="tg",mode="local",executor=make_unique("alignQC"),
+  task="alignQC",time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE, hold=""){
     
     out_file_dir=set_dir(dir=output_dir,name="alignqc_report")
     
@@ -105,56 +104,59 @@ align_qc_metrics=function(bin_path="tools/samtools/samtools",
 
     ## Generate alignment metrics
 
+   mapq_metrics_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
+   verbose=verbose,executor=executor,time=time,
+   threads=threads,ram=ram,update_time=update_time,wait=FALSE, hold=hold)
 
-
-    bam_metrics_mapq_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
-    verbose=verbose,threads=threads)
-
-    bam_metrics_summary_samtools(bin_path=bin_path2,bam=bam,output_dir=out_file_dir,
-    verbose=verbose,threads=threads,tmp_dir=tmp_dir,ram=ram)
+   summary_metrics_bam_samtools(bin_path=bin_path2,bam=bam,output_dir=out_file_dir,
+    verbose=verbose,threads=threads,tmp_dir=tmp_dir,threads=threads,
+    ram=ram,update_time=update_time,wait=FALSE, hold=hold)
     
-    bam_metrics_insertsize_picard(bin_path=bin_path2,bam=bam,output_dir=out_file_dir,
-    verbose=verbose,tmp_dir=tmp_dir,ram=ram)
+   insertsize_metrics_bam_picard(bin_path=bin_path2,bam=bam,output_dir=out_file_dir,
+   verbose=verbose,tmp_dir=tmp_dir,threads=threads,ram=ram,
+   update_time=update_time,wait=FALSE,hold=hold)
 
 
     ## Only call metrics for panel data if bait and target intervals are supplied, Otherwise WGS metrics.
     
-    if (mode=="tg"){
+    if (method=="tg"){
    
-      bam_metrics_tg_summary_picard(bin_path=bin_path2,bam=bam,output_dir=out_file_dir,
-      verbose=verbose,tmp_dir=tmp_dir,ram=ram,bi=bi,ti=ti)
-      ## Picard doesn't output coverage stats for off-target regions therefore we have to estimate this manually.
+      tg_summary_metrics_metrics_picard(bin_path=bin_path2,bam=bam,output_dir=out_file_dir,
+      verbose=verbose,tmp_dir=tmp_dir,ram=ram,bi=bi,ti=ti,threads=threads,ram=ram,
+      update_time=update_time,wait=FALSE,hold=hold)
+      # ## Picard doesn't output coverage stats for off-target regions therefore we have to estimate this manually.
 
-      ## I use this function to get the mean coverage on and off target.
+      # ## I use this function to get the mean coverage on and off target.
 
-      ## For target regions
+      # ## For target regions
 
-      bed_coverage(bin_path=bin_path3,bam=bam,bed=on_tar,verbose=verbose,sorted=TRUE,
-        mean=TRUE,hist=TRUE,fai=paste0(ref_genome,".fai"),suffix="on_Target",output_dir=out_file_dir)
-      bed_coverage(bin_path=bin_path3,bam=bam,bed=on_tar,verbose=verbose,sorted=TRUE,
-        mean=TRUE,hist=FALSE,fai=paste0(ref_genome,".fai"),suffix="on_Target",output_dir=out_file_dir)
+      # bed_coverage(bin_path=bin_path3,bam=bam,bed=on_tar,verbose=verbose,sorted=TRUE,
+      #   mean=TRUE,hist=TRUE,fai=paste0(ref_genome,".fai"),suffix="on_Target",output_dir=out_file_dir)
+      # bed_coverage(bin_path=bin_path3,bam=bam,bed=on_tar,verbose=verbose,sorted=TRUE,
+      #   mean=TRUE,hist=FALSE,fai=paste0(ref_genome,".fai"),suffix="on_Target",output_dir=out_file_dir)
 
-      ## For off target regions
+      # ## For off target regions
 
-      bed_coverage(bin_path=bin_path3,bam=bam,bed=off_tar,verbose=verbose,sorted=TRUE,
-        mean=TRUE,hist=TRUE,fai=paste0(ref_genome,".fai"),suffix="off_Target",output_dir=out_file_dir)
-      bed_coverage(bin_path=bin_path3,bam=bam,bed=off_tar,verbose=verbose,sorted=TRUE,
-        mean=TRUE,hist=FALSE,fai=paste0(ref_genome,".fai"),suffix="off_Target",output_dir=out_file_dir)
+      # bed_coverage(bin_path=bin_path3,bam=bam,bed=off_tar,verbose=verbose,sorted=TRUE,
+      #   mean=TRUE,hist=TRUE,fai=paste0(ref_genome,".fai"),suffix="off_Target",output_dir=out_file_dir)
+      # bed_coverage(bin_path=bin_path3,bam=bam,bed=off_tar,verbose=verbose,sorted=TRUE,
+      #   mean=TRUE,hist=FALSE,fai=paste0(ref_genome,".fai"),suffix="off_Target",output_dir=out_file_dir)
 
-      ## Generate violin and cummulative plots for target and off target regions
+      # ## Generate violin and cummulative plots for target and off target regions
 
-      plot_coverage_panel(on_target=paste0(out_file_dir,"/coverage/",get_file_name(bam),".on_Target.Per_Region_Coverage.txt"),
-      off_target=paste0(out_file_dir,"/coverage/",get_file_name(bam),col=c(5,4),height=6,width=12,output_dir=out_file_dir))
-      plot_cumulative_cov(on_target=paste0(out_file,".on_Target.Histogram_Coverage.txt"),
-      off_target=paste0(out_file,".off_Target.Histogram_Coverage.txt"),height=6,width=12,output_dir=out_file_dir)
+      # plot_coverage_panel(on_target=paste0(out_file_dir,"/coverage/",get_file_name(bam),".on_Target.Per_Region_Coverage.txt"),
+      # off_target=paste0(out_file_dir,"/coverage/",get_file_name(bam),col=c(5,4),height=6,width=12,output_dir=out_file_dir))
+      # plot_cumulative_cov(on_target=paste0(out_file,".on_Target.Histogram_Coverage.txt"),
+      # off_target=paste0(out_file,".off_Target.Histogram_Coverage.txt"),height=6,width=12,output_dir=out_file_dir)
 
-    }else if (mode=="rna"){
+    }else if (method=="rna"){
         bam_metrics_rnaseq_summary_picard(bin_path=bin_path2,
         bam=bam,output_dir=out_file_dir,verbose=verbose,tmp_dir=tmp_dir,
         ram=ram,ri=ri,ref_flat=ref_flat)
-    }else if(mode=="wgs"){
+    }else if(method=="wgs"){
         bam_metrics_wgs_summary_picard(bin_path=bin_path2,
-        bam=bam,output_dir=out_file_dir,verbose=verbose,tmp_dir=tmp_dir,ram=ram)
+        bam=bam,output_dir=out_file_dir,verbose=verbose,tmp_dir=tmp_dir,threads=threads,ram=ram,
+        update_time=update_time,wait=FALSE,hold=hold)
     }
 
 

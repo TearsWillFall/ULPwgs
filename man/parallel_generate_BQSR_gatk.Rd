@@ -8,10 +8,12 @@ parallel_generate_BQSR_gatk(
   bin_path = "tools/samtools/samtools",
   bin_path2 = "tools/gatk/gatk",
   bam = "",
+  regions = "",
   ref_genome = "",
   dbsnp = "",
   threads = 3,
   ram = 4,
+  clean = FALSE,
   executor = make_unique_id("par_generateBQSR"),
   task = "par_generateBQSR",
   output_dir = "",
@@ -30,6 +32,8 @@ parallel_generate_BQSR_gatk(
 
 \item{bam}{\link{REQUIRED} Path to the BAM file.}
 
+\item{regions}{\link{OPTIONAL} Regions to parallelize through.}
+
 \item{ref_genome}{\link{REQUIRED} Path to reference genome}
 
 \item{dbsnp}{\link{REQUIRED} Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.}
@@ -37,6 +41,8 @@ parallel_generate_BQSR_gatk(
 \item{threads}{Number of threads to split the work. Default 3}
 
 \item{ram}{\link{OPTIONAL} If batch mode. RAM memory in GB per job. Default 1}
+
+\item{clean}{Clean input files. Default TRUE.}
 
 \item{executor}{Name of the executor. Default "generateBQSR"}
 

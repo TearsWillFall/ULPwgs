@@ -219,8 +219,8 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @export
 
 tg_summary_metrics_bam_picard=function(bin_path="tools/picard/build/libs/picard.jar",bam="",output_dir="",
-verbose=FALSE,tmp_dir=".",threads=1,ram=4,bi="",ti="",mode="local",executor=make_unique_id("tgsummaryMetrics"),
-task="tgsummaryMetrics",time="48:0:0",update_time=60,wait=FALSE,hold=""){
+verbose=FALSE,tmp_dir=".",threads=1,ram=4,bi="",ti="",mode="local",executor=make_unique_id("TGsummaryMetrics"),
+task="TGsummaryMetrics",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   out_file_dir=set_dir(dir=output_dir,name="summary")
 
@@ -282,9 +282,9 @@ task="tgsummaryMetrics",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 
-bam_metrics_rnaseq_summary_picard=function(bin_path="tools/picard/build/libs/picard.jar",
-bam="",output_dir="",verbose=FALSE,tmp_dir=".",ram=4,ri="",ref_flat="",mode="local",
-executor=make_unique_id("tgsummaryMetrics"),task="tgsummaryMetrics",time="48:0:0",
+rnaseq_summary_metrics_bam_picard=function(bin_path="tools/picard/build/libs/picard.jar",
+bam="",output_dir="",verbose=FALSE,tmp_dir=".",threads=1,ram=4,ri="",ref_flat="",mode="local",
+executor=make_unique_id("RNAsummaryMetrics"),task="RNAsummaryMetrics",time="48:0:0",
 update_time=60,wait=FALSE,hold=""){
 
   out_file_dir=set_dir(dir=output_dir,name="summary")
@@ -343,8 +343,10 @@ update_time=60,wait=FALSE,hold=""){
 #' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 
-bam_metrics_wgs_summary_picard=function(bin_path="tools/picard/build/libs/picard.jar",
-bam="",output_dir="",verbose=FALSE,tmp_dir=".",ram=4){
+wgs_summary_metrics_bam_picard=function(bin_path="tools/picard/build/libs/picard.jar",
+bam="",output_dir="",verbose=FALSE,tmp_dir=".",threads=1,ram=4,mode="local",
+executor=make_unique_id("WGSsummaryMetrics"),task="WGSsummaryMetrics",time="48:0:0",
+update_time=60,wait=FALSE,hold=""){
 
  out_file_dir=set_dir(dir=output_dir,name="summary")
 
