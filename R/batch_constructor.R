@@ -1,10 +1,31 @@
+#' Build job for SGE executor
+#'
+#' @param executor Name of the executor
+#' @param task Name of the task
+#' @export
+
+
+
+
 build_job=function(executor="executor",task="task"){
 options(scipen = 999)
-  executor=paste0("E__",executor)
-  task=paste0("T__",task)
-  job=paste0(c(executor,task),collapse="____")
+  executor=paste0("[E]",executor)
+  task=paste0("[T]",task)
+  job=paste0(c(executor,task),collapse="_")
   return(job)
 }
+
+#' Build job executor in SGE
+#'
+#' @param job Name of job or jobs.
+#' @param time Time in seconds between checks. Default 10.
+#' @param output_dir [OPTIONAL] PATH to output directory. 
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param threads [OPTIONAL] Number of threads to use to. Default 3.
+#' @param ram  [OPTIONAL] RAM memory per thread requested. Default 4.
+#' @param hold Job IDs to hold job.
+#' 
+#' @export
 
 
 
@@ -74,8 +95,15 @@ return()
 
 }
 
+#' Create an unique ID
+#'
+#' @param name Name of the ID
+#' @param id Unique identfier. If not given selected randomly
+#' @param sep Separator between name and ID
+#' @export
+
 make_unique_id=function(name,id=sample(1:100000000000000,1),sep="_"){
   options(scipen = 999)
-  unique_name=paste0(c(name,id),sep=sep)
+  unique_name=paste0(c(name,id),collapse=sep)
   return(unique_name)
 }
