@@ -55,7 +55,7 @@ update_time=60,wait=FALSE,hold=""){
         }
       }
   }else{
-     job=bam_index_samtools(bin_path=bin_path,bam=bam,verbose=verbose,threads=threads,
+     job=index_bam_samtools(bin_path=bin_path,bam=bam,verbose=verbose,threads=threads,
      executor=executor,task="indexBAM",mode=mode,time=time,update_time=update_time,wait=FALSE,hold=job)
   }
 
