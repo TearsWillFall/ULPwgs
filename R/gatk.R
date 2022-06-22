@@ -133,7 +133,8 @@ task="recalGATK",mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   job=parallel_generate_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,
     bam=paste0(out_file_dir4,"/",get_file_name(bam),".recal.",get_file_ext(bam)),
-    ref_genome=ref_genome,dbsnp=dbsnp,threads=threads,clean=clean,output_dir=out_file_dir2,verbose=verbose,executor=executor,
+    ref_genome=ref_genome,dbsnp=dbsnp,threads=threads,clean=clean,regions=regions,
+    output_dir=out_file_dir2,verbose=verbose,executor=executor,
     mode=mode,ram=ram,time=time,update_time=update_time,wait=FALSE,hold=job)
 
   job=recal_covariates_gatk(bin_path=bin_path2,before=paste0(out_file_dir,"/",get_file_name(bam),".recal.table"),
