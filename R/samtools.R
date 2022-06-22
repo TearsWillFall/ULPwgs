@@ -366,7 +366,7 @@ task="statsINDEX",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
 #' @export
 
-metrics_mapq_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
+mapq_metrics_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
 verbose=FALSE,threads=3,ram=4,mode="local",executor=make_unique_id("metricsMAPQ"),
 task="metricsMAPQ",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 

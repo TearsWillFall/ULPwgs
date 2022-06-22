@@ -12,16 +12,22 @@ align_qc_metrics(
   output_dir = "",
   ref_genome = "",
   verbose = FALSE,
-  ram = 4,
   tmp_dir = ".",
   mapq = 0,
   bi = "",
   ti = "",
-  off_tar = "",
-  on_tar = "",
   ri = "",
   ref_flat = "",
-  mode = "tg"
+  method = "tg",
+  mode = "local",
+  executor = make_unique("alignQC"),
+  task = "alignQC",
+  time = "48:0:0",
+  threads = 4,
+  ram = 4,
+  update_time = 60,
+  wait = FALSE,
+  hold = ""
 )
 }
 \arguments{
@@ -39,8 +45,6 @@ align_qc_metrics(
 
 \item{verbose}{Enables progress messages. Default False.}
 
-\item{ram}{RAM in GB to use. Default 4 Gb.}
-
 \item{tmp_dir}{Path to tmp directory.}
 
 \item{mapq}{Minimum MapQ for Picard Wgs metrics. Default 0.}
@@ -49,15 +53,13 @@ align_qc_metrics(
 
 \item{ti}{Primary target intervals for panel data. Requires bi and off_tar and on_tar argmunets. Interval format.}
 
-\item{off_tar}{Path to off target regions bed file. Has to be chromosome sorted. Requires bi and ti arguments.}
-
-\item{on_tar}{Path to target region bed file. Has to be chromosome sorted. Requires bi and ti arguments.}
-
 \item{ri}{Path to ribosomal intervals file. Only for RNAseq.}
 
 \item{ref_flat}{Path to flat refrence. Only for RNAseq.}
 
 \item{mode}{Type of data to generate metrics for. Default tg. Options \link{"wgs","tg","rna"}}
+
+\item{ram}{RAM in GB to use. Default 4 Gb.}
 }
 \description{
 This function generates quality control metrics for an aligned sequence. Works for WGS and Panel data.
