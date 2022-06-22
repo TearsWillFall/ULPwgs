@@ -486,8 +486,8 @@ time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE, hold=""){
 
   job=gather_bam_files(bin_path=bin_path3,bam=dat$bam_loc,output_dir=out_file_dir,
   output_name=paste0(get_file_name(bam),".recal.sorted.rmdup.sorted"),executor=executor,
-  task="GatherBAM",hold=jobs,mode=time,time=time,threads=threads,ram=ram,
-  update_time=update_time,wait=FALSE)
+  task="GatherBAM",mode=mode,time=time,threads=threads,ram=ram,
+  update_time=update_time,wait=FALSE,hold=jobs)
 
   if(wait&&mode=="batch"){
     job_validator(job=job_name,time=update_time,verbose=verbose,threads=threads)
