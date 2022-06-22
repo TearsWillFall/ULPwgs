@@ -90,7 +90,7 @@ verbose=FALSE,threads=3){
 align_qc_metrics=function(bin_path="tools/samtools/samtools",
   bin_path2="tools/picard/build/libs/picard.jar",bin_path3="tools/bedtools2/bin/bedtools",
   bam="",output_dir="",ref_genome="",verbose=FALSE,tmp_dir=".",mapq=0,bi="",
-  ti="",ri="",ref_flat="",method="tg",mode="local",executor=make_unique("alignQC"),
+  ti="",ri="",ref_flat="",method="tg",mode="local",executor=make_unique_id("alignQC"),
   task="alignQC",time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE, hold=""){
     
     out_file_dir=set_dir(dir=output_dir,name="alignqc_report")
