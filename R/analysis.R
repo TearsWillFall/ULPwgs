@@ -108,7 +108,7 @@ align_qc_metrics=function(bin_path="tools/samtools/samtools",
    verbose=verbose,time=time,mode=mode,
    threads=threads,ram=ram,update_time=update_time,wait=FALSE, hold=hold)
 
-   summary_metrics_bam_samtools(bin_path=bin_path2,bam=bam,output_dir=out_file_dir,
+   summary_metrics_bam_picard(bin_path=bin_path2,bam=bam,output_dir=out_file_dir,
     verbose=verbose,threads=threads,tmp_dir=tmp_dir,mode=mode,executor=executor,threads=threads,
     ram=ram,update_time=update_time,wait=FALSE, hold=hold)
     
