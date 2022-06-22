@@ -16,6 +16,7 @@ recal_gatk(
   output_dir = "",
   verbose = FALSE,
   executor = make_unique_id("recalGATK"),
+  clean = TRUE,
   task = "recalGATK",
   mode = "local",
   time = "48:0:0",
@@ -46,6 +47,8 @@ recal_gatk(
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.#}
 
 \item{executor}{Name of the executor. Default "recalGATK"}
+
+\item{clean}{Clean input files. Default TRUE.}
 
 \item{task}{Name of the task. Default "recalGATK"}
 

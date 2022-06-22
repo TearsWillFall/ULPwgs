@@ -21,7 +21,7 @@ merge_bams=function(bin_path="tools/samtools/samtools",bams="",output_name="",
       print(exec_code)
     }
     system(exec_code)
-  }
+}
 
 
 

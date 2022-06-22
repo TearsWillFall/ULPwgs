@@ -14,6 +14,7 @@ gather_bam_files(
   threads = 4,
   ram = 4,
   mode = "local",
+  clean = FALSE,
   executor = make_unique_id("gatherBAM"),
   task = "gatherBAM",
   time = "48:0:0",
@@ -38,6 +39,8 @@ gather_bam_files(
 \item{ram}{\link{OPTIONAL} RAM memory to asing to each thread. Default 4}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
+\item{clean}{Clean input files. Default TRUE.}
 
 \item{executor}{\link{OPTIONAL} Task executor name. Default "gatherBAM"}
 

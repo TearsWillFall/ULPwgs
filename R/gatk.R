@@ -125,7 +125,7 @@ task="recalGATK",mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
   job=sort_and_index_bam_samtools(bin_path=bin_path,bam=paste0(out_file_dir4,"/",
     get_file_name(bam),".recal.",get_file_ext(bam)),output_dir=out_file_dir4,
     ram=ram,verbose=verbose,threads=threads,sort=FALSE,stats="",index=TRUE,clean=clean,
-    mode=mode,executor=executor,ram=ram,time=time,update_time=update_time,wait=FALSE,hold=job)
+    mode=mode,executor=executor,time=time,update_time=update_time,wait=FALSE,hold=job)
 
   job=parallel_generate_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,
     bam=paste0(out_file_dir4,"/",get_file_name(bam),".recal.",get_file_ext(bam)),
@@ -231,6 +231,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @param bin_path [REQUIRED] Path to gatk executable. Default tools/samtools/samtools.
 #' @param bin_path2 [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
 #' @param ref_genome [REQUIRED] Path to reference genome
+#' @param clean Clean input files. Default TRUE.
 #' @param dbsnp [REQUIRED] Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
@@ -249,7 +250,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
 
 parallel_generate_BQSR_gatk=function(bin_path="tools/samtools/samtools",
-bin_path2="tools/gatk/gatk",bam="",ref_genome="",dbsnp="",threads=3,ram=4,
+bin_path2="tools/gatk/gatk",bam="",ref_genome="",dbsnp="",threads=3,ram=4,clean=FALSE,
 executor=make_unique_id("par_generateBQSR"),task="par_generateBQSR",output_dir="",
 verbose=FALSE,mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
@@ -275,7 +276,7 @@ verbose=FALSE,mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
   
 
   job=gather_BQSR_reports_gatk(bin_path=bin_path2,report=dat$report_loc,
-  executor=executor,task="gatherBQSR",output_dir=out_file_dir,
+  executor=executor,task="gatherBQSR",output_dir=out_file_dir,clean=clean,
   output_name=get_file_name(bam),verbose=verbose,mode=mode,time=time,
   threads=threads,ram=ram,update_time=update_time,wait=FALSE,hold=jobs)
   
@@ -314,7 +315,7 @@ verbose=FALSE,mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @export
 
 gather_BQSR_reports_gatk=function(bin_path="tools/gatk/gatk",report="",reports_dir="",
-executor=make_unique_id("gatherBQSR"),task="gatherBQSR",output_name="Report", clean=TRUE,
+executor=make_unique_id("gatherBQSR"),task="gatherBQSR",output_name="Report", clean=FALSE,
 output_dir="",verbose=FALSE,mode="local",time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE,hold=""){
 
   out_file_dir=set_dir(dir=output_dir)
@@ -409,7 +410,6 @@ update_time=60,wait=TRUE,hold=""){
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
-       executor=executor,task=task,
        output_dir=out_file_dir2,hold=hold)
        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
   }
@@ -446,6 +446,7 @@ update_time=60,wait=TRUE,hold=""){
 #' @param ref_genome [REQUIRED] Path to reference genome
 #' @param rec_table [REQUIRED] Path to the recalibratio table.
 #' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param clean Clean input files. Default TRUE.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
 #' @param executor [OPTIONAL] Task executor name. Default "par_applyBQSR"
@@ -460,7 +461,7 @@ update_time=60,wait=TRUE,hold=""){
 #' @import pbapply
 
 parallel_apply_BQSR_gatk=function(bin_path="tools/samtools/samtools",bin_path2="tools/gatk/gatk",
-bin_path3="tools/picard/build/libs/picard.jar",bam="",ref_genome="",rec_table="",
+bin_path3="tools/picard/build/libs/picard.jar",bam="",ref_genome="",rec_table="",clean=FALSE,
 output_dir="",verbose=FALSE,mode="local",executor=make_unique("par_applyBQSR"),task="par_applyBQSR",
 time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE, hold=""){
 
