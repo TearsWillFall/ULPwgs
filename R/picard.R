@@ -108,6 +108,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
         " -jar ",bin_path," CollectAlignmentSummaryMetrics ",
         "VALIDATION_STRINGENCY=SILENT I=",bam," O=",paste0(out_file_dir,"/",get_file_name(bam),".picard_summary.txt "),tmp)
   
+  job=build_job(executor=executor,task=make_unique_id(task))
 
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
@@ -171,6 +172,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
       bam," O=",paste0(out_file_dir,"/",get_file_name(bam),".picard_insert_size.txt")," H=",
       paste0(out_file_dir,"/",get_file_name(bam),".picard_insert_size.pdf "),tmp)
 
+  job=build_job(executor=executor,task=make_unique_id(task))
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
@@ -236,6 +238,10 @@ task="TGsummaryMetrics",time="48:0:0",update_time=60,wait=FALSE,hold=""){
         paste0(out_file_dir,"/",get_file_name(bam),".picard_TS.txt"),ref," O=",
         paste0(out_file_dir,"/",get_file_name(bam),".picard_CollectHSmetrics.txt "),tmp))
         
+ 
+ 
+ 
+job=build_job(executor=executor,task=make_unique_id(task))
  if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
@@ -298,7 +304,10 @@ update_time=60,wait=FALSE,hold=""){
         " CollectRnaSeqMetrics VALIDATION_STRINGENCY=SILENT STRAND_SPECIFICITY='NONE' REF_FLAT=",
          ref_flat, " RIBOSOMAL_INTERVALS=",ri,
          " I=",bam," O=",paste0(out_file_dir,"/",get_file_name(bam),".CollectRNAseqMetrics.txt "),tmp)
-
+  
+  
+  
+  job=build_job(executor=executor,task=make_unique_id(task))
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
@@ -359,7 +368,8 @@ update_time=60,wait=FALSE,hold=""){
   exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",
             bin_path," CollectWgsMetrics VALIDATION_STRINGENCY=SILENT MINIMUM_MAPPING_QUALITY=",
             mapq," I=",bam," O=",paste0(out_file_dir,"/",get_file_name(bam),".picard_wgs_q00.txt "),tmp)
-
+  
+  job=build_job(executor=executor,task=make_unique_id(task))
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
