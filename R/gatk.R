@@ -121,7 +121,7 @@ task="recalGATK",mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
     output_dir=out_file_dir4,verbose=verbose,executor=executor,threads=threads,mode=mode,ram=ram,time=time,
     update_time=update_time,wait=FALSE,hold=job)
 
-  job=sort_and_index_samtools(bin_path=bin_path,bam=paste0(out_file_dir4,"/",
+  job=sort_and_index_bam_samtools(bin_path=bin_path,bam=paste0(out_file_dir4,"/",
     get_file_name(bam),".recal.",get_file_ext(bam)),output_dir=out_file_dir4,
     ram=ram,verbose=verbose,threads=threads,sort=FALSE,stats="",index=TRUE,
     mode=mode,executor=executor,ram=ram,time=time,update_time=update_time,wait=FALSE,hold=job)
