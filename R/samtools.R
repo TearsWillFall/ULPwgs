@@ -34,7 +34,7 @@ update_time=60,wait=FALSE,hold=""){
   if(sort){
       job=sort_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
       ram=ram,verbose=verbose,threads=threads,coord_sort=coord_sort,clean=clean,
-      executor=executor,task="sortBAM",mode=mode,time=time,
+      executor=executor,mode=mode,time=time,
       update_time=update_time,wait=FALSE,hold=hold)
 
       out_file_dir=set_dir(dir=output_dir,name="sorted")
@@ -45,24 +45,24 @@ update_time=60,wait=FALSE,hold=""){
 
         if(index){
             job=index_bam_samtools(bin_path=bin_path,bam=bam,verbose=verbose,threads=threads,ram=ram,
-            executor=executor,task="indexBAM",mode=mode,time=time,
+            executor=executor,mode=mode,time=time,
             update_time=update_time,wait=FALSE,hold=job,output_dir = out_file_dir)
           if(stats=="index"|stats=="all"){
               job=stats_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
-              verbose=verbose,threads=threads,stats="index",executor=executor,task="statsBAM",
+              verbose=verbose,threads=threads,stats="index",executor=executor,
               mode=mode,time=time,update_time=update_time,wait=FALSE,hold=job)
           }
         }
       }
   }else{
      job=index_bam_samtools(bin_path=bin_path,bam=bam,verbose=verbose,threads=threads,
-     executor=executor,task="indexBAM",mode=mode,time=time,update_time=update_time,wait=FALSE,hold=job)
+     executor=executor,mode=mode,time=time,update_time=update_time,wait=FALSE,hold=job)
   }
 
 
   if(stats=="flag"|stats=="all"){
     job=stats_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
-      verbose=verbose,threads=threads,stats="flag",executor=executor,task="statsBAM",
+      verbose=verbose,threads=threads,stats="flag",executor=executor,
       mode=mode,time=time,update_time=update_time,
       wait=FALSE,hold=job)
   }
