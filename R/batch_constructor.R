@@ -11,7 +11,7 @@ build_job=function(executor="executor",task="task"){
 options(scipen = 999)
   executor=paste0("EXECUTOR_",executor)
   task=paste0("TASK_",task)
-  job=paste0(c(executor,task),collapse="_")
+  job=paste0(c(executor,task),collapse=".")
   return(job)
 }
 
