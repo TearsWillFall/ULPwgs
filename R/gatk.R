@@ -108,18 +108,22 @@ task="recalGATK",mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
   out_file_dir=set_dir(dir=output_dir,name="recal_reports/recal_before")
   out_file_dir2=set_dir(dir=output_dir,name="recal_reports/recal_after")
   out_file_dir3=set_dir(dir=output_dir,name="recal_reports/recal_tmp")
-  out_file_dir4=set_dir(dir=output_dir,name="recal_reports")
+  out_file_dir4=set_dir(dir=output_dir,name="recal_reports")#
+
+
+  regions=get_bam_reference_chr(bin_path=bin_path,bam=bam,verbose=verbose)
 
 
   job=parallel_generate_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,bam=bam,
-    ref_genome=ref_genome,dbsnp=dbsnp,
+    ref_genome=ref_genome,dbsnp=dbsnp,regions=regions,
     output_dir=out_file_dir,
     verbose=verbose,executor=executor,mode=mode,threads=threads,ram=ram,clean=clean,
     time=time,update_time=update_time,wait=FALSE,hold=hold)
 
   job=parallel_apply_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,bin_path3=bin_path3,
     bam=bam,ref_genome=ref_genome,rec_table=paste0(out_file_dir,"/",get_file_name(bam),".recal.table"),
-    output_dir=out_file_dir4,clean=clean,verbose=verbose,executor=executor,threads=threads,mode=mode,ram=ram,time=time,
+    output_dir=out_file_dir4,regions=regions,
+    clean=clean,verbose=verbose,executor=executor,threads=threads,mode=mode,ram=ram,time=time,
     update_time=update_time,wait=FALSE,hold=job)
 
   job=sort_and_index_bam_samtools(bin_path=bin_path,bam=paste0(out_file_dir4,"/",
@@ -234,6 +238,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @param clean Clean input files. Default TRUE.
 #' @param dbsnp [REQUIRED] Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.
 #' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param regions [OPTIONAL] Regions to parallelize through.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
 #' @param executor Name of the executor. Default "generateBQSR"
@@ -250,7 +255,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
 
 parallel_generate_BQSR_gatk=function(bin_path="tools/samtools/samtools",
-bin_path2="tools/gatk/gatk",bam="",ref_genome="",dbsnp="",threads=3,ram=4,clean=FALSE,
+bin_path2="tools/gatk/gatk",bam="",regions="",ref_genome="",dbsnp="",threads=3,ram=4,clean=FALSE,
 executor=make_unique_id("par_generateBQSR"),task="par_generateBQSR",output_dir="",
 verbose=FALSE,mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
@@ -259,7 +264,6 @@ verbose=FALSE,mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   out_file_dir=set_dir(dir=output_dir)
 
-  dat=get_bam_reference_chr(bin_path=bin_path,bam=bam,verbose=verbose)
   dat$start=dat$start+1
   dat=dat %>% dplyr::mutate(region=paste0(chr,":",start,"-",end),
   report_loc=paste0(out_file_dir,get_file_name(bam),".",paste0(chr,":",start,"-",end),".recal.table"))
@@ -446,6 +450,7 @@ update_time=60,wait=TRUE,hold=""){
 #' @param ref_genome [REQUIRED] Path to reference genome
 #' @param rec_table [REQUIRED] Path to the recalibratio table.
 #' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param regions [OPTIONAL] Regions to parallelize through.
 #' @param clean Clean input files. Default TRUE.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
@@ -461,7 +466,7 @@ update_time=60,wait=TRUE,hold=""){
 #' @import pbapply
 
 parallel_apply_BQSR_gatk=function(bin_path="tools/samtools/samtools",bin_path2="tools/gatk/gatk",
-bin_path3="tools/picard/build/libs/picard.jar",bam="",ref_genome="",rec_table="",clean=FALSE,
+bin_path3="tools/picard/build/libs/picard.jar",bam="",regions="",ref_genome="",rec_table="",clean=FALSE,
 output_dir="",verbose=FALSE,mode="local",executor=make_unique("par_applyBQSR"),task="par_applyBQSR",
 time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE, hold=""){
 
@@ -469,7 +474,6 @@ time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE, hold=""){
   options(warn = -1)
 
   out_file_dir=set_dir(dir=output_dir)
-  dat=get_bam_reference_chr(bin_path=bin_path,bam=bam,verbose=verbose)
   dat$start=dat$start+1
   dat$pos=1:nrow(dat)
   dat=dat %>% dplyr::mutate(region=paste0(pos,"_",chr,":",start,"-",end),

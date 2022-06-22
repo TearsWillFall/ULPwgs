@@ -77,7 +77,6 @@ update_time=60,wait=FALSE,hold=""){
 }
 
 
-
 #' Sort a BAM file
 #'
 #' This function sorts a genome sequence file (BAM/SAM)
