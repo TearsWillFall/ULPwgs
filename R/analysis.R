@@ -109,7 +109,7 @@ align_qc_metrics=function(bin_path="tools/samtools/samtools",
    threads=threads,ram=ram,update_time=update_time,wait=FALSE, hold=hold)
 
    summary_metrics_bam_picard(bin_path=bin_path2,bam=bam,output_dir=out_file_dir,
-    verbose=verbose,threads=threads,tmp_dir=tmp_dir,mode=mode,executor=executor,threads=threads,
+    verbose=verbose,tmp_dir=tmp_dir,mode=mode,executor=executor,threads=threads,
     ram=ram,update_time=update_time,wait=FALSE, hold=hold)
     
    insertsize_metrics_bam_picard(bin_path=bin_path2,bam=bam,output_dir=out_file_dir,
@@ -122,7 +122,7 @@ align_qc_metrics=function(bin_path="tools/samtools/samtools",
     if (method=="tg"){
    
       tg_summary_metrics_metrics_picard(bin_path=bin_path2,bam=bam,output_dir=out_file_dir,
-      verbose=verbose,tmp_dir=tmp_dir,ram=ram,bi=bi,ti=ti,mode=mode,executor=executor,threads=threads,ram=ram,
+      verbose=verbose,tmp_dir=tmp_dir,bi=bi,ti=ti,mode=mode,executor=executor,threads=threads,ram=ram,
       update_time=update_time,wait=FALSE,hold=hold)
       # ## Picard doesn't output coverage stats for off-target regions therefore we have to estimate this manually.
 
