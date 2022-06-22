@@ -46,7 +46,7 @@ update_time=60,wait=FALSE,hold=""){
         if(index){
             job=index_bam_samtools(bin_path=bin_path,bam=bam,verbose=verbose,threads=threads,ram=ram,
             executor=executor,task="indexBAM",mode=mode,time=time,
-            update_time=update_time,wait=FALSE,hold=job)
+            update_time=update_time,wait=FALSE,hold=job,output_dir = out_file_dir)
           if(stats=="index"|stats=="all"){
               job=stats_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
               verbose=verbose,threads=threads,stats="index",executor=executor,task="statsBAM",
@@ -88,6 +88,7 @@ update_time=60,wait=FALSE,hold=""){
 #' @param verbose Enables progress messages. Default False.
 #' @param threads Number of threads. Default 3
 #' @param ram Ram memory to use per thread in GB. Default 1GB
+#' @param output_dir Path to the output directory.
 #' @param coord_sort Generate a coord sorted file. Otherwise queryname sorted. Default TRUE
 #' @param clean Remove input files. Default FALSE
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
@@ -149,9 +150,9 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
 
 index_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",verbose=FALSE,threads=3,ram=4,
-mode="local",executor=make_unique_id("indexBAM"),task="indexBAM",time="48:0:0",update_time=60,
+mode="local",executor=make_unique_id("indexBAM"),task="indexBAM",time="48:0:0",update_time=60, output_dir="",
 wait=FALSE,hold=""){
-
+  out_file_dir=set_dir(dir=output_dir)
   exec_code=paste(bin_path," index",bam," -@ ",threads)
   job=build_job(executor=executor,task=make_unique_id(task))
   if(mode=="batch"){
