@@ -87,6 +87,7 @@ return(job)
 #' @param dbsnp [REQUIRED] Known variant database.Requires atleast 1.
 #' @param threads [OPTIONAL] Number of threads to split the work.
 #' @param ram [OPTIONAL] RAM memory per thread.
+#' @param clean Clean input files. Default TRUE.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
 #' @param executor Name of the executor. Default "recalGATK"
@@ -101,7 +102,7 @@ return(job)
 
 recal_gatk=function(bin_path="tools/samtools/samtools",bin_path2="tools/gatk/gatk",
 bin_path3="tools/picard/build/libs/picard.jar",bam="",ref_genome="",dbsnp="",ram=4,
-threads=4,output_dir="",verbose=FALSE,executor=make_unique_id("recalGATK"),
+threads=4,output_dir="",verbose=FALSE,executor=make_unique_id("recalGATK"),clean=TRUE,
 task="recalGATK",mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   out_file_dir=set_dir(dir=output_dir,name="recal_reports/recal_before")
@@ -113,22 +114,22 @@ task="recalGATK",mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
   job=parallel_generate_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,bam=bam,
     ref_genome=ref_genome,dbsnp=dbsnp,
     output_dir=out_file_dir,
-    verbose=verbose,executor=executor,mode=mode,threads=threads,ram=ram,
+    verbose=verbose,executor=executor,mode=mode,threads=threads,ram=ram,clean=clean,
     time=time,update_time=update_time,wait=FALSE,hold=hold)
 
   job=parallel_apply_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,bin_path3=bin_path3,
     bam=bam,ref_genome=ref_genome,rec_table=paste0(out_file_dir,"/",get_file_name(bam),".recal.table"),
-    output_dir=out_file_dir4,verbose=verbose,executor=executor,threads=threads,mode=mode,ram=ram,time=time,
+    output_dir=out_file_dir4,clean=clean,verbose=verbose,executor=executor,threads=threads,mode=mode,ram=ram,time=time,
     update_time=update_time,wait=FALSE,hold=job)
 
   job=sort_and_index_bam_samtools(bin_path=bin_path,bam=paste0(out_file_dir4,"/",
     get_file_name(bam),".recal.",get_file_ext(bam)),output_dir=out_file_dir4,
-    ram=ram,verbose=verbose,threads=threads,sort=FALSE,stats="",index=TRUE,
+    ram=ram,verbose=verbose,threads=threads,sort=FALSE,stats="",index=TRUE,clean=clean,
     mode=mode,executor=executor,ram=ram,time=time,update_time=update_time,wait=FALSE,hold=job)
 
   job=parallel_generate_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,
     bam=paste0(out_file_dir4,"/",get_file_name(bam),".recal.",get_file_ext(bam)),
-    ref_genome=ref_genome,dbsnp=dbsnp,threads=threads,output_dir=out_file_dir2,verbose=verbose,executor=executor,
+    ref_genome=ref_genome,dbsnp=dbsnp,threads=threads,clean=clean,output_dir=out_file_dir2,verbose=verbose,executor=executor,
     mode=mode,ram=ram,time=time,update_time=update_time,wait=FALSE,hold=job)
 
   job=recal_covariates_gatk(bin_path=bin_path2,before=paste0(out_file_dir,"/",get_file_name(bam),".recal.table"),
@@ -508,6 +509,7 @@ time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE, hold=""){
 #' @param bams_dir [REQUIRED] Path to the directory where BAM files are stored.
 #' @param output_name [OPTIONAL] Name for the output file name.
 #' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param clean Clean input files. Default TRUE.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
 #' @param threads [OPTIONAL] Number of threads to split the work. Default 4
 #' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
@@ -520,7 +522,7 @@ time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE, hold=""){
 #' @export
 
 gather_bam_files=function(bin_path="tools/picard/build/libs/picard.jar",bam="",bams_dir="",
-output_name="File",output_dir="",verbose=FALSE,threads=4, ram=4, mode="local",
+output_name="File",output_dir="",verbose=FALSE,threads=4, ram=4, mode="local",clean=FALSE,
 executor=make_unique_id("gatherBAM"),task="gatherBAM",time="48:0:0",update_time=60,
 wait=FALSE,hold=""){
 
