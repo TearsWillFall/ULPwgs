@@ -56,7 +56,7 @@ update_time=60,wait=FALSE,hold=""){
       }
   }else{
      job=index_bam_samtools(bin_path=bin_path,bam=bam,verbose=verbose,threads=threads,
-     executor=executor,mode=mode,time=time,update_time=update_time,wait=FALSE,hold=job)
+     executor=executor,mode=mode,time=time,update_time=update_time,wait=FALSE,hold=hold)
   }
 
 
@@ -64,7 +64,7 @@ update_time=60,wait=FALSE,hold=""){
     job=stats_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
       verbose=verbose,threads=threads,stats="flag",executor=executor,
       mode=mode,time=time,update_time=update_time,
-      wait=FALSE,hold=job)
+      wait=FALSE,hold=hold)
   }
 
   if(wait&&mode=="batch"){
