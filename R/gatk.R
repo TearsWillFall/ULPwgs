@@ -407,7 +407,7 @@ update_time=60,wait=TRUE,hold=""){
   if (region==""){
       out_file=paste0(" ", out_file_dir,"/", get_file_name(bam),".recal.",get_file_ext(bam))
   }else{
-      reg=paste0(" -L ",strsplit(region,"_")[[1]][2], " ")
+      reg=paste0(" -L ",strsplit(region,";")[[1]][2], " ")
       out_file=paste0(out_file_dir,"/", get_file_name(bam),".",region,".recal.",get_file_ext(bam))
   }
   exec_code=paste(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome,
@@ -483,8 +483,8 @@ time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE, hold=""){
   }
   regions$start=regions$start+1
   regions$pos=1:nrow(regions)
-  regions=regions %>% dplyr::mutate(region=paste0(pos,"_",chr,":",start,"-",end),
-    bam_loc=paste0(out_file_dir,"/", get_file_name(bam),".",paste0(pos,"_",chr,":",start,"-",end),".recal.",get_file_ext(bam)))
+  regions=regions %>% dplyr::mutate(region=paste0(pos,";",chr,":",start,"-",end),
+    bam_loc=paste0(out_file_dir,"/", get_file_name(bam),".",paste0(pos,";",chr,":",start,"-",end),".recal.",get_file_ext(bam)))
 
 
   jobs=parallel::mclapply(1:nrow(regions),FUN=function(x){
