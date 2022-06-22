@@ -105,15 +105,15 @@ align_qc_metrics=function(bin_path="tools/samtools/samtools",
     ## Generate alignment metrics
 
    mapq_metrics_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
-   verbose=verbose,executor=executor,time=time,
+   verbose=verbose,time=time,mode=mode,
    threads=threads,ram=ram,update_time=update_time,wait=FALSE, hold=hold)
 
    summary_metrics_bam_samtools(bin_path=bin_path2,bam=bam,output_dir=out_file_dir,
-    verbose=verbose,threads=threads,tmp_dir=tmp_dir,threads=threads,
+    verbose=verbose,threads=threads,tmp_dir=tmp_dir,mode=mode,executor=executor,threads=threads,
     ram=ram,update_time=update_time,wait=FALSE, hold=hold)
     
    insertsize_metrics_bam_picard(bin_path=bin_path2,bam=bam,output_dir=out_file_dir,
-   verbose=verbose,tmp_dir=tmp_dir,threads=threads,ram=ram,
+   verbose=verbose,tmp_dir=tmp_dir,mode=mode,executor=executor,threads=threads,ram=ram,
    update_time=update_time,wait=FALSE,hold=hold)
 
 
@@ -122,7 +122,7 @@ align_qc_metrics=function(bin_path="tools/samtools/samtools",
     if (method=="tg"){
    
       tg_summary_metrics_metrics_picard(bin_path=bin_path2,bam=bam,output_dir=out_file_dir,
-      verbose=verbose,tmp_dir=tmp_dir,ram=ram,bi=bi,ti=ti,threads=threads,ram=ram,
+      verbose=verbose,tmp_dir=tmp_dir,ram=ram,bi=bi,ti=ti,mode=mode,executor=executor,threads=threads,ram=ram,
       update_time=update_time,wait=FALSE,hold=hold)
       # ## Picard doesn't output coverage stats for off-target regions therefore we have to estimate this manually.
 
@@ -149,16 +149,17 @@ align_qc_metrics=function(bin_path="tools/samtools/samtools",
       # plot_cumulative_cov(on_target=paste0(out_file,".on_Target.Histogram_Coverage.txt"),
       # off_target=paste0(out_file,".off_Target.Histogram_Coverage.txt"),height=6,width=12,output_dir=out_file_dir)
 
-    }else if (method=="rna"){
-        bam_metrics_rnaseq_summary_picard(bin_path=bin_path2,
+    }else if(method=="rna"){
+        rnaseq_summary_metrics_bam_picard(bin_path=bin_path2,
         bam=bam,output_dir=out_file_dir,verbose=verbose,tmp_dir=tmp_dir,
-        ram=ram,ri=ri,ref_flat=ref_flat)
+        ri=ri,ref_flat=ref_flat,mode=mode,executor=executor,
+        threads=threads,ram=ram,update_time=update_time,wait=FALSE,hold=hold)
     }else if(method=="wgs"){
-        bam_metrics_wgs_summary_picard(bin_path=bin_path2,
-        bam=bam,output_dir=out_file_dir,verbose=verbose,tmp_dir=tmp_dir,threads=threads,ram=ram,
+        wgs_summary_metrics_bam_picard(bin_path=bin_path2,
+        bam=bam,output_dir=out_file_dir,verbose=verbose,tmp_dir=tmp_dir,mode=mode,
+        executor=executor,threads=threads,ram=ram,
         update_time=update_time,wait=FALSE,hold=hold)
     }
-
 
   }
 
