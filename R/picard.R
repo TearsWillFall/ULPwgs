@@ -21,7 +21,7 @@
 
 markdups_picard=function(bin_path="tools/picard/build/libs/picard.jar",bam="",
 output_dir="",verbose=FALSE,hnd=1000,threads,ram=4,tmp_dir="",remove_duplicates=TRUE,
-mode="local",executor=make_unique_id("recalCovariates"),task="recalCovariates",
+mode="local",executor=make_unique_id("markDups"),task="markDups",
 time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
     out_file_dir=set_dir(dir=output_dir,name="markdups_reports")
@@ -93,8 +93,8 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 
-bam_metrics_summary_picard=function(bin_path="tools/picard/build/libs/picard.jar",bam="",output_dir="",
-verbose=FALSE,tmp_dir=".",threads=3,ram=4,mode="local",executor=make_unique_id("recalCovariates"),task="recalCovariates",
+summary_metrics_bam_picard=function(bin_path="tools/picard/build/libs/picard.jar",bam="",output_dir="",
+verbose=FALSE,tmp_dir=".",threads=3,ram=4,mode="local",executor=make_unique_id("summaryMetrics"),task="summaryMetrics",
 time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   out_file_dir=set_dir(dir=output_dir,name="summary")
@@ -153,8 +153,10 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 
-bam_metrics_insertsize_picard=function(bin_path="tools/picard/build/libs/picard.jar",
-bam="",output_dir="",verbose=FALSE,tmp_dir=".",ram=4){
+insertsize_metrics_bam_picard=function(bin_path="tools/picard/build/libs/picard.jar",
+bam="",output_dir="",verbose=FALSE,tmp_dir=".",threads=1,ram=4,
+mode="local",executor=make_unique_id("insertsizeMetrics"),task="insertsizeMetrics",
+time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   out_file_dir=set_dir(dir=output_dir,name="insertsize")
 
@@ -216,8 +218,9 @@ bam="",output_dir="",verbose=FALSE,tmp_dir=".",ram=4){
 #' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 
-bam_metrics_tg_summary_picard=function(bin_path="tools/picard/build/libs/picard.jar",bam="",output_dir="",
-verbose=FALSE,tmp_dir=".",ram=4,bi="",ti=""){
+tg_summary_metrics_bam_picard=function(bin_path="tools/picard/build/libs/picard.jar",bam="",output_dir="",
+verbose=FALSE,tmp_dir=".",threads=1,ram=4,bi="",ti="",mode="local",executor=make_unique_id("tgsummaryMetrics"),
+task="tgsummaryMetrics",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   out_file_dir=set_dir(dir=output_dir,name="summary")
 
@@ -232,7 +235,7 @@ verbose=FALSE,tmp_dir=".",ram=4,bi="",ti=""){
         bi," TI=",ti," I=",bam," THEORETICAL_SENSITIVITY_OUTPUT=",
         paste0(out_file_dir,"/",get_file_name(bam),".picard_TS.txt"),ref," O=",
         paste0(out_file_dir,"/",get_file_name(bam),".picard_CollectHSmetrics.txt "),tmp))
-
+        
  if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
@@ -280,7 +283,9 @@ verbose=FALSE,tmp_dir=".",ram=4,bi="",ti=""){
 #' @export
 
 bam_metrics_rnaseq_summary_picard=function(bin_path="tools/picard/build/libs/picard.jar",
-bam="",output_dir="",verbose=FALSE,tmp_dir=".",ram=4,ri="",ref_flat=""){
+bam="",output_dir="",verbose=FALSE,tmp_dir=".",ram=4,ri="",ref_flat="",mode="local",
+executor=make_unique_id("tgsummaryMetrics"),task="tgsummaryMetrics",time="48:0:0",
+update_time=60,wait=FALSE,hold=""){
 
   out_file_dir=set_dir(dir=output_dir,name="summary")
 

@@ -9,8 +9,8 @@
 
 build_job=function(executor="executor",task="task"){
 options(scipen = 999)
-  executor=paste0("[E]",executor)
-  task=paste0("[T]",task)
+  executor=paste0("\\[E\\]",executor)
+  task=paste0("\\[T\\]",task)
   job=paste0(c(executor,task),collapse="_")
   return(job)
 }
