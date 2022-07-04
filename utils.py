@@ -11,11 +11,11 @@ def main(argv):
    try:
       opts, args = getopt.getopt(argv,"hi:b:q:",["ifile=","bfile=","qt="])
    except getopt.GetoptError:
-      print 'get_coverage.py -i <bam> -b <bed> -q [qt]'
+      print ('get_coverage.py -i <bam> -b <bed> -q [qt]')
       sys.exit(2)
    for opt, arg in opts:
       if opt == '-h':
-         print 'get_coverage.py -i <bam> -b <bed> -q [qt]'
+         print ('get_coverage.py -i <bam> -b <bed> -q [qt]')
          sys.exit()
       elif opt in ("-i", "--ifile"):
          bam = arg
@@ -39,7 +39,8 @@ def main(argv):
            vaf=(altAllele)/bTotal
        except ZeroDivisionError:
            vaf=0
-       print x[0],x[1],x[2],baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,x[4],refAllele,x[5],altAllele,vaf
+       print (x[0],x[1],x[2],baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],
+       bTotal,x[4],refAllele,x[5],altAllele,vaf)
 
 if __name__ == "__main__":
    main(sys.argv[1:])
