@@ -13,7 +13,7 @@ build_instrument_id = function(instruments=list(
   "C[0-9]{5}$","HWI-D[0-9]{5}$","D[0-9]{5}$","J[0-9]{5}$","K[0-9]{5}$",
   "K[0-9]{5}$","E[0-9]{5}$","NB[0-9]{6}$","NS[0-9]{6}$","MN[0-9]{5}$","A[0-9]{5}$"
   ))){
-    data.frame(instruments)
+    data.frame(instruments,stringsAsFactors = FALSE)
   }
 
 
@@ -125,7 +125,7 @@ build_flowcell_id=function(flowcells=list(
     )
   )
   ) {
-      data.frame(flowcells)
+      data.frame(flowcells,stringsAsFactors = FALSE)
 }
 
 

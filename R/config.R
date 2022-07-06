@@ -22,7 +22,7 @@ build_default_config=function(
     "remove_duplicates=TRUE",
     "",
     ""))){
-    config=data.frame(config)
+    config=data.frame(config,stringsAsFactors = FALSE)
     row.names(config)=config$name
     return(config)
 }
@@ -55,7 +55,7 @@ build_default_sample_sheet=function(
         verbose="pre_fastqc=TRUE;trimming=TRUE;post_fastqc=TRUE;alignment=TRUE;merge_bams=TRUE;markdups=TRUE;recalibrate=TRUE;alignqc:TRUE"
     )
 ){
-    sample_sheet=data.frame(sample_sheet)
+    sample_sheet=data.frame(sample_sheet,stringsAsFactors = FALSE)
     return(sample_sheet)
 }
 
@@ -73,7 +73,7 @@ build_default_binaries_config=function(binaries=list(tool=c("fastqc","skewer","b
 "tools/skewer/skewer","tools/bwa/bwa","tools/samtools/samtools",
 "tools/gatk/gatk","tools/picard/build/libs/picard.jar",
 "tools/bedtools2/bin/bedtools"))){
-    binaries=data.frame(binaries)
+    binaries=data.frame(binaries,stringsAsFactors = FALSE)
     row.names(binaries)=binaries$name
     return(binaries)
 }
