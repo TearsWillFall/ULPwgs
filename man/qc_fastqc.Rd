@@ -8,12 +8,13 @@ qc_fastqc(
   bin_path = "tools/FastQC/bin/fastqc",
   file_R1 = "",
   file_R2 = "",
-  threads = 3,
   output_dir = "",
   verbose = FALSE,
-  executor = make_unique_id("fastQC"),
-  task = "fastQC",
+  executor_id = make_unique_id("fastQC"),
+  task_name = "fastQC",
   mode = "local",
+  threads = 3,
+  ram = 4,
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
@@ -27,23 +28,27 @@ qc_fastqc(
 
 \item{file_R2}{\link{Optional} Path to the input with the reverse read sequence.}
 
-\item{threads}{Number of CPU cores to use. Default 3.}
-
 \item{output_dir}{Path to the output directory.}
 
 \item{verbose}{Enables progress messages. Default False.}
 
-\item{executor}{Name of the executor. Default "fastQC"}
+\item{executor_id}{Executor ID. Default "fastQC"}
 
-\item{task}{Name of the task. Default "fastQC"}
+\item{task_name}{Name of the task. Default "fastQC"}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
+\item{threads}{Number of CPU cores to use. Default 3.}
+
+\item{ram}{RAM memory for batched job. Default 4}
 
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 
 \item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
 
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
+
+\item{hold}{Job to hold on in batched mode.}
 }
 \description{
 This function takes a set of sequence files (fastq,SAM,BAM...) and

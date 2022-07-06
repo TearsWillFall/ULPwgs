@@ -13,9 +13,8 @@ parallel_generate_BQSR_gatk(
   dbsnp = "",
   threads = 3,
   ram = 4,
-  clean = FALSE,
-  executor = make_unique_id("par_generateBQSR"),
-  task = "par_generateBQSR",
+  executor_id = make_unique_id("par_generateBQSR"),
+  task_name = "par_generateBQSR",
   output_dir = "",
   verbose = FALSE,
   mode = "local",
@@ -42,11 +41,9 @@ parallel_generate_BQSR_gatk(
 
 \item{ram}{\link{OPTIONAL} If batch mode. RAM memory in GB per job. Default 1}
 
-\item{clean}{Clean input files. Default TRUE.}
+\item{executor_id}{Task EXECUTOR ID. Default "par_generateBQSR"}
 
-\item{executor}{Name of the executor. Default "generateBQSR"}
-
-\item{task}{Name of the task. Default "generateBQSR"}
+\item{task_name}{Task name. Default "par_generateBQSR"}
 
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 

@@ -2,15 +2,17 @@
 % Please edit documentation in R/batch_constructor.R
 \name{build_job}
 \alias{build_job}
-\title{Build job for SGE executor}
+\title{Build job for SGE executor
+Job constructor only uses the top level Executor ID
+and the bottom level task ID.}
 \usage{
-build_job(executor = "executor", task = "task")
+build_job(executor_id = "executor", task_id = "task")
 }
 \arguments{
-\item{executor}{Name of the executor}
+\item{executor}{Job EXECUTOR ID}
 
-\item{task}{Name of the task}
+\item{task}{Task ID}
 }
 \description{
-Build job for SGE executor
+Middle level task are omited in Job ID for simplicity
 }

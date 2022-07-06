@@ -15,8 +15,8 @@ gather_bam_files(
   ram = 4,
   mode = "local",
   clean = FALSE,
-  executor = make_unique_id("gatherBAM"),
-  task = "gatherBAM",
+  executor_id = make_unique_id("gatherBAM"),
+  task_name = "gatherBAM",
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
@@ -42,9 +42,9 @@ gather_bam_files(
 
 \item{clean}{Clean input files. Default TRUE.}
 
-\item{executor}{\link{OPTIONAL} Task executor name. Default "gatherBAM"}
+\item{executor_id}{Task EXECUTOR ID. Default "gatherBAM"}
 
-\item{task}{\link{OPTIONAL} Task name. Default "gatherBAM"}
+\item{task_name}{Task name. Default "gatherBAM"}
 
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 

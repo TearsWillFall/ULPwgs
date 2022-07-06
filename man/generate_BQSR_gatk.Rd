@@ -15,8 +15,8 @@ generate_BQSR_gatk(
   threads = 4,
   ram = 4,
   mode = "local",
-  executor = make_unique_id("generateBQSR"),
-  task = "generateBQSR",
+  executor_id = make_unique_id("generateBQSR"),
+  task_name = "generateBQSR",
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
@@ -42,15 +42,15 @@ generate_BQSR_gatk(
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
-\item{executor}{Name of the executor. Default "generateBQSR"}
-
-\item{task}{Name of the task. Default "generateBQSR"}
+\item{executor_id}{Task EXECUTOR ID. Default "generateBQSR"}
 
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 
 \item{update_time}{\link{OPTIONAL} If batch mode. Show job updates every update time. Default 60}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
+
+\item{task_id}{Task NAME ID. Default "generateBQSR"}
 }
 \description{
 Generates a recalibration table based on various covariates.

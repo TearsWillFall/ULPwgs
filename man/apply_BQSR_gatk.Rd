@@ -15,8 +15,8 @@ apply_BQSR_gatk(
   mode = "local",
   threads = 4,
   ram = 4,
-  executor = make_unique_id("applyBQSR"),
-  task = "applyBQSR",
+  executor_id = make_unique_id("applyBQSR"),
+  task_name = "applyBQSR",
   time = "48:0:0",
   update_time = 60,
   wait = TRUE,
@@ -42,15 +42,15 @@ apply_BQSR_gatk(
 
 \item{ram}{\link{OPTIONAL} If batch mode. RAM memory in GB per job. Default 1}
 
-\item{executor}{\link{OPTIONAL} Task executor name. Default "applyBQSR"}
-
-\item{task}{\link{OPTIONAL} Task nam. Default "applyBQSR"}
-
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
+
+\item{executor}{\link{OPTIONAL} Task executor name. Default "applyBQSR"}
+
+\item{task}{\link{OPTIONAL} Task nam. Default "applyBQSR"}
 }
 \description{
 Applies numerical corrections to each individual basecall based on the covariates analyzed before.

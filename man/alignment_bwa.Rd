@@ -23,12 +23,13 @@ alignment_bwa(
   ref_genome = "",
   output_dir = "",
   verbose = FALSE,
-  executor = make_unique_id("alignment"),
-  task = "alignment",
+  executor_id = make_unique_id("alignment"),
+  task_name = "alignment",
   mode = "local",
   time = "48:0:0",
   update_time = 60,
-  wait = FALSE
+  wait = FALSE,
+  hold = ""
 )
 }
 \arguments{
@@ -68,9 +69,7 @@ alignment_bwa(
 
 \item{verbose}{Enables progress messages. Default False.}
 
-\item{executor}{Name of the executor. Default "alignment"}
-
-\item{task}{Name of the task. Default "alignment"}
+\item{executor_id}{Task EXECUTOR ID. Default "alignment"}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
@@ -79,6 +78,8 @@ alignment_bwa(
 \item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
 
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
+
+\item{task_nam}{Task nam. Default "alignment"}
 }
 \description{
 This function aligns a sequence of reads to a reference genome

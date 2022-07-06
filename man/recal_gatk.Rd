@@ -15,9 +15,9 @@ recal_gatk(
   threads = 4,
   output_dir = "",
   verbose = FALSE,
-  executor = make_unique_id("recalGATK"),
+  executor_id = make_unique_id("recalGATK"),
+  task_name = "recalGATK",
   clean = TRUE,
-  task = "recalGATK",
   mode = "local",
   time = "48:0:0",
   update_time = 60,
@@ -46,11 +46,9 @@ recal_gatk(
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.#}
 
-\item{executor}{Name of the executor. Default "recalGATK"}
+\item{executor_id}{Task EXECUTOR ID. Default "recalGATK"}
 
 \item{clean}{Clean input files. Default TRUE.}
-
-\item{task}{Name of the task. Default "recalGATK"}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
@@ -61,6 +59,8 @@ recal_gatk(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
+
+\item{task_id}{Task nam. Default "recalGATK"}
 }
 \description{
 This function recalibrates the base quality of the reads in two steps process based on GATK best practices guides.

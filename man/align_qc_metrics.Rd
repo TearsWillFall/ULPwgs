@@ -20,7 +20,7 @@ align_qc_metrics(
   ref_flat = "",
   method = "tg",
   mode = "local",
-  executor = make_unique("alignQC"),
+  executor = make_unique_id("alignQC"),
   task = "alignQC",
   time = "48:0:0",
   threads = 4,

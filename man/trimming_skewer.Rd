@@ -8,18 +8,19 @@ trimming_skewer(
   bin_path = "tools/skewer/skewer",
   file_R1 = "",
   file_R2 = "",
-  xadapt = NA,
-  yadapt = NA,
+  xadapt = "",
+  yadapt = "",
   threads = 3,
   ram = 4,
   output_dir = "",
   verbose = FALSE,
   mean_quality = 0,
-  min_length = 35,
-  max_length = NA,
+  min_length = 18,
+  max_length = "",
+  output_name = "",
   mode = "local",
-  executor = make_unique_id("trimmingSkewer"),
-  task = "trimmingSkewer",
+  executor_id = make_unique_id("trimmingSkewer"),
+  task_name = "trimmingSkewer",
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
@@ -43,13 +44,17 @@ trimming_skewer(
 
 \item{verbose}{Enables progress messages. Default False.}
 
-\item{mean_quality}{Minimum mean quality of reads to be kept.Dedault 0}
+\item{mean_quality}{The lowest mean quality value allowed before trimming. Default 0}
 
-\item{min_length}{Minimum length of reads to keep.Default 35}
+\item{min_length}{Minimum length of reads allowed after trimming. Default 18}
 
-\item{max_length}{Maximum length of reads to keep.Default NA.}
+\item{max_length}{Maximum length of reads allowed after trimming. Default No limit.}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
+\item{executor_id}{Executor ID. Default "trimmingSkewer"}
+
+\item{task_name}{Name of the task. Default "trimmingSkewer"}
 
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 

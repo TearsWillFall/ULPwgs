@@ -10,8 +10,8 @@ index_ref_bwa(
   threads = 4,
   ram = 4,
   verbose = FALSE,
-  executor = make_unique_id("refIndex"),
-  task = "refIndex",
+  executor_id = make_unique_id("refIndex"),
+  task_name = "refIndex",
   mode = "local",
   time = "48:0:0",
   update_time = 60,
@@ -26,9 +26,9 @@ index_ref_bwa(
 
 \item{verbose}{Enables progress messages. Default False.}
 
-\item{executor}{Name of the executor. Default "refIndex"}
+\item{executor_id}{Task EXECUTOR ID. Default "refIndex"}
 
-\item{task}{Name of the task. Default "refIndex"}
+\item{task_name}{Task name. Default "refIndex"}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 

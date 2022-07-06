@@ -8,8 +8,8 @@ gather_BQSR_reports_gatk(
   bin_path = "tools/gatk/gatk",
   report = "",
   reports_dir = "",
-  executor = make_unique_id("gatherBQSR"),
-  task = "gatherBQSR",
+  executor_id = make_unique_id("gatherBQSR"),
+  task_name = "gatherBQSR",
   output_name = "Report",
   clean = FALSE,
   output_dir = "",
@@ -30,9 +30,9 @@ gather_BQSR_reports_gatk(
 
 \item{reports_dir}{\link{REQUIRED} Path to the directory where reports are stored.}
 
-\item{executor}{\link{OPTIONAL} Task executor name. Default "gatherBQSR"}
+\item{executor_id}{Task EXECUTOR ID. Default "gatherBQSR"}
 
-\item{task}{\link{OPTIONAL} Task name. Default "gatherBQSR"}
+\item{task_name}{Task name. Default "gatherBQSR"}
 
 \item{output_name}{\link{OPTIONAL} Name for the output report file.}
 

@@ -13,8 +13,8 @@ markdups_gatk(
   threads = 3,
   ram = 4,
   remove_duplicates = TRUE,
-  executor = make_unique_id("markdupsGATK"),
-  task = "markdupsGATK",
+  executor_id = make_unique_id("markdupsGATK"),
+  task_name = "markdupsGATK",
   mode = "local",
   time = "48:0:0",
   update_time = 60,
@@ -39,9 +39,9 @@ markdups_gatk(
 
 \item{remove_duplicates}{Remove all sequencing duplicates from BAM file. Default TRUE.}
 
-\item{executor}{Name of the executor. Default "mardupsGATK"}
+\item{executor_id}{Task EXECUTOR ID. Default "mardupsGATK"}
 
-\item{task}{Name of the task. Default "mardupsGATK"}
+\item{task_name}{Task name. Default "mardupsGATK"}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 

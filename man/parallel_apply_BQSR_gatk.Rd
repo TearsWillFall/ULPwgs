@@ -12,7 +12,6 @@ parallel_apply_BQSR_gatk(
   regions = "",
   ref_genome = "",
   rec_table = "",
-  clean = FALSE,
   output_dir = "",
   verbose = FALSE,
   mode = "local",
@@ -40,8 +39,6 @@ parallel_apply_BQSR_gatk(
 \item{ref_genome}{\link{REQUIRED} Path to reference genome}
 
 \item{rec_table}{\link{REQUIRED} Path to the recalibratio table.}
-
-\item{clean}{Clean input files. Default TRUE.}
 
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
