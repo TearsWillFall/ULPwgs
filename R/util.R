@@ -226,9 +226,8 @@ extract_read_header=function(bin_path="tools/samtools/samtools",file_path){
 
 
 
-
 parse_read_header=function(header){
-  info_list=strsplit(read,":")[[1]]
+  info_list=strsplit(header,":")[[1]]
   instrument_id=info_list[1]
   run_id=info_list[2]
   flowcell_id=info_list[3]
