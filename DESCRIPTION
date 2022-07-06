@@ -22,7 +22,8 @@ Imports:
     pbapply,
     naturalsort,
     stringr,
-    snow
+    snow,
+    tidyr
 biocViews:
 Remotes: git::https://github.com/TearsWillFall/BTools.git
 Encoding: UTF-8
