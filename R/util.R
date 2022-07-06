@@ -37,6 +37,17 @@ set_dir=function(dir="",name=""){
   return(new_dir)
 }
 
+
+
+#' Parse all tool parameters from sample sheet
+#' 
+#'
+#' @param sample_sheet Input sample sheet
+#' @param config Default tool configure
+#' @export
+
+
+
 parse_tool_parameters=function(sample_sheet,config=build_default_config()){
   parameters=names(config)[names(config)!="name"]
   parameters_in_sheet=names(sample_sheet)[names(sample_sheet) %in% parameters]
@@ -71,6 +82,14 @@ parse_tool_parameters=function(sample_sheet,config=build_default_config()){
   })
 }
 
+#' Parse tool arguments
+#' 
+#'
+#' @param args Tool argument list
+#' @param step Pipeline step
+#' @export
+
+
 parse_args=function(args,step){
   args_list=strsplit(args,"\\|")
   out=lapply(args_list[[1]],FUN=function(arg){
@@ -82,6 +101,14 @@ parse_args=function(args,step){
   out$step=step
   return(out)
 }
+
+#' Validate tool args inputs
+#' 
+#'
+#' @param input Input tool argument values
+#' @param default Default tool argument values
+#' @export
+
 
 validate_input_args=function(input,default){
   undetermined=input[!input$arg %in% default$arg,]
@@ -98,118 +125,19 @@ validate_input_args=function(input,default){
   return(default)
 }
 
-build_instrument_id = function(instruments=list(
-  instrument=c("MiSeq","Genome Analyzer IIx",
-  "MiSeq","HiSeq 1500","HiSeq 1500","HiSeq 2500","HiSeq 2500","HiSeq 3000",
-  "HiSeq 3000","HiSeq 4000","HiSeq X","NextSeq","NextSeq","MiniSeq","NovaSeq 6000"),
-  pattern=c("HWI-M[0-9]{4}$","HWUSI","M[0-9]{5}$","HWI-C[0-9]{5}$",
-  "C[0-9]{5}$","HWI-D[0-9]{5}$","D[0-9]{5}$","J[0-9]{5}$","K[0-9]{5}$",
-  "K[0-9]{5}$","E[0-9]{5}$","NB[0-9]{6}$","NS[0-9]{6}$","MN[0-9]{5}$","A[0-9]{5}$"
-  ))){
-    data.frame(instruments)
-  }
-
-build_flowcell_id=function(flowcells=list(
-    instrument=c(
-      "HiSeq 1500",
-      "HiSeq 2000",
-      "HiSeq 2500",
-      "HiSeq 1000",
-      "HiSeq 1500",
-      "HiSeq 2000",
-      "HiSeq 2500",
-      "HiSeq 1500",
-      "HiSeq 2500",
-      "HiSeq 1500",
-      "HiSeq 2500",
-      "HiSeq 1500",
-      "HiSeq 2500",
-      "HiSeq 4000",
-      "HiSeq 4000",
-      "HiSeq X",
-      "HiSeq X",
-      "HiSeq X",
-      "NextSeq",
-      "NextSeq",
-      "NextSeq",
-      "NextSeq",
-      "MiSeq",
-      "MiSeq",
-      "MiSeq",
-      "MiSeq",
-      "NovaSeq 6000",
-      "NovaSeq 6000",
-      "NovaSeq 6000"
-
-    ),flowcell=c(
-      "High Output (8-lane) v4 flow cell",
-      "High Output (8-lane) v4 flow cell",
-      "High Output (8-lane) v4 flow cell",
-      "High Output (8-lane) v3 flow cell",
-      "High Output (8-lane) v3 flow cell",
-      "High Output (8-lane) v3 flow cell",
-      "High Output (8-lane) v3 flow cell",
-      "Rapid Run (2-lane) v1 flow cell",
-      "Rapid Run (2-lane) v1 flow cell",
-      "Rapid Run (2-lane) v2 flow cell",
-      "Rapid Run (2-lane) v2 flow cell",
-      "Rapid Run (2-lane) v2 flow cell",
-      "Rapid Run (2-lane) v2 flow cell",
-      "(8-lane) v1 flow cell",
-      "(8-lane) v1 flow cell",
-      "(8-lane) flow cell",
-      "(8-lane) flow cell",
-      "(8-lane) flow cell",
-        "High output flow cell",
-        "High output flow cell",
-        "High output flow cell",
-        "Mid output flow cell",
-        "MiSeq flow cell",
-        "MiSeq flow cell",
-        "MiSeq nano flow cell",
-        "MiSeq micro flow cell",
-        "S2 flow cell",
-        "S4 flow cell",
-        "SP flow cell"
-
-        
 
 
-    ),pattern=c(
-      "C[A-Z,0-9]{4}ANXX$",
-      "C[A-Z,0-9]{4}ANXX$",
-      "C[A-Z,0-9]{4}ANXX$",
-      "C[A-Z,0-9]{4}ACXX$",
-      "C[A-Z,0-9]{4}ACXX$",
-      "C[A-Z,0-9]{4}ACXX$",
-      "C[A-Z,0-9]{4}ACXX$",
-      "H[A-Z,0-9]{4}ADXX$",
-      "H[A-Z,0-9]{4}ADXX$",
-      "H[A-Z,0-9]{4}BCXX$",
-      "H[A-Z,0-9]{4}BCXX$",
-      "H[A-Z,0-9]{4}BCXY$",
-      "H[A-Z,0-9]{4}BCXY$",
-      "H[A-Z,0-9]{4}BBXX$",
-      "H[A-Z,0-9]{4}BBXY$",
-      "H[A-Z,0-9]{4}CCXX$",
-      "H[A-Z,0-9]{4}CCXY$",
-      "H[A-Z,0-9]{4}ALXX$",
-      "H[A-Z,0-9]{4}BGXX$",
-      "H[A-Z,0-9]{4}BGXY$",
-      "H[A-Z,0-9]{4}BGX2$",
-      "H[A-Z,0-9]{4}AFXX$",
-      "A[A-Z,0-9]{4}$",
-      "B[A-Z,0-9]{4}$",
-      "D[A-Z,0-9]{4}$",
-      "G[A-Z,0-9]{4}$",
-      "H[A-Z,0-9]{4}DMXX$",
-      "H[A-Z,0-9]{4}DSXX$",
-      "H[A-Z,0-9]{4}DRXX$"
-    )
-  )
-  ) {
-      data.frame(flowcells)
-}
+
+#' Find sequencing instrument name from sequecing information
+#' 
+#' Find sequencing instrument name using instrument_id and/or flowcell_id for a sequencing sample
+#' 
+#' @param instrument_id Dataframe with matched data for instrument_id and instrument name
+#' @param flowcell_id Dataframe with matched data for flowcell_id, flowcell_type and instrument name
+#' @param seq_info Sequencing info from a sample
+#' @return A dataframe with found matching instrument names
+#' @export
+
 
 find_instrument=function(instrument_id=build_instrument_id(),
   flowcell_id=build_flowcell_id(),seq_info){
@@ -230,13 +158,44 @@ find_instrument=function(instrument_id=build_instrument_id(),
   return(found)
 }
 
+
+
+#' Infer sequencing information from sequencing file
+#' 
+#' Infer sequencing information for:
+#' instrument
+#' run
+#' flowcell
+#' lane 
+#'
+#' @param bin_path Path to samtools binary. Default "tools/samtools/samtools".
+#' @param file_path Path to the input file
+#' @return A string with the extension of the file
+#' @export
+
+
 infer_sequencing_info=function(bin_path="tools/samtools/samtools",file_path){
-    read=extract_read(bin_path=bin_path,file_path=file_path)
-    seq_info=parse_read(read)
+    header=extract_read_header(bin_path=bin_path,file_path=file_path)
+    seq_info=parse_read_header(header)
     return(seq_info)
 }
 
-extract_read=function(bin_path="tools/samtools/samtools",file_path){
+#' Extract the a header for a random read from a sequencing file
+#'
+#' Extract the header from the top most read from any sequencing file
+#' Acepted formats: fasta | bam | sam 
+#' Compressed fasta also accepted
+#'
+#' @param bin_path Path to samtools binary. Default "tools/samtools/samtools".
+#' @param file_path Path to the input file
+#' @return A string with the extension of the file
+#' @export
+
+
+
+
+
+extract_read_header=function(bin_path="tools/samtools/samtools",file_path){
   file_ext=get_file_ext(file_path)
   if(grepl("f*q",file_ext)){
     if(check_if_compressed(file_path)){
@@ -252,7 +211,23 @@ extract_read=function(bin_path="tools/samtools/samtools",file_path){
   }
 }
 
-parse_read=function(read){
+#' Parse read header
+#'
+#' Parse read header info to extract ids for:
+#' instrument
+#' run
+#' flowcell
+#' lane 
+#'
+#' @param header Sequencing read header
+#' @return A list with sequencing information
+#' @export
+
+
+
+
+
+parse_read_header=function(header){
   info_list=strsplit(read,":")[[1]]
   instrument_id=info_list[1]
   run_id=info_list[2]
@@ -268,13 +243,32 @@ parse_read=function(read){
 }
 
 
+#' Check if sample is compressed
+#'
+#' Check sequencing info for each read group for each sample
+#'
+#' @param file_path Path to the input file
+#' @return A string with the extension of the file
+#' @export
+
+
 check_if_compressed=function(file_path){
   rslt=system(paste0("file ",file_path),intern=TRUE)
   return(grepl("compr",rslt))
 }
 
 
-sample_check=function(sample_info){
+
+#' Check sample sheet sequencing info
+#'
+#' Check sequencing info for each read group for each sample
+#'
+#' @param sample_info Path to the input file
+#' @return A string with the extension of the file
+#' @export
+
+
+sample_sheet_check=function(sample_info){
   lapply(seq(1,nrow(sample_info)),FUN=function(x){
     R1_seq_info=infer_sequencing_info(file_path=sample_info[x,]$R1)
     R1_seq_info$read_group="R1"

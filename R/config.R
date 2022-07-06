@@ -1,3 +1,10 @@
+#' Build default tool configuration
+#' 
+#'
+#' @param config List with name,threads,ram,step,mode,verbose,time,args config
+#' @export
+
+
 build_default_config=function(
     config=list(name=c("pre_fastqc","trimming",
     "post_fastqc","alignment","merge_bam","markdups","recalibrate","alignqc"),
@@ -20,6 +27,13 @@ build_default_config=function(
     return(config)
 }
 
+#' Build default sample sheet
+#' 
+#'
+#' @param sample_sheet List with patient_id,sample_id,R1,R2,genome,step,threads,ram,verbose configuration
+#' @export
+
+
 build_default_sample_sheet=function(
     sample_sheet=list(
         patient_id=c("TR001","TR001","TR001","TR001","TR002","TR002"),
@@ -38,10 +52,15 @@ build_default_sample_sheet=function(
 }
 
 
+#' Build default binaries config
+#' 
+#'
+#' @param binaries List with tool_names and paths 
+#' @export
 
 
 
-binaries_default_config=function(binaries=list(tool=c("fastqc","skewer","bwa",
+build_default_binaries_config=function(binaries=list(tool=c("fastqc","skewer","bwa",
 "samtools","gatk","picard","bedtools"),path=c("tools/FastQC/bin/fastqc",
 "tools/skewer/skewer","tools/bwa/bwa","tools/samtools/samtools",
 "tools/gatk/gatk","tools/picard/build/libs/picard.jar",
