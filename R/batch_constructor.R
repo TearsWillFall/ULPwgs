@@ -1,19 +1,48 @@
 #' Build job for SGE executor
+#' Job constructor only uses the top level Executor ID 
+#' and the bottom level task ID.
+#' 
+#' Middle level task are omited in Job ID for simplicity
 #'
-#' @param executor Name of the executor
-#' @param task Name of the task
+#' @param executor Job EXECUTOR ID
+#' @param task Task ID
 #' @export
 
 
 
 
-build_job=function(executor="executor",task="task"){
+build_job=function(executor_id="executor",task_id="task"){
 options(scipen = 999)
   executor=paste0("EXECUTOR_",executor)
   task=paste0("TASK_",task)
   job=paste0(c(executor,task),collapse=".")
   return(job)
 }
+
+
+
+#' Build a job report data structure
+#' 
+#' Data structure for job_report:
+#' job_id job_order out_files
+#'
+#'
+#' @param job_id Job ID
+#' @param executor_id Task executor ID
+#' @param task_id Task ID
+#' @param job_order Job execution order
+#' @param out_files Output files for job
+#' @export
+
+build_job_report=function(job_id="job_1",executor_id="",task_id="",
+job_order=1, out_files=list(file="file")){
+  options(scipen = 999)
+  job_report=list(job_id=job_id,executor_id=executor_id,task_id=task_id,
+  job_order=job_order,out_files=out_files)
+  return(job_report)
+}
+
+
 
 #' Build job executor in SGE
 #'
@@ -107,3 +136,6 @@ make_unique_id=function(name,id=sample(1:100000000000000,1),sep="_"){
   unique_name=paste0(c(name,id),collapse=sep)
   return(unique_name)
 }
+
+
+

@@ -1,0 +1,52 @@
+build_default_config=function(
+    config=list(name=c("pre_fastqc","trimming",
+    "post_fastqc","alignment","merge_bam","markdups","recalibrate","alignqc"),
+    threads=c(6,6,6,12,6,12,2,6),
+    ram=c(8,8,8,16,16,16,8,8),
+    step=TRUE,
+    mode="local",
+    verbose="TRUE",
+    time="48:0:0",
+    args=c("",
+    "mean_quality=0|min_length=18|max_length=''|xadapt=''|yadapt=''",
+    "",
+    "clean=TRUE|stats='all'|coord_sorted=FALSE",
+    "",
+    "remove_duplicates=TRUE",
+    "",
+    ""))){
+    config=data.frame(config)
+    row.names(config)=config$name
+    return(config)
+}
+
+build_default_sample_sheet=function(
+    sample_sheet=list(
+        patient_id=c("TR001","TR001","TR001","TR001","TR002","TR002"),
+        sample_id=c("ID1","ID2","ID1","ID2","ID1","ID2"),
+        R1="/somewhere/fasta.R1",
+        R2="/somewhere/fasta.R2",
+        genome="hg19",
+        step="pre_fastqc=TRUE;trimming=TRUE;post_fastqc=TRUE;alignment=TRUE;merge_bams=TRUE;markdups=TRUE;recalibrate=TRUE;alignqc:TRUE",
+        threads="pre_fastqc=6;trimming=6;post_fastqc=6;alignment=12;merge_bams=6;markdups=12;recalibrate=2;alignqc:6",
+        ram="pre_fastqc=8;trimming=8;post_fastqc=8;alignment=16;merge_bams=16;markdups=16;recalibrate=8;alignqc:8",
+        verbose="pre_fastqc=TRUE;trimming=TRUE;post_fastqc=TRUE;alignment=TRUE;merge_bams=TRUE;markdups=TRUE;recalibrate=TRUE;alignqc:TRUE"
+    )
+){
+    sample_sheet=data.frame(sample_sheet)
+    return(sample_sheet)
+}
+
+
+
+
+
+binaries_default_config=function(binaries=list(tool=c("fastqc","skewer","bwa",
+"samtools","gatk","picard","bedtools"),path=c("tools/FastQC/bin/fastqc",
+"tools/skewer/skewer","tools/bwa/bwa","tools/samtools/samtools",
+"tools/gatk/gatk","tools/picard/build/libs/picard.jar",
+"tools/bedtools2/bin/bedtools"))){
+    binaries=data.frame(binaries)
+    row.names(binaries)=binaries$name
+    return(binaries)
+}

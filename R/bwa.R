@@ -22,8 +22,8 @@
 #' @param threads Number of CPU cores to use. Default 3.
 #' @param stats Generate BAM stats. Default all. Options ["all","flag","index",""]
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
-#' @param executor Name of the executor. Default "alignment"
-#' @param task Name of the task. Default "alignment"
+#' @param executor_id Task EXECUTOR ID. Default "alignment"
+#' @param task_nam Task nam. Default "alignment"
 #' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
 #' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
 #' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
@@ -34,9 +34,10 @@
 alignment_bwa=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
 file_R1="",file_R2="",threads=3,ram=4,id_tag="NA",pu_tag="NA",pl_tag="ILLUMINA",lb_tag="NA",
 sm_tag="",sort=TRUE,coord_sort=TRUE,index=TRUE,stats="all",ref_genome="",output_dir="",
-verbose=FALSE,executor=make_unique_id("alignment"),task="alignment",mode="local",time="48:0:0",
-update_time=60,wait=FALSE){
+verbose=FALSE,executor_id=make_unique_id("alignment"),task_name="alignment",mode="local",time="48:0:0",
+update_time=60,wait=FALSE,hold=""){
     
+    task_id=make_unique_id(task_name)
     out_file_dir=set_dir(dir=output_dir,name="bwa_reports")
    
     input_files=file_R1
@@ -53,10 +54,11 @@ update_time=60,wait=FALSE){
     exec_code=paste(bin_path,"mem -t", threads," -v 2 -R",GPU,"-M",ref_genome,
         input_files, "| ",paste0(bin_path2)," view -h -b >",out_file)
     
-    job=build_job(executor=executor,task=make_unique_id(task))
+    job=build_job(executor_id=executor_id,task_id=task_id)
     if(mode=="batch"){
       out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-      batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,output_dir=out_file_dir2,hold=hold)
+      batch_code=build_job_exec(job=job,time=time,ram=ram,
+      threads=threads,output_dir=out_file_dir2,hold=hold)
       exec_code=paste0("echo 'source ~/.bashrc;",exec_code,"'|",batch_code)
     }
     
@@ -71,21 +73,26 @@ update_time=60,wait=FALSE){
       stop("bwa failed to run due to unknown error.
       Check std error for more information.")
     }
+    job_report=build_job_report(job_id=job, executor_id=executor_id, 
+    task_id=task_id,out_files=list(bam=out_file))
+    job_report_tmp=job_report
     
     if(sort){
-      job=sort_and_index_bam_samtools(bin_path=bin_path2,bam=out_file,output_dir=out_file_dir, 
-      executor=executor,ram=ram,verbose=verbose,threads=threads,
+      job_report=sort_and_index_bam_samtools(bin_path=bin_path2,
+      bam=out_file,output_dir=out_file_dir, 
+      executor_id=task_id,ram=ram,verbose=verbose,threads=threads,
       coord_sort=coord_sort,index=index,stats=stats,clean=clean,mode=mode,time=time,
-      update_time=update_time,wait=FALSE,hold=job)
+      update_time=update_time,wait=FALSE,hold=job_report$job_id)
+      job_report=dplyr::bind_rows(job_report,job_report_tmp)
     }
 
     if(wait&&mode=="batch"){
-        job_validator(job=job,
+        job_validator(job=job_report$job_id,
         time=update_time,verbose=verbose,threads=threads)
     }
 
-    return(job)
-    
+    return(job_report)
+
   }
 
 #' Index reference genome
@@ -94,8 +101,8 @@ update_time=60,wait=FALSE){
 #'
 #' @param file Path to the input file with the reference genome in FASTA format.
 #' @param bin_path Path to bwa executable. Default path tools/bwa/bwa.
-#' @param executor Name of the executor. Default "refIndex"
-#' @param task Name of the task. Default "refIndex"
+#' @param executor_id Task EXECUTOR ID. Default "refIndex"
+#' @param task_name Task name. Default "refIndex"
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
 #' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
 #' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
@@ -106,12 +113,13 @@ update_time=60,wait=FALSE){
 
 
 index_ref_bwa=function(bin_path="tools/bwa/bwa",file="",threads=4,ram=4,verbose=FALSE,
-executor=make_unique_id("refIndex"),task="refIndex",mode="local",time="48:0:0",
+executor_id=make_unique_id("refIndex"),task_name="refIndex",mode="local",time="48:0:0",
 update_time=60,wait=FALSE,hold=""){
   
+  task_id=make_unique_id(task_name)
   exec_code=paste(bin_path,"index", file)
   
-    job=build_job(executo=executor,task=make_unique_id(task))
+    job=build_job(executor_id=executor_id,task_id=task_id)
   if(mode=="batch"){
 
     out_file_dir2=set_dir(dir=".",name="batch")
@@ -128,13 +136,14 @@ update_time=60,wait=FALSE,hold=""){
     Check std error for more information.")
   }
 
-
+  job_report=build_job_report(job_id=job,executor_id=executor_id,
+  task_id=task_id,out_files=list(index=paste0(file,".fai")))
+  
   if(wait&&mode=="batch"){
-      job_validator(job=job,
+      job_validator(job=job_report$job_id,
       time=update_time,verbose=verbose,threads=threads)
   }
-  
 
-  return(job)
+  return(job_report)
 
 }

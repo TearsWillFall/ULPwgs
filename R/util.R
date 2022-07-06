@@ -37,7 +37,256 @@ set_dir=function(dir="",name=""){
   return(new_dir)
 }
 
+parse_tool_parameters=function(sample_sheet,config=build_default_config()){
+  parameters=names(config)[names(config)!="name"]
+  parameters_in_sheet=names(sample_sheet)[names(sample_sheet) %in% parameters]
+  missing_parameters=parameters[!parameters %in% parameters_in_sheet]
+  len_missing_parameters=length(missing_parameters)
+  if(len_missing_parameters>0){
+    message(paste0("Warning: The following columns were not found in the sample sheet: ",
+    paste(missing_parameters,collapse=", "),
+    ". These parameters will be initiate with default configuration."))
+  }
+  default_config=config
+  rslt=lapply(parameters_in_sheet,FUN=function(parameter){
+    rslt=lapply(sample_sheet[,parameter],FUN=function(steps){
+        step_list=unlist(strsplit(steps,";"))
+          rslt=lapply(step_list,FUN=function(step){
+            step_value_list=strsplit(step,"=")
+            step_name=step_value_list[[1]][1]
+            parameter_values=step_value_list[[1]][-1]
+            if(parameter=="args"){
+              parameter_values=paste0(parameter_values,collapse="=")
+              parameter_values=gsub("\\{|\\}","",parameter_values)
+              input_args=parse_args(parameter_values,step=step_name)
+              default_args=parse_args(default_config[step_name,parameter],step=step_name)
+              validated_args=validate_input_args(input_args,default_args)
+              default_config[step_name,parameter]<<-parameter_values
+            }else{
+                   default_config[step_name,parameter]<<-parameter_values
+            }
+          })
+      })
+  
+  })
+}
 
+parse_args=function(args,step){
+  args_list=strsplit(args,"\\|")
+  out=lapply(args_list[[1]],FUN=function(arg){
+                  arg_value_list=strsplit(arg,"=")
+                  out=list(arg=arg_value_list[[1]][1],
+                  value=arg_value_list[[1]][2])
+  })
+  out=dplyr::bind_rows(out)
+  out$step=step
+  return(out)
+}
+
+validate_input_args=function(input,default){
+  undetermined=input[!input$arg %in% default$arg,]
+  n_und=nrow(undetermined)
+  if(n_und>0){
+    message(paste0("Warning: Ignoring input argument",
+    ifelse(n_und==1,": ","s: ")),
+    paste0(undetermined$arg,collapse=", "),". ",ifelse(n_und==1,
+    "This argument is not valid ","These arguments are not valid "),
+    "for ",unique(undetermined$step), " step.")
+  }
+  determined=input[input$arg %in% default$arg,]
+  default[default$arg %in%determined$arg,"value"]=determined$value
+  return(default)
+}
+
+build_instrument_id = function(instruments=list(
+  instrument=c("MiSeq","Genome Analyzer IIx",
+  "MiSeq","HiSeq 1500","HiSeq 1500","HiSeq 2500","HiSeq 2500","HiSeq 3000",
+  "HiSeq 3000","HiSeq 4000","HiSeq X","NextSeq","NextSeq","MiniSeq","NovaSeq 6000"),
+  pattern=c("HWI-M[0-9]{4}$","HWUSI","M[0-9]{5}$","HWI-C[0-9]{5}$",
+  "C[0-9]{5}$","HWI-D[0-9]{5}$","D[0-9]{5}$","J[0-9]{5}$","K[0-9]{5}$",
+  "K[0-9]{5}$","E[0-9]{5}$","NB[0-9]{6}$","NS[0-9]{6}$","MN[0-9]{5}$","A[0-9]{5}$"
+  ))){
+    data.frame(instruments)
+  }
+
+build_flowcell_id=function(flowcells=list(
+    instrument=c(
+      "HiSeq 1500",
+      "HiSeq 2000",
+      "HiSeq 2500",
+      "HiSeq 1000",
+      "HiSeq 1500",
+      "HiSeq 2000",
+      "HiSeq 2500",
+      "HiSeq 1500",
+      "HiSeq 2500",
+      "HiSeq 1500",
+      "HiSeq 2500",
+      "HiSeq 1500",
+      "HiSeq 2500",
+      "HiSeq 4000",
+      "HiSeq 4000",
+      "HiSeq X",
+      "HiSeq X",
+      "HiSeq X",
+      "NextSeq",
+      "NextSeq",
+      "NextSeq",
+      "NextSeq",
+      "MiSeq",
+      "MiSeq",
+      "MiSeq",
+      "MiSeq",
+      "NovaSeq 6000",
+      "NovaSeq 6000",
+      "NovaSeq 6000"
+
+    ),flowcell=c(
+      "High Output (8-lane) v4 flow cell",
+      "High Output (8-lane) v4 flow cell",
+      "High Output (8-lane) v4 flow cell",
+      "High Output (8-lane) v3 flow cell",
+      "High Output (8-lane) v3 flow cell",
+      "High Output (8-lane) v3 flow cell",
+      "High Output (8-lane) v3 flow cell",
+      "Rapid Run (2-lane) v1 flow cell",
+      "Rapid Run (2-lane) v1 flow cell",
+      "Rapid Run (2-lane) v2 flow cell",
+      "Rapid Run (2-lane) v2 flow cell",
+      "Rapid Run (2-lane) v2 flow cell",
+      "Rapid Run (2-lane) v2 flow cell",
+      "(8-lane) v1 flow cell",
+      "(8-lane) v1 flow cell",
+      "(8-lane) flow cell",
+      "(8-lane) flow cell",
+      "(8-lane) flow cell",
+        "High output flow cell",
+        "High output flow cell",
+        "High output flow cell",
+        "Mid output flow cell",
+        "MiSeq flow cell",
+        "MiSeq flow cell",
+        "MiSeq nano flow cell",
+        "MiSeq micro flow cell",
+        "S2 flow cell",
+        "S4 flow cell",
+        "SP flow cell"
+
+        
+
+
+    ),pattern=c(
+      "C[A-Z,0-9]{4}ANXX$",
+      "C[A-Z,0-9]{4}ANXX$",
+      "C[A-Z,0-9]{4}ANXX$",
+      "C[A-Z,0-9]{4}ACXX$",
+      "C[A-Z,0-9]{4}ACXX$",
+      "C[A-Z,0-9]{4}ACXX$",
+      "C[A-Z,0-9]{4}ACXX$",
+      "H[A-Z,0-9]{4}ADXX$",
+      "H[A-Z,0-9]{4}ADXX$",
+      "H[A-Z,0-9]{4}BCXX$",
+      "H[A-Z,0-9]{4}BCXX$",
+      "H[A-Z,0-9]{4}BCXY$",
+      "H[A-Z,0-9]{4}BCXY$",
+      "H[A-Z,0-9]{4}BBXX$",
+      "H[A-Z,0-9]{4}BBXY$",
+      "H[A-Z,0-9]{4}CCXX$",
+      "H[A-Z,0-9]{4}CCXY$",
+      "H[A-Z,0-9]{4}ALXX$",
+      "H[A-Z,0-9]{4}BGXX$",
+      "H[A-Z,0-9]{4}BGXY$",
+      "H[A-Z,0-9]{4}BGX2$",
+      "H[A-Z,0-9]{4}AFXX$",
+      "A[A-Z,0-9]{4}$",
+      "B[A-Z,0-9]{4}$",
+      "D[A-Z,0-9]{4}$",
+      "G[A-Z,0-9]{4}$",
+      "H[A-Z,0-9]{4}DMXX$",
+      "H[A-Z,0-9]{4}DSXX$",
+      "H[A-Z,0-9]{4}DRXX$"
+    )
+  )
+  ) {
+      data.frame(flowcells)
+}
+
+find_instrument=function(instrument_id=build_instrument_id(),
+  flowcell_id=build_flowcell_id(),seq_info){
+  instrument=lapply(instrument_id$pattern,FUN=function(instrument_pattern){
+    grepl(instrument_pattern,seq_info$instrument_id,perl=TRUE)
+    })
+  instrument_id_found=instrument_id[unlist(instrument),]
+
+  flowcell=lapply(flowcell_id$pattern,FUN=function(flowcell_id){
+    grepl(flowcell_id,seq_info$flowcell_id,perl=TRUE)
+    })
+  
+  flowcell_id_found=flowcell_id[unlist(flowcell),]
+
+  found=data.frame(instrument_by_flowcell_id=flowcell_id_found$instrument,
+  flowcell_type=flowcell_id_found$flowcell,
+  instrument_by_intrument_id=instrument_id_found$instrument)
+  return(found)
+}
+
+infer_sequencing_info=function(bin_path="tools/samtools/samtools",file_path){
+    read=extract_read(bin_path=bin_path,file_path=file_path)
+    seq_info=parse_read(read)
+    return(seq_info)
+}
+
+extract_read=function(bin_path="tools/samtools/samtools",file_path){
+  file_ext=get_file_ext(file_path)
+  if(grepl("f*q",file_ext)){
+    if(check_if_compressed(file_path)){
+      read=system(paste0("gunzip -c ",file_path,"| head -n 1"),intern=TRUE)
+    }else{
+      read=system(paste0("cat ",file_path,"| head -n 1"),intern=TRUE)
+    }
+    
+  }else if(grepl("bam$",file_ext)){
+    read=system(paste0(bin_path," view | head -n 1 | awk '{print $1}'"),intern=TRUE)
+  }else{
+   stop("Could not figure out file format")
+  }
+}
+
+parse_read=function(read){
+  info_list=strsplit(read,":")[[1]]
+  instrument_id=info_list[1]
+  run_id=info_list[2]
+  flowcell_id=info_list[3]
+  lane_id=info_list[4]
+  return(list(
+    instrument_id=instrument_id,
+    run_id=run_id,
+    flowcell_id=flowcell_id,
+    lane_id=lane_id
+    )
+    )
+}
+
+
+check_if_compressed=function(file_path){
+  rslt=system(paste0("file ",file_path),intern=TRUE)
+  return(grepl("compr",rslt))
+}
+
+
+sample_check=function(sample_info){
+  lapply(seq(1,nrow(sample_info)),FUN=function(x){
+    R1_seq_info=infer_sequencing_info(file_path=sample_info[x,]$R1)
+    R1_seq_info$read_group="R1"
+    R2_seq_info=infer_sequencing_info(file_path=sample_info[x,]$R2)
+    R2_seq_info$read_group="R2"
+    seq_info=dplyr::bind_rows(R1_seq_info,R2_seq_info)
+    seq_info=seq_info %>% 
+      pivot_longer(cols=read_group,names_to=platform,values_to=value)
+    seq_info=seq_info %>% group_by(platform) %>% 
+      mutate(validate=value[read_group=="R1"]==value[read_group=="R2"]) 
+  })
+}
 
 
 

@@ -12,11 +12,13 @@
 #' @export
 
 
-merge_bams=function(bin_path="tools/samtools/samtools",bams="",output_name="",
-  verbose=FALSE,threads=3){
-    exec_code=paste(bin_path,"merge ",paste0(output_name,".bam"), " --threads",
+merge_bams_samtools=function(bin_path="tools/samtools/samtools",bams="",output_name="",
+verbose=TRUE,threads=3,ram=4,executor=make_unique_id("mergeBAMs"), task="mergeBAMs",mode="local",
+time="48:0:0",update_time=60,wait=FALSE,hold=""){
+    out_file_dir=set_dir(dir=output_dir,name="merged")
+    exec_code=paste(bin_path,"merge ",paste0(out_file_dir,"/",output_name,".bam"), " --threads",
       threads,paste(bams,collapse=" "))
-
+      
     if(verbose){
       print(exec_code)
     }
