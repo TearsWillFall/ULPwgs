@@ -275,9 +275,9 @@ sample_sheet_check=function(sample_info){
     R2_seq_info$read_group="R2"
     seq_info=dplyr::bind_rows(R1_seq_info,R2_seq_info)
     seq_info=seq_info %>% 
-      tidyr::pivot_longer(cols=read_group,names_to="platform",values_to="value")
+      tidyr::pivot_longer(cols=!read_group,names_to="platform",values_to="value")
     seq_info=seq_info %>% dplyr::group_by(platform) %>% 
-      mutate(validate=value[read_group=="R1"]==value[read_group=="R2"]) 
+      dplyr::mutate(validate=value[read_group=="R1"]==value[read_group=="R2"]) 
   })
 }
 

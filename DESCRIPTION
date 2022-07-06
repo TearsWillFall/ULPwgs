@@ -24,7 +24,8 @@ Imports:
     stringr,
     snow,
     tidyr,
-    dplyr
+    dplyr,
+    tidyverse
 biocViews:
 Remotes: git::https://github.com/TearsWillFall/BTools.git
 Encoding: UTF-8
