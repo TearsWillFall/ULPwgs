@@ -177,6 +177,10 @@ find_instrument=function(instrument_id=build_instrument_id(),
 infer_sequencing_info=function(bin_path="tools/samtools/samtools",file_path){
     header=extract_read_header(bin_path=bin_path,file_path=file_path)
     seq_info=parse_read_header(header)
+    instrument=find_instrument(seq_info=seq_info)
+    seq_info$flowcell_type=instrument$flowcell_type
+    seq_info$instrument_by_flowcell_id=instrument$instrument_by_flowcell_id
+    seq_info$instrument_by_intstrument_id=instrument$instrument_by_instrument_id
     return(seq_info)
 }
 
@@ -228,7 +232,7 @@ extract_read_header=function(bin_path="tools/samtools/samtools",file_path){
 
 parse_read_header=function(header){
   info_list=strsplit(header,":")[[1]]
-  instrument_id=info_list[1]
+  instrument_id=sub("@","",info_list[1])
   run_id=info_list[2]
   flowcell_id=info_list[3]
   lane_id=info_list[4]
