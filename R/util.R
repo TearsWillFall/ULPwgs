@@ -270,7 +270,7 @@ check_if_compressed=function(file_path){
 #' @export
 
 
-seq_info_check=function(sample_info){
+seq_info_check=function(sample_info=build_default_sample_sheet()){
   lapply(seq(1,nrow(sample_info)),FUN=function(x){
     R1_seq_info=infer_sequencing_info(file_path=sample_info[x,]$R1)
     R1_seq_info$patient_id=sample_info[x,]$patient_id

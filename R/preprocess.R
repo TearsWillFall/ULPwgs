@@ -23,7 +23,7 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
 
 
     ## Go through each patient
-    lapply(unique(sample_info$seq_info[,sample_info$seq_info$validate==TRUE]$patient_id),FUN=function(patient_id){
+    lapply(unique(sample_info$seq_info %>% filter(validate==TRUE) %>% select(patient_id)),FUN=function(patient_id){
 
         cat(paste0("Patient ID: ",patient_id,"\n"))
         out_file_dir_patient=set_dir(dir=output_dir,name=patient_id)
