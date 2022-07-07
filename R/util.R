@@ -48,7 +48,8 @@ set_dir=function(dir="",name=""){
 
 
 
-parse_tool_parameters=function(sample_sheet,config=build_default_config()){
+parse_tool_parameters=function(sample_sheet=build_default_sample_sheet(),
+config=build_default_config()){
   parameters=names(config)[names(config)!="name"]
   parameters_in_sheet=names(sample_sheet)[names(sample_sheet) %in% parameters]
   missing_parameters=parameters[!parameters %in% parameters_in_sheet]
@@ -66,11 +67,14 @@ parse_tool_parameters=function(sample_sheet,config=build_default_config()){
             step_value_list=strsplit(step,"=")
             step_name=step_value_list[[1]][1]
             parameter_values=step_value_list[[1]][-1]
+          
+
             if(parameter=="args"){
               parameter_values=paste0(parameter_values,collapse="=")
               parameter_values=gsub("\\{|\\}","",parameter_values)
               input_args=parse_args(parameter_values,step=step_name)
               default_args=parse_args(default_config[step_name,parameter],step=step_name)
+
               validated_args=validate_input_args(input_args,default_args)
               default_config[step_name,parameter]<<-parameter_values
             }else{
@@ -80,6 +84,7 @@ parse_tool_parameters=function(sample_sheet,config=build_default_config()){
       })
   
   })
+  return(default_config)
 }
 
 #' Parse tool arguments
