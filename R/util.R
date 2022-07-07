@@ -298,6 +298,8 @@ seq_info_check=function(sample_info){
 #'
 #' Check parameter configuration in sample sheet
 #'
+#' 
+
 #' @param sample_sheet Dataframe with sample information
 #' @param config Default tool config
 #' @return A string with the extension of the file
