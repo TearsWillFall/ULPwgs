@@ -4,7 +4,7 @@
 \alias{seq_info_check}
 \title{Check sequencing information for samples}
 \usage{
-seq_info_check(sample_info)
+seq_info_check(sample_info = build_default_sample_sheet())
 }
 \arguments{
 \item{sample_info}{Path to the input file}
