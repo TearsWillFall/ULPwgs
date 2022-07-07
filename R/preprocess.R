@@ -17,12 +17,11 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
         
     task_id=make_unique_id(task_name)
     sample_info=list()
-    sample_info$sample_sheet=sample_sheet
-    sample_info$seq_info=seq_info_check(sample_info$sample_sheet)
+    sample_info$seq_info=seq_info_check(sample_sheet)
     sample_info$tool_config=parameter_config_check(sample_info$sample_sheet)
-    job=build_job(executor_id=executor_id,task_id=task_id)
     seq_info=sample_info$seq_info %>% filter(validate==TRUE)
-  
+
+    job=build_job(executor_id=executor_id,task_id=task_id)
     ## Go through each patient
     lapply(unique(seq_info$patient_id),FUN=function(patient_id){
 
@@ -33,7 +32,7 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
         lapply(unique(seq_info_per_patient$sample_id),FUN=function(sample_id){
             
             cat(paste0("\tSample ID: ",sample_id,"\n"))
-            out_file_dir_sample=set_dir(dir=output_dir_patient,name=sample_id)
+            out_file_dir_sample=set_dir(dir=out_file_dir_patient,name=sample_id)
             seq_info_per_sample=seq_info_per_patient %>% filter(sample_id==sample_id)
                 ## Go through each method
                 lapply(unique(seq_info_per_sample$method_id),FUN=function(method_id){
