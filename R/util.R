@@ -274,14 +274,20 @@ check_if_compressed=function(file_path){
 sample_sheet_check=function(sample_info){
   lapply(seq(1,nrow(sample_info)),FUN=function(x){
     R1_seq_info=infer_sequencing_info(file_path=sample_info[x,]$R1)
+    R1_seq_info$patient_id=sample_info[x,]$patient_id
+    R1_seq_info$sample_id=sample_info[x,]$sample_id
+    R1_seq_info$method_id=sample_info[x,]$method_id
     R1_seq_info$read_group="R1"
     R1_seq_info$path=sample_info[x,]$R1
     R2_seq_info=infer_sequencing_info(file_path=sample_info[x,]$R2)
+    R2_seq_info$patient_id=sample_info[x,]$patient_id
+    R2_seq_info$sample_id=sample_info[x,]$sample_id
+    R2_seq_info$method_id=sample_info[x,]$method_id
     R2_seq_info$read_group="R2"
     R2_seq_info$path=sample_info[x,]$R2
     seq_info=dplyr::bind_rows(R1_seq_info,R2_seq_info)
     seq_info=seq_info %>% 
-      tidyr::pivot_longer(cols=!c(read_group,path),names_to="platform",values_to="value")
+      tidyr::pivot_longer(cols=!c(read_group,path,patient_id,sample_id,method_id),names_to="platform",values_to="value")
     seq_info=seq_info %>% dplyr::group_by(platform) %>% 
       dplyr::mutate(validate=value[read_group=="R1"]==value[read_group=="R2"])
   })

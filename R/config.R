@@ -38,6 +38,7 @@ build_default_sample_sheet=function(
     sample_sheet=list(
         patient_id=c("TR001","TR001","TR001","TR002","TR002"),
         sample_id=c("ID1","ID1","ID2","ID1","ID2"),
+        method_id="TG",
         R1=c("test/test_data/multi_lane/P1_S1_L1_R1.fq.gz",
         "test/test_data/multi_lane/P1_S1_L2_R1.fq.gz",
         "test/test_data/multi_lane/P1_S2_L1_R1.fq.gz",

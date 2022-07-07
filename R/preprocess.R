@@ -4,12 +4,13 @@
 preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     executor=make_unique_id("preprocess_seq"),
     task="preprocess_seq"){
-
-    seq_info=sample_check(sample_sheet)
+    sample_info=list()
+    sample_info$sample_info=sample_sheet
+    sample_info$seq_info=dplyr::bind_rows(sample_check(sample_info$sample_info))
     ## Go through each patient
-    lapply(unique(sample_info$patient_id),FUN=function(patient_id){
+    lapply(unique(sample_info$sample_info$patient_id),FUN=function(patient_id){
         out_file_dir_patient=set_dir(dir=output_dir,name=patient_id)
-        sample_info_per_patient=sample_info %>% filter(patient_id=patient_id)
+        sample_info_per_patient=sample_info$sample_info %>% filter(patient_id=patient_id)
 
         ## Go through each sample
         lapply(unique(sample_info_per_patient$sample_id),FUN=function(sample_id){
@@ -17,7 +18,7 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
             sample_info_per_sample=sample_info_per_patient %>% filter(sample_id=sample_id)
 
                 ## Go through each method
-                lapply(unique(sample_info$method_id),FUN=function(method_id){
+                lapply(unique(sample_info_per_sample$method_id),FUN=function(method_id){
                     out_file_dir_method_id=set_dir(dir=out_file_dir_platform,name=method_id)
                     sample_info_per_method=sample_info_per_platform %>% filter(method_id=method_id)
 
