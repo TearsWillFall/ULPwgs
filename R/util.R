@@ -195,10 +195,6 @@ infer_sequencing_info=function(bin_path="tools/samtools/samtools",file_path){
 #' @return A string with the extension of the file
 #' @export
 
-
-
-
-
 extract_read_header=function(bin_path="tools/samtools/samtools",file_path){
   file_ext=get_file_ext(file_path)
   if(grepl("f*q",file_ext)){
@@ -226,8 +222,6 @@ extract_read_header=function(bin_path="tools/samtools/samtools",file_path){
 #' @param header Sequencing read header
 #' @return A list with sequencing information
 #' @export
-
-
 
 
 parse_read_header=function(header){
@@ -290,7 +284,8 @@ sample_sheet_check=function(sample_info){
       tidyr::pivot_longer(cols=!c(read_group,path,patient_id,sample_id,method_id),names_to="platform",values_to="value")
     seq_info=seq_info %>% dplyr::group_by(platform) %>% 
       dplyr::mutate(validate=value[read_group=="R1"]==value[read_group=="R2"])
-  })
+  }) %>% dplyr::bind_rows() %>% ungroup()%>% pivot_wider(values_from=value,names_from=platform)
+    return(seq_info)
 }
 
 

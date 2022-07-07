@@ -39,6 +39,7 @@ build_default_sample_sheet=function(
         patient_id=c("TR001","TR001","TR001","TR002","TR002"),
         sample_id=c("ID1","ID1","ID2","ID1","ID2"),
         method_id="TG",
+        library_id=1,
         R1=c("test/test_data/multi_lane/P1_S1_L1_R1.fq.gz",
         "test/test_data/multi_lane/P1_S1_L2_R1.fq.gz",
         "test/test_data/multi_lane/P1_S2_L1_R1.fq.gz",
@@ -59,7 +60,13 @@ build_default_sample_sheet=function(
     sample_sheet=data.frame(sample_sheet,stringsAsFactors = FALSE)
     return(sample_sheet)
 }
-
+sample_sheet %>% group_by(patient_id,sample_id,method_id) %>% 
+summarise(print(paste0(paste0("Patient ID:",patient_id,"\n\t"),
+    paste0("Sample ID: ",sample_id,"\n\t\t"),
+    paste0("Method ID: ",method_id,"\n\t\t\t"),
+    paste0("R1: ",R1,"\n\t\t\t\t"),
+    paste0("R2: ",R2,"\n\t\t\t\t"))
+))
 
 #' Build default binaries config
 #' 
