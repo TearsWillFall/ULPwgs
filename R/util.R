@@ -67,7 +67,7 @@ config=build_default_config()){
             step_value_list=strsplit(step,"=")
             step_name=step_value_list[[1]][1]
             parameter_values=step_value_list[[1]][-1]
-          
+            
 
             if(parameter=="args"){
               parameter_values=paste0(parameter_values,collapse="=")
@@ -289,7 +289,7 @@ sample_sheet_check=function(sample_info){
       tidyr::pivot_longer(cols=!c(read_group,path,patient_id,sample_id,method_id),names_to="platform",values_to="value")
     seq_info=seq_info %>% dplyr::group_by(platform) %>% 
       dplyr::mutate(validate=value[read_group=="R1"]==value[read_group=="R2"])
-  }) %>% dplyr::bind_rows() %>% ungroup()%>% tidyr::pivot_wider(values_from=value,names_from=platform)
+  }) %>% dplyr::bind_rows() %>% dplyr::ungroup()%>% tidyr::pivot_wider(values_from=value,names_from=platform)
     return(seq_info)
 }
 
