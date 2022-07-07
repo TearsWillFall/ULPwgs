@@ -56,6 +56,7 @@ build_flowcell_id=function(flowcells=list(
       "MiSeq",
       "NovaSeq 6000",
       "NovaSeq 6000",
+      "NovaSeq 6000",
       "NovaSeq 6000"
 
     ),flowcell=c(
@@ -87,6 +88,7 @@ build_flowcell_id=function(flowcells=list(
         "MiSeq micro flow cell",
         "S2 flow cell",
         "S4 flow cell",
+        "SP flow cell",
         "SP flow cell"
 
         
@@ -121,7 +123,8 @@ build_flowcell_id=function(flowcells=list(
       "G[A-Z,0-9]{4}$",
       "H[A-Z,0-9]{4}DMXX$",
       "H[A-Z,0-9]{4}DSXX$",
-      "H[A-Z,0-9]{4}DRXX$"
+      "H[A-Z,0-9]{4}DRXX$",
+      "H[A-Z,0-9]{4}DRXY$"
     )
   )
   ) {

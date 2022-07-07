@@ -44,6 +44,7 @@ job_order=1, out_files=list(file="file")){
 
 
 
+
 #' Build job executor in SGE
 #'
 #' @param job Name of job or jobs.
@@ -55,8 +56,6 @@ job_order=1, out_files=list(file="file")){
 #' @param hold Job IDs to hold job.
 #' 
 #' @export
-
-
 
 build_job_exec=function(job="",time="48:0:0",ram=3,threads=1,output_dir="",hold=""){
   

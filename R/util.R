@@ -152,9 +152,7 @@ find_instrument=function(instrument_id=build_instrument_id(),
   
   flowcell_id_found=flowcell_id[unlist(flowcell),]
 
-  print(seq_info)
-  print(flowcell_id_found,instrument_id_found)
-  found=data.frame(instrument_by_flowcell_id=flowcell_id_found$instrument,
+  found=list(instrument_by_flowcell_id=flowcell_id_found$instrument,
   flowcell_type=flowcell_id_found$flowcell,
   instrument_by_intrument_id=instrument_id_found$instrument)
   
