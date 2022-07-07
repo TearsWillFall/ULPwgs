@@ -7,12 +7,13 @@
 #' @param config Default tool configure
 #' @param executor_id Task EXECUTOR ID . Default "preprocessSEQ"
 #' @param task_name Task name . Default "preprocessSEQ"
+#' @param output_dir Path to output directory
 #' @export
 
 
 preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     executor_id=make_unique_id("preprocessSEQ"),
-    task_name="preprocessSEQ"){
+    task_name="preprocessSEQ", output_dir=""){
         
     task_id=make_unique_id(task_name)
     sample_info=list()
@@ -20,10 +21,10 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     sample_info$seq_info=seq_info_check(sample_info$sample_sheet)
     sample_info$tool_config=parameter_config_check(sample_info$sample_sheet)
     job=build_job(executor_id=executor_id,task_id=task_id)
-
-
+    seq_info=sample_info$seq_info %>% filter(validate==TRUE)
+  
     ## Go through each patient
-    lapply(unique(sample_info$seq_info %>% filter(validate==TRUE) %>% select(patient_id)),FUN=function(patient_id){
+    lapply(unique(seq_info$patient_id),FUN=function(patient_id){
 
         cat(paste0("Patient ID: ",patient_id,"\n"))
         out_file_dir_patient=set_dir(dir=output_dir,name=patient_id)
