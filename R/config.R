@@ -30,12 +30,13 @@ build_default_config=function(
 #' Build default sample sheet
 #' 
 #'
-#' @param sample_sheet List with patient_id,sample_id,R1,R2,genome,step,threads,ram,verbose configuration
+#' @param sample_sheet List with project_id,patient_id,sample_id,R1,R2,genome,step,threads,ram,time,mode,verbose configuration
 #' @export
 
 
 build_default_sample_sheet=function(
     sample_sheet=list(
+        project_id="TRAILS",
         patient_id=c("TR001","TR001","TR001","TR002","TR002"),
         sample_id=c("ID1","ID1","ID2","ID1","ID2"),
         method_id="TG",
@@ -64,7 +65,6 @@ build_default_sample_sheet=function(
     sample_sheet=data.frame(sample_sheet,stringsAsFactors = FALSE)
     return(sample_sheet)
 }
-
 
 #' Build default binaries config
 #' 
