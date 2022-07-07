@@ -146,15 +146,18 @@ find_instrument=function(instrument_id=build_instrument_id(),
     })
   instrument_id_found=instrument_id[unlist(instrument),]
 
-  flowcell=lapply(flowcell_id$pattern,FUN=function(flowcell_id){
-    grepl(flowcell_id,seq_info$flowcell_id,perl=TRUE)
+  flowcell=lapply(flowcell_id$pattern,FUN=function(flowcell_pattern){
+    grepl(flowcell_pattern,seq_info$flowcell_id,perl=TRUE)
     })
   
   flowcell_id_found=flowcell_id[unlist(flowcell),]
 
+  print(seq_info)
+  print(flowcell_id_found,instrument_id_found)
   found=data.frame(instrument_by_flowcell_id=flowcell_id_found$instrument,
   flowcell_type=flowcell_id_found$flowcell,
   instrument_by_intrument_id=instrument_id_found$instrument)
+  
   return(found)
 }
 
