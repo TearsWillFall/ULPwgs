@@ -27,14 +27,14 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
 
         cat(paste0("Project ID: ",project_id,"\n"))
         out_file_dir_project=set_dir(dir=output_dir,name=project_id)
-        seq_info_per_project=sample_info$seq_info %>% filter(project_id==project_id)
+        seq_info_per_project=seq_info %>% filter(project_id==project_id)
       
         ## Go through each patient
         lapply(unique(seq_info_per_project$patient_id),FUN=function(patient_id){
 
             cat(paste0("\t",add_bl(),add_l(),"Patient ID: ",patient_id,"\n"))
             out_file_dir_patient=set_dir(dir=out_file_dir_project,name=patient_id)
-            seq_info_per_patient= seq_info_per_project$seq_info %>% filter(patient_id==patient_id)
+            seq_info_per_patient= seq_info_per_project %>% filter(patient_id==patient_id)
             ## Go through each sample
             lapply(unique(seq_info_per_patient$sample_id),FUN=function(sample_id){
                 
