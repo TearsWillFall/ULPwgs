@@ -4,7 +4,10 @@
 \alias{parse_tool_parameters}
 \title{Parse all tool parameters from sample sheet}
 \usage{
-parse_tool_parameters(sample_sheet, config = build_default_config())
+parse_tool_parameters(
+  sample_sheet = build_default_sample_sheet(),
+  config = build_default_config()
+)
 }
 \arguments{
 \item{sample_sheet}{Input sample sheet}

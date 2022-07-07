@@ -6,8 +6,8 @@
 \usage{
 build_default_sample_sheet(
   sample_sheet = list(patient_id = c("TR001", "TR001", "TR001", "TR002", "TR002"),
-    sample_id = c("ID1", "ID1", "ID2", "ID1", "ID2"), R1 =
-    c("test/test_data/multi_lane/P1_S1_L1_R1.fq.gz",
+    sample_id = c("ID1", "ID1", "ID2", "ID1", "ID2"), method_id = "TG", library_id = 1,
+    R1 = c("test/test_data/multi_lane/P1_S1_L1_R1.fq.gz",
     "test/test_data/multi_lane/P1_S1_L2_R1.fq.gz",
     "test/test_data/multi_lane/P1_S2_L1_R1.fq.gz",
     "test/test_data/multi_lane/P2_S1_L1_R1.fq.gz",
@@ -18,13 +18,20 @@ build_default_sample_sheet(
     
     "test/test_data/multi_lane/P2_S1_L1_R2.fq.gz",
     "test/test_data/multi_lane/P2_S2_L1_R2.fq.gz"), genome = "hg19", step =
-    "pre_fastqc=TRUE;trimming=TRUE;post_fastqc=TRUE;alignment=TRUE;merge_bams=TRUE;markdups=TRUE;recalibrate=TRUE;alignqc:TRUE",
+    "pre_fastqc=TRUE;trimming=TRUE;post_fastqc=TRUE;alignment=TRUE;merge_bam=TRUE;markdups=TRUE;recalibrate=TRUE;alignqc=TRUE",
     threads =
-    "pre_fastqc=6;trimming=6;post_fastqc=6;alignment=12;merge_bams=6;markdups=12;recalibrate=2;alignqc:6",
+    "pre_fastqc=6;trimming=6;post_fastqc=6;alignment=12;merge_bam=6;markdups=12;recalibrate=2;alignqc=6",
     ram =
-    "pre_fastqc=8;trimming=8;post_fastqc=8;alignment=16;merge_bams=16;markdups=16;recalibrate=8;alignqc:8",
+    "pre_fastqc=8;trimming=8;post_fastqc=8;alignment=16;merge_bam=16;markdups=16;recalibrate=8;alignqc=8",
+    time =
+    "pre_fastqc=48:0:0;trimming=48:0:0;post_fastqc=48:0:0;alignment=48:0:0;merge_bam=48:0:0;markdups=48:0:0;recalibrate=48:0:0;alignqc=48:0:0",
+    
+     mode =
+    "pre_fastqc=local;trimming=local;post_fastqc=local;alignment=local;merge_bam=local;markdups=local;recalibrate=local;alignqc=local",
     verbose =
-    "pre_fastqc=TRUE;trimming=TRUE;post_fastqc=TRUE;alignment=TRUE;merge_bams=TRUE;markdups=TRUE;recalibrate=TRUE;alignqc:TRUE")
+    "pre_fastqc=TRUE;trimming=TRUE;post_fastqc=TRUE;alignment=TRUE;merge_bam=TRUE;markdups=TRUE;recalibrate=TRUE;alignqc=TRUE",
+    args =
+    "trimming={mean_quality=0|min_length=18|max_length=''|xadapt=''|yadapt=''};alignment={clean=TRUE|stats='all'|coord_sorted=FALSE};markdups={remove_duplicates=TRUE}")
 )
 }
 \arguments{

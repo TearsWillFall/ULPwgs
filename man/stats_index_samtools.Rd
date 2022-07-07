@@ -12,8 +12,8 @@ stats_index_samtools(
   threads = 3,
   ram = 4,
   mode = "local",
-  executor = make_unique_id("statsINDEX"),
-  task = "statsINDEX",
+  executor_id = make_unique_id("statsINDEX"),
+  task_name = "statsINDEX",
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
@@ -35,9 +35,9 @@ stats_index_samtools(
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
-\item{executor}{Name of the executor. Default "mardupsGATK"}
+\item{executor_id}{Job EXECUTOR ID. Default "mardupsGATK"}
 
-\item{task}{Name of the task. Default "mardupsGATK"}
+\item{task_name}{Name of the task. Default "mardupsGATK"}
 
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 

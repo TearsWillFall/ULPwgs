@@ -13,9 +13,9 @@ sort_bam_samtools(
   ram = 1,
   coord_sort = TRUE,
   mode = "local",
-  executor = make_unique_id("sortBAM"),
+  executor_id = make_unique_id("sortBAM"),
   clean = FALSE,
-  task = "sortBAM",
+  task_name = "sortBAM",
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
@@ -39,11 +39,11 @@ sort_bam_samtools(
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
-\item{executor}{Name of the executor. Default "mardupsGATK"}
+\item{executor_id}{Task EXECUTOR ID. Default "mardupsGATK"}
 
 \item{clean}{Remove input files. Default FALSE}
 
-\item{task}{Name of the task. Default "mardupsGATK"}
+\item{task_name}{Name of the task. Default "mardupsGATK"}
 
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 
