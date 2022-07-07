@@ -43,29 +43,38 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
                     ## Go through each method
                     lapply(unique(seq_info_per_sample$method_id),FUN=function(method_id){
 
-                        cat(paste0(paste0(rep("....",1),collapse=""),"|...|----Method ID: ",method_id,"\n"))
+                        cat(paste0(paste0(rep("|...",2),collapse=""),"|----Method ID: ",method_id,"\n"))
                         out_file_dir_method=set_dir(dir=out_file_dir_sample,name=method_id)
                         seq_info_per_method=seq_info_per_sample %>% dplyr::filter(method_id==method_id)
                         ## Go through each flowcell ID
                         lapply(unique(seq_info_per_method$flowcell_id),FUN=function(flowcell_id){
                             
-                            cat(paste0(paste0(rep("....",2),collapse=""),"|...|----Flowcell ID: ",flowcell_id,"\n"))
+                            cat(paste0(paste0(rep("|...",3),collapse=""),"|...|----Flowcell ID: ",flowcell_id,"\n"))
                             out_file_dir_flowcell=set_dir(dir=out_file_dir_method,name=flowcell_id)
                             seq_info_per_flowcell=seq_info_per_method %>% dplyr::filter(flowcell_id==flowcell_id)
                             ## Go through each lane
                             lapply(unique(seq_info_per_flowcell$lane_id),FUN=function(lane_id){
                                 
-                                cat(paste0(paste0(rep("....",3),collapse=""),"|...|----Lane ID: ",lane_id,"\n"))
+                                cat(paste0(paste0(rep("|...",4),collapse=""),"|...|----Lane ID: ",lane_id,"\n"))
                                 out_file_dir_lane=set_dir(dir=out_file_dir_flowcell,name=lane_id)
                                 seq_info_per_lane=seq_info_per_flowcell %>% dplyr::filter(lane_id==lane_id)
                                 ## Go through each library
                                 lapply(unique(seq_info_per_lane$library_id),FUN=function(library_id){
-                                        cat(paste0(paste0(rep("....",4),collapse=""),"|...|----Library ID: ",library_id,"\n"))
+                                        cat(paste0(paste0(rep("|...",5),collapse=""),"|----Library ID: ",library_id,"\n"))
                                         out_file_dir_library=set_dir(dir=out_file_dir_lane,name=library_id)
                                         seq_info_per_library=seq_info_per_lane %>% dplyr::filter(library_id==library_id)
-                                        cat(paste0(paste0(rep("....",5),collapse=""),"|...|----R1: ",seq_info_per_library[seq_info_per_library$read_group=="R1",]$path,"\n"))
-                                        cat(paste0(paste0(rep("....",5),collapse=""),"|...|      "))
-                                        cat(paste0(paste0(rep("....",5),collapse=""),"|...|----R2: ",seq_info_per_library[seq_info_per_library$read_group=="R2",]$path,"\n"))
+                                        seq_info_per_library_R1=seq_info_per_library %>% dplyr::filter(project_id==project_id,
+                                        patient_id==patient_id,sample_id==sample_id,method_id==method_id,
+                                        flowcell_id==flowcell_id,lane_id==lane_id,library_id==library_id,
+                                        read_group=="R1")
+                                        seq_info_per_library_R2=seq_info_per_library %>% dplyr::filter(project_id==project_id,
+                                        patient_id==patient_id,sample_id==sample_id,method_id==method_id,
+                                        flowcell_id==flowcell_id,lane_id==lane_id,library_id==library_id,
+                                        read_group=="R2")
+                                        
+                                        cat(paste0(paste0(rep("|...",6),collapse=""),"|----R1: ",seq_info_per_library_R1$path,"\n"))
+                                        cat(paste0(paste0(rep("|...",6),collapse=""),"|      \n"))
+                                        cat(paste0(paste0(rep("|...",6),collapse=""),"|----R2: ",seq_info_per_library_R2$path,"\n"))
                                 })
                             })
                         })
