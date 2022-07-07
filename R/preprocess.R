@@ -16,14 +16,15 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
         
     task_id=make_unique_id(task_name)
     sample_info=list()
-    sample_info$sample_info=sample_sheet
-    sample_info$seq_info=sample_sheet_check(sample_info$sample_info)
+    sample_info$sample_sheet=sample_sheet
+    sample_info$seq_info=seq_info_check(sample_info$sample_sheet)
+    sample_info$tool_config=parameter_config_check(sample_info$sample_sheet)
     job=build_job(executor_id=executor_id,task_id=task_id)
 
 
     ## Go through each patient
-    lapply(unique(sample_info$seq_info[,validate==TRUE]$patient_id),FUN=function(patient_id){
-      
+    lapply(unique(sample_info$seq_info[,sample_info$seq_info$validate==TRUE]$patient_id),FUN=function(patient_id){
+
         cat(paste0("Patient ID: ",patient_id,"\n"))
         out_file_dir_patient=set_dir(dir=output_dir,name=patient_id)
         seq_info_per_patient=sample_info$seq_info %>% filter(patient_id==patient_id)
@@ -57,11 +58,8 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
                                     cat(paste0("\t\t\t\t\tLibrary ID: ",library_id,"\n"))
                                     out_file_dir_library=set_dir(dir=out_file_dir_lane,name=library_id)
                                     seq_info_per_library=seq_info_per_lane %>% filter(library_id==library_id)
-                                    sample_info_per_library=sample_info$sample_info=sample_info$sample_info %>% 
-                                    filter(R1==seq_info_per_library$R1,R2==seq_info_per_library$R2)
-                                    cat(paste0("\t\t\t\t\t\tR1: ",seq_info_per_library$R1,"\n"))
-                                    cat(paste0("\t\t\t\t\t\tR2: ",seq_info_per_library$R2,"\n"))
-                                    
+                                    cat(paste0("\t\t\t\t\t\tR1: ",seq_info_per_library$read_group[seq_info_per_library$read_group=="R1"]$path,"\n"))
+                                    cat(paste0("\t\t\t\t\t\tR2: ",seq_info_per_library$read_group[seq_info_per_library$read_group=="R2"]$path,"\n"))
                             })
                         })
                     })

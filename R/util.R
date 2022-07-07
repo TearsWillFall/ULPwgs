@@ -261,7 +261,7 @@ check_if_compressed=function(file_path){
 
 
 
-#' Check sample sheet sequencing info
+#' Check sequencing information for samples
 #'
 #' Check sequencing info for each read group for each sample
 #'
@@ -270,7 +270,7 @@ check_if_compressed=function(file_path){
 #' @export
 
 
-sample_sheet_check=function(sample_info){
+seq_info_check=function(sample_info){
   lapply(seq(1,nrow(sample_info)),FUN=function(x){
     R1_seq_info=infer_sequencing_info(file_path=sample_info[x,]$R1)
     R1_seq_info$patient_id=sample_info[x,]$patient_id
@@ -291,6 +291,33 @@ sample_sheet_check=function(sample_info){
       dplyr::mutate(validate=value[read_group=="R1"]==value[read_group=="R2"])
   }) %>% dplyr::bind_rows() %>% dplyr::ungroup()%>% tidyr::pivot_wider(values_from=value,names_from=platform)
     return(seq_info)
+}
+
+
+#' Check parameter configuration in sample sheet
+#'
+#' Check parameter configuration in sample sheet
+#'
+#' @param sample_sheet Dataframe with sample information
+#' @param config Default tool config
+#' @return A string with the extension of the file
+#' @export
+
+
+parameter_config_check=function(sample_sheet=build_default_sample_sheet(),
+config=build_default_config()){
+
+  tool_configs=lapply(seq(1,nrow(sample_sheet)),FUN=function(x){
+    tool_config=parse_tool_parameters(sample_sheet=sample_sheet[x,],config=config)
+    tool_config$patient_id=sample_sheet[x,]$patient_id
+    tool_config$sample_id=sample_sheet[x,]$sample_id
+    tool_config$method_id=sample_sheet[x,]$method_id
+    tool_config$R1=sample_sheet[x,]$R1
+    tool_config$R2=sample_sheet[x,]$R2
+    return(tool_config)
+  })
+  tool_config=dplyr::bind_rows(tool_configs)
+  return(tool_config)
 }
 
 
