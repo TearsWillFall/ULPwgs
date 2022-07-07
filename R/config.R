@@ -83,3 +83,16 @@ build_default_binaries_config=function(binaries=list(tool=c("fastqc","skewer","b
     row.names(binaries)=binaries$name
     return(binaries)
 }
+
+#' Build default binaries config
+#' 
+#'
+#' @param variables List with variable names
+#' @export
+
+
+build_default_variable_list=function(variables=list(variable=c("project_id","patient_id","sample_id","method_id","flowcell_id","lane_id","library_id"),
+    text=c("Project ID:","Patient ID:","Sample ID:","Method ID:","Flowcell ID:","Lane ID:","Library ID:")
+))(
+    return(data.frame(variables))
+)

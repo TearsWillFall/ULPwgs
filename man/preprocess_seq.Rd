@@ -7,7 +7,10 @@
 preprocess_seq(
   sample_sheet = build_default_sample_sheet(),
   executor_id = make_unique_id("preprocessSEQ"),
-  task_name = "preprocessSEQ"
+  variables = build_default_variable_list(),
+  config = build_default_config(),
+  task_name = "preprocessSEQ",
+  output_dir = ""
 )
 }
 \arguments{
@@ -15,9 +18,11 @@ preprocess_seq(
 
 \item{executor_id}{Task EXECUTOR ID . Default "preprocessSEQ"}
 
+\item{config}{Default tool configure}
+
 \item{task_name}{Task name . Default "preprocessSEQ"}
 
-\item{config}{Default tool configure}
+\item{output_dir}{Path to output directory}
 }
 \description{
 Preprocess sequencing data

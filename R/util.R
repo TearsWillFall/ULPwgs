@@ -457,6 +457,13 @@ add_l=function(){
   return(line)
 }
 
+#' @export
+
+add_fill=function(fill="\t",n=2){
+  paste0(rep(fill,n),collapse="")
+}
+
+
 
 
 
