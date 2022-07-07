@@ -277,6 +277,7 @@ seq_info_check=function(sample_info=build_default_sample_sheet()){
     R1_seq_info$patient_id=sample_info[x,]$patient_id
     R1_seq_info$sample_id=sample_info[x,]$sample_id
     R1_seq_info$method_id=sample_info[x,]$method_id
+    R1_seq_info$library_id=sample_info[x,]$library_id
     R1_seq_info$read_group="R1"
     R1_seq_info$path=sample_info[x,]$R1
     R2_seq_info=infer_sequencing_info(file_path=sample_info[x,]$R2)
@@ -284,6 +285,7 @@ seq_info_check=function(sample_info=build_default_sample_sheet()){
     R2_seq_info$patient_id=sample_info[x,]$patient_id
     R2_seq_info$sample_id=sample_info[x,]$sample_id
     R2_seq_info$method_id=sample_info[x,]$method_id
+    R2_seq_info$library_id=sample_info[x,]$library_id
     R2_seq_info$read_group="R2"
     R2_seq_info$path=sample_info[x,]$R2
     seq_info=dplyr::bind_rows(R1_seq_info,R2_seq_info)
@@ -317,6 +319,7 @@ config=build_default_config()){
     tool_config$patient_id=sample_sheet[x,]$patient_id
     tool_config$sample_id=sample_sheet[x,]$sample_id
     tool_config$method_id=sample_sheet[x,]$method_id
+    tool_config$library_id=sample_sheet[x,]$library_id
     tool_config$R1=sample_sheet[x,]$R1
     tool_config$R2=sample_sheet[x,]$R2
     return(tool_config)
