@@ -34,7 +34,7 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
                             out_file_dir_lane=set_dir(dir=out_file_dir_flowcell,name=lane_id)
                             seq_info_per_lane=seq_info_per_flowcell %>% filter(lane_id=lane_id)
                             ## Go through each library
-                            lapply(unique(sample_info$library_id),FUN=function(library_id){
+                            lapply(unique(seq_info_per_lane$library_id),FUN=function(library_id){
                                     cat(paste0("\t\t\t\t\tLibrary ID: ",library_id,"\n"))
                                     out_file_dir_library=set_dir(dir=out_file_dir_lane,name=library_id)
                                     seq_info_per_library=seq_info_per_lane %>% filter(library_id=library_id)
