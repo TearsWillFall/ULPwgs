@@ -62,7 +62,7 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
                                 lapply(unique(seq_info_per_lane$library_id),FUN=function(library_id){
                                         cat(paste0("\t\t\t\t\t","|----Library ID: ",library_id,"\n"))
                                         out_file_dir_library=set_dir(dir=out_file_dir_lane,name=library_id)
-                                        seq_info_per_library=seq_info_per_flowcell %>% dplyr::filter(library_id==library_id)
+                                        seq_info_per_library=seq_info_per_lane %>% dplyr::filter(library_id==library_id)
                                         cat(paste0("\t\t\t\t\t\t","|----R1: ",seq_info_per_library[seq_info_per_library$read_group=="R1",]$path,"\n"))
                                         cat(paste0("\t\t\t\t\t\t","|----R2: ",seq_info_per_library[seq_info_per_library$read_group=="R2",]$path,"\n"))
                                 })
