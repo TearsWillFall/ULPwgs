@@ -12,32 +12,32 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     lapply(unique(sample_info$seq_info[,validate==TRUE]$patient_id),FUN=function(patient_id){
         cat(paste0("Patient ID: ",patient_id,"\n"))
         out_file_dir_patient=set_dir(dir=output_dir,name=patient_id)
-        seq_info_per_patient=sample_info$seq_info %>% filter(patient_id=patient_id)
+        seq_info_per_patient=sample_info$seq_info %>% filter(patient_id==patient_id)
         ## Go through each sample
         lapply(unique(seq_info_per_patient$sample_id),FUN=function(sample_id){
             cat(paste0("\tSample ID: ",sample_id,"\n"))
             out_file_dir_sample=set_dir(dir=output_dir_patient,name=sample_id)
-            seq_info_per_sample=seq_info_per_patient %>% filter(sample_id=sample_id)
+            seq_info_per_sample=seq_info_per_patient %>% filter(sample_id==sample_id)
                 ## Go through each method
                 lapply(unique(seq_info_per_sample$method_id),FUN=function(method_id){
                     cat(paste0("\t\tMethod ID: ",method_id,"\n"))
                     out_file_dir_method=set_dir(dir=out_file_dir_sample,name=method_id)
-                    seq_info_per_method=seq_info_per_sample %>% filter(method_id=method_id)
+                    seq_info_per_method=seq_info_per_sample %>% filter(method_id==method_id)
                     ## Go through each flowcell ID
                     lapply(unique(seq_info_per_method$flowcell_id),FUN=function(flowcell_id){
                         cat(paste0("\t\t\tFlowcell ID: ",flowcell_id,"\n"))
                         out_file_dir_flowcell=set_dir(dir=out_file_dir_method,name=flowcell_id)
-                        seq_info_per_flowcell=seq_info_per_method %>% filter(flowcell_id=flowcell_id)
+                        seq_info_per_flowcell=seq_info_per_method %>% filter(flowcell_id==flowcell_id)
                         ## Go through each lane
                         lapply(unique(seq_info_per_method$lane_id),FUN=function(lane_id){
                             cat(paste0("\t\t\t\tLane ID: ",lane_id,"\n"))
                             out_file_dir_lane=set_dir(dir=out_file_dir_flowcell,name=lane_id)
-                            seq_info_per_lane=seq_info_per_flowcell %>% filter(lane_id=lane_id)
+                            seq_info_per_lane=seq_info_per_flowcell %>% filter(lane_id==lane_id)
                             ## Go through each library
                             lapply(unique(seq_info_per_lane$library_id),FUN=function(library_id){
                                     cat(paste0("\t\t\t\t\tLibrary ID: ",library_id,"\n"))
                                     out_file_dir_library=set_dir(dir=out_file_dir_lane,name=library_id)
-                                    seq_info_per_library=seq_info_per_lane %>% filter(library_id=library_id)
+                                    seq_info_per_library=seq_info_per_lane %>% filter(library_id==library_id)
                                     cat(paste0("\t\t\t\t\t\tR1: ",seq_info_per_library$R1,"\n"))
                                     cat(paste0("\t\t\t\t\t\tR2: ",seq_info_per_library$R2,"\n"))
                             })
