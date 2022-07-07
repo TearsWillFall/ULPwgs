@@ -153,8 +153,7 @@ find_instrument=function(instrument_id=build_instrument_id(),
   flowcell_id_found=flowcell_id[unlist(flowcell),]
 
   found=list(instrument_by_flowcell_id=flowcell_id_found$instrument,
-  flowcell_type=flowcell_id_found$flowcell,
-  instrument_by_intrument_id=instrument_id_found$instrument)
+  flowcell_type=flowcell_id_found$flowcell,instrument_by_intrument_id=instrument_id_found$instrument)
   
   return(found)
 }
@@ -181,7 +180,7 @@ infer_sequencing_info=function(bin_path="tools/samtools/samtools",file_path){
     instrument=find_instrument(seq_info=seq_info)
     seq_info$flowcell_type=instrument$flowcell_type
     seq_info$instrument_by_flowcell_id=instrument$instrument_by_flowcell_id
-    seq_info$instrument_by_intstrument_id=instrument$instrument_by_instrument_id
+    seq_info$instrument_by_insttrument_id=instrument$instrument_by_instrument_id
     return(seq_info)
 }
 
@@ -282,7 +281,7 @@ sample_sheet_check=function(sample_info){
     R2_seq_info$path=sample_info[x,]$R2
     seq_info=dplyr::bind_rows(R1_seq_info,R2_seq_info)
     seq_info=seq_info %>% 
-      tidyr::pivot_longer(cols=!read_group,names_to="platform",values_to="value")
+      tidyr::pivot_longer(cols=!c(read_group,path),names_to="platform",values_to="value")
     seq_info=seq_info %>% dplyr::group_by(platform) %>% 
       dplyr::mutate(validate=value[read_group=="R1"]==value[read_group=="R2"])
   })
