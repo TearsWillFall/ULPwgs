@@ -19,7 +19,7 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     sample_info=list()
     sample_info$seq_info=seq_info_check(sample_info=sample_sheet)
     sample_info$tool_config=parameter_config_check(sample_sheet=sample_sheet)
-    seq_info=sample_info$seq_info %>% filter(validate==TRUE)
+    seq_info=sample_info$seq_info %>% dplyr::filter(validate==TRUE)
 
     job=build_job(executor_id=executor_id,task_id=task_id)
     ## Go through each patient
