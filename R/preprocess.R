@@ -23,7 +23,7 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
 
     job=build_job(executor_id=executor_id,task_id=task_id)
     ## Go through each patient
-    lapply(unique(seq_info$project_id),FUN=function(project_id){
+    smt=lapply(unique(seq_info$project_id),FUN=function(project_id){
 
         cat(paste0("Project ID: ",project_id,"\n"))
         out_file_dir_project=set_dir(dir=output_dir,name=project_id)
