@@ -66,6 +66,7 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
                                         sample_id==sample_id,method_id==method_id,flowcell_id==flowcell_id,lane_id==lane_id,library_id==library_id)
                                         out_file_dir_library=set_dir(dir=out_file_dir_lane,name=library_id)
                                         print(seq_info_library)
+                                        print("-------")
                                                                              
                                     
                                         
