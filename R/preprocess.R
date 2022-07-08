@@ -62,7 +62,7 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
                                 lapply(unique(seq_info_lane$library_id),FUN=function(library_id){
                                         
                                         seq_info_library=seq_info_lane %>% dplyr::filter(project_id==project_id,patient_id==patient_id,
-                                        sample_id==sample_id,method_id==method_id,flowcell_id==flowcell_id,lane_id==lane_id,library_id=library_id)
+                                        sample_id==sample_id,method_id==method_id,flowcell_id==flowcell_id,lane_id==lane_id,library_id==library_id)
                                         out_file_dir_library=set_dir(dir=out_file_dir_lane,name=library_id)
 
                                         cat(paste0("Project ID: ",project_id,"\n"))
