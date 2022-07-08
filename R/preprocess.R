@@ -62,8 +62,9 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
                                 ## Go through each library
                                 lapply(unique(seq_info_lane$library_id),FUN=function(library_id){
                                         cat(paste0(add_fill(n=6),add_bl(),"Library ID: ",library_id,"\n"))
-                                        seq_info_library=seq_info_lane %>% dplyr::filter(project_id==project_id,patient_id==patient_id,
-                                        sample_id==sample_id,method_id==method_id,flowcell_id==flowcell_id,lane_id==lane_id,library_id==library_id)
+                                        
+                                        seq_info_library=seq_info_lane %>% dplyr::filter(project_id==project_id&patient_id==patient_id&
+                                        sample_id==sample_id&method_id==method_id&flowcell_id==flowcell_id&lane_id==lane_id&library_id==library_id)
                                         out_file_dir_library=set_dir(dir=out_file_dir_lane,name=library_id)
                                         print(seq_info_library)
                                         print("-------")
@@ -71,8 +72,6 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
                                     
                                         
                                         
-                                        
-                                      
 
                                
                                         # seq_info_R1=seq_info %>% dplyr::filter(project_id==project_id,
