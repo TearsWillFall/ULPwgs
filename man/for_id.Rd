@@ -6,7 +6,6 @@
 \usage{
 for_id(
   seq_info,
-  tool_config,
   output_dir = "",
   vars_list = build_default_variable_list(),
   pmts_list = build_default_parameter_list(),
@@ -17,8 +16,6 @@ for_id(
 }
 \arguments{
 \item{seq_info}{Sample sequencing information}
-
-\item{tool_config}{Tool config for each sample}
 
 \item{output_dir}{Path to output directory. Default none}
 

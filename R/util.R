@@ -394,7 +394,8 @@ config=build_default_config(),vars_list=build_default_variable_list()){
     tool_config=append(tool_config,sample_sheet[x,c(vars[vars %in% names(sample_sheet)],"R1","R2")])
     return(tool_config)
   })
-  tool_config=dplyr::bind_rows(tool_configs)
+  tool_config=dplyr::bind_rows(tool_configs) %>% tidyr::pivot_longer(cols=c(R1,R2),
+  names_to="read_group",values_to="path")
   return(tool_config)
 }
 

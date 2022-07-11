@@ -32,7 +32,7 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     seq_info=dplyr::left_join(sample_info$seq_info,
     parameter_config_check(sample_sheet=sample_sheet,config=config,vars_list=vars))
     job=build_job(executor_id=executor_id,task_id=task_id)
-    for_id(seq_info=sample_info$seq_info,output_dir=output_dir,
+    for_id(seq_info=seq_info,output_dir=output_dir,
     vars_list=vars_list,nesting=nesting,merge_level=merge_level,pmts_list=pmts_list)
 
 }
@@ -101,7 +101,7 @@ for_id=function(seq_info,output_dir="",
                         for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars_list=vars_list_left,
                         nesting=nesting,nest_ws=nest_ws)
                     }else{
-                        tool_config_id=seq_info_id %>% dplyr::distinct(-c(R1,R2))
+                        tool_config_id=seq_info_id %>% dplyr::distinct(-c("R1","R2"))
                         seq_info_id=seq_info_id %>% dplyr::distinct(-c(pmts$parameter))
                         seq_info_R1=seq_info_id[seq_info_id$read_group=="R1",]
                         seq_info_R2=seq_info_id[seq_info_id$read_group=="R2",]
@@ -111,7 +111,7 @@ for_id=function(seq_info,output_dir="",
                         cat(paste0(nesting,"|----",crayon::green(paste0("R2: ",seq_info_R2$path)),"\n"))    
                         lapply(seq(1,nrow(tool_config_id)),FUN=function(step){
                             lapply(seq(1,nrow(pmts_list$parameter)),FUN=function(pmt){
-                                cat(paste0(nesting,"|----    ",paste0(pmts_list[pmt,]$text,tool_config[step,pmt]),"\n"))
+                                cat(paste0(nesting,"|----    ",paste0(pmts_list[pmt,]$text,tool_config_id[step,pmt]),"\n"))
                             })
                         })
                      
