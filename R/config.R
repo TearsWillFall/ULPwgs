@@ -194,6 +194,7 @@ build_default_variable_list=function(
             "Method Version: ",
             "Reference Genome: ",
             "Library ID: ",
+            "Run ID: ",
             "Flowcell ID: ",
             "Lane ID: "
             )
