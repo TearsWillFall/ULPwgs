@@ -169,7 +169,6 @@ build_default_variable_list=function(
             TRUE,
             FALSE,
             FALSE),
-        ,
         needs_type_validation=c(
             FALSE,
             FALSE,
