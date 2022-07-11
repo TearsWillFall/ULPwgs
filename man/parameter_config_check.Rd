@@ -7,13 +7,15 @@
 parameter_config_check(
   sample_sheet = build_default_sample_sheet(),
   config = build_default_config(),
-  vars = build_default_variable_list()$variable
+  vars_list = build_default_variable_list()
 )
 }
 \arguments{
 \item{sample_sheet}{Dataframe with sample information}
 
 \item{config}{Default tool config}
+
+\item{vars_list}{List with variables}
 }
 \value{
 A string with the extension of the file

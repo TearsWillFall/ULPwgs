@@ -6,13 +6,13 @@
 \usage{
 validate_sample_sheet(
   sample_sheet = build_default_sample_sheet(),
-  vars = build_default_variable_list()
+  vars_list = build_default_variable_list()
 )
 }
 \arguments{
 \item{sample_sheet}{Input sample sheet}
 
-\item{vars}{Default variable list}
+\item{vars_list}{Default variable list}
 }
 \description{
 Validate sample sheet input columns

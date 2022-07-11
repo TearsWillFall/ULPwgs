@@ -6,11 +6,13 @@
 \usage{
 seq_info_check(
   sample_sheet = build_default_sample_sheet(),
-  vars = build_default_variable_list()$variable
+  vars_list = build_default_variable_list()
 )
 }
 \arguments{
 \item{sample_sheet}{Path to the input file}
+
+\item{vars_list}{List with variables}
 }
 \value{
 A string with the extension of the file

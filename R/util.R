@@ -91,12 +91,12 @@ check_req_types=function(sheet_col,col_name,types){
 #' 
 #'
 #' @param sample_sheet Input sample sheet
-#' @param vars Default variable list
+#' @param vars_list Default variable list
 #' @export
 
 
 validate_sample_sheet=function(sample_sheet=build_default_sample_sheet(),
-  vars=build_default_variable_list()){
+  vars_list=build_default_variable_list()){
     req_cols=vars$variable[vars$required==TRUE]
     check_req_cols(req_cols=req_cols)
     req_type_cols=vars$variable[vars$needs_type_validation==TRUE]
@@ -341,13 +341,14 @@ check_if_compressed=function(file_path){
 #' Check sequencing info for each read group for each sample
 #'
 #' @param sample_sheet Path to the input file
+#' @param vars_list List with variables
 #' @return A string with the extension of the file
 #' @export
 
 
 seq_info_check=function(sample_sheet=build_default_sample_sheet(),
-vars=build_default_variable_list()$variable){
-
+vars_list=build_default_variable_list()){
+  vars=vars_list$variable
   seq_info=lapply(seq(1,nrow(sample_sheet)),FUN=function(x){
     R1_seq_info=infer_sequencing_info(file_path=sample_sheet[x,]$R1)
     R1_seq_info=append(R1_seq_info,sample_sheet[x,vars[vars %in% names(sample_sheet)]])
@@ -380,13 +381,14 @@ vars=build_default_variable_list()$variable){
 
 #' @param sample_sheet Dataframe with sample information
 #' @param config Default tool config
+#' @param vars_list List with variables
 #' @return A string with the extension of the file
 #' @export
 
 
 parameter_config_check=function(sample_sheet=build_default_sample_sheet(),
-config=build_default_config(),vars=build_default_variable_list()$variable){
-
+config=build_default_config(),vars_list=build_default_variable_list()){
+  vars=vars_list$variable
   tool_configs=lapply(seq(1,nrow(sample_sheet)),FUN=function(x){
     tool_config=parse_tool_parameters(sample_sheet=sample_sheet[x,],config=config)
     tool_config=append(tool_config,sample_sheet[x,c(vars[vars %in% names(sample_sheet)],"R1","R2")])

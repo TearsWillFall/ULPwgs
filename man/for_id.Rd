@@ -2,30 +2,40 @@
 % Please edit documentation in R/preprocess.R
 \name{for_id}
 \alias{for_id}
-\title{Preprocess sequencing data}
+\title{For each variable in sample sheet}
 \usage{
 for_id(
   seq_info,
   tool_config,
   output_dir = "",
-  vars = build_default_variable_list(),
-  pmts = build_default_parameter_list(),
+  vars_list = build_default_variable_list(),
+  pmts_list = build_default_parameter_list(),
   nesting = "",
   merge_level = "library",
   nest_ws = 1
 )
 }
 \arguments{
-\item{output_dir}{Path to output directory}
+\item{seq_info}{Sample sequencing information}
 
-\item{sample_sheet}{Input sample sheet}
+\item{tool_config}{Tool config for each sample}
 
-\item{config}{Default tool configure}
+\item{output_dir}{Path to output directory. Default none}
+
+\item{pmts_list}{List with parameters}
+
+\item{nesting}{Starting nesting level}
+
+\item{merge_level}{Level to merge samples. Default library}
+
+\item{nest_ws}{Nesting ws to provide. Default 1}
+
+\item{var_list}{List with variables}
 
 \item{executor_id}{Task EXECUTOR ID . Default "preprocessSEQ"}
 
 \item{task_name}{Task name . Default "preprocessSEQ"}
 }
 \description{
-Preprocess sequencing data
+Run through each variable in sample sheet and report information
 }

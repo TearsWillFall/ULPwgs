@@ -16,44 +16,50 @@
 
 preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     executor_id=make_unique_id("preprocessSEQ"), 
-    vars=build_default_variable_list(),config=build_default_config(),
+    vars_list=build_default_variable_list(),config=build_default_config(),
+    pmts_list=build_default_parameter_list(),
     task_name="preprocessSEQ",output_dir="",merge_level="library",nest_ws=1){
-        
     task_id=make_unique_id(task_name)
-    validate_sample_sheet(sample_sheet=sample_sheet,vars=vars)
+    validate_sample_sheet(sample_sheet=sample_sheet,vars_list=vars)
     sample_info=list()
-    sample_info$seq_info=seq_info_check(sample_sheet=sample_sheet,vars=vars)
+    sample_info$seq_info=seq_info_check(sample_sheet=sample_sheet,vars_list=vars)
     sample_info$tool_config=parameter_config_check(sample_sheet=sample_sheet,
-    config=config,vars=vars)
+    config=config,vars_list=vars)
     job=build_job(executor_id=executor_id,task_id=task_id)
-    for_id(seq_info=sample_info$seq_info,tool_config=sample_info$tool_config,output_dir=output_dir,vars=vars,
-    nesting=nesting,merge_level)
+    for_id(seq_info=sample_info$seq_info,tool_config=sample_info$tool_config,output_dir=output_dir,vars_list=vars_list,
+    nesting=nesting,merge_level=merge_level,pmts_list=pmts_list)
 
 }
 
 
 
 
-#' Preprocess sequencing data
+#' For each variable in sample sheet 
 #' 
+#' Run through each variable in sample sheet and report information
 #'
-#' @param sample_sheet Input sample sheet
-#' @param config Default tool configure
+#' @param seq_info Sample sequencing information
+#' @param tool_config Tool config for each sample
+#' @param var_list List with variables
+#' @param pmts_list List with parameters
+#' @param nesting Starting nesting level
+#' @param nest_ws Nesting ws to provide. Default 1
+#' @param merge_level Level to merge samples. Default library
 #' @param executor_id Task EXECUTOR ID . Default "preprocessSEQ"
 #' @param task_name Task name . Default "preprocessSEQ"
-#' @param output_dir Path to output directory
+#' @param output_dir Path to output directory. Default none
 #' @export
 
 
 
 for_id=function(seq_info,tool_config, output_dir="",
-             vars=build_default_variable_list(),
-             pmts=build_default_parameter_list(),
+             vars_list=build_default_variable_list(),
+             pmts_list=build_default_parameter_list(),
              nesting="",merge_level="library",nest_ws=1){  
-            
-             var=vars$variable[1]
-             var_text=vars$text[1]
-             vars_left=vars[-1,]
+                
+             var=vars_list$variable[1]
+             var_text=vars_list$text[1]
+             vars_list_left=vars_list[-1,]
              info=unique(seq_info[,var,drop=TRUE])
              count=1
              rs=lapply(X=info,FUN=function(id){
@@ -85,7 +91,7 @@ for_id=function(seq_info,tool_config, output_dir="",
 
                
                     if(length(vars_left$variable)>0){
-                        for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars=vars_left,nesting=nesting,nest_ws=nest_ws)
+                        for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars=vars_list_left,nesting=nesting,nest_ws=nest_ws)
                     }else{
                         seq_info_R1=seq_info_id[seq_info_id$read_group=="R1",]
                         seq_info_R2=seq_info_id[seq_info_id$read_group=="R2",]
@@ -95,8 +101,8 @@ for_id=function(seq_info,tool_config, output_dir="",
                         add_nesting_ws(nesting,n=nest_ws)
                         cat(paste0(nesting,"|----",crayon::green(paste0("R2: ",seq_info_R2$path)),"\n"))    
                         lapply(seq(1,nrow(tool_config_id)),FUN=function(step){
-                            lapply(seq(1,nrow(pmts$parameter)),FUN=function(pmt){
-                                cat(paste0(nesting,"|----    ",paste0(pmts[pmt,]$text,tool_config[step,pmt]),"\n"))
+                            lapply(seq(1,nrow(pmts_list$parameter)),FUN=function(pmt){
+                                cat(paste0(nesting,"|----    ",paste0(pmts_list[pmt,]$text,tool_config[step,pmt]),"\n"))
                             })
                         })
                      
