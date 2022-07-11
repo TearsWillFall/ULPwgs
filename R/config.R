@@ -65,6 +65,9 @@ build_default_parameter_list=function(
 
 
 
+
+
+
 #' Build default sample sheet
 #' 
 #'
@@ -219,5 +222,7 @@ build_default_option_list=function(
                 library_id="",
                 flowcell_id="",
                 lane_id="")
-)
+){
+    return(options)
+}
 

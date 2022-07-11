@@ -9,6 +9,7 @@ preprocess_seq(
   executor_id = make_unique_id("preprocessSEQ"),
   vars_list = build_default_variable_list(),
   config = build_default_config(),
+  opts_list = build_default_option_list(),
   pmts_list = build_default_parameter_list(),
   task_name = "preprocessSEQ",
   output_dir = "",
