@@ -145,6 +145,7 @@ build_default_variable_list=function(
             "version",
             "reference",
             "library",
+            "run",
             "flowcell",
             "lane"),
         variable=c(
@@ -156,6 +157,7 @@ build_default_variable_list=function(
             "method_version",
             "reference",
             "library_id",
+            "run_id",
             "flowcell_id",
             "lane_id"),
         required=c(
@@ -168,6 +170,7 @@ build_default_variable_list=function(
             TRUE,
             TRUE,
             FALSE,
+            FALSE,
             FALSE),
         needs_type_validation=c(
             FALSE,
@@ -177,6 +180,7 @@ build_default_variable_list=function(
             TRUE,
             TRUE,
             TRUE,
+            FALSE,
             FALSE,
             FALSE,
             FALSE

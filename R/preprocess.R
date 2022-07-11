@@ -27,10 +27,10 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     validate_sample_sheet(sample_sheet=sample_sheet,
     vars_list=vars_list,opts_list=opts_list)
     
-    seq_info=seq_info_check(sample_sheet=sample_sheet,vars_list=vars)
+    seq_info=seq_info_check(sample_sheet=sample_sheet,vars_list=vars_list)
 
-    seq_info=dplyr::left_join(sample_info$seq_info,
-    parameter_config_check(sample_sheet=sample_sheet,config=config,vars_list=vars))
+    seq_info=dplyr::left_join(seq_info,
+    parameter_config_check(sample_sheet=sample_sheet,config=config,vars_list=vars_list))
     job=build_job(executor_id=executor_id,task_id=task_id)
     for_id(seq_info=seq_info,output_dir=output_dir,
     vars_list=vars_list,nesting=nesting,merge_level=merge_level,pmts_list=pmts_list)
@@ -77,9 +77,9 @@ for_id=function(seq_info,output_dir="",
                     merge=""
                     if(grepl(merge_level,var)){
                         merge=crayon::bold(" <<<<===== INFO::SAMPLES WILL BE MERGED AT THIS LEVEL")
+
+                        
                     }
-
-
                     
                     seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
             
@@ -101,8 +101,8 @@ for_id=function(seq_info,output_dir="",
                         for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars_list=vars_list_left,
                         nesting=nesting,nest_ws=nest_ws)
                     }else{
-                        tool_config_id=seq_info_id %>% dplyr::distinct(-c("R1","R2"))
-                        seq_info_id=seq_info_id %>% dplyr::distinct(-c(pmts$parameter))
+                        tool_config_id=seq_info_id %>% dplyr::select(-c(read_group,path)) %>%  dplyr::distinct()
+                        seq_info_id=seq_info_id %>% dplyr::select(-c(pmts_list$parameter)) %>%  dplyr::distinct()
                         seq_info_R1=seq_info_id[seq_info_id$read_group=="R1",]
                         seq_info_R2=seq_info_id[seq_info_id$read_group=="R2",]
                         add_nesting_ws(nesting,n=nest_ws)
@@ -110,12 +110,34 @@ for_id=function(seq_info,output_dir="",
                         add_nesting_ws(nesting,n=nest_ws)
                         cat(paste0(nesting,"|----",crayon::green(paste0("R2: ",seq_info_R2$path)),"\n"))    
                         lapply(seq(1,nrow(tool_config_id)),FUN=function(step){
-                            lapply(seq(1,nrow(pmts_list$parameter)),FUN=function(pmt){
-                                cat(paste0(nesting,"|----    ",paste0(pmts_list[pmt,]$text,tool_config_id[step,pmt]),"\n"))
-                            })
+                                cat(paste0(nesting,"        ","\n"))
+                            lapply(seq(1,length(pmts_list$parameter)),FUN=function(pmt){
+                                    space="       |"
+                                    if(pmt==ceiling(length(pmts_list$parameter)/2)){
+                                       space=paste0("STEP ",step," |")
+                                    }
+                                    mssg=
+                                    if(step>4){
+                                        cat(paste0(nesting,crayon::bold(paste0(space,pmts_list$text[pmt],
+                                        tool_config_id[step,pmts_list$parameter[pmt]])),"\n"))
+                                    }else{
+                                        cat(paste0(nesting,space,paste0(pmts_list$text[pmt],
+                                        tool_config_id[step,pmts_list$parameter[pmt]])),"\n")
+                                    }
+    
+                                })
+                                if(step!=nrow(tool_config_id)){
+                                        cat(paste0(nesting,"        ","      ..   ","\n"))
+                                        cat(paste0(nesting,"        ","      ..  ","\n"))
+                                        cat(paste0(nesting,"        ","      \\/   ","\n"))
+                                }else{
+                                    cat(paste0(nesting,"        ","\n"))
+                                }
+                       
                         })
                      
                     }
+            
                     count<<-count+1
             })
 }
