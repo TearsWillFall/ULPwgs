@@ -6,18 +6,19 @@
 \usage{
 build_default_sample_sheet(
   sample_sheet = list(project_id = "TRAILS", patient_id = c("TR001", "TR001", "TR001",
-    "TR002", "TR002"), sample_id = c("ID1", "ID1", "ID2", "ID1", "ID2"), method_id =
-    "TG", library_id = "LB1", R1 = c("test/test_data/multi_lane/P1_S1_L1_R1.fq.gz",
+    "TR002", "TR002"), sample_id = c("ID1", "ID1", "ID2", "ID1", "ID2"), sequencing_type
+    = "bulk", method_type = "capture", method_version = "pcf_v3", reference = "hg19",
+    library_id = "LB1", R1 = c("test/test_data/multi_lane/P1_S1_L1_R1.fq.gz",
     "test/test_data/multi_lane/P1_S1_L2_R1.fq.gz",
     "test/test_data/multi_lane/P1_S2_L1_R1.fq.gz",
     "test/test_data/multi_lane/P2_S1_L1_R1.fq.gz",
     "test/test_data/multi_lane/P2_S2_L1_R1.fq.gz"), R2 =
-    c("test/test_data/multi_lane/P1_S1_L1_R2.fq.gz",
-    "test/test_data/multi_lane/P1_S1_L2_R2.fq.gz", 
+    c("test/test_data/multi_lane/P1_S1_L1_R2.fq.gz", 
     
+    "test/test_data/multi_lane/P1_S1_L2_R2.fq.gz",
     "test/test_data/multi_lane/P1_S2_L1_R2.fq.gz",
     "test/test_data/multi_lane/P2_S1_L1_R2.fq.gz",
-    "test/test_data/multi_lane/P2_S2_L1_R2.fq.gz"), genome = "hg19", step =
+    "test/test_data/multi_lane/P2_S2_L1_R2.fq.gz"), step =
     "pre_fastqc=TRUE;trimming=TRUE;post_fastqc=TRUE;alignment=TRUE;merge_bam=TRUE;markdups=TRUE;recalibrate=TRUE;alignqc=TRUE",
     threads =
     "pre_fastqc=6;trimming=6;post_fastqc=6;alignment=12;merge_bam=6;markdups=12;recalibrate=2;alignqc=6",

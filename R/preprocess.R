@@ -5,96 +5,115 @@
 #'
 #' @param sample_sheet Input sample sheet
 #' @param config Default tool configure
+#' @param vars Default variables
+#' @param executor_id Task EXECUTOR ID . Default "preprocessSEQ"
+#' @param task_name Task name . Default "preprocessSEQ"
+#' @param output_dir Path to output directory
+#' @param merge_level Which level to merge samples
+#' @param nest_ws Nesting white-space separator
+#' @export
+
+
+preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
+    executor_id=make_unique_id("preprocessSEQ"), 
+    vars=build_default_variable_list(),config=build_default_config(),
+    task_name="preprocessSEQ",output_dir="",merge_level="library",nest_ws=1){
+        
+    task_id=make_unique_id(task_name)
+    validate_sample_sheet(sample_sheet=sample_sheet,vars=vars)
+    sample_info=list()
+    sample_info$seq_info=seq_info_check(sample_sheet=sample_sheet,vars=vars)
+    sample_info$tool_config=parameter_config_check(sample_sheet=sample_sheet,
+    config=config,vars=vars)
+    job=build_job(executor_id=executor_id,task_id=task_id)
+    for_id(seq_info=sample_info$seq_info,tool_config=sample_info$tool_config,output_dir=output_dir,vars=vars,
+    nesting=nesting,merge_level)
+
+}
+
+
+
+
+#' Preprocess sequencing data
+#' 
+#'
+#' @param sample_sheet Input sample sheet
+#' @param config Default tool configure
 #' @param executor_id Task EXECUTOR ID . Default "preprocessSEQ"
 #' @param task_name Task name . Default "preprocessSEQ"
 #' @param output_dir Path to output directory
 #' @export
 
 
-preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
-    executor_id=make_unique_id("preprocessSEQ"), 
-    variables=build_default_variable_list(),config=build_default_config(),
-    task_name="preprocessSEQ",output_dir=""){
-        
-    task_id=make_unique_id(task_name)
-    sample_info=list()
-    sample_info$seq_info=seq_info_check(sample_info=sample_sheet)
-    sample_info$tool_config=parameter_config_check(sample_sheet=sample_sheet,config=config)
-    seq_info=sample_info$seq_info %>% dplyr::filter(validate==TRUE)
 
-    job=build_job(executor_id=executor_id,task_id=task_id)
+for_id=function(seq_info,tool_config, output_dir="",
+             vars=build_default_variable_list(),
+             pmts=build_default_parameter_list(),
+             nesting="",merge_level="library",nest_ws=1){  
+            
+             var=vars$variable[1]
+             var_text=vars$text[1]
+             vars_left=vars[-1,]
+             info=unique(seq_info[,var,drop=TRUE])
+             count=1
+             rs=lapply(X=info,FUN=function(id){
+            
+                    if(var!="project_id"){
+                          add_nesting_ws(nesting,n=nest_ws)
+                    }
+                    merge=""
+                    if(grepl(merge_level,var)){
+                        merge=crayon::bold(" <<<<===== INFO::SAMPLES WILL BE MERGED AT THIS LEVEL")
+                    }
 
 
- 
-    ## Go through each patient
-    smt=lapply(unique(seq_info$project_id),FUN=function(project_id){
-        cat(paste0("Project ID: ",project_id,"\n"))
-        seq_info_project=seq_info %>% dplyr::filter(project_id==project_id)
-        out_file_dir_project=set_dir(dir=output_dir,name=project_id)
-        ## Go through each patient
-        lapply(unique(seq_info_project$patient_id),FUN=function(patient_id){
-            cat(paste0(add_fill(n=1),add_bl(),"Patient ID: ",patient_id,"\n"))  
-            seq_info_patient=seq_info_project %>% dplyr::filter(patient_id==patient_id)
-            out_file_dir_patient=set_dir(dir=out_file_dir_project,name=patient_id)
-            ## Go through each sample
-            lapply(unique(seq_info_patient$sample_id),FUN=function(sample_id){
-                cat(paste0(add_fill(n=2),add_bl(),"Sample ID: ",sample_id,"\n"))
-                seq_info_sample=seq_info_patient %>% dplyr::filter(sample_id==sample_id)
-                out_file_dir_sample=set_dir(dir=out_file_dir_patient,name=sample_id)
-                    ## Go through each method
-                    lapply(unique(seq_info_sample$method_id),FUN=function(method_id){
-                        cat(paste0(add_fill(n=3),add_bl(),"Method ID: ",method_id,"\n"))
-                        seq_info_method=seq_info_sample %>% dplyr::filter(method_id==method_id)
-                        out_file_dir_method=set_dir(dir=out_file_dir_sample,name=method_id)
-                     
-                        ## Go through each flowcell ID
-                        lapply(unique(seq_info_method$flowcell_id),FUN=function(flowcell_id){
-                            cat(paste0(add_fill(n=4),add_bl(),"Flowcell ID: ",flowcell_id,"\n"))
-                            seq_info_flowcell=seq_info_method %>% dplyr::filter(flowcell_id==flowcell_id)
-                            out_file_dir_flowcell=set_dir(dir=out_file_dir_method,name=flowcell_id)
-                         
-                            ## Go through each lane
-                            lapply(unique(seq_info_flowcell$lane_id),FUN=function(lane_id){
-                                cat(paste0(add_fill(n=5),add_bl(),"Lane ID: ",lane_id,"\n"))
-                                seq_info_lane=seq_info_flowcell %>% dplyr::filter(lane_id==lane_id)
-                                out_file_dir_lane=set_dir(dir=out_file_dir_flowcell,name=lane_id)
-                        
-                                ## Go through each library
-                                lapply(unique(seq_info_lane$library_id),FUN=function(library_id){
-                                        cat(paste0(add_fill(n=6),add_bl(),"Library ID: ",library_id,"\n"))
-                                        
-                                        seq_info_library=seq_info_lane %>% dplyr::filter(project_id==project_id&patient_id==patient_id&
-                                        sample_id==sample_id&method_id==method_id&flowcell_id==flowcell_id&lane_id==lane_id&library_id==library_id)
-                                        out_file_dir_library=set_dir(dir=out_file_dir_lane,name=library_id)
-                                        print(seq_info_library)
-                                        print("-------")
-                                                                             
-                                    
-                                        
-                                        
+                    
+                    seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
+                    tool_config_id=tool_config[tool_config[,var,drop=TRUE]==id,]
+            
+                    out_file_dir=set_dir(dir=output_dir,name=id)
+                   
+                    instrument_name=""
+                    if(var=="flowcell_id"){
+                        instrument_name=paste0("   Platform: ",unique(seq_info_id$instrument_by_flowcell_id))
+                    }
 
-                               
-                                        # seq_info_R1=seq_info %>% dplyr::filter(project_id==project_id,
-                                        # patient_id==patient_id,sample_id==sample_id,method_id==method_id,
-                                        # flowcell_id==flowcell_id,lane_id==lane_id,library_id==library_id,
-                                        # read_group=="R1")
-                
-                                        # seq_info_R2=seq_info %>% dplyr::filter(project_id==project_id,
-                                        # patient_id==patient_id,sample_id==sample_id,method_id==method_id,
-                                        # flowcell_id==flowcell_id,lane_id==lane_id,library_id==library_id,
-                                        # read_group=="R2")
-                                        
-                                        # cat(paste0(add_fill(n=7),"|----R1: ",seq_info_R1$path,"\n"))
-                                        # cat(paste0(add_fill(n=7),"|      \n"))
-                                        # cat(paste0(add_fill(n=7),"|----R2: ",seq_info_R2$path,"\n"))
-                                })
+                    cat(paste0(nesting,"|----",crayon::blue(var_text),crayon::red(id),crayon::silver(instrument_name),merge,"\n"))
+                   
+
+                    nesting=break_nest(count=count,info=info,nesting=nesting)
+
+               
+                    if(length(vars_left$variable)>0){
+                        for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars=vars_left,nesting=nesting,nest_ws=nest_ws)
+                    }else{
+                        seq_info_R1=seq_info_id[seq_info_id$read_group=="R1",]
+                        seq_info_R2=seq_info_id[seq_info_id$read_group=="R2",]
+                        tool_config_id=tool_config_id %>% dplyr::distinct(-c(R1,R2))
+                        add_nesting_ws(nesting,n=nest_ws)
+                        cat(paste0(nesting,"|----",crayon::green(paste0("R1: ",seq_info_R1$path)),"\n"))
+                        add_nesting_ws(nesting,n=nest_ws)
+                        cat(paste0(nesting,"|----",crayon::green(paste0("R2: ",seq_info_R2$path)),"\n"))    
+                        lapply(seq(1,nrow(tool_config_id)),FUN=function(step){
+                            lapply(seq(1,nrow(pmts$parameter)),FUN=function(pmt){
+                                cat(paste0(nesting,"|----    ",paste0(pmts[pmt,]$text,tool_config[step,pmt]),"\n"))
                             })
                         })
-                    })
-                })
+                     
+                    }
+                    count<<-count+1
             })
-        })   
-    }
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -146,20 +165,6 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
 
 #             }
 
-#                 if(grepl("post_fastqc",rownames(parameters))){
-
-#                     job_report=qc_fastqc(bin_path=bin_fastqc,
-#                     file_R1=sub_sub_sample_info$file[1],
-#                     file_R2=sub_sub_sample_info$file[2],
-#                     output_dir=paste0(out_file_dir,"/fastqc_reports/post_trim"),
-#                     executor_id=task_id,
-#                     verbose=parameters["pre_fastqc","verbose"],
-#                     mode=parameters["pre_fastqc","mode"],
-#                     threads=parameters["pre_fastqc","threads"],
-#                     ram=parameters["pre_fastqc","ram"],
-#                     time=parameters["pre_fastqc","time"],
-#                     update_time=60,wait=FALSE,hold=job_report$job_id)
-#                 }
         
         
 #                 if(grepl("alignment",rownames(parameters))){
@@ -245,3 +250,21 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
 #                 ti="",ri="",ref_flat="",method="tg",mode="local",executor=make_unique_id("alignQC"),
 #                 task="alignQC",time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE, hold="")
 #             }
+
+
+
+
+#   if(grepl("post_fastqc",rownames(parameters))){
+
+#                             job_report=qc_fastqc(bin_path=bin_fastqc,
+#                             file_R1=seq_info_R1$path,
+#                             file_R2=seq_info_R2$path,
+#                             output_dir=paste0(out_file_dir,"/fastqc_reports/post_trim"),
+#                             executor_id=task_id,
+#                             verbose=parameters["pre_fastqc","verbose"],
+#                             mode=parameters["pre_fastqc","mode"],
+#                             threads=parameters["pre_fastqc","threads"],
+#                             ram=parameters["pre_fastqc","ram"],
+#                             time=parameters["pre_fastqc","time"],
+#                             update_time=60,wait=FALSE,hold=job_report$job_id)
+#                         }

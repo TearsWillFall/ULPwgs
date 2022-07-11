@@ -6,7 +6,8 @@
 \usage{
 parameter_config_check(
   sample_sheet = build_default_sample_sheet(),
-  config = build_default_config()
+  config = build_default_config(),
+  vars = build_default_variable_list()$variable
 )
 }
 \arguments{

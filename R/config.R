@@ -27,6 +27,44 @@ build_default_config=function(
     return(config)
 }
 
+
+
+
+#' Build default tool configuration
+#' 
+#'
+#' @param config List with name,threads,ram,step,mode,verbose,time,args config
+#' @export
+
+
+build_default_parameter_list=function(
+    parameters=list(
+        parameter=c(
+        "name",
+        "step",
+        "mode",
+        "time",
+        "threads",
+        "ram",
+        "args")
+        ,
+        text=c(
+            "Step Name: ",
+            "Run: ",
+            "Run Mode: ",
+            "Run Time: ",
+            "Threads: ",
+            "Ram: ",
+            "Tool Parameters : "
+        )
+    )
+){
+    return(parameters)
+    
+}
+
+
+
 #' Build default sample sheet
 #' 
 #'
@@ -39,7 +77,10 @@ build_default_sample_sheet=function(
         project_id="TRAILS",
         patient_id=c("TR001","TR001","TR001","TR002","TR002"),
         sample_id=c("ID1","ID1","ID2","ID1","ID2"),
-        method_id="TG",
+        sequencing_type="bulk",
+        method_type="capture",
+        method_version="pcf_v3",
+        reference="hg19",
         library_id="LB1",
         R1=c("test/test_data/multi_lane/P1_S1_L1_R1.fq.gz",
         "test/test_data/multi_lane/P1_S1_L2_R1.fq.gz",
@@ -51,7 +92,6 @@ build_default_sample_sheet=function(
         "test/test_data/multi_lane/P1_S2_L1_R2.fq.gz",
         "test/test_data/multi_lane/P2_S1_L1_R2.fq.gz",
         "test/test_data/multi_lane/P2_S2_L1_R2.fq.gz"),
-        genome="hg19",
         step="pre_fastqc=TRUE;trimming=TRUE;post_fastqc=TRUE;alignment=TRUE;merge_bam=TRUE;markdups=TRUE;recalibrate=TRUE;alignqc=TRUE",
         threads="pre_fastqc=6;trimming=6;post_fastqc=6;alignment=12;merge_bam=6;markdups=12;recalibrate=2;alignqc=6",
         ram="pre_fastqc=8;trimming=8;post_fastqc=8;alignment=16;merge_bam=16;markdups=16;recalibrate=8;alignqc=8",
@@ -91,8 +131,83 @@ build_default_binaries_config=function(binaries=list(tool=c("fastqc","skewer","b
 #' @export
 
 
-build_default_variable_list=function(variables=list(variable=c("project_id","patient_id","sample_id","method_id","flowcell_id","lane_id","library_id"),
-    text=c("Project ID:","Patient ID:","Sample ID:","Method ID:","Flowcell ID:","Lane ID:","Library ID:")
+build_default_variable_list=function(
+    variables=list(
+        name=c(
+            "project",
+            "patient",
+            "sample",
+            "sequencing",
+            "method",
+            "version",
+            "reference",
+            "library",
+            "flowcell",
+            "lane"),
+        variable=c(
+            "project_id",
+            "patient_id",
+            "sample_id",
+            "sequencing_type",
+            "method_type",
+            "method_version",
+            "reference",
+            "library_id",
+            "flowcell_id",
+            "lane_id"),
+        required=c(
+            TRUE,
+            TRUE,
+            TRUE,
+            TRUE,
+            TRUE,
+            TRUE,
+            TRUE,
+            TRUE,
+            FALSE,
+            FALSE),
+        options=list(
+            project_id="",
+            patient_id="",
+            sample_id="",
+            sequencing_type=c("bulk","single_cell"),
+            method_type=c("wgs","capture","exome","rnaseq"),
+            method_version=list(
+                wgs=c("hc","lp","ulp"),
+                capture=c("pcf_v1","pcf_v2","pcf_v3"),
+                exome=c("all_exome"),
+                rnaseq=list("all_transcriptome")
+            ),
+            reference=c("hg19","hg38"),
+            library_id="",
+            flowcell_id="",
+            lane_id=""),
+
+        needs_type_validation=c(
+            FALSE,
+            FALSE,
+            FALSE,
+            TRUE,
+            TRUE,
+            TRUE,
+            TRUE,
+            FALSE,
+            FALSE,
+            FALSE
+        ),
+        text=c(
+            "Project ID: ",
+            "Patient ID: ",
+            "Sample ID: ",
+            "Sequencing Type: ",
+            "Method Type: ",
+            "Method Version: ",
+            "Reference Genome: ",
+            "Library ID: ",
+            "Flowcell ID: ",
+            "Lane ID: "
+            )
 ))(
-    return(data.frame(variables))
+    return(variables)
 )
+

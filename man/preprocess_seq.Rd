@@ -7,10 +7,12 @@
 preprocess_seq(
   sample_sheet = build_default_sample_sheet(),
   executor_id = make_unique_id("preprocessSEQ"),
-  variables = build_default_variable_list(),
+  vars = build_default_variable_list(),
   config = build_default_config(),
   task_name = "preprocessSEQ",
-  output_dir = ""
+  output_dir = "",
+  merge_level = "library",
+  nest_ws = 1
 )
 }
 \arguments{
@@ -18,11 +20,17 @@ preprocess_seq(
 
 \item{executor_id}{Task EXECUTOR ID . Default "preprocessSEQ"}
 
+\item{vars}{Default variables}
+
 \item{config}{Default tool configure}
 
 \item{task_name}{Task name . Default "preprocessSEQ"}
 
 \item{output_dir}{Path to output directory}
+
+\item{merge_level}{Which level to merge samples}
+
+\item{nest_ws}{Nesting white-space separator}
 }
 \description{
 Preprocess sequencing data

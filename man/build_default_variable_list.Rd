@@ -5,9 +5,22 @@
 \title{Build default binaries config}
 \usage{
 build_default_variable_list(
-  variables = list(variable = c("project_id", "patient_id", "sample_id", "method_id",
-    "flowcell_id", "lane_id", "library_id"), text = c("Project ID:", "Patient ID:",
-    "Sample ID:", "Method ID:", "Flowcell ID:", "Lane ID:", "Library ID:"))
+  variables = list(name = c("project", "patient", "sample", "sequencing", "method",
+    "version", "reference", "library", "flowcell", "lane"), variable = c("project_id",
+    "patient_id", "sample_id", "sequencing_type", "method_type", "method_version",
+    "reference", "library_id", "flowcell_id", "lane_id"), required = c(TRUE, TRUE, TRUE,
+    TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE), options = list(project_id = "",
+    patient_id = "", sample_id = "", sequencing_type = c("bulk", "single_cell"),
+    method_type = c("wgs", "capture", 
+     "exome", "rnaseq"), method_version = list(wgs
+    = c("hc", "lp", "ulp"), capture = c("pcf_v1", "pcf_v2", "pcf_v3"), exome =
+    c("all_exome"), rnaseq = list("all_transcriptome")), reference = c("hg19", "hg38"),
+    library_id = "", flowcell_id = "", lane_id = ""), needs_type_validation = c(FALSE,
+    FALSE, FALSE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE), text = c("Project ID: ",
+    "Patient ID: ", "Sample ID: ", "Sequencing Type: ", "Method Type: ",
+    "Method Version: ", "Reference Genome: ", "Library ID: ", 
+     "Flowcell ID: ",
+    "Lane ID: "))
 )
 }
 \arguments{

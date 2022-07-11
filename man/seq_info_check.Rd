@@ -4,10 +4,13 @@
 \alias{seq_info_check}
 \title{Check sequencing information for samples}
 \usage{
-seq_info_check(sample_info = build_default_sample_sheet())
+seq_info_check(
+  sample_sheet = build_default_sample_sheet(),
+  vars = build_default_variable_list()$variable
+)
 }
 \arguments{
-\item{sample_info}{Path to the input file}
+\item{sample_sheet}{Path to the input file}
 }
 \value{
 A string with the extension of the file

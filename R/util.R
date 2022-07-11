@@ -39,6 +39,74 @@ set_dir=function(dir="",name=""){
 
 
 
+
+#' Check required columns in sample sheet
+#' 
+#'
+#' @param sample_sheet Input sample sheet
+#' @param req_cols Required columns in sample sheet
+#' @export
+
+check_req_cols=function(sample_sheet=build_default_sample_sheet(),
+req_cols){
+  cols_in_sheet=names(sample_sheet)[names(sample_sheet) %in% req_cols]
+  miss_cols=cols_in_sheet[!req_cols %in% cols_in_sheet]
+  len_miss_cols=length(miss_cols)
+  if(len_miss_cols>0){
+   stop(paste0("Error: The following columns are required and were not found in the sample sheet: ",
+    paste(miss_cols,collapse=", "),
+    "."))
+  }
+
+}
+
+
+
+#' Check required variable values for a column
+#' 
+#'
+#' @param sheet_col Sample sheet column
+#' @param col_name Column name
+#' @param types Allowed values types for columns
+#' @export
+
+
+check_req_types=function(sheet_col,col_name,types){
+  types_in_col=unique(sheet_col[sheet_col %in% types])
+  wrong_types=unique(sheet_col[!sheet_col %in% types])
+  len_wrong_types=length(wrong_types)
+
+  if(len_wrong_types>0){
+   stop(paste0("Error: Column ",col_name," contains wrong value types in sample sheet: ",
+   paste(wrong_types,collapse=", "),
+    ". Allowed values for column ",col_name," are : ",paste(types,collapse=", ")))
+  }
+  return(TRUE)
+}
+
+
+
+
+#' Validate sample sheet input columns
+#' 
+#'
+#' @param sample_sheet Input sample sheet
+#' @param vars Default variable list
+#' @export
+
+
+validate_sample_sheet=function(sample_sheet=build_default_sample_sheet(),
+  vars=build_default_variable_list()){
+    req_cols=vars$variable[vars$required==TRUE]
+    check_req_cols(req_cols=req_cols)
+    req_type_cols=vars$variable[vars$needs_type_validation==TRUE]
+    rtrn=lapply(req_type_cols,FUN=function(col){
+          check_req_types(sheet_col=sample_sheet[,col,drop=TRUE],
+           col_name=col,types=unlist(vars$options[col]))
+
+    })
+}
+
 #' Parse all tool parameters from sample sheet
 #' 
 #'
@@ -55,7 +123,7 @@ config=build_default_config()){
   missing_parameters=parameters[!parameters %in% parameters_in_sheet]
   len_missing_parameters=length(missing_parameters)
   if(len_missing_parameters>0){
-    message(paste0("Warning: The following columns were not found in the sample sheet: ",
+    message(paste0("Warning: The following columns were not found for tool parameters in the sample sheet: ",
     paste(missing_parameters,collapse=", "),
     ". These parameters will be initiate with default configuration."))
   }
@@ -201,18 +269,25 @@ infer_sequencing_info=function(bin_path="tools/samtools/samtools",file_path){
 #' @export
 
 extract_read_header=function(bin_path="tools/samtools/samtools",file_path){
+  
+
   file_ext=get_file_ext(file_path)
+    
+  if(!file_ext){
+    stop("ERROR:",file_path," could not be found")
+  }
+  file.exists(file_path)
   if(grepl("f*q",file_ext)){
     if(check_if_compressed(file_path)){
-      read=system(paste0("gunzip -c ",file_path,"| head -n 1"),intern=TRUE)
+      read=system(paste0("gunzip -c ",file_path,"| head -n 1 "),intern=TRUE)
     }else{
-      read=system(paste0("cat ",file_path,"| head -n 1"),intern=TRUE)
+      read=system(paste0("cat ",file_path,"| head -n 1 "),intern=TRUE)
     }
     
   }else if(grepl("bam$",file_ext)){
-    read=system(paste0(bin_path," view | head -n 1 | awk '{print $1}'"),intern=TRUE)
+    read=system(paste0(bin_path," view | head -n 1 | awk '{print $1}' "),intern=TRUE)
   }else{
-   stop("Could not figure out file format")
+   stop("Error: Could not figure out file format for file : ",file_path)
   }
 }
 
@@ -265,37 +340,36 @@ check_if_compressed=function(file_path){
 #'
 #' Check sequencing info for each read group for each sample
 #'
-#' @param sample_info Path to the input file
+#' @param sample_sheet Path to the input file
 #' @return A string with the extension of the file
 #' @export
 
 
-seq_info_check=function(sample_info=build_default_sample_sheet()){
-  seq_info=lapply(seq(1,nrow(sample_info)),FUN=function(x){
-    R1_seq_info=infer_sequencing_info(file_path=sample_info[x,]$R1)
-    R1_seq_info$project_id=sample_info[x,]$project_id
-    R1_seq_info$patient_id=sample_info[x,]$patient_id
-    R1_seq_info$sample_id=sample_info[x,]$sample_id
-    R1_seq_info$method_id=sample_info[x,]$method_id
-    R1_seq_info$library_id=sample_info[x,]$library_id
+seq_info_check=function(sample_sheet=build_default_sample_sheet(),
+vars=build_default_variable_list()$variable){
+
+  seq_info=lapply(seq(1,nrow(sample_sheet)),FUN=function(x){
+    R1_seq_info=infer_sequencing_info(file_path=sample_sheet[x,]$R1)
+    R1_seq_info=append(R1_seq_info,sample_sheet[x,vars[vars %in% names(sample_sheet)]])
     R1_seq_info$read_group="R1"
-    R1_seq_info$path=sample_info[x,]$R1
-    R2_seq_info=infer_sequencing_info(file_path=sample_info[x,]$R2)
-    R2_seq_info$project_id=sample_info[x,]$project_id
-    R2_seq_info$patient_id=sample_info[x,]$patient_id
-    R2_seq_info$sample_id=sample_info[x,]$sample_id
-    R2_seq_info$method_id=sample_info[x,]$method_id
-    R2_seq_info$library_id=sample_info[x,]$library_id
+    R1_seq_info$path=sample_sheet[x,]$R1
+    R2_seq_info=infer_sequencing_info(file_path=sample_sheet[x,]$R2)
+    R2_seq_info=append(R2_seq_info,sample_sheet[x,vars[vars %in% names(sample_sheet)]])
     R2_seq_info$read_group="R2"
-    R2_seq_info$path=sample_info[x,]$R2
+    R2_seq_info$path=sample_sheet[x,]$R2
     seq_info=dplyr::bind_rows(R1_seq_info,R2_seq_info)
     seq_info=seq_info %>% 
-      tidyr::pivot_longer(cols=!c(read_group,path,project_id,patient_id,sample_id,method_id),names_to="platform",values_to="value")
+      tidyr::pivot_longer(cols=!c(vars[vars %in% names(sample_sheet)],
+      read_group,path),names_to="platform",values_to="value")
     seq_info=seq_info %>% dplyr::group_by(platform) %>% 
       dplyr::mutate(validate=value[read_group=="R1"]==value[read_group=="R2"])
   }) %>% dplyr::bind_rows() %>% dplyr::ungroup()%>% tidyr::pivot_wider(values_from=value,names_from=platform)
-    return(seq_info)
+  if(any(seq_info$validate==FALSE)){
+      stop("Miss-matching R1 and R2 information found for : \n",seq_info[seq_info$validate==FALSE,])
+  }
+  return(seq_info)
 }
+
 
 
 #' Check parameter configuration in sample sheet
@@ -311,17 +385,11 @@ seq_info_check=function(sample_info=build_default_sample_sheet()){
 
 
 parameter_config_check=function(sample_sheet=build_default_sample_sheet(),
-config=build_default_config()){
+config=build_default_config(),vars=build_default_variable_list()$variable){
 
   tool_configs=lapply(seq(1,nrow(sample_sheet)),FUN=function(x){
     tool_config=parse_tool_parameters(sample_sheet=sample_sheet[x,],config=config)
-    tool_config$project_id=sample_sheet[x,]$project_id
-    tool_config$patient_id=sample_sheet[x,]$patient_id
-    tool_config$sample_id=sample_sheet[x,]$sample_id
-    tool_config$method_id=sample_sheet[x,]$method_id
-    tool_config$library_id=sample_sheet[x,]$library_id
-    tool_config$R1=sample_sheet[x,]$R1
-    tool_config$R2=sample_sheet[x,]$R2
+    tool_config=append(tool_config,sample_sheet[x,c(vars[vars %in% names(sample_sheet)],"R1","R2")])
     return(tool_config)
   })
   tool_config=dplyr::bind_rows(tool_configs)
@@ -463,8 +531,42 @@ add_fill=function(fill="\t",n=2){
   paste0(rep(fill,n),collapse="")
 }
 
+#' @export
+
+add_nesting_level=function(n=1){
+  nest=paste0(" ",add_fill(" ",n=4))
+
+  if(n>0){
+    paste0(add_fill(" ",n=4),paste0(base::rep(nest,n),collapse=""),add_bl())
+  }else{
+    add_fill(" ",n=9)
+  }
+}
+
+#' @export
+
+add_nesting_ws=function(nesting="",n=1){
+    paste0(rep(paste0(nesting,"|    ","\n"),n),collapse="")
+}
 
 
+#' @export
+
+
+add_nest=function(){
+  return("|    ")
+}
+
+#' @export
+
+break_nest=function(count,info,nesting){
+  if(count==1&length(info)>1){
+          nesting=paste0(nesting,add_nest())
+  }else{
+          nesting=paste0(nesting,"     ")
+  }
+  return(nesting)
+}
 
 
 
