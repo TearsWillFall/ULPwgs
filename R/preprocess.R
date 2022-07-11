@@ -16,11 +16,16 @@
 
 preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     executor_id=make_unique_id("preprocessSEQ"), 
-    vars_list=build_default_variable_list(),config=build_default_config(),
+    vars_list=build_default_variable_list(),
+    config=build_default_config(),
+    opts_list=build_default_option_list(),
     pmts_list=build_default_parameter_list(),
-    task_name="preprocessSEQ",output_dir="",merge_level="library",nest_ws=1){
+    task_name="preprocessSEQ",output_dir="",
+    merge_level="library",nest_ws=1){
+
     task_id=make_unique_id(task_name)
-    validate_sample_sheet(sample_sheet=sample_sheet,vars_list=vars)
+    validate_sample_sheet(sample_sheet=sample_sheet,
+    vars_list=vars_list,opts_list=opts_list)
     sample_info=list()
     sample_info$seq_info=seq_info_check(sample_sheet=sample_sheet,vars_list=vars)
     sample_info$tool_config=parameter_config_check(sample_sheet=sample_sheet,
@@ -56,9 +61,11 @@ for_id=function(seq_info,tool_config, output_dir="",
              vars_list=build_default_variable_list(),
              pmts_list=build_default_parameter_list(),
              nesting="",merge_level="library",nest_ws=1){  
-                
-             var=vars_list$variable[1]
-             var_text=vars_list$text[1]
+            
+
+             var=var_list$variable[1]
+             var_text=var_list$text[1]
+
              vars_list_left=vars_list[-1,]
              info=unique(seq_info[,var,drop=TRUE])
              count=1

@@ -96,13 +96,13 @@ check_req_types=function(sheet_col,col_name,types){
 
 
 validate_sample_sheet=function(sample_sheet=build_default_sample_sheet(),
-  vars_list=build_default_variable_list()){
+  vars_list=build_default_variable_list(),opts_list=build_default_option_list()){
     req_cols=vars_list$variable[vars_list$required==TRUE]
     check_req_cols(req_cols=req_cols)
     req_type_cols=vars_list$variable[vars_list$needs_type_validation==TRUE]
     rtrn=lapply(req_type_cols,FUN=function(col){
           check_req_types(sheet_col=sample_sheet[,col,drop=TRUE],
-           col_name=col,types=unlist(vars_list$options[col]))
+           col_name=col,types=unlist(opts_list[col]))
 
     })
 }
