@@ -273,7 +273,7 @@ extract_read_header=function(bin_path="tools/samtools/samtools",file_path){
 
   file_ext=get_file_ext(file_path)
     
-  if(!file_ext){
+  if(!file.exists(bin_path)){
     stop("ERROR:",file_path," could not be found")
   }
   file.exists(file_path)
