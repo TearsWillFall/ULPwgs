@@ -26,13 +26,14 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     task_id=make_unique_id(task_name)
     validate_sample_sheet(sample_sheet=sample_sheet,
     vars_list=vars_list,opts_list=opts_list)
-    sample_info=list()
-    sample_info$seq_info=seq_info_check(sample_sheet=sample_sheet,vars_list=vars)
-    sample_info$tool_config=parameter_config_check(sample_sheet=sample_sheet,
-    config=config,vars_list=vars)
+    
+    seq_info=seq_info_check(sample_sheet=sample_sheet,vars_list=vars)
+
+    seq_info=dplyr::left_join(sample_info$seq_info,
+    parameter_config_check(sample_sheet=sample_sheet,config=config,vars_list=vars))
     job=build_job(executor_id=executor_id,task_id=task_id)
-    for_id(seq_info=sample_info$seq_info,tool_config=sample_info$tool_config,output_dir=output_dir,vars_list=vars_list,
-    nesting=nesting,merge_level=merge_level,pmts_list=pmts_list)
+    for_id(seq_info=sample_info$seq_info,output_dir=output_dir,
+    vars_list=vars_list,nesting=nesting,merge_level=merge_level,pmts_list=pmts_list)
 
 }
 
@@ -44,7 +45,6 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
 #' Run through each variable in sample sheet and report information
 #'
 #' @param seq_info Sample sequencing information
-#' @param tool_config Tool config for each sample
 #' @param var_list List with variables
 #' @param pmts_list List with parameters
 #' @param nesting Starting nesting level
@@ -57,14 +57,14 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
 
 
 
-for_id=function(seq_info,tool_config, output_dir="",
+for_id=function(seq_info,output_dir="",
              vars_list=build_default_variable_list(),
              pmts_list=build_default_parameter_list(),
              nesting="",merge_level="library",nest_ws=1){  
             
 
-             var=var_list$variable[1]
-             var_text=var_list$text[1]
+             var=vars_list$variable[1]
+             var_text=vars_list$text[1]
 
              vars_list_left=vars_list[-1,]
              info=unique(seq_info[,var,drop=TRUE])
@@ -82,7 +82,7 @@ for_id=function(seq_info,tool_config, output_dir="",
 
                     
                     seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
-                    tool_config_id=tool_config[tool_config[,var,drop=TRUE]==id,]
+            
             
                     out_file_dir=set_dir(dir=output_dir,name=id)
                    
@@ -97,12 +97,14 @@ for_id=function(seq_info,tool_config, output_dir="",
                     nesting=break_nest(count=count,info=info,nesting=nesting)
 
                
-                    if(length(vars_left$variable)>0){
-                        for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars=vars_list_left,nesting=nesting,nest_ws=nest_ws)
+                    if(length(vars_list_left$variable)>0){
+                        for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars_list=vars_list_left,
+                        nesting=nesting,nest_ws=nest_ws)
                     }else{
+                        tool_config_id=seq_info_id %>% dplyr::distinct(-c(R1,R2))
+                        seq_info_id=seq_info_id %>% dplyr::distinct(-c(pmts$parameter))
                         seq_info_R1=seq_info_id[seq_info_id$read_group=="R1",]
                         seq_info_R2=seq_info_id[seq_info_id$read_group=="R2",]
-                        tool_config_id=tool_config_id %>% dplyr::distinct(-c(R1,R2))
                         add_nesting_ws(nesting,n=nest_ws)
                         cat(paste0(nesting,"|----",crayon::green(paste0("R1: ",seq_info_R1$path)),"\n"))
                         add_nesting_ws(nesting,n=nest_ws)
