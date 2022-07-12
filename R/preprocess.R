@@ -46,8 +46,6 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
 }
 
 
-
-
 #' For each variable in sample sheet 
 #' 
 #' Run through each variable in sample sheet and report information
