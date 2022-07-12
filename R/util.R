@@ -117,8 +117,8 @@ validate_sample_sheet=function(sample_sheet=build_default_sample_sheet(),
 
 
 parse_tool_parameters=function(sample_sheet=build_default_sample_sheet(),
-config=build_default_config()){
-  parameters=names(config)[names(config)!="name"]
+config=build_default_config(),steps_list=build_default_steps_list()){
+  parameters=names(config)[names(config)!="name"&names(config)!="order"]
   parameters_in_sheet=names(sample_sheet)[names(sample_sheet) %in% parameters]
   missing_parameters=parameters[!parameters %in% parameters_in_sheet]
   len_missing_parameters=length(missing_parameters)
@@ -136,12 +136,11 @@ config=build_default_config()){
             step_name=step_value_list[[1]][1]
             parameter_values=step_value_list[[1]][-1]
             
-
             if(parameter=="args"){
               parameter_values=paste0(parameter_values,collapse="=")
               parameter_values=gsub("\\{|\\}","",parameter_values)
-              input_args=parse_args(parameter_values,step=step_name)
-              default_args=parse_args(default_config[step_name,parameter],step=step_name)
+              input_args=parse_args(parameter_values,step=step_name,steps_list=steps_list)
+              default_args=parse_args(default_config[step_name,parameter],step=step_name,steps_list=steps_list)
 
               validated_args=validate_input_args(input_args,default_args)
               default_config[step_name,parameter]<<-parameter_values
@@ -155,18 +154,41 @@ config=build_default_config()){
   return(default_config)
 }
 
+
+
+#' Validate tool argument for step
+#' 
+#'
+#' @param arg Tool argument list
+#' @param step Pipeline step
+#' @param step_list Pipeline step list
+#' @export
+
+
+validate_arg=function(step,arg,steps_list=build_default_steps_list()){
+  
+  val_arg=steps_list[[step]][["args"]][[arg]]
+
+  if(is.null(val_arg)){
+    stop(paste0(arg, " is an invalid argument for step: ",step))
+  }
+
+}
+
 #' Parse tool arguments
 #' 
 #'
 #' @param args Tool argument list
 #' @param step Pipeline step
+#' @param step_list Pipeline step list
 #' @export
 
 
-parse_args=function(args,step){
+parse_args=function(args,step,steps_list=build_default_steps_list()){
   args_list=strsplit(args,"\\|")
   out=lapply(args_list[[1]],FUN=function(arg){
                   arg_value_list=strsplit(arg,"=")
+                  validate_arg(step=step,arg=arg_value_list[[1]][1],steps_list=steps_list)
                   out=list(arg=arg_value_list[[1]][1],
                   value=arg_value_list[[1]][2])
   })
@@ -387,10 +409,12 @@ vars_list=build_default_variable_list()){
 
 
 parameter_config_check=function(sample_sheet=build_default_sample_sheet(),
-config=build_default_config(),vars_list=build_default_variable_list()){
+config=build_default_config(),vars_list=build_default_variable_list(),
+steps_list=build_default_steps_list()){
   vars=vars_list$variable
+  x=1
   tool_configs=lapply(seq(1,nrow(sample_sheet)),FUN=function(x){
-    tool_config=parse_tool_parameters(sample_sheet=sample_sheet[x,],config=config)
+    tool_config=parse_tool_parameters(sample_sheet=sample_sheet[x,],config=config,steps_list=steps_list)
     tool_config=append(tool_config,sample_sheet[x,c(vars[vars %in% names(sample_sheet)],"R1","R2")])
     return(tool_config)
   })

@@ -20,6 +20,7 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     config=build_default_config(),
     opts_list=build_default_option_list(),
     pmts_list=build_default_parameter_list(),
+    steps_list=build_default_steps_list(),
     task_name="preprocessSEQ",output_dir="",
     merge_level="library",nest_ws=1){
 
@@ -30,7 +31,7 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     seq_info=seq_info_check(sample_sheet=sample_sheet,vars_list=vars_list)
 
     seq_info=dplyr::left_join(seq_info,
-    parameter_config_check(sample_sheet=sample_sheet,config=config,vars_list=vars_list))
+    parameter_config_check(sample_sheet=sample_sheet,config=config,vars_list=vars_list,steps_list=steps_list))
     job=build_job(executor_id=executor_id,task_id=task_id)
     for_id(seq_info=seq_info,output_dir=output_dir,
     vars_list=vars_list,nesting=nesting,merge_level=merge_level,pmts_list=pmts_list)

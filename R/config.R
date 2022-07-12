@@ -6,9 +6,12 @@
 #' @export
 
 
-build_default_config=function(steps=names(build_default_steps()),steps_list=build_default_steps()){
+build_default_config=function(steps=names(build_default_steps_list()),
+steps_list=build_default_steps_list()){
     config_list=lapply(steps,FUN=build_step,steps_list=steps_list)
-    dplyr::bind_rows(config_list)
+    config_list=dplyr::bind_rows(config_list)
+    row.names(config_list)=config_list$name
+    return(config_list)
 }
 
 
@@ -22,7 +25,7 @@ build_default_config=function(steps=names(build_default_steps()),steps_list=buil
 #' @export
 
 
-build_step=function(step,steps_list=build_default_steps()){
+build_step=function(step,steps_list=build_default_steps_list()){
     step_info=steps_list[[step]]
     parameter=names(step_info[["args"]])
     if(!is.null(parameter)){
@@ -45,7 +48,7 @@ build_step=function(step,steps_list=build_default_steps()){
 #' @export
 
 
-build_default_steps=function(
+build_default_steps_list=function(
     steps=list(
         pre_fastqc=list(
             order=1,
