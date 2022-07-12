@@ -185,20 +185,20 @@ for_id=function(seq_info,output_dir="",
 
 
 
-            if(tool_config_id[step,]$name=="pre_fastqc"){
-                                sink(paste0(out_file_dir,"fastqc.out"))
-                                job_report=qc_fastqc(bin_path=bin_list$pre_fastqc$bin_fastqc,
-                                    file_R1=seq_info_R1$path,
-                                    file_R2=seq_info_R2$path,
-                                    output_dir=paste0(out_file_dir,"/fastqc_reports/pre_trim"),
-                                    executor_id=task_id,
-                                    verbose=tool_config_id[step,]$verbose,
-                                    mode=tool_config_id[step,]$mode,
-                                    threads=tool_config_id[step,]$threads,
-                                    ram=tool_config_id[step,]$ram,
-                                    time=tool_config_id[step,]$time,
-                                    update_time=60,wait=FALSE,hold="")
-                            }   
+            # if(tool_config_id[step,]$name=="pre_fastqc"){
+            #                     sink(paste0(out_file_dir,"fastqc.out"))
+            #                     job_report=qc_fastqc(bin_path=bin_list$pre_fastqc$bin_fastqc,
+            #                         file_R1=seq_info_R1$path,
+            #                         file_R2=seq_info_R2$path,
+            #                         output_dir=paste0(out_file_dir,"/fastqc_reports/pre_trim"),
+            #                         executor_id=task_id,
+            #                         verbose=tool_config_id[step,]$verbose,
+            #                         mode=tool_config_id[step,]$mode,
+            #                         threads=tool_config_id[step,]$threads,
+            #                         ram=tool_config_id[step,]$ram,
+            #                         time=tool_config_id[step,]$time,
+            #                         update_time=60,wait=FALSE,hold="")
+            #                 }   
 
 
 
