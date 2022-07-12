@@ -85,7 +85,11 @@ for_id=function(seq_info,output_dir="",
                     if(merge){
                         merge_txt=crayon::bold(" <<<<===== INFO::SAMPLES WILL BE MERGED AT THIS LEVEL")
                         seq_info_id[seq_info_id$name=="merge_bam",]$step=TRUE
-                        
+                        samples=seq_info_id %>% dplyr::distinct(path)
+                        samples$last=FALSE
+                        samples[seq(nrow(samples)-1,nrow(samples)),]=TRUE
+                        seq_info_id=dplyr::left_join(seq_info_id,samples)
+                        seq_info_id[seq_info_id$last!=TRUE&seq_info_id$order>5,]$step=FALSE
                     }
         
                     instrument_name=""
