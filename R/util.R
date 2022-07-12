@@ -40,11 +40,11 @@ set_dir=function(dir="",name=""){
 #' @export
 
 print_verbose=function(exec_code,ws=1){
-      paste0(rep(cat(" \n"),ws),collapse = "")
+      cat(paste0(rep(cat(" \n"),ws),collapse = ""))
       cat(crayon::bold("Running:"))
-      paste0(rep(cat(" \n"),ws),collapse = "")
+      cat(paste0(rep(cat(" \n"),ws),collapse = ""))
       cat(paste0(exec_code,"\n"))
-      paste0(rep(cat(" \n"),ws),collapse = "")
+      cat(paste0(rep(cat(" \n"),ws),collapse = ""))
 }
 
 
@@ -201,6 +201,7 @@ parse_args=function(args,step,steps_list=build_default_steps_list()){
   })
   out=dplyr::bind_rows(out)
   out$step=step
+  row.names(out)=out$arg
   return(out)
 }
 

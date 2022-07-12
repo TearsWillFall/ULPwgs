@@ -70,9 +70,9 @@ build_default_steps_list=function(
             args=list(
                 mean_quality=0,
                 min_length=18,
-                max_length='',
-                xadapt='',
-                yadapt=''
+                max_length="",
+                xadapt="",
+                yadapt=""
             )),
 
         post_fastqc=list(

@@ -178,8 +178,11 @@ for_id=function(seq_info,output_dir="",
                    
                                 })
                             }else{
+
                                 lapply(seq(1,nrow(tool_config_id)),FUN=function(step){
                                     if(tool_config_id[step,]$name=="pre_fastqc"){
+                                        cat(crayon::bold("pre_fastqc: \n"))
+    
                                             job_report=qc_fastqc(bin_path=bin_list$pre_fastqc$bin_fastqc,
                                             file_R1=seq_info_R1$path,
                                             file_R2=seq_info_R2$path,
@@ -191,7 +194,33 @@ for_id=function(seq_info,output_dir="",
                                             ram=tool_config_id[step,]$ram,
                                             time=tool_config_id[step,]$time,
                                             update_time=60,wait=FALSE,hold="")
-                                    }   
+                                            print(job_report)
+                                    }
+
+                                    if(tool_config_id[step,]$name=="trimming"){
+                                            cat(crayon::bold("trimming: \n"))
+
+                                            args=parse_args(tool_config_id[step,]$args,step="trimming")
+
+                                            job_report=trimming_skewer(bin_path=bin_list$trimming$bin_skewer,
+                                            file_R1=seq_info_R1$path,
+                                            file_R2=seq_info_R2$path,
+                                            output_dir=out_file_dir,
+                                            xadapt=args["xadapt",]$value,
+                                            yadapt=args["yadapt",]$value,
+                                            mean_quality=args["mean_quality",]$value,
+                                            min_length=args["min_length",]$value,
+                                            max_length=args["max_length",]$value,
+                                            threads=tool_config_id[step,]$threads,
+                                            ram=tool_config_id[step,]$ram,
+                                            verbose=tool_config_id[step,]$verbose,
+                                            mode=tool_config_id[step,]$mode,
+                                            time=tool_config_id[step,]$time,
+                                            executor_id=task_id,
+                                            update_time=60,wait=FALSE,hold="")
+                                            print(job_report)
+                                    }
+                                          
                                 })
                         }
                 }
@@ -229,27 +258,6 @@ for_id=function(seq_info,output_dir="",
                 # time=tool_parameters["pre_fastqc","time"],
                 # update_time=60,wait=FALSE,hold="")
         
-#             }
-            
-#             if(grepl("trimming",rownames(parameters))){
-
-#                 job_report=trimming_skewer(bin_path=bin_skewer,
-#                 file_R1=sub_sub_sample_info$file[1],
-#                 file_R2=sub_sub_sample_info$file[2],
-#                 output_dir=out_file_dir,
-#                 xadapt=tool_parameters["trimming","xadapt"],
-#                 yadapt=tool_parameters["trimming","yadapt"],
-#                 threads=tool_parameters["trimming","threads"],
-#                 ram=tool_parameters["trimming","ram"],
-#                 verbose=tool_parameters["trimming","verbose"],
-#                 mean_quality=tool_parameters["trimming","mean_quality"],
-#                 min_length=tool_parameters["trimming","min_length"],
-#                 max_length=tool_parameters["trimming","min_length"],
-#                 mode=tool_parameters["trimming","mode"],
-#                 time=tool_parameters["trimming","time"],
-#                 executor_id=task_id,
-#                 update_time=60,wait=FALSE)
-
 #             }
 
         
