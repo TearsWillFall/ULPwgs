@@ -211,17 +211,17 @@ for_id=function(seq_info,output_dir="",
 
 #             if(grepl("pre_fastqc",rownames(parameters))){
 
-                job_report=qc_fastqc(bin_path=bin_fastqc,
-                file_R1=sub_sub_sample_info$file[1],
-                file_R2=sub_sub_sample_info$file[2],
-                output_dir=paste0(out_file_dir,"/fastqc_reports/pre_trim"),
-                executor_id=task_id,
-                verbose=tool_parameters["pre_fastqc","verbose"],
-                mode=tool_parameters["pre_fastqc","mode"],
-                threads=tool_parameters["pre_fastqc","threads"],
-                ram=tool_parameters["pre_fastqc","ram"],
-                time=tool_parameters["pre_fastqc","time"],
-                update_time=60,wait=FALSE,hold="")
+                # job_report=qc_fastqc(bin_path=bin_fastqc,
+                # file_R1=sub_sub_sample_info$file[1],
+                # file_R2=sub_sub_sample_info$file[2],
+                # output_dir=paste0(out_file_dir,"/fastqc_reports/pre_trim"),
+                # executor_id=task_id,
+                # verbose=tool_parameters["pre_fastqc","verbose"],
+                # mode=tool_parameters["pre_fastqc","mode"],
+                # threads=tool_parameters["pre_fastqc","threads"],
+                # ram=tool_parameters["pre_fastqc","ram"],
+                # time=tool_parameters["pre_fastqc","time"],
+                # update_time=60,wait=FALSE,hold="")
         
 #             }
             

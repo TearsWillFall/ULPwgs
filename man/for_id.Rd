@@ -9,9 +9,11 @@ for_id(
   output_dir = "",
   vars_list = build_default_variable_list(),
   pmts_list = build_default_parameter_list(),
+  bin_list = build_default_binaries_list(),
   nesting = "",
   merge_level = "library",
-  nest_ws = 1
+  nest_ws = 1,
+  print_tree = TRUE
 )
 }
 \arguments{
