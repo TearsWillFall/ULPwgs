@@ -5,27 +5,131 @@
 #' @export
 
 
-build_default_config=function(
-    config=list(name=c("pre_fastqc","trimming",
-    "post_fastqc","alignment","merge_bam","markdups","recalibrate","alignqc"),
-    threads=c(6,6,6,12,6,12,2,6),
-    ram=c(8,8,8,16,16,16,8,8),
-    step=c(TRUE,TRUE,TRUE,TRUE,FALSE,TRUE,TRUE,TRUE),
-    mode="local",
-    verbose="TRUE",
-    time="48:0:0",
-    args=c("",
-    "mean_quality=0|min_length=18|max_length=''|xadapt=''|yadapt=''",
-    "",
-    "clean=TRUE|stats='all'|coord_sorted=FALSE",
-    "",
-    "remove_duplicates=TRUE",
-    "",
-    ""))){
-    config=data.frame(config,stringsAsFactors = FALSE)
-    row.names(config)=config$name
-    return(config)
+build_default_config=function(steps=names(build_default_steps()),steps_list=build_default_steps()){
+    config_list=lapply(steps,FUN=build_step,steps_list=steps_list)
+    dplyr::bind_rows(config_list)
 }
+
+build_default_config()
+
+build_step=function(step,steps_list=build_default_steps()){
+    step_info=steps_list[[step]]
+    parameter=names(step_info[["args"]])
+    if(!is.null(parameter)){
+         step_info$args=paste0(paste0(parameter,"=",
+         step_info[["args"]]),collapse="|")
+    }else{
+
+        step_info$args=""
+    }
+   
+    step_info$name=step
+    return(data.frame(step_info))
+}
+
+
+#' Build default tool configuration
+#' 
+#'
+#' @param steps List with pipeline step information
+#' @export
+
+
+build_default_steps=function(
+    steps=list(
+        pre_fastqc=list(
+            order=1,
+            step=TRUE,
+            threads=6,
+            ram=8,
+            mode="local",
+            verbose=TRUE,
+            time="48:0:0",
+            args=list()),
+        trimming=list(
+            order=2,
+            step=TRUE,
+            threads=6,
+            ram=8,
+            mode="local",
+            verbose=TRUE,
+            time="48:0:0",
+            args=list(
+                mean_quality=0,
+                min_length=18,
+                max_length='',
+                xadapt='',
+                yadapt=''
+            )),
+
+        post_fastqc=list(
+            order=3,
+            step=TRUE,
+            threads=6,
+            ram=8,
+            mode="local",
+            verbose=TRUE,
+            time="48:0:0",
+            args=list()),
+        
+        alignment=list(
+            order=4,
+            step=TRUE,
+            threads=12,
+            ram=16,
+            mode="local",
+            verbose=TRUE,
+            time="48:0:0",
+            args=list(
+                clean=TRUE,
+                stats="all",
+                coord_sorted=FALSE
+            )),
+        merge_bam=list(
+            order=5,
+            step=FALSE,
+            threads=6,
+            ram=16,
+            mode="local",
+            verbose=TRUE,
+            time="48:0:0",
+            args=list(
+            )),
+
+        markdups=list(
+            order=6,
+            step=TRUE,
+            threads=12,
+            ram=16,
+            mode="local",
+            verbose=TRUE,
+            time="48:0:0",
+            args=list(
+                remove_duplicates=TRUE)
+            ),
+         recalibrate=list(
+            order=7,
+            step=TRUE,
+            threads=2,
+            ram=8,
+            mode="local",
+            verbose=TRUE,
+            time="48:0:0",
+            args=list()
+            ),
+        alignqc=list(
+            order=8,
+            step=TRUE,
+            threads=2,
+            ram=8,
+            mode="local",
+            verbose=TRUE,
+            time="48:0:0",
+            args=list()))
+        ){
+    return(steps)
+}
+
 
 
 

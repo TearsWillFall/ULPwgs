@@ -61,14 +61,12 @@ for_id=function(seq_info,output_dir="",
              vars_list=build_default_variable_list(),
              pmts_list=build_default_parameter_list(),
              nesting="",merge_level="library",nest_ws=1){  
-            
-
              var=vars_list$variable[1]
              var_text=vars_list$text[1]
-
              vars_list_left=vars_list[-1,]
              info=unique(seq_info[,var,drop=TRUE])
              count=1
+             merge=FALSE
              rs=lapply(X=info,FUN=function(id){
             
                     if(var!="project_id"){
@@ -79,20 +77,23 @@ for_id=function(seq_info,output_dir="",
             
             
                     out_file_dir=set_dir(dir=output_dir,name=id)
-                    merge=""
-                    if(grepl(merge_level,var)&nrow(seq_info_id %>% dplyr::distinct(path))>2){
-                        merge=crayon::bold(" <<<<===== INFO::SAMPLES WILL BE MERGED AT THIS LEVEL")
-                        seq_info_id[seq_info_id=seq_info_id$name=="merge_bam",]$step=TRUE
-                    }
-                    
-               
                    
+                    if(grepl(merge_level,var)&nrow(seq_info_id %>% dplyr::distinct(path))>2){
+                        merge=TRUE
+                    }
+    
+                    if(merge){
+                        merge_txt=crayon::bold(" <<<<===== INFO::SAMPLES WILL BE MERGED AT THIS LEVEL")
+                        seq_info_id[seq_info_id$name=="merge_bam",]$step=TRUE
+                        
+                    }
+        
                     instrument_name=""
                     if(var=="flowcell_id"){
                         instrument_name=paste0("   Platform: ",unique(seq_info_id$instrument_by_flowcell_id))
                     }
 
-                    cat(paste0(nesting,"|----",crayon::blue(var_text),crayon::red(id),crayon::silver(instrument_name),merge,"\n"))
+                    cat(paste0(nesting,"|----",crayon::blue(var_text),crayon::red(id),crayon::silver(instrument_name),merge_txt,"\n"))
                    
 
                     nesting=break_nest(count=count,info=info,nesting=nesting)
@@ -119,6 +120,9 @@ for_id=function(seq_info,output_dir="",
                         bold_text=FALSE
                         lapply(seq(1,nrow(tool_config_id)),FUN=function(step){
                                 cat(add_nesting_ws(nesting=nesting,nest="        "))
+                                if(tool_config_id[step,]$name=="merge_bam"){
+                                        bold_text<<-TRUE
+                                }
                             lapply(seq(1,length(pmts_list$parameter)),FUN=function(pmt){
                                     
                                     space="       |"
@@ -126,10 +130,6 @@ for_id=function(seq_info,output_dir="",
                                        space=paste0("STEP ",step," |")
                                     }
                                    
-                                    if(tool_config_id[step,]$name=="merge_bam"){
-                                        bold_text=TRUE
-                                    }
-
                                     txt=paste0(space,pmts_list$text[pmt],
                                         tool_config_id[step,pmts_list$parameter[pmt]],"\n")
 
@@ -143,9 +143,9 @@ for_id=function(seq_info,output_dir="",
 
                             if(step!=nrow(tool_config_id)){
                                     if(bold_text){
-                                        cat(add_arrow(n=2,bold=TRUE))
+                                        cat(add_arrow(nesting=nesting,n=2,bold=TRUE))
                                     }else{
-                                        cat(add_arrow(n=2))
+                                        cat(add_arrow(nesting=nesting,n=2))
                                     }
                             }else{
                                  cat(add_nesting_ws(nesting=nesting,nest="        "))
@@ -154,6 +154,7 @@ for_id=function(seq_info,output_dir="",
                         })
                      
                     }
+                    
             
                     count<<-count+1
             })
