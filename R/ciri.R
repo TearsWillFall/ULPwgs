@@ -48,7 +48,7 @@ task_name="circRNA",mode="local",threads=3,ram=4,time="48:0:0",update_time=60,wa
   }
 
   if(verbose){
-      print(exec_code)
+      cat(exec_code)
   }
 
   error=system(exec_code)

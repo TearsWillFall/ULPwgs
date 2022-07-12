@@ -58,7 +58,7 @@ mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
         exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
     }
     if(verbose){
-        print(exec_code)
+        cat(exec_code)
     }
     error=system(exec_code)
     if(error!=0){
@@ -254,7 +254,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
   }
 
   if(verbose){
-    print(exec_code)
+    cat(exec_code)
   }
   error=system(exec_code)
   if(error!=0){
@@ -405,7 +405,7 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",threads=4,ram=4,update_ti
   }
 
   if(verbose){
-    print(exec_code)
+    cat(exec_code)
   }
 
   error=system(exec_code)
@@ -478,7 +478,7 @@ update_time=60,wait=TRUE,hold=""){
   }
 
   if(verbose){
-    print(exec_code)
+    cat(exec_code)
   }
 
 
@@ -637,7 +637,7 @@ wait=FALSE,hold=""){
   }
 
   if(verbose){
-    print(exec_code)
+    cat(exec_code)
   }
 
   error=system(exec_code)
@@ -713,7 +713,7 @@ update_time=60,wait=FALSE,hold=""){
   }
 
   if(verbose){
-      print(exec_code)
+      cat(exec_code)
   }
 
   error=system(exec_code)

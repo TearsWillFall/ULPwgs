@@ -96,9 +96,9 @@ job_validator=function(job="",time=10,verbose=FALSE,threads=3){
       break
     }else{
       if(verbose){
-          print("----------------------------------")
-          print(dat_info)
-          print("----------------------------------")
+          cat("----------------------------------")
+          cat(dat_info)
+          cat("----------------------------------")
       }
       if(any(grepl("E",dat_info$status))){
         error=TRUE
@@ -108,9 +108,9 @@ job_validator=function(job="",time=10,verbose=FALSE,threads=3){
   }
 
   if(error){
-      print("----------------------------------")
-      print(dat_info)
-      print("----------------------------------")
+      cat("----------------------------------")
+      cat(dat_info)
+      cat("----------------------------------")
       parallel::mclapply(1:nrow(dat_info),FUN=function(x){
         system(paste0("qdel ",dat_info[x,]$job_id))
       },mc.cores=threads)

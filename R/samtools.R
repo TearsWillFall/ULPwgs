@@ -129,7 +129,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
     
   if (verbose){
-    print(exec_code)
+    cat(exec_code)
   }
   error=system(exec_code)
   if(error!=0){
@@ -167,7 +167,7 @@ wait=FALSE,hold=""){
 
     
   if (verbose){
-    print(exec_code)
+    cat(exec_code)
   }
      error=system(exec_code)
   if(error!=0){
@@ -276,7 +276,7 @@ task_name="statsFlag",time="48:0:0",update_time=60,wait=FALSE,hold=""){
     
   
   if (verbose){
-    print(exec_code)
+    cat(exec_code)
   }
 
 
@@ -335,7 +335,7 @@ task_name="statsINDEX",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
     
   if (verbose){
-    print(exec_code)
+    cat(exec_code)
   }
      error=system(exec_code)
   if(error!=0){
@@ -381,7 +381,7 @@ task_name="metricsMAPQ",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
 
   exec_code=paste(bin_path,"view",bam," -@ ",threads, " | awk -F", "'\\t'",
-    "'{c[$5]++} END { for (i in c) printf(\"%s\\t%s\\n\",i,c[i]) }'",
+    "'{c[$5]++} END { for (i in c) catf(\"%s\\t%s\\n\",i,c[i]) }'",
     " | sort -t$'\\t' -k 1 -g >>", paste0(out_file_dir,"/",get_file_name(bam),".mapq_dist.txt"))
 
   job=build_job(executor_id=executor_id,task_id=task_id)
@@ -394,7 +394,7 @@ task_name="metricsMAPQ",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   
   if (verbose){
-    print(exec_code)
+    cat(exec_code)
   }
 
     error=system(exec_code)

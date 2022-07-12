@@ -57,7 +57,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
   }
     
     if(verbose){
-      print(exec_code)
+      cat(exec_code)
     }
 
     error=system(exec_code)
@@ -119,7 +119,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
 
   if (verbose){
-        print(exec_code)
+        cat(exec_code)
   }
   error=system(exec_code)
   if(error!=0){
@@ -181,7 +181,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
   }
 
   if (verbose){
-        print(exec_code)
+        cat(exec_code)
   }
   error=system(exec_code)
   if(error!=0){
@@ -232,7 +232,7 @@ task="TGsummaryMetrics",time="48:0:0",update_time=60,wait=FALSE,hold=""){
     tmp=paste0(" TMP_DIR=",tmp_dir)
   }
 
-  exec_code=print(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir,
+  exec_code=cat(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir,
         " -jar ",bin_path," CollectHsMetrics VALIDATION_STRINGENCY=SILENT BI=",
         bi," TI=",ti," I=",bam," THEORETICAL_SENSITIVITY_OUTPUT=",
         paste0(out_file_dir,"/",get_file_name(bam),".picard_TS.txt"),ref," O=",
@@ -251,7 +251,7 @@ job=build_job(executor=executor,task=make_unique_id(task))
 
 
   if (verbose){
-        print(exec_code)
+        cat(exec_code)
   }
   error=system(exec_code)
   if(error!=0){
@@ -317,7 +317,7 @@ update_time=60,wait=FALSE,hold=""){
 
 
   if (verbose){
-        print(exec_code)
+        cat(exec_code)
   }
   error=system(exec_code)
   if(error!=0){
@@ -379,7 +379,7 @@ update_time=60,wait=FALSE,hold=""){
 
 
   if (verbose){
-        print(exec_code)
+        cat(exec_code)
   }
   error=system(exec_code)
   if(error!=0){

@@ -20,7 +20,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
       threads,paste(bams,collapse=" "))
       
     if(verbose){
-      print(exec_code)
+      cat(exec_code)
     }
     system(exec_code)
 }
@@ -44,7 +44,7 @@ verbose=FALSE,threads=3){
     exec_code=paste(bin_path,"cat -o",paste0(output_name,".bam"), " --threads",
       threads,paste(bams,collapse=" "))
     if(verbose){
-      print(exec_code)
+      cat(exec_code)
     }
     system(exec_code)
 }
@@ -192,10 +192,10 @@ chrs=c(1:22,"X","Y"),win=500000, format="wig", bam="",output_dir="",verbose=FALS
     out_file=paste0(out_file_dir,"/",get_file_name(bam))
 
     ## Check chr notation
-    exec_code=paste(bin_path,"view",bam," | head -n 1 | awk -F \"\t\" '{print $3}'")
+    exec_code=paste(bin_path,"view",bam," | head -n 1 | awk -F \"\t\" '{cat $3}'")
     
     if (verbose){
-      print(exec_code)
+      cat(exec_code)
     }
     chr=system(exec_code,intern=TRUE)
 
@@ -207,10 +207,10 @@ chrs=c(1:22,"X","Y"),win=500000, format="wig", bam="",output_dir="",verbose=FALS
 
      if (threads>1){
         parallel::mclapply(1:length(chrs),FUN=function(x){
-          exec_code=print(paste(bin_path2,fmt,"--window", win,"--quality 20 --chromosome",
+          exec_code=cat(paste(bin_path2,fmt,"--window", win,"--quality 20 --chromosome",
             paste0("chr",chrs[x],collapse=","), bam,">", paste0(out_file,".",x,".",format)))
           if (verbose){
-            print(exec_code)
+            cat(exec_code)
           }
           system(exec_code)
         },mc.cores=threads
@@ -221,7 +221,7 @@ chrs=c(1:22,"X","Y"),win=500000, format="wig", bam="",output_dir="",verbose=FALS
         exec_code=paste(bin_path2,fmt,"--window", win,"--quality 20 --chromosome",
           paste0("chr",chrs,collapse=","), bam,">", paste0(out_file,".",format))
         if (verbose){
-          print(exec_code)
+          cat(exec_code)
         }
         system(exec_code)
       }
@@ -230,7 +230,7 @@ chrs=c(1:22,"X","Y"),win=500000, format="wig", bam="",output_dir="",verbose=FALS
      
       exec_code=paste("sed -i 's/chrom=chr/chrom=/g'",paste0(out_file,".",format))
       if (verbose){
-          print(exec_code)
+          cat(exec_code)
       }
       system(exec_code)
     }
@@ -258,7 +258,7 @@ verbose=FALSE,output_dir="",threads=1){
 
   out_file_dir=set_dir(dir=output_dir,name="filtered")
   if (position!="" &bed!=""){
-    print("Position and bed arguments are mutually exclusive")
+    cat("Position and bed arguments are mutually exclusive")
     quit()
   }
 
@@ -269,7 +269,7 @@ verbose=FALSE,output_dir="",threads=1){
   exec_code=paste(bin_path,"view -b",bed,"-@",threads,bam,position,">", paste0(out_file_dir,"/",get_file_name(bam),".filtered.bam"))
 
   if (verbose){
-    print(exec_code)
+    cat(exec_code)
   }
   system(exec_code)
 }
@@ -342,7 +342,7 @@ output_dir="",verbose=TRUE,libdir="tools/ichorCNA",male_tresh=0.0001,chrs="'c(1:
       "--estimateNormal True --estimatePloidy True --estimateScPrevalence True --outDir",out_file_dir,"--libdir",libdir)
 
     if(verbose){
-      print(exec_code)
+      cat(exec_code)
     }
     system(exec_code)
   }
@@ -372,7 +372,7 @@ map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",
 centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",male_tresh=0.0001,verbose=TRUE){
 
     if (wigs!="" && wigs_dir!=""){
-      print("Arguments wigs and wigs_dir are mutually exclusive")
+      cat("Arguments wigs and wigs_dir are mutually exclusive")
       quit()
     }
 
@@ -398,7 +398,7 @@ centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt"
     exec_code=paste("Rscript",bin_path,"--filelist",wig_list,bed," --gcWig", gc,
       "--mapWig",map,"--centromere",centromere,"--fracReadsInChrYForMale",male_tresh," --outfile",output_name)
     if(verbose){
-      print(exec_code)
+      cat(exec_code)
     }
     system(exec_code)
     system(paste("rm",wig_list))
