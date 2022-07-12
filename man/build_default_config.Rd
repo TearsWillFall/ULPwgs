@@ -5,8 +5,8 @@
 \title{Build default tool configuration}
 \usage{
 build_default_config(
-  steps = names(build_default_steps()),
-  steps_list = build_default_steps()
+  steps = names(build_default_steps_list()),
+  steps_list = build_default_steps_list()
 )
 }
 \arguments{

@@ -11,6 +11,7 @@ preprocess_seq(
   config = build_default_config(),
   opts_list = build_default_option_list(),
   pmts_list = build_default_parameter_list(),
+  steps_list = build_default_steps_list(),
   task_name = "preprocessSEQ",
   output_dir = "",
   merge_level = "library",

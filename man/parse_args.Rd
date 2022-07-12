@@ -4,12 +4,14 @@
 \alias{parse_args}
 \title{Parse tool arguments}
 \usage{
-parse_args(args, step)
+parse_args(args, step, steps_list = build_default_steps_list())
 }
 \arguments{
 \item{args}{Tool argument list}
 
 \item{step}{Pipeline step}
+
+\item{step_list}{Pipeline step list}
 }
 \description{
 Parse tool arguments
