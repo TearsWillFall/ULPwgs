@@ -10,7 +10,9 @@ build_default_config(
 )
 }
 \arguments{
-\item{config}{List with name,threads,ram,step,mode,verbose,time,args config}
+\item{steps}{Build configuration for steps}
+
+\item{steps_list}{List with steps}
 }
 \description{
 Build default tool configuration

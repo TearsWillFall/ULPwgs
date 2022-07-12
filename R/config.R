@@ -1,7 +1,8 @@
 #' Build default tool configuration
 #' 
-#'
-#' @param config List with name,threads,ram,step,mode,verbose,time,args config
+#' @param steps Build configuration for steps
+#' @param steps_list List with steps
+#' 
 #' @export
 
 
@@ -10,7 +11,16 @@ build_default_config=function(steps=names(build_default_steps()),steps_list=buil
     dplyr::bind_rows(config_list)
 }
 
-build_default_config()
+
+
+
+#' Build default tool configuration
+#' 
+#'
+#' @param step Step to build for configuration
+#' @param steps_list Step list
+#' @export
+
 
 build_step=function(step,steps_list=build_default_steps()){
     step_info=steps_list[[step]]
