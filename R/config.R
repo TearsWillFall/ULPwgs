@@ -37,7 +37,7 @@ build_step=function(step,steps_list=build_default_steps_list()){
     }
    
     step_info$name=step
-    return(data.frame(step_info))
+    return(data.frame(step_info,stringsAsFactors = FALSE))
 }
 
 

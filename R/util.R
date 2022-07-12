@@ -184,7 +184,7 @@ validate_arg=function(step,arg,steps_list=build_default_steps_list()){
 
 
 parse_args=function(args,step,steps_list=build_default_steps_list()){
-  args_list=strsplit(as.character(args),"\\|")
+  args_list=strsplit(args,"\\|")
   out=lapply(args_list[[1]],FUN=function(arg){
                   arg_value_list=strsplit(arg,"=")
                   validate_arg(step=step,arg=arg_value_list[[1]][1],steps_list=steps_list)
