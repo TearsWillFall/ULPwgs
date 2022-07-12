@@ -24,7 +24,7 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     bin_list=build_default_binaries_list(),
     task_name="preprocessSEQ",output_dir="",
     merge_level="library",nest_ws=1,
-    nesting="",print_tree=TRUE){
+    nesting=""){
 
     task_id=make_unique_id(task_name)
     validate_sample_sheet(sample_sheet=sample_sheet,
@@ -38,7 +38,10 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     job=build_job(executor_id=executor_id,task_id=task_id)
     for_id(seq_info=seq_info,output_dir=output_dir,
     vars_list=vars_list,nesting=nesting,merge_level=merge_level,
-    pmts_list=pmts_list,bin_list=bin_list,print_tree=print_tree)
+    pmts_list=pmts_list,bin_list=bin_list,print_tree=TRUE)
+    for_id(seq_info=seq_info,output_dir=output_dir,
+    vars_list=vars_list,nesting=nesting,merge_level=merge_level,
+    pmts_list=pmts_list,bin_list=bin_list,print_tree=FALSE)
 
 }
 
