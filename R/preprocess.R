@@ -74,17 +74,18 @@ for_id=function(seq_info,output_dir="",
                     if(var!="project_id"){
                           add_nesting_ws(nesting,n=nest_ws)
                     }
-                    merge=""
-                    if(grepl(merge_level,var)){
-                        merge=crayon::bold(" <<<<===== INFO::SAMPLES WILL BE MERGED AT THIS LEVEL")
 
-                        
-                    }
-                    
                     seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
             
             
                     out_file_dir=set_dir(dir=output_dir,name=id)
+                    merge=""
+                    if(grepl(merge_level,var)&nrow(seq_info_id %>% dplyr::distinct(path))>2){
+                        merge=crayon::bold(" <<<<===== INFO::SAMPLES WILL BE MERGED AT THIS LEVEL")
+                        seq_info_id[seq_info_id=seq_info_id$name=="merge_bam",]$step=TRUE
+                    }
+                    
+               
                    
                     instrument_name=""
                     if(var=="flowcell_id"){
@@ -96,43 +97,59 @@ for_id=function(seq_info,output_dir="",
 
                     nesting=break_nest(count=count,info=info,nesting=nesting)
 
-               
+                    ## Call recursively if variables
                     if(length(vars_list_left$variable)>0){
                         for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars_list=vars_list_left,
                         nesting=nesting,nest_ws=nest_ws)
                     }else{
-                        tool_config_id=seq_info_id %>% dplyr::select(-c(read_group,path)) %>%  dplyr::distinct()
-                        seq_info_id=seq_info_id %>% dplyr::select(-c(pmts_list$parameter)) %>%  dplyr::distinct()
+                        tool_config_id=seq_info_id %>% dplyr::select(-c(read_group,path)) %>%  
+                        dplyr::distinct() %>% dplyr::filter(step==TRUE)
+
+                        seq_info_id=seq_info_id %>% dplyr::select(-c(pmts_list$parameter)) %>%  
+                        dplyr::distinct()
+
                         seq_info_R1=seq_info_id[seq_info_id$read_group=="R1",]
                         seq_info_R2=seq_info_id[seq_info_id$read_group=="R2",]
-                        add_nesting_ws(nesting,n=nest_ws)
+                        cat(add_nesting_ws(nesting,n=nest_ws))
+
                         cat(paste0(nesting,"|----",crayon::green(paste0("R1: ",seq_info_R1$path)),"\n"))
-                        add_nesting_ws(nesting,n=nest_ws)
-                        cat(paste0(nesting,"|----",crayon::green(paste0("R2: ",seq_info_R2$path)),"\n"))    
+                        cat(add_nesting_ws(nesting,n=nest_ws))
+                        cat(paste0(nesting,"|----",crayon::green(paste0("R2: ",seq_info_R2$path)),"\n"))  
+                        
+                        bold_text=FALSE
                         lapply(seq(1,nrow(tool_config_id)),FUN=function(step){
-                                cat(paste0(nesting,"        ","\n"))
+                                cat(add_nesting_ws(nesting=nesting,nest="        "))
                             lapply(seq(1,length(pmts_list$parameter)),FUN=function(pmt){
+                                    
                                     space="       |"
                                     if(pmt==ceiling(length(pmts_list$parameter)/2)){
                                        space=paste0("STEP ",step," |")
                                     }
-                                    mssg=
-                                    if(step>4){
-                                        cat(paste0(nesting,crayon::bold(paste0(space,pmts_list$text[pmt],
-                                        tool_config_id[step,pmts_list$parameter[pmt]])),"\n"))
-                                    }else{
-                                        cat(paste0(nesting,space,paste0(pmts_list$text[pmt],
-                                        tool_config_id[step,pmts_list$parameter[pmt]])),"\n")
+                                   
+                                    if(tool_config_id[step,]$name=="merge_bam"){
+                                        bold_text=TRUE
                                     }
-    
+
+                                    txt=paste0(space,pmts_list$text[pmt],
+                                        tool_config_id[step,pmts_list$parameter[pmt]],"\n")
+
+                                    if(bold_text){
+                                        cat(paste0(nesting,crayon::bold(txt)))
+                                    }else{
+                                        cat(paste0(nesting,txt))
+                                    }
+
                                 })
-                                if(step!=nrow(tool_config_id)){
-                                        cat(paste0(nesting,"        ","      ..   ","\n"))
-                                        cat(paste0(nesting,"        ","      ..  ","\n"))
-                                        cat(paste0(nesting,"        ","      \\/   ","\n"))
-                                }else{
-                                    cat(paste0(nesting,"        ","\n"))
-                                }
+
+                            if(step!=nrow(tool_config_id)){
+                                    if(bold_text){
+                                        cat(add_arrow(n=2,bold=TRUE))
+                                    }else{
+                                        cat(add_arrow(n=2))
+                                    }
+                            }else{
+                                 cat(add_nesting_ws(nesting=nesting,nest="        "))
+                            }
                        
                         })
                      

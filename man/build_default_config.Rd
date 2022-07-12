@@ -7,8 +7,8 @@
 build_default_config(
   config = list(name = c("pre_fastqc", "trimming", "post_fastqc", "alignment",
     "merge_bam", "markdups", "recalibrate", "alignqc"), threads = c(6, 6, 6, 12, 6, 12,
-    2, 6), ram = c(8, 8, 8, 16, 16, 16, 8, 8), step = TRUE, mode = "local", verbose =
-    "TRUE", time = "48:0:0", args = c("",
+    2, 6), ram = c(8, 8, 8, 16, 16, 16, 8, 8), step = c(TRUE, TRUE, TRUE, TRUE, FALSE,
+    TRUE, TRUE, TRUE), mode = "local", verbose = "TRUE", time = "48:0:0", args = c("",
     "mean_quality=0|min_length=18|max_length=''|xadapt=''|yadapt=''", "",
     "clean=TRUE|stats='all'|coord_sorted=FALSE", "", "remove_duplicates=TRUE", "", ""))
 )

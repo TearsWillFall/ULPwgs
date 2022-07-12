@@ -6,15 +6,15 @@
 \usage{
 build_default_variable_list(
   variables = list(name = c("project", "patient", "sample", "sequencing", "method",
-    "version", "reference", "library", "flowcell", "lane"), variable = c("project_id",
-    "patient_id", "sample_id", "sequencing_type", "method_type", "method_version",
-    "reference", "library_id", "flowcell_id", "lane_id"), required = c(TRUE, TRUE, TRUE,
-    TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE), needs_type_validation = c(FALSE, FALSE,
-    FALSE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE), text = c("Project ID: ",
-    "Patient ID: ", "Sample ID: ", 
-     "Sequencing Type: ", "Method Type: ",
-    "Method Version: ", "Reference Genome: ", "Library ID: ", "Flowcell ID: ",
-    "Lane ID: "))
+    "version", "reference", "library", "run", "flowcell", "lane"), variable =
+    c("project_id", "patient_id", "sample_id", "sequencing_type", "method_type",
+    "method_version", "reference", "library_id", "run_id", "flowcell_id", "lane_id"),
+    required = c(TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE),
+    needs_type_validation = c(FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE,
+    FALSE, FALSE), text = c("Project ID: ", 
+     "Patient ID: ", "Sample ID: ",
+    "Sequencing Type: ", "Method Type: ", "Method Version: ", "Reference Genome: ",
+    "Library ID: ", "Run ID: ", "Flowcell ID: ", "Lane ID: "))
 )
 }
 \arguments{

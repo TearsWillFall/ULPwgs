@@ -548,8 +548,8 @@ add_nesting_level=function(n=1){
 
 #' @export
 
-add_nesting_ws=function(nesting="",n=1){
-    paste0(rep(paste0(nesting,"|    ","\n"),n),collapse="")
+add_nesting_ws=function(nesting="",nest="|    ",n=1){
+    paste0(rep(paste0(nesting,nest,"\n"),n),collapse="")
 }
 
 
@@ -570,6 +570,22 @@ break_nest=function(count,info,nesting){
   }
   return(nesting)
 }
+
+#' @export
+
+add_arrow=function(nesting="",n=2,bold=FALSE){
+  if(bold){
+    txt=paste0(paste0(rep(paste0(nesting,"        ",crayon::bold("      ..   "),"\n"),n),collapse=""),
+    paste0(nesting,"        ",crayon::bold("      \\/   "),"\n"))
+  }else{
+    txt=paste0(paste0(rep(paste0(nesting,"        ","      ..   ","\n"),n),collapse=""),
+    paste0(nesting,"        ","      \\/   ","\n"))
+  }
+  
+  return(txt)
+}
+
+
 
 
 

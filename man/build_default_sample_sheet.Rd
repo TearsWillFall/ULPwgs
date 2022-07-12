@@ -19,7 +19,7 @@ build_default_sample_sheet(
     "test/test_data/multi_lane/P1_S2_L1_R2.fq.gz",
     "test/test_data/multi_lane/P2_S1_L1_R2.fq.gz",
     "test/test_data/multi_lane/P2_S2_L1_R2.fq.gz"), step =
-    "pre_fastqc=TRUE;trimming=TRUE;post_fastqc=TRUE;alignment=TRUE;merge_bam=TRUE;markdups=TRUE;recalibrate=TRUE;alignqc=TRUE",
+    "pre_fastqc=TRUE;trimming=TRUE;post_fastqc=TRUE;alignment=TRUE;markdups=TRUE;recalibrate=TRUE;alignqc=TRUE",
     threads =
     "pre_fastqc=6;trimming=6;post_fastqc=6;alignment=12;merge_bam=6;markdups=12;recalibrate=2;alignqc=6",
     ram =
