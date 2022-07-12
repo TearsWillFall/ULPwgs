@@ -135,12 +135,11 @@ config=build_default_config(),steps_list=build_default_steps_list()){
             step_value_list=strsplit(step,"=")
             step_name=step_value_list[[1]][1]
             parameter_values=step_value_list[[1]][-1]
-            
             if(parameter=="args"){
               parameter_values=paste0(parameter_values,collapse="=")
               parameter_values=gsub("\\{|\\}","",parameter_values)
-              input_args=parse_args(parameter_values,step=step_name,steps_list=steps_list)
-              default_args=parse_args(default_config[step_name,parameter],step=step_name,steps_list=steps_list)
+              input_args=parse_args(args=parameter_values,step=step_name,steps_list=steps_list)
+              default_args=parse_args(args=default_config[step_name,parameter],step=step_name,steps_list=steps_list)
 
               validated_args=validate_input_args(input_args,default_args)
               default_config[step_name,parameter]<<-parameter_values
@@ -412,7 +411,6 @@ parameter_config_check=function(sample_sheet=build_default_sample_sheet(),
 config=build_default_config(),vars_list=build_default_variable_list(),
 steps_list=build_default_steps_list()){
   vars=vars_list$variable
-  x=1
   tool_configs=lapply(seq(1,nrow(sample_sheet)),FUN=function(x){
     tool_config=parse_tool_parameters(sample_sheet=sample_sheet[x,],config=config,steps_list=steps_list)
     tool_config=append(tool_config,sample_sheet[x,c(vars[vars %in% names(sample_sheet)],"R1","R2")])
