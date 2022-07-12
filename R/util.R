@@ -37,7 +37,15 @@ set_dir=function(dir="",name=""){
   return(new_dir)
 }
 
+#' @export
 
+print_verbose=function(exec_code,ws=1){
+      paste0(rep(cat(" \n"),ws),collapse = "")
+      cat(crayon::bold("Running:"))
+      paste0(rep(cat(" \n"),ws),collapse = "")
+      cat(paste0(exec_code,"\n"))
+      paste0(rep(cat(" \n"),ws),collapse = "")
+}
 
 
 #' Check required columns in sample sheet

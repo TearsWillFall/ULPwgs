@@ -57,7 +57,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
   }
     
     if(verbose){
-      cat(exec_code)
+      print_verbose(exec_code=exec_code)
     }
 
     error=system(exec_code)
@@ -119,7 +119,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
 
   if (verbose){
-        cat(exec_code)
+        print_verbose(exec_code=exec_code)
   }
   error=system(exec_code)
   if(error!=0){
@@ -181,7 +181,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
   }
 
   if (verbose){
-        cat(exec_code)
+        print_verbose(exec_code=exec_code)
   }
   error=system(exec_code)
   if(error!=0){
@@ -251,7 +251,7 @@ job=build_job(executor=executor,task=make_unique_id(task))
 
 
   if (verbose){
-        cat(exec_code)
+        print_verbose(exec_code=exec_code)
   }
   error=system(exec_code)
   if(error!=0){
@@ -317,7 +317,7 @@ update_time=60,wait=FALSE,hold=""){
 
 
   if (verbose){
-        cat(exec_code)
+        print_verbose(exec_code=exec_code)
   }
   error=system(exec_code)
   if(error!=0){
@@ -379,7 +379,7 @@ update_time=60,wait=FALSE,hold=""){
 
 
   if (verbose){
-        cat(exec_code)
+        print_verbose(exec_code=exec_code)
   }
   error=system(exec_code)
   if(error!=0){

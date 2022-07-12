@@ -60,7 +60,7 @@ update_time=60,wait=FALSE,hold=""){
   
 
   if(verbose){
-      cat(exec_code)
+      print_verbose(exec_code=exec_code)
     }
   error=system(exec_code)
   if(error!=0){

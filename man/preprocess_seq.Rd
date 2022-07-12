@@ -17,7 +17,8 @@ preprocess_seq(
   output_dir = "",
   merge_level = "library",
   nest_ws = 1,
-  nesting = ""
+  nesting = "",
+  print_tree = TRUE
 )
 }
 \arguments{

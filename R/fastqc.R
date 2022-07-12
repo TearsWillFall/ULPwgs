@@ -49,7 +49,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
   }
 
   if(verbose){
-      cat(exec_code)
+    
   }
 
   error=system(exec_code)

@@ -24,7 +24,7 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     bin_list=build_default_binaries_list(),
     task_name="preprocessSEQ",output_dir="",
     merge_level="library",nest_ws=1,
-    nesting=""){
+    nesting="",print_tree=TRUE){
 
     task_id=make_unique_id(task_name)
     validate_sample_sheet(sample_sheet=sample_sheet,
@@ -32,13 +32,13 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     
     seq_info=seq_info_check(sample_sheet=sample_sheet,vars_list=vars_list)
 
-    seq_info=dplyr::left_join(seq_info,
+    seq_info=suppressMessages(dplyr::left_join(seq_info,
     parameter_config_check(sample_sheet=sample_sheet,config=config,
-    vars_list=vars_list,steps_list=steps_list))
+    vars_list=vars_list,steps_list=steps_list)))
     job=build_job(executor_id=executor_id,task_id=task_id)
     for_id(seq_info=seq_info,output_dir=output_dir,
     vars_list=vars_list,nesting=nesting,merge_level=merge_level,
-    pmts_list=pmts_list,bin_list=bin_list,print_tree=TRUE)
+    pmts_list=pmts_list,bin_list=bin_list,print_tree=print_tree)
 
 }
 
@@ -67,7 +67,7 @@ for_id=function(seq_info,output_dir="",
              pmts_list=build_default_parameter_list(),
              bin_list=build_default_binaries_list(),
              nesting="",merge_level="library",
-             nest_ws=1,print_tree=TRUE){  
+             nest_ws=1,print_tree=FALSE){  
                 var=vars_list$variable[1]
                 var_text=vars_list$text[1]
                 vars_list_left=vars_list[-1,]
@@ -121,7 +121,7 @@ for_id=function(seq_info,output_dir="",
                         ## Call recursively if variables
                         if(length(vars_list_left$variable)>0){
                             for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars_list=vars_list_left,
-                            nesting=nesting,nest_ws=nest_ws)
+                            nesting=nesting,nest_ws=nest_ws,print_tree=print_tree)
                         }else{
                             tool_config_id=seq_info_id %>% dplyr::select(-c(read_group,path)) %>%  
                             dplyr::distinct() %>% dplyr::filter(step==TRUE)
@@ -177,28 +177,34 @@ for_id=function(seq_info,output_dir="",
                 
                    
                                 })
-                             }
-                            }
-    count<<-count+1
+                            }else{
+                                lapply(seq(1,nrow(tool_config_id)),FUN=function(step){
+                                    if(tool_config_id[step,]$name=="pre_fastqc"){
+                                            job_report=qc_fastqc(bin_path=bin_list$pre_fastqc$bin_fastqc,
+                                            file_R1=seq_info_R1$path,
+                                            file_R2=seq_info_R2$path,
+                                            output_dir=paste0(out_file_dir,"/fastqc_reports/pre_trim"),
+                                            executor_id=task_id,
+                                            verbose=tool_config_id[step,]$verbose,
+                                            mode=tool_config_id[step,]$mode,
+                                            threads=tool_config_id[step,]$threads,
+                                            ram=tool_config_id[step,]$ram,
+                                            time=tool_config_id[step,]$time,
+                                            update_time=60,wait=FALSE,hold="")
+                                    }   
+                                })
+                        }
+                }
+                    
+        
+            
+        count<<-count+1
     })
 }
 
 
 
-            # if(tool_config_id[step,]$name=="pre_fastqc"){
-            #                     sink(paste0(out_file_dir,"fastqc.out"))
-            #                     job_report=qc_fastqc(bin_path=bin_list$pre_fastqc$bin_fastqc,
-            #                         file_R1=seq_info_R1$path,
-            #                         file_R2=seq_info_R2$path,
-            #                         output_dir=paste0(out_file_dir,"/fastqc_reports/pre_trim"),
-            #                         executor_id=task_id,
-            #                         verbose=tool_config_id[step,]$verbose,
-            #                         mode=tool_config_id[step,]$mode,
-            #                         threads=tool_config_id[step,]$threads,
-            #                         ram=tool_config_id[step,]$ram,
-            #                         time=tool_config_id[step,]$time,
-            #                         update_time=60,wait=FALSE,hold="")
-            #                 }   
+ 
 
 
 
