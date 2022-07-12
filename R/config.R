@@ -234,14 +234,41 @@ build_default_sample_sheet=function(
 
 
 
-build_default_binaries_config=function(binaries=list(tool=c("fastqc","skewer","bwa",
-"samtools","gatk","picard","bedtools"),path=c("tools/FastQC/bin/fastqc",
-"tools/skewer/skewer","tools/bwa/bwa","tools/samtools/samtools",
-"tools/gatk/gatk","tools/picard/build/libs/picard.jar",
-"tools/bedtools2/bin/bedtools"))){
-    binaries=data.frame(binaries,stringsAsFactors = FALSE)
-    row.names(binaries)=binaries$name
-    return(binaries)
+build_default_binaries_list=function(
+    binaries=
+        list(
+                pre_fastqc=list(
+                    bin_fastqc="~/Scratch/tools/FastQC/bin/fastqc"
+                ),
+                trimming=list(
+                    bin_skewer="~/Scratch/tools/skewer/skewer"
+                ),
+                post_fastq=list(
+                    bin_fastqc="~/Scratch/tools/FastQC/bin/fastqc"
+                ),
+                alignment=list(
+                    bin_bwa="~/Scratch/tools/bwa/bwa",
+                    bin_samtools="~/Scratch/tools/samtools/samtools"
+                ),
+                merge_bams=list(
+                    bin_samtools="~/Scratch/tools/samtools/samtools"
+                ),
+                markdups=list(
+                    bin_gatk="~/Scratch/tools/gatk/gatk"
+                ),
+                recal_gatk=list(
+                    bin_samtools="~/Scratch/tools/samtools/samtools",
+                    bin_gatk="~/Scratch/tools/gatk/gatk",
+                    bin_picard="~/Scratch/tools/picard/build/libs/picard.jar"
+                ),
+                alignqc=list(  
+                    bin_samtools="~/Scratch/tools/samtools/samtools",
+                    bin_picard="~/Scratch/tools/picard/build/libs/picard.jar",
+                    bin_bedtools="~/Scratch/tools/bedtools2/bin/bedtools"
+                )
+            )
+        ){
+         return(binaries)
 }
 
 #' Build default binaries config
@@ -277,6 +304,7 @@ build_default_variable_list=function(
             "run_id",
             "flowcell_id",
             "lane_id"),
+
         required=c(
             TRUE,
             TRUE,
@@ -289,6 +317,7 @@ build_default_variable_list=function(
             FALSE,
             FALSE,
             FALSE),
+
         needs_type_validation=c(
             FALSE,
             FALSE,

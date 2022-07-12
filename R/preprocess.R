@@ -21,6 +21,7 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     opts_list=build_default_option_list(),
     pmts_list=build_default_parameter_list(),
     steps_list=build_default_steps_list(),
+    bin_list=build_default_binaries_list(),
     task_name="preprocessSEQ",output_dir="",
     merge_level="library",nest_ws=1,
     nesting=""){
@@ -32,10 +33,11 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     seq_info=seq_info_check(sample_sheet=sample_sheet,vars_list=vars_list)
 
     seq_info=dplyr::left_join(seq_info,
-    parameter_config_check(sample_sheet=sample_sheet,config=config,vars_list=vars_list,steps_list=steps_list))
+    parameter_config_check(sample_sheet=sample_sheet,config=config,
+    vars_list=vars_list,steps_list=steps_list))
     job=build_job(executor_id=executor_id,task_id=task_id)
     for_id(seq_info=seq_info,output_dir=output_dir,
-    vars_list=vars_list,nesting=nesting,merge_level=merge_level,pmts_list=pmts_list)
+    vars_list=vars_list,nesting=nesting,merge_level=merge_level,pmts_list=pmts_list,bin_list=bin_list)
 
 }
 
@@ -62,108 +64,124 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
 for_id=function(seq_info,output_dir="",
              vars_list=build_default_variable_list(),
              pmts_list=build_default_parameter_list(),
+             bin_list=build_default_binaries_list(),
              nesting="",merge_level="library",nest_ws=1){  
-             var=vars_list$variable[1]
-             var_text=vars_list$text[1]
-             vars_list_left=vars_list[-1,]
-             info=unique(seq_info[,var,drop=TRUE])
-             count=1
-             merge=FALSE
-             rs=lapply(X=info,FUN=function(id){
-            
-                    if(var!="project_id"){
-                          add_nesting_ws(nesting,n=nest_ws)
-                    }
+                var=vars_list$variable[1]
+                var_text=vars_list$text[1]
+                vars_list_left=vars_list[-1,]
+                info=unique(seq_info[,var,drop=TRUE])
+                count=1
+                merge=FALSE
+                rs=lapply(X=info,FUN=function(id){
+                
+                        if(var!="project_id"){
+                            add_nesting_ws(nesting,n=nest_ws)
+                        }
 
-                    seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
-            
-            
-                    out_file_dir=set_dir(dir=output_dir,name=id)
-                   
-                    if(grepl(merge_level,var)&nrow(seq_info_id %>% dplyr::distinct(path))>2){
-                        merge=TRUE
-                    }
-    
-                    if(merge){
-                        merge_txt=crayon::bold(" <<<<===== INFO::SAMPLES WILL BE MERGED AT THIS LEVEL")
-                        seq_info_id[seq_info_id$name=="merge_bam",]$step=TRUE
-                        samples=seq_info_id %>% dplyr::distinct(path)
-                        samples$last=FALSE
-                        samples[seq(nrow(samples)-1,nrow(samples)),]=TRUE
-                        seq_info_id=dplyr::left_join(seq_info_id,samples)
-                        seq_info_id[seq_info_id$last!=TRUE&seq_info_id$order>5,]$step=FALSE
-                    }
-        
-                    instrument_name=""
-                    if(var=="flowcell_id"){
-                        instrument_name=paste0("   Platform: ",unique(seq_info_id$instrument_by_flowcell_id))
-                    }
-
-                    cat(paste0(nesting,"|----",crayon::blue(var_text),crayon::red(id),crayon::silver(instrument_name),merge_txt,"\n"))
-                   
-
-                    nesting=break_nest(count=count,info=info,nesting=nesting)
-
-                    ## Call recursively if variables
-                    if(length(vars_list_left$variable)>0){
-                        for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars_list=vars_list_left,
-                        nesting=nesting,nest_ws=nest_ws)
-                    }else{
-                        tool_config_id=seq_info_id %>% dplyr::select(-c(read_group,path)) %>%  
-                        dplyr::distinct() %>% dplyr::filter(step==TRUE)
-
-                        seq_info_id=seq_info_id %>% dplyr::select(-c(pmts_list$parameter)) %>%  
-                        dplyr::distinct()
-
-                        seq_info_R1=seq_info_id[seq_info_id$read_group=="R1",]
-                        seq_info_R2=seq_info_id[seq_info_id$read_group=="R2",]
-                        cat(add_nesting_ws(nesting,n=nest_ws))
-
-                        cat(paste0(nesting,"|----",crayon::green(paste0("R1: ",seq_info_R1$path)),"\n"))
-                        cat(add_nesting_ws(nesting,n=nest_ws))
-                        cat(paste0(nesting,"|----",crayon::green(paste0("R2: ",seq_info_R2$path)),"\n"))  
-                        
-                        bold_text=FALSE
-                        lapply(seq(1,nrow(tool_config_id)),FUN=function(step){
-                                cat(add_nesting_ws(nesting=nesting,nest="        "))
-                                if(tool_config_id[step,]$name=="merge_bam"){
-                                        bold_text<<-TRUE
-                                }
-                            lapply(seq(1,length(pmts_list$parameter)),FUN=function(pmt){
-                                    
-                                    space="       |"
-                                    if(pmt==ceiling(length(pmts_list$parameter)/2)){
-                                       space=paste0("STEP ",step," |")
-                                    }
-                                   
-                                    txt=paste0(space,pmts_list$text[pmt],
-                                        tool_config_id[step,pmts_list$parameter[pmt]],"\n")
-
-                                    if(bold_text){
-                                        cat(paste0(nesting,crayon::bold(txt)))
-                                    }else{
-                                        cat(paste0(nesting,txt))
-                                    }
-
-                                })
-
-                            if(step!=nrow(tool_config_id)){
-                                    if(bold_text){
-                                        cat(add_arrow(nesting=nesting,n=2,bold=TRUE))
-                                    }else{
-                                        cat(add_arrow(nesting=nesting,n=2))
-                                    }
-                            }else{
-                                 cat(add_nesting_ws(nesting=nesting,nest="        "))
-                            }
-                       
-                        })
-                     
-                    }
+                        seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
+                
+                
+                        out_file_dir=set_dir(dir=output_dir,name=id)
                     
+                        if(grepl(merge_level,var)&nrow(seq_info_id %>% dplyr::distinct(path))>2){
+                            merge=TRUE
+                        }
+
+                        merge_txt=""
+                        if(merge){
+                            merge_txt=crayon::bold(" <<<<===== INFO::SAMPLES WILL BE MERGED AT THIS LEVEL")
+                            seq_info_id[seq_info_id$name=="merge_bam",]$step="TRUE"
+                            samples=seq_info_id %>% dplyr::distinct(path)
+                            samples$last=FALSE
+                            samples[seq(nrow(samples)-1,nrow(samples)),]$last=TRUE
+                            seq_info_id=dplyr::left_join(seq_info_id,samples,by="path")
+                            seq_info_id[seq_info_id$last!=TRUE&seq_info_id$order>4,]$step="FALSE"
+                        }
             
-                    count<<-count+1
-            })
+                        instrument_name=""
+                        if(var=="flowcell_id"){
+                            instrument_name=paste0("   Platform: ",unique(seq_info_id$instrument_by_flowcell_id))
+                        }
+
+                        cat(paste0(nesting,"|----",crayon::blue(var_text),crayon::red(id),crayon::silver(instrument_name),merge_txt,"\n"))
+                    
+
+                        nesting=break_nest(count=count,info=info,nesting=nesting)
+
+                        ## Call recursively if variables
+                        if(length(vars_list_left$variable)>0){
+                            for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars_list=vars_list_left,
+                            nesting=nesting,nest_ws=nest_ws)
+                        }else{
+                            tool_config_id=seq_info_id %>% dplyr::select(-c(read_group,path)) %>%  
+                            dplyr::distinct() %>% dplyr::filter(step==TRUE)
+
+                            seq_info_id=seq_info_id %>% dplyr::select(-c("order",pmts_list$parameter)) %>%  
+                            dplyr::distinct()
+
+                            seq_info_R1=seq_info_id[seq_info_id$read_group=="R1",]
+                            seq_info_R2=seq_info_id[seq_info_id$read_group=="R2",]
+                            cat(add_nesting_ws(nesting,n=nest_ws))
+
+                            cat(paste0(nesting,"|----",crayon::green(paste0("R1: ",seq_info_R1$path)),"\n"))
+                            cat(add_nesting_ws(nesting,n=nest_ws))
+                            cat(paste0(nesting,"|----",crayon::green(paste0("R2: ",seq_info_R2$path)),"\n"))  
+                            
+                            bold_text=FALSE
+                            lapply(seq(1,nrow(tool_config_id)),FUN=function(step){
+                                    cat(add_nesting_ws(nesting=nesting,nest="        "))
+                                    if(tool_config_id[step,]$name=="merge_bam"){
+                                            bold_text<<-TRUE
+                                    }
+                                lapply(seq(1,length(pmts_list$parameter)),FUN=function(pmt){
+                                        
+                                        space="       |"
+                                        if(pmt==ceiling(length(pmts_list$parameter)/2)){
+                                        space=paste0("STEP ",step," |")
+                                        }
+                                    
+                                        txt=paste0(space,pmts_list$text[pmt],
+                                            tool_config_id[step,pmts_list$parameter[pmt]],"\n")
+
+                                        if(bold_text){
+                                            cat(paste0(nesting,crayon::bold(txt)))
+                                        }else{
+                                            cat(paste0(nesting,txt))
+                                        }
+
+                                    })
+                
+
+                                if(step!=nrow(tool_config_id)){
+                                        if(bold_text){
+                                            cat(add_arrow(nesting=nesting,n=2,bold=TRUE))
+                                        }else{
+                                            cat(add_arrow(nesting=nesting,n=2))
+                                        }
+                                }else{
+                                    cat(add_nesting_ws(nesting=nesting,nest="        "))
+                                }
+
+                            if(tool_config_id[step,]$name=="pre_fastqc"){
+                                
+                                job_report=qc_fastqc(bin_path=bin_list$pre_fastqc$bin_fastqc,
+                                    file_R1=seq_info_R1$path,
+                                    file_R2=seq_info_R2$path,
+                                    output_dir=paste0(out_file_dir,"/fastqc_reports/pre_trim"),
+                                    executor_id=task_id,
+                                    verbose=tool_config_id[step,]$verbose,
+                                    mode=tool_config_id[step,]$mode,
+                                    threads=tool_config_id[step,]$threads,
+                                    ram=tool_config_id[step,]$ram,
+                                    time=tool_config_id[step,]$time,
+                                    update_time=60,wait=FALSE,hold="")
+                                }   
+                            })
+                        }
+                        
+                
+                        count<<-count+1
+               })
 }
 
 
@@ -191,17 +209,17 @@ for_id=function(seq_info,output_dir="",
 
 #             if(grepl("pre_fastqc",rownames(parameters))){
 
-#                 job_report=qc_fastqc(bin_path=bin_fastqc,
-#                 file_R1=sub_sub_sample_info$file[1],
-#                 file_R2=sub_sub_sample_info$file[2],
-#                 output_dir=paste0(out_file_dir,"/fastqc_reports/pre_trim"),
-#                 executor_id=task_id,
-#                 verbose=tool_parameters["pre_fastqc","verbose"],
-#                 mode=tool_parameters["pre_fastqc","mode"],
-#                 threads=tool_parameters["pre_fastqc","threads"],
-#                 ram=tool_parameters["pre_fastqc","ram"],
-#                 time=tool_parameters["pre_fastqc","time"],
-#                 update_time=60,wait=FALSE,hold="")
+                job_report=qc_fastqc(bin_path=bin_fastqc,
+                file_R1=sub_sub_sample_info$file[1],
+                file_R2=sub_sub_sample_info$file[2],
+                output_dir=paste0(out_file_dir,"/fastqc_reports/pre_trim"),
+                executor_id=task_id,
+                verbose=tool_parameters["pre_fastqc","verbose"],
+                mode=tool_parameters["pre_fastqc","mode"],
+                threads=tool_parameters["pre_fastqc","threads"],
+                ram=tool_parameters["pre_fastqc","ram"],
+                time=tool_parameters["pre_fastqc","time"],
+                update_time=60,wait=FALSE,hold="")
         
 #             }
             

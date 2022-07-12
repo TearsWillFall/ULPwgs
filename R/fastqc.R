@@ -62,16 +62,16 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
   job_report=build_job_report(job_id=job,executor_id=executor_id,
   task_id=task_id,job_order=1,out_files=list(
     R1=list( 
-      ZIP=paste0(out_file_dir,"/",get_file_name(R1),"_fastqc.zip"),
-      HTML=paste0(out_file_dir,"/",get_file_name(R1),"_fastqc.html"),
+      ZIP=paste0(out_file_dir,"/",get_file_name(file_R1),"_fastqc.zip"),
+      HTML=paste0(out_file_dir,"/",get_file_name(file_R2),"_fastqc.html"),
     R2=list(
-      ZIP=paste0(out_file_dir,"/",get_file_name(R2),"_fastqc.zip"),
-      HTML=paste0(out_file_dir,"/",get_file_name(R2),"_fastqc.html")
+      ZIP=paste0(out_file_dir,"/",get_file_name(file_R2),"_fastqc.zip"),
+      HTML=paste0(out_file_dir,"/",get_file_name(file_R2),"_fastqc.html")
         ) 
       )
     )
   )
-
+ 
   if(wait&&mode=="batch"){
     job_validator(job=job_report$job_id,
     time=update_time,verbose=verbose,threads=threads)
