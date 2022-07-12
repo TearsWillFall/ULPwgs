@@ -22,7 +22,8 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     pmts_list=build_default_parameter_list(),
     steps_list=build_default_steps_list(),
     task_name="preprocessSEQ",output_dir="",
-    merge_level="library",nest_ws=1){
+    merge_level="library",nest_ws=1,
+    nesting=""){
 
     task_id=make_unique_id(task_name)
     validate_sample_sheet(sample_sheet=sample_sheet,
