@@ -70,13 +70,13 @@ update_time=60,wait=FALSE,hold=""){
     if(verbose){
        print_verbose(job=job,arg=argg,exec_code=exec_code)
     }
-    system(exec_code)
 
     error=system(exec_code)
     if(error!=0){
       stop("bwa failed to run due to unknown error.
       Check std error for more information.")
     }
+
     job_report=build_job_report(job_id=job, executor_id=executor_id, 
     task_id=task_id,out_files=list(bam=out_file))
     job_report_tmp=job_report
