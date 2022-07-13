@@ -18,6 +18,7 @@
 #' @param sort Sort aligned file. Default TRUE.
 #' @param coord_sort Sort BAM file by coordinate. Alternatively sort by name. Default TRUE.
 #' @param index Generate index file if BAM sorted by coordinate. Default TRUE.
+#' @param clean Clean intermediary files. Default TRUE.
 #' @param ram RAM memory to use for sorting and indexing. Provided in GB.
 #' @param threads Number of CPU cores to use. Default 3.
 #' @param stats Generate BAM stats. Default all. Options ["all","flag","index",""]
@@ -33,7 +34,7 @@
 
 alignment_bwa=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
 file_R1="",file_R2="",threads=3,ram=4,id_tag="NA",pu_tag="NA",pl_tag="ILLUMINA",lb_tag="NA",
-sm_tag="",sort=TRUE,coord_sort=TRUE,index=TRUE,stats="all",ref_genome="",output_dir="",
+sm_tag="",sort=TRUE,coord_sort=TRUE,index=TRUE,clean=TRUE,stats="all",ref_genome="",output_dir="",
 verbose=FALSE,executor_id=make_unique_id("alignment"),task_name="alignment",mode="local",time="48:0:0",
 update_time=60,wait=FALSE,hold=""){
     
@@ -57,7 +58,7 @@ update_time=60,wait=FALSE,hold=""){
         input_files, "| ",paste0(bin_path2)," view -h -b >",out_file)
     
     job=build_job(executor_id=executor_id,task_id=task_id)
-    
+
     if(mode=="batch"){
       out_file_dir2=set_dir(dir=out_file_dir,name="batch")
       batch_code=build_job_exec(job=job,time=time,ram=ram,
