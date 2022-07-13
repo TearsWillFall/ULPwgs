@@ -185,15 +185,16 @@ for_id=function(seq_info,output_dir="",name="",
                                 })
                             }else{
 
-                                cat(paste0("Processing sample: ",new_name,"\n"))
-                                cat(paste0("             ","\n"))
+                                
+                                cat(crayon::bgYellow(paste0("Processing sample: ",new_name,"\n")))
+                                cat("\t\n")
                                 reports=list()
                                 lapply(seq(1,nrow(tool_config_id)),FUN=function(step){
                                    
                                     if(tool_config_id[step,]$name=="pre_fastqc"){
-                                        cat(crayon::bold("            \n"))
+                                        cat("\t\n")
                                         cat(crayon::bold("pre_fastqc: \n"))
-                                        cat(crayon::bold("            \n"))
+                                        cat("\t\n")
                                             reports[["pre_fastqc"]]<<-qc_fastqc(bin_path=bin_list$pre_fastqc$bin_fastqc,
                                             file_R1=seq_info_R1$path,
                                             file_R2=seq_info_R2$path,
@@ -209,9 +210,11 @@ for_id=function(seq_info,output_dir="",name="",
                                     }
 
                                     if(tool_config_id[step,]$name=="trimming"){
+                                            cat("\t\n")
                                             cat(crayon::bold("trimming: \n"))
+                                            cat("\t\n")
 
-                                            args=parse_args(tool_config_id[step,]$args,step="trimming")
+                                            args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="trimming"))
 
                                             reports[["trimming"]]<<-trimming_skewer(bin_path=bin_list$trimming$bin_skewer,
                                             file_R1=seq_info_R1$path,
@@ -235,13 +238,13 @@ for_id=function(seq_info,output_dir="",name="",
 
 
                                     if(tool_config_id[step,]$name=="post_fastqc"){
-                                            
+                                            cat("\t\n")
                                             cat(crayon::bold("post_fastqc: \n"))
-                                            cat(crayon::bold("            \n"))
+                                            cat("\t\n")
                                             reports[["post_fastqc"]]<<-qc_fastqc(bin_path=bin_list$pre_fastqc$bin_fastqc,
                                             file_R1=reports[["trimming"]]$out_files$R1,
                                             file_R2=reports[["trimming"]]$out_files$R2,
-                                            output_dir=paste0(out_file_dir,"/fastqc_reports/pre_trim"),
+                                            output_dir=paste0(out_file_dir,"/fastqc_reports/post_trim"),
                                             executor_id=task_id,
                                             verbose=tool_config_id[step,]$verbose,
                                             mode=tool_config_id[step,]$mode,
@@ -253,9 +256,9 @@ for_id=function(seq_info,output_dir="",name="",
                                     }
 
                                     if(tool_config_id[step,]$name=="alignment"){
-                                        
+                                        cat("\t\n")
                                         cat(crayon::bold("alignment \n"))
-                                        cat(crayon::bold("            \n"))
+                                        cat("\t\n")
 
                                         job_report=alignment_bwa(bin_path=bin_list$alignment$bin_bwa,
                                             bin_path2=bin_list$alignment$bin_samtools,
@@ -271,7 +274,7 @@ for_id=function(seq_info,output_dir="",name="",
                                             threads=tool_config_id[step,]$threads,
                                             ram=tool_config_id[step,]$ram,
                                             ref_genome=ref_list[[seq_info_R1$reference]]$reference$genome,
-                                            coord_sorted=tool_config_id[step,]$coord_sort,
+                                            coord_sort=tool_config_id[step,]$coord_sort,
                                             stats=tool_config_id[step,]$stats,
                                             verbose=tool_config_id[step,]$verbose,
                                             mode=tool_config_id[step,]$mode,
