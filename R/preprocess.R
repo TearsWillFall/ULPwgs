@@ -262,7 +262,7 @@ for_id=function(seq_info,output_dir="",name="",
 
                                     reports[[new_name]][["alignment"]]<<-alignment_bwa(bin_path=bin_list$alignment$bin_bwa,
                                             bin_path2=bin_list$alignment$bin_samtools,
-                                            file_R1=reports[[new_name]]["trimming"]]$out_files$R1,
+                                            file_R1=reports[[new_name]][["trimming"]]$out_files$R1,
                                             file_R2=reports[[new_name]][["trimming"]]$out_files$R2,
                                             output_dir=out_file_dir,
                                             id_tag=paste0(seq_info_R1$flowcell_id,".",seq_info_R1$lane_id),
