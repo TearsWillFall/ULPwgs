@@ -186,7 +186,7 @@ for_id=function(seq_info,output_dir="",name="",
                             }else{
 
                                 
-                                cat(crayon::bgYellow(paste0("Processing sample: ",new_name,"\n")))
+                                cat(crayon::magenta(paste0("Processing sample: ",new_name,"\n")))
                                 cat("\t\n")
                                 reports=list()
                                 lapply(seq(1,nrow(tool_config_id)),FUN=function(step){
@@ -262,7 +262,7 @@ for_id=function(seq_info,output_dir="",name="",
 
                                         args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="alignment"))
 
-                                        job_report=alignment_bwa(bin_path=bin_list$alignment$bin_bwa,
+                                        reports[["alignment"]]<<-alignment_bwa(bin_path=bin_list$alignment$bin_bwa,
                                             bin_path2=bin_list$alignment$bin_samtools,
                                             file_R1=reports[["trimming"]]$out_files$R1,
                                             file_R2=reports[["trimming"]]$out_files$R2,
@@ -287,6 +287,7 @@ for_id=function(seq_info,output_dir="",name="",
                                             wait=FALSE,
                                             hold=reports[["trimming"]]$job_id)
                                     }
+                                    return(reports)
                                           
                                 })
                         }
