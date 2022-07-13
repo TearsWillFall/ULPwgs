@@ -37,11 +37,13 @@ sm_tag="",sort=TRUE,coord_sort=TRUE,index=TRUE,stats="all",ref_genome="",output_
 verbose=FALSE,executor_id=make_unique_id("alignment"),task_name="alignment",mode="local",time="48:0:0",
 update_time=60,wait=FALSE,hold=""){
     
+    argg <- as.list(environment())
+
     task_id=make_unique_id(task_name)
     out_file_dir=set_dir(dir=output_dir,name="bwa_reports")
    
     input_files=file_R1
-    if (!file_R2==""){
+    if (!check_missing(file_R2)){
       sm_tag=ifelse(sm_tag=="",get_file_name(file_R1),sm_tag)
     }else{
       sm_tag=ifelse(sm_tag=="",intersect_file_name(file_R1,file_R2),sm_tag)
@@ -55,6 +57,7 @@ update_time=60,wait=FALSE,hold=""){
         input_files, "| ",paste0(bin_path2)," view -h -b >",out_file)
     
     job=build_job(executor_id=executor_id,task_id=task_id)
+    
     if(mode=="batch"){
       out_file_dir2=set_dir(dir=out_file_dir,name="batch")
       batch_code=build_job_exec(job=job,time=time,ram=ram,
@@ -64,7 +67,7 @@ update_time=60,wait=FALSE,hold=""){
     
     
     if(verbose){
-      print_verbose(exec_code=exec_code)
+       print_verbose(job=job,arg=argg,exec_code=exec_code)
     }
     system(exec_code)
 

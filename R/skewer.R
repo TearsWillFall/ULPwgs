@@ -71,8 +71,7 @@ task_name="trimmingSkewer",time="48:0:0",update_time=60,wait=FALSE,hold=""){
     Check std error for more information.")
   }
 
-  job_report=build_job_report(job_id=job,executor_id=executor_id,
-  task_id=task_id,
+  job_report=build_job_report(job_id=job,executor_id=executor_id,task_id=task_id,
   out_files=list(
     R1=paste0(out_file,"-trimmed-pair1.fastq.gz"),
     R2=paste0(out_file,"-trimmed-pair1.fastq.gz"),
@@ -84,5 +83,7 @@ task_name="trimmingSkewer",time="48:0:0",update_time=60,wait=FALSE,hold=""){
     batch_validator(job=job_report$job_id,
     time=update_time,verbose=verbose,threads=threads)
   }
+
+  return(job_report)
 
 }

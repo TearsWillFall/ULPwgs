@@ -13,10 +13,10 @@ build_default_steps_list(
     "local", verbose = TRUE, time = "48:0:0", args = list()), alignment = list(order = 4,
     step = TRUE, 
      threads = 12, ram = 16, mode = "local", verbose = TRUE, time =
-    "48:0:0", args = list(clean = TRUE, stats = "all", coord_sorted = FALSE)), merge_bam
-    = list(order = 5, step = FALSE, threads = 6, ram = 16, mode = "local", verbose =
-    TRUE, time = "48:0:0", args = list()), markdups = list(order = 6, step = TRUE,
-    threads = 12, ram = 16, mode = "local", verbose = TRUE, time = "48:0:0", args =
+    "48:0:0", args = list(clean = TRUE, stats = "all", coord_sort = FALSE)), merge_bam =
+    list(order = 5, step = FALSE, threads = 6, ram = 16, mode = "local", verbose = TRUE,
+    time = "48:0:0", args = list()), markdups = list(order = 6, step = TRUE, threads =
+    12, ram = 16, mode = "local", verbose = TRUE, time = "48:0:0", args =
     list(remove_duplicates = TRUE)), recalibrate = list(order = 7, step = TRUE, threads =
     2, ram = 8, mode = "local", 
      verbose = TRUE, time = "48:0:0", args = list()),

@@ -17,8 +17,8 @@ sort_and_index_bam_samtools(
   stats = "all",
   clean = FALSE,
   mode = "local",
-  executor = make_unique_id("sortANDindex"),
-  task = "sortANDindex",
+  executor_id = make_unique_id("sortANDindex"),
+  task_name = "sortANDindex",
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
@@ -50,9 +50,9 @@ sort_and_index_bam_samtools(
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
-\item{executor}{Name of the executor. Default "mardupsGATK"}
+\item{executor_id}{Task EXECUTOR id. Default "mardupsGATK"}
 
-\item{task}{Name of the task. Default "mardupsGATK"}
+\item{task_name}{Name of the task. Default "mardupsGATK"}
 
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 

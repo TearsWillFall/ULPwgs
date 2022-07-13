@@ -67,6 +67,7 @@ print_verbose=function(exec_code,arg,job,ws=1){
       cat(crayon::blue("Job:"))
       rep(cat("    \n"),ws)
       cat(paste0(crayon::red(job,"\n")))
+      rep(cat("    \n"),ws)
       cat(crayon::blue("Arguments:"))
       rep(cat("    \n"),ws)
       lapply(names(arg),FUN=function(ag){
@@ -461,7 +462,7 @@ vars_list=build_default_variable_list()){
 
 
 parameter_config_check=function(sample_sheet=build_default_sample_sheet(),
-config=build_default_config(),vars_list=build_default_variable_list(),
+config=suppressWarnings(build_default_config()),vars_list=build_default_variable_list(),
 steps_list=build_default_steps_list()){
   vars=vars_list$variable
   tool_configs=lapply(seq(1,nrow(sample_sheet)),FUN=function(x){

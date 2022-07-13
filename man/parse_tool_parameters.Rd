@@ -6,7 +6,7 @@
 \usage{
 parse_tool_parameters(
   sample_sheet = build_default_sample_sheet(),
-  config = suppressMessages(build_default_config()),
+  config = suppressWarnings(build_default_config()),
   steps_list = build_default_steps_list()
 )
 }

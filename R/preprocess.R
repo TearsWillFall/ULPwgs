@@ -22,6 +22,7 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     pmts_list=build_default_parameter_list(),
     steps_list=build_default_steps_list(),
     bin_list=build_default_binaries_list(),
+    ref_list=build_default_references_list(),
     task_name="preprocessSEQ",output_dir="",
     merge_level="library",nest_ws=1,
     nesting=""){
@@ -38,10 +39,10 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     job=build_job(executor_id=executor_id,task_id=task_id)
     for_id(seq_info=seq_info,output_dir=output_dir,
     vars_list=vars_list,nesting=nesting,merge_level=merge_level,
-    pmts_list=pmts_list,bin_list=bin_list,print_tree=TRUE)
+    pmts_list=pmts_list,bin_list=bin_list,ref_list=ref_list,print_tree=TRUE)
     for_id(seq_info=seq_info,output_dir=output_dir,
     vars_list=vars_list,nesting=nesting,merge_level=merge_level,
-    pmts_list=pmts_list,bin_list=bin_list,print_tree=FALSE)
+    pmts_list=pmts_list,bin_list=bin_list,ref_list=ref_list,print_tree=FALSE)
 
 }
 
@@ -53,6 +54,8 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
 #' @param seq_info Sample sequencing information
 #' @param var_list List with variables
 #' @param pmts_list List with parameters
+#' @param bin_list List with binaries
+#' @param ref_list List with references
 #' @param nesting Starting nesting level
 #' @param nest_ws Nesting ws to provide. Default 1
 #' @param merge_level Level to merge samples. Default library
@@ -67,6 +70,7 @@ for_id=function(seq_info,output_dir="",name="",
              vars_list=build_default_variable_list(),
              pmts_list=build_default_parameter_list(),
              bin_list=build_default_binaries_list(),
+             ref_list=build_default_reference_list(),
              nesting="",merge_level="library",
              nest_ws=1,print_tree=FALSE){  
                 var=vars_list$variable[1]
@@ -123,7 +127,7 @@ for_id=function(seq_info,output_dir="",name="",
                         ## Call recursively if variables
                         if(length(vars_list_left$variable)>0){
                             for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars_list=vars_list_left,
-                            nesting=nesting,nest_ws=nest_ws,name=new_name,print_tree=print_tree)
+                            nesting=nesting,nest_ws=nest_ws,name=new_name,ref_list=ref_list,print_tree=print_tree)
                         }else{
                             tool_config_id=seq_info_id %>% dplyr::select(-c(read_group,path)) %>%  
                             dplyr::distinct() %>% dplyr::filter(step==TRUE)
@@ -183,11 +187,12 @@ for_id=function(seq_info,output_dir="",name="",
 
                                 cat(paste0("Processing sample: ",new_name,"\n"))
                                 cat(paste0("   ","\n"))
+                                reports=list()
                                 lapply(seq(1,nrow(tool_config_id)),FUN=function(step){
+                                   
                                     if(tool_config_id[step,]$name=="pre_fastqc"){
                                         cat(crayon::bold("pre_fastqc: \n"))
-    
-                                            job_report=qc_fastqc(bin_path=bin_list$pre_fastqc$bin_fastqc,
+                                            reports[["pre_fastqc"]]<<-qc_fastqc(bin_path=bin_list$pre_fastqc$bin_fastqc,
                                             file_R1=seq_info_R1$path,
                                             file_R2=seq_info_R2$path,
                                             output_dir=paste0(out_file_dir,"/fastqc_reports/pre_trim"),
@@ -198,7 +203,7 @@ for_id=function(seq_info,output_dir="",name="",
                                             ram=tool_config_id[step,]$ram,
                                             time=tool_config_id[step,]$time,
                                             update_time=60,wait=FALSE,hold="")
-                                            print(job_report)
+                                            
                                     }
 
                                     if(tool_config_id[step,]$name=="trimming"){
@@ -206,7 +211,7 @@ for_id=function(seq_info,output_dir="",name="",
 
                                             args=parse_args(tool_config_id[step,]$args,step="trimming")
 
-                                            job_report=trimming_skewer(bin_path=bin_list$trimming$bin_skewer,
+                                            reports[["trimming"]]<<-trimming_skewer(bin_path=bin_list$trimming$bin_skewer,
                                             file_R1=seq_info_R1$path,
                                             file_R2=seq_info_R2$path,
                                             output_dir=out_file_dir,
@@ -223,7 +228,54 @@ for_id=function(seq_info,output_dir="",name="",
                                             time=tool_config_id[step,]$time,
                                             executor_id=task_id,
                                             update_time=60,wait=FALSE,hold="")
-                                            print(job_report)
+                                            
+                                    }
+
+
+                                    if(tool_config_id[step,]$name=="post_fastqc"){
+                                            
+                                            cat(crayon::bold("post_fastqc: \n"))
+
+                                            reports[["post_fastqc"]]<<-qc_fastqc(bin_path=bin_list$pre_fastqc$bin_fastqc,
+                                            file_R1=reports[["trimming"]]$R1,
+                                            file_R2=reports[["trimming"]]$R2,
+                                            output_dir=paste0(out_file_dir,"/fastqc_reports/pre_trim"),
+                                            executor_id=task_id,
+                                            verbose=tool_config_id[step,]$verbose,
+                                            mode=tool_config_id[step,]$mode,
+                                            threads=tool_config_id[step,]$threads,
+                                            ram=tool_config_id[step,]$ram,
+                                            time=tool_config_id[step,]$time,
+                                            update_time=60,wait=FALSE,
+                                            hold=reports[["post_trimming"]]$job)
+                                    }
+
+                                    if(tool_config_id[step,]$name=="alignment"){
+                                        cat(crayon::bold("alignment \n"))
+
+                                        job_report=alignment_bwa(bin_path=bin_list$alignment$bin_bwa,
+                                            bin_path2=bin_list$alignment$bin_samtools,
+                                            file_R1=reports[["trimming"]]$R1,
+                                            file_R2=reports[["trimming"]]$R2,
+                                            output_dir=out_file_dir,
+                                            id_tag=paste0(seq_info_R1$flowcell_id,".",seq_info_R1$lane),
+                                            pu_tag=paste0(seq_info_R1$flowcell_id,".",seq_info_R1$lane,".",
+                                            seq_info_R1$library_id),
+                                            pl_tag=seq_info_R1$instrument_by_flowcell_id,
+                                            lb_tag=seq_info_R1$library_id,
+                                            sm_tag=new_name,
+                                            threads=tool_config_id[step,]$threads,
+                                            ram=tool_config_id[step,]$ram,
+                                            ref_genome=ref_list[[seq_info_R1$reference]]$reference$genome,
+                                            coord_sorted=tool_config_id[step,]$coord_sort,
+                                            stats=tool_config_id[step,]$stats,
+                                            verbose=tool_config_id[step,]$verbose,
+                                            mode=tool_config_id[step,]$mode,
+                                            time=tool_config_id[step,]$time,
+                                            executor_id=task_id,
+                                            update_time=60,
+                                            wait=FALSE,
+                                            hold=reports[["trimming"]]$job)
                                     }
                                           
                                 })
@@ -267,30 +319,7 @@ for_id=function(seq_info,output_dir="",name="",
 
         
         
-#                 if(grepl("alignment",rownames(parameters))){
-#                     job_report=alignment_bwa(bin_path=bin_bwa,
-#                         bin_path2=bin_samtools,
-#                         file_R1=sub_sub_sample_info$file[1],
-#                         file_R2=sub_sub_sample_info$file[2],
-#                         output_dir=out_file_dir,
-#                         id_tag=sample_parameters["tags","id"],
-#                         pu_tag=sample_parameters["tags","pu"],
-#                         pl_tag=sample_parameters["tags","platform"],
-#                         lb_tag=sample_parameters["tags","library"],
-#                         sm_tag=sample_parameters["tags","sample"],
-#                         threads=tool_parameters["alignment","threads"],
-#                         ram=tool_parameters["alignment","ram"],
-#                         ref_genome=tool_parameters["alignment","ref_genome"],
-#                         coord_sorted=tool_parameters["alignment","coord_sorted"],
-#                         stats=tool_parameters["alignment","stats"],
-#                         verbose=tool_parameters["alignment","verbose"],
-#                         mode=tool_parameters["alignment","mode"],
-#                         time=tool_parameters["alignment","time"],
-#                         executor_id=task_id,
-#                         update_time=60,
-#                         wait=FALSE,
-#                         hold=job_report$job_id)
-#                 }
+
 #                 return(job_report)
         
             

@@ -16,8 +16,8 @@
 #' @param clean Remove input files. Default FALSE
 #' @param stats Generate BAM stats. Default all. Options ["all","flag","index",""]
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
-#' @param executor Name of the executor. Default "mardupsGATK"
-#' @param task Name of the task. Default "mardupsGATK"
+#' @param executor_id Task EXECUTOR id. Default "mardupsGATK"
+#' @param task_name Name of the task. Default "mardupsGATK"
 #' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
 #' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
 #' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
@@ -26,9 +26,11 @@
 
 sort_and_index_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
 verbose=FALSE,threads=3,ram=1,sort=TRUE,coord_sort=TRUE,index=TRUE,stats="all", clean=FALSE,
-mode="local",executor=make_unique_id("sortANDindex"),task="sortANDindex",time="48:0:0",
+mode="local",executor_id=make_unique_id("sortANDindex"),task_name="sortANDindex",time="48:0:0",
 update_time=60,wait=FALSE,hold=""){
 
+
+  task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
 
   if(sort){
@@ -44,25 +46,26 @@ update_time=60,wait=FALSE,hold=""){
         bam=paste0(out_file_dir,"/",get_file_name(bam),".sorted.",get_file_ext(bam))
 
         if(index){
-            job=index_bam_samtools(bin_path=bin_path,bam=bam,verbose=verbose,threads=threads,ram=ram,
-            executor=executor,mode=mode,time=time,
+            job=index_bam_samtools(bin_path=bin_path,
+            bam=bam,verbose=verbose,threads=threads,ram=ram,
+            executor_id=task_id,mode=mode,time=time,
             update_time=update_time,wait=FALSE,hold=job,output_dir = out_file_dir)
           if(stats=="index"|stats=="all"){
               job=stats_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
-              verbose=verbose,threads=threads,stats="index",executor=executor,
+              verbose=verbose,threads=threads,stats="index",executor_id=task_id,
               mode=mode,time=time,update_time=update_time,wait=FALSE,hold=job)
           }
         }
       }
   }else{
      job=index_bam_samtools(bin_path=bin_path,bam=bam,verbose=verbose,threads=threads,
-     executor=executor,mode=mode,time=time,update_time=update_time,wait=FALSE,hold=hold)
+     executor_id=task_id,mode=mode,time=time,update_time=update_time,wait=FALSE,hold=hold)
   }
 
 
   if(stats=="flag"|stats=="all"){
     job=stats_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
-      verbose=verbose,threads=threads,stats="flag",executor=executor,
+      verbose=verbose,threads=threads,stats="flag",executor_id=task_id,
       mode=mode,time=time,update_time=update_time,
       wait=FALSE,hold=hold)
   }
@@ -104,6 +107,7 @@ verbose=FALSE,threads=3,ram=1,coord_sort=TRUE,mode="local",
 executor_id=make_unique_id("sortBAM"),clean=FALSE,task_name="sortBAM",
 time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
+  argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="sorted")
 
@@ -129,7 +133,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
     
   if (verbose){
-    print_verbose(exec_code=exec_code)
+    print_verbose(job=job,arg=argg,exec_code=exec_code)
   }
   error=system(exec_code)
   if(error!=0){
@@ -155,7 +159,8 @@ bam="",verbose=FALSE,threads=3,ram=4,
 mode="local",executor_id=make_unique_id("indexBAM"),
 task_name="indexBAM",time="48:0:0",update_time=60, output_dir="",
 wait=FALSE,hold=""){
-  
+
+  argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
   exec_code=paste(bin_path," index",bam," -@ ",threads)
@@ -169,7 +174,7 @@ wait=FALSE,hold=""){
 
     
   if (verbose){
-    print_verbose(exec_code=exec_code)
+    print_verbose(job=job,arg=argg,exec_code=exec_code)
   }
      error=system(exec_code)
   if(error!=0){
@@ -214,6 +219,7 @@ stats_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir
 verbose=FALSE,threads=3,ram=4,stats="all",mode="local",executor_id=make_unique_id("statsBAM"),
 task_name="statsBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
+  argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="stats")
 
@@ -260,7 +266,7 @@ stats_flag_samtools=function(bin_path="tools/samtools/samtools",bam="",output_di
 verbose=FALSE,threads=3,ram=4,mode="local",executor_id=make_unique_id("statsFlag"),
 task_name="statsFlag",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
-  
+  argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="flag")
 
@@ -278,7 +284,7 @@ task_name="statsFlag",time="48:0:0",update_time=60,wait=FALSE,hold=""){
     
   
   if (verbose){
-    print_verbose(exec_code=exec_code)
+    print_verbose(job=job,arg=argg,exec_code=exec_code)
   }
 
 
@@ -321,6 +327,7 @@ stats_index_samtools=function(bin_path="tools/samtools/samtools",bam="",output_d
 verbose=FALSE,threads=3,ram=4,mode="local",executor_id=make_unique_id("statsINDEX"),
 task_name="statsINDEX",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
+  argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="index")
 
@@ -337,7 +344,7 @@ task_name="statsINDEX",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
     
   if (verbose){
-    print_verbose(exec_code=exec_code)
+    print_verbose(job=job,arg=argg,exec_code=exec_code)
   }
      error=system(exec_code)
   if(error!=0){
@@ -377,7 +384,7 @@ mapq_metrics_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",out
 verbose=FALSE,threads=3,ram=4,mode="local",executor_id=make_unique_id("metricsMAPQ"),
 task_name="metricsMAPQ",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
-
+  argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="mapq")
 

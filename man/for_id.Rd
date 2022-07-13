@@ -11,6 +11,7 @@ for_id(
   vars_list = build_default_variable_list(),
   pmts_list = build_default_parameter_list(),
   bin_list = build_default_binaries_list(),
+  ref_list = build_default_reference_list(),
   nesting = "",
   merge_level = "library",
   nest_ws = 1,
@@ -23,6 +24,10 @@ for_id(
 \item{output_dir}{Path to output directory. Default none}
 
 \item{pmts_list}{List with parameters}
+
+\item{bin_list}{List with binaries}
+
+\item{ref_list}{List with references}
 
 \item{nesting}{Starting nesting level}
 
