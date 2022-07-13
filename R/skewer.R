@@ -22,8 +22,8 @@
 #' @export
 
 
-trimming_skewer=function(bin_path="tools/skewer/skewer",file_R1="",file_R2=NA,xadapt=NA,
-yadapt=NA,mean_quality=0,min_length=18,max_length=NA,threads=3,ram=4,output_dir="",verbose=FALSE, 
+trimming_skewer=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt="",
+yadapt="",mean_quality=0,min_length=18,max_length="",threads=3,ram=4,output_dir="",verbose=FALSE, 
 output_name="",mode="local",executor_id=make_unique_id("trimmingSkewer"),
 task_name="trimmingSkewer",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
@@ -32,15 +32,15 @@ task_name="trimmingSkewer",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   func=paste(bin_path,"-m tail -t",threads,"-Q",mean_quality,"-l",min_length)
   
-  if (!is.na(xadapt) & !is.na(yadapt)){
+  if (!kutils::isNA(xadapt) & !kutils::isNA(yadapt)){
     func=paste(func,"-x", xadapt,"-y", yadapt)
   }
 
-  if(!is.na(max_length)){
+  if(!kutils::isNA(max_length)){
     func=paste(func,"-L",max_length)
   }
 
-  if (!is.na(file_R2)){
+  if (!kutils::isNA(file_R2)){
     out_file=paste0(out_file_dir,"/",ifelse(output_name,
     intersect_file_name(file_R1,file_R2)))
     exec_code=paste(func,"-z -f sanger --quiet -o",out_file,file_R1,file_R2)
