@@ -62,11 +62,15 @@ set_name=function(current_name="",name=""){
 
 #' @export
 
-print_verbose=function(exec_code,ws=1){
+print_verbose=function(exec_code,job=job,ws=1){
       cat(paste0(rep(cat(" \n"),ws),collapse = ""))
-      cat(crayon::bold("Running:"))
+      cat(crayon::blue("Job:"))
       cat(paste0(rep(cat(" \n"),ws),collapse = ""))
-      cat(paste0(exec_code,"\n"))
+      cat(paste0(crayon::red(job,"\n")))
+      cat(paste0(rep(cat(" \n"),ws),collapse = ""))
+      cat(crayon::blue("Command:"))
+      cat(paste0(rep(cat(" \n"),ws),collapse = ""))
+      cat(paste0(crayon::green(exec_code,"\n")))
       cat(paste0(rep(cat(" \n"),ws),collapse = ""))
 }
 
