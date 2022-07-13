@@ -136,6 +136,7 @@ for_id=function(seq_info,output_dir="",name="",
 
                             seq_info_R1=seq_info_id[seq_info_id$read_group=="R1",]
                             seq_info_R2=seq_info_id[seq_info_id$read_group=="R2",]
+                            report=list()
                             
                             if(print_tree){
                                 cat(add_nesting_ws(nesting,n=nest_ws))
@@ -186,7 +187,7 @@ for_id=function(seq_info,output_dir="",name="",
 
                                 cat(crayon::magenta(paste0("Processing sample: ",new_name,"\n")))
                                 cat("\t\n")
-                                report=list()
+                              
                                 lapply(seq(1,nrow(tool_config_id)),FUN=function(step){
                                     if(tool_config_id[step,]$name=="pre_fastqc"){
                                         cat("\t\n")
