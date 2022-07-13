@@ -178,8 +178,9 @@ config=suppressMessages(build_default_config()),steps_list=build_default_steps_l
             if(parameter=="args"){
               parameter_values=paste0(parameter_values,collapse="=")
               parameter_values=gsub("\\{|\\}","",parameter_values)
-              input_args=parse_args(args=parameter_values,step=step_name,steps_list=steps_list)
-              default_args=parse_args(args=default_config[step_name,parameter],step=step_name,steps_list=steps_list)
+              input_args=suppressMessages(parse_args(args=parameter_values,step=step_name,steps_list=steps_list))
+              default_args=suppressMessages(parse_args(args=default_config[step_name,parameter],
+              step=step_name,steps_list=steps_list))
 
               validated_args=validate_input_args(input_args,default_args)
               default_config[step_name,parameter]<<-parameter_values
