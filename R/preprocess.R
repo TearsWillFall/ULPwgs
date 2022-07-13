@@ -186,12 +186,14 @@ for_id=function(seq_info,output_dir="",name="",
                             }else{
 
                                 cat(paste0("Processing sample: ",new_name,"\n"))
-                                cat(paste0("   ","\n"))
+                                cat(paste0("             ","\n"))
                                 reports=list()
                                 lapply(seq(1,nrow(tool_config_id)),FUN=function(step){
                                    
                                     if(tool_config_id[step,]$name=="pre_fastqc"){
+                                        cat(crayon::bold("            \n"))
                                         cat(crayon::bold("pre_fastqc: \n"))
+                                        cat(crayon::bold("            \n"))
                                             reports[["pre_fastqc"]]<<-qc_fastqc(bin_path=bin_list$pre_fastqc$bin_fastqc,
                                             file_R1=seq_info_R1$path,
                                             file_R2=seq_info_R2$path,
@@ -235,10 +237,10 @@ for_id=function(seq_info,output_dir="",name="",
                                     if(tool_config_id[step,]$name=="post_fastqc"){
                                             
                                             cat(crayon::bold("post_fastqc: \n"))
-
+                                            cat(crayon::bold("            \n"))
                                             reports[["post_fastqc"]]<<-qc_fastqc(bin_path=bin_list$pre_fastqc$bin_fastqc,
-                                            file_R1=reports[["trimming"]]$R1,
-                                            file_R2=reports[["trimming"]]$R2,
+                                            file_R1=reports[["trimming"]]$out_files$R1,
+                                            file_R2=reports[["trimming"]]$out_files$R2,
                                             output_dir=paste0(out_file_dir,"/fastqc_reports/pre_trim"),
                                             executor_id=task_id,
                                             verbose=tool_config_id[step,]$verbose,
@@ -247,16 +249,18 @@ for_id=function(seq_info,output_dir="",name="",
                                             ram=tool_config_id[step,]$ram,
                                             time=tool_config_id[step,]$time,
                                             update_time=60,wait=FALSE,
-                                            hold=reports[["post_trimming"]]$job)
+                                            hold=reports[["post_trimming"]]$job_id)
                                     }
 
                                     if(tool_config_id[step,]$name=="alignment"){
+                                        
                                         cat(crayon::bold("alignment \n"))
+                                        cat(crayon::bold("            \n"))
 
                                         job_report=alignment_bwa(bin_path=bin_list$alignment$bin_bwa,
                                             bin_path2=bin_list$alignment$bin_samtools,
-                                            file_R1=reports[["trimming"]]$R1,
-                                            file_R2=reports[["trimming"]]$R2,
+                                            file_R1=reports[["trimming"]]$out_files$R1,
+                                            file_R2=reports[["trimming"]]$out_files$R2,
                                             output_dir=out_file_dir,
                                             id_tag=paste0(seq_info_R1$flowcell_id,".",seq_info_R1$lane),
                                             pu_tag=paste0(seq_info_R1$flowcell_id,".",seq_info_R1$lane,".",
@@ -275,7 +279,7 @@ for_id=function(seq_info,output_dir="",name="",
                                             executor_id=task_id,
                                             update_time=60,
                                             wait=FALSE,
-                                            hold=reports[["trimming"]]$job)
+                                            hold=reports[["trimming"]]$job_id)
                                     }
                                           
                                 })
