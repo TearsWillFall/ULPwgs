@@ -37,6 +37,29 @@ set_dir=function(dir="",name=""){
   return(new_dir)
 }
 
+
+#' Set the current name
+#' This function sets a new a name for a level
+#'
+#' @param current_name Path to the set the directory
+#' @param name Name of the level
+#' @return A path to the new directory
+#' @export
+
+
+set_name=function(current_name="",name=""){
+  sep="_"
+
+  if(current_name==""){
+    sep=""
+  }
+
+  new_name=paste0(current_name,sep,name)
+
+  return(new_name)
+}
+
+
 #' @export
 
 print_verbose=function(exec_code,ws=1){
@@ -162,6 +185,16 @@ config=build_default_config(),steps_list=build_default_steps_list()){
 }
 
 
+
+#' Check if value is missing
+#' 
+#'
+#' @param var Value of variable
+#' @export
+
+check_missing=function(var){
+  return(kutils::isNA(var)|is.null(var))
+}
 
 #' Validate tool argument for step
 #' 

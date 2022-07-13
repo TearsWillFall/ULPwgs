@@ -31,7 +31,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
   out_file_dir=set_dir(dir=output_dir,name="fastqc_reports")
 
 
-  if (!kutils::isNA(file_R2)){
+  if (!check_missing(file_R2)){
 
     exec_code=paste(bin_path,"-o ", out_file_dir,"-t ",threads,"--noextract",file_R1,file_R2)
 
@@ -49,7 +49,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
   }
 
   if(verbose){
-
+    print_verbose(exec_code=exec_code)
   }
 
   error=system(exec_code)

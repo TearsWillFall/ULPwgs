@@ -63,7 +63,7 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
 
 
 
-for_id=function(seq_info,output_dir="",
+for_id=function(seq_info,output_dir="",name="",
              vars_list=build_default_variable_list(),
              pmts_list=build_default_parameter_list(),
              bin_list=build_default_binaries_list(),
@@ -75,12 +75,14 @@ for_id=function(seq_info,output_dir="",
                 info=unique(seq_info[,var,drop=TRUE])
                 count=1
                 merge=FALSE
+                
                 rs=lapply(X=info,FUN=function(id){
                 
 
                         ## Filter sequencing info for id
                         seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
                         out_file_dir=set_dir(dir=output_dir,name=id)
+                        new_name=set_name(current_name=name,name=id)
                 
                         if(print_tree){
                                 if(var!="project_id"){
@@ -118,11 +120,10 @@ for_id=function(seq_info,output_dir="",
                         }
 
                         
-
                         ## Call recursively if variables
                         if(length(vars_list_left$variable)>0){
                             for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars_list=vars_list_left,
-                            nesting=nesting,nest_ws=nest_ws,print_tree=print_tree)
+                            nesting=nesting,nest_ws=nest_ws,name=new_name,print_tree=print_tree)
                         }else{
                             tool_config_id=seq_info_id %>% dplyr::select(-c(read_group,path)) %>%  
                             dplyr::distinct() %>% dplyr::filter(step==TRUE)
@@ -213,6 +214,7 @@ for_id=function(seq_info,output_dir="",
                                             min_length=args["min_length",]$value,
                                             max_length=args["max_length",]$value,
                                             threads=tool_config_id[step,]$threads,
+                                            output_name=new_name,
                                             ram=tool_config_id[step,]$ram,
                                             verbose=tool_config_id[step,]$verbose,
                                             mode=tool_config_id[step,]$mode,

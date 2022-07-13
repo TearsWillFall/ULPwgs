@@ -32,26 +32,27 @@ task_name="trimmingSkewer",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   func=paste(bin_path,"-m tail -t",threads,"-Q",mean_quality,"-l",min_length)
   
-  if (!kutils::isNA(xadapt) & !kutils::isNA(yadapt)){
+  if (!check_missing(xadapt) & !check_missing(yadapt)){
     func=paste(func,"-x", xadapt,"-y", yadapt)
   }
 
-  if(!kutils::isNA(max_length)){
+  if(!check_missing(max_length)){
     func=paste(func,"-L",max_length)
   }
 
-  if (!kutils::isNA(file_R2)){
-    out_file=paste0(out_file_dir,"/",ifelse(output_name,
+  if (!check_missing(file_R2)){
+    out_file=paste0(out_file_dir,"/",ifelse(output_name=="",
     intersect_file_name(file_R1,file_R2)))
     exec_code=paste(func,"-z -f sanger --quiet -o",out_file,file_R1,file_R2)
   }else{
-    out_file=paste0(out_file_dir,"/",ifelse(output_name,
+    out_file=paste0(out_file_dir,"/",ifelse(output_name=="",
     get_file_name(file_R1),output_name))
     exec_code=paste(func,"-z -f sanger --quiet -o",out_file,file_R1)
   }
 
 
   job=build_job(executor_id=executor_id,task_id=task_id)
+  
   if(mode=="batch"){
     out_file_dir2=set_dir(dir=out_file_dir,name="batch")
     batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,output_dir=out_file_dir2)
