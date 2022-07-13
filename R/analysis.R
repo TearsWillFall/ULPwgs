@@ -206,7 +206,7 @@ chrs=c(1:22,"X","Y"),win=500000, format="wig", bam="",output_dir="",verbose=FALS
     }
 
      if (threads>1){
-        parallel::mclapply(1:length(chrs),FUN=function(x){
+        parallel::mclapply(seq(1,length(chrs)),FUN=function(x){
           exec_code=cat(paste(bin_path2,fmt,"--window", win,"--quality 20 --chromosome",
             paste0("chr",chrs[x],collapse=","), bam,">", paste0(out_file,".",x,".",format)))
           if (verbose){
