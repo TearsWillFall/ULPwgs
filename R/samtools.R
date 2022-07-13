@@ -36,7 +36,7 @@ update_time=60,wait=FALSE,hold=""){
   if(sort){
       job=sort_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
       ram=ram,verbose=verbose,threads=threads,coord_sort=coord_sort,clean=clean,
-      executor=executor,mode=mode,time=time,
+      executor_id=task_id,mode=mode,time=time,
       update_time=update_time,wait=FALSE,hold=hold)
 
       out_file_dir=set_dir(dir=output_dir,name="sorted")

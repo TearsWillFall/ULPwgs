@@ -45,10 +45,10 @@ update_time=60,wait=FALSE,hold=""){
    
     input_files=file_R1
     if (!check_missing(file_R2)){
-      sm_tag=ifelse(sm_tag=="",get_file_name(file_R1),sm_tag)
-    }else{
       sm_tag=ifelse(sm_tag=="",intersect_file_name(file_R1,file_R2),sm_tag)
       input_files=paste(file_R1,file_R2)
+    }else{
+      sm_tag=ifelse(sm_tag=="",get_file_name(file_R1),sm_tag)
     }
     out_file=paste0(out_file_dir,"/",sm_tag,".bam")
     GPU=paste0("\"@RG\\tID:",id_tag,"\\tPL:",pl_tag,"\\tPU:",pu_tag,"\\tLB:",
