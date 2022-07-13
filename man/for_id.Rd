@@ -10,7 +10,7 @@ for_id(
   name = "",
   vars_list = build_default_variable_list(),
   pmts_list = build_default_parameter_list(),
-  bin_list = build_default_binaries_list(),
+  bin_list = build_default_binary_list(),
   ref_list = build_default_reference_list(),
   nesting = "",
   merge_level = "library",

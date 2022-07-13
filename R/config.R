@@ -234,7 +234,7 @@ build_default_sample_sheet=function(
 
 
 
-build_default_binaries_list=function(
+build_default_binary_list=function(
     binaries=
         list(
                 pre_fastqc=list(
