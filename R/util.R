@@ -63,20 +63,21 @@ set_name=function(current_name="",name=""){
 #' @export
 
 print_verbose=function(exec_code,arg,job,ws=1){
-      cat(paste0(rep(cat(" \n"),ws),collapse = ""))
+      rep(cat("    \n"),ws)
       cat(crayon::blue("Job:"))
-      cat(paste0(rep(cat(" \n"),ws),collapse = ""))
+      rep(cat("    \n"),ws)
       cat(paste0(crayon::red(job,"\n")))
       cat(crayon::blue("Arguments:"))
+      rep(cat("    \n"),ws)
       lapply(names(arg),FUN=function(ag){
-          cat(paste0(rep(cat(" \n"),ws),collapse = ""))
-          cat(paste0(ag,": ",arg[[ag]],"\n"))
+          rep(cat("    \n"),ws)
+          cat(paste0(crayon::silver(ag),": ",arg[[ag]],"\n"))
       })
-      cat(paste0(rep(cat(" \n"),ws),collapse = ""))
+      rep(cat("    \n"),ws)
       cat(crayon::blue("Command:"))
-      cat(paste0(rep(cat(" \n"),ws),collapse = ""))
+      rep(cat("    \n"),ws)
       cat(paste0(crayon::green(exec_code,"\n")))
-      cat(paste0(rep(cat(" \n"),ws),collapse = ""))
+      rep(cat("    \n"),ws)
 }
 
 

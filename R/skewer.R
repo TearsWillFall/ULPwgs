@@ -34,7 +34,7 @@ task_name="trimmingSkewer",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   func=paste(bin_path,"-m tail -t",threads,"-Q",mean_quality,"-l",min_length)
   
-  if (!check_missing(xadapt) & !check_missing(yadapt)){
+  if(!check_missing(var=xadapt) & !check_missing(var=yadapt)){
     func=paste(func,"-x", xadapt,"-y", yadapt)
   }
 
