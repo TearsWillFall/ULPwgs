@@ -213,8 +213,8 @@ check_missing=function(var){
 #' Unnest job report
 #' 
 #'
-#' @param job_report
-#' @param var
+#' @param job_report Job report to read
+#' @param index Index level to read at
 #' @export
 
 read_job_report=function(job_report,index=1){

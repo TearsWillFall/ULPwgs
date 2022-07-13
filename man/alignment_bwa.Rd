@@ -19,6 +19,7 @@ alignment_bwa(
   sort = TRUE,
   coord_sort = TRUE,
   index = TRUE,
+  clean = TRUE,
   stats = "all",
   ref_genome = "",
   output_dir = "",
@@ -60,6 +61,8 @@ alignment_bwa(
 \item{coord_sort}{Sort BAM file by coordinate. Alternatively sort by name. Default TRUE.}
 
 \item{index}{Generate index file if BAM sorted by coordinate. Default TRUE.}
+
+\item{clean}{Clean intermediary files. Default TRUE.}
 
 \item{stats}{Generate BAM stats. Default all. Options \link{"all","flag","index",""}}
 
