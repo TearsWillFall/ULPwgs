@@ -78,6 +78,7 @@ for_id=function(seq_info,output_dir="",name="",
                 vars_list_left=vars_list[-1,]
                 info=unique(seq_info[,var,drop=TRUE])
                 count=1
+                merge=FALSE
                 reports=list()
                 rs=lapply(X=info,FUN=function(id){
             
