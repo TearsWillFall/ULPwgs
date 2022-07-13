@@ -79,7 +79,7 @@ for_id=function(seq_info,output_dir="",name="",
                 info=unique(seq_info[,var,drop=TRUE])
                 count=1
                 merge=FALSE
-                report=list()
+                reports=list()
                 rs=lapply(X=info,FUN=function(id){
                 
 
