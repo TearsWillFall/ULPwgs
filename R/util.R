@@ -703,7 +703,7 @@ replace_rg=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
 
   tag=paste0(" -r ",paste0(tag,collapse=" -r "))
 
-  parallel::mclapply(1:length(bam),FUN=function(x){
+  parallel::mclapply(seq(1,length(bam)),FUN=function(x){
     exec_code=paste(bin_path," addreplacerg ",tag," -o ",paste0(out_file_dir,"/",
       basename(sub("bam","rh.bam",bam[x]))), " -@ ",threads,bam[x])
   if(verbose){
