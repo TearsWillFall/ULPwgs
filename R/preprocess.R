@@ -17,7 +17,7 @@
 preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     executor_id=make_unique_id("preprocessSEQ"), 
     vars_list=build_default_variable_list(),
-    config=suppressMessages(build_default_config()),
+    config=suppressWarnings(build_default_config()),
     opts_list=build_default_option_list(),
     pmts_list=build_default_parameter_list(),
     steps_list=build_default_steps_list(),
@@ -180,7 +180,9 @@ for_id=function(seq_info,output_dir="",name="",
                    
                                 })
                             }else{
-                                cat(new_name)
+
+                                cat(paste0("Processing sample: ",new_name,"\n"))
+                                cat(paste0("   ","\n"))
                                 lapply(seq(1,nrow(tool_config_id)),FUN=function(step){
                                     if(tool_config_id[step,]$name=="pre_fastqc"){
                                         cat(crayon::bold("pre_fastqc: \n"))

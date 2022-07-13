@@ -157,7 +157,7 @@ validate_sample_sheet=function(sample_sheet=build_default_sample_sheet(),
 
 
 parse_tool_parameters=function(sample_sheet=build_default_sample_sheet(),
-config=suppressMessages(build_default_config()),steps_list=build_default_steps_list()){
+config=suppressWarnings(build_default_config()),steps_list=build_default_steps_list()){
   parameters=names(config)[names(config)!="name"&names(config)!="order"]
   parameters_in_sheet=names(sample_sheet)[names(sample_sheet) %in% parameters]
   missing_parameters=parameters[!parameters %in% parameters_in_sheet]
@@ -178,8 +178,8 @@ config=suppressMessages(build_default_config()),steps_list=build_default_steps_l
             if(parameter=="args"){
               parameter_values=paste0(parameter_values,collapse="=")
               parameter_values=gsub("\\{|\\}","",parameter_values)
-              input_args=suppressMessages(parse_args(args=parameter_values,step=step_name,steps_list=steps_list))
-              default_args=suppressMessages(parse_args(args=default_config[step_name,parameter],
+              input_args=suppressWarnings(parse_args(args=parameter_values,step=step_name,steps_list=steps_list))
+              default_args=suppressWarnings(parse_args(args=default_config[step_name,parameter],
               step=step_name,steps_list=steps_list))
 
               validated_args=validate_input_args(input_args,default_args)
