@@ -27,6 +27,8 @@ yadapt="",mean_quality=0,min_length=18,max_length="",threads=3,ram=4,output_dir=
 output_name="",mode="local",executor_id=make_unique_id("trimmingSkewer"),
 task_name="trimmingSkewer",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
+
+  argg <- c(as.list(environment()), list(...))
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="skewer_reports")
 
@@ -61,7 +63,7 @@ task_name="trimmingSkewer",time="48:0:0",update_time=60,wait=FALSE,hold=""){
   
 
   if(verbose){
-      print_verbose(exec_code=exec_code)
+      print_verbose(job=job,arg=argg,exec_code=exec_code)
     }
   error=system(exec_code)
   if(error!=0){

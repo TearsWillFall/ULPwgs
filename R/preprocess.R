@@ -180,7 +180,7 @@ for_id=function(seq_info,output_dir="",name="",
                    
                                 })
                             }else{
-
+                                cat(new_name)
                                 lapply(seq(1,nrow(tool_config_id)),FUN=function(step){
                                     if(tool_config_id[step,]$name=="pre_fastqc"){
                                         cat(crayon::bold("pre_fastqc: \n"))
