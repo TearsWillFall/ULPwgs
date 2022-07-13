@@ -79,7 +79,7 @@ for_id=function(seq_info,output_dir="",name="",
                 info=unique(seq_info[,var,drop=TRUE])
                 count=1
                 merge=FALSE
-                
+                report=list()
                 rs=lapply(X=info,FUN=function(id){
                 
 
@@ -185,17 +185,15 @@ for_id=function(seq_info,output_dir="",name="",
                                 })
                             }else{
 
-                                
                                 cat(crayon::magenta(paste0("Processing sample: ",new_name,"\n")))
                                 cat("\t\n")
-                                reports=list()
                                 lapply(seq(1,nrow(tool_config_id)),FUN=function(step){
                                    
                                     if(tool_config_id[step,]$name=="pre_fastqc"){
                                         cat("\t\n")
                                         cat(crayon::bold("pre_fastqc: \n"))
                                         cat("\t\n")
-                                            reports[["pre_fastqc"]]<<-qc_fastqc(bin_path=bin_list$pre_fastqc$bin_fastqc,
+                                            reports[[new_name]][["pre_fastqc"]]<<-qc_fastqc(bin_path=bin_list$pre_fastqc$bin_fastqc,
                                             file_R1=seq_info_R1$path,
                                             file_R2=seq_info_R2$path,
                                             output_dir=paste0(out_file_dir,"/fastqc_reports/pre_trim"),
@@ -216,7 +214,7 @@ for_id=function(seq_info,output_dir="",name="",
 
                                             args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="trimming"))
 
-                                            reports[["trimming"]]<<-trimming_skewer(bin_path=bin_list$trimming$bin_skewer,
+                                            reports[[new_name]][["trimming"]]<<-trimming_skewer(bin_path=bin_list$trimming$bin_skewer,
                                             file_R1=seq_info_R1$path,
                                             file_R2=seq_info_R2$path,
                                             output_dir=out_file_dir,
@@ -241,9 +239,9 @@ for_id=function(seq_info,output_dir="",name="",
                                             cat("\t\n")
                                             cat(crayon::bold("post_fastqc: \n"))
                                             cat("\t\n")
-                                            reports[["post_fastqc"]]<<-qc_fastqc(bin_path=bin_list$pre_fastqc$bin_fastqc,
-                                            file_R1=reports[["trimming"]]$out_files$R1,
-                                            file_R2=reports[["trimming"]]$out_files$R2,
+                                            reports[[new_name]][["post_fastqc"]]<<-qc_fastqc(bin_path=bin_list$pre_fastqc$bin_fastqc,
+                                            file_R1=reports[[new_name]][["trimming"]]$out_files$R1,
+                                            file_R2=reports[[new_name]][["trimming"]]$out_files$R2,
                                             output_dir=paste0(out_file_dir,"/fastqc_reports/post_trim"),
                                             executor_id=task_id,
                                             verbose=tool_config_id[step,]$verbose,
@@ -252,7 +250,7 @@ for_id=function(seq_info,output_dir="",name="",
                                             ram=tool_config_id[step,]$ram,
                                             time=tool_config_id[step,]$time,
                                             update_time=60,wait=FALSE,
-                                            hold=reports[["post_trimming"]]$job_id)
+                                            hold=reports[[new_name]][["post_trimming"]]$job_id)
                                     }
 
                                     if(tool_config_id[step,]$name=="alignment"){
@@ -262,10 +260,10 @@ for_id=function(seq_info,output_dir="",name="",
 
                                         args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="alignment"))
 
-                                        reports[["alignment"]]<<-alignment_bwa(bin_path=bin_list$alignment$bin_bwa,
+                                    reports[[new_name]][["alignment"]]<<-alignment_bwa(bin_path=bin_list$alignment$bin_bwa,
                                             bin_path2=bin_list$alignment$bin_samtools,
-                                            file_R1=reports[["trimming"]]$out_files$R1,
-                                            file_R2=reports[["trimming"]]$out_files$R2,
+                                            file_R1=reports[[new_name]]["trimming"]]$out_files$R1,
+                                            file_R2=reports[[new_name]][["trimming"]]$out_files$R2,
                                             output_dir=out_file_dir,
                                             id_tag=paste0(seq_info_R1$flowcell_id,".",seq_info_R1$lane_id),
                                             pu_tag=paste0(seq_info_R1$flowcell_id,".",seq_info_R1$lane_id,".",
@@ -285,9 +283,8 @@ for_id=function(seq_info,output_dir="",name="",
                                             executor_id=task_id,
                                             update_time=60,
                                             wait=FALSE,
-                                            hold=reports[["trimming"]]$job_id)
+                                            hold= reports[[new_name]][["trimming"]]$job_id)
                                     }
-                                    return(reports)
                                           
                                 })
                         }
@@ -297,6 +294,7 @@ for_id=function(seq_info,output_dir="",name="",
             
         count<<-count+1
     })
+    return(report)
 }
 
 
