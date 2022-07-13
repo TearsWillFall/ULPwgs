@@ -7,6 +7,7 @@
 for_id(
   seq_info,
   output_dir = "",
+  name = "",
   vars_list = build_default_variable_list(),
   pmts_list = build_default_parameter_list(),
   bin_list = build_default_binaries_list(),

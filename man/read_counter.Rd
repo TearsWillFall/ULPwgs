@@ -8,7 +8,7 @@ read_counter(
   bin_path = "tools/samtools/samtools",
   bin_path2 = "tools/hmmcopy_utils/bin/readCounter",
   chrs = c(1:22, "X", "Y"),
-  win = 500000,
+  win = 5e+05,
   format = "wig",
   bam = "",
   output_dir = "",

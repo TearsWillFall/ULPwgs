@@ -6,10 +6,10 @@
 \usage{
 build_default_option_list(
   options = list(project_id = "", patient_id = "", sample_id = "", sequencing_type =
-    c("bulk", "single_cell"), method_type = c("wgs", "capture", "exome", "rnaseq"),
-    method_version = list(wgs = c("hc", "lp", "ulp"), capture = c("pcf_v1", "pcf_v2",
-    "pcf_v3"), exome = c("all_exome"), rnaseq = list("all_transcriptome")), reference =
-    c("hg19", "hg38"), library_id = "", flowcell_id = "", lane_id = "")
+    c("BULK", "SINGLE_CELL"), method_type = c("WGS", "CAPTURE", "EXOME", "RNASEQ"),
+    method_version = list(WGS = c("HC", "LP", "ULP"), CAPTURE = c("PCF_V1", "PCF_V2",
+    "PCF_V3"), EXOME = c("ALL_EXOME"), RNASEQ = list("ALL_TRANSCRIPTOME")), reference =
+    c("HG19", "HG38"), library_id = "", flowcell_id = "", lane_id = "")
 )
 }
 \arguments{

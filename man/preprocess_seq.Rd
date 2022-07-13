@@ -8,7 +8,7 @@ preprocess_seq(
   sample_sheet = build_default_sample_sheet(),
   executor_id = make_unique_id("preprocessSEQ"),
   vars_list = build_default_variable_list(),
-  config = build_default_config(),
+  config = suppressMessages(build_default_config()),
   opts_list = build_default_option_list(),
   pmts_list = build_default_parameter_list(),
   steps_list = build_default_steps_list(),
@@ -17,8 +17,7 @@ preprocess_seq(
   output_dir = "",
   merge_level = "library",
   nest_ws = 1,
-  nesting = "",
-  print_tree = TRUE
+  nesting = ""
 )
 }
 \arguments{

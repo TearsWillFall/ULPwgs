@@ -10,13 +10,13 @@ trimming_skewer(
   file_R2 = "",
   xadapt = "",
   yadapt = "",
+  mean_quality = 0,
+  min_length = 18,
+  max_length = "",
   threads = 3,
   ram = 4,
   output_dir = "",
   verbose = FALSE,
-  mean_quality = 0,
-  min_length = 18,
-  max_length = "",
   output_name = "",
   mode = "local",
   executor_id = make_unique_id("trimmingSkewer"),
@@ -38,17 +38,17 @@ trimming_skewer(
 
 \item{yadapt}{\link{Optional} Adapter sequence/file.}
 
-\item{threads}{Number of CPU cores to use. Default 3.}
-
-\item{output_dir}{Path to the output directory.}
-
-\item{verbose}{Enables progress messages. Default False.}
-
 \item{mean_quality}{The lowest mean quality value allowed before trimming. Default 0}
 
 \item{min_length}{Minimum length of reads allowed after trimming. Default 18}
 
 \item{max_length}{Maximum length of reads allowed after trimming. Default No limit.}
+
+\item{threads}{Number of CPU cores to use. Default 3.}
+
+\item{output_dir}{Path to the output directory.}
+
+\item{verbose}{Enables progress messages. Default False.}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 

@@ -7,7 +7,7 @@
 build_default_sample_sheet(
   sample_sheet = list(project_id = "TRAILS", patient_id = c("TR001", "TR001", "TR001",
     "TR002", "TR002"), sample_id = c("ID1", "ID1", "ID2", "ID1", "ID2"), sequencing_type
-    = "bulk", method_type = "capture", method_version = "pcf_v3", reference = "hg19",
+    = "BULK", method_type = "CAPTURE", method_version = "PCF_V3", reference = "HG19",
     library_id = "LB1", R1 = c("test/test_data/multi_lane/P1_S1_L1_R1.fq.gz",
     "test/test_data/multi_lane/P1_S1_L2_R1.fq.gz",
     "test/test_data/multi_lane/P1_S2_L1_R1.fq.gz",
