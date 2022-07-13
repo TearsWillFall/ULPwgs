@@ -294,7 +294,7 @@ for_id=function(seq_info,output_dir="",name="",
             
         count<<-count+1
     })
-    return(report)
+    return(reports)
 }
 
 
