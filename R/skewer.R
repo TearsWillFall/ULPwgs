@@ -42,7 +42,7 @@ task_name="trimmingSkewer",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   if (!check_missing(file_R2)){
     out_file=paste0(out_file_dir,"/",ifelse(output_name=="",
-    intersect_file_name(file_R1,file_R2)))
+    intersect_file_name(file_R1,file_R2),output_name))
     exec_code=paste(func,"-z -f sanger --quiet -o",out_file,file_R1,file_R2)
   }else{
     out_file=paste0(out_file_dir,"/",ifelse(output_name=="",

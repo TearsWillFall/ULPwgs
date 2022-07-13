@@ -49,7 +49,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
   }
 
   if(verbose){
-    print_verbose(exec_code=exec_code)
+    print_verbose(exec_code=exec_code,job=job)
   }
 
   error=system(exec_code)
