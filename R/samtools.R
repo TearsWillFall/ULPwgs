@@ -32,9 +32,9 @@ update_time=60,wait=FALSE,hold=""){
 
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
-
+  job_report=list()
   if(sort){
-      job=sort_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
+      job_report[["sort_bam"]]=sort_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
       ram=ram,verbose=verbose,threads=threads,coord_sort=coord_sort,clean=clean,
       executor_id=task_id,mode=mode,time=time,
       update_time=update_time,wait=FALSE,hold=hold)
@@ -46,37 +46,36 @@ update_time=60,wait=FALSE,hold=""){
         bam=paste0(out_file_dir,"/",get_file_name(bam),".sorted.",get_file_ext(bam))
 
         if(index){
-            job=index_bam_samtools(bin_path=bin_path,
+            job_report[["index_bam"]]=index_bam_samtools(bin_path=bin_path,
             bam=bam,verbose=verbose,threads=threads,ram=ram,
             executor_id=task_id,mode=mode,time=time,
             update_time=update_time,wait=FALSE,hold=job,output_dir = out_file_dir)
           if(stats=="index"|stats=="all"){
-              job=stats_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
+              job_report[["stats_bam"]]=stats_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
               verbose=verbose,threads=threads,stats="index",executor_id=task_id,
               mode=mode,time=time,update_time=update_time,wait=FALSE,hold=job)
           }
         }
       }
   }else{
-     job=index_bam_samtools(bin_path=bin_path,bam=bam,verbose=verbose,threads=threads,
+     job_report[["index_bam"]]=index_bam_samtools(bin_path=bin_path,bam=bam,verbose=verbose,threads=threads,
      executor_id=task_id,mode=mode,time=time,update_time=update_time,wait=FALSE,hold=hold)
   }
 
 
   if(stats=="flag"|stats=="all"){
-    job=stats_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
+    job_report[["all_bam"]]=stats_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
       verbose=verbose,threads=threads,stats="flag",executor_id=task_id,
       mode=mode,time=time,update_time=update_time,
       wait=FALSE,hold=hold)
   }
 
   if(wait&&mode=="batch"){
-      job_validator(job=job,
+      job_validator(job=unlist(read_job_report(job_report)),
       time=update_time,verbose=verbose,threads=threads)
   }
 
-  return(job)
-  
+  return(job_report)
 }
 
 
@@ -113,17 +112,19 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   sort_type=""
   
+  out_file=paste0(out_file_dir,"/",get_file_name(bam),".sorted.",get_file_ext(bam))
   if(!coord_sort){
     sort_type=" -n "
   }
   exec_code=paste0(bin_path," sort ",sort_type, bam," -@ ",threads," -m ",ram,"G"," -o ",
-  paste0(out_file_dir,"/",get_file_name(bam),".sorted.",get_file_ext(bam)))
+  out_file)
 
   if(clean){
     exec_code=paste(exec_code," && rm",paste(bam,collapse=" "))
   }
 
   job=build_job(executor_id=executor_id,task=task_id)
+
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
@@ -141,17 +142,16 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
     Check std error for more information.")
   }
 
+  job_report=build_job_report(job_id=job, executor_id=executor_id, 
+  task_id=task_id,out_files=list(bam=out_file))
+
   if(wait&&mode=="batch"){
-      job_validator(job=job,
+      job_validator(job=job_report$job_id,
       time=update_time,verbose=verbose,threads=threads)
   }
 
-  return(job)
+  return(job_report)
 }
-
-
-
-
 
 
 index_bam_samtools=function(bin_path="tools/samtools/samtools",
@@ -165,6 +165,7 @@ wait=FALSE,hold=""){
   out_file_dir=set_dir(dir=output_dir)
   exec_code=paste(bin_path," index",bam," -@ ",threads)
   job=build_job(executor_id=executor_id,task=task_id)
+
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
@@ -176,18 +177,23 @@ wait=FALSE,hold=""){
   if (verbose){
     print_verbose(job=job,arg=argg,exec_code=exec_code)
   }
-     error=system(exec_code)
+
+  error=system(exec_code)
   if(error!=0){
     stop("samtools failed to run due to unknown error.
     Check std error for more information.")
   }
 
+  job_report=build_job_report(job_id=job,executor_id=executor_id, 
+  task_id=task_id,out_files=list(bai=paste0(bam,".bai")))
+
+
   if(wait&&mode=="batch"){
-      job_validator(job=job,
+      job_validator(job=job_report,
       time=update_time,verbose=verbose,threads=threads)
   }
 
-  return(job)
+  return(job_report)
 }
 
 
@@ -222,24 +228,25 @@ task_name="statsBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""){
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="stats")
-
+  job_report=list()
   if(stats=="all"|stats=="flag"){
-    job1=stats_flag_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
+    job_report[["stats_flag"]]=stats_flag_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
     verbose=verbose,threads=threads,mode=mode,time=time,update_time=update_time,wait=FALSE,hold=hold)
+
   }
 
   if(stats=="all"|stats=="index"){
-    job2=stats_index_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
+    job_report[["stats_index"]]=stats_index_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
     verbose=verbose,threads=threads,mode=mode,time=time,update_time=update_time,wait=FALSE,hold=hold)
   }
 
-  
+
   if(wait&&mode=="batch"){
-      job_validator(job=c(job1,job2),
+      job_validator(job=unlist(read_job_report(job_report)),
       time=update_time,verbose=verbose,threads=threads)
   }
 
-  return(c(job1,job2))
+  return(job_report)
 }
 
 #' Generate BAM file flagstats
@@ -270,8 +277,8 @@ task_name="statsFlag",time="48:0:0",update_time=60,wait=FALSE,hold=""){
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="flag")
 
-  exec_code=paste0(bin_path," flagstat ",bam," -@ ",threads," > ",
-    paste0(out_file_dir,"/",get_file_name(bam),".flagstat.txt"))
+  out_file=paste0(out_file_dir,"/",get_file_name(bam),".flagstat.txt")
+  exec_code=paste0(bin_path," flagstat ",bam," -@ ",threads," > ",out_file)
 
   job=build_job(executor_id=executor_id,task_id=task_id)
   if(mode=="batch"){
@@ -294,13 +301,15 @@ task_name="statsFlag",time="48:0:0",update_time=60,wait=FALSE,hold=""){
     Check std error for more information.")
   }
 
-  
+  job_report=build_job_report(job_id=job,executor_id=executor_id, 
+  task_id=task_id,out_files=list(flag_stat=out_file))
+
   if(wait&&mode=="batch"){
-      job_validator(job=job,
+      job_validator(job=job_report$job_id,
       time=update_time,verbose=verbose,threads=threads)
   }
 
-  return(job)
+  return(job_report)
 }
 
 
@@ -331,7 +340,8 @@ task_name="statsINDEX",time="48:0:0",update_time=60,wait=FALSE,hold=""){
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="index")
 
-  exec_code=paste0(bin_path," idxstats ",bam," > ",paste0(out_file_dir,"/",get_file_name(bam),".idxstats.txt"))
+  out_file=paste0(out_file_dir,"/",get_file_name(bam),".idxstats.txt")
+  exec_code=paste0(bin_path," idxstats ",bam," > ",out_file)
 
 
   job=build_job(executor_id=executor_id,task_id=task_id)
@@ -352,13 +362,15 @@ task_name="statsINDEX",time="48:0:0",update_time=60,wait=FALSE,hold=""){
     Check std error for more information.")
   }
 
-  
+  job_report=build_job_report(job_id=job,executor_id=executor_id, 
+  task_id=task_id,out_files=list(idx_stat=out_file))
+
   if(wait&&mode=="batch"){
-      job_validator(job=job,
+      job_validator(job=job_report$job_id,
       time=update_time,verbose=verbose,threads=threads)
   }
 
-  return(job)
+  return(job_report)
 
 }
 
@@ -389,9 +401,10 @@ task_name="metricsMAPQ",time="48:0:0",update_time=60,wait=FALSE,hold=""){
   out_file_dir=set_dir(dir=output_dir,name="mapq")
 
 
+  out_file=paste0(out_file_dir,"/",get_file_name(bam),".mapq_dist.txt")
   exec_code=paste(bin_path,"view",bam," -@ ",threads, " | awk -F", "'\\t'",
     "'{c[$5]++} END { for (i in c) catf(\"%s\\t%s\\n\",i,c[i]) }'",
-    " | sort -t$'\\t' -k 1 -g >>", paste0(out_file_dir,"/",get_file_name(bam),".mapq_dist.txt"))
+    " | sort -t$'\\t' -k 1 -g >", out_file)
 
   job=build_job(executor_id=executor_id,task_id=task_id)
   if(mode=="batch"){
@@ -411,13 +424,17 @@ task_name="metricsMAPQ",time="48:0:0",update_time=60,wait=FALSE,hold=""){
     stop("samtools failed to run due to unknown error.
     Check std error for more information.")
   }
+
+  job_report=build_job_report(job_id=job,executor_id=executor_id, 
+  task_id=task_id,out_files=list(mapq_metric=out_file))
+
   
   if(wait&&mode=="batch"){
-      job_validator(job=job,
+      job_validator(job=job_report$job_id,
       time=update_time,verbose=verbose,threads=threads)
   }
 
-  return(job)
+  return(job_report)
 }
 
 

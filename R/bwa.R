@@ -77,21 +77,21 @@ update_time=60,wait=FALSE,hold=""){
       Check std error for more information.")
     }
 
-    job_report=build_job_report(job_id=job, executor_id=executor_id, 
+    job_report=list()
+    job_report[["bwa"]]=build_job_report(job_id=job, executor_id=executor_id, 
     task_id=task_id,out_files=list(bam=out_file))
-    job_report_tmp=job_report
     
     if(sort){
-      job_report=sort_and_index_bam_samtools(bin_path=bin_path2,
+      job_report[["sort_and_index_bam"]]=sort_and_index_bam_samtools(bin_path=bin_path2,
       bam=out_file,output_dir=out_file_dir, 
       executor_id=task_id,ram=ram,verbose=verbose,threads=threads,
       coord_sort=coord_sort,index=index,stats=stats,clean=clean,mode=mode,time=time,
       update_time=update_time,wait=FALSE,hold=job_report$job_id)
-      job_report=dplyr::bind_rows(job_report,job_report_tmp)
+    
     }
 
     if(wait&&mode=="batch"){
-        job_validator(job=job_report$job_id,
+        job_validator(job=unlist(read_job_report(job_report)),
         time=update_time,verbose=verbose,threads=threads)
     }
 

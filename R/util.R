@@ -208,6 +208,22 @@ check_missing=function(var){
   return(kutils::isNA(var)|is.null(var))
 }
 
+
+
+#' Unnest job report
+#' 
+#'
+#' @param job_report
+#' @param var
+#' @export
+
+read_job_report=function(job_report,index=1){
+    lapply(job_report,FUN="[[",index=index)
+}
+
+
+
+
 #' Validate tool argument for step
 #' 
 #'
