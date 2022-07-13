@@ -79,8 +79,7 @@ for_id=function(seq_info,output_dir="",name="",
                 info=unique(seq_info[,var,drop=TRUE])
                 count=1
                 merge=FALSE
-                report=list()
-                rs=lapply(X=info,FUN=function(id){
+                reports=lapply(X=info,FUN=function(id){
             
                         ## Filter sequencing info for id
                         seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
@@ -125,7 +124,7 @@ for_id=function(seq_info,output_dir="",name="",
                         
                         ## Call recursively if variables
                         if(length(vars_list_left$variable)>0){
-                            report[[var]][[new_name]]<<-for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars_list=vars_list_left,
+                            report=for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars_list=vars_list_left,
                             nesting=nesting,nest_ws=nest_ws,name=new_name,ref_list=ref_list,print_tree=print_tree)
                         }else{
                             tool_config_id=seq_info_id %>% dplyr::select(-c(read_group,path)) %>%  
@@ -186,6 +185,7 @@ for_id=function(seq_info,output_dir="",name="",
 
                                 cat(crayon::magenta(paste0("Processing sample: ",new_name,"\n")))
                                 cat("\t\n")
+                                report=list()
                                 lapply(seq(1,nrow(tool_config_id)),FUN=function(step){
                                     if(tool_config_id[step,]$name=="pre_fastqc"){
                                         cat("\t\n")
@@ -290,8 +290,9 @@ for_id=function(seq_info,output_dir="",name="",
                 }
                     
         count<<-count+1
+        return(report)
     })
-    return(report)
+    return(reports)
    
 }
 
