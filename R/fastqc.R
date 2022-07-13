@@ -26,7 +26,7 @@ output_dir="",verbose=FALSE,executor_id=make_unique_id("fastQC"),
 task_name="fastQC",mode="local",threads=3,ram=4,
 time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
-  argg <- c(as.list(environment()), list(...))
+  argg <- as.list(environment())
 
   task_id=make_unique_id(task_name)
 

@@ -150,8 +150,10 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
 
 
-index_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",verbose=FALSE,threads=3,ram=4,
-mode="local",executor_id=make_unique_id("indexBAM"),task_name="indexBAM",time="48:0:0",update_time=60, output_dir="",
+index_bam_samtools=function(bin_path="tools/samtools/samtools",
+bam="",verbose=FALSE,threads=3,ram=4,
+mode="local",executor_id=make_unique_id("indexBAM"),
+task_name="indexBAM",time="48:0:0",update_time=60, output_dir="",
 wait=FALSE,hold=""){
   
   task_id=make_unique_id(task_name)
