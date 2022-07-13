@@ -185,6 +185,7 @@ for_id=function(seq_info,output_dir="",name="",
                                 })
                             }else{
 
+                                cat("\t\n")
                                 cat(crayon::magenta(paste0("Processing sample: ",new_name,"\n")))
                                 cat("\t\n")
                               
@@ -290,7 +291,10 @@ for_id=function(seq_info,output_dir="",name="",
                                 })
                         }
                 }
-        reports[[var]]<<-report    
+        if(length(report)>0){
+            reports<<-append(reports,report)
+        }
+    
         count<<-count+1
     })
     return(reports)
