@@ -10,7 +10,7 @@ build_default_config=function(steps=names(build_default_steps_list()),
 steps_list=build_default_steps_list()){
     config_list=lapply(steps,FUN=build_step,steps_list=steps_list)
     config_list=dplyr::bind_rows(config_list)
-    suppressMessages(row.names(config_list)=config_list$name)
+    row.names(config_list)=config_list$name
     return(config_list)
 }
 

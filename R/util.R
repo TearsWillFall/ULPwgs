@@ -148,7 +148,7 @@ validate_sample_sheet=function(sample_sheet=build_default_sample_sheet(),
 
 
 parse_tool_parameters=function(sample_sheet=build_default_sample_sheet(),
-config=build_default_config(),steps_list=build_default_steps_list()){
+config=suppressMessages(build_default_config()),steps_list=build_default_steps_list()){
   parameters=names(config)[names(config)!="name"&names(config)!="order"]
   parameters_in_sheet=names(sample_sheet)[names(sample_sheet) %in% parameters]
   missing_parameters=parameters[!parameters %in% parameters_in_sheet]
