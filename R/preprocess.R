@@ -27,9 +27,29 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     merge_level="library",nest_ws=1,
     nesting=""){
 
+    reports=list()
+          
+    argg <- as.list(environment())
+
+  
     task_id=make_unique_id(task_name)
+
+    job=build_job(executor_id=executor_id,task=task_id)
+
+
+    job_report=build_job_report(
+        job_id=job,
+        executor_id=executor_id, 
+        task_id=task_id,
+        input_args=argg,
+        out_file_dir=out_file_dir,
+        out_files=list()
+      )
+
     validate_sample_sheet(sample_sheet=sample_sheet,
     vars_list=vars_list,opts_list=opts_list)
+    
+    out_file_dir=set_dir(dir=output_dir)
     
     seq_info=seq_info_check(sample_sheet=sample_sheet,vars_list=vars_list)
 
@@ -37,13 +57,13 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     parameter_config_check(sample_sheet=sample_sheet,config=config,
     vars_list=vars_list,steps_list=steps_list)))
     job=build_job(executor_id=executor_id,task_id=task_id)
-    for_id(seq_info=seq_info,output_dir=output_dir,
+    for_id(seq_info=seq_info,output_dir=out_file_dir,
     vars_list=vars_list,nesting=nesting,merge_level=merge_level,
     pmts_list=pmts_list,bin_list=bin_list,ref_list=ref_list,print_tree=TRUE)
-    reports=for_id(seq_info=seq_info,output_dir=output_dir,
+    job_reports[["steps"]][["samples"]]=for_id(seq_info=seq_info,output_dir=output_dir,
     vars_list=vars_list,nesting=nesting,merge_level=merge_level,
     pmts_list=pmts_list,bin_list=bin_list,ref_list=ref_list,print_tree=FALSE)
-    return(reports)
+    return(job_reports)
 
 }
 
@@ -295,7 +315,7 @@ for_id=function(seq_info,output_dir="",name="",
 
                                     if(tool_config_id[step,]$name=="markdups"){
                                         cat("\t\n")
-                                        cat(crayon::bold("markdups \n"))
+                                        cat(crayon::bold("markdups: \n"))
                                         cat("\t\n")
                                         
                                         args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="markdups"))
@@ -314,6 +334,18 @@ for_id=function(seq_info,output_dir="",name="",
                                             update_time=60,wait=FALSE,
                                             hold=report[[new_name]][["steps"]][["aligment"]]$job_id)
                                     }
+
+
+                                    if(!merge){
+                                        if(tool_config_id[step,]$name=="recalibrate"){
+                                        cat("\t\n")
+                                        cat(crayon::bold("recalibrate: \n"))
+                                        cat("\t\n")
+                                    
+                                        args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="recalibrate"))
+
+                                        }
+                                    }
                                                 
                                           
                                 })
@@ -325,7 +357,7 @@ for_id=function(seq_info,output_dir="",name="",
     
         count<<-count+1
     })
-    return(list(samples=reports))
+    return(reports)
    
 }
 
