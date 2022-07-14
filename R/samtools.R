@@ -37,8 +37,14 @@ update_time=60,wait=FALSE,hold=""){
 
   job=build_job(executor_id=executor_id,task=task_id)
 
-  job_report=build_job_report(job_id=job, executor_id=executor_id, 
-  task_id=task_id,input_args=argg, out_file_dir=out_file_dir, out_files=list())
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id, 
+    task_id=task_id,
+    input_args=argg,
+    out_file_dir=out_file_dir,
+      out_files=list()
+  )
 
   if(sort){
       job_report[["steps"]][["sort"]]=sort_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
@@ -154,8 +160,15 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
     Check std error for more information.")
   }
 
-  job_report=build_job_report(job_id=job, executor_id=executor_id, 
-  task_id=task_id,input_args=argg,out_file_dir=out_file_dir,out_files=list(bam=out_file))
+  job_report=build_job_report(
+    job_id=job, 
+    executor_id=executor_id, 
+    task_id=task_id,
+    input_args=argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+      bam=out_file)
+    )
 
   if(wait&&mode=="batch"){
       job_validator(job=job_report$job_id,
@@ -329,8 +342,15 @@ task_name="statsFlag",time="48:0:0",update_time=60,wait=FALSE,hold=""){
   }
 
 
-  job_report=build_job_report(job_id=job,executor_id=executor_id, 
-  task_id=task_id,input_args=argg,out_file_dir=out_file_dir,out_files=list(flag_stat=out_file))
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id, 
+    task_id=task_id,
+    input_args=argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+      flag_stat=out_file)
+    )
 
   if(wait&&mode=="batch"){
       job_validator(job=job_report$job_id,
@@ -391,9 +411,15 @@ task_name="statsINDEX",time="48:0:0",update_time=60,wait=FALSE,hold=""){
   }
 
   
-  job_report=build_job_report(job_id=job,executor_id=executor_id, 
-  task_id=task_id,input_args=argg,out_file_dir=out_file_dir,
-  out_files=list(idx_stat=out_file))
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id, 
+    task_id=task_id,
+    input_args=argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+      idx_stat=out_file)
+    )
 
   if(wait&&mode=="batch"){
       job_validator(job=job_report$job_id,
@@ -456,9 +482,15 @@ task_name="metricsMAPQ",time="48:0:0",update_time=60,wait=FALSE,hold=""){
     Check std error for more information.")
   }
 
-  job_report=build_job_report(job_id=job,executor_id=executor_id, 
-  task_id=task_id,input_args=argg,out_file_dir=out_file_dir,
-  out_files=list(mapq_metric=out_file))
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id, 
+    task_id=task_id,
+    input_args=argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+      mapq_metric=out_file)
+    )
 
   
   if(wait&&mode=="batch"){
