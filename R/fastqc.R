@@ -60,7 +60,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
   }
 
   job_report=build_job_report(job_id=job,executor_id=executor_id,
-  task_id=task_id,input=argg, out_file_dir=out_file_dir, out_files=list(
+  task_id=task_id,input_args=argg, out_file_dir=out_file_dir, out_files=list(
     R1=list( 
       ZIP=paste0(out_file_dir,"/",get_file_name(file_R1),"_fastqc.zip"),
       HTML=paste0(out_file_dir,"/",get_file_name(file_R2),"_fastqc.html")),

@@ -27,6 +27,7 @@ verbose=FALSE,tmp_dir="",threads=3,ram=4,remove_duplicates=TRUE,
 executor_id=make_unique_id("markdupsGATK"),task_name="markdupsGATK",
 mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
+    argg <- as.list(environment())
     task_id=make_unique_id(task_name)
 
     out_file_dir=set_dir(dir=output_dir,name="markdups_reports")
@@ -60,18 +61,25 @@ mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
     if(verbose){
         print_verbose(exec_code=exec_code)
     }
+
+
     error=system(exec_code)
     if(error!=0){
         stop("markdups failed to run due to unknown error.
         Check std error for more information.")
     }
 
- 
+  job_report=build_job_report(job_id=job, executor_id=executor_id, 
+  task_id=task_id,input_args=argg,out_file_dir=out_file_dir,
+  out_files=list(
+    bam=out_file,
+    log=out_file_md
+  ))
 
- if(wait&&mode=="batch"){
-      job_validator(job=job_report$job_id,
-      time=update_time,verbose=verbose,threads=threads)
-  }
+  if(wait&&mode=="batch"){
+        job_validator(job=job_report$job_id,
+        time=update_time,verbose=verbose,threads=threads)
+    } 
 
   
 

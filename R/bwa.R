@@ -78,7 +78,7 @@ update_time=60,wait=FALSE,hold=""){
     }
 
     job_report=build_job_report(job_id=job, executor_id=executor_id, 
-    task_id=task_id,input=argg,out_file_dir=out_file_dir,out_files=list(bam=out_file))
+    task_id=task_id,input_args=argg,out_file_dir=out_file_dir,out_files=list(bam=out_file))
     
     if(sort){
       job_report[["steps"]][["sort_and_index"]]=sort_and_index_bam_samtools(bin_path=bin_path2,
@@ -149,7 +149,7 @@ update_time=60,wait=FALSE,hold=""){
   }
  
   job_report=build_job_report(job_id=job,executor_id=executor_id,
-  task_id=task_id,input=argg,out_file_dir=out_file_dir,out_files=list(index=paste0(file,".fai")))
+  task_id=task_id,input_args=argg,out_file_dir=out_file_dir,out_files=list(index=paste0(file,".fai")))
   
   if(wait&&mode=="batch"){
       job_validator(job=job_report$job_id,
