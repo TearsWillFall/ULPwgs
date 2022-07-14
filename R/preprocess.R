@@ -128,7 +128,7 @@ for_id=function(seq_info,output_dir="",name="",
                         ## Call recursively if variables
                        
                         if(length(vars_list_left$variable)>0){
-                            report[["samples"]]=for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars_list=vars_list_left,
+                            report=for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars_list=vars_list_left,
                             nesting=nesting,nest_ws=nest_ws,name=new_name,ref_list=ref_list,print_tree=print_tree)
                         }else{
                             tool_config_id=seq_info_id %>% dplyr::select(-c(read_group,path)) %>%  
@@ -325,7 +325,7 @@ for_id=function(seq_info,output_dir="",name="",
     
         count<<-count+1
     })
-    return(reports)
+    return(list(samples=reports))
    
 }
 
