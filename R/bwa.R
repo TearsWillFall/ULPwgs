@@ -77,12 +77,11 @@ update_time=60,wait=FALSE,hold=""){
       Check std error for more information.")
     }
 
-    job_report=list()
-    job_report[["bwa"]]=build_job_report(job_id=job, executor_id=executor_id, 
-    task_id=task_id,out_files=list(bam=out_file))
+    job_report=build_job_report(job_id=job, executor_id=executor_id, 
+    task_id=task_id,input=argg,out_file_dir=out_file_dir,out_files=list(bam=out_file))
     
     if(sort){
-      job_report[["sort_and_index_bam"]]=sort_and_index_bam_samtools(bin_path=bin_path2,
+      job_report[["steps"]][["sort_and_index"]]=sort_and_index_bam_samtools(bin_path=bin_path2,
       bam=out_file,output_dir=out_file_dir, 
       executor_id=task_id,ram=ram,verbose=verbose,threads=threads,
       coord_sort=coord_sort,index=index,stats=stats,clean=clean,mode=mode,time=time,
@@ -91,7 +90,11 @@ update_time=60,wait=FALSE,hold=""){
     }
 
     if(wait&&mode=="batch"){
-        job_validator(job=unlist(read_job_report(job_report)),
+        job_validator(job=c(
+          job_report[["steps"]][["sort_and_index"]][["steps"]][["sort"]]$job_id,
+          job_report[["steps"]][["sort_and_index"]][["steps"]][["index"]]$job_id,
+          job_report[["steps"]][["sort_and_index"]][["steps"]][["stats"]][["steps"]][["index"]]$job_id,
+          job_report[["steps"]][["sort_and_index"]][["steps"]][["stats"]][["steps"]][["flag"]]$job_id),
         time=update_time,verbose=verbose,threads=threads)
     }
 
@@ -119,6 +122,10 @@ update_time=60,wait=FALSE,hold=""){
 index_ref_bwa=function(bin_path="tools/bwa/bwa",file="",threads=4,ram=4,verbose=FALSE,
 executor_id=make_unique_id("refIndex"),task_name="refIndex",mode="local",time="48:0:0",
 update_time=60,wait=FALSE,hold=""){
+
+      
+  argg <- as.list(environment())
+
   
   task_id=make_unique_id(task_name)
   exec_code=paste(bin_path,"index", file)
@@ -132,16 +139,17 @@ update_time=60,wait=FALSE,hold=""){
   }
 
   if(verbose){
-    print_verbose(exec_code=exec_code)
-  }
+       print_verbose(job=job,arg=argg,exec_code=exec_code)
+    }
+
   error=system(exec_code)
   if(error!=0){
     stop("bwa failed to run due to unknown error.
     Check std error for more information.")
   }
-
+ 
   job_report=build_job_report(job_id=job,executor_id=executor_id,
-  task_id=task_id,out_files=list(index=paste0(file,".fai")))
+  task_id=task_id,input=argg,out_file_dir=out_file_dir,out_files=list(index=paste0(file,".fai")))
   
   if(wait&&mode=="batch"){
       job_validator(job=job_report$job_id,

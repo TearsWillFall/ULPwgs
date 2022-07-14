@@ -66,8 +66,7 @@ mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
         Check std error for more information.")
     }
 
- job_report=list(job_id=job,out_files=list(bam=out_file,metrics=out_file_md))
- job_report$order=1
+ 
 
  if(wait&&mode=="batch"){
       job_validator(job=job_report$job_id,

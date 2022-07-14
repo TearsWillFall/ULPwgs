@@ -29,12 +29,19 @@ verbose=FALSE,threads=3,ram=1,sort=TRUE,coord_sort=TRUE,index=TRUE,stats="all", 
 mode="local",executor_id=make_unique_id("sortANDindex"),task_name="sortANDindex",time="48:0:0",
 update_time=60,wait=FALSE,hold=""){
 
+  argg <- as.list(environment())
 
   task_id=make_unique_id(task_name)
+
   out_file_dir=set_dir(dir=output_dir)
-  job_report=list()
+
+  job=build_job(executor_id=executor_id,task=task_id)
+
+  job_report=build_job_report(job_id=job, executor_id=executor_id, 
+  task_id=task_id,input=argg, out_file_dir=out_file_dir, out_files=list())
+
   if(sort){
-      job_report[["sort_bam"]]=sort_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
+      job_report[["steps"]][["sort"]]=sort_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
       ram=ram,verbose=verbose,threads=threads,coord_sort=coord_sort,clean=clean,
       executor_id=task_id,mode=mode,time=time,
       update_time=update_time,wait=FALSE,hold=hold)
@@ -46,32 +53,37 @@ update_time=60,wait=FALSE,hold=""){
         bam=paste0(out_file_dir,"/",get_file_name(bam),".sorted.",get_file_ext(bam))
 
         if(index){
-            job_report[["index_bam"]]=index_bam_samtools(bin_path=bin_path,
+            job_report[["steps"]][["index"]]=index_bam_samtools(bin_path=bin_path,
             bam=bam,verbose=verbose,threads=threads,ram=ram,
             executor_id=task_id,mode=mode,time=time,
             update_time=update_time,wait=FALSE,hold=job,output_dir = out_file_dir)
           if(stats=="index"|stats=="all"){
-              job_report[["stats_bam"]]=stats_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
+              job_report[["stats"]]=stats_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
               verbose=verbose,threads=threads,stats="index",executor_id=task_id,
               mode=mode,time=time,update_time=update_time,wait=FALSE,hold=job)
           }
         }
       }
   }else{
-     job_report[["index_bam"]]=index_bam_samtools(bin_path=bin_path,bam=bam,verbose=verbose,threads=threads,
+     job_report[["steps"]][["index"]]=index_bam_samtools(bin_path=bin_path,bam=bam,verbose=verbose,threads=threads,
      executor_id=task_id,mode=mode,time=time,update_time=update_time,wait=FALSE,hold=hold)
   }
 
 
   if(stats=="flag"|stats=="all"){
-    job_report[["all_bam"]]=stats_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
+    job_report[["steps"]][["stats"]]=append(job_report[["steps"]][["stats"]],
+    stats_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
       verbose=verbose,threads=threads,stats="flag",executor_id=task_id,
       mode=mode,time=time,update_time=update_time,
-      wait=FALSE,hold=hold)
+      wait=FALSE,hold=hold))
   }
 
   if(wait&&mode=="batch"){
-      job_validator(job=unlist(read_job_report(job_report)),
+      job_validator(job=c(
+      job_report[["steps"]][["sort"]]$job_id,
+      job_report[["steps"]][["index"]]$job_id,
+      job_report[["steps"]][["stats"]][["steps"]][["stats"]]$job_id,
+      job_report[["steps"]][["stats"]][["steps"]][["index"]]$job_id),
       time=update_time,verbose=verbose,threads=threads)
   }
 
@@ -143,7 +155,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
   }
 
   job_report=build_job_report(job_id=job, executor_id=executor_id, 
-  task_id=task_id,out_files=list(bam=out_file))
+  task_id=task_id,input=argg,out_file_dir=out_file_dir,out_files=list(bam=out_file))
 
   if(wait&&mode=="batch"){
       job_validator(job=job_report$job_id,
@@ -184,8 +196,9 @@ wait=FALSE,hold=""){
     Check std error for more information.")
   }
 
+  
   job_report=build_job_report(job_id=job,executor_id=executor_id, 
-  task_id=task_id,out_files=list(bai=paste0(bam,".bai")))
+  task_id=task_id,input=argg,out_file_dir=out_file_dir,out_files=list(bai=paste0(bam,".bai")))
 
 
   if(wait&&mode=="batch"){
@@ -228,21 +241,35 @@ task_name="statsBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""){
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="stats")
-  job_report=list()
+
+  job=build_job(executor_id=executor_id,task=task_id)
+
+  job_report=build_job_report(
+    job_id=job, 
+    executor_id=executor_id, 
+    task_id=task_id,
+    input=argg,
+    out_file_dir=out_file_dir,
+    out_files=list()
+  )
+
+
   if(stats=="all"|stats=="flag"){
-    job_report[["stats_flag"]]=stats_flag_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
+    job_report[["steps"]][["flag"]]=stats_flag_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
     verbose=verbose,threads=threads,mode=mode,time=time,update_time=update_time,wait=FALSE,hold=hold)
 
   }
 
   if(stats=="all"|stats=="index"){
-    job_report[["stats_index"]]=stats_index_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
+    job_report[["steps"]][["index"]]=stats_index_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
     verbose=verbose,threads=threads,mode=mode,time=time,update_time=update_time,wait=FALSE,hold=hold)
   }
 
 
   if(wait&&mode=="batch"){
-      job_validator(job=unlist(read_job_report(job_report)),
+      job_validator(job=c(
+      job_report[["steps"]][["index"]]$job_id,
+      job_report[["steps"]][["flag"]]$job_id),
       time=update_time,verbose=verbose,threads=threads)
   }
 
@@ -301,8 +328,9 @@ task_name="statsFlag",time="48:0:0",update_time=60,wait=FALSE,hold=""){
     Check std error for more information.")
   }
 
+
   job_report=build_job_report(job_id=job,executor_id=executor_id, 
-  task_id=task_id,out_files=list(flag_stat=out_file))
+  task_id=task_id,input=argg,out_file_dir=out_file_dir,out_files=list(flag_stat=out_file))
 
   if(wait&&mode=="batch"){
       job_validator(job=job_report$job_id,
@@ -362,8 +390,10 @@ task_name="statsINDEX",time="48:0:0",update_time=60,wait=FALSE,hold=""){
     Check std error for more information.")
   }
 
+  
   job_report=build_job_report(job_id=job,executor_id=executor_id, 
-  task_id=task_id,out_files=list(idx_stat=out_file))
+  task_id=task_id,input=argg,out_file_dir=out_file_dir,
+  out_files=list(idx_stat=out_file))
 
   if(wait&&mode=="batch"){
       job_validator(job=job_report$job_id,
@@ -407,6 +437,7 @@ task_name="metricsMAPQ",time="48:0:0",update_time=60,wait=FALSE,hold=""){
     " | sort -t$'\\t' -k 1 -g >", out_file)
 
   job=build_job(executor_id=executor_id,task_id=task_id)
+
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
@@ -426,7 +457,8 @@ task_name="metricsMAPQ",time="48:0:0",update_time=60,wait=FALSE,hold=""){
   }
 
   job_report=build_job_report(job_id=job,executor_id=executor_id, 
-  task_id=task_id,out_files=list(mapq_metric=out_file))
+  task_id=task_id,input=argg,out_file_dir=out_file_dir,
+  out_files=list(mapq_metric=out_file))
 
   
   if(wait&&mode=="batch"){

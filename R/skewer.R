@@ -71,11 +71,12 @@ task_name="trimmingSkewer",time="48:0:0",update_time=60,wait=FALSE,hold=""){
     Check std error for more information.")
   }
 
-  job_report=build_job_report(job_id=job,executor_id=executor_id,task_id=task_id,
+  job_report=build_job_report(job_id=job,executor_id=executor_id,
+  task_id=task_id,input=argg, out_file_dir=out_file_dir,
   out_files=list(
     R1=paste0(out_file,"-trimmed-pair1.fastq.gz"),
     R2=paste0(out_file,"-trimmed-pair2.fastq.gz"),
-    LOG=paste0(out_file,"-trimmed-log")
+    LOG=paste0(out_file,"-trimmed.log")
     )
   )
 

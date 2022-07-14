@@ -126,7 +126,7 @@ for_id=function(seq_info,output_dir="",name="",
                         
                         ## Call recursively if variables
                         if(length(vars_list_left$variable)>0){
-                            report=for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars_list=vars_list_left,
+                            report[["samples"]]=for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars_list=vars_list_left,
                             nesting=nesting,nest_ws=nest_ws,name=new_name,ref_list=ref_list,print_tree=print_tree)
                         }else{
                             tool_config_id=seq_info_id %>% dplyr::select(-c(read_group,path)) %>%  
@@ -195,7 +195,7 @@ for_id=function(seq_info,output_dir="",name="",
                                         cat("\t\n")
                                         cat(crayon::bold("pre_fastqc: \n"))
                                         cat("\t\n")
-                                            report[[new_name]][["pre_fastqc"]]<<-qc_fastqc(
+                                            report[[new_name]][["steps"]][["pre_fastqc"]]<<-qc_fastqc(
                                                 bin_path=bin_list$pre_fastqc$bin_fastqc,
                                                 file_R1=seq_info_R1$path,
                                                 file_R2=seq_info_R2$path,
@@ -216,7 +216,7 @@ for_id=function(seq_info,output_dir="",name="",
 
                                             args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="trimming"))
 
-                                            report[[new_name]][["trimming"]]<<-trimming_skewer(
+                                            report[[new_name]][["steps"]][["trimming"]]<<-trimming_skewer(
                                                 bin_path=bin_list$trimming$bin_skewer,
                                                 file_R1=seq_info_R1$path,
                                                 file_R2=seq_info_R2$path,
@@ -240,10 +240,10 @@ for_id=function(seq_info,output_dir="",name="",
                                             cat("\t\n")
                                             cat(crayon::bold("post_fastqc: \n"))
                                             cat("\t\n")
-                                        report[[new_name]][["post_fastqc"]]<<-qc_fastqc(
+                                        report[[new_name]][["steps"]][["post_fastqc"]]<<-qc_fastqc(
                                             bin_path=bin_list$pre_fastqc$bin_fastqc,
-                                            file_R1=report[[new_name]][["trimming"]]$out_files$R1,
-                                            file_R2=report[[new_name]][["trimming"]]$out_files$R2,
+                                            file_R1=report[[new_name]][["steps"]][["trimming"]]$out_files$R1,
+                                            file_R2=report[[new_name]][["steps"]][["trimming"]]$out_files$R2,
                                             output_dir=paste0(out_file_dir,"/fastqc_reports/post_trim"),
                                             executor_id=task_id,
                                             verbose=tool_config_id[step,]$verbose,
@@ -252,7 +252,7 @@ for_id=function(seq_info,output_dir="",name="",
                                             ram=tool_config_id[step,]$ram,
                                             time=tool_config_id[step,]$time,
                                             update_time=60,wait=FALSE,
-                                            hold=report[[new_name]][["post_trimming"]]$job_id)
+                                            hold=report[[new_name]][["steps"]][["post_trimming"]]$job_id)
                                     }
 
                                     if(tool_config_id[step,]$name=="alignment"){
@@ -262,11 +262,11 @@ for_id=function(seq_info,output_dir="",name="",
 
                                         args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="alignment"))
 
-                                        report[[new_name]][["alignment"]]<<-alignment_bwa(
+                                        report[[new_name]][["steps"]][["alignment"]]<<-alignment_bwa(
                                             bin_path=bin_list$alignment$bin_bwa,
                                             bin_path2=bin_list$alignment$bin_samtools,
-                                            file_R1=report[[new_name]][["trimming"]]$out_files$R1,
-                                            file_R2=report[[new_name]][["trimming"]]$out_files$R2,
+                                            file_R1=report[[new_name]][["steps"]][["trimming"]]$out_files$R1,
+                                            file_R2=report[[new_name]][["steps"]][["trimming"]]$out_files$R2,
                                             output_dir=out_file_dir,
                                             id_tag=paste0(seq_info_R1$flowcell_id,".",seq_info_R1$lane_id),
                                             pu_tag=paste0(seq_info_R1$flowcell_id,".",seq_info_R1$lane_id,".",
@@ -286,8 +286,33 @@ for_id=function(seq_info,output_dir="",name="",
                                             executor_id=task_id,
                                             update_time=60,
                                             wait=FALSE,
-                                            hold= report[[new_name]][["trimming"]]$job_id)
+                                            hold= report[[new_name]][["steps"]][["trimming"]]$job_id)
                                     }
+
+
+
+                                    if(tool_config_id[step,]$name=="markdups"){
+                                        cat("\t\n")
+                                        cat(crayon::bold("markdups \n"))
+                                        cat("\t\n")
+                                        
+                                        args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="markdups"))
+
+                                        report[[new_name]][["steps"]][["markdups"]]=markdups_gatk(
+                                            bin_path=bin_list$markdups$bin_gatk,
+                                            bam=report[[new_name]][["steps"]][["aligment"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam,
+                                            output_dir=out_file_dir,
+                                            verbose=tool_config_id[step,]$verbose,
+                                            threads=tool_config_id[step,]$threads,
+                                            ram=tool_config_id[step,]$ram,
+                                            remove_duplicates=as.logical(args["remove_duplicates",]$value),
+                                            mode=tool_config_id[step,]$mode,
+                                            time=tool_config_id[step,]$time,
+                                            executor_id=task_id,
+                                            update_time=60,wait=FALSE,
+                                            hold=report[[new_name]][["steps"]][["aligment"]]$job_id)
+                                    }
+                                                
                                           
                                 })
                         }
@@ -308,33 +333,6 @@ for_id=function(seq_info,output_dir="",name="",
 
 
 
-#   ## Run only preselected steps
-
-#             tool_config=tool_config %>% filter(step==TRUE)
-#             out_file_dir=set_dir(dir=out_file_dir_main,name=paste0(lane_id))
-
-#             ## Check which steps are selected in sample sheet
-
-#             if(grepl("pre_fastqc",rownames(parameters))){
-
-                # job_report=qc_fastqc(bin_path=bin_fastqc,
-                # file_R1=sub_sub_sample_info$file[1],
-                # file_R2=sub_sub_sample_info$file[2],
-                # output_dir=paste0(out_file_dir,"/fastqc_reports/pre_trim"),
-                # executor_id=task_id,
-                # verbose=tool_parameters["pre_fastqc","verbose"],
-                # mode=tool_parameters["pre_fastqc","mode"],
-                # threads=tool_parameters["pre_fastqc","threads"],
-                # ram=tool_parameters["pre_fastqc","ram"],
-                # time=tool_parameters["pre_fastqc","time"],
-                # update_time=60,wait=FALSE,hold="")
-        
-#             }
-
-        
-        
-
-#                 return(job_report)
         
             
 #             if(n_lanes>1){
@@ -351,21 +349,7 @@ for_id=function(seq_info,output_dir="",name="",
 #                     update_time=60,wait=FALSE,hold=job_report$job_id)
 #             }
 
-#             if(grepl("markdups",rownames(parameters))){
-#                 job_report=markdups_gatk(
-#                     bin_path=bin_markdups_gatk,
-#                     bam=job_report$out_files$bam,
-#                     output_dir=out_file_dir_main,
-#                     verbose=tool_parameters["markdups","verbose"],
-#                     tmp_dir=tool_parameters["markdups","tmp_dir"],
-#                     threads=tool_parameters["markdups","threads"],
-#                     ram=tool_parameters["markdups","ram"],
-#                     remove_duplicates=tool_parameters["markdups","remove_duplicates"],
-#                     mode=tool_parameters["markdups","mode"],
-#                     time=tool_parameters["markdups","time"],
-#                     executor_id=task_id,
-#                     update_time=60,wait=FALSE,hold=job_report$job_id)
-#             }
+
 
 #             if(grepl("recalibrate",rownames(parameters))){
 #                 job_report=recal_gatk(
