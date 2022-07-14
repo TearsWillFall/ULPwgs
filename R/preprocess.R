@@ -27,7 +27,7 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     merge_level="library",nest_ws=1,
     nesting=""){
 
-    reports=list()
+    job_report=list()
           
     argg <- as.list(environment())
 
