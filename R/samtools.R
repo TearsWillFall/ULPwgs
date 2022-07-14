@@ -210,8 +210,15 @@ wait=FALSE,hold=""){
   }
 
   
-  job_report=build_job_report(job_id=job,executor_id=executor_id, 
-  task_id=task_id,input_args=argg,out_file_dir=out_file_dir,out_files=list(bai=paste0(bam,".bai")))
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id, 
+    task_id=task_id,
+    input_args=argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+      bai=paste0(bam,".bai"))
+      )
 
 
   if(wait&&mode=="batch"){

@@ -82,7 +82,7 @@ for_id=function(seq_info,output_dir="",name="",
                 merge=FALSE
                 reports=list()
                 rs=lapply(X=info,FUN=function(id){
-                    
+
                         report=list()
                         ## Filter sequencing info for id
                         seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
@@ -302,7 +302,7 @@ for_id=function(seq_info,output_dir="",name="",
 
                                         report[[new_name]][["steps"]][["markdups"]]=markdups_gatk(
                                             bin_path=bin_list$markdups$bin_gatk,
-                                            bam=report[[new_name]][["steps"]][["aligment"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam,
+                                            bam=report[[new_name]][["steps"]][["alignment"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam,
                                             output_dir=out_file_dir,
                                             verbose=tool_config_id[step,]$verbose,
                                             threads=tool_config_id[step,]$threads,
