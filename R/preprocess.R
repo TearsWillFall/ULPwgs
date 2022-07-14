@@ -39,7 +39,7 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
 
     
     out_file_dir=set_dir(dir=output_dir)
-    
+
     job_report=build_job_report(
         job_id=job,
         executor_id=executor_id, 
@@ -61,10 +61,10 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     vars_list=vars_list,steps_list=steps_list)))
     job=build_job(executor_id=executor_id,task_id=task_id)
     for_id(seq_info=seq_info,output_dir=out_file_dir,
-    vars_list=vars_list,nesting=nesting,merge_level=merge_level,
+    vars_list=vars_list,nesting=nesting,merge_level=merge_level,executor_id = executor_id,task_id=task_id,
     pmts_list=pmts_list,bin_list=bin_list,ref_list=ref_list,print_tree=TRUE)
     job_reports[["steps"]][["samples"]]=for_id(seq_info=seq_info,output_dir=output_dir,
-    vars_list=vars_list,nesting=nesting,merge_level=merge_level,
+    vars_list=vars_list,nesting=nesting,merge_level=merge_level,executor_id = executor_id,task_id=task_id,
     pmts_list=pmts_list,bin_list=bin_list,ref_list=ref_list,print_tree=FALSE)
     return(job_reports)
 
@@ -96,6 +96,8 @@ for_id=function(seq_info,output_dir="",name="",
              bin_list=build_default_binary_list(),
              ref_list=build_default_reference_list(),
              nesting="",merge_level="library",
+             executor_id=make_unique_id("preprocessSEQ"),
+             task_id=make_unique_id("preprocessSEQ"),
              nest_ws=1,print_tree=FALSE){  
                 var=vars_list$variable[1]
                 var_text=vars_list$text[1]
