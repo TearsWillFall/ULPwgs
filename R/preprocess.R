@@ -82,7 +82,8 @@ for_id=function(seq_info,output_dir="",name="",
                 merge=FALSE
                 reports=list()
                 rs=lapply(X=info,FUN=function(id){
-            
+                    
+                        report=list()
                         ## Filter sequencing info for id
                         seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
                         out_file_dir=set_dir(dir=output_dir,name=id)
@@ -125,6 +126,7 @@ for_id=function(seq_info,output_dir="",name="",
 
                         
                         ## Call recursively if variables
+                       
                         if(length(vars_list_left$variable)>0){
                             report[["samples"]]=for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars_list=vars_list_left,
                             nesting=nesting,nest_ws=nest_ws,name=new_name,ref_list=ref_list,print_tree=print_tree)
@@ -137,7 +139,7 @@ for_id=function(seq_info,output_dir="",name="",
 
                             seq_info_R1=seq_info_id[seq_info_id$read_group=="R1",]
                             seq_info_R2=seq_info_id[seq_info_id$read_group=="R2",]
-                            report=list()
+                        
                             
                             if(print_tree){
                                 cat(add_nesting_ws(nesting,n=nest_ws))
