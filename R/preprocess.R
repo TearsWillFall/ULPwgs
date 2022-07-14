@@ -26,8 +26,6 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     task_name="preprocessSEQ",output_dir="",
     merge_level="library",nest_ws=1,
     nesting=""){
-
-    job_report=list()
           
     argg <- as.list(environment())
 
@@ -63,7 +61,7 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     for_id(seq_info=seq_info,output_dir=out_file_dir,
     vars_list=vars_list,nesting=nesting,merge_level=merge_level,executor_id = executor_id,task_id=task_id,
     pmts_list=pmts_list,bin_list=bin_list,ref_list=ref_list,print_tree=TRUE)
-    job_reports[["steps"]][["samples"]]=for_id(seq_info=seq_info,output_dir=output_dir,
+    job_report[["steps"]][["samples"]]=for_id(seq_info=seq_info,output_dir=output_dir,
     vars_list=vars_list,nesting=nesting,merge_level=merge_level,executor_id = executor_id,task_id=task_id,
     pmts_list=pmts_list,bin_list=bin_list,ref_list=ref_list,print_tree=FALSE)
     return(job_reports)
