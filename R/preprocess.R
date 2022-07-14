@@ -35,8 +35,11 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     task_id=make_unique_id(task_name)
 
     job=build_job(executor_id=executor_id,task=task_id)
+   
 
-
+    
+    out_file_dir=set_dir(dir=output_dir)
+    
     job_report=build_job_report(
         job_id=job,
         executor_id=executor_id, 
@@ -49,7 +52,7 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     validate_sample_sheet(sample_sheet=sample_sheet,
     vars_list=vars_list,opts_list=opts_list)
     
-    out_file_dir=set_dir(dir=output_dir)
+  
     
     seq_info=seq_info_check(sample_sheet=sample_sheet,vars_list=vars_list)
 
