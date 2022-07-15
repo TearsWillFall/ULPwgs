@@ -34,7 +34,7 @@ task_name="circRNA",mode="local",threads=3,ram=4,time="48:0:0",update_time=60,wa
 
   task_id=make_unique_id(task_name)
 
-  out_file_dir=set_dir(dir=output_dir,name="ciri_reports")
+  out_file_dir=paste0(output_dir,"/ciri_reports")
 
 
   exec_code=paste("java -jar ",bin_path,"Pipeline -1",file_R1, " -2",file_R2, " -d ",
