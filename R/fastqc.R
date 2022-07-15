@@ -67,11 +67,11 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
     out_file_dir=out_file_dir,
     out_files=list(
       R1=list( 
-        ZIP=paste0(out_file_dir,"/",get_file_name(file_R1),"_fastqc.zip"),
-        HTML=paste0(out_file_dir,"/",get_file_name(file_R2),"_fastqc.html")),
+        zip=paste0(out_file_dir,"/",get_file_name(file_R1),"_fastqc.zip"),
+        html=paste0(out_file_dir,"/",get_file_name(file_R2),"_fastqc.html")),
       R2=list(
-        ZIP=paste0(out_file_dir,"/",get_file_name(file_R2),"_fastqc.zip"),
-        HTML=paste0(out_file_dir,"/",get_file_name(file_R2),"_fastqc.html")
+        zip=paste0(out_file_dir,"/",get_file_name(file_R2),"_fastqc.zip"),
+        html=paste0(out_file_dir,"/",get_file_name(file_R2),"_fastqc.html")
       ) 
     )
   )

@@ -62,6 +62,29 @@ set_name=function(current_name="",name=""){
 
 #' @export
 
+unlist_lvl=function(named_list,var){
+
+  vars=names(named_list)
+  lvl_found=any(vars %in% var)
+
+  if(lvl_found){
+      out=named_list[[var]]
+  }else{
+    out=unlist(lapply(names(named_list),FUN=function(name){
+      out=unlist_level(named_list=named_list[[name]],var)
+
+    }))
+  }
+  return(out)
+}
+
+
+
+
+
+
+#' @export
+
 print_verbose=function(exec_code,arg,job,ws=1){
       rep(cat("    \n"),ws)
       cat(crayon::blue("Job:"))

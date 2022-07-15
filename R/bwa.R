@@ -137,7 +137,7 @@ update_time=60,wait=FALSE,hold=""){
   task_id=make_unique_id(task_name)
   exec_code=paste(bin_path,"index", file)
   
-    job=build_job(executor_id=executor_id,task_id=task_id)
+  job=build_job(executor_id=executor_id,task_id=task_id)
   if(mode=="batch"){
 
     out_file_dir2=set_dir(dir=".",name="batch")

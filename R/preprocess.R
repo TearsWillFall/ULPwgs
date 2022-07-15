@@ -314,45 +314,61 @@ for_id=function(seq_info,output_dir="",name="",
                                             hold= report[[new_name]][["steps"]][["trimming"]]$job_id)
                                     }
 
-
-
-                                    if(tool_config_id[step,]$name=="markdups"){
-                                        cat("\t\n")
-                                        cat(crayon::bold("markdups: \n"))
-                                        cat("\t\n")
-                                        
-                                        args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="markdups"))
-
-                                        report[[new_name]][["steps"]][["markdups"]]=markdups_gatk(
-                                            bin_path=bin_list$markdups$bin_gatk,
-                                            bam=report[[new_name]][["steps"]][["alignment"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam,
-                                            output_dir=out_file_dir,
-                                            verbose=tool_config_id[step,]$verbose,
-                                            threads=tool_config_id[step,]$threads,
-                                            ram=tool_config_id[step,]$ram,
-                                            remove_duplicates=as.logical(args["remove_duplicates",]$value),
-                                            mode=tool_config_id[step,]$mode,
-                                            time=tool_config_id[step,]$time,
-                                            executor_id=task_id,
-                                            update_time=60,wait=FALSE,
-                                            hold=report[[new_name]][["steps"]][["aligment"]]$job_id)
-                                    }
-
-
                                     if(!merge){
-                                        if(tool_config_id[step,]$name=="recalibrate"){
-                                        cat("\t\n")
-                                        cat(crayon::bold("recalibrate: \n"))
-                                        cat("\t\n")
-                                    
-                                        args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="recalibrate"))
 
-                                        }
-                                    }
-                                                
-                                          
+                                        if(tool_config_id[step,]$name=="markdups"){
+                                            cat("\t\n")
+                                            cat(crayon::bold("markdups: \n"))
+                                            cat("\t\n")
+                                            
+                                            args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="markdups"))
+
+                                            report[[new_name]][["steps"]][["markdups"]]<<-markdups_gatk(
+                                                bin_path=bin_list$markdups$bin_gatk,
+                                                bam=report[[new_name]][["steps"]][["alignment"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam,
+                                                output_dir=out_file_dir,
+                                                verbose=tool_config_id[step,]$verbose,
+                                                threads=tool_config_id[step,]$threads,
+                                                ram=tool_config_id[step,]$ram,
+                                                remove_duplicates=as.logical(args["remove_duplicates",]$value),
+                                                mode=tool_config_id[step,]$mode,
+                                                time=tool_config_id[step,]$time,
+                                                executor_id=task_id,
+                                                update_time=60,wait=FALSE,
+                                                hold=report[[new_name]][["steps"]][["aligment"]]$job_id)
+                                            }
+
+
+                                   
+                                            if(tool_config_id[step,]$name=="recalibrate"){
+                                            cat("\t\n")
+                                            cat(crayon::bold("recalibrate: \n"))
+                                            cat("\t\n")
+                                        
+                                            args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="recalibrate"))
+                                            
+                                                report[[new_name]][["steps"]][["recalibrate"]]<<-recal_gatk(
+                                                    bin_path=bin_list$recalibrate$bin_samtools,
+                                                    bin_path2=bin_list$recalibrate$bin_gatk,
+                                                    bin_path3=bin_list$recalibrate$bin_picard,
+                                                    bam=report[[new_name]][["steps"]][["markdups"]]$out_files$bam,
+                                                    output_dir=out_file_dir,
+                                                    ref_genome=ref_list[[seq_info_R1$reference]]$reference$genome,
+                                                    dbsnp=ref_list[[seq_info_R1$reference]]$database$all_common,
+                                                    clean=as.logical(args["clean",]$value),
+                                                    verbose=tool_config_id[step,]$verbose,
+                                                    threads=tool_config_id[step,]$threads,
+                                                    ram=tool_config_id[step,]$ram,
+                                                    mode=tool_config_id[step,]$mode,
+                                                    time=tool_config_id[step,]$time,
+                                                    executor_id=task_id,
+                                                    update_time=60,wait=FALSE,hold=job)
+                                            }
+
+                                        }    
+                                            
                                 })
-                        }
+                            }
                 }
         if(length(report)>0){
             reports<<-append(reports,report)
@@ -388,25 +404,6 @@ for_id=function(seq_info,output_dir="",name="",
 
 
 
-#             if(grepl("recalibrate",rownames(parameters))){
-#                 job_report=recal_gatk(
-#                     bin_path=bin_samtools,
-#                     bin_path2=bin_gatk,
-#                     bin_path3=bin_picard,
-#                     bam=bam,
-#                     output_dir=out_file_dir,
-#                     ref_genome=tool_parameters["recal_gatk","ref_genome"],
-#                     dbsnp=tool_parameters["recal_gatk","dbsnp"],
-#                     clean=tool_parameters["recal_gatk","clean"],
-#                     verbose=tool_parameters["recal_gatk","verbose"],
-#                     threads=tool_parameters["recal_gatk","threads"],
-#                     ram=tool_parameters["recal_gatk","ram"],
-#                     mode=tool_parameters["recal_gatk","mode"],
-#                     time=tool_parameters["recal_gatk","time"],
-#                     executor_id=task_id,
-#                     update_time=60,wait=FALSE,hold=job)
-#             }
-
 #             if(grepl("alignqc",rownames(parameters))){
 #                 align_qc_metrics(bin_path=bin_samtools,
 #                 bin_path2=bin_picard,bin_path3=bin_bedtools,
@@ -415,20 +412,3 @@ for_id=function(seq_info,output_dir="",name="",
 #                 task="alignQC",time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE, hold="")
 #             }
 
-
-
-
-#   if(grepl("post_fastqc",rownames(parameters))){
-
-#                             job_report=qc_fastqc(bin_path=bin_fastqc,
-#                             file_R1=seq_info_R1$path,
-#                             file_R2=seq_info_R2$path,
-#                             output_dir=paste0(out_file_dir,"/fastqc_reports/post_trim"),
-#                             executor_id=task_id,
-#                             verbose=parameters["pre_fastqc","verbose"],
-#                             mode=parameters["pre_fastqc","mode"],
-#                             threads=parameters["pre_fastqc","threads"],
-#                             ram=parameters["pre_fastqc","ram"],
-#                             time=parameters["pre_fastqc","time"],
-#                             update_time=60,wait=FALSE,hold=job_report$job_id)
-#                         }

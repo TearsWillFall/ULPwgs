@@ -128,7 +128,9 @@ build_default_steps_list=function(
             mode="local",
             verbose=TRUE,
             time="48:0:0",
-            args=list()
+            args=list(
+                clean=TRUE
+            )
             ),
         alignqc=list(
             order=8,
@@ -218,7 +220,7 @@ build_default_sample_sheet=function(
         time="pre_fastqc=48:0:0;trimming=48:0:0;post_fastqc=48:0:0;alignment=48:0:0;merge_bam=48:0:0;markdups=48:0:0;recalibrate=48:0:0;alignqc=48:0:0",
         mode="pre_fastqc=local;trimming=local;post_fastqc=local;alignment=local;merge_bam=local;markdups=local;recalibrate=local;alignqc=local",
         verbose="pre_fastqc=TRUE;trimming=TRUE;post_fastqc=TRUE;alignment=TRUE;merge_bam=TRUE;markdups=TRUE;recalibrate=TRUE;alignqc=TRUE",
-        args="trimming={mean_quality=0|min_length=18|max_length=|xadapt=|yadapt=};alignment={clean=TRUE|stats='all'|coord_sort=FALSE};markdups={remove_duplicates=TRUE}"
+        args="trimming={mean_quality=0|min_length=18|max_length=|xadapt=|yadapt=};alignment={clean=TRUE|stats=all|coord_sort=FALSE};markdups={remove_duplicates=TRUE};recalibrate={clean=TRUE}"
     )
 ){
 

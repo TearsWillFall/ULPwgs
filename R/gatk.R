@@ -86,7 +86,6 @@ mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
         time=update_time,verbose=verbose,threads=threads)
     } 
 
-  
 
   return(job_report)
 }
@@ -126,6 +125,7 @@ update_time=60,wait=FALSE,hold=""){
 
 
 
+  argg <- as.list(environment())
   task_id=make_unique_id(task_name)
 
   out_file_dir=set_dir(dir=output_dir,name="recal_reports/recal_before")
@@ -137,45 +137,46 @@ update_time=60,wait=FALSE,hold=""){
   regions=get_bam_reference_chr(bin_path=bin_path,bam=bam,verbose=verbose)
 
   job=build_job(executor_id=executor_id,task_id=task_id)
+  
+  job_report=build_job_report(
+    job_id=job, 
+    executor_id=executor_id, 
+    task_id=task_id,
+    input_args=argg,
+    out_file_dir=list(
+      main=out_file_dir4,
+      tmp=out_file_dir3,
+      after=out_file_dir2,
+      before=out_file_dir,
+      ),
+    out_files=list(
+      bam=out_file,
+      log=out_file_md
+    )
+  )
 
-  job_report=list(job_id=job,out_files=NA)
-  job_report$order=1
-  job_report_tmp=job_report
-
-  job_report=parallel_generate_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,bam=bam,
+  job_report[["steps"]][["par_bqsr_before"]]=parallel_generate_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,bam=bam,
     ref_genome=ref_genome,dbsnp=dbsnp,regions=regions,
     output_dir=out_file_dir,
     verbose=verbose,executor_id=task_id,mode=mode,threads=threads,ram=ram,
     time=time,update_time=update_time,wait=FALSE,hold=hold)
-  
-  job_report_tmp=dplyr::bind_rows(job_report_tmp,job_report)
-  
-  job_report=gather_BQSR_reports_gatk(bin_path=bin_path2,
-  report=job_report$out_file$table,
-  executor_id=task_id,output_dir=out_file_dir,clean=clean,
-  output_name=get_file_name(bam),verbose=verbose,mode=mode,time=time,
-  threads=threads,ram=ram,update_time=update_time,wait=FALSE,
-  hold=job_report$job_id)
-  
-  job_report_tmp=dplyr::bind_rows(job_report_tmp,job_report)
-  
-  job_report=parallel_apply_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,bin_path3=bin_path3,
+
+
+
+  job_report[["steps"]][["par_apply_bqsr"]]=parallel_apply_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,bin_path3=bin_path3,
     bam=bam,ref_genome=ref_genome,rec_table=paste0(out_file_dir,"/",get_file_name(bam),".recal.table"),
     output_dir=out_file_dir4,regions=regions,
     clean=clean,verbose=verbose,executor_id=task_id,threads=threads,mode=mode,ram=ram,time=time,
     update_time=update_time,wait=FALSE,hold=job_report$job_id)
   
-  job_report_tmp=dplyr::bind_rows(job_report_tmp,job_report)
-
-
-  job_report=sort_and_index_bam_samtools(bin_path=bin_path,bam=paste0(out_file_dir4,"/",
+  job_report[["steps"]][["sort_and_index"]]=sort_and_index_bam_samtools(bin_path=bin_path,bam=paste0(out_file_dir4,"/",
     get_file_name(bam),".recal.",get_file_ext(bam)),output_dir=out_file_dir4,
     ram=ram,verbose=verbose,threads=threads,sort=FALSE,stats="",index=TRUE,clean=clean,
     mode=mode,executor_id=task_id,time=time,update_time=update_time,wait=FALSE,hold=job_report$job_id)
   
-  job_report_tmp=dplyr::bind_rows(job_report_tmp,job_report)
+ 
 
-  job_report=parallel_generate_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,
+  job_report[["steps"]][["par"]]=parallel_generate_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,
     bam=paste0(out_file_dir4,"/",get_file_name(bam),".recal.",get_file_ext(bam)),
     ref_genome=ref_genome,dbsnp=dbsnp,threads=threads,regions=regions,
     output_dir=out_file_dir2,verbose=verbose,executor_id=task_id,
@@ -183,10 +184,6 @@ update_time=60,wait=FALSE,hold=""){
   
   job_report_tmp=dplyr::bind_rows(job_report_tmp,job_report)
 
-  job_report=gather_bam_files(bin_path=bin_path3,bam=job_report$out_files$bam,
-  output_dir=out_file_dir,output_name=paste0(get_file_name(bam),".recal.sorted.rmdup.sorted"),
-  executor_id=task_id,mode=mode,time=time,threads=threads,ram=ram,
-  update_time=update_time,wait=FALSE,hold=job_report$job_id)
 
 
   job_report=analyze_covariates_gatk(bin_path=bin_path2,before=paste0(out_file_dir,"/",
@@ -236,6 +233,7 @@ executor_id=make_unique_id("generateBQSR"),task_name="generateBQSR",
 time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
 
+  argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
 
@@ -322,6 +320,7 @@ verbose=FALSE,mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
   options(scipen = 999)
   options(warn = -1)
 
+  argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
   if(regions==""){
@@ -333,26 +332,38 @@ verbose=FALSE,mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   job=build_job(executor_id=executor_id,task_id=task_id)
 
-  job_report=list(job_id=job,out_files=NA)
-  job_report$order=1
-  job_report_tmp=job_report
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    task_id=task_id,
+    input_args=argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+      )
+    )
 
-  job_reports=parallel::mclapply(1:nrow(regions),FUN=function(x){
+  parallel::mclapply(1:nrow(regions),FUN=function(x){
     tmp=regions[x,]
-    job_report=generate_BQSR_gatk(region=tmp$region,
+    job_report[["steps"]][["generate_bqsr_report"]][[tmp$region]]<<-generate_BQSR_gatk(region=tmp$region,
     bin_path=bin_path2,bam=bam,ref_genome=ref_genome,
     dbsnp=dbsnp,output_dir=out_file_dir,verbose=verbose,
     executor_id=task_id,mode=mode,time=time,
     threads=threads,ram=ram,update_time=update_time,wait=FALSE,hold=hold) 
   },mc.cores=ifelse(mode=="local",threads,3))
 
-  job_report=dplyr::bind_rows(job_reports)
-  job_report$order=seq(1:length(job_report$job_id))
 
-  job_report=dplyr::bind_rows(job_report_tmp,job_report)
+    
+  job_report[["steps"]][["generate_bqsr_report"]]=gather_BQSR_reports_gatk(bin_path=bin_path2,
+  report=unlist_lvl(named_list=job_report[["steps"]][["gather_reports"]],var="table"),
+  executor_id=task_id,output_dir=out_file_dir,clean=clean,
+  output_name=get_file_name(bam),verbose=verbose,mode=mode,time=time,
+  threads=threads,ram=ram,update_time=update_time,wait=FALSE,
+  hold=)
+  
 
   if(wait&&mode=="batch"){
-    job_validator(job=job_report$job_id,time=update_time,verbose=verbose,threads=threads)
+    job_validator(job=unlist_lvl(named_list=job_report[["steps"]],var="job_id"),
+    time=update_time,verbose=verbose,threads=threads)
   }
   return(job_report)
 }
@@ -387,6 +398,7 @@ gather_BQSR_reports_gatk=function(bin_path="tools/gatk/gatk",report="",reports_d
 executor_id=make_unique_id("gatherBQSR"),task_name="gatherBQSR",output_name="Report", clean=FALSE,
 output_dir="",verbose=FALSE,mode="local",time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE,hold=""){
 
+  argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
   if(report==""){
@@ -407,6 +419,8 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",threads=4,ram=4,update_ti
   }
 
   job=build_job(executor_id = executor_id,task_id=task_id)
+  
+
   if(mode=="batch"){
   
       out_file_dir2=set_dir(dir=out_file_dir,name="batch")
@@ -425,8 +439,15 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",threads=4,ram=4,update_ti
     stop("gatk failed to run due to unknown error.
     Check std error for more information.")
   }
-  job_report=build_job_report(job_id=job,executor_id=executor_id,task_id=task_id,
-      out_file=list(table=out_file))
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    task_id=task_id, 
+    input_args = argg,
+    out_file_dir=out_file_dir,
+      out_file=list(
+        table=out_file)
+  )
 
 
   if(wait&&mode=="batch"){
@@ -467,7 +488,7 @@ rec_table="",output_dir="",verbose=FALSE,mode="local", threads=4,ram=4,
 executor_id=make_unique_id("applyBQSR"),task_name="applyBQSR",time="48:0:0",
 update_time=60,wait=TRUE,hold=""){
 
-
+  argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
  
@@ -482,6 +503,7 @@ update_time=60,wait=TRUE,hold=""){
    " --bqsr-recal-file ",rec_table, " -O ",out_file,reg)
    
   job=build_job(executor_id=executor_id,task_id=task_id)
+
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
@@ -500,8 +522,15 @@ update_time=60,wait=TRUE,hold=""){
     Check std error for more information.")
   }
 
-  job_report=build_job_report(job_id=job,executor_id=executor_id,task_id=task_id,
-    out_files=list(bam=out_file,bai=paste0(out_file,".bai")
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    task_id=task_id,
+    input_args = argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+      bam=out_file,
+      bai=paste0(out_file,".bai")
     )
   )
 
@@ -549,6 +578,7 @@ time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE, hold=""){
   options(scipen = 999)
   options(warn = -1)
 
+  argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
 
@@ -561,24 +591,33 @@ time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE, hold=""){
 
   job=build_job(executor_id=executor_id,task_id=task_id)
 
-  job_report=list(job_id=job,out_files=NA)
-  job_report$order=1
-  job_report_tmp=job_report
-
-
-  jobs_reports=parallel::mclapply(1:nrow(regions),FUN=function(x){
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    task_id=task_id,
+    input_args=argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+      )
+    )
+parallel::mclapply(seq(1,nrow(regions)),FUN=function(x){
     tmp=regions[x,]
-    apply_BQSR_gatk(region=tmp$region,bin_path=bin_path2,bam=bam,ref_genome=ref_genome,
+    job_report[["steps"]][["apply_bqsr"]][[tmp$region]]<<-apply_BQSR_gatk(region=tmp$region,
+    bin_path=bin_path2,bam=bam,ref_genome=ref_genome,
     executor_id=executor_id,rec_table=rec_table,
     output_dir=out_file_dir,verbose=verbose,mode=mode,time=time,threads=threads,
     ram=ram,update_time=update_time,hold=hold,wait=FALSE)},mc.cores=ifelse(mode=="local",threads,3))
-   
-  job_report=dplyr::bind_rows(job_reports)
-  job_report$order=seq(1:length(job_report$job_id))
-  job_report=dplyr::bind_rows(job_report_tmp,job_report)
+  
+job_report[["steps"]][["gather_bam"]]=gather_bam_files(bin_path=bin_path3,
+  bam=unlist_level(job_report[["steps"]][["apply_bqsr"]],var="bam"),
+  output_dir=out_file_dir,output_name=paste0(get_file_name(bam),".recal.sorted.rmdup.sorted"),
+  executor_id=task_id,mode=mode,time=time,threads=threads,ram=ram,
+  update_time=update_time,wait=FALSE,hold=unlist_level(job_report[["steps"]][["apply_bqsr"]],var="job_id"))
+
 
   if(wait&&mode=="batch"){
-    job_validator(job=job_report$job_id,time=update_time,verbose=verbose,threads=threads)
+    job_validator(job=unlist_level(named_list=job_report[["steps"]][["apply_bqsr"]],var="job_id"),
+    time=update_time,verbose=verbose,threads=threads)
   }
 
   return(job_report)
@@ -616,7 +655,7 @@ output_name="File",output_dir="",verbose=FALSE,threads=4, ram=4, mode="local",cl
 executor_id=make_unique_id("gatherBAM"),task_name="gatherBAM",time="48:0:0",update_time=60,
 wait=FALSE,hold=""){
 
-
+  argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
   if(bam==""){
@@ -660,7 +699,12 @@ wait=FALSE,hold=""){
   }
 
 
-  job_report=build_job_report(job_id=job,executor_id=executor_id,task_id=task_id,
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    task_id=task_id,
+    input_args = argg,
+    out_file_dir=out_file_dir,
     out_files=list(bam=out_file)
     )
 
@@ -699,6 +743,7 @@ output_dir="",verbose=FALSE,threads=4,ram=4,mode="local",
 executor_id=make_unique_id("recalCovariates"),task_name="recalCovariates",time="48:0:0",
 update_time=60,wait=FALSE,hold=""){
 
+  argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(name=output_dir)
  
@@ -735,9 +780,16 @@ update_time=60,wait=FALSE,hold=""){
     Check std error for more information.")
   }
 
-  job_report=build_job_report(job_id=job,executor_id=executor_id,task_id=task_id,
-    out_files=list(plot=out_file)
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    task_id=task_id,
+    input_args = argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+      plot=out_file)
   )
+
 
   if(wait&&mode=="batch"){
     job_validator(job=job_report$job_id,time=update_time,

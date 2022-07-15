@@ -29,6 +29,9 @@ output_dir="",ref_genome="database/Homo_sapiens_GRCh38.fa",
 db_annot="database/human_gencode_vch38.gtf",output_name="",verbose=FALSE,executor_id=make_unique_id("circRNA"),
 task_name="circRNA",mode="local",threads=3,ram=4,time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
+  
+  argg <- as.list(environment())
+
   task_id=make_unique_id(task_name)
 
   out_file_dir=set_dir(dir=output_dir,name="ciri_reports")
@@ -58,8 +61,15 @@ task_name="circRNA",mode="local",threads=3,ram=4,time="48:0:0",update_time=60,wa
   }
 
 
-  job_report=build_job_report(job_id=job,executor_id=executor_id,
-  task_id=task_id,job_order=1,out_files=list(file=NA))
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    task_id=task_id,
+    input_args = argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+      file=NA)
+    )
 
   if(wait&&mode=="batch"){
     job_validator(job=job_report$job_id,
