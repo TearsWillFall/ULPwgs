@@ -32,7 +32,7 @@ build_default_sample_sheet(
     verbose =
     "pre_fastqc=TRUE;trimming=TRUE;post_fastqc=TRUE;alignment=TRUE;merge_bam=TRUE;markdups=TRUE;recalibrate=TRUE;alignqc=TRUE",
     args =
-    "trimming={mean_quality=0|min_length=18|max_length=|xadapt=|yadapt=};alignment={clean=TRUE|stats='all'|coord_sort=FALSE};markdups={remove_duplicates=TRUE}")
+    "trimming={mean_quality=0|min_length=18|max_length=|xadapt=|yadapt=};alignment={clean=TRUE|stats=all|coord_sort=FALSE};markdups={remove_duplicates=TRUE};recalibrate={clean=TRUE}")
 )
 }
 \arguments{

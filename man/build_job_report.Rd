@@ -9,6 +9,8 @@ build_job_report(
   executor_id = "",
   task_id = "",
   job_order = 1,
+  input_args = "",
+  out_file_dir = "",
   out_files = list(file = "file")
 )
 }
@@ -22,6 +24,10 @@ build_job_report(
 \item{job_order}{Job execution order}
 
 \item{out_files}{Output files for job}
+
+\item{input}{Input arguments for job}
+
+\item{out_file_fir}{Output dir for}
 }
 \description{
 Data structure for job_report:

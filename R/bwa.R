@@ -65,8 +65,7 @@ update_time=60,wait=FALSE,hold=""){
       threads=threads,output_dir=out_file_dir2,hold=hold)
       exec_code=paste0("echo 'source ~/.bashrc;",exec_code,"'|",batch_code)
     }
-    
-    
+
     if(verbose){
        print_verbose(job=job,arg=argg,exec_code=exec_code)
     }

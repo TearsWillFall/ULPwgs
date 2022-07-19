@@ -14,6 +14,8 @@ for_id(
   ref_list = build_default_reference_list(),
   nesting = "",
   merge_level = "library",
+  executor_id = make_unique_id("preprocessSEQ"),
+  task_id = make_unique_id("preprocessSEQ"),
   nest_ws = 1,
   print_tree = FALSE
 )
@@ -33,11 +35,11 @@ for_id(
 
 \item{merge_level}{Level to merge samples. Default library}
 
+\item{executor_id}{Task EXECUTOR ID . Default "preprocessSEQ"}
+
 \item{nest_ws}{Nesting ws to provide. Default 1}
 
 \item{var_list}{List with variables}
-
-\item{executor_id}{Task EXECUTOR ID . Default "preprocessSEQ"}
 
 \item{task_name}{Task name . Default "preprocessSEQ"}
 }

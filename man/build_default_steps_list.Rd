@@ -19,9 +19,9 @@ build_default_steps_list(
     12, ram = 16, mode = "local", verbose = TRUE, time = "48:0:0", args =
     list(remove_duplicates = TRUE)), recalibrate = list(order = 7, step = TRUE, threads =
     2, ram = 8, mode = "local", 
-     verbose = TRUE, time = "48:0:0", args = list()),
-    alignqc = list(order = 8, step = TRUE, threads = 2, ram = 8, mode = "local", verbose
-    = TRUE, time = "48:0:0", args = list()))
+     verbose = TRUE, time = "48:0:0", args = list(clean
+    = TRUE)), alignqc = list(order = 8, step = TRUE, threads = 2, ram = 8, mode =
+    "local", verbose = TRUE, time = "48:0:0", args = list()))
 )
 }
 \arguments{
