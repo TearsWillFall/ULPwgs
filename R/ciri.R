@@ -126,7 +126,7 @@ task_name="circRNAquant",mode="local",threads=3,ram=4,time="48:0:0",update_time=
     ciri=paste0("--tool CIRI2 --circ ",ciri_input)
   }
   
-  exec_code=paste(bin_path, "-1",file_R1, " -2",file_R2, " -d ",
+  exec_code=paste(bin_path, "-1",file_R1, " -2",file_R2, " -o ",
   paste0(out_file_dir,"/",output_name),"-t ",threads,"-p",output_name,"--config ",config,ciri)
 
 
