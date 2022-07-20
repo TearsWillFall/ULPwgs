@@ -36,7 +36,8 @@ preprocess_seq_trento=function(
  
     exec_code=paste(" singularity run --app preProcess ",
     sif_path, " -i ", fastq_dir ," -o ", out_file_dir," -t ",tmp_dir,
-    " -n " , threads, " -m ", ram)
+    " -n " , threads, " -m ", ram, 
+    "-f .+_R1_.+[.]f.+[.]gz,.+_1[.].+[.]gz,R1[.].+[.]gz -r .+_R2_.+[.]f.+[.]gz,.+_2[.].+[.]gz,R2[.].+[.]gz")
     
     
     out_file_dir2=set_dir(dir=out_file_dir,name="batch")
