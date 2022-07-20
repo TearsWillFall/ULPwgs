@@ -93,7 +93,7 @@ task_name="circRNA",mode="local",threads=3,ram=4,time="48:0:0",update_time=60,wa
 #' @param file_R2 Path to the input with the reverse read sequence.
 #' @param ciri_input [Optional] Path to CIRI2 output file.
 #' @param config Path to yaml config file.
-#' @param env_path Path to enviroment containing CIRIquant. 
+#' @param bin_path Path to enviroment containing CIRIquant. 
 #' @param threads Number of CPU cores to use. Default 3.
 #' @param output_name File output name
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
@@ -109,7 +109,7 @@ task_name="circRNA",mode="local",threads=3,ram=4,time="48:0:0",update_time=60,wa
 #' @export
 
 
-circ_quant_rna=function(env_path="tools/CIRI/CIRIquant/venv",
+circ_quant_rna=function(bin_path="tools/CIRIquant/bin/CIRIquant",
 file_R1="",file_R2="",ciri_input="",output_dir="",config="database/yaml/config/yaml",output_name="",
 verbose=FALSE,executor_id=make_unique_id("circRNAquant"),
 task_name="circRNAquant",mode="local",threads=3,ram=4,time="48:0:0",update_time=60,wait=FALSE,hold=""){
@@ -126,7 +126,7 @@ task_name="circRNAquant",mode="local",threads=3,ram=4,time="48:0:0",update_time=
     ciri=paste0("--tool CIRI2 --circ ",ciri_input)
   }
   
-  exec_code=paste("source ",paste0(env_path,"/bin/activate;")," CIRIquant -1",file_R1, " -2",file_R2, " -d ",
+  exec_code=paste(paste0("./",bin_path), "-1",file_R1, " -2",file_R2, " -d ",
   paste0(out_file_dir,"/",output_name),"-t ",threads,"-p",output_name,"--config ",config,ciri)
 
 

@@ -5,7 +5,7 @@
 \title{Generate a quality control (QC) report from a fastaqc file}
 \usage{
 circ_quant_rna(
-  env_path = "tools/CIRI/CIRIquant/venv",
+  bin_path = "tools/CIRIquant/bin/CIRIquant",
   file_R1 = "",
   file_R2 = "",
   ciri_input = "",
@@ -25,7 +25,7 @@ circ_quant_rna(
 )
 }
 \arguments{
-\item{env_path}{Path to enviroment containing CIRIquant.}
+\item{bin_path}{Path to enviroment containing CIRIquant.}
 
 \item{file_R1}{Path to the input file with the sequence.}
 
