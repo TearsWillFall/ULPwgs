@@ -202,7 +202,7 @@ clonet_trento=function(
     task_id=make_unique_id(task_name)
     out_file_dir=set_dir(dir=output_dir,name="clonet_reports")
     out_file_dir_tmp=set_dir(dir=output_dir,name="clone_tmp")
-  
+    out_file_dir=set_dir(dir=out_file_dir,name=get_file_name(tumour))
 
 
     file_info=data.frame(Patient=patient_id,Tumour=tumour,Normal=normal)
@@ -218,7 +218,7 @@ clonet_trento=function(
     job=build_job(executor_id=executor_id,task_id=make_unique_id(task_id))
 
     if(mode=="batch"){
-        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,threads=threads,wd=out_file_dir,
+        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,threads=threads,
         output_dir=out_file_dir2)
         exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
     }
