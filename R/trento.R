@@ -132,8 +132,8 @@ multisample_clonet_trento=function(
                 out_files=list(
                 )
         )
-
-        bam_files=system(paste0("find ",bam_dir,"| bam$"))
+        bam_dir_path=system(paste("realpath",bam_dir))
+        bam_files=system(paste0("find ",bam_dir_path,"| bam$"))
         t_files=bam_files[!grepl(normal_id,bam_dir)]
         normal=bam_files[grepl(normal_id,bam_dir)]
         job_report=list()
