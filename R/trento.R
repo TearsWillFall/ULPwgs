@@ -201,8 +201,8 @@ clonet_trento=function(
 
     task_id=make_unique_id(task_name)
     out_file_dir=set_dir(dir=output_dir,name="clonet_reports")
-    out_file_dir_tmp=set_dir(dir=tmp_dir,name="clone_tmp")
-    out_file_dir=set_dir(dir=out_file_dir,name=get_file_name(tumour))
+    out_file_dir_tmp=set_dir(dir=output_dir,name="clone_tmp")
+  
 
 
     file_info=data.frame(Patient=patient_id,Tumour=tumour,Normal=normal)
@@ -211,7 +211,7 @@ clonet_trento=function(
     write.table(file_info,file=sample_sheet,quote=FALSE,row.names=FALSE,col.names=TRUE,sep="\t")
     
 
-    exec_code=paste(" singularity run --app PCFS ",
+    exec_code=paste(paste0(" export SINGULARITY_BINDPATH=",getwd()),"; singularity run --app PCFS ",
     sif_path, " -s ", sample_sheet ," -o ", out_file_dir," -t ",out_file_dir_tmp,
     " -n " , threads)
     
@@ -219,9 +219,9 @@ clonet_trento=function(
     job=build_job(executor_id=executor_id,task_id=make_unique_id(task_id))
 
     if(mode=="batch"){
-        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,threads=threads,
+        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,threads=threads,wd=out_file_dir,
         output_dir=out_file_dir2)
-        exec_code=paste("echo 'source ~/.bashrc;",paste0(" export SINGULARITY_BINDPATH=",out_file_dir),exec_code,"'|",exec_batch)
+        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
     }
 
     if(verbose){
