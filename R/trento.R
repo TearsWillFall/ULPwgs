@@ -207,7 +207,7 @@ clonet_trento=function(
     file_info=data.frame(Patient=patient_id,Tumour=tumour,Normal=normal)
 
     sample_sheet=paste0(out_file_dir_tmp,"/tmp.txt")
-    write.table(file_info,file=sample_sheet,quote="",row.names=FALSE,col.names=TRUE)
+    write.table(file_info,file=sample_sheet,quote=FALSE,row.names=FALSE,col.names=TRUE)
     
 
     exec_code=paste(" singularity run --app PCFS ",
