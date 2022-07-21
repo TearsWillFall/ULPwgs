@@ -144,7 +144,7 @@ multisample_clonet_trento=function(
                 tumour=tumour,normal=normal,
                 patient_id=patient_id,
                 threads=threads,
-                ram=ram,output_dir=paste0(output_file_dir,"/",patient_id),verbose=verbose,
+                ram=ram,output_dir=paste0(output_file_dir,patient_id),verbose=verbose,
                 executor_id=task_id,mode=local,time=time,
                 update_time=60,wait=FALSE,hold="")
         },mc.cores=ifelse(mode=="local",1,3))
@@ -200,14 +200,15 @@ clonet_trento=function(
     argg <- as.list(environment())
 
     task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir,name="clonet")
+    out_file_dir=set_dir(dir=output_dir,name="clonet_reports")
     out_file_dir_tmp=set_dir(dir=out_file_dir,name="tmp")
+    out_file_dir=set_dir(dir=out_file_dir,name=get_file_name(tumour))
 
 
     file_info=data.frame(Patient=patient_id,Tumour=tumour,Normal=normal)
 
     sample_sheet=paste0(out_file_dir_tmp,"/tmp.txt")
-    write.table(file_info,file=sample_sheet,quote=FALSE,row.names=FALSE,col.names=TRUE)
+    write.table(file_info,file=sample_sheet,quote=FALSE,row.names=FALSE,col.names=TRUE,sep="\t")
     
 
     exec_code=paste(" singularity run --app PCFS ",
