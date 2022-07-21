@@ -144,7 +144,7 @@ multisample_clonet_trento=function(
                 tumour=tumour,normal=normal,
                 patient_id=patient_id,
                 threads=threads,
-                ram=ram,output_dir=paste0(output_file_dir,patient_id),verbose=verbose,
+                ram=ram,output_dir=paste0(out_file_dir,patient_id),verbose=verbose,
                 executor_id=task_id,mode=local,time=time,
                 update_time=60,wait=FALSE,hold="")
         },mc.cores=ifelse(mode=="local",1,3))
