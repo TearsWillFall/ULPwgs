@@ -134,9 +134,9 @@ multisample_clonet_trento=function(
         )
         bam_dir_path=system(paste("realpath",bam_dir),intern=TRUE)
         bam_files=system(paste0("find ",bam_dir_path,"| grep bam$"),intern=TRUE)
-        t_files=bam_files[!grepl(normal_id,bam_dir)]
-        normal=bam_files[grepl(normal_id,bam_dir)]
-        
+        t_files=bam_files[!grepl(normal_id,bam_files)]
+        normal=bam_files[grepl(normal_id,bam_files)]
+
         parallel::mclapply(t_files,FUN=function(tumour){
             job_report[["steps"]][["clonet"]][[ULPwgs::get_file_name(tumour)]]<<-clonet_trento(
                 sif_path=sif_path,
