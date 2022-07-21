@@ -219,7 +219,7 @@ clonet_trento=function(
     job=build_job(executor_id=executor_id,task_id=make_unique_id(task_id))
 
     if(mode=="batch"){
-        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,threads=threads,
+        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,threads=threads,wd=out_file_dir,
         output_dir=out_file_dir2)
         exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
     }

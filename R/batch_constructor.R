@@ -59,13 +59,13 @@ job_order=1, input_args="",out_file_dir="", out_files=list(file="file")){
 #' 
 #' @export
 
-build_job_exec=function(job="",time="48:0:0",ram=3,threads=1,output_dir="",hold=""){
+build_job_exec=function(job="",time="48:0:0",ram=3,threads=1,output_dir="",hold="",wd=getwd()){
   
   if(hold!=""){
     hold=paste0(" -hold_jid ",paste0(hold,collapse=","))
   }
   exec_code=paste("qsub -N ",job, paste0(" -l h_rt=",time),
-  paste0(" -l mem=",ram,"G"), paste0(" -pe smp ",threads), paste0(" -wd ",getwd()), 
+  paste0(" -l mem=",ram,"G"), paste0(" -pe smp ",threads), paste0(" -wd ",wd), 
   paste0(" -o ",output_dir,"/",job,".std_out"),
   paste0(" -e ",output_dir,"/",job,".std_error"),hold)
 }
