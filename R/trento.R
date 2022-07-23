@@ -186,8 +186,6 @@ multisample_clonet_trento=function(
 #' @export
 
 
-
-
 clonet_trento=function(
     sif_path="Singularity_Images/preProcess_latest.sif",
     tumour="",normal="",patient_id="",tmp_dir="",threads=3,
@@ -206,7 +204,7 @@ clonet_trento=function(
 
     file_info=data.frame(Patient=patient_id,Tumour=tumour,Normal=normal)
 
-    sample_sheet=paste0(getwd(),"/",out_file_dir_tmp,"/tmp.txt")
+    sample_sheet=paste0(getwd(),"/",out_file_dir_tmp,"/",patient_id,"_tmp.txt")
     write.table(file_info,file=sample_sheet,quote=FALSE,row.names=FALSE,col.names=TRUE,sep="\t")
 
     exec_code=paste(paste0(" export SINGULARITY_BINDPATH=",getwd()),"; singularity run --app PCFS ",
@@ -251,3 +249,309 @@ clonet_trento=function(
 
     return(job_report)
 }
+
+
+#' View CLONET output
+#'
+#' Allows to visualize CLONET output files
+#'
+#'
+#' @param method Select view mode. Options [beta_log2, ai, snps, stats]
+#' @param clonet_dir Path to clonet directory of directories.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Executor ID. Default "preprocess_trento"
+#' @param task_name Name of the task. Default "preprocess_trento"
+#' @param threads Number of CPU cores to use. Default 3.
+#' @param ram RAM memory for batched job. Default 4
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param output_dir Path to the output directory.
+#' @param tmp_dir Path to temporary file directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param hold Job to hold on in batched mode.
+#' @export
+
+
+clonet_view_trento=function(method="beta_log2", clonet_dir="",threads=3,
+    ram=4,output_dir="",verbose=FALSE,
+    executor_id=make_unique_id("clonet_view"),
+    task_name="clonet_view",mode="local",time="48:0:0",
+    update_time=60,wait=FALSE,hold="",cn_list=build_default_cn_list(),
+    clonet_dirs=build_default_clonet_dir_list()){
+
+    argg <- as.list(environment())
+    task_id=make_unique_id(task_name)
+    out_file_dir=set_dir(dir=output_dir)
+    lapply(clonet_dir,FUN=check_clonet_output,clonet_dirs=clonet_dirs)
+
+    plt_data=list()
+    cn_input_files=paste0(clonet_dir,"/",clonet_dirs$cn_snv_calls$CN_SNVs_calls.csv)
+    cn_data=lapply(cn_input_files,FUN=function(x){
+          cn_data=read.table(x,sep=",",header=TRUE)
+  
+    })
+    cn_data=dplyr::bind_rows(cn_data)
+    cn_data=dplyr::left_join(cn_data,cn_list,by=c("cn.call.corr"="cn"))
+    
+    plt_data[["cn_data"]]=cn_data
+
+    if(method=="beta_log2"){
+        clonet_log2_beta(plt_data=plt_data[["cn_data"]])
+    } else if(method=="ai"){
+        clonet_ai(plt_data=plt_data[["cn_data"]])
+    }else if(method=="cn"){
+        clonet_cn(plt_data=plt_data[["cn_data"]])
+    }
+
+}
+
+#' @export
+clonet_log2_beta=function(plt_data){
+    server_log2_beta=function(input,output,session){
+
+        boxes=list()
+        lapply(unique(plt_data$sample),FUN=function(id){
+            tmp_plt_data=plt_data %>% filter(sample==id)
+            output[[paste0(id,"_plot")]]<-renderPlot({
+                
+                plot_log2_beta(tmp_plt_data,
+                gene_tg=any(grepl("Target",input[[paste0(id,"_gene_type")]])),
+                gene_ctrl=any(grepl("Control",input[[paste0(id,"_gene_type")]])),
+                gene_other=any(grepl("Other",input[[paste0(id,"_gene_type")]])),
+                log2_limit=input[[paste0(id,"_log2_limit")]],
+                gene_lbl_evi=input[[paste0(id,"_gene_lbl_evi")]],
+                gene_lbl_beta_low=input[[paste0(id,"_gene_lbl_beta_low")]],
+                gene_lbl_beta_high=input[[paste0(id,"_gene_lbl_beta_high")]],
+                gene_lbl=input[[paste0(id,"_gene_lbl")]],
+                gene_lbl_size=input[[paste0(id,"_gene_lbl_size")]]
+                )
+            })
+    
+            boxes[[id]] <<- shinydashboardPlus::box(
+            width = 12, 
+            id =paste0(id,"_box"),
+            footer=paste0("Tumour Content=",unique(tmp_plt_data$tc),
+            "; Ploidy=",unique(tmp_plt_data$ploidy)),
+            sidebar =shinydashboardPlus::boxSidebar(
+                
+                id=paste0(id,"_sb"),
+                width=26,
+             
+                    radioButtons(paste0(id,"_gene_lbl"), "Labels:", c(
+                "Genes" = 1,
+                "SNPS" = 2, "Informative SNPS" = 3, "No labels" = 4
+                ),
+                selected = 4
+                ),
+                sliderInput(paste0(id,"_gene_lbl_evi"), "AI Evidence:",
+                min = 0, max = 1, value = 0.2, step = 0.1, ticks = FALSE
+                ),
+                sliderInput(paste0(id,"_gene_lbl_beta_low"), "Beta Low Labels:",
+                min = 0, max = 1, value = 0.1, step = 0.1, ticks = FALSE
+                ),
+                sliderInput(paste0(id,"_gene_lbl_beta_high"), "Beta High Labels:",
+                min = 0, max = 1, value = 1, step = 0.1, ticks = FALSE
+                ),
+                sliderInput(paste0(id,"_log2_limit"), "Log2_Limit:",
+                min = 1, max = 10, value = 2, step = 0.1, ticks = FALSE
+                ),
+               sliderInput(paste0(id,"_gene_lbl_size"), "Label Size:",
+                min = 0, max = 10, value = 2, step = 0.1, ticks = FALSE
+                ),
+                shinyWidgets::awesomeCheckbox(
+                    inputId = paste0(id,"_mdl_mrg"),
+                    label = "Show Marginal Plots",
+                    value = TRUE
+                ),
+                shinyWidgets::awesomeCheckboxGroup(
+                    inputId = paste0(id,"_gene_type"),
+                    label = "Genes:",
+                    choices = c("Target", "Control", "Other"),
+                    selected = c("Target")
+                )
+        ),
+        plotOutput(paste0(id,"_plot")),
+        title =id, collapsible = TRUE,
+        collapsed = FALSE, solidHeader = TRUE
+    )
+    })
+    
+    output[["UI"]] <- renderUI({
+        fluidRow(boxes)
+    })
+}
+    shinyApp(ui = build_ui, server = server_log2_beta)
+}
+
+#' @export
+clonet_ai=function(plt_data){
+    server_ai=function(input,output,session){
+            output[[paste0("ai_plot")]]<- renderPlot({
+                
+               plot_ai(
+                    plt_data,
+                    gene_tg=any(grepl("Target",input[["ai_gene_type"]])),
+                    gene_ctrl=any(grepl("Control",input[["ai_gene_type"]])),
+                    gene_other=any(grepl("Other",input[["ai_gene_type"]]))
+                )
+         
+            })
+
+            my_box <- shinydashboardPlus::box(
+                width = 12,
+                id="ai_box",
+                sidebar =shinydashboardPlus::boxSidebar(
+                    id="ai_sb",
+                    width=26,
+                    footer=paste0("Min Tumour Content=",min(plt_data$tc),";",
+                    "Max Tumour Content=",max(plt_data$tc),";",
+                    "Min Ploidy=",min(plt_data$ploidy),";",
+                    "max Ploidy=",max(plt_data$ploidy)),
+                    radioButtons("ai_gene_lbl", "Labels:", c(
+                    "Genes" = 1,
+                    "SNPS" = 2, "Informative SNPS" = 3, "No labels" = 4
+                    ),
+                    selected = 4
+                    ),
+                    sliderInput("ai_gene_lbl_evi", "AI Evidence:",
+                    min = 0, max = 1, value = 0.2, step = 0.1, ticks = FALSE
+                    ),
+                    sliderInput("ai_gene_lbl_beta_low", "Beta Low Labels:",
+                    min = 0, max = 1, value = 0.1, step = 0.1, ticks = FALSE
+                    ),
+                    sliderInput("ai_gene_lbl_beta_high", "Beta High Labels:",
+                    min = 0, max = 1, value = 1, step = 0.1, ticks = FALSE
+                    ),
+                    sliderInput("ai_cn_limit", "CN_Limit:",
+                    min = 1, max = 10, value = 3, step = 1, ticks = FALSE
+                    ),
+                sliderInput("ai_gene_lbl_size", "Label Size:",
+                    min = 0, max = 10, value = 2, step = 0.1, ticks = FALSE
+                    ),
+                    shinyWidgets::awesomeCheckbox(
+                        inputId = "ai_mdl_mrg",
+                        label = "Show Marginal Plots",
+                        value = TRUE
+                    ),
+                    shinyWidgets::awesomeCheckboxGroup(
+                        inputId = "ai_gene_type",
+                        label = "Genes:",
+                        choices = c("Target", "Control", "Other"),
+                        selected = c("Target")
+                    )
+            ),
+            plotOutput("ai_plot",height=nrow(plt_data)*2.5),
+            title ="Allelic Imbalance", collapsible = TRUE,
+            collapsed = FALSE, solidHeader = TRUE
+     )
+        output[["UI"]] <- renderUI({
+            fluidRow(my_box)
+        })
+    }
+
+    shinyApp(ui = build_ui, server = server_ai)
+}
+
+#' @export
+clonet_cn=function(plt_data){
+
+    server_cn=function(input,output,session){
+
+        boxes=list()
+        lapply(unique(plt_data$sample),FUN=function(id){
+            tmp_plt_data=plt_data %>% filter(sample==id)
+            output[[paste0(id,"_plot")]]<-renderPlot({
+                
+                plot_cn(tmp_plt_data,
+                gene_tg=any(grepl("Target",input[[paste0(id,"_gene_type")]])),
+                gene_ctrl=any(grepl("Control",input[[paste0(id,"_gene_type")]])),
+                gene_other=any(grepl("Other",input[[paste0(id,"_gene_type")]])),
+                cn_limit=input[[paste0(id,"_cn_limit")]],
+                gene_lbl_evi=input[[paste0(id,"_gene_lbl_evi")]],
+                gene_lbl_beta_low=input[[paste0(id,"_gene_lbl_beta_low")]],
+                gene_lbl_beta_high=input[[paste0(id,"_gene_lbl_beta_high")]],
+                gene_lbl=input[[paste0(id,"_gene_lbl")]],
+                gene_lbl_size=input[[paste0(id,"_gene_lbl_size")]]
+                )
+            })
+    
+            boxes[[id]] <<- shinydashboardPlus::box(
+            width = 12, 
+            id =paste0(id,"_box"),
+            footer=paste0("Tumour Content=",unique(tmp_plt_data$tc),
+            "; Ploidy=",unique(tmp_plt_data$ploidy)),
+            sidebar =shinydashboardPlus::boxSidebar(
+                
+                id=paste0(id,"_sb"),
+                width=26,
+             
+                    radioButtons(paste0(id,"_gene_lbl"), "Labels:", c(
+                "Genes" = 1,
+                "SNPS" = 2, "Informative SNPS" = 3, "No labels" = 4
+                ),
+                selected = 4
+                ),
+                sliderInput(paste0(id,"_gene_lbl_evi"), "AI Evidence:",
+                min = 0, max = 1, value = 0.2, step = 0.1, ticks = FALSE
+                ),
+                sliderInput(paste0(id,"_gene_lbl_beta_low"), "Beta Low Labels:",
+                min = 0, max = 1, value = 0.1, step = 0.1, ticks = FALSE
+                ),
+                sliderInput(paste0(id,"_gene_lbl_beta_high"), "Beta High Labels:",
+                min = 0, max = 1, value = 1, step = 0.1, ticks = FALSE
+                ),
+                sliderInput(paste0(id,"_cn_limit"), "CN_Limit:",
+                min = 1, max = 10, value = 3, step = 1, ticks = FALSE
+                ),
+               sliderInput(paste0(id,"_gene_lbl_size"), "Label Size:",
+                min = 0, max = 10, value = 2, step = 0.1, ticks = FALSE
+                ),
+                shinyWidgets::awesomeCheckbox(
+                    inputId = paste0(id,"_mdl_mrg"),
+                    label = "Show Marginal Plots",
+                    value = TRUE
+                ),
+                shinyWidgets::awesomeCheckboxGroup(
+                    inputId = paste0(id,"_gene_type"),
+                    label = "Genes:",
+                    choices = c("Target", "Control", "Other"),
+                    selected = c("Target")
+                )
+        ),
+        plotOutput(paste0(id,"_plot")),
+        title =id, collapsible = TRUE,
+        collapsed = FALSE, solidHeader = TRUE
+    )
+    })
+    
+    output[["UI"]] <- renderUI({
+        fluidRow(boxes)
+    })
+}
+    shinyApp(ui = build_ui, server = server_cn)
+}
+
+
+
+#' @export
+
+
+check_clonet_output=function(clonet_dir="",
+clonet_dirs=build_default_clonet_dir_list()){
+
+    validation=all(unlist(lapply(unlist(clonet_dirs),FUN=function(file){
+
+        search_dir=paste0(clonet_dir,"/",file)
+
+        file.exists(search_dir)
+    })))
+
+    if(!validation){
+        stop(paste0("Could not validate all CLONET files in ",clonet_dir))
+    }
+    
+}
+
+
+

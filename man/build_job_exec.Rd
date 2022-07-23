@@ -10,7 +10,8 @@ build_job_exec(
   ram = 3,
   threads = 1,
   output_dir = "",
-  hold = ""
+  hold = "",
+  wd = getwd()
 )
 }
 \arguments{

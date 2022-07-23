@@ -944,3 +944,29 @@ thisFile <- function() {
                 return(normalizePath(sys.frames()[[1]]$ofile))
         }
 }
+
+
+#' @export
+
+
+make_triangles <- function(x, y, point = "up") {
+  x <- as.integer((x))
+  y <- as.integer((y))
+
+  if (point == "up") {
+    newx <- sapply(x, function(x) {
+      c(x - 0.5, x - 0.5, x + 0.5)
+    }, simplify = FALSE)
+    newy <- sapply(y, function(y) {
+      c(y - 0.5, y + 0.5, y + 0.5)
+    }, simplify = FALSE)
+  } else if (point == "down") {
+    newx <- sapply(x, function(x) {
+      c(x - 0.5, x + 0.5, x + 0.5)
+    }, simplify = FALSE)
+    newy <- sapply(y, function(y) {
+      c(y - 0.5, y - 0.5, y + 0.5)
+    }, simplify = FALSE)
+  }
+  data.frame(x = unlist(newx), y = unlist(newy))
+}

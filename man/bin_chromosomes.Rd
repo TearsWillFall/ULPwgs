@@ -8,7 +8,7 @@ bin_chromosomes(
   bin_path = "tools/samtools/samtools",
   bam = "",
   verbose = FALSE,
-  bin_size = 4e+07
+  bin_size = 40000000
 )
 }
 \arguments{

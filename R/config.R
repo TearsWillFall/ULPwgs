@@ -413,3 +413,98 @@ build_default_reference_list=function(
     }
 
 
+
+#' Build default references
+#' 
+#'
+#' @param clonet_dirs List with reference files
+#' @export
+
+build_default_clonet_dir_list=function(
+    clonet_dirs=list(
+    beta_computation=list(
+        segmentation_amplicons_log2r.tsv="beta_computation/segmentation_amplicons_log2r.tsv",
+        segmentation.seg="beta_computation/segmentation.seg"
+    ),
+    cn_snv_calls=list(
+        CN_SNVs_calls.csv="cn_snv_calls/CN_SNVs_calls.csv",
+        SNVs_calls.csv="cn_snv_calls/SNVs_calls.csv",
+        SNVs_calls_corrected.csv="cn_snv_calls/SNVs_calls_corrected.csv"
+    ),
+    focalTables=list(
+        segmentation_focal.seg="focalTables/segmentation_focal.seg",
+        bed_with_rc.Rdata="focalTables/bed_with_rc.Rdata"
+    ),
+    pacbam=list(
+
+    ),
+    peak_correction=list(
+        germline_distribution_shifts.Rdata="peak_correction/germline_distribution_shifts.Rdata",
+        peak_shifts.tsv="peak_correction/peak_shifts.tsv"
+    ),
+    tcEstimation=list(
+        tc_estimations_CLONETv2.tsv="tcEstimation/tc_estimations_CLONETv2.tsv"
+    ),
+    abemus=list(
+        table_mutations.tsv="abemus/table_mutations.tsv",
+        table_mutations_nocommonSNPs.tsv="abemus/table_mutations_nocommonSNPs.tsv",
+        tabindex_optimalR.tsv="abemus/tabindex_optimalR.tsv",
+        samples_info_file_rpa.tsv="abemus/samples_info_file_rpa.tsv"
+    ),
+    allelicImbalance=list(
+        ai_log2_table.chrX.csv="allelicImbalance/ai_log2_table.chrX.csv",
+        ai_log2_table.csv="allelicImbalance/ai_log2_table.csv"
+    ),
+    annovar=list(
+    ))
+){
+    return(clonet_dirs)
+
+}
+
+
+
+#' Build default references
+#' 
+#'
+#' @param cn_list List cn events
+#' @export
+
+build_default_cn_list=function(
+    cn_list=list(
+        cn=c(
+            "Unb.Gain",
+            "wt",
+            "CNNL",
+            "NoImb_WTGrayZoneCN",
+            "Likely Loss",
+            "HemiDel",
+            "Imb_WTGrayZoneCN",
+            "Bal.Gain",
+            "Likely Gain",
+            "Uncertain Bal.Gain",
+            "HomoDe",
+            "Uncertain HomoDel",
+            "Deletion on chrX"
+        ),
+        col=c(
+            "#ED7D31",
+            "#CDCDCD",
+            "#FFE699",
+            "#CDCDCD",
+            "#00B0F0",
+            "#94F6F6",
+            "#CDCDCD",
+            "#C00000",
+            "#FF0000",
+            "#C00000",
+            "#0070C0",
+            "#0070C0",
+            "#305496"
+        )
+    )
+){
+    return(data.frame(cn_list,stringsAsFactors = FALSE))
+}
+
+
