@@ -268,7 +268,7 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
     newcoord_down <- newcoord_down %>% dplyr::select(xdown = x, ydown = y)
 
     repdata=purrr::map_df(1:nrow(plt_data), function(i) plt_data[rep(i, 3), ])
-    newdata <- bind_cols(repdata, newcoord_up, newcoord_down)
+    newdata <- dplyr::bind_cols(repdata, newcoord_up, newcoord_down)
     return(newdata)
   }
  
@@ -364,7 +364,7 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
   plts[["X"]]=main_plot(to_plot,type="X",show_cn=TRUE)
 
 
-  p=wrap_plots(plts)+plot_layout(height=c(15,nrow(to_plot[["autosome"]]),nrow(to_plot[["X"]])))
+  p=patchwork::wrap_plots(plts)+patchwork::plot_layout(height=c(15,nrow(to_plot[["autosome"]]),nrow(to_plot[["X"]])))
 
   print(p&coord_equal())
 
