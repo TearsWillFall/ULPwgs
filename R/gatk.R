@@ -540,7 +540,7 @@ update_time=60,wait=TRUE,hold=""){
       time=update_time,verbose=verbose,threads=threads)
   }
 
-  return(job)
+  return(job_report)
 }
 
 #' Multiregion parallelization of apply_BQSR function

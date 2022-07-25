@@ -24,6 +24,8 @@ output_dir="",verbose=FALSE,hnd=1000,threads,ram=4,tmp_dir="",remove_duplicates=
 mode="local",executor=make_unique_id("markDups"),task="markDups",
 time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
+    argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
     out_file_dir=set_dir(dir=output_dir,name="markdups_reports")
 
     tmp=""
@@ -38,7 +40,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
     }
 
 
-    job=build_job(executor=executor,task=make_unique_id(task))
+    job=build_job(executor_id=executor_id,task_id=task_id)
 
     exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",
       bin_path," MarkDuplicates I=",bam, " O=",paste0(out_file_dir,"/",
@@ -56,8 +58,8 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
   }
     
-    if(verbose){
-      print_verbose(exec_code=exec_code)
+  if(verbose){
+       print_verbose(job=job,arg=argg,exec_code=exec_code)
     }
 
     error=system(exec_code)
@@ -67,12 +69,23 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
       Check std error for more information.")
     }
 
-    if(wait&&mode=="batch"){
-        job_validator(job=job,time=update_time,
-        verbose=verbose,threads=threads)
-    }
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    task_id=task_id, 
+    input_args = argg,
+    out_file_dir=out_file_dir,
+      out_file=list(
+        )
+  )
 
-    return(job)
+
+   if(wait&&mode=="batch"){
+    job_validator(job=job_report$job_id,
+    time=update_time,verbose=verbose,threads=threads)
+   }
+
+    return(job_report)
 
   }
 
@@ -97,6 +110,9 @@ summary_metrics_bam_picard=function(bin_path="tools/picard/build/libs/picard.jar
 verbose=FALSE,tmp_dir=".",threads=3,ram=4,mode="local",executor=make_unique_id("summaryMetrics"),task="summaryMetrics",
 time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
+
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="summary")
 
   tmp=""
@@ -108,7 +124,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
         " -jar ",bin_path," CollectAlignmentSummaryMetrics ",
         "VALIDATION_STRINGENCY=SILENT I=",bam," O=",paste0(out_file_dir,"/",get_file_name(bam),".picard_summary.txt "),tmp)
   
-  job=build_job(executor=executor,task=make_unique_id(task))
+  job=build_job(executor_id=executor_id,task_id=task_id)
 
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
@@ -118,21 +134,31 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
   }
 
 
-  if (verbose){
-        print_verbose(exec_code=exec_code)
-  }
+ if(verbose){
+       print_verbose(job=job,arg=argg,exec_code=exec_code)
+    }
   error=system(exec_code)
   if(error!=0){
     stop("picard failed to run due to unknown error.
     Check std error for more information.")
   }
 
-  if(wait&&mode=="batch"){
-    job_validator(job=job,time=update_time,
-    verbose=verbose,threads=threads)
-  }
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    task_id=task_id, 
+    input_args = argg,
+    out_file_dir=out_file_dir,
+      out_file=list(
+        )
+)
 
-  return(job)
+
+ if(wait&&mode=="batch"){
+    job_validator(job=job_report$job_id,
+    time=update_time,verbose=verbose,threads=threads)
+  }
+  return(job_report)
 }
 
 
@@ -159,6 +185,10 @@ bam="",output_dir="",verbose=FALSE,tmp_dir=".",threads=1,ram=4,
 mode="local",executor=make_unique_id("insertsizeMetrics"),task="insertsizeMetrics",
 time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
+
+
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="insertsize")
 
 
@@ -172,7 +202,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
       bam," O=",paste0(out_file_dir,"/",get_file_name(bam),".picard_insert_size.txt")," H=",
       paste0(out_file_dir,"/",get_file_name(bam),".picard_insert_size.pdf "),tmp)
 
-  job=build_job(executor=executor,task=make_unique_id(task))
+  job=build_job(executor_id=executor_id,task_id=task_id)
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
@@ -180,22 +210,31 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
   }
 
-  if (verbose){
-        print_verbose(exec_code=exec_code)
-  }
+  if(verbose){
+       print_verbose(job=job,arg=argg,exec_code=exec_code)
+    }
   error=system(exec_code)
   if(error!=0){
     stop("picard failed to run due to unknown error.
     Check std error for more information.")
   }
 
-  if(wait&&mode=="batch"){
-    job_validator(job=job,time=update_time,
-    verbose=verbose,threads=threads)
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    task_id=task_id, 
+    input_args = argg,
+    out_file_dir=out_file_dir,
+      out_file=list(
+        )
+)
+
+
+ if(wait&&mode=="batch"){
+    job_validator(job=job_report$job_id,
+    time=update_time,verbose=verbose,threads=threads)
   }
-
-  return(job)
-
+  return(job_report)
 }
 
 
@@ -221,9 +260,11 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @export
 
 tg_summary_metrics_bam_picard=function(bin_path="tools/picard/build/libs/picard.jar",bam="",output_dir="",
-verbose=FALSE,tmp_dir=".",threads=1,ram=4,bi="",ti="",mode="local",executor=make_unique_id("TGsummaryMetrics"),
-task="TGsummaryMetrics",time="48:0:0",update_time=60,wait=FALSE,hold=""){
+verbose=FALSE,tmp_dir=".",threads=1,ram=4,bi="",ti="",mode="local",executor_id=make_unique_id("TGsummaryMetrics"),
+task_name="TGsummaryMetrics",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="summary")
 
 
@@ -232,17 +273,17 @@ task="TGsummaryMetrics",time="48:0:0",update_time=60,wait=FALSE,hold=""){
     tmp=paste0(" TMP_DIR=",tmp_dir)
   }
 
-
+  out_file_ts=paste0(out_file_dir,"/",get_file_name(bam),".picard_TS.txt")
+  out_file=paste0(out_file_dir,"/",get_file_name(bam),".picard_CollectHSmetrics.txt ")
   exec_code=cat(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir,
         " -jar ",bin_path," CollectHsMetrics VALIDATION_STRINGENCY=SILENT BI=",
         bi," TI=",ti," I=",bam," THEORETICAL_SENSITIVITY_OUTPUT=",
-        paste0(out_file_dir,"/",get_file_name(bam),".picard_TS.txt")," O=",
-        paste0(out_file_dir,"/",get_file_name(bam),".picard_CollectHSmetrics.txt "),tmp))
+        out_file_ts," O=",out_file,tmp))
         
  
  
  
-job=build_job(executor=executor,task=make_unique_id(task))
+job=build_job(executor_id=executor_id,task_id=task_id)
  if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
@@ -251,21 +292,36 @@ job=build_job(executor=executor,task=make_unique_id(task))
   }
 
 
-  if (verbose){
-        print_verbose(exec_code=exec_code)
-  }
+   if(verbose){
+       print_verbose(job=job,arg=argg,exec_code=exec_code)
+   }
+
   error=system(exec_code)
   if(error!=0){
     stop("picard failed to run due to unknown error.
     Check std error for more information.")
   }
 
-  if(wait&&mode=="batch"){
-    job_validator(job=job,time=update_time,
-    verbose=verbose,threads=threads)
-  }
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    task_id=task_id, 
+    input_args = argg,
+    out_file_dir=out_file_dir,
+      out_file=list(
+        ts=out_file_ts,
+        summary=out_file
+        )
+  )
 
-  return(job)
+
+
+  if(wait&&mode=="batch"){
+    job_validator(job=job_report$job_id,
+    time=update_time,verbose=verbose,threads=threads)
+  }
+  return(job_report)
+
 
 }
 
@@ -294,6 +350,9 @@ bam="",output_dir="",verbose=FALSE,tmp_dir=".",threads=1,ram=4,ri="",ref_flat=""
 executor=make_unique_id("RNAsummaryMetrics"),task="RNAsummaryMetrics",time="48:0:0",
 update_time=60,wait=FALSE,hold=""){
 
+
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="summary")
 
   tmp=""
@@ -308,7 +367,7 @@ update_time=60,wait=FALSE,hold=""){
   
   
   
-  job=build_job(executor=executor,task=make_unique_id(task))
+job=build_job(executor_id=executor_id,task_id=task_id)
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
@@ -317,21 +376,32 @@ update_time=60,wait=FALSE,hold=""){
   }
 
 
-  if (verbose){
-        print_verbose(exec_code=exec_code)
+  if(verbose){
+       print_verbose(job=job,arg=argg,exec_code=exec_code)
   }
+
   error=system(exec_code)
   if(error!=0){
     stop("picard failed to run due to unknown error.
     Check std error for more information.")
   }
 
-  if(wait&&mode=="batch"){
-    job_validator(job=job,time=update_time,
-    verbose=verbose,threads=threads)
-  }
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    task_id=task_id, 
+    input_args = argg,
+    out_file_dir=out_file_dir,
+      out_file=list(
+        )
+)
 
-  return(job)
+
+  if(wait&&mode=="batch"){
+    job_validator(job=job_report$job_id,
+    time=update_time,verbose=verbose,threads=threads)
+  }
+  return(job_report)
 }
 
 
@@ -358,7 +428,10 @@ bam="",output_dir="",verbose=FALSE,tmp_dir=".",threads=1,ram=4,mode="local",
 executor=make_unique_id("WGSsummaryMetrics"),task="WGSsummaryMetrics",time="48:0:0",
 update_time=60,wait=FALSE,hold=""){
 
- out_file_dir=set_dir(dir=output_dir,name="summary")
+
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
+  out_file_dir=set_dir(dir=output_dir,name="summary")
 
 
   tmp=""
@@ -370,7 +443,7 @@ update_time=60,wait=FALSE,hold=""){
             bin_path," CollectWgsMetrics VALIDATION_STRINGENCY=SILENT MINIMUM_MAPPING_QUALITY=",
             mapq," I=",bam," O=",paste0(out_file_dir,"/",get_file_name(bam),".picard_wgs_q00.txt "),tmp)
   
-  job=build_job(executor=executor,task=make_unique_id(task))
+job=build_job(executor_id=executor_id,task_id=task_id)
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
@@ -379,19 +452,29 @@ update_time=60,wait=FALSE,hold=""){
   }
 
 
-  if (verbose){
-        print_verbose(exec_code=exec_code)
-  }
+ if(verbose){
+       print_verbose(job=job,arg=argg,exec_code=exec_code)
+    }
   error=system(exec_code)
   if(error!=0){
     stop("picard failed to run due to unknown error.
     Check std error for more information.")
   }
 
-  if(wait&&mode=="batch"){
-    job_validator(job=job,time=update_time,
-    verbose=verbose,threads=threads)
-  }
 
-  return(job)
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    task_id=task_id, 
+    input_args = argg,
+    out_file_dir=out_file_dir,
+      out_file=list(
+        )
+)
+
+ if(wait&&mode=="batch"){
+    job_validator(job=job_report$job_id,
+    time=update_time,verbose=verbose,threads=threads)
+  }
+  return(job_report)
 }
