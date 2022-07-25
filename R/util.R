@@ -515,6 +515,29 @@ steps_list=build_default_steps_list()){
 }
 
 
+#' Parse HS metrics and WGS metrics picard info
+#'
+#' 
+#'
+#' 
+
+#' @param metrics Path to Picard metrics file
+#' @param output_dir Path to output directory
+#' @param output_name File output name
+#' @return A string with the extension of the file
+#' @export
+
+parse_picard_metrics=function(metrics="",output_dir="",output_name=""){
+
+  out_file_dir=set_dir(dir=output_dir,name=output_name)
+
+  metrics=read.table(metrics,sep="\t",quote="\\",nrows=1,header=TRUE)
+  histogram=read.table(metrics,sep="\t",quote="\\",skip=8,header=TRUE)
+  
+  write.table(metrics,file=paste0(out_file_dir,"metrics_stats"),quote=FALSE,row.names=FALSE,col.names=TRUE)
+  write.table(histogram,file=paste0(out_file_dir,"metrics_histogram"),quote=FALSE,row.names=FALSE,col.names=TRUE)
+}
+
 
 #' Get the extension of a file
 #'
