@@ -286,17 +286,15 @@ task_name="TGsummaryMetrics",time="48:0:0",update_time=60,wait=FALSE,hold=""){
         " -jar ",bin_path," CollectHsMetrics VALIDATION_STRINGENCY=SILENT BI=",
         bi," TI=",ti," I=",bam," THEORETICAL_SENSITIVITY_OUTPUT=",
         out_file_ts," O=",out_file,ref,tmp)
-        
- 
- 
- 
+
 job=build_job(executor_id=executor_id,task_id=task_id)
- if(mode=="batch"){
+
+if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
-  }
+}
 
 
    if(verbose){
