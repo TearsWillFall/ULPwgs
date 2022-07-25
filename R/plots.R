@@ -267,7 +267,7 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
 
     newcoord_down <- newcoord_down %>% dplyr::select(xdown = x, ydown = y)
 
-    repdata=map_df(1:nrow(plt_data), function(i) plt_data[rep(i, 3), ])
+    repdata=purrr::map_df(1:nrow(plt_data), function(i) plt_data[rep(i, 3), ])
     newdata <- bind_cols(repdata, newcoord_up, newcoord_down)
     return(newdata)
   }
@@ -283,14 +283,14 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
 
 
   tc_pl_plot=function(plt_data){
-    tc_data=plt_data %>% group_by(sample,s_order) %>% distinct(tc,ploidy)%>% ungroup() %>%
+    tc_data=plt_data %>% group_by(sample,s_order) %>% dplyr::distinct(tc,ploidy)%>% dplyr::ungroup() %>%
     dplyr::mutate(nc=1-tc) %>% 
     pivot_longer(cols = -c(sample,s_order,ploidy)) %>% dplyr::mutate(col=ifelse(name=="tc","red","grey"),total=1)
   
 
     
     df.grobs <- tc_data %>%
-        group_by(sample,s_order,ploidy, total) %>%
+        dplyr::group_by(sample,s_order,ploidy, total) %>%
         do(subplots = ggplot(., aes(1, value, fill = col)) +
           geom_col(position = "fill", colour = "black") +
           coord_polar(theta = "y") +

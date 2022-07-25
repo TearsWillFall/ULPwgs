@@ -315,7 +315,7 @@ clonet_view_trento=function(method="beta_log2", clonet_dir="",threads=3,
   
     })
 
-    
+
     cn_data=dplyr::bind_rows(cn_data)
     cn_data=dplyr::left_join(cn_data,cn_list,by=c("cn.call.corr"="cn"))
     
@@ -345,7 +345,7 @@ clonet_log2_beta=function(plt_data){
 
         boxes=list()
         lapply(unique(plt_data$sample),FUN=function(id){
-            tmp_plt_data=plt_data %>% filter(sample==id)
+            tmp_plt_data=plt_data %>% dplyr::filter(sample==id)
             output[[paste0(id,"_plot")]]<- shiny::renderPlot({
                 
                 plot_log2_beta(tmp_plt_data,
@@ -576,7 +576,7 @@ clonet_snp=function(plt_data){
 
         boxes=list()
         lapply(unique(plt_data$sample),FUN=function(id){
-            tmp_plt_data=plt_data %>% filter(sample==id)
+            tmp_plt_data=plt_data %>% dplyr::filter(sample==id)
             output[[paste0(id,"_plot")]]<- shiny::renderPlot({
                 
                 plot_cn(tmp_plt_data,
