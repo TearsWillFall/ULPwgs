@@ -291,7 +291,7 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
     
     df.grobs <- tc_data %>%
         dplyr::group_by(sample,s_order,ploidy, total) %>%
-        do(subplots = ggplot(., aes(1, value, fill = col)) +
+        dplyr::do(subplots = ggplot(., aes(1, value, fill = col)) +
           geom_col(position = "fill", colour = "black") +
           coord_polar(theta = "y") +
           theme_void() +
@@ -324,8 +324,6 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
     }
   
   }
-
-
 
   main_plot=function(data,type="autosome",show_cn=TRUE){
     p=ggplot(data[[type]]) +
