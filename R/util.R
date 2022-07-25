@@ -534,7 +534,6 @@ steps_list=build_default_steps_list()){
 #' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
 #' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
 #' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
-#' @return 
 #' @export
 
 parse_picard_metrics=function(metrics="",output_dir="",output_name="",

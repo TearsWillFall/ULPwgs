@@ -10,13 +10,14 @@ tg_summary_metrics_bam_picard(
   output_dir = "",
   verbose = FALSE,
   tmp_dir = ".",
+  ref_genome = "",
   threads = 1,
   ram = 4,
   bi = "",
   ti = "",
   mode = "local",
-  executor = make_unique_id("TGsummaryMetrics"),
-  task = "TGsummaryMetrics",
+  executor_id = make_unique_id("TGsummaryMetrics"),
+  task_name = "TGsummaryMetrics",
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
@@ -40,10 +41,6 @@ tg_summary_metrics_bam_picard(
 
 \item{ti}{Primary target intervals for panel data. Interval format.}
 
-\item{executor}{\link{OPTIONAL} Task executor name. Default "recalCovariates"}
-
-\item{task}{\link{OPTIONAL} Task name. Default "recalCovariates"}
-
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 
 \item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
@@ -51,6 +48,10 @@ tg_summary_metrics_bam_picard(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
+
+\item{executor}{\link{OPTIONAL} Task executor name. Default "recalCovariates"}
+
+\item{task}{\link{OPTIONAL} Task name. Default "recalCovariates"}
 }
 \description{
 Generate BAM Summary for Targeted data
