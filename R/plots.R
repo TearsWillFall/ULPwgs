@@ -362,7 +362,8 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
   plts[["X"]]=main_plot(to_plot,type="X",show_cn=TRUE)
 
 
-  p=patchwork::wrap_plots(plts)+patchwork::plot_layout(height=c(nrow(to_plot[["autosome"]]),nrow(to_plot[["X"]])))
+  p=patchwork::wrap_plots(plts)+patchwork::plot_layout(height=c(unique(plt_data$sample),
+  nrow(to_plot[["autosome"]]),nrow(to_plot[["X"]])))
 
   print(p)
 
