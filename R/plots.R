@@ -283,7 +283,7 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
 
 
   tc_pl_plot=function(plt_data){
-    tc_data=plt_data %>% group_by(sample,s_order) %>% dplyr::distinct(tc,ploidy)%>% dplyr::ungroup() %>%
+    tc_data=plt_data %>% dplyr::group_by(sample,s_order) %>% dplyr::distinct(tc,ploidy)%>% dplyr::ungroup() %>%
     dplyr::mutate(nc=1-tc) %>% 
     tidyr::pivot_longer(cols = -c(sample,s_order,ploidy)) %>% dplyr::mutate(col=ifelse(name=="tc","red","grey"),total=1)
   
