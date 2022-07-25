@@ -275,10 +275,10 @@ task_name="TGsummaryMetrics",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   out_file_ts=paste0(out_file_dir,"/",get_file_name(bam),".picard_TS.txt")
   out_file=paste0(out_file_dir,"/",get_file_name(bam),".picard_CollectHSmetrics.txt ")
-  exec_code=cat(paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir,
+  exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir,
         " -jar ",bin_path," CollectHsMetrics VALIDATION_STRINGENCY=SILENT BI=",
         bi," TI=",ti," I=",bam," THEORETICAL_SENSITIVITY_OUTPUT=",
-        out_file_ts," O=",out_file,tmp))
+        out_file_ts," O=",out_file,tmp)
         
  
  
