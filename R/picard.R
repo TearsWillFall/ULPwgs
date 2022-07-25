@@ -275,7 +275,7 @@ task_name="TGsummaryMetrics",time="48:0:0",update_time=60,wait=FALSE,hold=""){
   }
 
   ref=""
-  if(reference_genome!=""){
+  if(ref_genome!=""){
     ref=paste0(" R=",ref_genome)
   }
  
@@ -285,7 +285,7 @@ task_name="TGsummaryMetrics",time="48:0:0",update_time=60,wait=FALSE,hold=""){
   exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir,
         " -jar ",bin_path," CollectHsMetrics VALIDATION_STRINGENCY=SILENT BI=",
         bi," TI=",ti," I=",bam," THEORETICAL_SENSITIVITY_OUTPUT=",
-        out_file_ts," O=",out_file,ref," ",tmp)
+        out_file_ts," O=",out_file,ref,tmp)
         
  
  
