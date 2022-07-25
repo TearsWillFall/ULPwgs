@@ -241,6 +241,8 @@ gene_lbl=1, gene_lbl_evi=0.2, gene_lbl_beta_low=0.2, gene_lbl_beta_high=1, gene_
     print(p)
 }
 
+
+#' @import patchwork
 #' @export
 
 plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
