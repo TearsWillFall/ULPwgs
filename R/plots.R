@@ -352,7 +352,7 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
       p<-p+geom_text(data=data[[type]],aes(s_order,as.numeric(as.factor(gene)),
       label=cn_t),col="white",size=3)
     }
-    print(p&coord_equal())
+    print(p)
   }
 
   plts=list()
@@ -362,8 +362,8 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
   plts[["X"]]=main_plot(to_plot,type="X",show_cn=TRUE)
 
 
-  p=patchwork::wrap_plots(plts)+patchwork::plot_layout(height=c(15,nrow(to_plot[["autosome"]]),nrow(to_plot[["X"]])))
+  p=patchwork::wrap_plots(plts)+patchwork::plot_layout(height=c(nrow(to_plot[["autosome"]]),nrow(to_plot[["X"]])))
 
-  print(p&coord_equal())
+  print(p)
 
 }
