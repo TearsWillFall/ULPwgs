@@ -326,6 +326,7 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
   }
 
   main_plot=function(data,type="autosome",show_cn=TRUE){
+    
     p=ggplot(data[[type]]) +
     geom_polygon(aes(x = x, y = y, fill =1-beta, 
     group = interaction(sample, gene)),col="black",size=0.1) +
@@ -348,10 +349,7 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
     if(show_cn){
       p<-p+geom_text(data=data[[type]],aes(s_order,as.numeric(as.factor(gene)),
       label=cn_t),col="white",size=3)
-
     }
-
-
     print(p&coord_equal())
   }
 
