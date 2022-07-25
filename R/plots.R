@@ -147,7 +147,7 @@ plot_log2_beta=function(
 
     if (gene_lbl == 1) {
         p <- p + ggrepel::geom_label_repel(
-        data = plt_data %>% filter(
+        data = plt_data %>% dplyr::filter(
             evidence >= gene_lbl_evi, beta >= gene_lbl_beta_low,
             beta <= gene_lbl_beta_high
         ),
@@ -155,7 +155,7 @@ plot_log2_beta=function(
         ) + scale_fill_identity()
     } else if (gene_lbl == 2) {
         p <- p + ggrepel::geom_label_repel(
-        data = plt_data %>% filter(
+        data = plt_data %>% dplyr::filter(
             evidence >= gene_lbl_evi, beta >= gene_lbl_beta_low,
             beta <= gene_lbl_beta_high
         ),
@@ -163,7 +163,7 @@ plot_log2_beta=function(
         ) + scale_fill_identity()
     } else if (gene_lbl == 3) {
         p <- p + ggrepel::geom_label_repel(
-        data = plt_data %>% filter(
+        data = plt_data %>% dplyr::filter(
             evidence >= gene_lbl_evi, beta >= gene_lbl_beta_low,
             beta <= gene_lbl_beta_high
         ),
@@ -181,7 +181,7 @@ plot_log2_beta=function(
 plot_cn=function(plt_data, cn_limit=3, gene_tg=TRUE, gene_ctrl=FALSE, gene_other=FALSE,
 gene_lbl=1, gene_lbl_evi=0.2, gene_lbl_beta_low=0.2, gene_lbl_beta_high=1, gene_lbl_size=2){
   plt_data <- plt_data %>%
-    filter(!is.na(cnA), !is.na(cnB)) %>%
+    dplyr::filter(!is.na(cnA), !is.na(cnB)) %>%
     dplyr::mutate(
       cnA = ifelse(cnA < 0, 0, ifelse(cnA > cn_limit, cn_limit, cnA)),
       cnB = ifelse(cnB < 0, 0, ifelse(cnB > cn_limit, cn_limit, cnB))
@@ -214,7 +214,7 @@ gene_lbl=1, gene_lbl_evi=0.2, gene_lbl_beta_low=0.2, gene_lbl_beta_high=1, gene_
     theme(legend.position = "none")
  if (gene_lbl == 1) {
         p <- p + ggrepel::geom_label_repel(
-        data = plt_data %>% filter(
+        data = plt_data %>% dplyr::filter(
             evidence >= gene_lbl_evi, beta >= gene_lbl_beta_low,
             beta <= gene_lbl_beta_high
         ),
@@ -222,7 +222,7 @@ gene_lbl=1, gene_lbl_evi=0.2, gene_lbl_beta_low=0.2, gene_lbl_beta_high=1, gene_
         ) + scale_fill_identity()
     } else if (gene_lbl == 2) {
         p <- p + ggrepel::geom_label_repel(
-        data = plt_data %>% filter(
+        data = plt_data %>% dpylr::filter(
             evidence >= gene_lbl_evi, beta >= gene_lbl_beta_low,
             beta <= gene_lbl_beta_high
         ),
@@ -230,7 +230,7 @@ gene_lbl=1, gene_lbl_evi=0.2, gene_lbl_beta_low=0.2, gene_lbl_beta_high=1, gene_
         ) + scale_fill_identity()
     } else if (gene_lbl == 3) {
         p <- p + ggrepel::geom_label_repel(
-        data = plt_data %>% filter(
+        data = plt_data %>% dplyr::filter(
             evidence >= gene_lbl_evi, beta >= gene_lbl_beta_low,
             beta <= gene_lbl_beta_high
         ),
