@@ -260,7 +260,8 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @export
 
 tg_summary_metrics_bam_picard=function(bin_path="tools/picard/build/libs/picard.jar",bam="",output_dir="",
-verbose=FALSE,tmp_dir=".",threads=1,ram=4,bi="",ti="",mode="local",executor_id=make_unique_id("TGsummaryMetrics"),
+verbose=FALSE,tmp_dir=".",ref_genome="",threads=1,ram=4,bi="",ti="",
+mode="local",executor_id=make_unique_id("TGsummaryMetrics"),
 task_name="TGsummaryMetrics",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   argg <- as.list(environment())
@@ -273,12 +274,18 @@ task_name="TGsummaryMetrics",time="48:0:0",update_time=60,wait=FALSE,hold=""){
     tmp=paste0(" TMP_DIR=",tmp_dir)
   }
 
+  ref=""
+  if(reference_genome!=""){
+    ref=paste0(" R=",ref_genome)
+  }
+ 
+
   out_file_ts=paste0(out_file_dir,"/",get_file_name(bam),".picard_TS.txt")
   out_file=paste0(out_file_dir,"/",get_file_name(bam),".picard_CollectHSmetrics.txt ")
   exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir,
         " -jar ",bin_path," CollectHsMetrics VALIDATION_STRINGENCY=SILENT BI=",
         bi," TI=",ti," I=",bam," THEORETICAL_SENSITIVITY_OUTPUT=",
-        out_file_ts," O=",out_file,tmp)
+        out_file_ts," O=",out_file,ref," ",tmp)
         
  
  
