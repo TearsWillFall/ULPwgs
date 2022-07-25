@@ -1,7 +1,7 @@
 #' @export
 
 build_ui <- function() {
-  dashboardPage(
+  shinydashboard::dashboardPage(
     skin = "black",
     build_ui_header(),
     build_ui_sidebar(),
@@ -12,7 +12,7 @@ build_ui <- function() {
 #' @export
 
 build_ui_header <- function() {
-  dashboardHeader(
+  shinydashboard::dashboardHeader(
     titleWidth=0
     
   )
@@ -29,7 +29,7 @@ build_ui_body <- function() {
 #' @export
 
 build_ui_sidebar <- function() {
-  dashboardSidebar(
+  shinydashboard::dashboardSidebar(
      tags$script(JS("document.getElementsByClassName('sidebar-toggle')[0].style.visibility = 'hidden';")),
      width = "0px")
  }

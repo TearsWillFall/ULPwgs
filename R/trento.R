@@ -286,6 +286,8 @@ clonet_view_trento=function(method="beta_log2", clonet_dir="",threads=3,
     lapply(clonet_dir,FUN=check_clonet_output,clonet_dirs=clonet_dirs)
 
     plt_data=list()
+
+    ## Reac CN data
     cn_input_files=paste0(clonet_dir,"/",clonet_dirs$cn_snv_calls$CN_SNVs_calls.csv)
     cn_data=lapply(cn_input_files,FUN=function(x){
         tryCatch({
@@ -298,6 +300,22 @@ clonet_view_trento=function(method="beta_log2", clonet_dir="",threads=3,
        
   
     })
+
+    ### Read TC data
+    tc_input_files=paste0(clonet_dir,"/",clonet_dirs$tcEstimation$tc_estimations_CLONETv2.tsv)
+    tc_data=lapply(tc_input_files,FUN=function(x){
+        tryCatch({
+
+               tc_data=read.table(x,sep=",",header=TRUE)
+        },error=function(e){
+            warning(paste0("Could not find file ",x))
+
+        })
+       
+  
+    })
+
+    
     cn_data=dplyr::bind_rows(cn_data)
     cn_data=dplyr::left_join(cn_data,cn_list,by=c("cn.call.corr"="cn"))
     
