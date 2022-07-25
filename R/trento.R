@@ -296,7 +296,7 @@ clonet_view_trento=function(method="beta_log2", clonet_dir="",threads=3,
     
     plt_data[["cn_data"]]=cn_data
 
-    if(method=="beta_log2"){
+    if(method=="log2_beta"){
         clonet_log2_beta(plt_data=plt_data[["cn_data"]])
     } else if(method=="ai"){
         clonet_ai(plt_data=plt_data[["cn_data"]])
@@ -313,7 +313,7 @@ clonet_log2_beta=function(plt_data){
         boxes=list()
         lapply(unique(plt_data$sample),FUN=function(id){
             tmp_plt_data=plt_data %>% filter(sample==id)
-            output[[paste0(id,"_plot")]]<-renderPlot({
+            output[[paste0(id,"_plot")]]<- shiny::renderPlot({
                 
                 plot_log2_beta(tmp_plt_data,
                 gene_tg=any(grepl("Target",input[[paste0(id,"_gene_type")]])),
@@ -338,25 +338,25 @@ clonet_log2_beta=function(plt_data){
                 id=paste0(id,"_sb"),
                 width=26,
              
-                    radioButtons(paste0(id,"_gene_lbl"), "Labels:", c(
+                    shiny::radioButtons(paste0(id,"_gene_lbl"), "Labels:", c(
                 "Genes" = 1,
                 "SNPS" = 2, "Informative SNPS" = 3, "No labels" = 4
                 ),
                 selected = 4
                 ),
-                sliderInput(paste0(id,"_gene_lbl_evi"), "AI Evidence:",
+                shiny::sliderInput(paste0(id,"_gene_lbl_evi"), "AI Evidence:",
                 min = 0, max = 1, value = 0.2, step = 0.1, ticks = FALSE
                 ),
-                sliderInput(paste0(id,"_gene_lbl_beta_low"), "Beta Low Labels:",
+                shiny::sliderInput(paste0(id,"_gene_lbl_beta_low"), "Beta Low Labels:",
                 min = 0, max = 1, value = 0.1, step = 0.1, ticks = FALSE
                 ),
-                sliderInput(paste0(id,"_gene_lbl_beta_high"), "Beta High Labels:",
+                shiny::sliderInput(paste0(id,"_gene_lbl_beta_high"), "Beta High Labels:",
                 min = 0, max = 1, value = 1, step = 0.1, ticks = FALSE
                 ),
-                sliderInput(paste0(id,"_log2_limit"), "Log2_Limit:",
+                shiny::sliderInput(paste0(id,"_log2_limit"), "Log2_Limit:",
                 min = 1, max = 10, value = 2, step = 0.1, ticks = FALSE
                 ),
-               sliderInput(paste0(id,"_gene_lbl_size"), "Label Size:",
+                shiny::sliderInput(paste0(id,"_gene_lbl_size"), "Label Size:",
                 min = 0, max = 10, value = 2, step = 0.1, ticks = FALSE
                 ),
                 shinyWidgets::awesomeCheckbox(
@@ -371,23 +371,23 @@ clonet_log2_beta=function(plt_data){
                     selected = c("Target")
                 )
         ),
-        plotOutput(paste0(id,"_plot")),
+        shiny::plotOutput(paste0(id,"_plot")),
         title =id, collapsible = TRUE,
         collapsed = FALSE, solidHeader = TRUE
     )
     })
     
-    output[["UI"]] <- renderUI({
+    output[["UI"]] <- shiny::renderUI({
         fluidRow(boxes)
     })
 }
-    shinyApp(ui = build_ui, server = server_log2_beta)
+    shiny::shinyApp(ui = build_ui, server = server_log2_beta)
 }
 
 #' @export
 clonet_ai=function(plt_data){
     server_ai=function(input,output,session){
-            output[[paste0("ai_plot")]]<- renderPlot({
+            output[[paste0("ai_plot")]]<- shiny::renderPlot({
                 
                plot_ai(
                     plt_data,
@@ -408,25 +408,25 @@ clonet_ai=function(plt_data){
                     "Max Tumour Content=",max(plt_data$tc),";",
                     "Min Ploidy=",min(plt_data$ploidy),";",
                     "max Ploidy=",max(plt_data$ploidy)),
-                    radioButtons("ai_gene_lbl", "Labels:", c(
+                    shiny::radioButtons("ai_gene_lbl", "Labels:", c(
                     "Genes" = 1,
                     "SNPS" = 2, "Informative SNPS" = 3, "No labels" = 4
                     ),
                     selected = 4
                     ),
-                    sliderInput("ai_gene_lbl_evi", "AI Evidence:",
+                    shiny::sliderInput("ai_gene_lbl_evi", "AI Evidence:",
                     min = 0, max = 1, value = 0.2, step = 0.1, ticks = FALSE
                     ),
-                    sliderInput("ai_gene_lbl_beta_low", "Beta Low Labels:",
+                    shiny::sliderInput("ai_gene_lbl_beta_low", "Beta Low Labels:",
                     min = 0, max = 1, value = 0.1, step = 0.1, ticks = FALSE
                     ),
-                    sliderInput("ai_gene_lbl_beta_high", "Beta High Labels:",
+                    shiny::sliderInput("ai_gene_lbl_beta_high", "Beta High Labels:",
                     min = 0, max = 1, value = 1, step = 0.1, ticks = FALSE
                     ),
-                    sliderInput("ai_cn_limit", "CN_Limit:",
+                    shiny::sliderInput("ai_cn_limit", "CN_Limit:",
                     min = 1, max = 10, value = 3, step = 1, ticks = FALSE
                     ),
-                sliderInput("ai_gene_lbl_size", "Label Size:",
+                    shiny::sliderInput("ai_gene_lbl_size", "Label Size:",
                     min = 0, max = 10, value = 2, step = 0.1, ticks = FALSE
                     ),
                     shinyWidgets::awesomeCheckbox(
@@ -441,16 +441,16 @@ clonet_ai=function(plt_data){
                         selected = c("Target")
                     )
             ),
-            plotOutput("ai_plot",height=nrow(plt_data)*2.5),
+            shiny::plotOutput("ai_plot",height=nrow(plt_data)*2.5),
             title ="Allelic Imbalance", collapsible = TRUE,
             collapsed = FALSE, solidHeader = TRUE
      )
-        output[["UI"]] <- renderUI({
+        output[["UI"]] <- shiny::renderUI({
             fluidRow(my_box)
         })
     }
 
-    shinyApp(ui = build_ui, server = server_ai)
+    shiny::shinyApp(ui = build_ui, server = server_ai)
 }
 
 #' @export
@@ -461,7 +461,7 @@ clonet_cn=function(plt_data){
         boxes=list()
         lapply(unique(plt_data$sample),FUN=function(id){
             tmp_plt_data=plt_data %>% filter(sample==id)
-            output[[paste0(id,"_plot")]]<-renderPlot({
+            output[[paste0(id,"_plot")]]<- shiny::renderPlot({
                 
                 plot_cn(tmp_plt_data,
                 gene_tg=any(grepl("Target",input[[paste0(id,"_gene_type")]])),
@@ -486,25 +486,25 @@ clonet_cn=function(plt_data){
                 id=paste0(id,"_sb"),
                 width=26,
              
-                    radioButtons(paste0(id,"_gene_lbl"), "Labels:", c(
+                    shiny::radioButtons(paste0(id,"_gene_lbl"), "Labels:", c(
                 "Genes" = 1,
                 "SNPS" = 2, "Informative SNPS" = 3, "No labels" = 4
                 ),
                 selected = 4
                 ),
-                sliderInput(paste0(id,"_gene_lbl_evi"), "AI Evidence:",
+                shiny::sliderInput(paste0(id,"_gene_lbl_evi"), "AI Evidence:",
                 min = 0, max = 1, value = 0.2, step = 0.1, ticks = FALSE
                 ),
-                sliderInput(paste0(id,"_gene_lbl_beta_low"), "Beta Low Labels:",
+                shiny::sliderInput(paste0(id,"_gene_lbl_beta_low"), "Beta Low Labels:",
                 min = 0, max = 1, value = 0.1, step = 0.1, ticks = FALSE
                 ),
-                sliderInput(paste0(id,"_gene_lbl_beta_high"), "Beta High Labels:",
+                shiny::sliderInput(paste0(id,"_gene_lbl_beta_high"), "Beta High Labels:",
                 min = 0, max = 1, value = 1, step = 0.1, ticks = FALSE
                 ),
-                sliderInput(paste0(id,"_cn_limit"), "CN_Limit:",
+                shiny::sliderInput(paste0(id,"_cn_limit"), "CN_Limit:",
                 min = 1, max = 10, value = 3, step = 1, ticks = FALSE
                 ),
-               sliderInput(paste0(id,"_gene_lbl_size"), "Label Size:",
+                shiny::sliderInput(paste0(id,"_gene_lbl_size"), "Label Size:",
                 min = 0, max = 10, value = 2, step = 0.1, ticks = FALSE
                 ),
                 shinyWidgets::awesomeCheckbox(
@@ -519,17 +519,17 @@ clonet_cn=function(plt_data){
                     selected = c("Target")
                 )
         ),
-        plotOutput(paste0(id,"_plot")),
+        shiny::plotOutput(paste0(id,"_plot")),
         title =id, collapsible = TRUE,
         collapsed = FALSE, solidHeader = TRUE
     )
     })
     
-    output[["UI"]] <- renderUI({
+    output[["UI"]] <- shiny::renderUI({
         fluidRow(boxes)
     })
 }
-    shinyApp(ui = build_ui, server = server_cn)
+    shiny::shinyApp(ui = build_ui, server = server_cn)
 }
 
 

@@ -182,7 +182,7 @@ plot_cn=function(plt_data, cn_limit=3, gene_tg=TRUE, gene_ctrl=FALSE, gene_other
 gene_lbl=1, gene_lbl_evi=0.2, gene_lbl_beta_low=0.2, gene_lbl_beta_high=1, gene_lbl_size=2){
   plt_data <- plt_data %>%
     filter(!is.na(cnA), !is.na(cnB)) %>%
-    mutate(
+    dplyr::mutate(
       cnA = ifelse(cnA < 0, 0, ifelse(cnA > cn_limit, cn_limit, cnA)),
       cnB = ifelse(cnB < 0, 0, ifelse(cnB > cn_limit, cn_limit, cnB))
     )
@@ -272,7 +272,7 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
     return(newdata)
   }
  
-  plt_data=plt_data %>% mutate(cn_t=ifelse(chr=="X",as.integer(2**all_log2),2*as.integer(2**all_log2)),
+  plt_data=plt_data %>% dplyr::mutate(cn_t=ifelse(chr=="X",as.integer(2**all_log2),2*as.integer(2**all_log2)),
   s_order=as.numeric(as.factor(sample)))
   to_plot=list()
  
@@ -284,8 +284,8 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
 
   tc_pl_plot=function(plt_data){
     tc_data=plt_data %>% group_by(sample,s_order) %>% distinct(tc,ploidy)%>% ungroup() %>%
-    mutate(nc=1-tc) %>% 
-    pivot_longer(cols = -c(sample,s_order,ploidy)) %>% mutate(col=ifelse(name=="tc","red","grey"),total=1)
+    dplyr::mutate(nc=1-tc) %>% 
+    pivot_longer(cols = -c(sample,s_order,ploidy)) %>% dplyr::mutate(col=ifelse(name=="tc","red","grey"),total=1)
   
 
     
@@ -297,7 +297,7 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
           theme_void() +
           theme(legend.position = "none") +
           scale_fill_identity()) %>%
-        mutate(subgrobs = list(annotation_custom(ggplot2::ggplotGrob(subplots),
+        dplyr::mutate(subgrobs = list(annotation_custom(ggplot2::ggplotGrob(subplots),
           x = s_order - total/2 , y = 1 - total / 2,
           xmax = s_order + total/2 , ymax = 1 + total / 2
         )))
