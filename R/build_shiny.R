@@ -30,7 +30,7 @@ build_ui_body <- function() {
 
 build_ui_sidebar <- function() {
   shinydashboard::dashboardSidebar(
-     tags$script(JS("document.getElementsByClassName('sidebar-toggle')[0].style.visibility = 'hidden';")),
+     shiny::tags$script(htmlwidgets::JS("document.getElementsByClassName('sidebar-toggle')[0].style.visibility = 'hidden';")),
      width = "0px")
  }
 
