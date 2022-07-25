@@ -493,7 +493,7 @@ clonet_cn=function(plt_data){
 
         boxes=list()
         lapply(unique(plt_data$sample),FUN=function(id){
-            tmp_plt_data=plt_data %>% filter(sample==id)
+            tmp_plt_data=plt_data %>% dplyr::filter(sample==id)
             output[[paste0(id,"_plot")]]<- shiny::renderPlot({
                 
                 plot_cn(tmp_plt_data,
