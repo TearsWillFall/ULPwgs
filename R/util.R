@@ -525,17 +525,32 @@ steps_list=build_default_steps_list()){
 #' @param output_dir Path to output directory
 #' @param output_name File output name
 #' @param extract Metric to extract
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param ram RAM memory to use in GB. Default 4.
+#' @param executor [OPTIONAL] Task executor name. Default "recalCovariates"
+#' @param task [OPTIONAL] Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @return 
 #' @export
 
-parse_picard_metrics=function(metrics="",output_dir="",output_name="",extract="stats"){
+parse_picard_metrics=function(metrics="",output_dir="",output_name="",
+extract="stats",verbose=FALSE,threads=1,ram=4,
+mode="local",executor_id=make_unique_id("parsePicardMetrics"),
+task_name="parsePicardMetrics",time="48:0:0",
+update_time=60,wait=FALSE,hold=""){
 
-  out_file_dir=set_dir(dir=output_dir,name=output_name)
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
+  out_file_dir=set_dir(dir=output_dir,name="parse_summary")
 
   metrics=read.table(metrics,sep="\t",quote="\\",nrows=1,header=TRUE)
   histogram=read.table(metrics,sep="\t",quote="\\",skip=8,header=TRUE)
 
-
+  job=build_job(executor_id = executor_id,task_id=task_id)
 
   if(extract=="stats"|extract=="all"){
     write.table(metrics,file=paste0(out_file_dir,"metrics_stats"),quote=FALSE,row.names=FALSE,col.names=TRUE)
