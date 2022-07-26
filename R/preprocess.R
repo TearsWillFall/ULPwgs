@@ -360,7 +360,8 @@ for_id=function(seq_info,output_dir="",name="",
                                                     mode=tool_config_id[step,]$mode,
                                                     time=tool_config_id[step,]$time,
                                                     executor_id=task_id,
-                                                    update_time=60,wait=FALSE,hold=job)
+                                                    update_time=60,wait=FALSE,
+                                                    hold=report[[new_name]][["steps"]][["markdups"]]$job_id)
                                             }
 
                                         }    

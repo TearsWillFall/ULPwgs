@@ -125,7 +125,8 @@ recal_gatk=function(
   bam="",ref_genome="",dbsnp="",ram=4,threads=4,output_dir="",
   verbose=FALSE, executor_id=make_unique_id("recalGATK"),
   task_name="recalGATK",clean=TRUE,mode="local",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""){
+  update_time=60,wait=FALSE,hold=""
+  ){
 
 
 
