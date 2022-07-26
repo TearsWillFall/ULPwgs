@@ -172,7 +172,8 @@ recal_gatk=function(
     ref_genome=ref_genome,dbsnp=dbsnp,regions=regions,
     output_dir=out_file_dir,clean=clean,
     verbose=verbose,executor_id=task_id,mode=mode,threads=threads,ram=ram,
-    time=time,update_time=update_time,wait=FALSE,hold=job_reports[["steps"]][["getChr"]]$job_id)
+    time=time,update_time=update_time,wait=FALSE,
+    hold=job_reports[["steps"]][["getChr"]]$job_id)
 
 
 
