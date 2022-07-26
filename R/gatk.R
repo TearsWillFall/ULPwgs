@@ -176,7 +176,7 @@ recal_gatk=function(
     time=time,update_time=update_time,wait=FALSE,
     hold=job_report[["steps"]][["getChr"]]$job_id)
 
-
+  print(job_report[["steps"]][["par_bqsr_before"]][["steps"]][["generate_bqsr_report"]]$out_file$table)
 
   job_report[["steps"]][["par_apply_bqsr"]] <- parallel_apply_BQSR_gatk(
     bin_samtools=bin_samtools,bin_gatk=bin_gatk,bin_picard=bin_picard,
@@ -674,7 +674,7 @@ parallel_apply_BQSR_gatk=function(
     names(region_list)=regions$region
 
     job_report[["steps"]][["apply_bqsr"]]=parallel::mclapply(
-      names(region_list),FUN=function(region){
+    region_list,FUN=function(region){
 
       job_report<-apply_BQSR_gatk(
       region=region,
@@ -715,8 +715,8 @@ parallel_apply_BQSR_gatk=function(
 #' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360037055512-GatherBamFiles-Picard-
 #'
 #' @param bin_picard [REQUIRED] Path to picard executable. Default tools/picard/build/libs/picard.jar.
-#' @param bamr [REQUIRED] Path to BAM file/s.
-#' @param bams_dir [REQUIRED] Path to the directory where BAM files are stored.
+#' @param bam [REQUIRED] Path to BAM file/s.
+
 #' @param output_name [OPTIONAL] Name for the output file name.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param clean Clean input files. Default TRUE.
@@ -733,7 +733,7 @@ parallel_apply_BQSR_gatk=function(
 
 gather_bam_files=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
-  bam="",bams_dir="",output_name="File",output_dir="",
+  bam="",output_name="File",output_dir="",
   verbose=FALSE,threads=4, ram=4, mode="local",clean=FALSE,
   executor_id=make_unique_id("gatherBAM"),task_name="gatherBAM",
   time="48:0:0",update_time=60,wait=FALSE,hold=""
@@ -742,12 +742,6 @@ gather_bam_files=function(
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
-  if(bam==""){
-    files=list.files(bams_dir,full.names=TRUE,pattern=":")
-    files=files[grepl("bam$",files)]
-  }else{
-    files=bam
-  }
 
   out_file=paste0(out_file_dir,"/",output_name,".bam")
   files=files[order(as.numeric(lapply(lapply(lapply(lapply(lapply(lapply(basename(files),
