@@ -410,7 +410,7 @@ parallel_generate_BQSR_gatk=function(
     
   job_report[["steps"]][["generate_bqsr_report"]]=gather_BQSR_reports_gatk(
     bin_gatk=bin_gatk,
-    report=unlist(job_report[["steps"]][["generate_bqsr_report"]])$out_files$recal_table,
+    report=unlist(job_report[["steps"]][["generate_bqsr_report"]],recursive=FALSE)$out_files$recal_table,
     executor_id=task_id,output_dir=out_file_dir,clean=clean,
     output_name=get_file_name(bam),verbose=verbose,mode=mode,time=time,
     threads=threads,ram=ram,update_time=update_time,wait=FALSE,
