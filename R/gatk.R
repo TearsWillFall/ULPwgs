@@ -359,7 +359,7 @@ parallel_generate_BQSR_gatk=function(
   update_time=60,wait=FALSE,hold=""){
 
   options(scipen = 999)
-  options(warn = -1)
+ 
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -368,8 +368,7 @@ parallel_generate_BQSR_gatk=function(
 
     job_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
       bin_samtools=bin_samtools,
-      bam=bam,verbose=verbose,
-      fasta=ref_genome,verbose=verbose,output_dir=output_dir,
+      bam=bam,verbose=verbose,verbose=verbose,output_dir=output_dir,
       executor_id=task_id,mode=mode,threads=threads,ram=ram,
       time=time,update_time=update_time,wait=FALSE,hold=hold)
 
@@ -393,7 +392,7 @@ parallel_generate_BQSR_gatk=function(
       )
     )
 
-  job_report[["steps"]][["generate_bqsr_report"]]=unlist(parallel::mclapply(
+  job_report[["steps"]][["generate_bqsr_report"]]=unlist(lapply(
     seq(1,nrow(regions)),FUN=function(x){
     tmp=regions[x,]
       job_report=list()
@@ -661,7 +660,7 @@ parallel_apply_BQSR_gatk=function(
     out_files=list(
       )
     )
-job_report[["steps"]][["apply_bqsr"]]=unllist(parallel::mclapply(seq(1,nrow(regions)),FUN=function(x){
+job_report[["steps"]][["apply_bqsr"]]=unlist(parallel::mclapply(seq(1,nrow(regions)),FUN=function(x){
     tmp=regions[x,]
     job_report<-list()
     job_report[[tmp$region]]<-apply_BQSR_gatk(
