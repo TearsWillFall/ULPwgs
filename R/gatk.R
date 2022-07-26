@@ -43,7 +43,8 @@ mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
         dups="--remove-all-duplicates"
     }
 
-    out_file= paste0(out_file_dir,"/",get_file_name(bam),".sorted.rmdup.",get_file_ext(bam))
+    out_file=paste0(out_file_dir,"/",get_file_name(bam),".sorted.rmdup.",
+    get_file_ext(bam))
     
     out_file_md=paste0(out_file_dir,"/",get_file_name(bam),".gatk_rmdup.txt")
     exec_code=paste0(bin_gatk," MarkDuplicatesSpark -I ",bam, " -O ",  out_file,
@@ -157,13 +158,12 @@ recal_gatk=function(
     )
   )
   
-  job_report[["steps"]][["getChr"]]=get_fai_reference_chr(
+  job_report[["steps"]][["getChr"]] <- get_fai_reference_chr(
     fasta=ref_genome,verbose=verbose,output_dir=output_dir,
     executor_id=task_id,mode=mode,threads=threads,ram=ram,
     time=time,update_time=update_time,wait=FALSE,hold=hold)
 
-  print(job_report[["steps"]][["getChr"]]$out_file$ref)
-  print(job_report[["steps"]][["getChr"]])
+
   regions=read.table(job_report[["steps"]][["getChr"]]$out_file$ref,
   sep="\t",header=TRUE)
 
@@ -186,7 +186,8 @@ recal_gatk=function(
     output_dir=out_file_dir4,regions=regions,
     clean=clean,verbose=verbose,executor_id=task_id,
     threads=threads,mode=mode,ram=ram,time=time,
-    update_time=update_time,wait=FALSE,hold=job_report[["steps"]][["par_bqsr_before"]]$job_id)
+    update_time=update_time,wait=FALSE,
+    hold=job_report[["steps"]][["par_bqsr_before"]]$job_id)
 
   
   job_report[["steps"]][["sort_and_index"]]=sort_and_index_bam_samtools(
@@ -195,7 +196,8 @@ recal_gatk=function(
     ram=ram,verbose=verbose,threads=threads,sort=FALSE,
     stats="",index=TRUE,clean=clean,
     mode=mode,executor_id=task_id,time=time,
-    update_time=update_time,wait=FALSE,hold=job_report[["steps"]][["sort_and_index"]]$job_id)
+    update_time=update_time,wait=FALSE,
+    hold=job_report[["steps"]][["sort_and_index"]]$job_id)
   
  
 
@@ -213,7 +215,8 @@ recal_gatk=function(
   get_file_name(bam),".recal.table"),
   after=paste0(out_file_dir2,"/",get_file_name(bam),".recal.table"),
   output_dir=out_file_dir4,executor_id=task_id,mode=mode,threads=threads,
-  ram=ram,time=time,update_time=update_time,wait=FALSE,hold=job_report[["steps"]][["sort_and_index"]]$job_id)
+  ram=ram,time=time,update_time=update_time,wait=FALSE,
+  hold=job_report[["steps"]][["sort_and_index"]]$job_id)
   
 
   if(wait&&mode=="batch"){
@@ -296,8 +299,17 @@ generate_BQSR_gatk=function(
     Check std error for more information.")
   }
 
-  job_report=build_job_report(job_id=job,executor_id=executor_id,
-  task_id=task_id,out_files=list(table=out_file))
+   job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    task_id=task_id,
+    input_args = argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+      recal_table=out_file
+    )
+  )
+
 
   if(wait&&mode=="batch"){
       job_validator(job=job_report$job_id,
@@ -471,7 +483,7 @@ gather_BQSR_reports_gatk=function(
     task_id=task_id, 
     input_args = argg,
     out_file_dir=out_file_dir,
-      out_file=list(
+      out_files=list(
         table=out_file)
   )
 

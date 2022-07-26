@@ -1051,7 +1051,7 @@ get_bam_reference_chr=function(
     task_id=task_id, 
     input_args = argg,
     out_file_dir=out_file_dir,
-      out_file=list(
+      out_files=list(
         ref=out_file)
   )
 
@@ -1137,7 +1137,7 @@ get_fai_reference_chr=function(
       task_id=task_id, 
       input_args = argg,
       out_file_dir=out_file_dir,
-        out_file=list(
+        out_files=list(
           ref=out_file)
     )
 
