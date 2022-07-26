@@ -391,11 +391,11 @@ parallel_generate_BQSR_gatk=function(
       )
     )
 
-  job_report[["steps"]][["generate_bqsr_report"]]=unlist(parallel::mclapply(
+  parallel::mclapply(
     seq(1,nrow(regions)),FUN=function(x){
-    tmp=regions[x,]
+      tmp=regions[x,]
       job_report=list()
-      job_report[[tmp$region]]<-generate_BQSR_gatk(
+       job_report[["steps"]][["generate_bqsr_report"]] <<- generate_BQSR_gatk(
         region=tmp$region,
         bin_gatk=bin_gatk,bam=bam,ref_genome=ref_genome,
         dbsnp=dbsnp,output_dir=out_file_dir,verbose=verbose,
@@ -403,7 +403,7 @@ parallel_generate_BQSR_gatk=function(
         threads=threads,ram=ram,update_time=update_time,
         wait=FALSE,hold=hold
     )
-  },mc.cores=ifelse(mode=="local",threads,3)),recursive=FALSE)
+  },mc.cores=ifelse(mode=="local",threads,3))
 
   print(job_report)
 
