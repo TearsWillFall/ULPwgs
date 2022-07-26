@@ -196,7 +196,7 @@ recal_gatk=function(
     stats="",index=TRUE,clean=clean,
     mode=mode,executor_id=task_id,time=time,
     update_time=update_time,wait=FALSE,
-    hold=unlist_lvl(job_report[["steps"]][["par_apply_bqsr"]] var="job_id"))
+    hold=unlist_lvl(job_report[["steps"]][["par_apply_bqsr"]],var="job_id"))
   
  
 
@@ -206,7 +206,7 @@ recal_gatk=function(
     ref_genome=ref_genome,dbsnp=dbsnp,threads=threads,regions=regions,
     output_dir=out_file_dir2,verbose=verbose,executor_id=task_id,clean=clean,
     mode=mode,ram=ram,time=time,update_time=update_time,
-    wait=FALSE,hold=unlist_lvl(job_report[["steps"]][["sort_and_index"]] var="job_id"))
+    wait=FALSE,hold=unlist_lvl(job_report[["steps"]][["sort_and_index"]],var="job_id"))
   
 
  job_report[["steps"]][["analyse_covariates"]] <- analyze_covariates_gatk(
