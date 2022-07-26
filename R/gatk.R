@@ -583,8 +583,8 @@ apply_BQSR_gatk=function(
     input_args = argg,
     out_file_dir=out_file_dir,
     out_files=list(
-      bam=out_file,
-      bai=paste0(out_file,".bai")
+      recal_bam=out_file,
+      recal_bai=paste0(out_file,".bai")
     )
   )
 
@@ -687,7 +687,7 @@ parallel_apply_BQSR_gatk=function(
   
   job_report[["steps"]][["gather_bam"]]=gather_bam_files(
     bin_picard=bin_picard,
-    bam=unlist_lvl(job_report[["steps"]][["apply_bqsr"]],var="bam"),
+    bam=unlist_lvl(job_report[["steps"]][["apply_bqsr"]],var="recal_bam"),
     output_dir=out_file_dir,
     output_name=paste0(get_file_name(bam),".recal.sorted.rmdup.sorted"),
     executor_id=task_id,mode=mode,time=time,threads=threads,ram=ram,
