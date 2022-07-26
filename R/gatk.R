@@ -189,32 +189,33 @@ recal_gatk=function(
 
   
   job_report[["steps"]][["sort_and_index"]] <- sort_and_index_bam_samtools(
-    bin_samtools=bin_samtools,bam=paste0(out_file_dir4,"/",
-    get_file_name(bam),".recal.",get_file_ext(bam)),output_dir=out_file_dir4,
-    ram=ram,verbose=verbose,threads=threads,sort=FALSE,
+    bin_samtools=bin_samtools,
+    bam=job_report[["steps"]][["par_apply_bqsr"]][["steps"]][["gather_bam"]]$out_files$bam,
+    output_dir=out_file_dir4,
+    ram=ram,verbose=verbose,threads=threads,sort=TRUE,
     stats="",index=TRUE,clean=clean,
     mode=mode,executor_id=task_id,time=time,
     update_time=update_time,wait=FALSE,
-    hold=job_report[["steps"]][["sort_and_index"]]$job_id)
+    hold=unlist_lvl(job_report[["steps"]][["par_apply_bqsr"]] var="job_id"))
   
  
 
   job_report[["steps"]][["par_bqsr_after"]] <- parallel_generate_BQSR_gatk(
     bin_samtools=bin_samtools,bin_gatk=bin_gatk,
-    bam=paste0(out_file_dir4,"/",get_file_name(bam),".recal.",get_file_ext(bam)),
+    bam=job_report[["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam,
     ref_genome=ref_genome,dbsnp=dbsnp,threads=threads,regions=regions,
     output_dir=out_file_dir2,verbose=verbose,executor_id=task_id,clean=clean,
     mode=mode,ram=ram,time=time,update_time=update_time,
-    wait=FALSE,hold=job_report[["steps"]][["sort_and_index"]]$job_id)
+    wait=FALSE,hold=unlist_lvl(job_report[["steps"]][["sort_and_index"]] var="job_id"))
   
 
  job_report[["steps"]][["analyse_covariates"]] <- analyze_covariates_gatk(
-  bin_gatk=bin_gatk,before=paste0(out_file_dir,"/",
-  get_file_name(bam),".recal.table"),
-  after=paste0(out_file_dir2,"/",get_file_name(bam),".recal.table"),
+  bin_gatk=bin_gatk,
+  before=job_report[["steps"]][["par_bqsr_before"]][["steps"]][["generate_bqsr_report"]]$out_files$table,
+  after=job_report[["steps"]][["par_bqsr_after"]][["steps"]][["generate_bqsr_report"]]$out_files$table,
   output_dir=out_file_dir4,executor_id=task_id,mode=mode,threads=threads,
   ram=ram,time=time,update_time=update_time,wait=FALSE,
-  hold=job_report[["steps"]][["sort_and_index"]]$job_id)
+  hold=unlist_lvl(job_report[["steps"]][["par_bqsr_after"]],var="job_id"))
   
 
   if(wait&&mode=="batch"){
@@ -748,10 +749,10 @@ gather_bam_files=function(
     FUN=strsplit,split="^"),FUN="[[",index=1),FUN="[",index=1)))]
 
   exec_code=paste0("java -jar ",bin_picard," GatherBamFiles ",
-    paste0(" I=",files,collapse=" ")," O=",)
+    paste0(" I=",bam,collapse=" ")," O=",out_file)
 
   if(clean){
-    exec_code=paste(exec_code," && rm",paste(files,collapse=" "))
+    exec_code=paste(exec_code," && rm",paste(bam,collapse=" "))
   }
 
  
@@ -782,7 +783,8 @@ gather_bam_files=function(
     task_id=task_id,
     input_args = argg,
     out_file_dir=out_file_dir,
-    out_files=list(bam=out_file)
+    out_files=list(
+      bam=out_file)
     )
 
   if(wait&&mode=="batch"){
