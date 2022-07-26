@@ -167,7 +167,7 @@ recal_gatk=function(
   regions=read.table(job_report[["steps"]][["getChr"]]$out_files$ref,
   sep="\t",header=TRUE)
 
-
+  print(regions)
   
   job_report[["steps"]][["par_bqsr_before"]]=parallel_generate_BQSR_gatk(
     bin_samtools=bin_samtools,bin_gatk=bin_gatk,bam=bam,
