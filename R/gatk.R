@@ -496,8 +496,8 @@ gather_BQSR_reports_gatk=function(
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
 #' @param threads Number of threads to split the work. Default 3
 #' @param ram [OPTIONAL] If batch mode. RAM memory in GB per job. Default 1
-#' @param executor [OPTIONAL] Task executor name. Default "applyBQSR"
-#' @param task [OPTIONAL] Task nam. Default "applyBQSR"
+#' @param executor_id [OPTIONAL] Task executor name. Default "applyBQSR"
+#' @param task_name [OPTIONAL] Task name. Default "applyBQSR"
 #' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
 #' @param ram [OPTIONAL] If batch mode. RAM memory in GB per job. Default 1
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
@@ -580,12 +580,13 @@ apply_BQSR_gatk=function(
 #' @param bin_picard [REQUIRED] Path to picard executable. Default tools/picard/build/libs/picard.jar
 #' @param ref_genome [REQUIRED] Path to reference genome
 #' @param rec_table [REQUIRED] Path to the recalibratio table.
+#' @param clean Clean intermediary files.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param regions [OPTIONAL] Regions to parallelize through.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
-#' @param executor [OPTIONAL] Task executor name. Default "par_applyBQSR"
-#' @param task [OPTIONAL] Task name. Default "par_applyBQSR"
+#' @param executor_id [OPTIONAL] Task executor name. Default "par_applyBQSR"
+#' @param task_name [OPTIONAL] Task name. Default "par_applyBQSR"
 #' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
 #' @param threads [OPTIONAL] Number of threads for the main job. Default 4
 #' @param ram [OPTIONAL] If batch mode. RAM memory in GB per job. Default 1
@@ -599,10 +600,10 @@ parallel_apply_BQSR_gatk=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bin_gatk=build_default_tool_binary_list()$bin_gatk,
   bin_picard=build_default_tool_binary_list()$bin_picard,
-  bam="",regions="",ref_genome="",rec_table="",
+  bam="",regions="",ref_genome="",rec_table="",clean=TRUE,
   output_dir="",verbose=FALSE,mode="local",
-  executor=make_unique("par_applyBQSR"),
-  task="par_applyBQSR",
+  executor_id=make_unique("par_applyBQSR"),
+  task_name="par_applyBQSR",
   time="48:0:0",threads=4,ram=4,
   update_time=60,wait=FALSE, hold=""){
 
@@ -649,6 +650,7 @@ job_report[["steps"]][["gather_bam"]]=gather_bam_files(
   output_name=paste0(get_file_name(bam),".recal.sorted.rmdup.sorted"),
   executor_id=task_id,mode=mode,time=time,threads=threads,ram=ram,
   update_time=update_time,wait=FALSE,
+  clean=clean,
   hold=unlist_level(job_report[["steps"]][["apply_bqsr"]],var="job_id"))
 
 
