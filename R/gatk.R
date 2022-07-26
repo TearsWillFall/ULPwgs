@@ -429,7 +429,7 @@ gather_BQSR_reports_gatk=function(
 
 
   if(clean){
-    exec_code=paste(exec_code," && rm",paste(files,collapse=" "))
+    exec_code=paste(exec_code," && rm",paste(report,collapse=" "))
   }
 
   job=build_job(executor_id = executor_id,task_id=task_id)
