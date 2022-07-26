@@ -13,7 +13,7 @@ build_default_binary_list(
     build_default_tool_binary_list()$bin_samtools), merge_bams = list(bin_samtools =
     build_default_tool_binary_list()$bin_samtools), markdups = list(bin_gatk =
     build_default_tool_binary_list()$bin_gatk), 
-     recal_gatk = list(bin_samtools =
+     recalibrate = list(bin_samtools =
     build_default_tool_binary_list()$bin_samtools, bin_gatk =
     build_default_tool_binary_list()$bin_gatk, bin_picard =
     build_default_tool_binary_list()$bin_picard), alignqc = list(bin_samtools =

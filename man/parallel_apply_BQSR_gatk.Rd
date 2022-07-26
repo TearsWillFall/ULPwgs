@@ -12,11 +12,12 @@ parallel_apply_BQSR_gatk(
   regions = "",
   ref_genome = "",
   rec_table = "",
+  clean = TRUE,
   output_dir = "",
   verbose = FALSE,
   mode = "local",
-  executor = make_unique("par_applyBQSR"),
-  task = "par_applyBQSR",
+  executor_id = make_unique("par_applyBQSR"),
+  task_name = "par_applyBQSR",
   time = "48:0:0",
   threads = 4,
   ram = 4,
@@ -40,15 +41,17 @@ parallel_apply_BQSR_gatk(
 
 \item{rec_table}{\link{REQUIRED} Path to the recalibratio table.}
 
+\item{clean}{Clean intermediary files.}
+
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
-\item{executor}{\link{OPTIONAL} Task executor name. Default "par_applyBQSR"}
+\item{executor_id}{\link{OPTIONAL} Task executor name. Default "par_applyBQSR"}
 
-\item{task}{\link{OPTIONAL} Task name. Default "par_applyBQSR"}
+\item{task_name}{\link{OPTIONAL} Task name. Default "par_applyBQSR"}
 
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 

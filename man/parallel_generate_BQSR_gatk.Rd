@@ -10,6 +10,7 @@ parallel_generate_BQSR_gatk(
   bam = "",
   regions = "",
   ref_genome = "",
+  clean = TRUE,
   dbsnp = "",
   threads = 3,
   ram = 4,
@@ -34,6 +35,8 @@ parallel_generate_BQSR_gatk(
 \item{regions}{\link{OPTIONAL} Regions to parallelize through.}
 
 \item{ref_genome}{\link{REQUIRED} Path to reference genome}
+
+\item{clean}{Remove intermediary files. Default TRUE}
 
 \item{dbsnp}{\link{REQUIRED} Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.}
 

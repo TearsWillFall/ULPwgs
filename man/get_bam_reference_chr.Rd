@@ -7,7 +7,18 @@
 get_bam_reference_chr(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = "",
-  verbose = FALSE
+  verbose = FALSE,
+  executor_id = make_unique_id("getBAMchr"),
+  task_name = "getBAMchr",
+  output_name = "chrReference",
+  output_dir = "",
+  mode = "local",
+  time = "48:0:0",
+  threads = 4,
+  ram = 4,
+  update_time = 60,
+  wait = FALSE,
+  hold = ""
 )
 }
 \arguments{
