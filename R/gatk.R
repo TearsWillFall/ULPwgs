@@ -139,9 +139,6 @@ recal_gatk=function(
   out_file_dir4=set_dir(dir=output_dir,name="recal_reports")
 
 
-  regions=get_bam_reference_chr(
-    bin_samtools=bin_samtools,bam=bam,
-    verbose=verbose)
 
   job=build_job(executor_id=executor_id,task_id=task_id)
   
@@ -159,13 +156,22 @@ recal_gatk=function(
     out_files=list(
     )
   )
+  
+  job_reports[["steps"]][["getChr"]]=get_fai_reference_chr(
+    fasta=ref_genome,verbose=verbose,
+    executor_id=task_id,mode=mode,threads=threads,ram=ram,
+    time=time,update_time=update_time,wait=FALSE,hold=hold)
 
+  regions=job_reports[["steps"]][["getChr"]]$out_file$ref
+
+
+  
   job_report[["steps"]][["par_bqsr_before"]]=parallel_generate_BQSR_gatk(
     bin_samtools=bin_samtools,bin_gatk=bin_gatk,bam=bam,
     ref_genome=ref_genome,dbsnp=dbsnp,regions=regions,
     output_dir=out_file_dir,clean=clean,
     verbose=verbose,executor_id=task_id,mode=mode,threads=threads,ram=ram,
-    time=time,update_time=update_time,wait=FALSE,hold=hold)
+    time=time,update_time=update_time,wait=FALSE,hold=job_reports[["steps"]][["getChr"]]$job_id)
 
 
 
@@ -176,7 +182,7 @@ recal_gatk=function(
     output_dir=out_file_dir4,regions=regions,
     clean=clean,verbose=verbose,executor_id=task_id,
     threads=threads,mode=mode,ram=ram,time=time,
-    update_time=update_time,wait=FALSE,hold=job_report$job_id)
+    update_time=update_time,wait=FALSE,hold=job_report[["steps"]][["par_bqsr_before"]]$job_id)
 
   
   job_report[["steps"]][["sort_and_index"]]=sort_and_index_bam_samtools(
@@ -185,7 +191,7 @@ recal_gatk=function(
     ram=ram,verbose=verbose,threads=threads,sort=FALSE,
     stats="",index=TRUE,clean=clean,
     mode=mode,executor_id=task_id,time=time,
-    update_time=update_time,wait=FALSE,hold=job_report$job_id)
+    update_time=update_time,wait=FALSE,hold=job_report[["steps"]][["sort_and_index"]]$job_id)
   
  
 
@@ -195,7 +201,7 @@ recal_gatk=function(
     ref_genome=ref_genome,dbsnp=dbsnp,threads=threads,regions=regions,
     output_dir=out_file_dir2,verbose=verbose,executor_id=task_id,clean=clean,
     mode=mode,ram=ram,time=time,update_time=update_time,
-    wait=FALSE,hold=job_report$job_id)
+    wait=FALSE,hold=job_report[["steps"]][["sort_and_index"]]$job_id)
   
 
  job_report[["steps"]][["analyse_covariates"]]=analyze_covariates_gatk(
@@ -203,7 +209,7 @@ recal_gatk=function(
   get_file_name(bam),".recal.table"),
   after=paste0(out_file_dir2,"/",get_file_name(bam),".recal.table"),
   output_dir=out_file_dir4,executor_id=task_id,mode=mode,threads=threads,
-  ram=ram,time=time,update_time=update_time,wait=FALSE,hold=job_report$job_id)
+  ram=ram,time=time,update_time=update_time,wait=FALSE,hold=job_report[["steps"]][["sort_and_index"]]$job_id)
   
 
   if(wait&&mode=="batch"){
@@ -454,7 +460,7 @@ gather_BQSR_reports_gatk=function(
     stop("gatk failed to run due to unknown error.
     Check std error for more information.")
   }
-  
+
   job_report=build_job_report(
     job_id=job,
     executor_id=executor_id,
