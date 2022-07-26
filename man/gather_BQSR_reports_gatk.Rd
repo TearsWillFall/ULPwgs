@@ -5,7 +5,7 @@
 \title{Wrapper around gatk GatherBQSRReports function}
 \usage{
 gather_BQSR_reports_gatk(
-  bin_path = "tools/gatk/gatk",
+  bin_gatk = build_default_tool_binary_list()$bin_gatk,
   report = "",
   reports_dir = "",
   executor_id = make_unique_id("gatherBQSR"),
@@ -24,7 +24,7 @@ gather_BQSR_reports_gatk(
 )
 }
 \arguments{
-\item{bin_path}{\link{REQUIRED} Path to gatk executable. Default tools/gatk/gatk.}
+\item{bin_gatk}{\link{REQUIRED} Path to gatk executable. Default tools/gatk/gatk.}
 
 \item{report}{\link{REQUIRED} Path to indivual reports.}
 

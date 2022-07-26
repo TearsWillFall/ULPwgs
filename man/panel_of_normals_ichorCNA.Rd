@@ -5,7 +5,7 @@
 \title{Generate panel of normals for ichorCNA}
 \usage{
 panel_of_normals_ichorCNA(
-  bin_path = "tools/ichorCNA/scripts/createPanelOfNormals.R",
+  bin_ichor_pon = build_default_tool_binary_list()$bin_ichor_pon,
   wigs_dir = "",
   wigs = "",
   bed = "",
@@ -18,7 +18,7 @@ panel_of_normals_ichorCNA(
 )
 }
 \arguments{
-\item{bin_path}{Path to ichorCNA executable. Default path tools/ichorCNA/scripts/createPanelOfNormals.}
+\item{bin_ichor_pon}{Path to ichorCNA executable. Default path tools/ichorCNA/scripts/createPanelOfNormals.}
 
 \item{wigs_dir}{Path to dir with WIG files.}
 

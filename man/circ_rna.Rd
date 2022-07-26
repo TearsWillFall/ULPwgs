@@ -5,7 +5,7 @@
 \title{Generate a quality control (QC) report from a fastaqc file}
 \usage{
 circ_rna(
-  bin_path = "tools/CIRI/CIRI_Full_v2.1.1.jar",
+  bin_ciri = build_default_tool_binary_list()$bin_ciri,
   file_R1 = "",
   file_R2 = "",
   output_dir = "",
@@ -25,7 +25,7 @@ circ_rna(
 )
 }
 \arguments{
-\item{bin_path}{Path to fastQC executable. Default path tools/CIRI/CIRI_Full_v2.1.1.jar.}
+\item{bin_ciri}{Path to fastQC executable. Default path tools/CIRI/CIRI_Full_v2.1.1.jar.}
 
 \item{file_R1}{Path to the input file with the sequence.}
 

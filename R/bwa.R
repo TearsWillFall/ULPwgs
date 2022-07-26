@@ -7,8 +7,8 @@
 #'
 #' @param file_R1 Path to the input file with the sequence.
 #' @param file_R2 [Optional] Path to the input with the reverse read sequence.
-#' @param bin_path Path to bwa executable. Default path tools/bwa/bwa.
-#' @param bin_path2 Path to samtools executable. Default path tools/samtools/samtools.
+#' @param bin_bwa Path to bwa executable. Default path tools/bwa/bwa.
+#' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
 #' @param ref_genome Path to input file with the reference genome sequence.
 #' @param id_tag Read group identifier. Default NA.
 #' @param pu_tag Platform unit identifier. Default NA.
@@ -32,11 +32,17 @@
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-alignment_bwa=function(bin_path="tools/bwa/bwa",bin_path2="tools/samtools/samtools",
-file_R1="",file_R2="",threads=3,ram=4,id_tag="NA",pu_tag="NA",pl_tag="ILLUMINA",lb_tag="NA",
-sm_tag="",sort=TRUE,coord_sort=TRUE,index=TRUE,clean=TRUE,stats="all",ref_genome="",output_dir="",
-verbose=FALSE,executor_id=make_unique_id("alignment"),task_name="alignment",mode="local",time="48:0:0",
-update_time=60,wait=FALSE,hold=""){
+alignment_bwa=function(
+  bin_bwa=build_default_binary_list()$alignment$bin_bwa,
+  bin_samtools=build_default_binary_list()$alignment$bin_samtools,
+  file_R1="",file_R2="",threads=3,ram=4,id_tag="NA",
+  pu_tag="NA",pl_tag="ILLUMINA",lb_tag="NA",
+  sm_tag="",sort=TRUE,coord_sort=TRUE,index=TRUE,
+  clean=TRUE,stats="all",ref_genome="",output_dir="",
+  verbose=FALSE,executor_id=make_unique_id("alignment"),
+  task_name="alignment",mode="local",time="48:0:0",
+  update_time=60,wait=FALSE,hold=""
+){
     
     argg <- as.list(environment())
 
@@ -54,8 +60,8 @@ update_time=60,wait=FALSE,hold=""){
     GPU=paste0("\"@RG\\tID:",id_tag,"\\tPL:",pl_tag,"\\tPU:",pu_tag,"\\tLB:",
     lb_tag,"\\tSM:",sm_tag,"\"")
 
-    exec_code=paste(bin_path,"mem -t", threads," -v 2 -R",GPU,"-M",ref_genome,
-        input_files, "| ",paste0(bin_path2)," view -h -b >",out_file)
+    exec_code=paste(bin_bwa,"mem -t", threads," -v 2 -R",GPU,"-M",ref_genome,
+        input_files, "| ",paste0(bin_samtools)," view -h -b >",out_file)
     
     job=build_job(executor_id=executor_id,task_id=task_id)
 
@@ -87,11 +93,12 @@ update_time=60,wait=FALSE,hold=""){
       )
     
     if(sort){
-      job_report[["steps"]][["sort_and_index"]]=sort_and_index_bam_samtools(bin_path=bin_path2,
-      bam=out_file,output_dir=out_file_dir, 
-      executor_id=task_id,ram=ram,verbose=verbose,threads=threads,
-      coord_sort=coord_sort,index=index,stats=stats,clean=clean,mode=mode,time=time,
-      update_time=update_time,wait=FALSE,hold=job_report$job_id)
+      job_report[["steps"]][["sort_and_index"]]=sort_and_index_bam_samtools(
+        bin_samtools=bin_samtools,
+        bam=out_file,output_dir=out_file_dir, 
+        executor_id=task_id,ram=ram,verbose=verbose,threads=threads,
+        coord_sort=coord_sort,index=index,stats=stats,clean=clean,mode=mode,time=time,
+        update_time=update_time,wait=FALSE,hold=job_report$job_id)
     
     }
 
@@ -113,7 +120,7 @@ update_time=60,wait=FALSE,hold=""){
 #' This function indexes a reference genome using the bwa aligner
 #'
 #' @param file Path to the input file with the reference genome in FASTA format.
-#' @param bin_path Path to bwa executable. Default path tools/bwa/bwa.
+#' @param bin_bwa Path to bwa executable. Default path tools/bwa/bwa.
 #' @param executor_id Task EXECUTOR ID. Default "refIndex"
 #' @param task_name Task name. Default "refIndex"
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
@@ -125,16 +132,18 @@ update_time=60,wait=FALSE,hold=""){
 #' @export
 
 
-index_ref_bwa=function(bin_path="tools/bwa/bwa",file="",threads=4,ram=4,verbose=FALSE,
-executor_id=make_unique_id("refIndex"),task_name="refIndex",mode="local",time="48:0:0",
-update_time=60,wait=FALSE,hold=""){
+index_ref_bwa=function(
+  bin_bwa=build_default_tool_binary_list()$bin_bwa,
+  file="",threads=4,ram=4,verbose=FALSE,
+  executor_id=make_unique_id("refIndex"),
+  task_name="refIndex",mode="local",time="48:0:0",
+  update_time=60,wait=FALSE,hold=""
+ ){
 
-      
   argg <- as.list(environment())
 
-  
   task_id=make_unique_id(task_name)
-  exec_code=paste(bin_path,"index", file)
+  exec_code=paste(bin_bwa,"index", file)
   
   job=build_job(executor_id=executor_id,task_id=task_id)
   if(mode=="batch"){

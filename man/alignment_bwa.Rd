@@ -5,8 +5,8 @@
 \title{Read alignment using BWA}
 \usage{
 alignment_bwa(
-  bin_path = "tools/bwa/bwa",
-  bin_path2 = "tools/samtools/samtools",
+  bin_bwa = build_default_binary_list()$alignment$bin_bwa,
+  bin_samtools = build_default_binary_list()$alignment$bin_samtools,
   file_R1 = "",
   file_R2 = "",
   threads = 3,
@@ -34,9 +34,9 @@ alignment_bwa(
 )
 }
 \arguments{
-\item{bin_path}{Path to bwa executable. Default path tools/bwa/bwa.}
+\item{bin_bwa}{Path to bwa executable. Default path tools/bwa/bwa.}
 
-\item{bin_path2}{Path to samtools executable. Default path tools/samtools/samtools.}
+\item{bin_samtools}{Path to samtools executable. Default path tools/samtools/samtools.}
 
 \item{file_R1}{Path to the input file with the sequence.}
 

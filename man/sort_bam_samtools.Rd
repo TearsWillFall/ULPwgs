@@ -5,7 +5,7 @@
 \title{Sort a BAM file}
 \usage{
 sort_bam_samtools(
-  bin_path = "tools/samtools/samtools",
+  bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = "",
   output_dir = "",
   verbose = FALSE,
@@ -23,8 +23,6 @@ sort_bam_samtools(
 )
 }
 \arguments{
-\item{bin_path}{Path to bwa executable. Default path tools/samtools/samtools.}
-
 \item{bam}{Path to the input file with the sequence.}
 
 \item{output_dir}{Path to the output directory.}
@@ -52,6 +50,8 @@ sort_bam_samtools(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} Hold job until job is finished. Job ID.}
+
+\item{bin_samtols}{Path to samtools executable. Default path tools/samtools/samtools.}
 }
 \description{
 This function sorts a genome sequence file (BAM/SAM)

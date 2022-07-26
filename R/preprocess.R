@@ -221,7 +221,7 @@ for_id=function(seq_info,output_dir="",name="",
                                         cat(crayon::bold("pre_fastqc: \n"))
                                         cat("\t\n")
                                             report[[new_name]][["steps"]][["pre_fastqc"]]<<-qc_fastqc(
-                                                bin_path=bin_list$pre_fastqc$bin_fastqc,
+                                                bin_fastqc=bin_list$pre_fastqc$bin_fastqc,
                                                 file_R1=seq_info_R1$path,
                                                 file_R2=seq_info_R2$path,
                                                 output_dir=paste0(out_file_dir,"/fastqc_reports/pre_trim"),
@@ -242,7 +242,7 @@ for_id=function(seq_info,output_dir="",name="",
                                             args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="trimming"))
 
                                             report[[new_name]][["steps"]][["trimming"]]<<-trimming_skewer(
-                                                bin_path=bin_list$trimming$bin_skewer,
+                                                bin_skewer=bin_list$trimming$bin_skewer,
                                                 file_R1=seq_info_R1$path,
                                                 file_R2=seq_info_R2$path,
                                                 output_dir=out_file_dir,
@@ -266,9 +266,9 @@ for_id=function(seq_info,output_dir="",name="",
                                             cat(crayon::bold("post_fastqc: \n"))
                                             cat("\t\n")
                                         report[[new_name]][["steps"]][["post_fastqc"]]<<-qc_fastqc(
-                                            bin_path=bin_list$pre_fastqc$bin_fastqc,
-                                            file_R1=report[[new_name]][["steps"]][["trimming"]]$out_files$R1,
-                                            file_R2=report[[new_name]][["steps"]][["trimming"]]$out_files$R2,
+                                            bin_fastqc=bin_list$pre_fastqc$bin_fastqc,
+                                            file_R1=report[[new_name]][["steps"]][["trimming"]]$out_files$r1,
+                                            file_R2=report[[new_name]][["steps"]][["trimming"]]$out_files$r2,
                                             output_dir=paste0(out_file_dir,"/fastqc_reports/post_trim"),
                                             executor_id=task_id,
                                             verbose=tool_config_id[step,]$verbose,
@@ -288,10 +288,10 @@ for_id=function(seq_info,output_dir="",name="",
                                         args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="alignment"))
 
                                         report[[new_name]][["steps"]][["alignment"]]<<-alignment_bwa(
-                                            bin_path=bin_list$alignment$bin_bwa,
-                                            bin_path2=bin_list$alignment$bin_samtools,
-                                            file_R1=report[[new_name]][["steps"]][["trimming"]]$out_files$R1,
-                                            file_R2=report[[new_name]][["steps"]][["trimming"]]$out_files$R2,
+                                            bin_bwa=bin_list$alignment$bin_bwa,
+                                            bin_samtools=bin_list$alignment$bin_samtools,
+                                            file_R1=report[[new_name]][["steps"]][["trimming"]]$out_files$r1,
+                                            file_R2=report[[new_name]][["steps"]][["trimming"]]$out_files$r2,
                                             output_dir=out_file_dir,
                                             id_tag=paste0(seq_info_R1$flowcell_id,".",seq_info_R1$lane_id),
                                             pu_tag=paste0(seq_info_R1$flowcell_id,".",seq_info_R1$lane_id,".",
@@ -324,7 +324,7 @@ for_id=function(seq_info,output_dir="",name="",
                                             args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="markdups"))
 
                                             report[[new_name]][["steps"]][["markdups"]]<<-markdups_gatk(
-                                                bin_path=bin_list$markdups$bin_gatk,
+                                                bin_gatk=bin_list$markdups$bin_gatk,
                                                 bam=report[[new_name]][["steps"]][["alignment"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam,
                                                 output_dir=out_file_dir,
                                                 verbose=tool_config_id[step,]$verbose,
@@ -337,8 +337,6 @@ for_id=function(seq_info,output_dir="",name="",
                                                 update_time=60,wait=FALSE,
                                                 hold=report[[new_name]][["steps"]][["aligment"]]$job_id)
                                             }
-
-
                                    
                                             if(tool_config_id[step,]$name=="recalibrate"){
                                             cat("\t\n")
@@ -348,9 +346,9 @@ for_id=function(seq_info,output_dir="",name="",
                                             args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="recalibrate"))
                                             
                                                 report[[new_name]][["steps"]][["recalibrate"]]<<-recal_gatk(
-                                                    bin_path=bin_list$recalibrate$bin_samtools,
-                                                    bin_path2=bin_list$recalibrate$bin_gatk,
-                                                    bin_path3=bin_list$recalibrate$bin_picard,
+                                                    bin_samtools=bin_list$recalibrate$bin_samtools,
+                                                    bin_gatk=bin_list$recalibrate$bin_gatk,
+                                                    bin_picard=bin_list$recalibrate$bin_picard,
                                                     bam=report[[new_name]][["steps"]][["markdups"]]$out_files$bam,
                                                     output_dir=out_file_dir,
                                                     ref_genome=ref_list[[seq_info_R1$reference]]$reference$genome,

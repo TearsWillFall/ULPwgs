@@ -6,7 +6,7 @@
 \usage{
 apply_BQSR_gatk(
   region = "",
-  bin_path = "tools/gatk/gatk",
+  bin_gatk = build_default_tool_binary_list()$bin_gatk,
   bam = "",
   ref_genome = "",
   rec_table = "",
@@ -24,7 +24,7 @@ apply_BQSR_gatk(
 )
 }
 \arguments{
-\item{bin_path}{\link{REQUIRED} Path to gatk executable. Default tools/gatk/gatk.}
+\item{bin_gatk}{\link{REQUIRED} Path to gatk executable. Default tools/gatk/gatk.}
 
 \item{bam}{\link{REQUIRED} Path to the BAM file.}
 

@@ -240,36 +240,70 @@ build_default_binary_list=function(
     binaries=
         list(
                 pre_fastqc=list(
-                    bin_fastqc="~/Scratch/tools/FastQC/bin/fastqc"
+                    bin_fastqc=build_default_tool_binary_list()$bin_fastqc
                 ),
                 trimming=list(
-                    bin_skewer="~/Scratch/tools/skewer/skewer"
+                    bin_skewer=build_default_tool_binary_list()$bin_skewer
                 ),
                 post_fastq=list(
-                    bin_fastqc="~/Scratch/tools/FastQC/bin/fastqc"
+                    bin_fastqc=build_default_tool_binary_list()$bin_fastqc
                 ),
                 alignment=list(
-                    bin_bwa="~/Scratch/tools/bwa/bwa",
-                    bin_samtools="~/Scratch/tools/samtools/samtools"
+                    bin_bwa=build_default_tool_binary_list()$bin_bwa,
+                    bin_samtools=build_default_tool_binary_list()$bin_samtools
                 ),
                 merge_bams=list(
-                    bin_samtools="~/Scratch/tools/samtools/samtools"
+                    bin_samtools=build_default_tool_binary_list()$bin_samtools
                 ),
                 markdups=list(
-                    bin_gatk="~/Scratch/tools/gatk/gatk"
+                    bin_gatk=build_default_tool_binary_list()$bin_gatk
                 ),
                 recal_gatk=list(
-                    bin_samtools="~/Scratch/tools/samtools/samtools",
-                    bin_gatk="~/Scratch/tools/gatk/gatk",
-                    bin_picard="~/Scratch/tools/picard/build/libs/picard.jar"
+                    bin_samtools=build_default_tool_binary_list()$bin_samtools,
+                    bin_gatk=build_default_tool_binary_list()$bin_gatk,
+                    bin_picard=build_default_tool_binary_list()$bin_picard
                 ),
                 alignqc=list(  
-                    bin_samtools="~/Scratch/tools/samtools/samtools",
-                    bin_picard="~/Scratch/tools/picard/build/libs/picard.jar",
-                    bin_bedtools="~/Scratch/tools/bedtools2/bin/bedtools"
+                    bin_samtools=build_default_tool_binary_list()$bin_samtools,
+                    bin_picard=build_default_tool_binary_list()$bin_picard,
+                    bin_bedtools=build_default_tool_binary_list()$bin_bedtools
                 )
             )
         ){
+         return(binaries)
+}
+
+
+
+
+#' Build default tools binaries config
+#' 
+#'
+#' @param binaries List with tool_names and paths 
+#' @export
+
+
+build_default_tool_binary_list=function(
+    binaries=
+        list(
+                bin_fastqc="/lustre/scratch/scratch/regmova/tools/FastQC/bin/fastqc",
+                bin_skewer="/lustre/scratch/scratch/regmova/tools/skewer/skewer",
+                bin_fastqc="/lustre/scratch/scratch/regmova/tools/FastQC/bin/fastqc",
+                bin_bwa="/lustre/scratch/scratch/regmova/tools/bwa/bwa",
+                bin_ichor_pon="/lustre/scratch/scratch/regmova/tools/ichorCNA/scripts/createPanelOfNormals.R",
+                bin_ichor="/lustre/scratch/scratch/regmova/tools/ichorCNA/scripts/runIchorCNA.R",
+                bin_samtools="/lustre/scratch/scratch/regmova/tools/samtools/samtools",
+                bin_gatk="/lustre/scratch/scratch/regmova/tools/gatk/gatk",
+                bin_readcount="/lustre/scratch/scratch/regmova/tools/hmmcopy_utils/bin/readCounter",
+                bin_ciri="/lustre/scratch/scratch/regmova/tools/CIRI/CIRI_Full_v2.1.1.jar",
+                bin_picard="/lustre/scratch/scratch/regmova/tools/picard/build/libs/picard.jar",
+                bin_samtools="/lustre/scratch/scratch/regmova/tools/samtools/samtools",
+                bin_picard="/lustre/scratch/scratch/regmova/tools/picard/build/libs/picard.jar",
+                bin_bedtools="/lustre/scratch/scratch/regmova/tools/bedtools2/bin/bedtools",
+                bin_ciri_quant="/lustre/scratch/scratch/regmova/tools/CIRIquant/bin/CIRIquant"
+       
+        )
+    ){
          return(binaries)
 }
 

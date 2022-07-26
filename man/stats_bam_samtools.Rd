@@ -5,7 +5,7 @@
 \title{Generate BAM file flag and index stats}
 \usage{
 stats_bam_samtools(
-  bin_path = "tools/samtools/samtools",
+  bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = "",
   output_dir = "",
   verbose = FALSE,
@@ -22,7 +22,7 @@ stats_bam_samtools(
 )
 }
 \arguments{
-\item{bin_path}{Path to bwa executable. Default path tools/samtools/samtools.}
+\item{bin_samtools}{Path to bwa executable. Default path tools/samtools/samtools.}
 
 \item{bam}{Path to the input file with the sequence.}
 

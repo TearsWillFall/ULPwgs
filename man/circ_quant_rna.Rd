@@ -2,10 +2,10 @@
 % Please edit documentation in R/ciri.R
 \name{circ_quant_rna}
 \alias{circ_quant_rna}
-\title{Generate a quality control (QC) report from a fastaqc file}
+\title{Quantify circRNA expression using ciriQuant}
 \usage{
 circ_quant_rna(
-  bin_path = "tools/CIRIquant/bin/CIRIquant",
+  bin_ciri_quant = build_default_tool_binary_list()$bin_ciri_quant,
   file_R1 = "",
   file_R2 = "",
   ciri_input = "",
@@ -25,7 +25,7 @@ circ_quant_rna(
 )
 }
 \arguments{
-\item{bin_path}{Path to enviroment containing CIRIquant.}
+\item{bin_ciri_quant}{Path to enviroment containing CIRIquant.}
 
 \item{file_R1}{Path to the input file with the sequence.}
 
@@ -60,6 +60,5 @@ circ_quant_rna(
 \item{hold}{Job to hold on in batched mode.}
 }
 \description{
-This function takes a set of sequence files (fastq,SAM,BAM...) and
-returns a report in HTML format.
+Wrapper for CIRIquant tool.
 }

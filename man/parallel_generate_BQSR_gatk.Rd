@@ -5,8 +5,8 @@
 \title{Multiregion parallelization of generate_BQSR function}
 \usage{
 parallel_generate_BQSR_gatk(
-  bin_path = "tools/samtools/samtools",
-  bin_path2 = "tools/gatk/gatk",
+  bin_samtools = build_default_tool_binary_list()$bin_samtools,
+  bin_gatk = build_default_tool_binary_list()$bin_gatk,
   bam = "",
   regions = "",
   ref_genome = "",
@@ -25,9 +25,9 @@ parallel_generate_BQSR_gatk(
 )
 }
 \arguments{
-\item{bin_path}{\link{REQUIRED} Path to gatk executable. Default tools/samtools/samtools.}
+\item{bin_samtools}{\link{REQUIRED} Path to gatk executable. Default tools/samtools/samtools.}
 
-\item{bin_path2}{\link{REQUIRED} Path to gatk executable. Default tools/gatk/gatk.}
+\item{bin_gatk}{\link{REQUIRED} Path to gatk executable. Default tools/gatk/gatk.}
 
 \item{bam}{\link{REQUIRED} Path to the BAM file.}
 

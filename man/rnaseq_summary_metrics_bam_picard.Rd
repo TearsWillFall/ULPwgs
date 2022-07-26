@@ -5,7 +5,7 @@
 \title{Generate BAM Summary for RNAseq data}
 \usage{
 rnaseq_summary_metrics_bam_picard(
-  bin_path = "tools/picard/build/libs/picard.jar",
+  bin_picard = build_default_tool_binary_list()$bin_picard,
   bam = "",
   output_dir = "",
   verbose = FALSE,
@@ -24,8 +24,6 @@ rnaseq_summary_metrics_bam_picard(
 )
 }
 \arguments{
-\item{bin_path}{Path to bwa executable. Default path tools/samtools/samtools.}
-
 \item{bam}{Path to the input file with the sequence.}
 
 \item{output_dir}{Path to the output directory.}
@@ -51,6 +49,8 @@ rnaseq_summary_metrics_bam_picard(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
+
+\item{bin_samtools}{Path to picard executable. Default path tools/picard/build/libs/picard.jar.}
 }
 \description{
 Generate BAM Summary for RNAseq data

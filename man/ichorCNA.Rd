@@ -5,7 +5,7 @@
 \title{Generate report for ULP-WGS samples}
 \usage{
 ichorCNA(
-  bin_path = "tools/ichorCNA/scripts/runIchorCNA.R",
+  bin_ichor = build_default_tool_binary_list()$bin_ichor,
   sample_id = "",
   wig = "",
   norm_wig = "",
@@ -28,7 +28,7 @@ ichorCNA(
 )
 }
 \arguments{
-\item{bin_path}{Path to ichorCNA executable. Default path tools/ichorCNA/scripts/runIchorCNA.R.}
+\item{bin_ichor}{Path to ichorCNA executable. Default path tools/ichorCNA/scripts/runIchorCNA.R.}
 
 \item{sample_id}{String with sample name.}
 

@@ -5,7 +5,7 @@
 \title{Generate a quality control (QC) report from a fastaqc file}
 \usage{
 qc_fastqc(
-  bin_path = "tools/FastQC/bin/fastqc",
+  bin_fastqc = build_default_tool_binary_list()$bin_fastqc,
   file_R1 = "",
   file_R2 = "",
   output_dir = "",
@@ -22,7 +22,7 @@ qc_fastqc(
 )
 }
 \arguments{
-\item{bin_path}{Path to fastQC executable. Default path tools/FastQC/bin/fastqc.}
+\item{bin_fastqc}{Path to fastQC executable. Default path tools/FastQC/bin/fastqc.}
 
 \item{file_R1}{Path to the input file with the sequence.}
 

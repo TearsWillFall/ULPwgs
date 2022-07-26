@@ -5,8 +5,8 @@
 \title{Generate a WIG file}
 \usage{
 read_counter(
-  bin_path = "tools/samtools/samtools",
-  bin_path2 = "tools/hmmcopy_utils/bin/readCounter",
+  bin_samtools = build_default_tool_binary_list()$bin_samtools,
+  bin_readcount = build_default_tool_binary_list()$bin_readcount,
   chrs = c(1:22, "X", "Y"),
   win = 500000,
   format = "wig",
@@ -17,9 +17,9 @@ read_counter(
 )
 }
 \arguments{
-\item{bin_path}{Path to readCounter executable. Default path tools/samtools/samtools.}
+\item{bin_samtools}{Path to readCounter executable. Default path tools/samtools/samtools.}
 
-\item{bin_path2}{Path to readCounter executable. Default path tools/hmmcopy_utils/bin/readCounter.}
+\item{bin_readcount}{Path to readCounter executable. Default path tools/hmmcopy_utils/bin/readCounter.}
 
 \item{chrs}{String of chromosomes to include. c()}
 

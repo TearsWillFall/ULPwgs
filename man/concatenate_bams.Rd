@@ -5,7 +5,7 @@
 \title{Concatenate BAM files in directory.}
 \usage{
 concatenate_bams(
-  bin_path = "tools/samtools/samtools",
+  bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bams = "",
   output_name = "",
   verbose = FALSE,

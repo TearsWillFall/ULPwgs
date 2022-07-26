@@ -5,7 +5,7 @@
 \title{Wrapper around gatk GatherBamFiles function}
 \usage{
 gather_bam_files(
-  bin_path = "tools/picard/build/libs/picard.jar",
+  bin_picard = build_default_tool_binary_list()$bin_picard,
   bam = "",
   bams_dir = "",
   output_name = "File",
@@ -24,7 +24,7 @@ gather_bam_files(
 )
 }
 \arguments{
-\item{bin_path}{\link{REQUIRED} Path to gatk executable. Default tools/picard/build/libs/picard.jar.}
+\item{bin_picard}{\link{REQUIRED} Path to picard executable. Default tools/picard/build/libs/picard.jar.}
 
 \item{bams_dir}{\link{REQUIRED} Path to the directory where BAM files are stored.}
 

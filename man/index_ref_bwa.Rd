@@ -5,7 +5,7 @@
 \title{Index reference genome}
 \usage{
 index_ref_bwa(
-  bin_path = "tools/bwa/bwa",
+  bin_bwa = build_default_tool_binary_list()$bin_bwa,
   file = "",
   threads = 4,
   ram = 4,
@@ -20,7 +20,7 @@ index_ref_bwa(
 )
 }
 \arguments{
-\item{bin_path}{Path to bwa executable. Default path tools/bwa/bwa.}
+\item{bin_bwa}{Path to bwa executable. Default path tools/bwa/bwa.}
 
 \item{file}{Path to the input file with the reference genome in FASTA format.}
 

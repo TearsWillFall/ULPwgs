@@ -5,7 +5,7 @@
 \title{Mark duplicated reads}
 \usage{
 markdups_picard(
-  bin_path = "tools/picard/build/libs/picard.jar",
+  bin_picard = build_default_tool_binary_list()$bin_picard,
   bam = "",
   output_dir = "",
   verbose = FALSE,
@@ -24,7 +24,7 @@ markdups_picard(
 )
 }
 \arguments{
-\item{bin_path}{Path to picard executable. Default path tools/picard/build/libs/picard.jar.}
+\item{bin_picard}{Path to picard executable. Default path tools/picard/build/libs/picard.jar.}
 
 \item{bam}{Path to the input file with the aligned sequence.}
 

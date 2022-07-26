@@ -6,7 +6,7 @@
 #'
 #' @param file_R1 Path to the input file with the sequence.
 #' @param file_R2 [Optional] Path to the input with the reverse read sequence.
-#' @param bin_path Path to fastQC executable. Default path tools/FastQC/bin/fastqc.
+#' @param bin_fastqc Path to fastQC executable. Default path tools/FastQC/bin/fastqc.
 #' @param threads Number of CPU cores to use. Default 3.
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
 #' @param executor_id Executor ID. Default "fastQC"
@@ -21,7 +21,8 @@
 #' @export
 
 
-qc_fastqc=function (bin_path="tools/FastQC/bin/fastqc",file_R1="",file_R2="",
+qc_fastqc=function(
+bin_fastqc=build_default_tool_binary_list()$bin_fastqc,file_R1="",file_R2="",
 output_dir="",verbose=FALSE,executor_id=make_unique_id("fastQC"),
 task_name="fastQC",mode="local",threads=3,ram=4,
 time="48:0:0",update_time=60,wait=FALSE,hold=""){
@@ -35,18 +36,19 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   if (!check_missing(file_R2)){
 
-    exec_code=paste(bin_path,"-o ", out_file_dir,"-t ",threads,"--noextract",file_R1,file_R2)
+    exec_code=paste(bin_fastqc,"-o ", out_file_dir,"-t ",threads,"--noextract",file_R1,file_R2)
 
 
   }else{
-    exec_code=paste(bin_path,"-o ", out_file_dir,"-t ",threads,"--noextract",file_R1)
+    exec_code=paste(bin_fastqc,"-o ", out_file_dir,"-t ",threads,"--noextract",file_R1)
   }
 
   job=build_job(executor_id=executor_id,task_id=task_id)
 
   if(mode=="batch"){
     out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-    batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,output_dir=out_file_dir2,hold=hold)
+    batch_code=build_job_exec(job=job,time=time,
+    ram=ram,threads=threads,output_dir=out_file_dir2,hold=hold)
     exec_code=paste0("echo 'source ~/.bashrc;",exec_code,"'|",batch_code)
   }
 

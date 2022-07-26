@@ -5,9 +5,9 @@
 \title{Function for base quality recalibration}
 \usage{
 recal_gatk(
-  bin_path = "tools/samtools/samtools",
-  bin_path2 = "tools/gatk/gatk",
-  bin_path3 = "tools/picard/build/libs/picard.jar",
+  bin_samtools = build_default_tool_binary_list()$bin_samtools,
+  bin_gatk = build_default_tool_binary_list()$bin_gatk,
+  bin_picard = build_default_tool_binary_list()$bin_picard,
   bam = "",
   ref_genome = "",
   dbsnp = "",
@@ -26,11 +26,11 @@ recal_gatk(
 )
 }
 \arguments{
-\item{bin_path}{\link{REQUIRED} Path to picard executable. Default path tools/samtools/samtools.}
+\item{bin_samtools}{\link{REQUIRED} Path to picard executable. Default path tools/samtools/samtools.}
 
-\item{bin_path2}{\link{REQUIRED} Path to picard executable. Default path tools/gatk/gatk.}
+\item{bin_gatk}{\link{REQUIRED} Path to picard executable. Default path tools/gatk/gatk.}
 
-\item{bin_path3}{\link{REQUIRED} Path to picard executable. Default path tools/picard/build/libs/picard.jar.}
+\item{bin_picard}{\link{REQUIRED} Path to picard executable. Default path tools/picard/build/libs/picard.jar.}
 
 \item{bam}{\link{REQUIRED}  Path to BAM file.}
 

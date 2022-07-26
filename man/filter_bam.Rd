@@ -5,7 +5,7 @@
 \title{Filter BAM to specific regions}
 \usage{
 filter_bam(
-  bin_path = "tools/samtools/samtools",
+  bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = "",
   position = "",
   bed = "",
@@ -15,7 +15,7 @@ filter_bam(
 )
 }
 \arguments{
-\item{bin_path}{Path to readCounter executable. Default path tools/samtools/samtools.}
+\item{bin_samtools}{Path to readCounter executable. Default path tools/samtools/samtools.}
 
 \item{bam}{Path to the BAM file .}
 

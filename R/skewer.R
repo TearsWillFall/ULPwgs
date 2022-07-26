@@ -2,11 +2,11 @@
 #'
 #' Detects and removes adapter sequences from single and paired read data
 #'
+#' @param bin_skewer Path to skewer executable. Default path tools/skewer/skewer.
 #' @param file_R1 Path to the input file with the sequence.
 #' @param file_R2 [Optional] Path to the input with the reverse read sequence.
 #' @param xadapt [Optional] Adapter sequence/file.
 #' @param yadapt [Optional] Adapter sequence/file.
-#' @param bin_path Path to skewer executable. Default path tools/skewer/skewer.
 #' @param threads Number of CPU cores to use. Default 3.
 #' @param mean_quality The lowest mean quality value allowed before trimming. Default 0
 #' @param min_length Minimum length of reads allowed after trimming. Default 18
@@ -22,17 +22,22 @@
 #' @export
 
 
-trimming_skewer=function(bin_path="tools/skewer/skewer",file_R1="",file_R2="",xadapt="",
-yadapt="",mean_quality=0,min_length=18,max_length="",threads=3,ram=4,output_dir="",verbose=FALSE, 
-output_name="",mode="local",executor_id=make_unique_id("trimmingSkewer"),
-task_name="trimmingSkewer",time="48:0:0",update_time=60,wait=FALSE,hold=""){
+trimming_skewer=function(
+  bin_skewer=build_default_tool_binary_list()$bin_skewer,
+  file_R1="",file_R2="",xadapt="",
+  yadapt="",mean_quality=0,min_length=18,max_length="",
+  threads=3,ram=4,output_dir="",verbose=FALSE,
+  output_name="",mode="local",executor_id=make_unique_id("trimmingSkewer"),
+  task_name="trimmingSkewer",time="48:0:0",
+  update_time=60,wait=FALSE,hold=""
+){
 
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="skewer_reports")
 
-  func=paste(bin_path,"-m tail -t",threads,"-Q",mean_quality,"-l",min_length)
+  func=paste(bin_skewer,"-m tail -t",threads,"-Q",mean_quality,"-l",min_length)
   
   if(!check_missing(var=xadapt) &&!check_missing(var=yadapt)){
     func=paste(func,"-x", xadapt,"-y", yadapt)
@@ -78,9 +83,9 @@ task_name="trimmingSkewer",time="48:0:0",update_time=60,wait=FALSE,hold=""){
     input_args=argg,
     out_file_dir=out_file_dir,
     out_files=list(
-      R1=paste0(out_file,"-trimmed-pair1.fastq.gz"),
-      R2=paste0(out_file,"-trimmed-pair2.fastq.gz"),
-      LOG=paste0(out_file,"-trimmed.log")
+      r1=paste0(out_file,"-trimmed-pair1.fastq.gz"),
+      r2=paste0(out_file,"-trimmed-pair2.fastq.gz"),
+      log=paste0(out_file,"-trimmed.log")
     )
   )
 

@@ -5,7 +5,7 @@
 \title{Adapter sequence trimmer using skewer}
 \usage{
 trimming_skewer(
-  bin_path = "tools/skewer/skewer",
+  bin_skewer = build_default_tool_binary_list()$bin_skewer,
   file_R1 = "",
   file_R2 = "",
   xadapt = "",
@@ -28,7 +28,7 @@ trimming_skewer(
 )
 }
 \arguments{
-\item{bin_path}{Path to skewer executable. Default path tools/skewer/skewer.}
+\item{bin_skewer}{Path to skewer executable. Default path tools/skewer/skewer.}
 
 \item{file_R1}{Path to the input file with the sequence.}
 

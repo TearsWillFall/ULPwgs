@@ -5,7 +5,7 @@
 #' 
 #' 
 #' @param bam Path to the input file with the sequence.
-#' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
+#' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param threads Number of threads. Default 3
@@ -24,10 +24,13 @@
 #' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
 #' @export
 
-sort_and_index_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
-verbose=FALSE,threads=3,ram=1,sort=TRUE,coord_sort=TRUE,index=TRUE,stats="all", clean=FALSE,
-mode="local",executor_id=make_unique_id("sortANDindex"),task_name="sortANDindex",time="48:0:0",
-update_time=60,wait=FALSE,hold=""){
+sort_and_index_bam_samtools=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam="",output_dir="",verbose=FALSE,threads=3,ram=1,sort=TRUE,
+  coord_sort=TRUE,index=TRUE,stats="all", clean=FALSE,
+  mode="local",executor_id=make_unique_id("sortANDindex"),
+  task_name="sortANDindex",time="48:0:0",
+  update_time=60,wait=FALSE,hold=""){
 
   argg <- as.list(environment())
 
@@ -47,10 +50,11 @@ update_time=60,wait=FALSE,hold=""){
   )
 
   if(sort){
-      job_report[["steps"]][["sort"]]=sort_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
-      ram=ram,verbose=verbose,threads=threads,coord_sort=coord_sort,clean=clean,
-      executor_id=task_id,mode=mode,time=time,
-      update_time=update_time,wait=FALSE,hold=hold)
+      job_report[["steps"]][["sort"]]=sort_bam_samtools(
+        bin_samtools=bin_samtools,bam=bam,output_dir=out_file_dir,
+        ram=ram,verbose=verbose,threads=threads,coord_sort=coord_sort,clean=clean,
+        executor_id=task_id,mode=mode,time=time,
+        update_time=update_time,wait=FALSE,hold=hold)
 
       out_file_dir=set_dir(dir=output_dir,name="sorted")
   
@@ -59,26 +63,33 @@ update_time=60,wait=FALSE,hold=""){
         bam=paste0(out_file_dir,"/",get_file_name(bam),".sorted.",get_file_ext(bam))
 
         if(index){
-            job_report[["steps"]][["index"]]=index_bam_samtools(bin_path=bin_path,
-            bam=bam,verbose=verbose,threads=threads,ram=ram,
-            executor_id=task_id,mode=mode,time=time,
-            update_time=update_time,wait=FALSE,hold=job,output_dir = out_file_dir)
+            job_report[["steps"]][["index"]]=index_bam_samtools(
+              bin_samtools=bin_samtools,
+              bam=bam,verbose=verbose,threads=threads,ram=ram,
+              executor_id=task_id,mode=mode,time=time,
+              update_time=update_time,wait=FALSE,hold=job,
+              output_dir = out_file_dir)
+
           if(stats=="index"|stats=="all"){
-              job_report[["stats"]]=stats_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
-              verbose=verbose,threads=threads,stats="index",executor_id=task_id,
-              mode=mode,time=time,update_time=update_time,wait=FALSE,hold=job)
+              job_report[["stats"]]=stats_bam_samtools(
+                bin_samtools=bin_samtools,bam=bam,output_dir=out_file_dir,
+                verbose=verbose,threads=threads,stats="index",executor_id=task_id,
+                mode=mode,time=time,update_time=update_time,wait=FALSE,hold=job)
           }
         }
       }
   }else{
-     job_report[["steps"]][["index"]]=index_bam_samtools(bin_path=bin_path,bam=bam,verbose=verbose,threads=threads,
-     executor_id=task_id,mode=mode,time=time,update_time=update_time,wait=FALSE,hold=hold)
+     job_report[["steps"]][["index"]]=index_bam_samtools(
+      bin_samtools=bin_samtools,bam=bam,verbose=verbose,threads=threads,
+      executor_id=task_id,mode=mode,time=time,
+      update_time=update_time,wait=FALSE,hold=hold)
   }
 
 
   if(stats=="flag"|stats=="all"){
     job_report[["steps"]][["stats"]]=append(job_report[["steps"]][["stats"]],
-    stats_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
+    stats_bam_samtools(
+      bin_samtools=bin_samtools,bam=bam,output_dir=out_file_dir,
       verbose=verbose,threads=threads,stats="flag",executor_id=task_id,
       mode=mode,time=time,update_time=update_time,
       wait=FALSE,hold=hold))
@@ -102,7 +113,7 @@ update_time=60,wait=FALSE,hold=""){
 #' This function sorts a genome sequence file (BAM/SAM)
 #'
 #' @param bam Path to the input file with the sequence.
-#' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
+#' @param bin_samtols Path to samtools executable. Default path tools/samtools/samtools.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param threads Number of threads. Default 3
@@ -119,10 +130,11 @@ update_time=60,wait=FALSE,hold=""){
 #' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
 #' @export
 
-sort_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
-verbose=FALSE,threads=3,ram=1,coord_sort=TRUE,mode="local",
-executor_id=make_unique_id("sortBAM"),clean=FALSE,task_name="sortBAM",
-time="48:0:0",update_time=60,wait=FALSE,hold=""){
+sort_bam_samtools=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam="",output_dir="",verbose=FALSE,threads=3,ram=1,coord_sort=TRUE,mode="local",
+  executor_id=make_unique_id("sortBAM"),clean=FALSE,task_name="sortBAM",
+  time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -134,7 +146,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
   if(!coord_sort){
     sort_type=" -n "
   }
-  exec_code=paste0(bin_path," sort ",sort_type, bam," -@ ",threads," -m ",ram,"G"," -o ",
+  exec_code=paste0(bin_samtools," sort ",sort_type, bam," -@ ",threads," -m ",ram,"G"," -o ",
   out_file)
 
   if(clean){
@@ -179,16 +191,18 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 }
 
 
-index_bam_samtools=function(bin_path="tools/samtools/samtools",
-bam="",verbose=FALSE,threads=3,ram=4,
-mode="local",executor_id=make_unique_id("indexBAM"),
-task_name="indexBAM",time="48:0:0",update_time=60, output_dir="",
-wait=FALSE,hold=""){
+index_bam_samtools=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam="",verbose=FALSE,threads=3,ram=4,
+  mode="local",executor_id=make_unique_id("indexBAM"),
+  task_name="indexBAM",time="48:0:0",update_time=60, output_dir="",
+  wait=FALSE,hold=""
+){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
-  exec_code=paste(bin_path," index",bam," -@ ",threads)
+  exec_code=paste(bin_samtools," index",bam," -@ ",threads)
   job=build_job(executor_id=executor_id,task=task_id)
 
   if(mode=="batch"){
@@ -238,7 +252,7 @@ wait=FALSE,hold=""){
 #'
 #'
 #' @param bam Path to the input file with the sequence.
-#' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
+#' @param bin_samtools Path to bwa executable. Default path tools/samtools/samtools.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param threads Number of threads. Default 3
@@ -254,9 +268,12 @@ wait=FALSE,hold=""){
 #' @export
 
 
-stats_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
-verbose=FALSE,threads=3,ram=4,stats="all",mode="local",executor_id=make_unique_id("statsBAM"),
-task_name="statsBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""){
+stats_bam_samtools=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam="",output_dir="",verbose=FALSE,threads=3,ram=4,stats="all",
+  mode="local",executor_id=make_unique_id("statsBAM"),
+  task_name="statsBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""
+){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -275,14 +292,19 @@ task_name="statsBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
 
   if(stats=="all"|stats=="flag"){
-    job_report[["steps"]][["flag"]]=stats_flag_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
-    verbose=verbose,threads=threads,mode=mode,time=time,update_time=update_time,wait=FALSE,hold=hold)
+    job_report[["steps"]][["flag"]]=stats_flag_samtools(
+      bin_samtools=bin_samtools,bam=bam,output_dir=out_file_dir,
+      verbose=verbose,threads=threads,mode=mode,time=time,
+      update_time=update_time,wait=FALSE,hold=hold)
 
   }
 
   if(stats=="all"|stats=="index"){
-    job_report[["steps"]][["index"]]=stats_index_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
-    verbose=verbose,threads=threads,mode=mode,time=time,update_time=update_time,wait=FALSE,hold=hold)
+    job_report[["steps"]][["index"]]=stats_index_samtools(
+      bin_samtools=bin_samtools,
+      bam=bam,output_dir=out_file_dir,
+      verbose=verbose,threads=threads,mode=mode,time=time,
+      update_time=update_time,wait=FALSE,hold=hold)
   }
 
 
@@ -300,7 +322,7 @@ task_name="statsBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #'
 #'
 #' @param bam Path to the input file with the sequence.
-#' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
+#' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param threads Number of threads. Default 3
@@ -316,16 +338,20 @@ task_name="statsBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
 
 
-stats_flag_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
-verbose=FALSE,threads=3,ram=4,mode="local",executor_id=make_unique_id("statsFlag"),
-task_name="statsFlag",time="48:0:0",update_time=60,wait=FALSE,hold=""){
+stats_flag_samtools=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam="",output_dir="",verbose=FALSE,threads=3,ram=4,mode="local",
+  executor_id=make_unique_id("statsFlag"),
+  task_name="statsFlag",time="48:0:0",update_time=60,
+  wait=FALSE,hold=""
+){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="flag")
 
   out_file=paste0(out_file_dir,"/",get_file_name(bam),".flagstat.txt")
-  exec_code=paste0(bin_path," flagstat ",bam," -@ ",threads," > ",out_file)
+  exec_code=paste0(bin_samtools," flagstat ",bam," -@ ",threads," > ",out_file)
 
   job=build_job(executor_id=executor_id,task_id=task_id)
   if(mode=="batch"){
@@ -372,7 +398,7 @@ task_name="statsFlag",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #'
 #'
 #' @param bam Path to the input file with the sequence.
-#' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
+#' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param threads Number of threads. Default 3
@@ -387,16 +413,19 @@ task_name="statsFlag",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @export
 
 
-stats_index_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
-verbose=FALSE,threads=3,ram=4,mode="local",executor_id=make_unique_id("statsINDEX"),
-task_name="statsINDEX",time="48:0:0",update_time=60,wait=FALSE,hold=""){
+stats_index_samtools=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam="",output_dir="",verbose=FALSE,threads=3,ram=4,mode="local",
+  executor_id=make_unique_id("statsINDEX"),task_name="statsINDEX",
+  time="48:0:0",update_time=60,wait=FALSE,hold=""
+){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="index")
 
   out_file=paste0(out_file_dir,"/",get_file_name(bam),".idxstats.txt")
-  exec_code=paste0(bin_path," idxstats ",bam," > ",out_file)
+  exec_code=paste0(bin_samtools," idxstats ",bam," > ",out_file)
 
 
   job=build_job(executor_id=executor_id,task_id=task_id)
@@ -442,7 +471,7 @@ task_name="statsINDEX",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #'
 #'
 #' @param bam Path to the input file with the sequence.
-#' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
+#' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param threads Number of threads. Default 3
@@ -455,9 +484,11 @@ task_name="statsINDEX",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
 #' @export
 
-mapq_metrics_bam_samtools=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
-verbose=FALSE,threads=3,ram=4,mode="local",executor_id=make_unique_id("metricsMAPQ"),
-task_name="metricsMAPQ",time="48:0:0",update_time=60,wait=FALSE,hold=""){
+mapq_metrics_bam_samtools=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,bam="",output_dir="",
+  verbose=FALSE,threads=3,ram=4,mode="local",executor_id=make_unique_id("metricsMAPQ"),
+  task_name="metricsMAPQ",time="48:0:0",update_time=60,wait=FALSE,hold=""
+){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -465,7 +496,7 @@ task_name="metricsMAPQ",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
 
   out_file=paste0(out_file_dir,"/",get_file_name(bam),".mapq_dist.txt")
-  exec_code=paste(bin_path,"view",bam," -@ ",threads, " | awk -F", "'\\t'",
+  exec_code=paste(bin_samtools,"view",bam," -@ ",threads, " | awk -F", "'\\t'",
     "'{c[$5]++} END { for (i in c) catf(\"%s\\t%s\\n\",i,c[i]) }'",
     " | sort -t$'\\t' -k 1 -g >", out_file)
 

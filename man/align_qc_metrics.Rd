@@ -5,9 +5,9 @@
 \title{Generate quality control metrics for aligned sequences}
 \usage{
 align_qc_metrics(
-  bin_path = "tools/samtools/samtools",
-  bin_path2 = "tools/picard/build/libs/picard.jar",
-  bin_path3 = "tools/bedtools2/bin/bedtools",
+  bin_samtools = build_default_tool_binary_list()$bin_samtools,
+  bin_picard = build_default_tool_binary_list()$bin_picard,
+  bin_bedtools = build_default_tool_binary_list()$bin_bedtools,
   bam = "",
   output_dir = "",
   ref_genome = "",
@@ -31,11 +31,11 @@ align_qc_metrics(
 )
 }
 \arguments{
-\item{bin_path}{Path to samtools executable. Default path tools/samtools/samtools.}
+\item{bin_samtools}{Path to samtools executable. Default path tools/samtools/samtools.}
 
-\item{bin_path2}{Path to picard executable. Default path tools/picard/build/libs/picard.jar.}
+\item{bin_picard}{Path to picard executable. Default path tools/picard/build/libs/picard.jar.}
 
-\item{bin_path3}{Path to bedtools executable. Default path tools/bedtools2/bin/bedtools. Only required if analyzing panel data.}
+\item{bin_bedtools}{Path to bedtools executable. Default path tools/bedtools2/bin/bedtools. Only required if analyzing panel data.}
 
 \item{bam}{Path to the BAM file.}
 

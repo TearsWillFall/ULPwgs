@@ -4,7 +4,7 @@
 #' This function removes duplicated reads (artifacts) found in aligned sequences and sorts the output bam.
 #'
 #' @param bam Path to the input file with the aligned sequence.
-#' @param bin_path Path to picard executable. Default path tools/picard/build/libs/picard.jar.
+#' @param bin_gatk Path to gatk executable. Default path tools/picard/build/libs/picard.jar.
 #' @param output_dir Path to the output directory.
 #' @param tmp_dir Path to tmp directory.
 #' @param remove_duplicates Remove all sequencing duplicates from BAM file. Default TRUE.
@@ -22,7 +22,8 @@
 #' @export
 
 
-markdups_gatk=function(bin_path="tools/gatk/gatk",bam="",output_dir="",
+markdups_gatk=function(
+bin_gatk=build_default_tool_binary_list()$bin_gatk,bam="",output_dir="",
 verbose=FALSE,tmp_dir="",threads=3,ram=4,remove_duplicates=TRUE,
 executor_id=make_unique_id("markdupsGATK"),task_name="markdupsGATK",
 mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
@@ -43,25 +44,25 @@ mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
     }
 
     out_file= paste0(out_file_dir,"/",get_file_name(bam),".sorted.rmdup.",get_file_ext(bam))
+    
     out_file_md=paste0(out_file_dir,"/",get_file_name(bam),".gatk_rmdup.txt")
-    exec_code=paste0(bin_path," MarkDuplicatesSpark -I ",bam, " -O ",  out_file,
+    exec_code=paste0(bin_gatk," MarkDuplicatesSpark -I ",bam, " -O ",  out_file,
     " -M ",out_file_md,
     " ",tmp," --conf \'spark.executor.cores=",threads,"\'", dups)
 
-   
 
-    
     job=build_job(executor_id=executor_id,task_id=task_id)
+
     if(mode=="batch"){
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
         output_dir=out_file_dir2,hold=hold)
         exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
     }
+  
     if(verbose){
          print_verbose(job=job,arg=argg,exec_code=exec_code)
     }
-
 
     error=system(exec_code)
     if(error!=0){
@@ -96,9 +97,9 @@ mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #'
 #' This function recalibrates the base quality of the reads in two steps process based on GATK best practices guides.
 #'
-#' @param bin_path [REQUIRED] Path to picard executable. Default path tools/samtools/samtools.
-#' @param bin_path2 [REQUIRED] Path to picard executable. Default path tools/gatk/gatk.
-#' @param bin_path3 [REQUIRED] Path to picard executable. Default path tools/picard/build/libs/picard.jar.
+#' @param bin_samtools [REQUIRED] Path to picard executable. Default path tools/samtools/samtools.
+#' @param bin_gatk [REQUIRED] Path to picard executable. Default path tools/gatk/gatk.
+#' @param bin_picard [REQUIRED] Path to picard executable. Default path tools/picard/build/libs/picard.jar.
 #' @param bam [REQUIRED]  Path to BAM file.
 #' @param ref_genome [REQUIRED]  Path to reference genome.
 #' @param dbsnp [REQUIRED] Known variant database.Requires atleast 1.
@@ -117,11 +118,14 @@ mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @export
 
 
-recal_gatk=function(bin_path="tools/samtools/samtools",bin_path2="tools/gatk/gatk",
-bin_path3="tools/picard/build/libs/picard.jar",bam="",ref_genome="",dbsnp="",ram=4,
-threads=4,output_dir="",verbose=FALSE, executor_id=make_unique_id("recalGATK"),
-task_name="recalGATK",clean=TRUE,mode="local",time="48:0:0",
-update_time=60,wait=FALSE,hold=""){
+recal_gatk=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bin_gatk=build_default_tool_binary_list()$bin_gatk,
+  bin_picard=build_default_tool_binary_list()$bin_picard,
+  bam="",ref_genome="",dbsnp="",ram=4,threads=4,output_dir="",
+  verbose=FALSE, executor_id=make_unique_id("recalGATK"),
+  task_name="recalGATK",clean=TRUE,mode="local",time="48:0:0",
+  update_time=60,wait=FALSE,hold=""){
 
 
 
@@ -134,7 +138,9 @@ update_time=60,wait=FALSE,hold=""){
   out_file_dir4=set_dir(dir=output_dir,name="recal_reports")
 
 
-  regions=get_bam_reference_chr(bin_path=bin_path,bam=bam,verbose=verbose)
+  regions=get_bam_reference_chr(
+    bin_samtools=bin_samtools,bam=bam,
+    verbose=verbose)
 
   job=build_job(executor_id=executor_id,task_id=task_id)
   
@@ -155,7 +161,8 @@ update_time=60,wait=FALSE,hold=""){
     )
   )
 
-  job_report[["steps"]][["par_bqsr_before"]]=parallel_generate_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,bam=bam,
+  job_report[["steps"]][["par_bqsr_before"]]=parallel_generate_BQSR_gatk(
+    bin_samtools=bin_samtools,bin_gatk=bin_gatk,bam=bam,
     ref_genome=ref_genome,dbsnp=dbsnp,regions=regions,
     output_dir=out_file_dir,
     verbose=verbose,executor_id=task_id,mode=mode,threads=threads,ram=ram,
@@ -163,36 +170,41 @@ update_time=60,wait=FALSE,hold=""){
 
 
 
-  job_report[["steps"]][["par_apply_bqsr"]]=parallel_apply_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,bin_path3=bin_path3,
-    bam=bam,ref_genome=ref_genome,rec_table=paste0(out_file_dir,"/",get_file_name(bam),".recal.table"),
+  job_report[["steps"]][["par_apply_bqsr"]]=parallel_apply_BQSR_gatk(
+    bin_samtools=bin_samtools,bin_gatk=bin_gatk,bin_picard=bin_picard,
+    bam=bam,ref_genome=ref_genome,
+    rec_table=paste0(out_file_dir,"/",get_file_name(bam),".recal.table"),
     output_dir=out_file_dir4,regions=regions,
-    clean=clean,verbose=verbose,executor_id=task_id,threads=threads,mode=mode,ram=ram,time=time,
+    clean=clean,verbose=verbose,executor_id=task_id,
+    threads=threads,mode=mode,ram=ram,time=time,
     update_time=update_time,wait=FALSE,hold=job_report$job_id)
+
   
-  job_report[["steps"]][["sort_and_index"]]=sort_and_index_bam_samtools(bin_path=bin_path,bam=paste0(out_file_dir4,"/",
+  job_report[["steps"]][["sort_and_index"]]=sort_and_index_bam_samtools(
+    bin_samtools=bin_samtools,bam=paste0(out_file_dir4,"/",
     get_file_name(bam),".recal.",get_file_ext(bam)),output_dir=out_file_dir4,
-    ram=ram,verbose=verbose,threads=threads,sort=FALSE,stats="",index=TRUE,clean=clean,
-    mode=mode,executor_id=task_id,time=time,update_time=update_time,wait=FALSE,hold=job_report$job_id)
+    ram=ram,verbose=verbose,threads=threads,sort=FALSE,
+    stats="",index=TRUE,clean=clean,
+    mode=mode,executor_id=task_id,time=time,
+    update_time=update_time,wait=FALSE,hold=job_report$job_id)
   
  
 
-  job_report[["steps"]][["par"]]=parallel_generate_BQSR_gatk(bin_path=bin_path,bin_path2=bin_path2,
+  job_report[["steps"]][["par_bqsr_after"]]=parallel_generate_BQSR_gatk(
+    bin_samtools=bin_samtools,bin_gatk=bin_gatk,
     bam=paste0(out_file_dir4,"/",get_file_name(bam),".recal.",get_file_ext(bam)),
     ref_genome=ref_genome,dbsnp=dbsnp,threads=threads,regions=regions,
     output_dir=out_file_dir2,verbose=verbose,executor_id=task_id,
-    mode=mode,ram=ram,time=time,update_time=update_time,wait=FALSE,hold=job_report$job_id)
+    mode=mode,ram=ram,time=time,update_time=update_time,
+    wait=FALSE,hold=job_report$job_id)
   
-  job_report_tmp=dplyr::bind_rows(job_report_tmp,job_report)
 
-
-
-  job_report=analyze_covariates_gatk(bin_path=bin_path2,before=paste0(out_file_dir,"/",
+ job_report[["steps"]][["analyse_covariates"]]=analyze_covariates_gatk(
+  bin_gatk=bin_gatk,before=paste0(out_file_dir,"/",
   get_file_name(bam),".recal.table"),
   after=paste0(out_file_dir2,"/",get_file_name(bam),".recal.table"),
   output_dir=out_file_dir4,executor_id=task_id,mode=mode,threads=threads,
   ram=ram,time=time,update_time=update_time,wait=FALSE,hold=job_report$job_id)
-  
-  job_report=dplyr::bind_rows(job_report_tmp,job_report)
   
 
   if(wait&&mode=="batch"){
@@ -212,7 +224,7 @@ update_time=60,wait=FALSE,hold=""){
 #' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360036898312-BaseRecalibrator
 #'
 #' @param bam [REQUIRED] Path to the BAM file.
-#' @param bin_path [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
+#' @param bin_gatk [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
 #' @param ref_genome [REQUIRED] Path to reference genome
 #' @param dbsnp [REQUIRED] Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.
 #' @param output_dir [OPTIONAL] Path to the output directory.
@@ -227,7 +239,9 @@ update_time=60,wait=FALSE,hold=""){
 #' @param hold [OPTIONAL] HOld job until job is finished. Job ID.
 #' @export
 
-generate_BQSR_gatk=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome="",
+generate_BQSR_gatk=function(
+region="",
+bin_gatk=build_default_tool_binary_list()$bin_gatk,bam="",ref_genome="",
 dbsnp="",output_dir="",verbose=FALSE, threads=4,ram=4,mode="local",
 executor_id=make_unique_id("generateBQSR"),task_name="generateBQSR",
 time="48:0:0",update_time=60,wait=FALSE,hold=""){
@@ -291,8 +305,8 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360036898312-BaseRecalibrator
 #'
 #' @param bam [REQUIRED] Path to the BAM file.
-#' @param bin_path [REQUIRED] Path to gatk executable. Default tools/samtools/samtools.
-#' @param bin_path2 [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
+#' @param bin_samtools [REQUIRED] Path to gatk executable. Default tools/samtools/samtools.
+#' @param bin_gatk [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
 #' @param ref_genome [REQUIRED] Path to reference genome
 #' @param dbsnp [REQUIRED] Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.
 #' @param output_dir [OPTIONAL] Path to the output directory.
@@ -312,10 +326,14 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
 
 
-parallel_generate_BQSR_gatk=function(bin_path="tools/samtools/samtools",
-bin_path2="tools/gatk/gatk",bam="",regions="",ref_genome="",dbsnp="",threads=3,ram=4,
-executor_id=make_unique_id("par_generateBQSR"),task_name="par_generateBQSR",output_dir="",
-verbose=FALSE,mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
+parallel_generate_BQSR_gatk=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bin_gatk=build_default_tool_binary_list()$bin_gatk,bam="",
+  regions="",ref_genome="",dbsnp="",threads=3,ram=4,
+  executor_id=make_unique_id("par_generateBQSR"),
+  task_name="par_generateBQSR",output_dir="",
+  verbose=FALSE,mode="local",time="48:0:0",
+  update_time=60,wait=FALSE,hold=""){
 
   options(scipen = 999)
   options(warn = -1)
@@ -324,7 +342,7 @@ verbose=FALSE,mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
   if(regions==""){
-    regions=get_bam_reference_chr(bin_path=bin_path,bam=bam,verbose=verbose)
+    regions=get_bam_reference_chr(bin_samtools=bin_samtools,bam=bam,verbose=verbose)
   }
 
   regions$start=regions$start+1
@@ -344,8 +362,9 @@ verbose=FALSE,mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   parallel::mclapply(1:nrow(regions),FUN=function(x){
     tmp=regions[x,]
-    job_report[["steps"]][["generate_bqsr_report"]][[tmp$region]]<<-generate_BQSR_gatk(region=tmp$region,
-    bin_path=bin_path2,bam=bam,ref_genome=ref_genome,
+    job_report[["steps"]][["generate_bqsr_report"]][[tmp$region]]<<-generate_BQSR_gatk(
+    region=tmp$region,
+    bin_gatk=bin_gatk,bam=bam,ref_genome=ref_genome,
     dbsnp=dbsnp,output_dir=out_file_dir,verbose=verbose,
     executor_id=task_id,mode=mode,time=time,
     threads=threads,ram=ram,update_time=update_time,wait=FALSE,hold=hold) 
@@ -353,12 +372,13 @@ verbose=FALSE,mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
 
     
-  job_report[["steps"]][["generate_bqsr_report"]]=gather_BQSR_reports_gatk(bin_path=bin_path2,
-  report=unlist_lvl(named_list=job_report[["steps"]][["gather_reports"]],var="table"),
-  executor_id=task_id,output_dir=out_file_dir,clean=clean,
-  output_name=get_file_name(bam),verbose=verbose,mode=mode,time=time,
-  threads=threads,ram=ram,update_time=update_time,wait=FALSE,
-  hold=)
+  job_report[["steps"]][["generate_bqsr_report"]]=gather_BQSR_reports_gatk(
+    bin_gatk=bin_gatk,
+    report=unlist_lvl(named_list=job_report[["steps"]][["gather_reports"]],var="table"),
+    executor_id=task_id,output_dir=out_file_dir,clean=clean,
+    output_name=get_file_name(bam),verbose=verbose,mode=mode,time=time,
+    threads=threads,ram=ram,update_time=update_time,wait=FALSE,
+    hold=unlist_lvl(named_list=job_report[["steps"]],var="job_id"))
   
 
   if(wait&&mode=="batch"){
@@ -376,7 +396,7 @@ verbose=FALSE,mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' This function wraps around gatk GatherBQSRReports function.
 #' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360036829851-GatherBQSRReports
 #'
-#' @param bin_path [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
+#' @param bin_gatk [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
 #' @param reports_dir [REQUIRED] Path to the directory where reports are stored.
 #' @param report [REQUIRED] Path to indivual reports.
 #' @param output_name [OPTIONAL] Name for the output report file.
@@ -394,9 +414,12 @@ verbose=FALSE,mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 
-gather_BQSR_reports_gatk=function(bin_path="tools/gatk/gatk",report="",reports_dir="",
-executor_id=make_unique_id("gatherBQSR"),task_name="gatherBQSR",output_name="Report", clean=FALSE,
-output_dir="",verbose=FALSE,mode="local",time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE,hold=""){
+gather_BQSR_reports_gatk=function(
+  bin_gatk=build_default_tool_binary_list()$bin_gatk,
+  report="",reports_dir="",executor_id=make_unique_id("gatherBQSR"),
+  task_name="gatherBQSR",output_name="Report", clean=FALSE,
+  output_dir="",verbose=FALSE,mode="local",time="48:0:0",
+  threads=4,ram=4,update_time=60,wait=FALSE,hold=""){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -410,7 +433,7 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",threads=4,ram=4,update_ti
 
 
   out_file=paste0(out_file_dir,output_name,".recal.table")
-  exec_code=paste0(bin_path," GatherBQSRReports ",paste(" -I ",files,collapse=" "),
+  exec_code=paste0(bin_gatk," GatherBQSRReports ",paste(" -I ",files,collapse=" "),
     " -O ",out_file)
 
 
@@ -466,7 +489,7 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",threads=4,ram=4,update_ti
 #' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360050814312-ApplyBQSR
 #'
 #' @param bam [REQUIRED] Path to the BAM file.
-#' @param bin_path [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
+#' @param bin_gatk [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
 #' @param ref_genome [REQUIRED] Path to reference genome
 #' @param rec_table [REQUIRED] Path to covariates table generated by generate_BSQR.
 #' @param output_dir [OPTIONAL] Path to the output directory.
@@ -483,10 +506,12 @@ output_dir="",verbose=FALSE,mode="local",time="48:0:0",threads=4,ram=4,update_ti
 #' @export
 
 
-apply_BQSR_gatk=function(region="",bin_path="tools/gatk/gatk",bam="",ref_genome="",
-rec_table="",output_dir="",verbose=FALSE,mode="local", threads=4,ram=4,
-executor_id=make_unique_id("applyBQSR"),task_name="applyBQSR",time="48:0:0",
-update_time=60,wait=TRUE,hold=""){
+apply_BQSR_gatk=function(
+  region="",
+  bin_gatk=build_default_tool_binary_list()$bin_gatk,bam="",ref_genome="",
+  rec_table="",output_dir="",verbose=FALSE,mode="local", threads=4,ram=4,
+  executor_id=make_unique_id("applyBQSR"),task_name="applyBQSR",time="48:0:0",
+  update_time=60,wait=TRUE,hold=""){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -499,7 +524,7 @@ update_time=60,wait=TRUE,hold=""){
       reg=paste0(" -L ",strsplit(region,";")[[1]][2], " ")
       out_file=paste0(out_file_dir,"/", get_file_name(bam),".",region,".recal.",get_file_ext(bam))
   }
-  exec_code=paste(bin_path," ApplyBQSR -I ",bam, " -R ", ref_genome,
+  exec_code=paste(bin_gatk," ApplyBQSR -I ",bam, " -R ", ref_genome,
    " --bqsr-recal-file ",rec_table, " -O ",out_file,reg)
    
   job=build_job(executor_id=executor_id,task_id=task_id)
@@ -550,9 +575,9 @@ update_time=60,wait=TRUE,hold=""){
 #' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360050814312-ApplyBQSR
 #'
 #' @param bam [REQUIRED] Path to the BAM file.
-#' @param bin_path [REQUIRED] Path to samtools executable. Default tools/samtools/samtools.
-#' @param bin_path2 [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
-#' @param bin_path3 [REQUIRED] Path to picard executable. Default tools/picard/build/libs/picard.jar
+#' @param bin_samtools [REQUIRED] Path to samtools executable. Default tools/samtools/samtools.
+#' @param bin_gatk [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
+#' @param bin_picard [REQUIRED] Path to picard executable. Default tools/picard/build/libs/picard.jar
 #' @param ref_genome [REQUIRED] Path to reference genome
 #' @param rec_table [REQUIRED] Path to the recalibratio table.
 #' @param output_dir [OPTIONAL] Path to the output directory.
@@ -570,10 +595,16 @@ update_time=60,wait=TRUE,hold=""){
 #' @export
 #' @import pbapply
 
-parallel_apply_BQSR_gatk=function(bin_path="tools/samtools/samtools",bin_path2="tools/gatk/gatk",
-bin_path3="tools/picard/build/libs/picard.jar",bam="",regions="",ref_genome="",rec_table="",
-output_dir="",verbose=FALSE,mode="local",executor=make_unique("par_applyBQSR"),task="par_applyBQSR",
-time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE, hold=""){
+parallel_apply_BQSR_gatk=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bin_gatk=build_default_tool_binary_list()$bin_gatk,
+  bin_picard=build_default_tool_binary_list()$bin_picard,
+  bam="",regions="",ref_genome="",rec_table="",
+  output_dir="",verbose=FALSE,mode="local",
+  executor=make_unique("par_applyBQSR"),
+  task="par_applyBQSR",
+  time="48:0:0",threads=4,ram=4,
+  update_time=60,wait=FALSE, hold=""){
 
   options(scipen = 999)
   options(warn = -1)
@@ -583,7 +614,7 @@ time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE, hold=""){
   out_file_dir=set_dir(dir=output_dir)
 
    if(regions==""){
-    regions=get_bam_reference_chr(bin_path=bin_path,bam=bam,verbose=verbose)
+    regions=get_bam_reference_chr(bin_samtools=bin_samtools,bam=bam,verbose=verbose)
   }
   regions$start=regions$start+1
   regions$pos=1:nrow(regions)
@@ -602,22 +633,28 @@ time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE, hold=""){
     )
 parallel::mclapply(seq(1,nrow(regions)),FUN=function(x){
     tmp=regions[x,]
-    job_report[["steps"]][["apply_bqsr"]][[tmp$region]]<<-apply_BQSR_gatk(region=tmp$region,
-    bin_path=bin_path2,bam=bam,ref_genome=ref_genome,
+    job_report[["steps"]][["apply_bqsr"]][[tmp$region]]<<-apply_BQSR_gatk(
+    region=tmp$region,
+    bin_gatk=bin_gatk,bam=bam,ref_genome=ref_genome,
     executor_id=executor_id,rec_table=rec_table,
     output_dir=out_file_dir,verbose=verbose,mode=mode,time=time,threads=threads,
-    ram=ram,update_time=update_time,hold=hold,wait=FALSE)},mc.cores=ifelse(mode=="local",threads,3))
+    ram=ram,update_time=update_time,hold=hold,wait=FALSE)},
+    mc.cores=ifelse(mode=="local",threads,3)
+  )
   
-job_report[["steps"]][["gather_bam"]]=gather_bam_files(bin_path=bin_path3,
+job_report[["steps"]][["gather_bam"]]=gather_bam_files(
+  bin_picard=bin_picard,
   bam=unlist_level(job_report[["steps"]][["apply_bqsr"]],var="bam"),
-  output_dir=out_file_dir,output_name=paste0(get_file_name(bam),".recal.sorted.rmdup.sorted"),
+  output_dir=out_file_dir,
+  output_name=paste0(get_file_name(bam),".recal.sorted.rmdup.sorted"),
   executor_id=task_id,mode=mode,time=time,threads=threads,ram=ram,
-  update_time=update_time,wait=FALSE,hold=unlist_level(job_report[["steps"]][["apply_bqsr"]],var="job_id"))
+  update_time=update_time,wait=FALSE,
+  hold=unlist_level(job_report[["steps"]][["apply_bqsr"]],var="job_id"))
 
 
   if(wait&&mode=="batch"){
-    job_validator(job=unlist_level(named_list=job_report[["steps"]][["apply_bqsr"]],var="job_id"),
-    time=update_time,verbose=verbose,threads=threads)
+    job_validator(job=unlist_level(named_list=job_report[["steps"]][["apply_bqsr"]],
+    var="job_id"),time=update_time,verbose=verbose,threads=threads)
   }
 
   return(job_report)
@@ -633,7 +670,7 @@ job_report[["steps"]][["gather_bam"]]=gather_bam_files(bin_path=bin_path3,
 #' This function wraps around gatk GatherBamFiles function.
 #' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360037055512-GatherBamFiles-Picard-
 #'
-#' @param bin_path [REQUIRED] Path to gatk executable. Default tools/picard/build/libs/picard.jar.
+#' @param bin_picard [REQUIRED] Path to picard executable. Default tools/picard/build/libs/picard.jar.
 #' @param bamr [REQUIRED] Path to BAM file/s.
 #' @param bams_dir [REQUIRED] Path to the directory where BAM files are stored.
 #' @param output_name [OPTIONAL] Name for the output file name.
@@ -650,10 +687,13 @@ job_report[["steps"]][["gather_bam"]]=gather_bam_files(bin_path=bin_path3,
 #' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 
-gather_bam_files=function(bin_path="tools/picard/build/libs/picard.jar",bam="",bams_dir="",
-output_name="File",output_dir="",verbose=FALSE,threads=4, ram=4, mode="local",clean=FALSE,
-executor_id=make_unique_id("gatherBAM"),task_name="gatherBAM",time="48:0:0",update_time=60,
-wait=FALSE,hold=""){
+gather_bam_files=function(
+  bin_picard=build_default_tool_binary_list()$bin_picard,
+  bam="",bams_dir="",output_name="File",output_dir="",
+  verbose=FALSE,threads=4, ram=4, mode="local",clean=FALSE,
+  executor_id=make_unique_id("gatherBAM"),task_name="gatherBAM",
+  time="48:0:0",update_time=60,wait=FALSE,hold=""
+){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -670,7 +710,7 @@ wait=FALSE,hold=""){
     FUN=strsplit,split="\\."),FUN="[[",index=1),FUN="[",index=2),
     FUN=strsplit,split="^"),FUN="[[",index=1),FUN="[",index=1)))]
 
-  exec_code=paste0("java -jar ",bin_path," GatherBamFiles ",
+  exec_code=paste0("java -jar ",bin_picard," GatherBamFiles ",
     paste0(" I=",files,collapse=" ")," O=",)
 
   if(clean){
@@ -721,7 +761,7 @@ wait=FALSE,hold=""){
 #' This function wraps around gatk AnalyzeCovariates function.
 #' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360037066912-AnalyzeCovariates
 #'
-#' @param bin_path [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
+#' @param bin_gatk [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
 #' @param before [REQUIRED] Recalibration table produced by generate_BQSR function.
 #' @param after [OPTIONAL] Recalibration table produced by generate_BQSR function.
 #' @param output_dir [OPTIONAL] Path to the output directory.
@@ -738,10 +778,13 @@ wait=FALSE,hold=""){
 #' @export
 
 
-analyze_covariates_gatk=function(bin_path="tools/gatk/gatk",before="",after="",
-output_dir="",verbose=FALSE,threads=4,ram=4,mode="local",
-executor_id=make_unique_id("recalCovariates"),task_name="recalCovariates",time="48:0:0",
-update_time=60,wait=FALSE,hold=""){
+analyze_covariates_gatk=function(
+  bin_gatk=build_default_tool_binary_list()$bin_gatk,before="",after="",
+  output_dir="",verbose=FALSE,threads=4,ram=4,mode="local",
+  executor_id=make_unique_id("recalCovariates"),
+  task_name="recalCovariates",time="48:0:0",
+  update_time=60,wait=FALSE,hold=""
+){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -750,14 +793,14 @@ update_time=60,wait=FALSE,hold=""){
   if (before!="" & after==""){
     out_file=paste0(out_file_dir,"/",get_file_name(before),
     "_covariates_analysis_before.pdf")
-    exec_code=paste0(bin_path," AnalyzeCovariates -bqsr ",before," -plots ",out_file)
+    exec_code=paste0(bin_gatk," AnalyzeCovariates -bqsr ",before," -plots ",out_file)
   }else if(before=="" & after!=""){
     out_file=paste0(out_file_dir,"/",get_file_name(after),
        "_covariates_analysis_after.pdf")
-    exec_code=paste0(bin_path," AnalyzeCovariates -bqsr ",after," -plots ",out_file)
+    exec_code=paste0(bin_gatk," AnalyzeCovariates -bqsr ",after," -plots ",out_file)
   }else{
     out_file=paste0(out_file_dir,"/",get_file_name(before),"_covariates_analysis.pdf")
-    exec_code=paste0(bin_path," AnalyzeCovariates -before ",before," -after ",after,
+    exec_code=paste0(bin_gatk," AnalyzeCovariates -before ",before," -after ",after,
       " -plots ",out_file)
   }
 

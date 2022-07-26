@@ -5,7 +5,7 @@
 \title{Generate BAM Insert Size Metrics}
 \usage{
 insertsize_metrics_bam_picard(
-  bin_path = "tools/picard/build/libs/picard.jar",
+  bin_picard = build_default_tool_binary_list()$bin_picard,
   bam = "",
   output_dir = "",
   verbose = FALSE,
@@ -22,7 +22,7 @@ insertsize_metrics_bam_picard(
 )
 }
 \arguments{
-\item{bin_path}{Path to bwa executable. Default path tools/samtools/samtools.}
+\item{bin_picard}{Path to bwa executable. Default path tools/samtools/samtools.}
 
 \item{bam}{Path to the input file with the sequence.}
 

@@ -5,18 +5,21 @@
 \title{Build default binaries config}
 \usage{
 build_default_binary_list(
-  binaries = list(pre_fastqc = list(bin_fastqc = "~/Scratch/tools/FastQC/bin/fastqc"),
-    trimming = list(bin_skewer = "~/Scratch/tools/skewer/skewer"), post_fastq =
-    list(bin_fastqc = "~/Scratch/tools/FastQC/bin/fastqc"), alignment = list(bin_bwa =
-    "~/Scratch/tools/bwa/bwa", bin_samtools = "~/Scratch/tools/samtools/samtools"),
-    merge_bams = list(bin_samtools = "~/Scratch/tools/samtools/samtools"), markdups =
-    list(bin_gatk = "~/Scratch/tools/gatk/gatk"), recal_gatk = list(bin_samtools =
-    "~/Scratch/tools/samtools/samtools", 
-     bin_gatk = "~/Scratch/tools/gatk/gatk",
-    bin_picard = "~/Scratch/tools/picard/build/libs/picard.jar"), alignqc =
-    list(bin_samtools = "~/Scratch/tools/samtools/samtools", bin_picard =
-    "~/Scratch/tools/picard/build/libs/picard.jar", bin_bedtools =
-    "~/Scratch/tools/bedtools2/bin/bedtools"))
+  binaries = list(pre_fastqc = list(bin_fastqc =
+    build_default_tool_binary_list()$bin_fastqc), trimming = list(bin_skewer =
+    build_default_tool_binary_list()$bin_skewer), post_fastq = list(bin_fastqc =
+    build_default_tool_binary_list()$bin_fastqc), alignment = list(bin_bwa =
+    build_default_tool_binary_list()$bin_bwa, bin_samtools =
+    build_default_tool_binary_list()$bin_samtools), merge_bams = list(bin_samtools =
+    build_default_tool_binary_list()$bin_samtools), markdups = list(bin_gatk =
+    build_default_tool_binary_list()$bin_gatk), 
+     recal_gatk = list(bin_samtools =
+    build_default_tool_binary_list()$bin_samtools, bin_gatk =
+    build_default_tool_binary_list()$bin_gatk, bin_picard =
+    build_default_tool_binary_list()$bin_picard), alignqc = list(bin_samtools =
+    build_default_tool_binary_list()$bin_samtools, bin_picard =
+    build_default_tool_binary_list()$bin_picard, bin_bedtools =
+    build_default_tool_binary_list()$bin_bedtools))
 )
 }
 \arguments{

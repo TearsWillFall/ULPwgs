@@ -5,6 +5,7 @@
 #' directory. This function is still Work In Progress (WIP).
 #'
 #' @param bam Path to the input bam file with the sequence.
+#' @param bin_samtools Path to samtools binary.
 #' @param bam_dir Path to directory with BAM files to merge.
 #' @param threads Number of threads to use.Default 3.
 #' @param output_name Output file name
@@ -12,11 +13,16 @@
 #' @export
 
 
-merge_bams_samtools=function(bin_path="tools/samtools/samtools",bams="",output_name="",
-verbose=TRUE,threads=3,ram=4,executor=make_unique_id("mergeBAMs"), task="mergeBAMs",mode="local",
+merge_bams_samtools=function(
+bin_samtools=build_default_tool_binary_list()$bin_samtools,
+bams="",output_name="",
+verbose=TRUE,threads=3,ram=4,
+executor=make_unique_id("mergeBAMs"),
+task="mergeBAMs",mode="local",
 time="48:0:0",update_time=60,wait=FALSE,hold=""){
+
     out_file_dir=set_dir(dir=output_dir,name="merged")
-    exec_code=paste(bin_path,"merge ",paste0(out_file_dir,"/",output_name,".bam"), " --threads",
+    exec_code=paste(bin_samtools,"merge ",paste0(out_file_dir,"/",output_name,".bam"), " --threads",
       threads,paste(bams,collapse=" "))
       
     if(verbose){
@@ -39,9 +45,11 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-concatenate_bams=function(bin_path="tools/samtools/samtools",bams="",output_name="",
-verbose=FALSE,threads=3){
-    exec_code=paste(bin_path,"cat -o",paste0(output_name,".bam"), " --threads",
+concatenate_bams=function(
+bin_samtools=build_default_tool_binary_list()$bin_samtools,
+bams="",output_name="",verbose=FALSE,threads=3){
+
+    exec_code=paste(bin_samtools,"cat -o",paste0(output_name,".bam"), " --threads",
       threads,paste(bams,collapse=" "))
     if(verbose){
       print_verbose(exec_code=exec_code)
@@ -73,9 +81,9 @@ verbose=FALSE,threads=3){
 #'
 #'
 #' @param bam Path to the BAM file.
-#' @param bin_path Path to samtools executable. Default path tools/samtools/samtools.
-#' @param bin_path2 Path to picard executable. Default path tools/picard/build/libs/picard.jar.
-#' @param bin_path3 Path to bedtools executable. Default path tools/bedtools2/bin/bedtools. Only required if analyzing panel data.
+#' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
+#' @param bin_picard Path to picard executable. Default path tools/picard/build/libs/picard.jar.
+#' @param bin_bedtools Path to bedtools executable. Default path tools/bedtools2/bin/bedtools. Only required if analyzing panel data.
 #' @param ref_genome Path to input file with the reference genome sequence.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
@@ -89,43 +97,72 @@ verbose=FALSE,threads=3){
 #' @param mode Type of data to generate metrics for. Default tg. Options ["wgs","tg","rna"]
 #' @export
 
-align_qc_metrics=function(bin_path="tools/samtools/samtools",
-  bin_path2="tools/picard/build/libs/picard.jar",bin_path3="tools/bedtools2/bin/bedtools",
+align_qc_metrics=function(bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bin_picard=build_default_tool_binary_list()$bin_picard,
+  bin_bedtools=build_default_tool_binary_list()$bin_bedtools,
   bam="",output_dir="",ref_genome="",verbose=FALSE,tmp_dir=".",mapq=0,bi="",
   ti="",ri="",ref_flat="",method="tg",mode="local",executor=make_unique_id("alignQC"),
   task="alignQC",time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE, hold=""){
     
+
+    argg <- as.list(environment())
+    task_id=make_unique_id(task_name)
+
     out_file_dir=set_dir(dir=output_dir,name="alignqc_report")
     
-    ref=""
-    if (!ref_genome==""){
-      ref=paste0(" R=",ref_genome)
-    }
-
-  
+    job=build_job(executor_id=executor_id,task_id=task_id)
 
     ## Generate alignment metrics
-
-   mapq_metrics_bam_samtools(bin_path=bin_path,bam=bam,output_dir=out_file_dir,
+    job_report=build_job_report(
+      job_id=job,
+      executor_id=executor_id, 
+      task_id=task_id,
+      input_args=argg,
+      out_file_dir=out_file_dir,
+      out_files=list(
+        )
+      )
+  job_report[["steps"]][["mapq_metrics"]]=mapq_metrics_bam_samtools(
+   bin_samtools=bin_samtools,
+   bam=bam,output_dir=out_file_dir,
    verbose=verbose,time=time,mode=mode,
-   threads=threads,ram=ram,update_time=update_time,wait=FALSE, hold=hold)
+   threads=threads,ram=ram,
+   update_time=update_time,
+   wait=FALSE, hold=hold)
 
-   summary_metrics_bam_picard(bin_path=bin_path2,bam=bam,output_dir=out_file_dir,
-    verbose=verbose,tmp_dir=tmp_dir,mode=mode,executor=executor,threads=threads,
-    ram=ram,update_time=update_time,wait=FALSE, hold=hold)
+  job_report[["steps"]][["summary_metrics"]]=summary_metrics_bam_picard(
+    bin_picard=bin_picard,
+    bam=bam,output_dir=out_file_dir,
+    verbose=verbose,tmp_dir=tmp_dir,
+    mode=mode,executor=executor,
+    threads=threads,
+    ram=ram,update_time=update_time,
+    wait=FALSE, hold=hold)
     
-   insertsize_metrics_bam_picard(bin_path=bin_path2,bam=bam,output_dir=out_file_dir,
-   verbose=verbose,tmp_dir=tmp_dir,mode=mode,executor=executor,threads=threads,ram=ram,
-   update_time=update_time,wait=FALSE,hold=hold)
+  job_report[["steps"]][["insertsize_metrics"]]=insertsize_metrics_bam_picard(
+  bin_picard=bin_picard,bam=bam,
+  output_dir=out_file_dir,
+   verbose=verbose,tmp_dir=tmp_dir,
+   mode=mode,executor=executor,
+   threads=threads,ram=ram,
+   update_time=update_time,
+   wait=FALSE,hold=hold)
 
 
     ## Only call metrics for panel data if bait and target intervals are supplied, Otherwise WGS metrics.
     
     if (method=="tg"){
    
-     tg_summary_metrics_bam_picard(bin_path=bin_path2,bam=bam,output_dir=out_file_dir,
-      verbose=verbose,tmp_dir=tmp_dir,bi=bi,ti=ti,mode=mode,executor=executor,threads=threads,ram=ram,
-      update_time=update_time,wait=FALSE,hold=hold)
+     job_report[["steps"]][["tg_summary_metrics"]]=tg_summary_metrics_bam_picard(
+      bin_picard=bin_picard,
+      bam=bam,output_dir=out_file_dir,
+      verbose=verbose,
+      tmp_dir=tmp_dir,bi=bi,
+      ti=ti,mode=mode,
+      executor=executor,
+      threads=threads,ram=ram,
+      update_time=update_time,
+      wait=FALSE,hold=hold)
       # ## Picard doesn't output coverage stats for off-target regions therefore we have to estimate this manually.
 
       # ## I use this function to get the mean coverage on and off target.
@@ -152,15 +189,26 @@ align_qc_metrics=function(bin_path="tools/samtools/samtools",
       # off_target=paste0(out_file,".off_Target.Histogram_Coverage.txt"),height=6,width=12,output_dir=out_file_dir)
 
     }else if(method=="rna"){
-        rnaseq_summary_metrics_bam_picard(bin_path=bin_path2,
-        bam=bam,output_dir=out_file_dir,verbose=verbose,tmp_dir=tmp_dir,
-        ri=ri,ref_flat=ref_flat,mode=mode,executor=executor,
-        threads=threads,ram=ram,update_time=update_time,wait=FALSE,hold=hold)
+        job_report[["steps"]][["rna_summary_metrics"]]=rnaseq_summary_metrics_bam_picard(
+        bin_picard=bin_picard,
+        bam=bam,output_dir=out_file_dir,
+        verbose=verbose,tmp_dir=tmp_dir,
+        ri=ri,ref_flat=ref_flat,
+        mode=mode,executor=executor,
+        threads=threads,ram=ram,
+        update_time=update_time,
+        wait=FALSE,hold=hold)
     }else if(method=="wgs"){
-        wgs_summary_metrics_bam_picard(bin_path=bin_path2,
-        bam=bam,output_dir=out_file_dir,verbose=verbose,tmp_dir=tmp_dir,mode=mode,
-        executor=executor,threads=threads,ram=ram,
-        update_time=update_time,wait=FALSE,hold=hold)
+        job_report[["steps"]][["rna_summary_metrics"]]=wgs_summary_metrics_bam_picard(
+        bin_picard=bin_picard,
+        bam=bam,
+        output_dir=out_file_dir,
+        verbose=verbose,
+        tmp_dir=tmp_dir,mode=mode,
+        executor=executor,
+        threads=threads,ram=ram,
+        update_time=update_time,
+        wait=FALSE,hold=hold)
     }
 
   }
@@ -171,8 +219,8 @@ align_qc_metrics=function(bin_path="tools/samtools/samtools",
 #'
 #'
 #' @param bam Path to the BAM file .
-#' @param bin_path Path to readCounter executable. Default path tools/samtools/samtools.
-#' @param bin_path2 Path to readCounter executable. Default path tools/hmmcopy_utils/bin/readCounter.
+#' @param bin_samtools Path to readCounter executable. Default path tools/samtools/samtools.
+#' @param bin_readcount Path to readCounter executable. Default path tools/hmmcopy_utils/bin/readCounter.
 #' @param output_dir Path to the output directory.
 #' @param chrs String of chromosomes to include. c()
 #' @param win Size of non overlaping windows. Default 500000.
@@ -182,8 +230,10 @@ align_qc_metrics=function(bin_path="tools/samtools/samtools",
 #' @export
 
 
-read_counter=function(bin_path="tools/samtools/samtools",bin_path2="tools/hmmcopy_utils/bin/readCounter",
-chrs=c(1:22,"X","Y"),win=500000, format="wig", bam="",output_dir="",verbose=FALSE,threads=3){
+read_counter=function(bin_samtools=build_default_tool_binary_list()$bin_samtools,
+bin_readcount=build_default_tool_binary_list()$bin_readcount,
+chrs=c(1:22,"X","Y"),win=500000, format="wig", bam="",
+output_dir="",verbose=FALSE,threads=3){
 
     win=format(win,scientific=F)
 
@@ -192,7 +242,7 @@ chrs=c(1:22,"X","Y"),win=500000, format="wig", bam="",output_dir="",verbose=FALS
     out_file=paste0(out_file_dir,"/",get_file_name(bam))
 
     ## Check chr notation
-    exec_code=paste(bin_path,"view",bam," | head -n 1 | awk -F \"\t\" '{cat $3}'")
+    exec_code=paste(bin_samtools,"view",bam," | head -n 1 | awk -F \"\t\" '{cat $3}'")
     
     if (verbose){
       print_verbose(exec_code=exec_code)
@@ -207,7 +257,7 @@ chrs=c(1:22,"X","Y"),win=500000, format="wig", bam="",output_dir="",verbose=FALS
 
      if (threads>1){
         parallel::mclapply(seq(1,length(chrs)),FUN=function(x){
-          exec_code=cat(paste(bin_path2,fmt,"--window", win,"--quality 20 --chromosome",
+          exec_code=cat(paste(bin_readcount,fmt,"--window", win,"--quality 20 --chromosome",
             paste0("chr",chrs[x],collapse=","), bam,">", paste0(out_file,".",x,".",format)))
           if (verbose){
             print_verbose(exec_code=exec_code)
@@ -218,7 +268,7 @@ chrs=c(1:22,"X","Y"),win=500000, format="wig", bam="",output_dir="",verbose=FALS
       system(paste0("ls -v -d ",out_file_dir,"/* | xargs cat >",out_file,".",format))
       system(paste0("rm ",out_file,".*.",format))
       }else{
-        exec_code=paste(bin_path2,fmt,"--window", win,"--quality 20 --chromosome",
+        exec_code=paste(bin_readcount,fmt,"--window", win,"--quality 20 --chromosome",
           paste0("chr",chrs,collapse=","), bam,">", paste0(out_file,".",format))
         if (verbose){
           print_verbose(exec_code=exec_code)
@@ -242,7 +292,7 @@ chrs=c(1:22,"X","Y"),win=500000, format="wig", bam="",output_dir="",verbose=FALS
 #' multiple genomic coordinates. The output is a BAM file with reads for inputed genomic region/s
 #'
 #'
-#' @param bin_path Path to readCounter executable. Default path tools/samtools/samtools.
+#' @param bin_samtools Path to readCounter executable. Default path tools/samtools/samtools.
 #' @param bam Path to the BAM file .
 #' @param position String of genomic position to filter. Ex chr6:1000-100000
 #' @param output_name Name of the output file.
@@ -252,7 +302,8 @@ chrs=c(1:22,"X","Y"),win=500000, format="wig", bam="",output_dir="",verbose=FALS
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-filter_bam=function(bin_path="tools/samtools/samtools",bam="",position="",bed="",
+filter_bam=function(bin_samtools=build_default_tool_binary_list()$bin_samtools,
+bam="",position="",bed="",
 verbose=FALSE,output_dir="",threads=1){
 
 
@@ -265,8 +316,11 @@ verbose=FALSE,output_dir="",threads=1){
   if(bed!=""){
     bed=paste("-L",bed)
   }
+  out_file=paste0(out_file_dir,"/",get_file_name(bam),".filtered.bam")
 
-  exec_code=paste(bin_path,"view -b",bed,"-@",threads,bam,position,">", paste0(out_file_dir,"/",get_file_name(bam),".filtered.bam"))
+  exec_code=paste(bin_samtools,"view -b",bed,"-@",threads,bam,position,">",
+    out_file
+  )
 
   if (verbose){
     print_verbose(exec_code=exec_code)
@@ -282,7 +336,7 @@ verbose=FALSE,output_dir="",threads=1){
 #'
 #' @param wig Path to the WIG file.
 #' @param norm_wig Path to normal WIG file.
-#' @param bin_path Path to ichorCNA executable. Default path tools/ichorCNA/scripts/runIchorCNA.R.
+#' @param bin_ichor Path to ichorCNA executable. Default path tools/ichorCNA/scripts/runIchorCNA.R.
 #' @param output_dir Path to the output directory.
 #' @param bed Path to BED file with target regions.
 #' @param sample_id String with sample name.
@@ -301,8 +355,10 @@ verbose=FALSE,output_dir="",threads=1){
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-ichorCNA=function(bin_path="tools/ichorCNA/scripts/runIchorCNA.R",sample_id="",
-wig="",norm_wig="",bed="",ploidy="2,3",tumour_content="0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9",
+ichorCNA=function(bin_ichor=build_default_tool_binary_list()$bin_ichor,
+sample_id="",
+wig="",norm_wig="",bed="",ploidy="2,3",
+tumour_content="0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9",
 homozygous_del="False",subclonal_states=NULL,
 gc="tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",
 map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",
@@ -334,7 +390,7 @@ output_dir="",verbose=TRUE,libdir="tools/ichorCNA",male_tresh=0.0001,chrs="'c(1:
       subclonal_states=""
     }
 
-    exec_code=paste("Rscript",bin_path,"--id",sample_id,"--WIG",wig,norm_wig,bed,
+    exec_code=paste("Rscript",bin_ichor,"--id",sample_id,"--WIG",wig,norm_wig,bed,
       "--ploidy",paste0("'c(",ploidy,")'"),"--normal",paste0("'c(",tumour_content,")'"),
       "--maxCN 7 --gcWig", gc,"--mapWig",map,"--centromere",centromere,subclonal_states,
       "--normalPanel",normal_panel,"--includeHOMD",homozygous_del,"--chrs",chrs,
@@ -355,7 +411,7 @@ output_dir="",verbose=TRUE,libdir="tools/ichorCNA",male_tresh=0.0001,chrs="'c(1:
 #'
 #' @param wigs Path to the WIG files.
 #' @param wigs_dir Path to dir with WIG files.
-#' @param bin_path Path to ichorCNA executable. Default path tools/ichorCNA/scripts/createPanelOfNormals.
+#' @param bin_ichor_pon Path to ichorCNA executable. Default path tools/ichorCNA/scripts/createPanelOfNormals.
 #' @param output_dir Path to the output directory.
 #' @param bed Path to BED file with target regions.
 #' @param output_name File output name.
@@ -366,10 +422,13 @@ output_dir="",verbose=TRUE,libdir="tools/ichorCNA",male_tresh=0.0001,chrs="'c(1:
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-panel_of_normals_ichorCNA=function(bin_path="tools/ichorCNA/scripts/createPanelOfNormals.R",wigs_dir="",wigs="",bed="",
-output_name="PoN_ichorCNA",gc="tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",
-map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",
-centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",male_tresh=0.0001,verbose=TRUE){
+panel_of_normals_ichorCNA=function(
+  bin_ichor_pon=build_default_tool_binary_list()$bin_ichor_pon,
+  wigs_dir="",wigs="",bed="",output_name="PoN_ichorCNA",
+  gc="tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",
+  map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",
+  centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",
+  male_tresh=0.0001,verbose=TRUE){
 
     if (wigs!="" && wigs_dir!=""){
       cat("Arguments wigs and wigs_dir are mutually exclusive")
@@ -395,7 +454,7 @@ centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt"
       bed=paste0("--exons.bed ",bed)
     }
 
-    exec_code=paste("Rscript",bin_path,"--filelist",wig_list,bed," --gcWig", gc,
+    exec_code=paste("Rscript",bin_ichor_pon,"--filelist",wig_list,bed," --gcWig", gc,
       "--mapWig",map,"--centromere",centromere,"--fracReadsInChrYForMale",male_tresh," --outfile",output_name)
     if(verbose){
       print_verbose(exec_code=exec_code)

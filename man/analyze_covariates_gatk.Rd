@@ -5,7 +5,7 @@
 \title{Wrapper of AnalyzeCovariates function in gatk}
 \usage{
 analyze_covariates_gatk(
-  bin_path = "tools/gatk/gatk",
+  bin_gatk = build_default_tool_binary_list()$bin_gatk,
   before = "",
   after = "",
   output_dir = "",
@@ -22,7 +22,7 @@ analyze_covariates_gatk(
 )
 }
 \arguments{
-\item{bin_path}{\link{REQUIRED} Path to gatk executable. Default tools/gatk/gatk.}
+\item{bin_gatk}{\link{REQUIRED} Path to gatk executable. Default tools/gatk/gatk.}
 
 \item{before}{\link{REQUIRED} Recalibration table produced by generate_BQSR function.}
 

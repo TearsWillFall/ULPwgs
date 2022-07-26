@@ -5,7 +5,7 @@
 \title{Merge BAM files in directory}
 \usage{
 merge_bams_samtools(
-  bin_path = "tools/samtools/samtools",
+  bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bams = "",
   output_name = "",
   verbose = TRUE,
@@ -21,6 +21,8 @@ merge_bams_samtools(
 )
 }
 \arguments{
+\item{bin_samtools}{Path to samtools binary.}
+
 \item{output_name}{Output file name}
 
 \item{verbose}{Enables progress messages. Default False.}

@@ -3,7 +3,7 @@
 #'
 #' This function marks duplicated reads (artifacts) found in aligned sequences.
 #'
-#' @param bin_path Path to picard executable. Default path tools/picard/build/libs/picard.jar.
+#' @param bin_picard Path to picard executable. Default path tools/picard/build/libs/picard.jar.
 #' @param bam Path to the input file with the aligned sequence.
 #' @param output_dir Path to the output directory.
 #' @param tmp_dir Path to tmp directory.
@@ -19,13 +19,16 @@
 #' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 
-markdups_picard=function(bin_path="tools/picard/build/libs/picard.jar",bam="",
-output_dir="",verbose=FALSE,hnd=1000,threads,ram=4,tmp_dir="",remove_duplicates=TRUE,
-mode="local",executor=make_unique_id("markDups"),task="markDups",
-time="48:0:0",update_time=60,wait=FALSE,hold=""){
+markdups_picard=function(
+  bin_picard=build_default_tool_binary_list()$bin_picard,bam="",
+  output_dir="",verbose=FALSE,hnd=1000,threads,ram=4,tmp_dir="",
+  remove_duplicates=TRUE,mode="local",executor=make_unique_id("markDups"),
+  task="markDups",time="48:0:0",
+  update_time=60,wait=FALSE,hold=""
+){
 
     argg <- as.list(environment())
-  task_id=make_unique_id(task_name)
+    task_id=make_unique_id(task_name)
     out_file_dir=set_dir(dir=output_dir,name="markdups_reports")
 
     tmp=""
@@ -42,14 +45,13 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
     job=build_job(executor_id=executor_id,task_id=task_id)
 
+    out_file=paste0(out_file_dir,"/",get_file_name(bam),".rmdup.",get_file_ext(bam))
+    out_file_md=paste0(out_file_dir,"/",get_file_name(bam),".picard_rmdup.txt")
+
     exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",
-      bin_path," MarkDuplicates I=",bam, " O=",paste0(out_file_dir,"/",
-      get_file_name(bam),".rmdup.",get_file_ext(bam)),
-      " M=",paste0(out_file_dir,"/",
-      get_file_name(bam),".picard_rmdup.txt"),
-      remove_duplicates, " AS=true VALIDATION_STRINGENCY=LENIENT ",
+      bin_picard," MarkDuplicates I=",bam, " O=",out_file,
+      " M=",out_file_md, remove_duplicates, " AS=true VALIDATION_STRINGENCY=LENIENT ",
       paste0("MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=",hnd)," ",tmp)
-    
     
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
@@ -76,7 +78,9 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
     input_args = argg,
     out_file_dir=out_file_dir,
       out_file=list(
-        )
+        bam=out_file,
+        log=out_file_md
+    )
   )
 
 
@@ -93,7 +97,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #'
 #'
 #' @param bam Path to the input file with the sequence.
-#' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
+#' @param bin_picard Path to picard executable. Default tools/picard/build/libs/picard.jar.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param ram RAM memory to use in GB. Default 4.
@@ -106,11 +110,13 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 
-summary_metrics_bam_picard=function(bin_path="tools/picard/build/libs/picard.jar",bam="",output_dir="",
-verbose=FALSE,tmp_dir=".",threads=3,ram=4,mode="local",executor=make_unique_id("summaryMetrics"),task="summaryMetrics",
-time="48:0:0",update_time=60,wait=FALSE,hold=""){
-
-
+summary_metrics_bam_picard=function(
+  bin_picard=build_default_tool_binary_list()$bin_picard,
+  bam="",output_dir="",verbose=FALSE,tmp_dir=".",
+  threads=3,ram=4,mode="local",executor=make_unique_id("summaryMetrics"),
+  task="summaryMetrics",
+  time="48:0:0",update_time=60,wait=FALSE,hold=""
+){
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="summary")
@@ -120,9 +126,10 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
     tmp=paste0(" TMP_DIR=",tmp_dir)
   }
 
+  out_file=paste0(out_file_dir,"/",get_file_name(bam),".picard_summary.txt ")
   exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir,
-        " -jar ",bin_path," CollectAlignmentSummaryMetrics ",
-        "VALIDATION_STRINGENCY=SILENT I=",bam," O=",paste0(out_file_dir,"/",get_file_name(bam),".picard_summary.txt "),tmp)
+        " -jar ",bin_picard," CollectAlignmentSummaryMetrics ",
+        "VALIDATION_STRINGENCY=SILENT I=",bam," O=",out_file,tmp)
   
   job=build_job(executor_id=executor_id,task_id=task_id)
 
@@ -133,10 +140,10 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
   }
 
-
  if(verbose){
        print_verbose(job=job,arg=argg,exec_code=exec_code)
-    }
+  }
+
   error=system(exec_code)
   if(error!=0){
     stop("picard failed to run due to unknown error.
@@ -149,8 +156,9 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
     task_id=task_id, 
     input_args = argg,
     out_file_dir=out_file_dir,
-      out_file=list(
-        )
+    out_file=list(
+      summary=out_file
+    )
 )
 
 
@@ -167,7 +175,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #'
 #'
 #' @param bam Path to the input file with the sequence.
-#' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
+#' @param bin_picard Path to bwa executable. Default path tools/samtools/samtools.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param ram RAM memory to use in GB. Default 4.
@@ -180,12 +188,12 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 
-insertsize_metrics_bam_picard=function(bin_path="tools/picard/build/libs/picard.jar",
-bam="",output_dir="",verbose=FALSE,tmp_dir=".",threads=1,ram=4,
-mode="local",executor=make_unique_id("insertsizeMetrics"),task="insertsizeMetrics",
-time="48:0:0",update_time=60,wait=FALSE,hold=""){
-
-
+insertsize_metrics_bam_picard=function(
+  bin_picard=build_default_tool_binary_list()$bin_picard,
+  bam="",output_dir="",verbose=FALSE,tmp_dir=".",threads=1,ram=4,
+  mode="local",executor=make_unique_id("insertsizeMetrics"),
+  task="insertsizeMetrics",
+  time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -197,10 +205,11 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
     tmp=paste0(" TMP_DIR=",tmp_dir)
   }
 
+  out_file=paste0(out_file_dir,"/",get_file_name(bam),".picard_insert_size.txt")
+  out_file_pdf=paste0(out_file_dir,"/",get_file_name(bam),".picard_insert_size.pdf ")
   exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",
-      bin_path," CollectInsertSizeMetrics ","VALIDATION_STRINGENCY=SILENT I=",
-      bam," O=",paste0(out_file_dir,"/",get_file_name(bam),".picard_insert_size.txt")," H=",
-      paste0(out_file_dir,"/",get_file_name(bam),".picard_insert_size.pdf "),tmp)
+      bin_picard," CollectInsertSizeMetrics ","VALIDATION_STRINGENCY=SILENT I=",
+      bam," O=",out_file," H=",out_file_pdf,tmp)
 
   job=build_job(executor_id=executor_id,task_id=task_id)
   if(mode=="batch"){
@@ -226,9 +235,10 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
     input_args = argg,
     out_file_dir=out_file_dir,
       out_file=list(
+        insert=out_file,
+        pdf=out_file_pdf
         )
-)
-
+  )
 
  if(wait&&mode=="batch"){
     job_validator(job=job_report$job_id,
@@ -244,7 +254,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #'
 #'
 #' @param bam Path to the input file with the sequence.
-#' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
+#' @param bin_picard Path to bwa executable. Default path tools/samtools/samtools.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param ram RAM memory to use in GB. Default 4.
@@ -259,10 +269,12 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 
-tg_summary_metrics_bam_picard=function(bin_path="tools/picard/build/libs/picard.jar",bam="",output_dir="",
-verbose=FALSE,tmp_dir=".",ref_genome="",threads=1,ram=4,bi="",ti="",
-mode="local",executor_id=make_unique_id("TGsummaryMetrics"),
-task_name="TGsummaryMetrics",time="48:0:0",update_time=60,wait=FALSE,hold=""){
+tg_summary_metrics_bam_picard=function(
+  bin_picard=build_default_tool_binary_list()$bin_picard,bam="",output_dir="",
+  verbose=FALSE,tmp_dir=".",ref_genome="",threads=1,ram=4,bi="",ti="",
+  mode="local",executor_id=make_unique_id("TGsummaryMetrics"),
+  task_name="TGsummaryMetrics",time="48:0:0",update_time=60,
+  wait=FALSE,hold=""){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -284,7 +296,7 @@ task_name="TGsummaryMetrics",time="48:0:0",update_time=60,wait=FALSE,hold=""){
   out_file_ts=paste0(out_file_dir,"/",get_file_name(bam),".picard_TS.txt")
   out_file=paste0(out_file_dir,"/",get_file_name(bam),".picard_CollectHSmetrics.txt ")
   exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir,
-        " -jar ",bin_path," CollectHsMetrics VALIDATION_STRINGENCY=SILENT BI=",
+        " -jar ",bin_picard," CollectHsMetrics VALIDATION_STRINGENCY=SILENT BI=",
         bi," TI=",ti," I=",bam," THEORETICAL_SENSITIVITY_OUTPUT=",
         out_file_ts," O=",out_file,ref,tmp)
 
@@ -339,7 +351,7 @@ task_name="TGsummaryMetrics",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #'
 #'
 #' @param bam Path to the input file with the sequence.
-#' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
+#' @param bin_samtools Path to picard executable. Default path tools/picard/build/libs/picard.jar.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param ram RAM memory to use in GB. Default 4.
@@ -354,10 +366,12 @@ task_name="TGsummaryMetrics",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 
-rnaseq_summary_metrics_bam_picard=function(bin_path="tools/picard/build/libs/picard.jar",
-bam="",output_dir="",verbose=FALSE,tmp_dir=".",threads=1,ram=4,ri="",ref_flat="",mode="local",
-executor=make_unique_id("RNAsummaryMetrics"),task="RNAsummaryMetrics",time="48:0:0",
-update_time=60,wait=FALSE,hold=""){
+rnaseq_summary_metrics_bam_picard=function(
+  bin_picard=build_default_tool_binary_list()$bin_picard,
+  bam="",output_dir="",verbose=FALSE,tmp_dir=".",threads=1,ram=4,
+  ri="",ref_flat="",mode="local",executor=make_unique_id("RNAsummaryMetrics"),
+  task="RNAsummaryMetrics",time="48:0:0",
+  update_time=60,wait=FALSE,hold=""){
 
 
   argg <- as.list(environment())
@@ -369,10 +383,11 @@ update_time=60,wait=FALSE,hold=""){
     tmp=paste0(" TMP_DIR=",tmp_dir)
   }
 
-  exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_path,
+  out_file=paste0(out_file_dir,"/",get_file_name(bam),".CollectRNAseqMetrics.txt ")
+  exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_picard,
         " CollectRnaSeqMetrics VALIDATION_STRINGENCY=SILENT STRAND_SPECIFICITY='NONE' REF_FLAT=",
          ref_flat, " RIBOSOMAL_INTERVALS=",ri,
-         " I=",bam," O=",paste0(out_file_dir,"/",get_file_name(bam),".CollectRNAseqMetrics.txt "),tmp)
+         " I=",bam," O=",,tmp)
   
   
   
@@ -402,6 +417,7 @@ job=build_job(executor_id=executor_id,task_id=task_id)
     input_args = argg,
     out_file_dir=out_file_dir,
       out_file=list(
+        summary=out_file
         )
 )
 
@@ -419,7 +435,7 @@ job=build_job(executor_id=executor_id,task_id=task_id)
 #'
 #'
 #' @param bam Path to the input file with the sequence.
-#' @param bin_path Path to bwa executable. Default path tools/samtools/samtools.
+#' @param bin_picard Path to picard executable. Default path tools/samtools/samtools.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param ram RAM memory to use in GB. Default 4.
@@ -432,10 +448,11 @@ job=build_job(executor_id=executor_id,task_id=task_id)
 #' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 
-wgs_summary_metrics_bam_picard=function(bin_path="tools/picard/build/libs/picard.jar",
-bam="",output_dir="",verbose=FALSE,tmp_dir=".",threads=1,ram=4,mode="local",
-executor=make_unique_id("WGSsummaryMetrics"),task="WGSsummaryMetrics",time="48:0:0",
-update_time=60,wait=FALSE,hold=""){
+wgs_summary_metrics_bam_picard=function(
+  bin_picard=build_default_tool_binary_list()$bin_picard,
+  bam="",output_dir="",verbose=FALSE,tmp_dir=".",threads=1,ram=4,mode="local",
+  executor=make_unique_id("WGSsummaryMetrics"),task="WGSsummaryMetrics",time="48:0:0",
+  update_time=60,wait=FALSE,hold=""){
 
 
   argg <- as.list(environment())
@@ -448,9 +465,10 @@ update_time=60,wait=FALSE,hold=""){
     tmp=paste0(" TMP_DIR=",tmp_dir)
   }
 
+  out_file=paste0(out_file_dir,"/",get_file_name(bam),".picard_wgs_q00.txt ")
   exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",
-            bin_path," CollectWgsMetrics VALIDATION_STRINGENCY=SILENT MINIMUM_MAPPING_QUALITY=",
-            mapq," I=",bam," O=",paste0(out_file_dir,"/",get_file_name(bam),".picard_wgs_q00.txt "),tmp)
+            bin_picard," CollectWgsMetrics VALIDATION_STRINGENCY=SILENT MINIMUM_MAPPING_QUALITY=",
+            mapq," I=",bam," O=",out_file,tmp)
   
 job=build_job(executor_id=executor_id,task_id=task_id)
   if(mode=="batch"){
@@ -478,6 +496,7 @@ job=build_job(executor_id=executor_id,task_id=task_id)
     input_args = argg,
     out_file_dir=out_file_dir,
       out_file=list(
+        summary=out_file
         )
 )
 

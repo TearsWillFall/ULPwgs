@@ -9,5 +9,6 @@
 
 
 install_required_tools=function(){
-  BTools::install_tools(whitelist=c("FastQC","bwa","skewer","samtools","picard","hmmcopy_utils","ichorCNA"))
+  BTools::install_tools(whitelist=c("FastQC","bwa","skewer",
+  "samtools","picard","hmmcopy_utils","ichorCNA"))
 }
