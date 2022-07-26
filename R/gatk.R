@@ -401,7 +401,7 @@ parallel_generate_BQSR_gatk=function(
       bin_gatk=bin_gatk,bam=bam,ref_genome=ref_genome,
       dbsnp=dbsnp,output_dir=out_file_dir,verbose=verbose,
       executor_id=task_id,mode=mode,time=time,
-      threads=threads,ram=ram,update_time=update_time
+      threads=threads,ram=ram,update_time=update_time,
       wait=FALSE,hold=hold
     ) 
   },mc.cores=ifelse(mode=="local",threads,3))
