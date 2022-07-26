@@ -404,8 +404,8 @@ parallel_generate_BQSR_gatk=function(
         executor_id=task_id,mode=mode,time=time,
         threads=threads,ram=ram,update_time=update_time,
         wait=FALSE,hold=hold
-    ),recursive=FALSE)
-  },mc.cores=ifelse(mode=="local",threads,3))
+    )
+  },mc.cores=ifelse(mode=="local",threads,3)),recursive=FALSE)
 
 
     
