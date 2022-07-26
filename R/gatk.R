@@ -164,7 +164,7 @@ recal_gatk=function(
     time=time,update_time=update_time,wait=FALSE,hold=hold)
 
 
-  regions=read.table(job_report[["steps"]][["getChr"]]$out_file$ref,
+  regions=read.table(job_report[["steps"]][["getChr"]]$out_files$ref,
   sep="\t",header=TRUE)
 
 
@@ -182,7 +182,7 @@ recal_gatk=function(
   job_report[["steps"]][["par_apply_bqsr"]]=parallel_apply_BQSR_gatk(
     bin_samtools=bin_samtools,bin_gatk=bin_gatk,bin_picard=bin_picard,
     bam=bam,ref_genome=ref_genome,
-    rec_table=paste0(out_file_dir,"/",get_file_name(bam),".recal.table"),
+    rec_table=job_report[["steps"]][["par_apply_bqsr"]][["steps"]][["generate_bqsr_report"]]$out_file$table,
     output_dir=out_file_dir4,regions=regions,
     clean=clean,verbose=verbose,executor_id=task_id,
     threads=threads,mode=mode,ram=ram,time=time,
