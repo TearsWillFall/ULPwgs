@@ -277,7 +277,7 @@ generate_BQSR_gatk=function(
     dbsnp=paste(" --known-sites ",dbsnp,collapse=" ")
   }
 
-  exec_code=paste0(bin_path," BaseRecalibrator -I ",bam, " -R ", ref_genome, dbsnp,
+  exec_code=paste0(bin_gatk," BaseRecalibrator -I ",bam, " -R ", ref_genome, dbsnp,
   reg," -O ",out_file)
 
 
@@ -392,7 +392,7 @@ parallel_generate_BQSR_gatk=function(
       )
     )
 
-  job_report[["steps"]][["generate_bqsr_report"]]=unlist(lapply(
+  job_report[["steps"]][["generate_bqsr_report"]]=unlist(parallel::mclapply(
     seq(1,nrow(regions)),FUN=function(x){
     tmp=regions[x,]
       job_report=list()
@@ -404,7 +404,7 @@ parallel_generate_BQSR_gatk=function(
         threads=threads,ram=ram,update_time=update_time,
         wait=FALSE,hold=hold
     )
-  }),recursive=FALSE)
+  },mc.cores=ifelse(mode=="local",threads,3)),recursive=FALSE)
 
 
     
