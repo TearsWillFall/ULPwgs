@@ -380,7 +380,6 @@ parallel_generate_BQSR_gatk=function(
     threads=threads,ram=ram,update_time=update_time,wait=FALSE,
     hold=unlist_lvl(named_list=job_report[["steps"]],var="job_id"))
   
-
   if(wait&&mode=="batch"){
     job_validator(job=unlist_lvl(named_list=job_report[["steps"]],var="job_id"),
     time=update_time,verbose=verbose,threads=threads)
@@ -397,7 +396,6 @@ parallel_generate_BQSR_gatk=function(
 #' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360036829851-GatherBQSRReports
 #'
 #' @param bin_gatk [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
-#' @param reports_dir [REQUIRED] Path to the directory where reports are stored.
 #' @param report [REQUIRED] Path to indivual reports.
 #' @param output_name [OPTIONAL] Name for the output report file.
 #' @param clean Clean input files. Default TRUE.
@@ -416,7 +414,7 @@ parallel_generate_BQSR_gatk=function(
 
 gather_BQSR_reports_gatk=function(
   bin_gatk=build_default_tool_binary_list()$bin_gatk,
-  report="",reports_dir="",executor_id=make_unique_id("gatherBQSR"),
+  report="",executor_id=make_unique_id("gatherBQSR"),
   task_name="gatherBQSR",output_name="Report", clean=FALSE,
   output_dir="",verbose=FALSE,mode="local",time="48:0:0",
   threads=4,ram=4,update_time=60,wait=FALSE,hold=""){
@@ -424,16 +422,9 @@ gather_BQSR_reports_gatk=function(
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
-  if(report==""){
-      files=list.files(reports_dir,full.names=TRUE,pattern=":")
-      files=files[grepl(".recal.table",files)]
-  }else{
-    files=report
-  }
-
 
   out_file=paste0(out_file_dir,output_name,".recal.table")
-  exec_code=paste0(bin_gatk," GatherBQSRReports ",paste(" -I ",files,collapse=" "),
+  exec_code=paste0(bin_gatk," GatherBQSRReports ",paste(" -I ",report,collapse=" "),
     " -O ",out_file)
 
 
