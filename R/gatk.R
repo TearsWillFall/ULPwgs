@@ -404,7 +404,7 @@ parallel_generate_BQSR_gatk=function(
         threads=threads,ram=ram,update_time=update_time,
         wait=FALSE,hold=hold
     )
-  },mc.cores=ifelse(mode=="local",threads,3)),recursive=FALSE)
+  }),recursive=FALSE)
 
 
     
