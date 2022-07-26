@@ -360,7 +360,7 @@ parallel_generate_BQSR_gatk=function(
       )
     )
 
-  parallel::mclapply(1:nrow(regions),FUN=function(x){
+  parallel::mclapply(seq(1,nrow(regions)),FUN=function(x){
     tmp=regions[x,]
     job_report[["steps"]][["generate_bqsr_report"]][[tmp$region]]<<-generate_BQSR_gatk(
     region=tmp$region,
