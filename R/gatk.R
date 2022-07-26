@@ -154,11 +154,9 @@ recal_gatk=function(
       main=out_file_dir4,
       tmp=out_file_dir3,
       after=out_file_dir2,
-      before=out_file_dir,
+      before=out_file_dir
       ),
     out_files=list(
-      bam=out_file,
-      log=out_file_md
     )
   )
 
