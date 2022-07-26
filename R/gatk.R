@@ -661,30 +661,31 @@ parallel_apply_BQSR_gatk=function(
     out_files=list(
       )
     )
-parallel::mclapply(seq(1,nrow(regions)),FUN=function(x){
+job_report[["steps"]][["apply_bqsr"]]=unllist(parallel::mclapply(seq(1,nrow(regions)),FUN=function(x){
     tmp=regions[x,]
-    job_report[["steps"]][["apply_bqsr"]][[tmp$region]]<<-apply_BQSR_gatk(
+    job_report<-list()
+    job_report[[tmp$region]]<-apply_BQSR_gatk(
     region=tmp$region,
     bin_gatk=bin_gatk,bam=bam,ref_genome=ref_genome,
     executor_id=executor_id,rec_table=rec_table,
     output_dir=out_file_dir,verbose=verbose,mode=mode,time=time,threads=threads,
     ram=ram,update_time=update_time,hold=hold,wait=FALSE)},
     mc.cores=ifelse(mode=="local",threads,3)
-  )
+  ),recursive=FALSE)
   
 job_report[["steps"]][["gather_bam"]]=gather_bam_files(
   bin_picard=bin_picard,
-  bam=unlist_level(job_report[["steps"]][["apply_bqsr"]],var="bam"),
+  bam=unlist_lvl(job_report[["steps"]][["apply_bqsr"]],var="bam"),
   output_dir=out_file_dir,
   output_name=paste0(get_file_name(bam),".recal.sorted.rmdup.sorted"),
   executor_id=task_id,mode=mode,time=time,threads=threads,ram=ram,
   update_time=update_time,wait=FALSE,
   clean=clean,
-  hold=unlist_level(job_report[["steps"]][["apply_bqsr"]],var="job_id"))
+  hold=unlist_lvl(job_report[["steps"]][["apply_bqsr"]],var="job_id"))
 
 
   if(wait&&mode=="batch"){
-    job_validator(job=unlist_level(named_list=job_report[["steps"]][["apply_bqsr"]],
+    job_validator(job=unlist_lvl(named_list=job_report[["steps"]][["apply_bqsr"]],
     var="job_id"),time=update_time,verbose=verbose,threads=threads)
   }
 

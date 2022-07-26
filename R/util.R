@@ -71,7 +71,7 @@ unlist_lvl=function(named_list,var){
       out=named_list[[var]]
   }else{
     out=unlist(lapply(names(named_list),FUN=function(name){
-      out=unlist_level(named_list=named_list[[name]],var)
+      out=unlist_lvl(named_list=named_list[[name]],var)
 
     }))
   }
