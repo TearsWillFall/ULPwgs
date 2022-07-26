@@ -1106,7 +1106,7 @@ get_fai_reference_chr=function(
     
     out_file=paste0(out_file_dir,output_name,".txt")
     exec_code=paste("cat",paste0(fasta,".fai"),
-    " | grep @SQ| awk \'{print $1\"\\t\"0\"\\t\"$2}\' |  awk \'BEGIN{print \"chr\\tstart\\tend\"}1\' >",out_file)
+    " | awk \'{print $1\"\\t\"0\"\\t\"$2}\' |  awk \'BEGIN{print \"chr\\tstart\\tend\"}1\' >",out_file)
     
     job=build_job(executor_id = executor_id,task_id=task_id)
     

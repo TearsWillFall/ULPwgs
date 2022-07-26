@@ -157,12 +157,12 @@ recal_gatk=function(
     )
   )
   
-  job_reports[["steps"]][["getChr"]]=get_fai_reference_chr(
-    fasta=ref_genome,verbose=verbose,
+  job_report[["steps"]][["getChr"]]=get_fai_reference_chr(
+    fasta=ref_genome,verbose=verbose,output_dir=output_dir,
     executor_id=task_id,mode=mode,threads=threads,ram=ram,
     time=time,update_time=update_time,wait=FALSE,hold=hold)
 
-  regions=read.table(job_reports[["steps"]][["getChr"]]$out_file$ref,
+  regions=read.table(job_report[["steps"]][["getChr"]]$out_file$ref,
   sep="\t",header=TRUE)
 
 
@@ -173,7 +173,7 @@ recal_gatk=function(
     output_dir=out_file_dir,clean=clean,
     verbose=verbose,executor_id=task_id,mode=mode,threads=threads,ram=ram,
     time=time,update_time=update_time,wait=FALSE,
-    hold=job_reports[["steps"]][["getChr"]]$job_id)
+    hold=job_report[["steps"]][["getChr"]]$job_id)
 
 
 
