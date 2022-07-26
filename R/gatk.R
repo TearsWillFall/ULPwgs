@@ -163,7 +163,7 @@ recal_gatk=function(
   job_report[["steps"]][["par_bqsr_before"]]=parallel_generate_BQSR_gatk(
     bin_samtools=bin_samtools,bin_gatk=bin_gatk,bam=bam,
     ref_genome=ref_genome,dbsnp=dbsnp,regions=regions,
-    output_dir=out_file_dir,
+    output_dir=out_file_dir,clean=clean,
     verbose=verbose,executor_id=task_id,mode=mode,threads=threads,ram=ram,
     time=time,update_time=update_time,wait=FALSE,hold=hold)
 
@@ -193,7 +193,7 @@ recal_gatk=function(
     bin_samtools=bin_samtools,bin_gatk=bin_gatk,
     bam=paste0(out_file_dir4,"/",get_file_name(bam),".recal.",get_file_ext(bam)),
     ref_genome=ref_genome,dbsnp=dbsnp,threads=threads,regions=regions,
-    output_dir=out_file_dir2,verbose=verbose,executor_id=task_id,
+    output_dir=out_file_dir2,verbose=verbose,executor_id=task_id,clean=clean,
     mode=mode,ram=ram,time=time,update_time=update_time,
     wait=FALSE,hold=job_report$job_id)
   
@@ -310,6 +310,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @param dbsnp [REQUIRED] Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param regions [OPTIONAL] Regions to parallelize through.
+#' @param clean Remove intermediary files. Default TRUE
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
 #' @param executor_id Task EXECUTOR ID. Default "par_generateBQSR"
@@ -328,7 +329,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 parallel_generate_BQSR_gatk=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bin_gatk=build_default_tool_binary_list()$bin_gatk,bam="",
-  regions="",ref_genome="",dbsnp="",threads=3,ram=4,
+  regions="",ref_genome="", clean=TRUE, dbsnp="",threads=3,ram=4,
   executor_id=make_unique_id("par_generateBQSR"),
   task_name="par_generateBQSR",output_dir="",
   verbose=FALSE,mode="local",time="48:0:0",
