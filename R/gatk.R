@@ -395,7 +395,7 @@ parallel_generate_BQSR_gatk=function(
     seq(1,nrow(regions)),FUN=function(x){
     tmp=regions[x,]
       job_report=list()
-      job_report[[tmp$region]]<- generate_BQSR_gatk(
+      job_report[[tmp$region]]<-generate_BQSR_gatk(
         region=tmp$region,
         bin_gatk=bin_gatk,bam=bam,ref_genome=ref_genome,
         dbsnp=dbsnp,output_dir=out_file_dir,verbose=verbose,
@@ -405,11 +405,12 @@ parallel_generate_BQSR_gatk=function(
     )
   },mc.cores=ifelse(mode=="local",threads,3)),recursive=FALSE)
 
+  print(job_report)
 
     
   job_report[["steps"]][["generate_bqsr_report"]]=gather_BQSR_reports_gatk(
     bin_gatk=bin_gatk,
-    report=unlist_lvl(named_list=job_report[["steps"]][["generate_bqsr_report"]],var="recal_table"),
+    report=unlist(job_report[["steps"]][["generate_bqsr_report"]])$out_files$recal_table,
     executor_id=task_id,output_dir=out_file_dir,clean=clean,
     output_name=get_file_name(bam),verbose=verbose,mode=mode,time=time,
     threads=threads,ram=ram,update_time=update_time,wait=FALSE,
@@ -419,7 +420,8 @@ parallel_generate_BQSR_gatk=function(
     job_validator(job=unlist_lvl(named_list=job_report[["steps"]],var="job_id"),
     time=update_time,verbose=verbose,threads=threads)
   }
-  print(job_report)
+
+
   return(job_report)
 }
 
