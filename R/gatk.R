@@ -549,7 +549,7 @@ apply_BQSR_gatk=function(
   if (region==""){
       out_file=paste0(" ", out_file_dir,"/", get_file_name(bam),".recal.",get_file_ext(bam))
   }else{
-      reg=paste0(" -L ",strsplit(region,";")[[1]][2], " ")
+      reg=paste0(" -L ",strsplit(region,"__")[[1]][2], " ")
       out_file=paste0(out_file_dir,"/", get_file_name(bam),".",region,".recal.",get_file_ext(bam))
   }
   exec_code=paste(bin_gatk," ApplyBQSR -I ",bam, " -R ", ref_genome,
@@ -655,7 +655,7 @@ parallel_apply_BQSR_gatk=function(
   }
   regions$start=regions$start+1
   regions$pos=1:nrow(regions)
-  regions=regions %>% dplyr::mutate(region=paste0(pos,".",chr,":",start,"-",end))
+  regions=regions %>% dplyr::mutate(region=paste0(pos,"__",chr,":",start,"-",end))
 
   job=build_job(executor_id=executor_id,task_id=task_id)
 
