@@ -5,12 +5,12 @@
 \title{Function to collect chromosome data in fasta fai}
 \usage{
 get_fai_reference_chr(
-  bam = "",
+  fasta = "",
+  output_name = "chrRef",
+  output_dir = "",
   verbose = FALSE,
   executor_id = make_unique_id("getFAIchr"),
   task_name = "getFAIrchr",
-  output_name = "chrRef",
-  output_dir = "",
   mode = "local",
   time = "48:0:0",
   threads = 4,
@@ -21,9 +21,29 @@ get_fai_reference_chr(
 )
 }
 \arguments{
-\item{verbose}{Enables progress messages. Default False.}
-
 \item{fasta}{Path to directory with fasta file.}
+
+\item{output_name}{Output name}
+
+\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.#}
+
+\item{executor_id}{Task EXECUTOR ID. Default "mardupsGATK"}
+
+\item{task_name}{Task name. Default "mardupsGATK"}
+
+\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+
+\item{threads}{Number of threads . Default 4}
+
+\item{ram}{RAM memory. Default 4}
+
+\item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
+
+\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
+
+\item{hold}{\link{OPTIONAL} Hold job until job is finished. Job ID.}
 }
 \description{
 This function takes a FAI file and collects the chr names from the fai

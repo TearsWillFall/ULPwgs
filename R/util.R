@@ -988,13 +988,24 @@ bed_coverage=function(
 #' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
 #' @param bam Path to directory with BAM files to merge.
 #' @param verbose Enables progress messages. Default False.
+#' @param threads Number of threads . Default 4
+#' @param ram RAM memory. Default 4
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "mardupsGATK"
+#' @param task_name Task name. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.#
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
 #' @export
 
 get_bam_reference_chr=function(
     bin_samtools=build_default_tool_binary_list()$bin_samtools,
-    bam="",verbose=FALSE,executor_id=make_unique_id("getBAMchr"),
-    task_name="getBAMchr",output_name="chrReference",
-    output_dir="",mode="local",time="48:0:0",
+    bam="",output_name="chrReference",
+    output_dir="",verbose=FALSE,
+    executor_id=make_unique_id("getBAMchr"),task_name="getBAMchr",
+    mode="local",time="48:0:0",
     threads=4,ram=4,update_time=60,wait=FALSE,hold=""
   ){
  
@@ -1062,13 +1073,25 @@ get_bam_reference_chr=function(
 #' file.
 #'
 #' @param fasta Path to directory with fasta file.
+#' @param output_name Output name
 #' @param verbose Enables progress messages. Default False.
+#' @param threads Number of threads . Default 4
+#' @param ram RAM memory. Default 4
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "mardupsGATK"
+#' @param task_name Task name. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.#
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
 #' @export
 
 get_fai_reference_chr=function(
-    bam="",verbose=FALSE,executor_id=make_unique_id("getFAIchr"),
-    task_name="getFAIrchr",output_name="chrRef",
-    output_dir="",mode="local",time="48:0:0",
+    fasta="",output_name="chrRef",output_dir="",
+    verbose=FALSE,executor_id=make_unique_id("getFAIchr"),
+    task_name="getFAIrchr",
+    mode="local",time="48:0:0",
     threads=4,ram=4,update_time=60,wait=FALSE,hold=""
   ){
  

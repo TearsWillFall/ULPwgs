@@ -7,11 +7,11 @@
 get_bam_reference_chr(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = "",
+  output_name = "chrReference",
+  output_dir = "",
   verbose = FALSE,
   executor_id = make_unique_id("getBAMchr"),
   task_name = "getBAMchr",
-  output_name = "chrReference",
-  output_dir = "",
   mode = "local",
   time = "48:0:0",
   threads = 4,
@@ -26,7 +26,25 @@ get_bam_reference_chr(
 
 \item{bam}{Path to directory with BAM files to merge.}
 
-\item{verbose}{Enables progress messages. Default False.}
+\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.#}
+
+\item{executor_id}{Task EXECUTOR ID. Default "mardupsGATK"}
+
+\item{task_name}{Task name. Default "mardupsGATK"}
+
+\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+
+\item{threads}{Number of threads . Default 4}
+
+\item{ram}{RAM memory. Default 4}
+
+\item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
+
+\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
+
+\item{hold}{\link{OPTIONAL} Hold job until job is finished. Job ID.}
 }
 \description{
 This function takes a BAM file and collects the chr names from the bam
