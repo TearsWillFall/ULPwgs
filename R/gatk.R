@@ -409,7 +409,7 @@ parallel_generate_BQSR_gatk=function(
     
   job_report[["steps"]][["generate_bqsr_report"]]=gather_BQSR_reports_gatk(
     bin_gatk=bin_gatk,
-    report=unlist_lvl(named_list=job_report[["steps"]][["generate_bqsr_report"]],var="table"),
+    report=unlist_lvl(named_list=job_report[["steps"]][["generate_bqsr_report"]],var="recal_table"),
     executor_id=task_id,output_dir=out_file_dir,clean=clean,
     output_name=get_file_name(bam),verbose=verbose,mode=mode,time=time,
     threads=threads,ram=ram,update_time=update_time,wait=FALSE,
@@ -419,6 +419,7 @@ parallel_generate_BQSR_gatk=function(
     job_validator(job=unlist_lvl(named_list=job_report[["steps"]],var="job_id"),
     time=update_time,verbose=verbose,threads=threads)
   }
+  print(job_report)
   return(job_report)
 }
 
