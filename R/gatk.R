@@ -844,9 +844,10 @@ analyze_covariates_gatk=function(
   }
 
   out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-  job=build_job(executor=executor,task=make_unique_id(task))
+  job=build_job(executor_id=executor_id,task=task_id)
   if(mode=="batch"){
-       exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,threads=threads,
+       exec_batch=build_job_exec(job=job,hold=hold,
+       time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2)
        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
   }
