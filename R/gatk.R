@@ -391,7 +391,7 @@ parallel_generate_BQSR_gatk=function(
       )
     )
 
-  job_report[["steps"]][["generate_bqsr_report"]]=unlist(lapply(
+  job_report[["steps"]][["generate_bqsr_report"]]=unlist(parallel::mclapply(
     seq(1,nrow(regions)),FUN=function(x){
     tmp=regions[x,]
       job_report=list()
@@ -403,13 +403,13 @@ parallel_generate_BQSR_gatk=function(
         threads=threads,ram=ram,update_time=update_time,
         wait=FALSE,hold=hold
     )
-  }),recursive=FALSE)
+  },mc.cores=ifelse(mode=="local",threads,3)),recursive=FALSE)
 
 
     
   job_report[["steps"]][["generate_bqsr_report"]]=gather_BQSR_reports_gatk(
     bin_gatk=bin_gatk,
-    report=unlist_lvl(named_list=job_report[["steps"]][["gather_reports"]],var="table"),
+    report=unlist_lvl(named_list=job_report[["steps"]][["generate_bqsr_report"]],var="table"),
     executor_id=task_id,output_dir=out_file_dir,clean=clean,
     output_name=get_file_name(bam),verbose=verbose,mode=mode,time=time,
     threads=threads,ram=ram,update_time=update_time,wait=FALSE,
