@@ -281,7 +281,7 @@ generate_BQSR_gatk=function(
   reg," -O ",out_file)
 
 
-  job=build_job(executor=executor,task=make_unique_id(task))
+  job=build_job(executor_id=executor_id,task_id=task_id)
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
