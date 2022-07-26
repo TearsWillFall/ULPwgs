@@ -181,7 +181,7 @@ recal_gatk=function(
   job_report[["steps"]][["par_apply_bqsr"]] <- parallel_apply_BQSR_gatk(
     bin_samtools=bin_samtools,bin_gatk=bin_gatk,bin_picard=bin_picard,
     bam=bam,ref_genome=ref_genome,
-    rec_table=job_report[["steps"]][["par_apply_bqsr"]][["steps"]][["generate_bqsr_report"]]$out_file$table,
+    rec_table=job_report[["steps"]][["par_apply_bqsr"]][["generate_bqsr_report"]]$out_file$table,
     output_dir=out_file_dir4,regions=regions,
     clean=clean,verbose=verbose,executor_id=task_id,
     threads=threads,mode=mode,ram=ram,time=time,
@@ -637,14 +637,22 @@ parallel_apply_BQSR_gatk=function(
   update_time=60,wait=FALSE, hold=""){
 
   options(scipen = 999)
-  options(warn = -1)
+ 
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
 
    if(regions==""){
-    regions=get_bam_reference_chr(bin_samtools=bin_samtools,bam=bam,verbose=verbose)
+      job_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
+      bin_samtools=bin_samtools,
+      bam=bam,verbose=verbose,output_dir=output_dir,
+      executor_id=task_id,mode=mode,threads=threads,ram=ram,
+      time=time,update_time=update_time,wait=FALSE,hold=hold)
+
+
+      regions=read.table(job_report[["steps"]][["getChr"]]$out_files$ref,
+      sep="\t",header=TRUE)
   }
   regions$start=regions$start+1
   regions$pos=1:nrow(regions)
