@@ -991,25 +991,142 @@ bed_coverage=function(
 #' @export
 
 get_bam_reference_chr=function(
-    bin_samtools=build_default_tool_binary_list()$bin_samtools,bam="",verbose=FALSE
+    bin_samtools=build_default_tool_binary_list()$bin_samtools,
+    bam="",verbose=FALSE,executor_id=make_unique_id("getBAMchr"),
+    task_name="getBAMchr",output_name="chrReference",
+    output_dir="",mode="local",time="48:0:0",
+    threads=4,ram=4,update_time=60,wait=FALSE,hold=""
   ){
  
-  options(scipen = 999)
+    options(scipen = 999)
+    
+    argg <- as.list(environment())
+    task_id=make_unique_id(task_name)
+    out_file_dir=set_dir(dir=output_dir)
 
-  exec_code=paste0(bin_samtools," view -H ",bam," | grep @SQ")
-  if(verbose){
-    print(exec_code)
+    job=build_job(executor_id=executor_id,task_id=task_id)
+
+    
+    out_file=paste0(out_file_dir,output_name,".txt")
+    exec_code=paste0(bin_samtools," view -H ",bam,
+    " | grep @SQ| awk -F  \"\\t|:\"\'{print $3\"\\t\"0\"\\t\"$5}\' |  awk \'BEGIN{print \"chr\\tstart\\tend\"}1\' >",out_file)
+    
+    job=build_job(executor_id = executor_id,task_id=task_id)
+    
+    if(mode=="batch"){
+    
+        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+        exec_batch=build_job_exec(job=job,
+        time=time,ram=ram,threads=threads,
+        output_dir=out_file_dir2,hold=hold)
+        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+    }
+
+
+    if(verbose){
+      print_verbose(job=job,arg=argg,exec_code=exec_code)
+    }
+
+
+  error=system(exec_code)
+  if(error!=0){
+    stop("samtools failed to run due to unknown error.
+    Check std error for more information.")
   }
-  SQ=read.table(text=system(exec_code,intern=TRUE),stringsAsFactors=FALSE)
-  chr=SQ[,2]
-  chr=unlist(lapply(chr,FUN=function(x){strsplit(x,":")[[1]][2]}))
 
-  size=SQ[,3]
-  size=unlist(lapply(size,FUN=function(x){strsplit(x,":")[[1]][2]}))
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    task_id=task_id, 
+    input_args = argg,
+    out_file_dir=out_file_dir,
+      out_file=list(
+        ref=out_file)
+  )
 
-  ref_chr=data.frame(chr=chr,start=0,end=as.numeric(size))
-  return(ref_chr)
+    if(wait&&mode=="batch"){
+    batch_validator(job=job_report$job_id,
+    time=update_time,verbose=verbose,threads=threads)
+  }
+
+
+  return(job_report)
 }
+
+
+
+
+#' Function to collect chromosome data in fasta fai
+#'
+#' This function takes a FAI file and collects the chr names from the fai
+#' file.
+#'
+#' @param fasta Path to directory with fasta file.
+#' @param verbose Enables progress messages. Default False.
+#' @export
+
+get_fai_reference_chr=function(
+    bam="",verbose=FALSE,executor_id=make_unique_id("getFAIchr"),
+    task_name="getFAIrchr",output_name="chrRef",
+    output_dir="",mode="local",time="48:0:0",
+    threads=4,ram=4,update_time=60,wait=FALSE,hold=""
+  ){
+ 
+    options(scipen = 999)
+    
+    argg <- as.list(environment())
+    task_id=make_unique_id(task_name)
+    out_file_dir=set_dir(dir=output_dir)
+
+    job=build_job(executor_id=executor_id,task_id=task_id)
+
+    
+    out_file=paste0(out_file_dir,output_name,".txt")
+    exec_code=paste("cat",paste0(fasta,".fai"),
+    " | grep @SQ| awk \'{print $1\"\\t\"0\"\\t\"$2}\' |  awk \'BEGIN{print \"chr\\tstart\\tend\"}1\' >",out_file)
+    
+    job=build_job(executor_id = executor_id,task_id=task_id)
+    
+    if(mode=="batch"){
+    
+        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+        exec_batch=build_job_exec(job=job,
+        time=time,ram=ram,threads=threads,
+        output_dir=out_file_dir2,hold=hold)
+        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+    }
+
+
+    if(verbose){
+      print_verbose(job=job,arg=argg,exec_code=exec_code)
+    }
+
+
+  error=system(exec_code)
+  if(error!=0){
+    stop("samtools failed to run due to unknown error.
+    Check std error for more information.")
+  }
+
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    task_id=task_id, 
+    input_args = argg,
+    out_file_dir=out_file_dir,
+      out_file=list(
+        ref=out_file)
+  )
+
+    if(wait&&mode=="batch"){
+    batch_validator(job=job_report$job_id,
+    time=update_time,verbose=verbose,threads=threads)
+  }
+
+
+  return(job_report)
+}
+
 
 
 

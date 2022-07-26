@@ -239,11 +239,12 @@ recal_gatk=function(
 #' @export
 
 generate_BQSR_gatk=function(
-region="",
-bin_gatk=build_default_tool_binary_list()$bin_gatk,bam="",ref_genome="",
-dbsnp="",output_dir="",verbose=FALSE, threads=4,ram=4,mode="local",
-executor_id=make_unique_id("generateBQSR"),task_name="generateBQSR",
-time="48:0:0",update_time=60,wait=FALSE,hold=""){
+  region="",
+  bin_gatk=build_default_tool_binary_list()$bin_gatk,bam="",ref_genome="",
+  dbsnp="",output_dir="",verbose=FALSE, threads=4,ram=4,mode="local",
+  executor_id=make_unique_id("generateBQSR"),task_name="generateBQSR",
+  time="48:0:0",update_time=60,wait=FALSE,hold=""
+){
 
 
   argg <- as.list(environment())
@@ -362,7 +363,7 @@ parallel_generate_BQSR_gatk=function(
 
   parallel::mclapply(seq(1,nrow(regions)),FUN=function(x){
     tmp=regions[x,]
-    job_report[["steps"]][["generate_bqsr_report"]][[tmp$region]]<<-generate_BQSR_gatk(
+    job_report[["steps"]][["generate_bqsr_report"]][[tmp$region]] <<- generate_BQSR_gatk(
     region=tmp$region,
     bin_gatk=bin_gatk,bam=bam,ref_genome=ref_genome,
     dbsnp=dbsnp,output_dir=out_file_dir,verbose=verbose,
@@ -453,6 +454,7 @@ gather_BQSR_reports_gatk=function(
     stop("gatk failed to run due to unknown error.
     Check std error for more information.")
   }
+  
   job_report=build_job_report(
     job_id=job,
     executor_id=executor_id,
