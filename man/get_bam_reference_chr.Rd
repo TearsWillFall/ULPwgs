@@ -5,13 +5,13 @@
 \title{Function to collect chromosome data in bam}
 \usage{
 get_bam_reference_chr(
-  bin_path = "tools/samtools/samtools",
+  bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = "",
   verbose = FALSE
 )
 }
 \arguments{
-\item{bin_path}{Path to samtools executable. Default path tools/samtools/samtools.}
+\item{bin_samtools}{Path to samtools executable. Default path tools/samtools/samtools.}
 
 \item{bam}{Path to directory with BAM files to merge.}
 

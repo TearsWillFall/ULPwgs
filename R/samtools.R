@@ -30,7 +30,8 @@ sort_and_index_bam_samtools=function(
   coord_sort=TRUE,index=TRUE,stats="all", clean=FALSE,
   mode="local",executor_id=make_unique_id("sortANDindex"),
   task_name="sortANDindex",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""){
+  update_time=60,wait=FALSE,hold=""
+){
 
   argg <- as.list(environment())
 

@@ -355,14 +355,14 @@ find_instrument=function(instrument_id=build_instrument_id(),
 #' flowcell
 #' lane 
 #'
-#' @param bin_path Path to samtools binary. Default "tools/samtools/samtools".
+#' @param bin_samtools Path to samtools binary. Default "tools/samtools/samtools".
 #' @param file_path Path to the input file
 #' @return A string with the extension of the file
 #' @export
 
 
-infer_sequencing_info=function(bin_path="tools/samtools/samtools",file_path){
-    header=extract_read_header(bin_path=bin_path,file_path=file_path)
+infer_sequencing_info=function(bin_samtools=build_default_tool_binary_list()$bin_samtools,file_path){
+    header=extract_read_header(bin_samtools=bin_samtools,file_path=file_path)
     seq_info=parse_read_header(header)
     instrument=find_instrument(seq_info=seq_info)
     seq_info$flowcell_type=instrument$flowcell_type
@@ -377,12 +377,13 @@ infer_sequencing_info=function(bin_path="tools/samtools/samtools",file_path){
 #' Acepted formats: fasta | bam | sam 
 #' Compressed fasta also accepted
 #'
-#' @param bin_path Path to samtools binary. Default "tools/samtools/samtools".
+#' @param bin_samtools Path to samtools binary. Default "tools/samtools/samtools".
 #' @param file_path Path to the input file
 #' @return A string with the extension of the file
 #' @export
 
-extract_read_header=function(bin_path="tools/samtools/samtools",file_path){
+extract_read_header=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,file_path){
   
 
   file_ext=get_file_ext(file_path)
@@ -399,7 +400,7 @@ extract_read_header=function(bin_path="tools/samtools/samtools",file_path){
     }
     
   }else if(grepl("bam$",file_ext)){
-    read=system(paste0(bin_path," view | head -n 1 | awk '{print $1}' "),intern=TRUE)
+    read=system(paste0(bin_samtools," view | head -n 1 | awk '{print $1}' "),intern=TRUE)
   }else{
    stop("Error: Could not figure out file format for file : ",file_path)
   }
@@ -605,44 +606,91 @@ intersect_file_name=function(file_path="",file_path2=""){
 #'
 #' This function indexes a genomic sequence file (BAM/SAM).
 #'
-#' @param bin_path Path to bwa executable. Default path tools/bedtools2/bin/bedtools.
+#' @param bin_bedtools Path to bedtools executable. Default path tools/bedtools2/bin/bedtools.
 #' @param bed Path to the input file with the sequence.
 #' @param pad Pad distance. Default 10
 #' @param output_name Output file name.
 #' @param genome Path to genome fa.fai file
 #' @param verbose Enables progress messages. Default False.
+#' @param threads Number of threads . Default 4
+#' @param ram RAM memory. Default 4
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "mardupsGATK"
+#' @param task_name Task name. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.#
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
 #' @export
 
-complement_bed=function(bin_path="tools/bedtools2/bin/bedtools",bed="",pad=10,
-output_name="Complement",genome="",verbose=FALSE){
+complement_bed=function(
+  bin_betools=build_default_tool_binary_list()$bin_bedtools,
+  bed="",pad=10,output_name="Complement",genome="",verbose=FALSE,
+  threads=3,ram=1,coord_sort=TRUE,mode="local",
+  executor_id=make_unique_id("complementBED"),clean=TRUE,
+  task_name="complementBED",time="48:0:0",update_time=60,wait=FALSE,hold=""
+  ){
 
+
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
+  out_file_dir=set_dir(dir=output_dir)
+
+  out_file=paste0(out_file_dir,output_name,".bed")
+
+
+  job_report=build_job_report(
+    job_id=job, 
+    executor_id=executor_id, 
+    task_id=task_id,
+    input_args=argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+      complement=out_file
+    )
+  )
   if (pad!=0){
+    job_report[["steps"]][["pad_bed"]]=pad_bed(
+      bin_bedtools=bin_bedtools,bed=bed,pad=pad,
+      output_name=paste0(ULPwgs::get_file_name(bed),"_",pad),
+      output_dir=out_file_dir,genome=genome,verbose=verbose)
 
-    pad_bed(bin_path=bin_path,bed=bed,pad=pad,output_name=paste0(ULPwgs::get_file_name(bed),"_",pad),
-    genome=genome,verbose=verbose)
 
-    exec_code=paste0(bin_path," complement -i ",paste0(ULPwgs::get_file_name(bed),"_",pad,".bed"),
-       " -g ", genome, " > ",paste0(output_name,".bed"))
-    if(verbose){
-      print(exec_code)
-    }
-         error=system(exec_code)
-  if(error!=0){
-    stop("bedtools failed to run due to unknown error.
-    Check std error for more information.")
-  }
+
+    exec_code=paste0(bin_samtools," complement -i ",
+    job_report[["steps"]][["pad_bed"]]$out_file$pad,
+       " -g ", genome, " > ",out_file)
+    hold=job_report[["steps"]][["pad_bed"]]$job_id
+
+
 
   }else{
-    exec_code=paste0(bin_path," complement -i ",bed, " -g ", genome, " > ",paste0(output_name,".bed"))
-    if(verbose){
-      print(exec_code)
-    }
-          error=system(exec_code)
+    exec_code=paste0(bin_bedtools," complement -i ",bed, " -g ", genome, " > ",out_file)
+  }
+
+  if(mode=="batch"){
+        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+        exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
+        output_dir=out_file_dir2,hold=hold)
+        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+  }
+
+  if(verbose){
+        print_verbose(job=job,arg=argg,exec_code=exec_code)
+  }
+      error=system(exec_code)
   if(error!=0){
     stop("bedtools failed to run due to unknown error.
     Check std error for more information.")
   }
-  }
+
+  if(wait&&mode=="batch"){
+        job_validator(job=job_report$job_id,
+        time=update_time,verbose=verbose,threads=threads)
+  } 
+
+    return(job_report)
 }
 
 #' Pad a BED file
@@ -650,26 +698,68 @@ output_name="Complement",genome="",verbose=FALSE){
 #' This function takes a BED file and pad each regions in both directions
 #'
 #' @param bed Path to the input file with the sequence.
-#' @param bin_path Path to bwa executable. Default path tools/bedtools2/bin/bedtools.
+#' @param bin_bedtools Path to bedtools executable. Default path tools/bedtools2/bin/bedtools.
 #' @param pad Pad distance. Default 10
 #' @param output_name Output file name.
+#' @param output_dir Path to output directory
 #' @param genome Path to genome fa.fai file
 #' @param verbose Enables progress messages. Default False.
+#' @param threads Number of threads . Default 4
+#' @param ram RAM memory. Default 4
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "mardupsGATK"
+#' @param task_name Task name. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.#
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
 #' @export
 
-pad_bed=function(bin_path="tools/bedtools2/bin/bedtools",bed="",pad=10,
-output_name="Padded",genome="",verbose=FALSE){
+pad_bed=function(bin_bedtools=build_default_tool_binary_list()$bin_bedtools,bed="",pad=10,
+  output_name="Padded",output_dir="",genome="",verbose=FALSE,threads=3,ram=1,
+  coord_sort=TRUE,mode="local",executor_id=make_unique_id("padBED"),task_name="padBED",
+  time="48:0:0",update_time=60,wait=FALSE,hold=""
+){
 
-  exec_code=paste0(bin_path," slop -i ",bed, " -g ", genome," -b ",pad, " > ",
-    paste0(output_name,".bed"))
-  if(verbose){
-    print(exec_code)
-  }
+
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
+  out_file_dir=set_dir(dir=output_dir)
+
+
+  out_file=paste0(out_file_dir,output_name,".bed")
+  exec_code=paste0(bin_bedtools," slop -i ",bed, " -g ", genome," -b ",pad, " > ",
+    out_file)
+
+  job=build_job(executor_id=executor_id,task_id=task_id)
+ 
+  if(mode=="batch"){
+        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+        exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
+        output_dir=out_file_dir2,hold=hold)
+        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+    }
+   if(verbose){
+         print_verbose(job=job,arg=argg,exec_code=exec_code)
+    }
   error=system(exec_code)
   if(error!=0){
     stop("bedtools failed to run due to unknown error.
     Check std error for more information.")
   }
+
+    job_report=build_job_report(
+    job_id=job, 
+    executor_id=executor_id, 
+    task_id=task_id,
+    input_args=argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+      pad=out_file
+    )
+  )
+  return(job_report)
 }
 
 
@@ -757,7 +847,7 @@ add_arrow=function(nesting="",n=2,bold=FALSE){
 #' This functions add/replaces RG tags lines in BAM files
 #' This function wraps around samtools addreplacerg function
 #'
-#' @param bin_path [REQUIRED] Path to santools binary. Default tools/samtools/samtools.
+#' @param bin_samtools [REQUIRED] Path to santools binary. Default tools/samtools/samtools.
 #' @param bam [REQUIRED] Path to the BAM file/s.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
@@ -771,7 +861,8 @@ add_arrow=function(nesting="",n=2,bold=FALSE){
 #' @param jobs [OPTIONAL] Number of jobs to run.
 #' @export
 
-replace_rg=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
+replace_rg=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,bam="",output_dir="",
   verbose=FALSE,index=TRUE,ID="",PL="",PU="",LB="",SM="",threads=3,jobs=1){
 
   out_file_di=set_dir(dir=output_dir)
@@ -802,7 +893,7 @@ replace_rg=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
   tag=paste0(" -r ",paste0(tag,collapse=" -r "))
 
   parallel::mclapply(seq(1,length(bam)),FUN=function(x){
-    exec_code=paste(bin_path," addreplacerg ",tag," -o ",paste0(out_file_dir,"/",
+    exec_code=paste(bin_samtools," addreplacerg ",tag," -o ",paste0(out_file_dir,"/",
       basename(sub("bam","rh.bam",bam[x]))), " -@ ",threads,bam[x])
   if(verbose){
       print(exec_code)
@@ -810,7 +901,7 @@ replace_rg=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
     exec_code
 
     if(index){
-      bam_index_samtools(bin_path=bin_path,bam=paste0(out_file_dir,"/",
+      bam_index_samtools(bin_samtools=bin_samtools,bam=paste0(out_file_dir,"/",
       basename(sub("bam","rh.bam",bam[x]))),verbose=verbose,threads=threads)
     }
   },mc.cores=jobs)
@@ -828,9 +919,8 @@ replace_rg=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
 #' However, this may not work if the BED has been build based on different reference than the BAM. For example, hs37 vs hg19.
 #' For more information: https://bedtools.readthedocs.io/en/latest/content/tools/coverage.html
 #'
-#'
+#' @param bin_bedtools Path to bwa executable. Default tools/bedtools2/bin/bedtools.
 #' @param bam Path to the input BAM file.
-#' @param bin_path Path to bwa executable. Default tools/bedtools2/bin/bedtools.
 #' @param bed Path to the input bed file.
 #' @param sorted Are the input files sorted. Default TRUE
 #' @param mean Estimate mean coverage per region. Default TRUE. FALSE produces coverage per base per target.
@@ -841,8 +931,10 @@ replace_rg=function(bin_path="tools/samtools/samtools",bam="",output_dir="",
 #' @export
 
 
-bed_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",bed="",
-verbose=FALSE,sorted=TRUE,mean=TRUE,fai="",suffix="",output_dir="",hist=FALSE){
+bed_coverage=function(
+  bin_bedtools=build_default_tool_binary_list()$bin_bedtools,bam="",bed="",
+  verbose=FALSE,sorted=TRUE,mean=TRUE,fai="",suffix="",output_dir="",hist=FALSE
+){
     
     out_file_dir=set_dir(dir=output_dir,name="coverage")
 
@@ -874,7 +966,7 @@ verbose=FALSE,sorted=TRUE,mean=TRUE,fai="",suffix="",output_dir="",hist=FALSE){
       }
     }
 
-    exec_code=paste(bin_path,"coverage -a",bed, "-b" ,bam,fai, mode,srt,out_file)
+    exec_code=paste(bin_bedtools,"coverage -a",bed, "-b" ,bam,fai, mode,srt,out_file)
     if(verbose){
         print(exec_code)
     }
@@ -893,15 +985,18 @@ verbose=FALSE,sorted=TRUE,mean=TRUE,fai="",suffix="",output_dir="",hist=FALSE){
 #' This function takes a BAM file and collects the chr names from the bam
 #' file.
 #'
-#' @param bin_path Path to samtools executable. Default path tools/samtools/samtools.
+#' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
 #' @param bam Path to directory with BAM files to merge.
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-get_bam_reference_chr=function(bin_path="tools/samtools/samtools",bam="",verbose=FALSE){
+get_bam_reference_chr=function(
+    bin_samtools=build_default_tool_binary_list()$bin_samtools,bam="",verbose=FALSE
+  ){
+ 
   options(scipen = 999)
 
-  exec_code=paste0(bin_path," view -H ",bam," | grep @SQ")
+  exec_code=paste0(bin_samtools," view -H ",bam," | grep @SQ")
   if(verbose){
     print(exec_code)
   }
@@ -947,17 +1042,17 @@ seqlast <- function (from, to, by)
 #' This functions takes a BED file of chromosome positions for BAM file input
 #'
 #'
-#' @param bin_path Path to samtools executable. Default path tools/samtools/samtools.
+#' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
 #' @param bam Path to directory with BAM files to merge.
 #' @param verbose Enables progress messages. Default False.
 #' @param bin_size Bin size. Default 400000000 pb
 #' @export
 
 
-bin_chromosomes <- function(bin_path="tools/samtools/samtools",bam="",verbose=FALSE,
+bin_chromosomes <- function(bin_samtools=build_default_tool_binary_list()$bin_samtools,bam="",verbose=FALSE,
 bin_size=40000000){
   options(scipen = 999)
-  chr=get_bam_reference_chr(bin_path=bin_path,bam=bam,verbose=verbose)
+  chr=get_bam_reference_chr(bin_samtools=bin_samtools,bam=bam,verbose=verbose)
   bed=chr%>% dplyr::group_by(chr) %>%
   dplyr::summarise(start=seqlast(start,end,bin_size)) %>%
   dplyr::mutate(end=dplyr::lead(start)) %>% tidyr::drop_na()

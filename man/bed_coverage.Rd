@@ -5,7 +5,7 @@
 \title{Estimate coverage for BED file}
 \usage{
 bed_coverage(
-  bin_path = "tools/bedtools2/bin/bedtools",
+  bin_bedtools = build_default_tool_binary_list()$bin_bedtools,
   bam = "",
   bed = "",
   verbose = FALSE,
@@ -18,7 +18,7 @@ bed_coverage(
 )
 }
 \arguments{
-\item{bin_path}{Path to bwa executable. Default tools/bedtools2/bin/bedtools.}
+\item{bin_bedtools}{Path to bwa executable. Default tools/bedtools2/bin/bedtools.}
 
 \item{bam}{Path to the input BAM file.}
 

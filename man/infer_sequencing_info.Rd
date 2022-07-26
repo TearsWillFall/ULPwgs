@@ -4,10 +4,13 @@
 \alias{infer_sequencing_info}
 \title{Infer sequencing information from sequencing file}
 \usage{
-infer_sequencing_info(bin_path = "tools/samtools/samtools", file_path)
+infer_sequencing_info(
+  bin_samtools = build_default_tool_binary_list()$bin_samtools,
+  file_path
+)
 }
 \arguments{
-\item{bin_path}{Path to samtools binary. Default "tools/samtools/samtools".}
+\item{bin_samtools}{Path to samtools binary. Default "tools/samtools/samtools".}
 
 \item{file_path}{Path to the input file}
 }

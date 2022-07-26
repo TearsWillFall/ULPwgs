@@ -4,10 +4,13 @@
 \alias{extract_read_header}
 \title{Extract the a header for a random read from a sequencing file}
 \usage{
-extract_read_header(bin_path = "tools/samtools/samtools", file_path)
+extract_read_header(
+  bin_samtools = build_default_tool_binary_list()$bin_samtools,
+  file_path
+)
 }
 \arguments{
-\item{bin_path}{Path to samtools binary. Default "tools/samtools/samtools".}
+\item{bin_samtools}{Path to samtools binary. Default "tools/samtools/samtools".}
 
 \item{file_path}{Path to the input file}
 }

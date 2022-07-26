@@ -5,7 +5,7 @@
 \title{Wrapper around samtools addreplacerg function}
 \usage{
 replace_rg(
-  bin_path = "tools/samtools/samtools",
+  bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = "",
   output_dir = "",
   verbose = FALSE,
@@ -20,7 +20,7 @@ replace_rg(
 )
 }
 \arguments{
-\item{bin_path}{\link{REQUIRED} Path to santools binary. Default tools/samtools/samtools.}
+\item{bin_samtools}{\link{REQUIRED} Path to santools binary. Default tools/samtools/samtools.}
 
 \item{bam}{\link{REQUIRED} Path to the BAM file/s.}
 

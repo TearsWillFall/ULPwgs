@@ -85,7 +85,7 @@ mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
   if(wait&&mode=="batch"){
         job_validator(job=job_report$job_id,
         time=update_time,verbose=verbose,threads=threads)
-    } 
+  } 
 
 
   return(job_report)

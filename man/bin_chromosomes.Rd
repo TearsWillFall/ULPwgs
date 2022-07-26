@@ -5,14 +5,14 @@
 \title{Split chromosomes into bins}
 \usage{
 bin_chromosomes(
-  bin_path = "tools/samtools/samtools",
+  bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = "",
   verbose = FALSE,
   bin_size = 40000000
 )
 }
 \arguments{
-\item{bin_path}{Path to samtools executable. Default path tools/samtools/samtools.}
+\item{bin_samtools}{Path to samtools executable. Default path tools/samtools/samtools.}
 
 \item{bam}{Path to directory with BAM files to merge.}
 

@@ -5,16 +5,27 @@
 \title{Pad a BED file}
 \usage{
 pad_bed(
-  bin_path = "tools/bedtools2/bin/bedtools",
+  bin_bedtools = build_default_tool_binary_list()$bin_bedtools,
   bed = "",
   pad = 10,
   output_name = "Padded",
+  output_dir = "",
   genome = "",
-  verbose = FALSE
+  verbose = FALSE,
+  threads = 3,
+  ram = 1,
+  coord_sort = TRUE,
+  mode = "local",
+  executor_id = make_unique_id("padBED"),
+  task_name = "padBED",
+  time = "48:0:0",
+  update_time = 60,
+  wait = FALSE,
+  hold = ""
 )
 }
 \arguments{
-\item{bin_path}{Path to bwa executable. Default path tools/bedtools2/bin/bedtools.}
+\item{bin_bedtools}{Path to bedtools executable. Default path tools/bedtools2/bin/bedtools.}
 
 \item{bed}{Path to the input file with the sequence.}
 
@@ -22,9 +33,29 @@ pad_bed(
 
 \item{output_name}{Output file name.}
 
+\item{output_dir}{Path to output directory}
+
 \item{genome}{Path to genome fa.fai file}
 
-\item{verbose}{Enables progress messages. Default False.}
+\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.#}
+
+\item{threads}{Number of threads . Default 4}
+
+\item{ram}{RAM memory. Default 4}
+
+\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
+\item{executor_id}{Task EXECUTOR ID. Default "mardupsGATK"}
+
+\item{task_name}{Task name. Default "mardupsGATK"}
+
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+
+\item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
+
+\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
+
+\item{hold}{\link{OPTIONAL} Hold job until job is finished. Job ID.}
 }
 \description{
 This function takes a BED file and pad each regions in both directions
