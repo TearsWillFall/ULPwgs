@@ -96,7 +96,7 @@ for_id=function(seq_info,output_dir="",name="",
              nesting="",merge_level="library",
              executor_id=make_unique_id("preprocessSEQ"),
              task_id=make_unique_id("preprocessSEQ"),
-             nest_ws=1,print_tree=FALSE){  
+                nest_ws=1,print_tree=FALSE){  
                 var=vars_list$variable[1]
                 var_text=vars_list$text[1]
                 vars_list_left=vars_list[-1,]
@@ -345,7 +345,7 @@ for_id=function(seq_info,output_dir="",name="",
                                         
                                             args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="recalibrate"))
                                             
-                                                report[[new_name]][["steps"]][["recalibrate"]]<<-recal_gatk(
+                                                report[[new_name]][["steps"]][["recalibrate"]] <<- recal_gatk(
                                                     bin_samtools=bin_list$recalibrate$bin_samtools,
                                                     bin_gatk=bin_list$recalibrate$bin_gatk,
                                                     bin_picard=bin_list$recalibrate$bin_picard,

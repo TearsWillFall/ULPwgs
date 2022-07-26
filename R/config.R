@@ -258,7 +258,7 @@ build_default_binary_list=function(
                 markdups=list(
                     bin_gatk=build_default_tool_binary_list()$bin_gatk
                 ),
-                recal_gatk=list(
+                recalibrate=list(
                     bin_samtools=build_default_tool_binary_list()$bin_samtools,
                     bin_gatk=build_default_tool_binary_list()$bin_gatk,
                     bin_picard=build_default_tool_binary_list()$bin_picard
