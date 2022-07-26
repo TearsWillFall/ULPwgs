@@ -360,7 +360,6 @@ parallel_generate_BQSR_gatk=function(
 
   options(scipen = 999)
  
-
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
@@ -368,7 +367,7 @@ parallel_generate_BQSR_gatk=function(
 
     job_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
       bin_samtools=bin_samtools,
-      bam=bam,verbose=verbose,verbose=verbose,output_dir=output_dir,
+      bam=bam,verbose=verbose,output_dir=output_dir,
       executor_id=task_id,mode=mode,threads=threads,ram=ram,
       time=time,update_time=update_time,wait=FALSE,hold=hold)
 
@@ -392,7 +391,7 @@ parallel_generate_BQSR_gatk=function(
       )
     )
 
-  job_report[["steps"]][["generate_bqsr_report"]]=unlist(parallel::mclapply(
+  job_report[["steps"]][["generate_bqsr_report"]]=unlist(lapply(
     seq(1,nrow(regions)),FUN=function(x){
     tmp=regions[x,]
       job_report=list()
@@ -404,7 +403,7 @@ parallel_generate_BQSR_gatk=function(
         threads=threads,ram=ram,update_time=update_time,
         wait=FALSE,hold=hold
     )
-  },mc.cores=ifelse(mode=="local",threads,3)),recursive=FALSE)
+  }),recursive=FALSE)
 
 
     
