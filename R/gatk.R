@@ -744,9 +744,9 @@ gather_bam_files=function(
   out_file_dir=set_dir(dir=output_dir)
 
   out_file=paste0(out_file_dir,"/",output_name,".bam")
-  files=files[order(as.numeric(lapply(lapply(lapply(lapply(lapply(lapply(basename(files),
+  bam=bam[order(as.numeric(lapply(lapply(lapply(lapply(lapply(lapply(basename(bam),
     FUN=strsplit,split="\\."),FUN="[[",index=1),FUN="[",index=2),
-    FUN=strsplit,split="^"),FUN="[[",index=1),FUN="[",index=1)))]
+    FUN=strsplit,split="__"),FUN="[[",index=1),FUN="[",index=1)))]
 
   exec_code=paste0("java -jar ",bin_picard," GatherBamFiles ",
     paste0(" I=",bam,collapse=" ")," O=",out_file)
