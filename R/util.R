@@ -1125,26 +1125,26 @@ get_fai_reference_chr=function(
     }
 
 
-  error=system(exec_code)
-  if(error!=0){
-    stop("samtools failed to run due to unknown error.
-    Check std error for more information.")
-  }
+    error=system(exec_code)
+    if(error!=0){
+      stop("samtools failed to run due to unknown error.
+      Check std error for more information.")
+    }
 
-  job_report=build_job_report(
-    job_id=job,
-    executor_id=executor_id,
-    task_id=task_id, 
-    input_args = argg,
-    out_file_dir=out_file_dir,
-      out_file=list(
-        ref=out_file)
-  )
+    job_report=build_job_report(
+      job_id=job,
+      executor_id=executor_id,
+      task_id=task_id, 
+      input_args = argg,
+      out_file_dir=out_file_dir,
+        out_file=list(
+          ref=out_file)
+    )
 
-    if(wait&&mode=="batch"){
-    batch_validator(job=job_report$job_id,
-    time=update_time,verbose=verbose,threads=threads)
-  }
+      if(wait&&mode=="batch"){
+      batch_validator(job=job_report$job_id,
+      time=update_time,verbose=verbose,threads=threads)
+    }
 
 
   return(job_report)

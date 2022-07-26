@@ -162,6 +162,8 @@ recal_gatk=function(
     executor_id=task_id,mode=mode,threads=threads,ram=ram,
     time=time,update_time=update_time,wait=FALSE,hold=hold)
 
+  print(job_report[["steps"]][["getChr"]]$out_file$ref)
+  print(job_report[["steps"]][["getChr"]])
   regions=read.table(job_report[["steps"]][["getChr"]]$out_file$ref,
   sep="\t",header=TRUE)
 
