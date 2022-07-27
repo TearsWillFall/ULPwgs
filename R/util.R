@@ -531,7 +531,6 @@ steps_list=build_default_steps_list()){
 #' @param summary Path to Picard summary file
 #' @param output_dir Path to output directory
 #' @param output_name File output name
-#' @param extract Metric to extract
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param ram RAM memory to use in GB. Default 4.
@@ -544,7 +543,7 @@ steps_list=build_default_steps_list()){
 #' @export
 
 parse_picard_metrics=function(summary="",output_dir="",output_name="",
-extract="stats",verbose=FALSE,threads=1,ram=4,
+verbose=FALSE,threads=1,ram=4,
 mode="local",executor_id=make_unique_id("parsePicardMetrics"),
 task_name="parsePicardMetrics",time="48:0:0",
 update_time=60,wait=FALSE,hold=""){

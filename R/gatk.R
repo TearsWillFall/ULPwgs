@@ -180,7 +180,7 @@ recal_gatk=function(
   job_report[["steps"]][["par_apply_bqsr"]] <- parallel_apply_BQSR_gatk(
     bin_samtools=bin_samtools,bin_gatk=bin_gatk,bin_picard=bin_picard,
     bam=bam,ref_genome=ref_genome,
-    rec_table=job_report[["steps"]][["par_bqsr_before"]][["steps"]][["generate_bqsr_report"]]$out_files$table,
+    rec_table=job_report[["steps"]][["par_bqsr_before"]][["steps"]][["gather_bqsr_report"]]$out_files$table,
     output_dir=out_file_dir3,regions=regions,
     clean=clean,verbose=verbose,executor_id=task_id,
     threads=threads,mode=mode,ram=ram,time=time,
@@ -211,8 +211,8 @@ recal_gatk=function(
 
  job_report[["steps"]][["analyse_covariates"]] <- analyze_covariates_gatk(
   bin_gatk=bin_gatk,
-  before=job_report[["steps"]][["par_bqsr_before"]][["steps"]][["generate_bqsr_report"]]$out_files$table,
-  after=job_report[["steps"]][["par_bqsr_after"]][["steps"]][["generate_bqsr_report"]]$out_files$table,
+  before=job_report[["steps"]][["par_bqsr_before"]][["steps"]][["gather_bqsr_report"]]$out_files$table,
+  after=job_report[["steps"]][["par_bqsr_after"]][["steps"]][["gather_bqsr_report"]]$out_files$table,
   output_dir=out_file_dir4,executor_id=task_id,mode=mode,threads=threads,
   ram=ram,time=time,update_time=update_time,wait=FALSE,
   hold=unlist_lvl(job_report[["steps"]][["par_bqsr_after"]],var="job_id",recursive=TRUE))
@@ -395,7 +395,7 @@ parallel_generate_BQSR_gatk=function(
     region_list=regions$region
     names(region_list)=regions$region
 
-  job_report[["steps"]][["generate_bqsr_report"]]=parallel::mclapply(
+  job_report[["steps"]][["generate_bqsr_report"]]<-parallel::mclapply(
   region_list,FUN=function(region){
         job_report <- generate_BQSR_gatk(
         region=region,
@@ -408,13 +408,13 @@ parallel_generate_BQSR_gatk=function(
   },mc.cores=ifelse(mode=="local",threads,3))
 
 
-  job_report[["steps"]][["generate_bqsr_report"]]=gather_BQSR_reports_gatk(
+  job_report[["steps"]][["gather_bqsr_report"]]<- gather_BQSR_reports_gatk(
     bin_gatk=bin_gatk,
-    report=unlist_lvl(named_list=job_report[["steps"]],var="recal_table"),
+    report=unlist_lvl(named_list=job_report[["steps"]][["generate_bqsr_report"]],var="recal_table"),
     executor_id=task_id,output_dir=out_file_dir,clean=clean,
     output_name=get_file_name(bam),verbose=verbose,mode=mode,time=time,
     threads=threads,ram=ram,update_time=update_time,wait=FALSE,
-    hold=unlist_lvl(named_list=job_report[["steps"]],var="job_id"))
+    hold=unlist_lvl(named_list=job_report[["steps"]][["generate_bqsr_report"]],var="job_id",recursive=TRUE))
   
   if(wait&&mode=="batch"){
     job_validator(job=unlist_lvl(named_list=job_report[["steps"]],var="job_id"),
@@ -694,7 +694,7 @@ parallel_apply_BQSR_gatk=function(
     executor_id=task_id,mode=mode,time=time,threads=threads,ram=ram,
     update_time=update_time,wait=FALSE,
     clean=clean,
-    hold=unlist_lvl(job_report[["steps"]][["apply_bqsr"]],var="job_id"))
+    hold=unlist_lvl(job_report[["steps"]][["apply_bqsr"]],var="job_id",recursive=TRUE))
 
 
     if(wait&&mode=="batch"){
