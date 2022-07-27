@@ -300,8 +300,8 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
           theme(legend.position = "none") +
           scale_fill_identity()) %>%
         dplyr::mutate(subgrobs = list(annotation_custom(ggplot2::ggplotGrob(subplots),
-          x = s_order - total/2 , y = 2.5*max(s_order) - total / 2,
-          xmax = s_order + total/2 , ymax = 2.5*max(s_order) + total / 2
+          x = s_order - total/2 , y = 2.5*max(s_order) - 2.5*max(s_order) / 2,
+          xmax = s_order + total/2 , ymax = 2.5*max(s_order) + 2.5*max(s_order) / 2
         )))
 
 
