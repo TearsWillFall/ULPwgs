@@ -126,7 +126,7 @@ summary_metrics_bam_picard=function(
     tmp=paste0(" TMP_DIR=",tmp_dir)
   }
 
-  out_file=paste0(out_file_dir,"/",get_file_name(bam),".picard_summary.txt ")
+  out_file=paste0(out_file_dir,"/",get_file_name(bam),".picard_summary.txt")
   exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir,
         " -jar ",bin_picard," CollectAlignmentSummaryMetrics ",
         "VALIDATION_STRINGENCY=SILENT I=",bam," O=",out_file,tmp)
@@ -206,7 +206,7 @@ insertsize_metrics_bam_picard=function(
   }
 
   out_file=paste0(out_file_dir,"/",get_file_name(bam),".picard_insert_size.txt")
-  out_file_pdf=paste0(out_file_dir,"/",get_file_name(bam),".picard_insert_size.pdf ")
+  out_file_pdf=paste0(out_file_dir,"/",get_file_name(bam),".picard_insert_size.pdf")
   exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",
       bin_picard," CollectInsertSizeMetrics ","VALIDATION_STRINGENCY=SILENT I=",
       bam," O=",out_file," H=",out_file_pdf,tmp)
@@ -294,7 +294,7 @@ tg_summary_metrics_bam_picard=function(
 
 
   out_file_ts=paste0(out_file_dir,"/",get_file_name(bam),".picard_TS.txt")
-  out_file=paste0(out_file_dir,"/",get_file_name(bam),".picard_CollectHSmetrics.txt ")
+  out_file=paste0(out_file_dir,"/",get_file_name(bam),".picard_CollectHSmetrics.txt")
   exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir,
         " -jar ",bin_picard," CollectHsMetrics VALIDATION_STRINGENCY=SILENT BI=",
         bi," TI=",ti," I=",bam," THEORETICAL_SENSITIVITY_OUTPUT=",
@@ -390,11 +390,11 @@ rnaseq_summary_metrics_bam_picard=function(
     tmp=paste0(" TMP_DIR=",tmp_dir)
   }
 
-  out_file=paste0(out_file_dir,"/",get_file_name(bam),".CollectRNAseqMetrics.txt ")
+  out_file=paste0(out_file_dir,"/",get_file_name(bam),".CollectRNAseqMetrics.txt")
   exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",bin_picard,
         " CollectRnaSeqMetrics VALIDATION_STRINGENCY=SILENT STRAND_SPECIFICITY='NONE' REF_FLAT=",
          ref_flat, " RIBOSOMAL_INTERVALS=",ri,
-         " I=",bam," O=",,tmp)
+         " I=",bam," O=",out_file,tmp)
   
   
   
@@ -473,7 +473,7 @@ wgs_summary_metrics_bam_picard=function(
     tmp=paste0(" TMP_DIR=",tmp_dir)
   }
 
-  out_file=paste0(out_file_dir,"/",get_file_name(bam),".picard_wgs_q00.txt ")
+  out_file=paste0(out_file_dir,"/",get_file_name(bam),".picard_wgs_q00.txt")
   exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",
             bin_picard," CollectWgsMetrics VALIDATION_STRINGENCY=SILENT MINIMUM_MAPPING_QUALITY=",
             mapq," I=",bam," O=",out_file,tmp)
