@@ -22,8 +22,8 @@
 markdups_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,bam="",
   output_dir="",verbose=FALSE,hnd=1000,threads,ram=4,tmp_dir="",
-  remove_duplicates=TRUE,mode="local",executor=make_unique_id("markDups"),
-  task="markDups",time="48:0:0",
+  remove_duplicates=TRUE,mode="local",executor_id=make_unique_id("markDups"),
+  task_name="markDups",time="48:0:0",
   update_time=60,wait=FALSE,hold=""
 ){
 
@@ -113,8 +113,8 @@ markdups_picard=function(
 summary_metrics_bam_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bam="",output_dir="",verbose=FALSE,tmp_dir=".",
-  threads=3,ram=4,mode="local",executor=make_unique_id("summaryMetrics"),
-  task="summaryMetrics",
+  threads=3,ram=4,mode="local",executor_id=make_unique_id("summaryMetrics"),
+  task_name="summaryMetrics",
   time="48:0:0",update_time=60,wait=FALSE,hold=""
 ){
   argg <- as.list(environment())
@@ -180,8 +180,8 @@ summary_metrics_bam_picard=function(
 #' @param verbose Enables progress messages. Default False.
 #' @param ram RAM memory to use in GB. Default 4.
 #' @param tmp_dir Path to TMP directory. Default .
-#' @param executor [OPTIONAL] Task executor name. Default "recalCovariates"
-#' @param task [OPTIONAL] Task name. Default "recalCovariates"
+#' @param executor_id [OPTIONAL] Task executor name. Default "recalCovariates"
+#' @param task_name [OPTIONAL] Task name. Default "recalCovariates"
 #' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
 #' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
 #' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
@@ -191,8 +191,8 @@ summary_metrics_bam_picard=function(
 insertsize_metrics_bam_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bam="",output_dir="",verbose=FALSE,tmp_dir=".",threads=1,ram=4,
-  mode="local",executor=make_unique_id("insertsizeMetrics"),
-  task="insertsizeMetrics",
+  mode="local",executor_id=make_unique_id("insertsizeMetrics"),
+  task_name="insertsizeMetrics",
   time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
   argg <- as.list(environment())
@@ -261,8 +261,8 @@ insertsize_metrics_bam_picard=function(
 #' @param tmp_dir Path to TMP directory. Default .
 #' @param bi Bait capture target interval for panel data. Interval format.
 #' @param ti Primary target intervals for panel data. Interval format.
-#' @param executor [OPTIONAL] Task executor name. Default "recalCovariates"
-#' @param task [OPTIONAL] Task name. Default "recalCovariates"
+#' @param executor_id [OPTIONAL] Task executor name. Default "recalCovariates"
+#' @param task_name [OPTIONAL] Task name. Default "recalCovariates"
 #' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
 #' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
 #' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
@@ -358,8 +358,8 @@ tg_summary_metrics_bam_picard=function(
 #' @param tmp_dir Path to TMP directory. Default .
 #' @param ri Ribosomal interval for RNAseq data. Interval format.
 #' @param ref_flat Path to flat refrence. Interval format.
-#' @param executor [OPTIONAL] Task executor name. Default "recalCovariates"
-#' @param task [OPTIONAL] Task name. Default "recalCovariates"
+#' @param executor_id [OPTIONAL] Task executor name. Default "recalCovariates"
+#' @param task_name [OPTIONAL] Task name. Default "recalCovariates"
 #' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
 #' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
 #' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
@@ -369,8 +369,8 @@ tg_summary_metrics_bam_picard=function(
 rnaseq_summary_metrics_bam_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bam="",output_dir="",verbose=FALSE,tmp_dir=".",threads=1,ram=4,
-  ri="",ref_flat="",mode="local",executor=make_unique_id("RNAsummaryMetrics"),
-  task="RNAsummaryMetrics",time="48:0:0",
+  ri="",ref_flat="",mode="local",executor_id=make_unique_id("RNAsummaryMetrics"),
+  task_name="RNAsummaryMetrics",time="48:0:0",
   update_time=60,wait=FALSE,hold=""){
 
 
@@ -451,7 +451,8 @@ job=build_job(executor_id=executor_id,task_id=task_id)
 wgs_summary_metrics_bam_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bam="",output_dir="",verbose=FALSE,tmp_dir=".",threads=1,ram=4,mode="local",
-  executor=make_unique_id("WGSsummaryMetrics"),task="WGSsummaryMetrics",time="48:0:0",
+  executor_id=make_unique_id("WGSsummaryMetrics"),
+  task_name="WGSsummaryMetrics",time="48:0:0",
   update_time=60,wait=FALSE,hold=""){
 
 
