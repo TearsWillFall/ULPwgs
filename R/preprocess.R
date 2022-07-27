@@ -258,7 +258,10 @@ for_id=function(seq_info,output_dir="",name="",
                                                 mode=tool_config_id[step,]$mode,
                                                 time=tool_config_id[step,]$time,
                                                 executor_id=task_id,
-                                                update_time=60,wait=FALSE,hold="") 
+                                                update_time=60,wait=FALSE,hold="")
+                                        file_R1=report[[new_name]][["steps"]][["trimming"]]$out_files$r1
+                                        file_R2=report[[new_name]][["steps"]][["trimming"]]$out_files$r2
+                                        hold=unlist_lvl(report[[new_name]][["steps"]][["post_trimming"]],var="job_id")
                                     }
 
                                     if(tool_config_id[step,]$name=="post_fastqc"){
@@ -267,8 +270,8 @@ for_id=function(seq_info,output_dir="",name="",
                                             cat("\t\n")
                                         report[[new_name]][["steps"]][["post_fastqc"]]<<-qc_fastqc(
                                             bin_fastqc=bin_list$pre_fastqc$bin_fastqc,
-                                            file_R1=report[[new_name]][["steps"]][["trimming"]]$out_files$r1,
-                                            file_R2=report[[new_name]][["steps"]][["trimming"]]$out_files$r2,
+                                            file_R1=file_R1,
+                                            file_R2=file_R2,
                                             output_dir=paste0(out_file_dir,"/fastqc_reports/post_trim"),
                                             executor_id=task_id,
                                             verbose=tool_config_id[step,]$verbose,
@@ -277,7 +280,7 @@ for_id=function(seq_info,output_dir="",name="",
                                             ram=tool_config_id[step,]$ram,
                                             time=tool_config_id[step,]$time,
                                             update_time=60,wait=FALSE,
-                                            hold=report[[new_name]][["steps"]][["post_trimming"]]$job_id)
+                                            hold=hold)
                                     }
 
                                     if(tool_config_id[step,]$name=="alignment"){
@@ -311,7 +314,10 @@ for_id=function(seq_info,output_dir="",name="",
                                             executor_id=task_id,
                                             update_time=60,
                                             wait=FALSE,
-                                            hold= report[[new_name]][["steps"]][["trimming"]]$job_id)
+                                            hold= hold)
+                                        
+                                        bam=report[[new_name]][["steps"]][["alignment"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam
+                                        hold=unlist_lvl(report[[new_name]][["steps"]][["alignment"]],var="job_id")
                                     }
 
                                     if(!merge){
@@ -325,7 +331,7 @@ for_id=function(seq_info,output_dir="",name="",
 
                                             report[[new_name]][["steps"]][["markdups"]]<<-markdups_gatk(
                                                 bin_gatk=bin_list$markdups$bin_gatk,
-                                                bam=report[[new_name]][["steps"]][["alignment"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam,
+                                                bam=bam,
                                                 output_dir=out_file_dir,
                                                 verbose=tool_config_id[step,]$verbose,
                                                 threads=tool_config_id[step,]$threads,
@@ -335,7 +341,9 @@ for_id=function(seq_info,output_dir="",name="",
                                                 time=tool_config_id[step,]$time,
                                                 executor_id=task_id,
                                                 update_time=60,wait=FALSE,
-                                                hold=report[[new_name]][["steps"]][["aligment"]]$job_id)
+                                                hold=hold)
+                                            bam=report[[new_name]][["steps"]][["markdups"]]$out_files$bam
+                                            hold=unlist_lvl(report[[new_name]][["steps"]][["markdups"]],var="job_id")
                                             }
                                    
                                             if(tool_config_id[step,]$name=="recalibrate"){
@@ -349,7 +357,7 @@ for_id=function(seq_info,output_dir="",name="",
                                                     bin_samtools=bin_list$recalibrate$bin_samtools,
                                                     bin_gatk=bin_list$recalibrate$bin_gatk,
                                                     bin_picard=bin_list$recalibrate$bin_picard,
-                                                    bam=report[[new_name]][["steps"]][["markdups"]]$out_files$bam,
+                                                    bam=,
                                                     output_dir=out_file_dir,
                                                     ref_genome=ref_list[[seq_info_R1$reference]]$reference$genome,
                                                     dbsnp=ref_list[[seq_info_R1$reference]]$database$all_common,
@@ -361,10 +369,60 @@ for_id=function(seq_info,output_dir="",name="",
                                                     time=tool_config_id[step,]$time,
                                                     executor_id=task_id,
                                                     update_time=60,wait=FALSE,
-                                                    hold=report[[new_name]][["steps"]][["markdups"]]$job_id)
+                                                    hold=hold)
+
+                                                bam=report[[new_name]][["steps"]][["recalibrate"]][["steps"]][["par_apply_bqsr"]][["steps"]][["gather_bam"]]$out_files$bam
+                                                hold=unlist_lvl(report[[new_name]][["steps"]][["recalibrate"]],var="job_id")
                                             }
 
-                                        }    
+
+                                        if(tool_config_id[step,]$name=="alignqc"){
+                                            cat("\t\n")
+                                            cat(crayon::bold("alignqc: \n"))
+                                            cat("\t\n")
+
+                                            bi=""
+                                            ti=""
+                                            ri=""
+                                            ref_flat=""
+                                            if(seq_info_R1$method_type=="CAPTURE"|seq_info_R1$method_type=="EXOME"){
+                                                method="tg"
+                                                bi=ref_list[[seq_info_R1$reference]][["panel"]][[seq_info_R1$method_version]]$intervals$bi
+                                                ti=ref_list[[seq_info_R1$reference]][["panel"]][[seq_info_R1$method_version]]$intervals$ti
+                                            } else if(seq_info_R1$method_type=="WGS"){
+                                                method="wgs"
+                                            } else if(seq_info_R1$method_type=="RNASEQ"){
+                                                method="rna"
+                                                ri=ref_list[[seq_info_R1$reference]][["rnaseq"]][[seq_info_R1$method_version]]$intervals$ri
+                                                ref_flat=ref_list[[seq_info_R1$reference]][["rnaseq"]][[seq_info_R1$method_version]]$reference$ref_flat
+                                            }
+                                        
+                                            args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="alignqc"))
+
+                                            report[[new_name]][["steps"]][["align_qc_metrics"]] <<- align_qc_metrics(
+                                                bin_samtools=bin_list$alignqc$bin_samtools,
+                                                bin_picard=bin_list$alignqc$bin_picard,
+                                                bin_bedtools=bin_list$alignqc$bin_bedtools,
+                                                bam=bam,
+                                                output_dir=out_file_dir,
+                                                ref_genome=ref_list[[seq_info_R1$reference]]$reference$genome,
+                                                verbose=tool_config_id[step,]$verbose,
+                                                tmp_dir=out_file_dir,
+                                                bi=bi,
+                                                ti=ti,
+                                                ri=ri,
+                                                ref_flat=ref_flat,
+                                                method=method,
+                                                executor_id=task_id,
+                                                mode=tool_config_id[step,]$mode,
+                                                time=tool_config_id[step,]$time,
+                                                threads=tool_config_id[step,]$threads,
+                                                ram=tool_config_id[step,]$ram,
+                                                update_time=60,wait=FALSE,
+                                                hold=hold
+                                            )
+                                        }
+                                    }    
                                             
                                 })
                             }
@@ -386,28 +444,7 @@ for_id=function(seq_info,output_dir="",name="",
 
 
         
-            
-#             if(n_lanes>1){
-#                 job_report=merge_bams_samtools(
-#                     bin_path=bin_samtools,
-#                     bams=job_report$out_files$bam,
-#                     output_name=sample_parameters["merge_bams","verbose"],
-#                     verbose=tool_parameters["merge_bams","verbose"],
-#                     threads=tool_parameters["merge_bams","threads"],
-#                     ram=tool_parameters["merge_bams","time"],
-#                     mode=tool_parameters["merge_bams","mode"],
-#                     time=tool_parameters["merge_bams","time"],
-#                     executor_id=task_id,
-#                     update_time=60,wait=FALSE,hold=job_report$job_id)
-#             }
+       
 
 
-
-#             if(grepl("alignqc",rownames(parameters))){
-#                 align_qc_metrics(bin_path=bin_samtools,
-#                 bin_path2=bin_picard,bin_path3=bin_bedtools,
-#                 bam=bam,output_dir="",ref_genome="",verbose=FALSE,tmp_dir=".",mapq=0,bi="",
-#                 ti="",ri="",ref_flat="",method="tg",mode="local",executor=make_unique_id("alignQC"),
-#                 task="alignQC",time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE, hold="")
-#             }
 

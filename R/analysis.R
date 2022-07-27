@@ -122,7 +122,7 @@ align_qc_metrics=function(bin_samtools=build_default_tool_binary_list()$bin_samt
       out_files=list(
         )
       )
-  job_report[["steps"]][["mapq_metrics"]]=mapq_metrics_bam_samtools(
+  job_report[["steps"]][["mapq_metrics"]] <- mapq_metrics_bam_samtools(
    bin_samtools=bin_samtools,
    bam=bam,output_dir=out_file_dir,
    verbose=verbose,time=time,mode=mode,
@@ -130,7 +130,7 @@ align_qc_metrics=function(bin_samtools=build_default_tool_binary_list()$bin_samt
    update_time=update_time,
    wait=FALSE, hold=hold)
 
-  job_report[["steps"]][["summary_metrics"]]=summary_metrics_bam_picard(
+  job_report[["steps"]][["summary_metrics"]] <- summary_metrics_bam_picard(
     bin_picard=bin_picard,
     bam=bam,output_dir=out_file_dir,
     verbose=verbose,tmp_dir=tmp_dir,
@@ -139,7 +139,7 @@ align_qc_metrics=function(bin_samtools=build_default_tool_binary_list()$bin_samt
     ram=ram,update_time=update_time,
     wait=FALSE, hold=hold)
     
-  job_report[["steps"]][["insertsize_metrics"]]=insertsize_metrics_bam_picard(
+  job_report[["steps"]][["insertsize_metrics"]] <- insertsize_metrics_bam_picard(
   bin_picard=bin_picard,bam=bam,
   output_dir=out_file_dir,
    verbose=verbose,tmp_dir=tmp_dir,
@@ -153,7 +153,7 @@ align_qc_metrics=function(bin_samtools=build_default_tool_binary_list()$bin_samt
     
     if (method=="tg"){
    
-     job_report[["steps"]][["tg_summary_metrics"]]=tg_summary_metrics_bam_picard(
+     job_report[["steps"]][["tg_summary_metrics"]] <- tg_summary_metrics_bam_picard(
       bin_picard=bin_picard,
       bam=bam,output_dir=out_file_dir,
       verbose=verbose,
@@ -189,7 +189,7 @@ align_qc_metrics=function(bin_samtools=build_default_tool_binary_list()$bin_samt
       # off_target=paste0(out_file,".off_Target.Histogram_Coverage.txt"),height=6,width=12,output_dir=out_file_dir)
 
     }else if(method=="rna"){
-        job_report[["steps"]][["rna_summary_metrics"]]=rnaseq_summary_metrics_bam_picard(
+        job_report[["steps"]][["rna_summary_metrics"]] <- rnaseq_summary_metrics_bam_picard(
         bin_picard=bin_picard,
         bam=bam,output_dir=out_file_dir,
         verbose=verbose,tmp_dir=tmp_dir,
@@ -199,7 +199,7 @@ align_qc_metrics=function(bin_samtools=build_default_tool_binary_list()$bin_samt
         update_time=update_time,
         wait=FALSE,hold=hold)
     }else if(method=="wgs"){
-        job_report[["steps"]][["rna_summary_metrics"]]=wgs_summary_metrics_bam_picard(
+        job_report[["steps"]][["rna_summary_metrics"]] <- wgs_summary_metrics_bam_picard(
         bin_picard=bin_picard,
         bam=bam,
         output_dir=out_file_dir,

@@ -754,7 +754,7 @@ gather_bam_files=function(
 
   if(clean){
     exec_code=paste(exec_code," && rm",paste(bam,collapse=" "),
-    " && rm ",sub(".bam",".bai",bam)
+    " && rm ",sub(".bam",".bai",bam))
   }
 
  
