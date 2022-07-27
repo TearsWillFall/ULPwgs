@@ -845,15 +845,15 @@ analyze_covariates_gatk=function(
       " -plots ",out_file)
   }
 
-  out_file_dir2=set_dir(dir=out_file_dir,name="batch")
   job=build_job(executor_id=executor_id,task=task_id)
+
   if(mode=="batch"){
-       exec_batch=build_job_exec(job=job,hold=hold,
-       time=time,ram=ram,threads=threads,
-       output_dir=out_file_dir2)
+       out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+       exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+       threads=threads,output_dir=out_file_dir2)
        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
   }
-
+  
   if(verbose){
      print_verbose(job=job,arg=argg,exec_code=exec_code)
   }
