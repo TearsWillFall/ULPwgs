@@ -554,11 +554,11 @@ update_time=60,wait=FALSE,hold=""){
   job=build_job(executor_id = executor_id,task_id=task_id)
 
   if(extract=="stats"|extract=="all"){
-    write.table(metrics,file=paste0(out_file_dir,"metrics_stats"),quote=FALSE,row.names=FALSE,col.names=TRUE)
+    write.table(metrics,file=paste0(out_file_dir,"/metrics_stats.txt"),quote=FALSE,row.names=FALSE,col.names=TRUE)
   }
 
   if(extract=="histogram"|extract=="all"){
-    write.table(histogram,file=paste0(out_file_dir,"metrics_histogram"),quote=FALSE,row.names=FALSE,col.names=TRUE)
+    write.table(histogram,file=paste0(out_file_dir,"/metrics_histogram.txt"),quote=FALSE,row.names=FALSE,col.names=TRUE)
   }
 
 
