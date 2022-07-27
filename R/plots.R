@@ -300,8 +300,8 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
           theme(legend.position = "none") +
           scale_fill_identity()) %>%
         dplyr::mutate(subgrobs = list(annotation_custom(ggplot2::ggplotGrob(subplots),
-          x = s_order - total/2 , y = 1 - total / 2,
-          xmax = s_order + total/2 , ymax = 1 + total / 2
+          x = s_order - total/2 , y = 2.5*max(s_order) - total / 2,
+          xmax = s_order + total/2 , ymax = 2.5*max(s_order) + total / 2
         )))
 
 
@@ -309,7 +309,7 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
     p <- df.grobs %>% {
         p <- ggplot(.) +
           scale_fill_gradient2(low = "blue", high = "red", mid = "grey", midpoint = 2)+
-          geom_point(aes(x = s_order, y = 1)) +
+          geom_point(aes(x = s_order, y = 2.5*max(s_order))) +
           theme_void() +
           ylab("TC/PL") +
           theme(
