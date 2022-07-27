@@ -322,7 +322,7 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
       p <- p+ geom_tile(aes(x = s_order, y = 1,fill=ploidy), col = "black")
       p<- p + .$subgrobs
       p<- p + scale_x_continuous(expand = c(0, 0))+scale_y_continuous(expand=c(0,0))
-
+      return(p&coord_equal())
     }
   
   }
@@ -352,7 +352,7 @@ main_plot=function(data,type="autosome",show_cn=TRUE){
       p<-p+geom_text(data=data[[type]],aes(s_order,as.numeric(as.factor(gene)),
       label=cn_t),col="white",size=3)
     }
-    print(p)
+    print(p&coord_equal())
   }
 
   plts=list()
@@ -365,5 +365,5 @@ main_plot=function(data,type="autosome",show_cn=TRUE){
   p=patchwork::wrap_plots(plts)+patchwork::plot_layout(height=c(2.5*length(unique(plt_data$sample)),
   nrow(to_plot[["autosome"]]),nrow(to_plot[["X"]])))
 
-  print(p&coord_equal())
+  print(p)
 }
