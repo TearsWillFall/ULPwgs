@@ -322,7 +322,7 @@ for_id=function(seq_info,output_dir="",name="",
                                             hold= hold)
                                         
                                         bam <<- report[[new_name]][["steps"]][["alignment"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam
-                                        hold <<- unlist_lvl(report[[new_name]][["steps"]][["alignment"]],var="job_id")
+                                        hold <<- unlist_lvl(report[[new_name]][["steps"]][["alignment"]],var="job_id",recursive=TRUE)
                                     }
 
                                     if(!merge){

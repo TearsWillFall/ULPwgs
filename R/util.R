@@ -62,17 +62,23 @@ set_name=function(current_name="",name=""){
 
 #' @export
 
-unlist_lvl=function(named_list,var){
+unlist_lvl=function(named_list,var,recursive=FALSE){
 
   vars=names(named_list)
   lvl_found=any(vars %in% var)
 
   if(lvl_found){
       out=named_list[[var]]
+      if(recursive){
+        if(!is.null(names(named_list))){
+            out=append(out,unlist(lapply(names(named_list),FUN=function(name){
+            out=unlist_lvl(named_list=named_list[[name]],var)
+        })))
+      }
+    }
   }else{
     out=unlist(lapply(names(named_list),FUN=function(name){
-      out=unlist_lvl(named_list=named_list[[name]],var)
-
+    out=unlist_lvl(named_list=named_list[[name]],var)
     }))
   }
   return(out)
