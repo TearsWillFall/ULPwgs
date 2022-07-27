@@ -181,7 +181,7 @@ recal_gatk=function(
     bin_samtools=bin_samtools,bin_gatk=bin_gatk,bin_picard=bin_picard,
     bam=bam,ref_genome=ref_genome,
     rec_table=job_report[["steps"]][["par_bqsr_before"]][["steps"]][["generate_bqsr_report"]]$out_files$table,
-    output_dir=out_file_dir4,regions=regions,
+    output_dir=out_file_dir3,regions=regions,
     clean=clean,verbose=verbose,executor_id=task_id,
     threads=threads,mode=mode,ram=ram,time=time,
     update_time=update_time,wait=FALSE,
@@ -219,7 +219,8 @@ recal_gatk=function(
   
 
   if(wait&&mode=="batch"){
-    job_validator(job=job_report$job_id,time=update_time,verbose=verbose,threads=threads)
+    job_validator(job=job_report$job_id,
+    time=update_time,verbose=verbose,threads=threads)
   }
   return(job_report)
 }
@@ -752,7 +753,8 @@ gather_bam_files=function(
     paste0(" I=",bam,collapse=" ")," O=",out_file)
 
   if(clean){
-    exec_code=paste(exec_code," && rm",paste(bam,collapse=" "))
+    exec_code=paste(exec_code," && rm",paste(bam,collapse=" "),
+    " && rm ",paste0(bam,".bai"))
   }
 
  
