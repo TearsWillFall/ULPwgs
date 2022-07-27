@@ -548,8 +548,9 @@ update_time=60,wait=FALSE,hold=""){
   out_file_dir=set_dir(dir=output_dir,name="parse_summary")
 
   metrics=read.table(metrics,sep="\t",quote="\\",nrows=1,header=TRUE)
+  metrics$SAMPLE=output_name
   histogram=read.table(metrics,sep="\t",quote="\\",skip=8,header=TRUE)
-
+  histogram$SAMPLE=output_name
   job=build_job(executor_id = executor_id,task_id=task_id)
 
   if(extract=="stats"|extract=="all"){
