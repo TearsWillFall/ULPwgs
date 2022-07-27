@@ -166,6 +166,7 @@ for_id=function(seq_info,output_dir="",name="",
                             file_R1=seq_info_R1$path
                             file_R2=seq_info_R2$path
                             hold=""
+                            bam=""
                         
                             if(print_tree){
                                 cat(add_nesting_ws(nesting,n=nest_ws))
@@ -263,9 +264,9 @@ for_id=function(seq_info,output_dir="",name="",
                                                 executor_id=task_id,
                                                 update_time=60,wait=FALSE,hold=hold)
 
-                                        file_R1=report[[new_name]][["steps"]][["trimming"]]$out_files$r1
-                                        file_R2=report[[new_name]][["steps"]][["trimming"]]$out_files$r2
-                                        hold=unlist_lvl(report[[new_name]][["steps"]][["post_trimming"]],var="job_id")
+                                        file_R1 <<- report[[new_name]][["steps"]][["trimming"]]$out_files$r1
+                                        file_R2 <<- report[[new_name]][["steps"]][["trimming"]]$out_files$r2
+                                        hold <<- unlist_lvl(report[[new_name]][["steps"]][["post_trimming"]],var="job_id")
                                     }
 
                                     if(tool_config_id[step,]$name=="post_fastqc"){
@@ -320,8 +321,8 @@ for_id=function(seq_info,output_dir="",name="",
                                             wait=FALSE,
                                             hold= hold)
                                         
-                                        bam <- report[[new_name]][["steps"]][["alignment"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam
-                                        hold <- unlist_lvl(report[[new_name]][["steps"]][["alignment"]],var="job_id")
+                                        bam <<- report[[new_name]][["steps"]][["alignment"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam
+                                        hold <<- unlist_lvl(report[[new_name]][["steps"]][["alignment"]],var="job_id")
                                     }
 
                                     if(!merge){
@@ -346,8 +347,8 @@ for_id=function(seq_info,output_dir="",name="",
                                                 executor_id=task_id,
                                                 update_time=60,wait=FALSE,
                                                 hold=hold)
-                                            bam=report[[new_name]][["steps"]][["markdups"]]$out_files$bam
-                                            hold=unlist_lvl(report[[new_name]][["steps"]][["markdups"]],var="job_id")
+                                            bam <<- report[[new_name]][["steps"]][["markdups"]]$out_files$bam
+                                            hold <<- unlist_lvl(report[[new_name]][["steps"]][["markdups"]],var="job_id")
                                             }
                                    
                                             if(tool_config_id[step,]$name=="recalibrate"){
@@ -375,8 +376,8 @@ for_id=function(seq_info,output_dir="",name="",
                                                     update_time=60,wait=FALSE,
                                                     hold=hold)
 
-                                                bam=report[[new_name]][["steps"]][["recalibrate"]][["steps"]][["par_apply_bqsr"]][["steps"]][["gather_bam"]]$out_files$bam
-                                                hold=unlist_lvl(report[[new_name]][["steps"]][["recalibrate"]],var="job_id")
+                                                bam <<- report[[new_name]][["steps"]][["recalibrate"]][["steps"]][["par_apply_bqsr"]][["steps"]][["gather_bam"]]$out_files$bam
+                                                hold <<- unlist_lvl(report[[new_name]][["steps"]][["recalibrate"]],var="job_id")
                                             }
 
 
