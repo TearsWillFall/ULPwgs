@@ -174,7 +174,7 @@ recal_gatk=function(
     output_dir=out_file_dir,clean=clean,
     verbose=verbose,executor_id=task_id,mode=mode,threads=threads,ram=ram,
     time=time,update_time=update_time,wait=FALSE,
-    hold=job_report[["steps"]][["getChr"]]$job_id)
+    hold=hold)
 
 
   job_report[["steps"]][["par_apply_bqsr"]] <- parallel_apply_BQSR_gatk(

@@ -483,8 +483,11 @@ stats_index_samtools=function(
 #' @export
 
 mapq_metrics_bam_samtools=function(
-  bin_samtools=build_default_tool_binary_list()$bin_samtools,bam="",output_dir="",
-  verbose=FALSE,threads=3,ram=4,mode="local",executor_id=make_unique_id("metricsMAPQ"),
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam="",
+  output_dir="",
+  verbose=FALSE,threads=3,ram=4,mode="local",
+  executor_id=make_unique_id("metricsMAPQ"),
   task_name="metricsMAPQ",time="48:0:0",update_time=60,wait=FALSE,hold=""
 ){
 
@@ -495,7 +498,7 @@ mapq_metrics_bam_samtools=function(
 
   out_file=paste0(out_file_dir,"/",get_file_name(bam),".mapq_dist.txt")
   exec_code=paste(bin_samtools,"view",bam," -@ ",threads, " | awk -F", "'\\t'",
-    "'{c[$5]++} END { for (i in c) printf(\"%s\\t%s\\n\",i,c[i]) }'",
+    "\"{c[$5]++} END { for (i in c) printf(\"%s\\t%s\\n\",i,c[i]) }\"",
     " | sort -t$'\\t' -k 1 -g >", out_file)
 
   job=build_job(executor_id=executor_id,task_id=task_id)
@@ -512,7 +515,7 @@ mapq_metrics_bam_samtools=function(
     print_verbose(job=job,arg=argg,exec_code=exec_code)
   }
 
-    error=system(exec_code)
+  error=system(exec_code)
   if(error!=0){
     stop("samtools failed to run due to unknown error.
     Check std error for more information.")
