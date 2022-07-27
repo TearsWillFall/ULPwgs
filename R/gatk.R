@@ -402,7 +402,7 @@ parallel_generate_BQSR_gatk=function(
         bin_gatk=bin_gatk,bam=bam,ref_genome=ref_genome,
         dbsnp=dbsnp,output_dir=out_file_dir,verbose=verbose,
         executor_id=task_id,mode=mode,time=time,
-        threads=threads,ram=ram,update_time=update_time,
+        threads=ifelse(mode=="local",threads,2),ram=ram,update_time=update_time,
         wait=FALSE,hold=hold
     )
   },mc.cores=ifelse(mode=="local",threads,3))
@@ -681,7 +681,8 @@ parallel_apply_BQSR_gatk=function(
       region=region,
       bin_gatk=bin_gatk,bam=bam,ref_genome=ref_genome,
       executor_id=executor_id,rec_table=rec_table,
-      output_dir=out_file_dir,verbose=verbose,mode=mode,time=time,threads=threads,
+      output_dir=out_file_dir,verbose=verbose,mode=mode,time=time,
+      threads=ifelse(mode=="local",threads,2),
       ram=ram,update_time=update_time,hold=hold,wait=FALSE)},
       mc.cores=ifelse(mode=="local",threads,3)
   )
