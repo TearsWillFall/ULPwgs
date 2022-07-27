@@ -404,7 +404,7 @@ for_id=function(seq_info,output_dir="",name="",
                                         
                                             args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="alignqc"))
 
-                                            report[[new_name]][["steps"]][["align_qc_metrics"]] <<- align_qc_metrics(
+                                            report[[new_name]][["steps"]][["metrics_alignqc"]] <<- metrics_alignqc(
                                                 bin_samtools=bin_list$alignqc$bin_samtools,
                                                 bin_picard=bin_list$alignqc$bin_picard,
                                                 bin_bedtools=bin_list$alignqc$bin_bedtools,

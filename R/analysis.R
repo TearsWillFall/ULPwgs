@@ -87,6 +87,9 @@ bams="",output_name="",verbose=FALSE,threads=3){
 #' @param ref_genome Path to input file with the reference genome sequence.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
+#' @param executor_id Task EXECUTOR ID. Default "gatherBAM"
+#' @param task_name Task name. Default "gatherBAM"
+#' @param thread Threads to use. Default 3.
 #' @param ram RAM in GB to use. Default 4 Gb.
 #' @param tmp_dir Path to tmp directory.
 #' @param mapq Minimum MapQ for Picard Wgs metrics. Default 0.
@@ -97,12 +100,16 @@ bams="",output_name="",verbose=FALSE,threads=3){
 #' @param mode Type of data to generate metrics for. Default tg. Options ["wgs","tg","rna"]
 #' @export
 
-align_qc_metrics=function(bin_samtools=build_default_tool_binary_list()$bin_samtools,
+metrics_alignqc=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bin_bedtools=build_default_tool_binary_list()$bin_bedtools,
-  bam="",output_dir="",ref_genome="",verbose=FALSE,tmp_dir=".",mapq=0,bi="",
-  ti="",ri="",ref_flat="",method="tg",mode="local",executor_od=make_unique_id("alignQC"),
-  task_name="alignQC",time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE, hold=""){
+  bam="",output_dir="",ref_genome="",
+  verbose=FALSE,tmp_dir=".",mapq=0,bi="",
+  ti="",ri="",ref_flat="",method="tg",
+  mode="local",executor_id=make_unique_id("alignQC"),
+  task_name="alignQC",time="48:0:0",
+  threads=3,ram=4,update_time=60,wait=FALSE, hold=""){
     
 
     argg <- as.list(environment())
