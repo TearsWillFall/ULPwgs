@@ -101,8 +101,8 @@ align_qc_metrics=function(bin_samtools=build_default_tool_binary_list()$bin_samt
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bin_bedtools=build_default_tool_binary_list()$bin_bedtools,
   bam="",output_dir="",ref_genome="",verbose=FALSE,tmp_dir=".",mapq=0,bi="",
-  ti="",ri="",ref_flat="",method="tg",mode="local",executor=make_unique_id("alignQC"),
-  task="alignQC",time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE, hold=""){
+  ti="",ri="",ref_flat="",method="tg",mode="local",executor_od=make_unique_id("alignQC"),
+  task_name="alignQC",time="48:0:0",threads=4,ram=4,update_time=60,wait=FALSE, hold=""){
     
 
     argg <- as.list(environment())
@@ -125,6 +125,7 @@ align_qc_metrics=function(bin_samtools=build_default_tool_binary_list()$bin_samt
   job_report[["steps"]][["mapq_metrics"]] <- mapq_metrics_bam_samtools(
    bin_samtools=bin_samtools,
    bam=bam,output_dir=out_file_dir,
+   executor_id=task_id,
    verbose=verbose,time=time,mode=mode,
    threads=threads,ram=ram,
    update_time=update_time,
@@ -134,7 +135,7 @@ align_qc_metrics=function(bin_samtools=build_default_tool_binary_list()$bin_samt
     bin_picard=bin_picard,
     bam=bam,output_dir=out_file_dir,
     verbose=verbose,tmp_dir=tmp_dir,
-    mode=mode,executor=executor,
+    mode=mode,executor_id=task_id,
     threads=threads,
     ram=ram,update_time=update_time,
     wait=FALSE, hold=hold)
@@ -143,7 +144,7 @@ align_qc_metrics=function(bin_samtools=build_default_tool_binary_list()$bin_samt
   bin_picard=bin_picard,bam=bam,
   output_dir=out_file_dir,
    verbose=verbose,tmp_dir=tmp_dir,
-   mode=mode,executor=executor,
+   mode=mode,executor_id=task_id,
    threads=threads,ram=ram,
    update_time=update_time,
    wait=FALSE,hold=hold)
@@ -159,7 +160,7 @@ align_qc_metrics=function(bin_samtools=build_default_tool_binary_list()$bin_samt
       verbose=verbose,
       tmp_dir=tmp_dir,bi=bi,
       ti=ti,mode=mode,
-      executor=executor,
+      executor_id=task_id,
       threads=threads,ram=ram,
       update_time=update_time,
       wait=FALSE,hold=hold)
@@ -194,7 +195,7 @@ align_qc_metrics=function(bin_samtools=build_default_tool_binary_list()$bin_samt
         bam=bam,output_dir=out_file_dir,
         verbose=verbose,tmp_dir=tmp_dir,
         ri=ri,ref_flat=ref_flat,
-        mode=mode,executor=executor,
+        mode=mode,executor_id=task_id,
         threads=threads,ram=ram,
         update_time=update_time,
         wait=FALSE,hold=hold)
@@ -205,7 +206,7 @@ align_qc_metrics=function(bin_samtools=build_default_tool_binary_list()$bin_samt
         output_dir=out_file_dir,
         verbose=verbose,
         tmp_dir=tmp_dir,mode=mode,
-        executor=executor,
+        executor_id=task_id,
         threads=threads,ram=ram,
         update_time=update_time,
         wait=FALSE,hold=hold)
