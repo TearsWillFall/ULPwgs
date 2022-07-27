@@ -364,8 +364,7 @@ main_plot=function(data,type="autosome",show_cn=TRUE){
   plts[["X"]]=main_plot(to_plot,type="X",show_cn=TRUE)
 
 
-  p=patchwork::wrap_plots(plts)+patchwork::plot_layout(height=c(2.5*length(unique(plt_data$sample)),
-  nrow(to_plot[["autosome"]]),nrow(to_plot[["X"]])))
+  p=patchwork::wrap_plots(plts)
 
   print(p)
 }
