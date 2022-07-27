@@ -274,7 +274,7 @@ clonet_trento=function(
 
 
 clonet_view_trento=function(method="beta_log2", clonet_dir="",threads=3,
-    ram=4,output_dir="",verbose=FALSE,
+    ram=4,output_dir=".",verbose=FALSE,
     executor_id=make_unique_id("clonet_view"),
     task_name="clonet_view",mode="local",time="48:0:0",
     update_time=60,wait=FALSE,hold="",cn_list=build_default_cn_list(),
@@ -291,7 +291,6 @@ clonet_view_trento=function(method="beta_log2", clonet_dir="",threads=3,
     cn_input_files=paste0(clonet_dir,"/",clonet_dirs$cn_snv_calls$CN_SNVs_calls.csv)
     cn_data=lapply(cn_input_files,FUN=function(x){
         tryCatch({
-
                cn_data=read.table(x,sep=",",header=TRUE)
         },error=function(e){
             warning(paste0("Could not find file ",x))
@@ -305,21 +304,21 @@ clonet_view_trento=function(method="beta_log2", clonet_dir="",threads=3,
     tc_input_files=paste0(clonet_dir,"/",clonet_dirs$tcEstimation$tc_estimations_CLONETv2.tsv)
     tc_data=lapply(tc_input_files,FUN=function(x){
         tryCatch({
-
                tc_data=read.table(x,sep=",",header=TRUE)
         },error=function(e){
             warning(paste0("Could not find file ",x))
 
         })
-       
-  
     })
+    
 
 
     cn_data=dplyr::bind_rows(cn_data)
     cn_data=dplyr::left_join(cn_data,cn_list,by=c("cn.call.corr"="cn"))
     
     plt_data[["cn_data"]]=cn_data
+    plt_data[["tc_data"]]=tc_data
+    
 
     if(method=="log2_beta"){
         clonet_log2_beta(plt_data=plt_data[["cn_data"]])
@@ -413,6 +412,9 @@ clonet_log2_beta=function(plt_data){
     output[["UI"]] <- shiny::renderUI({
         fluidRow(boxes)
     })
+    session$onSessionEnded(function() {
+        stopApp()
+    })
 }
     shiny::shinyApp(ui = build_ui, server = server_log2_beta)
 }
@@ -481,6 +483,9 @@ clonet_ai=function(plt_data){
         output[["UI"]] <- shiny::renderUI({
             fluidRow(my_box)
         })
+    session$onSessionEnded(function() {
+        stopApp()
+    })
     }
 
     shiny::shinyApp(ui = build_ui, server = server_ai)
@@ -560,6 +565,9 @@ clonet_cn=function(plt_data){
     
     output[["UI"]] <- shiny::renderUI({
         fluidRow(boxes)
+    })
+    session$onSessionEnded(function() {
+        stopApp()
     })
 }
     shiny::shinyApp(ui = build_ui, server = server_cn)
@@ -643,6 +651,9 @@ clonet_snp=function(plt_data){
     
     output[["UI"]] <- shiny::renderUI({
         fluidRow(boxes)
+    })
+    session$onSessionEnded(function() {
+        stopApp()
     })
 }
     shiny::shinyApp(ui = build_ui, server = server_cn)

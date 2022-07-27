@@ -333,7 +333,7 @@ tg_summary_metrics_bam_picard=function(
         )
   )
 
-
+  
   job_report[["steps"]][["parse_summary"]]<-parse_picard_metrics(
     summary=out_file,
     output_dir=out_file_dir,

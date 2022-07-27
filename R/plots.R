@@ -327,7 +327,7 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
   
   }
 
-  main_plot=function(data,type="autosome",show_cn=TRUE){
+main_plot=function(data,type="autosome",show_cn=TRUE){
     
     p=ggplot(data[[type]]) +
     geom_polygon(aes(x = x, y = y, fill =1-beta, 
@@ -365,5 +365,5 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
   p=patchwork::wrap_plots(plts)+patchwork::plot_layout(height=c(2.5*length(unique(plt_data$sample)),
   nrow(to_plot[["autosome"]]),nrow(to_plot[["X"]])))
 
-  print(p)
+  print(p&coord_equal())
 }
