@@ -160,7 +160,7 @@ recal_gatk=function(
   
   job_report[["steps"]][["getChr"]] <- get_fai_reference_chr(
     fasta=ref_genome,verbose=verbose,output_dir=output_dir,
-    executor_id=task_id,mode=mode,threads=threads,ram=ram,
+    executor_id=task_id,mode="local",threads=threads,ram=ram,
     time=time,update_time=update_time,wait=FALSE,hold=hold)
 
 
