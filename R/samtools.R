@@ -61,23 +61,23 @@ sort_and_index_bam_samtools=function(
       bam=paste0(out_file_dir,"/",get_file_name(bam),".sorted.",get_file_ext(bam))
       if (coord_sort){
         if(index){
-            job_report[["steps"]][["index"]]=index_bam_samtools(
+            job_report[["steps"]][["index"]] <-index_bam_samtools(
               bin_samtools=bin_samtools,
               bam=bam,verbose=verbose,threads=threads,ram=ram,
               executor_id=task_id,mode=mode,time=time,
-              update_time=update_time,wait=FALSE,hold=job,
+              update_time=update_time,wait=FALSE,hold=job_report[["steps"]][["sort"]]$job_id,
               output_dir = out_file_dir)
 
           if(stats=="index"|stats=="all"){
-              job_report[["stats"]]=stats_bam_samtools(
+              job_report[["steps"]][["index_stats"]]<- stats_bam_samtools(
                 bin_samtools=bin_samtools,bam=bam,output_dir=out_file_dir,
                 verbose=verbose,threads=threads,stats="index",executor_id=task_id,
-                mode=mode,time=time,update_time=update_time,wait=FALSE,hold=job)
+                mode=mode,time=time,update_time=update_time,wait=FALSE,hold=job_report[["steps"]][["index"]]$job_id)
           }
         }
       }
   }else{
-     job_report[["steps"]][["index"]]=index_bam_samtools(
+     job_report[["steps"]][["index"]] <- index_bam_samtools(
       bin_samtools=bin_samtools,bam=bam,verbose=verbose,threads=threads,
       executor_id=task_id,mode=mode,time=time,
       update_time=update_time,wait=FALSE,hold=hold)
@@ -85,20 +85,15 @@ sort_and_index_bam_samtools=function(
 
 
   if(stats=="flag"|stats=="all"){
-    job_report[["steps"]][["stats"]]=append(job_report[["steps"]][["stats"]],
-    stats_bam_samtools(
+    job_report[["steps"]][["flag_stats"]] <- stats_bam_samtools(
       bin_samtools=bin_samtools,bam=bam,output_dir=out_file_dir,
       verbose=verbose,threads=threads,stats="flag",executor_id=task_id,
       mode=mode,time=time,update_time=update_time,
-      wait=FALSE,hold=hold))
+      wait=FALSE,hold=hold)
   }
 
   if(wait&&mode=="batch"){
-      job_validator(job=c(
-      job_report[["steps"]][["sort"]]$job_id,
-      job_report[["steps"]][["index"]]$job_id,
-      job_report[["steps"]][["stats"]][["steps"]][["stats"]]$job_id,
-      job_report[["steps"]][["stats"]][["steps"]][["index"]]$job_id),
+      job_validator(job=unlist_lv(job_report[["steps"]],var="job_id"),
       time=update_time,verbose=verbose,threads=threads)
   }
 
