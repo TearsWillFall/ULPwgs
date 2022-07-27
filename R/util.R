@@ -553,20 +553,47 @@ update_time=60,wait=FALSE,hold=""){
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="parse_summary")
 
-  metrics=read.table(summary,sep="\t",quote="\\",nrows=1,header=TRUE)
-  metrics$SAMPLE=output_name
-  histogram=read.table(summary,sep="\t",quote="\\",skip=8,header=TRUE)
-  histogram$SAMPLE=output_name
   job=build_job(executor_id = executor_id,task_id=task_id)
 
-  if(extract=="stats"|extract=="all"){
-    write.table(metrics,file=paste0(out_file_dir,"/metrics_stats.txt"),quote=FALSE,row.names=FALSE,col.names=TRUE)
+  out_file_histogram=paste0(out_file_dir,"/",output_name,".histogram.txt")
+  out_file_metrics=paste0(out_file_dir,"/",output_name,".metrics.txt")
+  exec_code=paste0("awk -v RS= \'{if(NR==2) {out=\"",out_file_metrics,
+  "\"} else if(NR==3){ out=\"",out_file_histogram,"\"}; if (NR>1)  print > (out)}\' ",summary)
+
+  if(mode=="batch"){
+        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+        threads=threads,output_dir=out_file_dir2)
+        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+  }
+   if(verbose){
+       print_verbose(job=job,arg=argg,exec_code=exec_code)
+   }
+
+  error=system(exec_code)
+  if(error!=0){
+    stop("picard failed to run due to unknown error.
+    Check std error for more information.")
   }
 
-  if(extract=="histogram"|extract=="all"){
-    write.table(histogram,file=paste0(out_file_dir,"/metrics_histogram.txt"),quote=FALSE,row.names=FALSE,col.names=TRUE)
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    task_id=task_id, 
+    input_args = argg,
+    out_file_dir=out_file_dir,
+      out_file=list(
+        metrics=out_file_metrics,
+        histogram=out_file_histogram
+        )
+  )
+
+  if(wait&&mode=="batch"){
+    job_validator(job=job_report$job_id,
+    time=update_time,verbose=verbose,threads=threads)
   }
 
+  return(job_report)
 
 }
 
