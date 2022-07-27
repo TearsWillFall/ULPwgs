@@ -585,7 +585,7 @@ apply_BQSR_gatk=function(
     out_file_dir=out_file_dir,
     out_files=list(
       recal_bam=out_file,
-      recal_bai=paste0(out_file,".bai")
+      recal_bai=sub(".bam",".bai",out_file)
     )
   )
 
@@ -754,7 +754,7 @@ gather_bam_files=function(
 
   if(clean){
     exec_code=paste(exec_code," && rm",paste(bam,collapse=" "),
-    " && rm ",paste0(bam,".bai"))
+    " && rm ",sub(".bam",".bai",bam)
   }
 
  

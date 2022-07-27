@@ -204,12 +204,14 @@ build_default_sample_sheet=function(
         method_version="PCF_V3",
         reference="HG19",
         library_id="LB1",
-        R1=c("test/test_data/multi_lane/P1_S1_L1_R1.fq.gz",
+        R1=c(
+        "test/test_data/multi_lane/P1_S1_L1_R1.fq.gz",
         "test/test_data/multi_lane/P1_S1_L2_R1.fq.gz",
         "test/test_data/multi_lane/P1_S2_L1_R1.fq.gz",
         "test/test_data/multi_lane/P2_S1_L1_R1.fq.gz",
         "test/test_data/multi_lane/P2_S2_L1_R1.fq.gz"),
-        R2=c("test/test_data/multi_lane/P1_S1_L1_R2.fq.gz",
+        R2=c(
+        "test/test_data/multi_lane/P1_S1_L1_R2.fq.gz",
         "test/test_data/multi_lane/P1_S1_L2_R2.fq.gz",
         "test/test_data/multi_lane/P1_S2_L1_R2.fq.gz",
         "test/test_data/multi_lane/P2_S1_L1_R2.fq.gz",
