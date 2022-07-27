@@ -334,7 +334,14 @@ tg_summary_metrics_bam_picard=function(
   )
 
 
-  job_report[["steps"]]=parse_picard_metrics()
+  job_report[["steps"]][["parse_summary"]]<-parse_picard_metrics(
+    metrics=out_file,
+    output_dir=out_file_dir,
+    mode=mode,executor_id=task_id,
+    output_name=get_file_name(bam),
+    time=time,update_time=60,
+    wait=FALSE,hold=job_report$job_id
+    )
 
 
   if(wait&&mode=="batch"){
