@@ -66,16 +66,15 @@ unlist_lvl=function(named_list,var,recursive=FALSE){
 
   vars=names(named_list)
   lvl_found=any(vars %in% var)
-  out=list()
   if(lvl_found){
-      out=append(out,named_list[[var]])
+      out=named_list[[var]]
   }
    
-  out=append(out,unlist(lapply(vars,FUN=function(name){
-    out=unlist_lvl(named_list=named_list[[name]],var)
-  })))
+  out_level=unlist(lapply(vars,FUN=function(name){
+    out_tmp=unlist_lvl(named_list=named_list[[name]],var)
+  }))
 
-  return(out)
+  return(append(out,out_level))
 }
 
 
