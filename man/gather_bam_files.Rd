@@ -7,7 +7,6 @@
 gather_bam_files(
   bin_picard = build_default_tool_binary_list()$bin_picard,
   bam = "",
-  bams_dir = "",
   output_name = "File",
   output_dir = "",
   verbose = FALSE,
@@ -26,7 +25,7 @@ gather_bam_files(
 \arguments{
 \item{bin_picard}{\link{REQUIRED} Path to picard executable. Default tools/picard/build/libs/picard.jar.}
 
-\item{bams_dir}{\link{REQUIRED} Path to the directory where BAM files are stored.}
+\item{bam}{\link{REQUIRED} Path to BAM file/s.}
 
 \item{output_name}{\link{OPTIONAL} Name for the output file name.}
 
@@ -51,8 +50,6 @@ gather_bam_files(
 \item{update_time}{\link{OPTIONAL} If batch mode. Show job updates every update time. Default 60}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
-
-\item{bamr}{\link{REQUIRED} Path to BAM file/s.}
 }
 \description{
 This functions collects the Recalibration reports generated from scattered parallel_apply_BQSR output

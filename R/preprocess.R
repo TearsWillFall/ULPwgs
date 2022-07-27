@@ -162,8 +162,11 @@ for_id=function(seq_info,output_dir="",name="",
 
                             seq_info_R1=seq_info_id[seq_info_id$read_group=="R1",]
                             seq_info_R2=seq_info_id[seq_info_id$read_group=="R2",]
+
+                            file_R1=seq_info_R1$path
+                            file_R2=seq_info_R2$path
+                    
                         
-                            
                             if(print_tree){
                                 cat(add_nesting_ws(nesting,n=nest_ws))
                                 cat(paste0(nesting,"|----",crayon::green(paste0("R1: ",seq_info_R1$path)),"\n"))
@@ -222,8 +225,8 @@ for_id=function(seq_info,output_dir="",name="",
                                         cat("\t\n")
                                             report[[new_name]][["steps"]][["pre_fastqc"]]<<-qc_fastqc(
                                                 bin_fastqc=bin_list$pre_fastqc$bin_fastqc,
-                                                file_R1=seq_info_R1$path,
-                                                file_R2=seq_info_R2$path,
+                                                file_R1=file_R1,
+                                                file_R2=file_R2,
                                                 output_dir=paste0(out_file_dir,"/fastqc_reports/pre_trim"),
                                                 executor_id=task_id,
                                                 verbose=tool_config_id[step,]$verbose,
@@ -243,8 +246,8 @@ for_id=function(seq_info,output_dir="",name="",
 
                                             report[[new_name]][["steps"]][["trimming"]]<<-trimming_skewer(
                                                 bin_skewer=bin_list$trimming$bin_skewer,
-                                                file_R1=seq_info_R1$path,
-                                                file_R2=seq_info_R2$path,
+                                                file_R1=file_R1,
+                                                file_R2=file_R2,
                                                 output_dir=out_file_dir,
                                                 xadapt=args["xadapt",]$value,
                                                 yadapt=args["yadapt",]$value,
@@ -259,6 +262,7 @@ for_id=function(seq_info,output_dir="",name="",
                                                 time=tool_config_id[step,]$time,
                                                 executor_id=task_id,
                                                 update_time=60,wait=FALSE,hold="")
+                                                
                                         file_R1=report[[new_name]][["steps"]][["trimming"]]$out_files$r1
                                         file_R2=report[[new_name]][["steps"]][["trimming"]]$out_files$r2
                                         hold=unlist_lvl(report[[new_name]][["steps"]][["post_trimming"]],var="job_id")
@@ -293,8 +297,8 @@ for_id=function(seq_info,output_dir="",name="",
                                         report[[new_name]][["steps"]][["alignment"]]<<-alignment_bwa(
                                             bin_bwa=bin_list$alignment$bin_bwa,
                                             bin_samtools=bin_list$alignment$bin_samtools,
-                                            file_R1=report[[new_name]][["steps"]][["trimming"]]$out_files$r1,
-                                            file_R2=report[[new_name]][["steps"]][["trimming"]]$out_files$r2,
+                                            file_R1=file_R1,
+                                            file_R2=file_R2,
                                             output_dir=out_file_dir,
                                             id_tag=paste0(seq_info_R1$flowcell_id,".",seq_info_R1$lane_id),
                                             pu_tag=paste0(seq_info_R1$flowcell_id,".",seq_info_R1$lane_id,".",
@@ -316,8 +320,8 @@ for_id=function(seq_info,output_dir="",name="",
                                             wait=FALSE,
                                             hold= hold)
                                         
-                                        bam=report[[new_name]][["steps"]][["alignment"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam
-                                        hold=unlist_lvl(report[[new_name]][["steps"]][["alignment"]],var="job_id")
+                                        bam <- report[[new_name]][["steps"]][["alignment"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam
+                                        hold <- unlist_lvl(report[[new_name]][["steps"]][["alignment"]],var="job_id")
                                     }
 
                                     if(!merge){

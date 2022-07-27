@@ -8,9 +8,23 @@ build_default_reference_list(
   references = list(HG19 = list(reference = list(genome =
     "references/hg19/reference/hs37d5.fa"), database = list(all_snps =
     "references/hg19/database/00-All.vcf.gz", all_common =
-    "references/hg19/database/00-common_all.vcf.gz")), HG38 = list(reference =
-    list(genome = "references/hg38/reference/ucsc.hg38.fa"), database = list(all_snps =
-    "references/hg38/database/00-All.vcf.gz", all_common =
+    "references/hg19/database/00-common_all.vcf.gz"), panel = list(PCF_V2 =
+    list(intervals = list(bi = "references/hg19/panel/v2/cap_tg.interval_list", ti =
+    "references/hg19/panel/v2/prim_tg.interval_list"), bed = list(bait =
+    "references/hg19/panel/v2/cap_tg.bed", target =
+    "references/hg19/panel/v2/prim_tg.bed", antitarget =
+    "references/hg19/panel/v2/off_tg.bed")), 
+     PCF_V3 = list(intervals = list(bi =
+    "references/hg19/panel/v3/cap_tg.interval_list", ti =
+    "references/hg19/panel/v3/prim_tg.interval_list"), bed = list(bait =
+    "references/hg19/panel/v3/cap_tg.bed", target =
+    "references/hg19/panel/v3/prim_tg.bed", antitarget =
+    "references/hg19/panel/v3/off_tg.bed"))), rnaseq = list(intervals = list(ri =
+    "references/hg19/rnaseq//intervals/rRNA.interval_list"), reference = list(ref_flat =
+    "references/hg19/rnaseq/reference/refFlat.txt"))), HG38 = list(reference =
+    list(genome = "references/hg38/reference/ucsc.hg38.fa"), 
+     database =
+    list(all_snps = "references/hg38/database/00-All.vcf.gz", all_common =
     "references/hg38/database/00-common_all.vcf.gz")))
 )
 }
