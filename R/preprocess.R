@@ -165,7 +165,7 @@ for_id=function(seq_info,output_dir="",name="",
 
                             file_R1=seq_info_R1$path
                             file_R2=seq_info_R2$path
-                    
+                            hold=""
                         
                             if(print_tree){
                                 cat(add_nesting_ws(nesting,n=nest_ws))
@@ -234,7 +234,7 @@ for_id=function(seq_info,output_dir="",name="",
                                                 threads=tool_config_id[step,]$threads,
                                                 ram=tool_config_id[step,]$ram,
                                                 time=tool_config_id[step,]$time,
-                                                update_time=60,wait=FALSE,hold="")
+                                                update_time=60,wait=FALSE,hold=hold)
                                     }
 
                                     if(tool_config_id[step,]$name=="trimming"){
@@ -261,8 +261,8 @@ for_id=function(seq_info,output_dir="",name="",
                                                 mode=tool_config_id[step,]$mode,
                                                 time=tool_config_id[step,]$time,
                                                 executor_id=task_id,
-                                                update_time=60,wait=FALSE,hold="")
-                                                
+                                                update_time=60,wait=FALSE,hold=hold)
+
                                         file_R1=report[[new_name]][["steps"]][["trimming"]]$out_files$r1
                                         file_R2=report[[new_name]][["steps"]][["trimming"]]$out_files$r2
                                         hold=unlist_lvl(report[[new_name]][["steps"]][["post_trimming"]],var="job_id")
