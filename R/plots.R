@@ -322,7 +322,7 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
       p <- p+ geom_tile(aes(x = s_order, y = 1,fill=ploidy), col = "black")
       p<- p + .$subgrobs
       p<- p + scale_x_continuous(expand = c(0, 0))+scale_y_continuous(expand=c(0,0))
-      return(p&coord_equal())
+      print(p&coord_equal())
     }
   
   }
