@@ -509,7 +509,7 @@ mapq_metrics_bam_samtools=function(
 
   
   if (verbose){
-    print_verbose(exec_code=exec_code)
+    print_verbose(job=job,arg=argg,exec_code=exec_code)
   }
 
     error=system(exec_code)
