@@ -266,7 +266,7 @@ for_id=function(seq_info,output_dir="",name="",
 
                                         file_R1 <<- report[[new_name]][["steps"]][["trimming"]]$out_files$r1
                                         file_R2 <<- report[[new_name]][["steps"]][["trimming"]]$out_files$r2
-                                        hold <<- unlist_lvl(report[[new_name]][["steps"]][["post_trimming"]],var="job_id")
+                                        hold <<- unlist_lvl(report[[new_name]][["steps"]][["trimming"]],var="job_id")
                                     }
 
                                     if(tool_config_id[step,]$name=="post_fastqc"){
