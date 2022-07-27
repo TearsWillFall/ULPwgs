@@ -288,7 +288,7 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
     tc_data=plt_data %>% dplyr::group_by(sample,s_order) %>% dplyr::distinct(tc,ploidy)%>% dplyr::ungroup() %>%
     dplyr::mutate(nc=1-tc) %>% 
     tidyr::pivot_longer(cols = -c(sample,s_order,ploidy)) %>% dplyr::mutate(col=ifelse(name=="tc","red","grey"),total=1)
-  
+
 
     
     df.grobs <- tc_data %>%
@@ -319,7 +319,7 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
             axis.ticks.y = element_blank(),
             axis.title.y = element_blank(), legend.position = "none"
           )
-      p <- p+ geom_tile(aes(x = s_order, y = 1,fill=ploidy), col = "black")
+      p <- p+ geom_tile(aes(x = s_order, y = 2.5*max(s_order),fill=ploidy), col = "black")
       p<- p + .$subgrobs
       p<- p + scale_x_continuous(expand = c(0, 0))+scale_y_continuous(expand=c(0,0))
       
@@ -364,7 +364,7 @@ main_plot=function(data,type="autosome",show_cn=TRUE){
   plts[["X"]]=main_plot(to_plot,type="X",show_cn=TRUE)
 
 
-  p=patchwork::wrap_plots(plts)
+  p=patchwork::wrap_plots(plts,ncol=1)
 
   print(p)
 }
