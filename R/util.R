@@ -522,7 +522,7 @@ steps_list=build_default_steps_list()){
 #'
 #' 
 
-#' @param metrics Path to Picard metrics file
+#' @param summary Path to Picard summary file
 #' @param output_dir Path to output directory
 #' @param output_name File output name
 #' @param extract Metric to extract
@@ -537,7 +537,7 @@ steps_list=build_default_steps_list()){
 #' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 
-parse_picard_metrics=function(metrics="",output_dir="",output_name="",
+parse_picard_metrics=function(summary="",output_dir="",output_name="",
 extract="stats",verbose=FALSE,threads=1,ram=4,
 mode="local",executor_id=make_unique_id("parsePicardMetrics"),
 task_name="parsePicardMetrics",time="48:0:0",
@@ -547,7 +547,7 @@ update_time=60,wait=FALSE,hold=""){
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="parse_summary")
 
-  metrics=read.table(metrics,sep="\t",quote="\\",nrows=1,header=TRUE)
+  metrics=read.table(summary,sep="\t",quote="\\",nrows=1,header=TRUE)
   metrics$SAMPLE=output_name
   histogram=read.table(metrics,sep="\t",quote="\\",skip=8,header=TRUE)
   histogram$SAMPLE=output_name
