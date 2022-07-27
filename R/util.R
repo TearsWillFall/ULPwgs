@@ -549,7 +549,7 @@ update_time=60,wait=FALSE,hold=""){
 
   metrics=read.table(summary,sep="\t",quote="\\",nrows=1,header=TRUE)
   metrics$SAMPLE=output_name
-  histogram=read.table(metrics,sep="\t",quote="\\",skip=8,header=TRUE)
+  histogram=read.table(summary,sep="\t",quote="\\",skip=8,header=TRUE)
   histogram$SAMPLE=output_name
   job=build_job(executor_id = executor_id,task_id=task_id)
 
