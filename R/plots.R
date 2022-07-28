@@ -126,7 +126,7 @@ plot_log2_beta=function(
         plt_data <- plt_data[plt_data$gene_type %in% filt, ]
         p <- ggplot(plt_data) +
         geom_vline(aes(xintercept = 0), linetype = "longdash", alpha = 0.25) +
-        geom_vline(aes(xintercept = median(all_log2)),
+        geom_vline(aes(xintercept = all_log2+log2(ploidy/2)),
         linetype = "longdash",
         col = "red", alpha = 0.5
         ) +
@@ -285,14 +285,14 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
 
 
   tc_pl_plot=function(plt_data){
-    tc_data=plt_data %>% dplyr::group_by(sample,s_order) %>% dplyr::distinct(tc,ploidy)%>% dplyr::ungroup() %>%
+    tc_data=plt_data %>% dplyr::group_by(sample,s_order) %>% 
+    dplyr::distinct(tc,ploidy)%>% dplyr::ungroup() %>%
     dplyr::mutate(nc=1-tc) %>% 
-    tidyr::pivot_longer(cols = -c(sample,s_order,ploidy)) %>% dplyr::mutate(col=ifelse(name=="tc","red","grey"),total=1)
+    tidyr::pivot_longer(cols = -c(sample,s_order,ploidy)) %>% 
+    dplyr::mutate(col=ifelse(name=="tc","red","grey"),total=1,n_samples=max(s_order))
 
-
-    
     df.grobs <- tc_data %>%
-        dplyr::group_by(sample,s_order,ploidy, total) %>%
+        dplyr::group_by(sample,s_order,ploidy, total,n_samples) %>%
         dplyr::do(subplots = ggplot(., aes(1, value, fill = col)) +
           geom_col(position = "fill", colour = "black") +
           coord_polar(theta = "y") +
@@ -300,8 +300,8 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
           theme(legend.position = "none") +
           scale_fill_identity()) %>%
         dplyr::mutate(subgrobs = list(annotation_custom(ggplot2::ggplotGrob(subplots),
-          x = s_order - total/2 , y = 2.5*max(s_order)/2 - total / 2,
-          xmax = s_order + total/2 , ymax = 2.5*max(s_order)/2 + total / 2
+          x = s_order - total/2 , y = 2.5*n_samples - n_samples / 2,
+          xmax = s_order + total/2 , ymax = 2.5*n_samples + n_samples / 2
         )))
 
 
@@ -309,7 +309,7 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
     p <- df.grobs %>% {
         p <- ggplot(.) +
           scale_fill_gradient2(low = "blue", high = "red", mid = "grey", midpoint = 2)+
-          geom_point(aes(x = s_order, y = 2.5*max(s_order))) +
+          geom_point(aes(x = s_order, y = 2.5*n_samples)) +
           theme_void() +
           ylab("TC/PL") +
           theme(
@@ -319,7 +319,7 @@ plot_ai=function(plt_data,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
             axis.ticks.y = element_blank(),
             axis.title.y = element_blank(), legend.position = "none"
           )
-      p <- p+ geom_tile(aes(x = s_order, y = 2.5*max(s_order),fill=ploidy), col = "black")
+      p <- p+ geom_tile(aes(x = s_order, y = 2.5*n_samples,fill=ploidy), col = "black")
       p<- p + .$subgrobs
       p<- p + scale_x_continuous(expand = c(0, 0))+scale_y_continuous(expand=c(0,0))
       

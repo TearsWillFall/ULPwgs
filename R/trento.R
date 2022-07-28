@@ -296,8 +296,6 @@ clonet_view_trento=function(method="beta_log2", clonet_dir="",threads=3,
             warning(paste0("Could not find file ",x))
 
         })
-       
-  
     })
 
     ### Read TC data
@@ -310,15 +308,30 @@ clonet_view_trento=function(method="beta_log2", clonet_dir="",threads=3,
 
         })
     })
-    
-
 
     cn_data=dplyr::bind_rows(cn_data)
     cn_data=dplyr::left_join(cn_data,cn_list,by=c("cn.call.corr"="cn"))
     
+    tc_data=dplyr::bind_rows(tc_data)
+    tc_data
     plt_data[["cn_data"]]=cn_data
     plt_data[["tc_data"]]=tc_data
+
+
+    summ_beta=cn_data %>% group_by(sample) %>% summarise(beta=mean(
+        as.numeric(beta[(all_log2+log2(ploidy/2)) < - 0.05 & gene_type=="target"& evidence!=0 ]),na.rm=TRUE),
+        genes=paste0(gene[(all_log2+log2(ploidy/2)) < - 0.05 & gene_type=="target"& evidence!=0 ],collapse=";")) %>% 
+        mutate(tc_manual=1-round(beta/(2-beta), digits = 2))
     
+    summ_cn_data=cn_data %>% group_by(sample,cn.call.corr,order,col) %>% 
+    summarise(N=n(),genes=paste0(gene,collapse=";")) %>% arrange(desc(sample),desc(N)) %>%group_by(sample) %>% 
+    mutate(Freq=N/sum(N))
+
+    ggplot(summ_cn_data)+geom_bar(position="stack",stat="identity",aes(x=sample,y=Freq,fill=fct_reorder(col,order)))+scale_fill_identity()
+
+
+
+   
 
     if(method=="log2_beta"){
         clonet_log2_beta(plt_data=plt_data[["cn_data"]])
@@ -436,38 +449,15 @@ clonet_ai=function(plt_data){
             my_box <- shinydashboardPlus::box(
                 width = 12,
                 id="ai_box",
+                footer=paste0("Min TC=",min(plt_data$tc),"; ",
+                "Max TC=",max(plt_data$tc),"; ",
+                "Min Ploidy=",min(plt_data$ploidy),"; ",
+                "max Ploidy=",max(plt_data$ploidy)),
                 sidebar =shinydashboardPlus::boxSidebar(
                     id="ai_sb",
                     width=26,
-                    footer=paste0("Min Tumour Content=",min(plt_data$tc),";",
-                    "Max Tumour Content=",max(plt_data$tc),";",
-                    "Min Ploidy=",min(plt_data$ploidy),";",
-                    "max Ploidy=",max(plt_data$ploidy)),
-                    shiny::radioButtons("ai_gene_lbl", "Labels:", c(
-                    "Genes" = 1,
-                    "SNPS" = 2, "Informative SNPS" = 3, "No labels" = 4
-                    ),
-                    selected = 4
-                    ),
                     shiny::sliderInput("ai_gene_lbl_evi", "AI Evidence:",
                     min = 0, max = 1, value = 0.2, step = 0.1, ticks = FALSE
-                    ),
-                    shiny::sliderInput("ai_gene_lbl_beta_low", "Beta Low Labels:",
-                    min = 0, max = 1, value = 0.1, step = 0.1, ticks = FALSE
-                    ),
-                    shiny::sliderInput("ai_gene_lbl_beta_high", "Beta High Labels:",
-                    min = 0, max = 1, value = 1, step = 0.1, ticks = FALSE
-                    ),
-                    shiny::sliderInput("ai_cn_limit", "CN_Limit:",
-                    min = 1, max = 10, value = 3, step = 1, ticks = FALSE
-                    ),
-                    shiny::sliderInput("ai_gene_lbl_size", "Label Size:",
-                    min = 0, max = 10, value = 2, step = 0.1, ticks = FALSE
-                    ),
-                    shinyWidgets::awesomeCheckbox(
-                        inputId = "ai_mdl_mrg",
-                        label = "Show Marginal Plots",
-                        value = TRUE
                     ),
                     shinyWidgets::awesomeCheckboxGroup(
                         inputId = "ai_gene_type",
@@ -476,7 +466,7 @@ clonet_ai=function(plt_data){
                         selected = c("Target")
                     )
             ),
-            shiny::plotOutput("ai_plot",height=nrow(plt_data)*2.5),
+            shiny::plotOutput("ai_plot",height=length(unique(plt_data$gene))*10),
             title ="Allelic Imbalance", collapsible = TRUE,
             collapsed = FALSE, solidHeader = TRUE
      )

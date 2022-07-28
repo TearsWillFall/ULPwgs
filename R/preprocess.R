@@ -375,9 +375,9 @@ for_id=function(seq_info,output_dir="",name="",
                                                     executor_id=task_id,
                                                     update_time=60,wait=FALSE,
                                                     hold=hold)
-
                                                 bam <<- report[[new_name]][["steps"]][["recalibrate"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam
                                                 hold <<- unlist_lvl(report[[new_name]][["steps"]][["recalibrate"]],var="job_id",recursive = TRUE)
+                                            
                                             }
 
 

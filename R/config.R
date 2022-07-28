@@ -553,7 +553,7 @@ build_default_cn_list=function(
             "Bal.Gain",
             "Likely Gain",
             "Uncertain Bal.Gain",
-            "HomoDe",
+            "HomoDel",
             "Uncertain HomoDel",
             "Deletion on chrX"
         ),
@@ -571,7 +571,22 @@ build_default_cn_list=function(
             "#0070C0",
             "#0070C0",
             "#305496"
-        )
+        ),
+       order=c(
+          4,
+          0,
+          10,
+          -2,
+          1,
+          -3,
+          -1,
+          5,
+          2,
+          3,
+          -5,
+          -4,
+          -10
+       )
     )
 ){
     return(data.frame(cn_list,stringsAsFactors = FALSE))

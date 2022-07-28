@@ -553,8 +553,8 @@ update_time=60,wait=FALSE,hold=""){
 
   out_file_histogram=paste0(out_file_dir,"/",output_name,".histogram.txt")
   out_file_metrics=paste0(out_file_dir,"/",output_name,".metrics.txt")
-  exec_code=paste0("awk -v RS= \'{if(NR==2) {out=\"",out_file_metrics,
-  "\"} else if(NR==3){ out=\"",out_file_histogram,"\"}; if (NR>1)  print > (out)}\' ",summary)
+  exec_code=paste0("awk -v RS= \"{if(NR==2) {out=\\\"",out_file_metrics,
+  "\\\"} else if(NR==3){ out=\\\"",out_file_histogram,"\\\"}; if (NR>1)  print > (out)}\" ",summary)
 
   if(mode=="batch"){
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
