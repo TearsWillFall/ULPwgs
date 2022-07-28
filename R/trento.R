@@ -327,7 +327,8 @@ clonet_view_trento=function(method="beta_log2", clonet_dir="",threads=3,
     summarise(N=n(),genes=paste0(gene,collapse=";")) %>% arrange(desc(sample),desc(N)) %>%group_by(sample) %>% 
     mutate(Freq=N/sum(N))
 
-    ggplot(summ_cn_data)+geom_bar(position="stack",stat="identity",aes(x=sample,y=Freq,fill=fct_reorder(col,order)))+scale_fill_identity()
+    ggplot(summ_cn_data)+geom_bar(position="stack",stat="identity",aes(x=sample,
+    y=Freq,fill=fct_reorder(col,order)),col="black")+scale_fill_identity()+theme_classic()+scale_y_continuous(expand=c(0,0))
 
 
 

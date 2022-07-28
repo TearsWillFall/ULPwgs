@@ -364,7 +364,8 @@ find_instrument=function(instrument_id=build_instrument_id(),
 #' @export
 
 
-infer_sequencing_info=function(bin_samtools=build_default_tool_binary_list()$bin_samtools,file_path){
+infer_sequencing_info=function(
+    bin_samtools=build_default_tool_binary_list()$bin_samtools,file_path){
     header=extract_read_header(bin_samtools=bin_samtools,file_path=file_path)
     seq_info=parse_read_header(header)
     instrument=find_instrument(seq_info=seq_info)

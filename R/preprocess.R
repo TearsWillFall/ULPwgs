@@ -50,8 +50,6 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     validate_sample_sheet(sample_sheet=sample_sheet,
     vars_list=vars_list,opts_list=opts_list)
     
-  
-    
     seq_info=seq_info_check(sample_sheet=sample_sheet,vars_list=vars_list)
 
     seq_info=suppressMessages(dplyr::left_join(seq_info,

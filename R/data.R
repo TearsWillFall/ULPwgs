@@ -87,6 +87,8 @@ build_flowcell_id=function(flowcells=list(
         "MiSeq nano flow cell",
         "MiSeq micro flow cell",
         "S2 flow cell",
+        "S2 flow cell",
+        "S4 flow cell",
         "S4 flow cell",
         "SP flow cell",
         "SP flow cell"
@@ -122,9 +124,12 @@ build_flowcell_id=function(flowcells=list(
       "D[A-Z,0-9]{4}$",
       "G[A-Z,0-9]{4}$",
       "H[A-Z,0-9]{4}DMXX$",
+      "H[A-Z,0-9]{4}DMXY$",
       "H[A-Z,0-9]{4}DSXX$",
+      "H[A-Z,0-9]{4}DSXY$",
       "H[A-Z,0-9]{4}DRXX$",
-      "H[A-Z,0-9]{4}DRXY$"
+      "H[A-Z,0-9]{4}DRXY$",
+
     )
   )
   ) {
