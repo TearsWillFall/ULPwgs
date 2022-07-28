@@ -83,7 +83,6 @@ sort_and_index_bam_samtools=function(
       update_time=update_time,wait=FALSE,hold=hold)
   }
 
-
   if(stats=="flag"|stats=="all"){
     job_report[["steps"]][["flag_stats"]] <- stats_bam_samtools(
       bin_samtools=bin_samtools,bam=bam,output_dir=out_file_dir,

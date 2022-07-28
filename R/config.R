@@ -303,7 +303,6 @@ build_default_tool_binary_list=function(
                 bin_picard="/lustre/scratch/scratch/regmova/tools/picard/build/libs/picard.jar",
                 bin_bedtools="/lustre/scratch/scratch/regmova/tools/bedtools2/bin/bedtools",
                 bin_ciri_quant="/lustre/scratch/scratch/regmova/tools/CIRIquant/bin/CIRIquant"
-       
         )
     ){
          return(binaries)
@@ -572,19 +571,32 @@ build_default_cn_list=function(
             "#0070C0",
             "#305496"
         ),
-      
-
+        alpha=c(
+            1,
+            0.75,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            0.75,
+            1,
+            0.75,
+            0.75
+        ),
        order=c(
-          4,
+          3,
           0,
           10,
-          -2,
           1,
+          -2,
           -3,
           -1,
           5,
           2,
-          3,
+          4,
           -5,
           -4,
           -10
@@ -593,5 +605,4 @@ build_default_cn_list=function(
 ){
     return(data.frame(cn_list,stringsAsFactors = FALSE))
 }
-
 

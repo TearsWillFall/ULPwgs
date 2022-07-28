@@ -108,6 +108,7 @@ for_id=function(seq_info,output_dir="",name="",
                         ## Filter sequencing info for id
                         seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
                         out_file_dir=set_dir(dir=output_dir,name=id)
+                        out_file_dir_tmp=set_dir(dir=out_file_dir,name="tmp")
                         new_name=set_name(current_name=name,name=id)
                 
                         if(print_tree){
@@ -341,6 +342,7 @@ for_id=function(seq_info,output_dir="",name="",
                                                 ram=tool_config_id[step,]$ram,
                                                 remove_duplicates=as.logical(args["remove_duplicates",]$value),
                                                 mode=tool_config_id[step,]$mode,
+                                                tmp=out_file_dir_tmp,
                                                 time=tool_config_id[step,]$time,
                                                 executor_id=task_id,
                                                 update_time=60,wait=FALSE,

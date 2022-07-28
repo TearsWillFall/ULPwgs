@@ -309,30 +309,41 @@ clonet_view_trento=function(method="beta_log2", clonet_dir="",threads=3,
         })
     })
 
+
+
+    
+    ### Gene Annotations
+    annot_input_file <- system.file("extdata", "gene_annotations_hg19.bed", package="ULPwgs")
+    annot_data=read.delim( annot_input_file,header=TRUE)
+ 
+    cn_data=cn_data %>% dplyr::filter(Class!="") %>%
+    mutate(
+        cn_class=ifelse(order==10,"CNNL",
+        ifelse(order>1&order<10,"Gain",
+        ifelse(order< -1,"Loss","Wt"))))
+    summ=cn_data %>% group_by(sample,Class,cn_class) %>% 
+    summarise(N=n()) %>% group_by(sample,Class) %>% mutate(Freq=N/sum(N))
+    unique(summ$sample)
+
+    ggradar(summ %>% filter(sample=="K180063") %>% ungroup()%>%select(-c(N,sample)) %>% 
+    pivot_wider(names_from=Class,values_from=Freq,values_fill = 0) %>% mutate(cn_class=as.factor(cn_class)),
+    values.radar =c(""), group.line.width = 1,group.point.size = 3)
+    
     cn_data=dplyr::bind_rows(cn_data)
     cn_data=dplyr::left_join(cn_data,cn_list,by=c("cn.call.corr"="cn"))
+    cn_data=dplyr::left_join(cn_data,annot_data,by=c("gene"="hgnc_symbol"))
     
     tc_data=dplyr::bind_rows(tc_data)
-    tc_data
+
     plt_data[["cn_data"]]=cn_data
     plt_data[["tc_data"]]=tc_data
 
 
-    summ_beta=cn_data %>% group_by(sample) %>% summarise(beta=mean(
-        as.numeric(beta[(all_log2+log2(ploidy/2)) < - 0.05 & gene_type=="target"& evidence!=0 ]),na.rm=TRUE),
-        genes=paste0(gene[(all_log2+log2(ploidy/2)) < - 0.05 & gene_type=="target"& evidence!=0 ],collapse=";")) %>% 
-        mutate(tc_manual=1-round(beta/(2-beta), digits = 2))
-    
-    summ_cn_data=cn_data %>% group_by(sample,cn.call.corr,order,col) %>% 
-    summarise(N=n(),genes=paste0(gene,collapse=";")) %>% arrange(desc(sample),desc(N)) %>%group_by(sample) %>% 
-    mutate(Freq=N/sum(N))
-
-    ggplot(summ_cn_data)+geom_bar(position="stack",stat="identity",aes(x=sample,
-    y=Freq,fill=fct_reorder(col,order)),col="black")+scale_fill_identity()+theme_classic()+scale_y_continuous(expand=c(0,0))
-
-
-
-   
+        summ_beta=cn_data %>% group_by(sample) %>% summarise(beta=mean(
+            as.numeric(beta[(all_log2+log2(ploidy/2)) < - 0.05 & gene_type=="target"& evidence!=0 ]),na.rm=TRUE),
+            genes=paste0(gene[(all_log2+log2(ploidy/2)) < - 0.05 & gene_type=="target"& evidence!=0 ],collapse=";")) %>% 
+            mutate(tc_manual=1-round(beta/(2-beta), digits = 2))
+ 
 
     if(method=="log2_beta"){
         clonet_log2_beta(plt_data=plt_data[["cn_data"]])
@@ -343,13 +354,15 @@ clonet_view_trento=function(method="beta_log2", clonet_dir="",threads=3,
     }else if(method=="snp"){
         clonet_snp(plt_data=plt_data)
     }else if(method=="stats"){
-        clonet_stats(plt_data=plt_data)
+        clonet_stats(plt_data=plt_data[["cn_data"]])
+    }else if(method=="pathways"){
+        clonet_pathways(plt_data=plt_data[["cn_data"]])
     }
 
 
-
-
 }
+
+
 
 
 #' @export
@@ -566,6 +579,56 @@ clonet_cn=function(plt_data){
 
 
 
+#' @export
+clonet_stats=function(plt_data){
+    server_stats=function(input,output,session){
+            output[[paste0("ai_plot")]]<- shiny::renderPlot({
+                
+               plot_stats(
+                    plt_data,
+                    gene_tg=any(grepl("Target",input[["stats_gene_type"]])),
+                    gene_ctrl=any(grepl("Control",input[["stats_gene_type"]])),
+                    gene_other=any(grepl("Other",input[["stats_gene_type"]]))
+                )
+         
+            })
+
+            my_box <- shinydashboardPlus::box(
+                width = 12,
+                id="stats_box",
+                footer=paste0("Min TC=",min(plt_data$tc),"; ",
+                "Max TC=",max(plt_data$tc),"; ",
+                "Min Ploidy=",min(plt_data$ploidy),"; ",
+                "max Ploidy=",max(plt_data$ploidy)),
+                sidebar =shinydashboardPlus::boxSidebar(
+                    id="stats_sb",
+                    width=26,
+                    shiny::sliderInput("stats_gene_lbl_evi", "AI Evidence:",
+                    min = 0, max = 1, value = 0.2, step = 0.1, ticks = FALSE
+                    ),
+                    shinyWidgets::awesomeCheckboxGroup(
+                        inputId = "stats_gene_type",
+                        label = "Genes:",
+                        choices = c("Target", "Control", "Other"),
+                        selected = c("Target")
+                    )
+            ),
+            shiny::plotOutput("ststs_plot",height=length(unique(plt_data$gene))*10),
+            title ="Aberration Statistics", collapsible = TRUE,
+            collapsed = FALSE, solidHeader = TRUE
+     )
+        output[["UI"]] <- shiny::renderUI({
+            fluidRow(my_box)
+        })
+    session$onSessionEnded(function() {
+        stopApp()
+    })
+    }
+
+    shiny::shinyApp(ui = build_ui, server = server_ai)
+}
+
+
 
 
 #' @export
@@ -649,10 +712,6 @@ clonet_snp=function(plt_data){
 }
     shiny::shinyApp(ui = build_ui, server = server_cn)
 }
-
-
-
-
 
 
 

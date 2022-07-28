@@ -35,12 +35,12 @@ mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
     tmp=""
     if (!tmp_dir==""){
-    tmp=paste0("--tmp-dir ",tmp_dir)
+    tmp=paste0(" --tmp-dir ",tmp_dir)
     }
 
     dups=""
     if(remove_duplicates){
-        dups="--remove-all-duplicates"
+        dups=" --remove-all-duplicates"
     }
 
     out_file=paste0(out_file_dir,"/",get_file_name(bam),".sorted.rmdup.",

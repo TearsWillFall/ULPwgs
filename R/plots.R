@@ -368,3 +368,94 @@ main_plot=function(data,type="autosome",show_cn=TRUE){
 
   print(p)
 }
+
+
+
+plot_stats=function(plt_data,gene_tg=TRUE, gene_ctrl=FALSE, gene_other=FALSE){
+
+    filt <- c()
+    if (gene_tg) {
+      filt <- c(filt, "target")
+    }
+    if (gene_ctrl) {
+      filt <- c(filt, "control")
+    }
+    if (gene_other) {
+      filt <- c(filt, "other")
+    }
+    plt_data <- plt_data[plt_data$gene_type %in% filt, ]
+    plt_data$s_order <- as.numeric(as.factor(plt_data$sample))
+
+
+    tc_pl_plot=function(plt_data){
+    
+    tc_data=plt_data %>% dplyr::group_by(sample,s_order) %>% 
+    dplyr::distinct(tc,ploidy)%>% dplyr::ungroup() %>%
+    dplyr::mutate(nc=1-tc) %>% 
+    tidyr::pivot_longer(cols = -c(sample,s_order,ploidy)) %>% 
+    dplyr::mutate(col=ifelse(name=="tc","red","grey"),total=1,n_samples=max(s_order))
+
+    df.grobs <- tc_data %>%
+        dplyr::group_by(sample,s_order,ploidy, total,n_samples) %>%
+        dplyr::do(subplots = ggplot(., aes(1, value, fill = col)) +
+          geom_col(position = "fill", colour = "black") +
+          coord_polar(theta = "y") +
+          theme_void() +
+          theme(legend.position = "none") +
+          scale_fill_identity()) %>%
+        dplyr::mutate(subgrobs = list(annotation_custom(ggplot2::ggplotGrob(subplots),
+          y = s_order - total/2 , x = 1 - total / 2,
+          ymax = s_order + total/2 , xmin= 1 + total / 2
+        )))
+
+
+
+    p <- df.grobs %>% {
+        p <- ggplot(.) +
+          scale_fill_gradient2(low = "blue", high = "red", mid = "grey", midpoint = 2)+
+          geom_point(aes(y = s_order, x = 1)) +
+          theme_void() +
+          ylab("TC/PL") +
+          theme(
+            plot.margin = unit(c(0, 0, 0, 0), "pt"),
+            axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+            axis.line.x = element_blank(), axis.title.x = element_blank(),
+            axis.ticks.y = element_blank(),
+            axis.title.y = element_blank(), legend.position = "none"
+          )
+      p <- p+ geom_tile(aes(y = s_order, x= 1,fill=ploidy), col = "black")
+      p<- p + .$subgrobs
+      p<- p + scale_x_continuous(expand = c(0, 0))+scale_y_continuous(expand=c(0,0))
+      
+      
+    }
+    print(p&coord_equal())
+  
+  }
+
+  main_plot=function(plt_data){
+
+    summ=plt_data %>% dplyr::filter(gene_type=="target") %>%
+    dplyr::group_by(sample,cn.call.corr,order,alpha,col,s_order) %>% 
+    summarise(N=n(),genes=paste0(gene,collapse=";")) %>% 
+    dplyr::arrange(desc(s_order),desc(N)) %>%
+    dplyr::group_by(sample) %>% 
+    dplyr::mutate(Freq=N/sum(N),col=col) %>% dplyr::ungroup()
+  
+
+    p1<-ggplot(summ)+geom_bar(position="stack",stat="identity",aes(y=reorder(sample,s_order),
+        x=Freq,fill=fct_reorder(col,order),alpha=alpha,group = order),col="black")+
+        scale_fill_identity()+
+        theme_classic()+scale_x_continuous(expand=c(0,0))+
+        xlab("Aberration Frequency %")+ylab("Samples")+scale_alpha_identity()
+}
+  plts=list()
+  plts[["main"]] <-main_plot(plt_data)
+  plts[["tc_pl"]] <-tc_pl_plot(plt_data)
+  patchwork::wrap_plots(plts,ncol=2)
+
+}
+
+
+      
+
