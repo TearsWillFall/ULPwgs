@@ -195,10 +195,11 @@ config=suppressWarnings(build_default_config()),steps_list=build_default_steps_l
     paste(missing_parameters,collapse=", "),
     ". These parameters will be initiate with default configuration."))
   }
+
   default_config=config
   rslt=lapply(parameters_in_sheet,FUN=function(parameter){
     rslt=lapply(sample_sheet[,parameter],FUN=function(steps){
-        step_list=unlist(strsplit(steps,";"))
+        step_list=unlist(strsplit(steps,"\\|\\|"))
           rslt=lapply(step_list,FUN=function(step){
             step_value_list=strsplit(step,"=")
             step_name=step_value_list[[1]][1]
@@ -209,7 +210,6 @@ config=suppressWarnings(build_default_config()),steps_list=build_default_steps_l
               input_args=suppressWarnings(parse_args(args=parameter_values,step=step_name,steps_list=steps_list))
               default_args=suppressWarnings(parse_args(args=default_config[step_name,parameter],
               step=step_name,steps_list=steps_list))
-
               validated_args=validate_input_args(input_args,default_args)
               default_config[step_name,parameter]<<-parameter_values
             }else{
@@ -279,7 +279,7 @@ validate_arg=function(step,arg,steps_list=build_default_steps_list()){
 
 
 parse_args=function(args,step,steps_list=build_default_steps_list()){
-  args_list=strsplit(args,"\\|")
+  args_list=strsplit(args,";")
   out=lapply(args_list[[1]],FUN=function(arg){
                   arg_value_list=strsplit(arg,"=")
                   validate_arg(step=step,arg=arg_value_list[[1]][1],steps_list=steps_list)
@@ -509,6 +509,7 @@ parameter_config_check=function(sample_sheet=build_default_sample_sheet(),
 config=suppressWarnings(build_default_config()),vars_list=build_default_variable_list(),
 steps_list=build_default_steps_list()){
   vars=vars_list$variable
+  x=1
   tool_configs=lapply(seq(1,nrow(sample_sheet)),FUN=function(x){
     tool_config=parse_tool_parameters(sample_sheet=sample_sheet[x,],config=config,steps_list=steps_list)
     tool_config=append(tool_config,sample_sheet[x,c(vars[vars %in% names(sample_sheet)],"R1","R2")])
@@ -523,7 +524,7 @@ steps_list=build_default_steps_list()){
 #' @export
 
 
-collapse_step_list=function(list,sep=";"){
+collapse_step_list=function(list,sep="||"){
   paste0(names(list),"=",list,collapse=sep)
 }
 

@@ -26,12 +26,12 @@ build_default_config=function(
 
 
 build_step=function(
-    step,steps_list=build_default_steps_list()){
+    step,steps_list=build_default_steps_list(),sep="||"){
     step_info=steps_list[[step]]
     parameter=names(step_info[["args"]])
     if(!is.null(parameter)){
          step_info$args=paste0(paste0(parameter,"=",
-         step_info[["args"]]),collapse="|")
+         step_info[["args"]]),collapse=sep)
     }else{
 
         step_info$args=""
@@ -246,18 +246,19 @@ build_default_sample_sheet=function(
 
 #' @export
 
-build_default_args=function(steps_list=build_default_steps_list()){
+build_default_args=function(
+    steps_list=build_default_steps_list(),int_sep=";",
+    ext_sep="||"){
     lapply(names(steps_list),FUN=function(x){
         if(length(steps_list[[x]]$args)>0){
-            args=collapse_step_list(steps_list[[x]]$args,sep="|")
+            args=collapse_step_list(steps_list[[x]]$args,sep=int_sep)
         }else{
             return()
         }
         paste0(x,"={",args,"}")
-    })%>% purrr::discard(is.null) %>% paste(collapse=";")
+    })%>% purrr::discard(is.null) %>% paste(collapse=ext_sep)
 
 }
-
 
 #' @export
 
