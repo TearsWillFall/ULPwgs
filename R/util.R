@@ -520,6 +520,17 @@ steps_list=build_default_steps_list()){
 }
 
 
+#' @export
+
+
+collapse_step_list=function(list,sep=";"){
+  paste0(names(list),"=",list,collapse=sep)
+}
+
+
+
+
+
 #' Parse HS metrics and WGS metrics picard info
 #'
 #' 

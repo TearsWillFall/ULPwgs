@@ -5,13 +5,13 @@
 #' 
 #' @export
 
-
-build_default_config=function(steps=names(build_default_steps_list()),
-steps_list=build_default_steps_list()){
-    config_list=lapply(steps,FUN=build_step,steps_list=steps_list)
-    config_list=dplyr::bind_rows(config_list)
-    row.names(config_list)=config_list$name
-    return(config_list)
+build_default_config=function(
+    steps=names(build_default_steps_list()),
+    steps_list=build_default_steps_list()){
+        config_list=lapply(steps,FUN=build_step,steps_list=steps_list)
+        config_list=dplyr::bind_rows(config_list)
+        row.names(config_list)=config_list$name
+        return(config_list)
 }
 
 
@@ -25,7 +25,8 @@ steps_list=build_default_steps_list()){
 #' @export
 
 
-build_step=function(step,steps_list=build_default_steps_list()){
+build_step=function(
+    step,steps_list=build_default_steps_list()){
     step_info=steps_list[[step]]
     parameter=names(step_info[["args"]])
     if(!is.null(parameter)){
@@ -52,21 +53,23 @@ build_default_steps_list=function(
     steps=list(
         pre_fastqc=list(
             order=1,
-            step=TRUE,
-            threads=6,
-            ram=8,
-            mode="local",
-            verbose=TRUE,
-            time="48:0:0",
+            step=build_default_step_list()$pre_fastqc,
+            threads=build_default_step_threads_list()$pre_fastqc,
+            ram=build_default_step_ram_list()$pre_fastqc,
+            batch_config=build_default_preprocess_config(),
+            mode=build_default_step_mode_list()$pre_fastqc,
+            verbose=build_default_step_verbose_list()$pre_fastqc,
+            time=build_default_step_time_list()$pre_fastqc,
             args=list()),
         trimming=list(
             order=2,
-            step=TRUE,
-            threads=6,
-            ram=8,
-            mode="local",
-            verbose=TRUE,
-            time="48:0:0",
+            step=build_default_step_list()$trimming,
+            threads=build_default_step_threads_list()$trimming,
+            ram=build_default_step_ram_list()$trimming,
+            batch_config=build_default_preprocess_config(),
+            mode=build_default_step_mode_list()$trimming,
+            verbose=build_default_step_verbose_list()$trimming,
+            time=build_default_step_time_list()$trimming,
             args=list(
                 mean_quality=0,
                 min_length=18,
@@ -77,22 +80,24 @@ build_default_steps_list=function(
 
         post_fastqc=list(
             order=3,
-            step=TRUE,
-            threads=6,
-            ram=8,
-            mode="local",
-            verbose=TRUE,
-            time="48:0:0",
+           step=build_default_step_list()$post_fastqc,
+            threads=build_default_step_threads_list()$post_fastqc,
+            ram=build_default_step_ram_list()$post_fastqc,
+            batch_config=build_default_preprocess_config(),
+            mode=build_default_step_mode_list()$post_fastqc,
+            verbose=build_default_step_verbose_list()$post_fastqc,
+            time=build_default_step_time_list()$post_fastqc,
             args=list()),
         
         alignment=list(
             order=4,
-            step=TRUE,
-            threads=12,
-            ram=16,
-            mode="local",
-            verbose=TRUE,
-            time="48:0:0",
+            step=build_default_step_list()$alignment,
+            threads=build_default_step_threads_list()$alignment,
+            ram=build_default_step_ram_list()$alignment,
+            batch_config=build_default_preprocess_config(),
+            mode=build_default_step_mode_list()$alignment,
+            verbose=build_default_step_verbose_list()$alignment,
+            time=build_default_step_time_list()$alignment,
             args=list(
                 clean=TRUE,
                 stats="all",
@@ -100,46 +105,50 @@ build_default_steps_list=function(
             )),
         merge_bam=list(
             order=5,
-            step=FALSE,
-            threads=6,
-            ram=16,
-            mode="local",
-            verbose=TRUE,
-            time="48:0:0",
+            step=build_default_step_list()$merge_bam,
+            threads=build_default_step_threads_list()$merge_bam,
+            ram=build_default_step_ram_list()$merge_bam,
+            batch_config=build_default_preprocess_config(),
+            mode=build_default_step_mode_list()$merge_bam,
+            verbose=build_default_step_verbose_list()$merge_bam,
+            time=build_default_step_time_list()$merge_bam,
             args=list(
             )),
 
         markdups=list(
             order=6,
-            step=TRUE,
-            threads=12,
-            ram=16,
-            mode="local",
-            verbose=TRUE,
-            time="48:0:0",
+            step=build_default_step_list()$markdups,
+            threads=build_default_step_threads_list()$markdups,
+            ram=build_default_step_ram_list()$markdups,
+            batch_config=build_default_preprocess_config(),
+            mode=build_default_step_mode_list()$markdups,
+            verbose=build_default_step_verbose_list()$markdups,
+            time=build_default_step_time_list()$markdups,
             args=list(
-                remove_duplicates=TRUE)
+                remove_duplicates=FALSE)
             ),
          recalibrate=list(
             order=7,
-            step=TRUE,
-            threads=2,
-            ram=8,
-            mode="local",
-            verbose=TRUE,
-            time="48:0:0",
+            step=build_default_step_list()$recalibrate,
+            threads=build_default_step_threads_list()$recalibrate,
+            ram=build_default_step_ram_list()$recalibrate,
+            batch_config=build_default_preprocess_config(),
+            mode=build_default_step_mode_list()$recalibrate,
+            verbose=build_default_step_verbose_list()$recalibrate,
+            time=build_default_step_time_list()$recalibrate,
             args=list(
                 clean=TRUE
             )
             ),
         alignqc=list(
             order=8,
-            step=TRUE,
-            threads=2,
-            ram=8,
-            mode="local",
-            verbose=TRUE,
-            time="48:0:0",
+            step=build_default_step_list()$alignqc,
+            threads=build_default_step_threads_list()$alignqc,
+            ram=build_default_step_ram_list()$alignqc,
+            batch_config=build_default_preprocess_config(),
+            mode=build_default_step_mode_list()$alignqc,
+            verbose=build_default_step_verbose_list()$alignqc,
+            time=build_default_step_time_list()$alignqc,
             args=list()))
         ){
     return(steps)
@@ -165,8 +174,8 @@ build_default_parameter_list=function(
         "time",
         "threads",
         "ram",
-        "args")
-        ,
+        "batch_config",
+        "args"),
         text=c(
             "Step Name: ",
             "Run: ",
@@ -174,6 +183,7 @@ build_default_parameter_list=function(
             "Run Time: ",
             "Threads: ",
             "Ram: ",
+            "Batch Config: ",
             "Tool Parameters : "
         )
     )
@@ -216,14 +226,14 @@ build_default_sample_sheet=function(
         "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P1_S2_L1_R2.fq.gz",
         "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P2_S1_L1_R2.fq.gz",
         "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P2_S2_L1_R2.fq.gz"),
-        step=build_default_steps(),
-        threads=build_default_step_threads(),
-        ram=build_default_step_ram(),
-        batch_config=build_default_step_batch(),
-        time=build_default_step_time(),
-        mode=build_default_step_mode(),
-        verbose=build_default_step_verbose(),
-        args="trimming={mean_quality=0|min_length=18|max_length=|xadapt=|yadapt=};alignment={clean=TRUE|stats=all|coord_sort=FALSE};markdups={remove_duplicates=FALSE};recalibrate={clean=TRUE}"
+        step=collapse_step_list(build_default_step_list()),
+        threads=collapse_step_list(build_default_step_threads_list()),
+        ram=collapse_step_list(build_default_step_ram_list()),
+        batch_config=collapse_step_list(build_default_step_batch_list()),
+        time=collapse_step_list(build_default_step_time_list()),
+        mode=collapse_step_list(build_default_step_mode_list()),
+        verbose=collapse_step_list(build_default_step_verbose_list()),
+        args=build_default_args()
     )
 ){
 
@@ -232,9 +242,26 @@ build_default_sample_sheet=function(
 }
 
 
+
+
 #' @export
 
-build_default_step_time=function(
+build_default_args=function(steps_list=build_default_steps_list()){
+    lapply(names(steps_list),FUN=function(x){
+        if(length(steps_list[[x]]$args)>0){
+            args=collapse_step_list(steps_list[[x]]$args,sep="|")
+        }else{
+            return()
+        }
+        paste0(x,"={",args,"}")
+    })%>% purrr::discard(is.null) %>% paste(collapse=";")
+
+}
+
+
+#' @export
+
+build_default_step_time_list=function(
     time=list(
         pre_fastqc="48:0:0",
         trimming="48:0:0",
@@ -246,11 +273,11 @@ build_default_step_time=function(
         alignqc="48:0:0"
     )
 ){
-    paste0(names(time),"=",time,collapse=";")    
+    return(time)  
 }
 
 #' @export
-build_default_step_threads=function(
+build_default_step_threads_list=function(
    threads=list(
         pre_fastqc=6,
         trimming=6,
@@ -262,11 +289,11 @@ build_default_step_threads=function(
         alignqc=6
     )
 ){
-    paste0(names(threads),"=",threads,collapse=";")    
+    return(threads)   
 }
 
 #' @export
-build_default_steps=function(
+build_default_step_list=function(
     steps=list(
         pre_fastqc=TRUE,
         trimming=TRUE,
@@ -278,12 +305,12 @@ build_default_steps=function(
         alignqc=TRUE
     )
 ){
-    paste0(names(steps),"=",steps,collapse=";")    
+   return(steps)    
 }
 
 #' @export
 
-build_default_step_mode=function(
+build_default_step_mode_list=function(
     mode=list(
         pre_fastqc="local",
         trimming="local",
@@ -295,12 +322,12 @@ build_default_step_mode=function(
         alignqc="local"
     )
 ){
-    paste0(names(mode),"=",mode,collapse=";")    
+    return(mode)
 }
 
 #' @export
 
-build_default_step_verbose=function(
+build_default_step_verbose_list=function(
     verbose=list(
         pre_fastqc=TRUE,
         trimming=TRUE,
@@ -312,12 +339,12 @@ build_default_step_verbose=function(
         alignqc=TRUE
     )
 ){
-    paste0(names(verbose),"=",verbose,collapse=";")    
+   return(verbose)   
 }
 
 #' @export
 
-build_default_step_batch=function(
+build_default_step_batch_list=function(
      config=list(
         pre_fastqc=build_default_preprocess_config(),
         trimming=build_default_preprocess_config(),
@@ -330,11 +357,11 @@ build_default_step_batch=function(
 
     )
 ){
-       paste0(names(config),"=",config,collapse=";")    
+       return(config)
 }
 
 #' @export
-build_default_step_ram=function(
+build_default_step_ram_list=function(
     ram=list(
         pre_fastqc=6,
         trimming=6,
@@ -346,7 +373,7 @@ build_default_step_ram=function(
         alignqc=6
     )
 ){
-    paste0(names(ram),"=",ram,collapse=";")    
+    return(ram)  
 }
 
 

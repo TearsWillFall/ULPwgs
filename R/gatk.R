@@ -151,10 +151,9 @@ recal_gatk=function(
     task_id=task_id,
     input_args=argg,
     out_file_dir=list(
-      main=out_file_dir4,
-      tmp=out_file_dir3,
-      after=out_file_dir2,
-      before=out_file_dir
+      main=out_file_dir_main,
+      after=out_file_dir_after,
+      before=out_file_dir_before
       ),
     out_files=list(
     )
@@ -935,7 +934,7 @@ analyze_covariates_gatk=function(
     job_validator(job=job_report$job_id,time=update_time,
     verbose=verbose,threads=threads)
   }
-  
+
   return(job_report)
 }
 
