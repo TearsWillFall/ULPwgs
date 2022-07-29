@@ -716,7 +716,7 @@ parallel_apply_BQSR_gatk=function(
   )
   
   job_report[["steps"]][["gather_bam"]]=gather_bam_files(
-    bin_picard=bin_picard,tmp_dir=tmp_dir,
+    bin_picard=bin_picard,
     bam=unlist_lvl(job_report[["steps"]][["apply_bqsr"]],var="recal_bam"),
     output_dir=out_file_dir,
     output_name=paste0(get_file_name(bam),".recal.sorted.rmdup.sorted"),
@@ -763,7 +763,7 @@ parallel_apply_BQSR_gatk=function(
 
 gather_bam_files=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
-  bam="",output_name="File",output_dir="",tmp_dir="",
+  bam="",output_name="File",output_dir="",
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   threads=4, ram=4, mode="local",clean=FALSE,
   executor_id=make_unique_id("gatherBAM"),task_name="gatherBAM",
@@ -774,10 +774,6 @@ gather_bam_files=function(
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
 
-  if(tmp_dir!=""){
-    tmp_dir=paste0(" --TMP_DIR ",tmp_dir)
-    
-  }
   
   out_file=paste0(out_file_dir,"/",output_name,".bam")
   bam=bam[order(as.numeric(lapply(lapply(lapply(lapply(lapply(lapply(basename(bam),
@@ -786,7 +782,7 @@ gather_bam_files=function(
 
 
   exec_code=paste0("java -jar ",bin_picard," GatherBamFiles ",
-    paste0(" I=",bam,collapse=" ")," O=",out_file,tmp_dir)
+    paste0(" I=",bam,collapse=" ")," O=",out_file)
 
   if(clean){
     exec_code=paste(exec_code," && rm",paste(bam,collapse=" "),
