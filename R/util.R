@@ -541,7 +541,7 @@ steps_list=build_default_steps_list()){
 #' @export
 
 parse_picard_metrics=function(summary="",output_dir="",output_name="",
-verbose=FALSE,threads=1,ram=4,
+verbose=FALSE,batch_config=build_default_preprocess_config(),threads=1,ram=4,
 mode="local",executor_id=make_unique_id("parsePicardMetrics"),
 task_name="parsePicardMetrics",time="48:0:0",
 update_time=60,wait=FALSE,hold=""){
@@ -561,7 +561,7 @@ update_time=60,wait=FALSE,hold=""){
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
         threads=threads,output_dir=out_file_dir2)
-        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
    if(verbose){
        print_verbose(job=job,arg=argg,exec_code=exec_code)
@@ -657,7 +657,7 @@ intersect_file_name=function(file_path="",file_path2=""){
 
 complement_bed=function(
   bin_betools=build_default_tool_binary_list()$bin_bedtools,
-  bed="",pad=10,output_name="Complement",genome="",verbose=FALSE,
+  bed="",pad=10,output_name="Complement",genome="",verbose=FALSE,batch_config=build_default_preprocess_config(),
   threads=3,ram=1,coord_sort=TRUE,mode="local",
   executor_id=make_unique_id("complementBED"),clean=TRUE,
   task_name="complementBED",time="48:0:0",update_time=60,wait=FALSE,hold=""
@@ -704,7 +704,7 @@ complement_bed=function(
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
         output_dir=out_file_dir2,hold=hold)
-        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
 
   if(verbose){
@@ -748,8 +748,8 @@ complement_bed=function(
 #' @export
 
 pad_bed=function(bin_bedtools=build_default_tool_binary_list()$bin_bedtools,bed="",pad=10,
-  output_name="Padded",output_dir="",genome="",verbose=FALSE,threads=3,ram=1,
-  coord_sort=TRUE,mode="local",executor_id=make_unique_id("padBED"),task_name="padBED",
+  output_name="Padded",output_dir="",genome="",verbose=FALSE,batch_config=build_default_preprocess_config(),
+  threads=3,ram=1,coord_sort=TRUE,mode="local",executor_id=make_unique_id("padBED"),task_name="padBED",
   time="48:0:0",update_time=60,wait=FALSE,hold=""
 ){
 
@@ -769,7 +769,7 @@ pad_bed=function(bin_bedtools=build_default_tool_binary_list()$bin_bedtools,bed=
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
         output_dir=out_file_dir2,hold=hold)
-        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
     }
    if(verbose){
          print_verbose(job=job,arg=argg,exec_code=exec_code)
@@ -894,7 +894,8 @@ add_arrow=function(nesting="",n=2,bold=FALSE){
 
 replace_rg=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,bam="",output_dir="",
-  verbose=FALSE,index=TRUE,ID="",PL="",PU="",LB="",SM="",threads=3,jobs=1){
+  verbose=FALSE,batch_config=build_default_preprocess_config(),
+  index=TRUE,ID="",PL="",PU="",LB="",SM="",threads=3,jobs=1){
 
   out_file_di=set_dir(dir=output_dir)
 
@@ -964,7 +965,8 @@ replace_rg=function(
 
 bed_coverage=function(
   bin_bedtools=build_default_tool_binary_list()$bin_bedtools,bam="",bed="",
-  verbose=FALSE,sorted=TRUE,mean=TRUE,fai="",suffix="",output_dir="",hist=FALSE
+  verbose=FALSE,batch_config=build_default_preprocess_config(),
+  sorted=TRUE,mean=TRUE,fai="",suffix="",output_dir="",hist=FALSE
 ){
     
     out_file_dir=set_dir(dir=output_dir,name="coverage")
@@ -1034,7 +1036,7 @@ bed_coverage=function(
 get_bam_reference_chr=function(
     bin_samtools=build_default_tool_binary_list()$bin_samtools,
     bam="",output_name="chrReference",
-    output_dir="",verbose=FALSE,
+    output_dir="",verbose=FALSE,batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("getBAMchr"),task_name="getBAMchr",
     mode="local",time="48:0:0",
     threads=4,ram=4,update_time=60,wait=FALSE,hold=""
@@ -1061,7 +1063,7 @@ get_bam_reference_chr=function(
         exec_batch=build_job_exec(job=job,
         time=time,ram=ram,threads=threads,
         output_dir=out_file_dir2,hold=hold)
-        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
     }
 
 
@@ -1120,7 +1122,8 @@ get_bam_reference_chr=function(
 
 get_fai_reference_chr=function(
     fasta="",output_name="chrRef",output_dir="",
-    verbose=FALSE,executor_id=make_unique_id("getFAIchr"),
+    verbose=FALSE,batch_config=build_default_preprocess_config(),
+    executor_id=make_unique_id("getFAIchr"),
     task_name="getFAIrchr",
     mode="local",time="48:0:0",
     threads=4,ram=4,update_time=60,wait=FALSE,hold=""
@@ -1147,7 +1150,7 @@ get_fai_reference_chr=function(
         exec_batch=build_job_exec(job=job,
         time=time,ram=ram,threads=threads,
         output_dir=out_file_dir2,hold=hold)
-        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
     }
 
 
@@ -1220,8 +1223,8 @@ seqlast <- function (from, to, by)
 #' @export
 
 
-bin_chromosomes <- function(bin_samtools=build_default_tool_binary_list()$bin_samtools,bam="",verbose=FALSE,
-bin_size=40000000){
+bin_chromosomes <- function(bin_samtools=build_default_tool_binary_list()$bin_samtools,
+bam="",verbose=FALSE,batch_config=build_default_preprocess_config(),bin_size=40000000){
   options(scipen = 999)
   chr=get_bam_reference_chr(bin_samtools=bin_samtools,bam=bam,verbose=verbose)
   bed=chr%>% dplyr::group_by(chr) %>%
@@ -1230,6 +1233,17 @@ bin_size=40000000){
   bed=bed[stringr::str_order(paste0(bed$chr,"_",bed$start), numeric = TRUE),]
   return(bed)
 }
+
+
+#' @export
+myriad_module=function(mode="load",module=""){
+    if(mode=="load"){
+      mdl=paste0("module load ",module)
+    }else if (mode=="unload"){
+      mdl=paste0("module unload ",module)
+    }
+}
+
 
 
 

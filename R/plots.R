@@ -126,7 +126,7 @@ plot_log2_beta=function(
         plt_data <- plt_data[plt_data$gene_type %in% filt, ]
         p <- ggplot(plt_data) +
         geom_vline(aes(xintercept = 0), linetype = "longdash", alpha = 0.25) +
-        geom_vline(aes(xintercept = all_log2+log2(ploidy/2)),
+        geom_vline(aes(xintercept = -unique(log2(ploidy/2))),
         linetype = "longdash",
         col = "red", alpha = 0.5
         ) +
@@ -457,5 +457,29 @@ plot_stats=function(plt_data,gene_tg=TRUE, gene_ctrl=FALSE, gene_other=FALSE){
 }
 
 
+
+
+
+plot_pathways=function(plt_data){
+
+
+      main_plot <- function(plt_data){
+ 
+
+        p <- ggplot(plt_data,stat="identity",position="stack",
+        aes(x=Class,y=Freq))+geom_point(shape=21,aes(fill=class_col))+geom_polygon(fill=NA,aes(
+        group=cn_class,col=class_col))+coord_radar()+theme_bw()+scale_y_continuous(limits=c(0,1))+
+        theme(axis.text.y =element_blank(),axis.ticks.y =element_blank())+
+        scale_color_identity()+scale_fill_identity()
+        
+        print(p)
+      }
+      p <- main_plot(plt_data)
+
+      print(p)
+
+  }
+    
+   
       
 

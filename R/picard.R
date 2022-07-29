@@ -21,7 +21,9 @@
 
 markdups_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,bam="",
-  output_dir="",verbose=FALSE,hnd=1000,threads,ram=4,tmp_dir="",
+  output_dir="",verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  hnd=1000,threads,ram=4,tmp_dir="",
   remove_duplicates=TRUE,mode="local",executor_id=make_unique_id("markDups"),
   task_name="markDups",time="48:0:0",
   update_time=60,wait=FALSE,hold=""
@@ -57,7 +59,7 @@ markdups_picard=function(
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
-       exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+       exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
     
   if(verbose){
@@ -112,7 +114,8 @@ markdups_picard=function(
 
 summary_metrics_bam_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
-  bam="",output_dir="",verbose=FALSE,tmp_dir=".",
+  bam="",output_dir="",verbose=FALSE,
+  batch_config=build_default_preprocess_config(),tmp_dir=".",
   threads=3,ram=4,mode="local",executor_id=make_unique_id("summaryMetrics"),
   task_name="summaryMetrics",
   time="48:0:0",update_time=60,wait=FALSE,hold=""
@@ -137,7 +140,7 @@ summary_metrics_bam_picard=function(
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
-       exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+       exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
 
  if(verbose){
@@ -190,7 +193,8 @@ summary_metrics_bam_picard=function(
 
 insertsize_metrics_bam_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
-  bam="",output_dir="",verbose=FALSE,tmp_dir=".",threads=1,ram=4,
+  bam="",output_dir="",verbose=FALSE,
+  batch_config=build_default_preprocess_config(),tmp_dir=".",threads=1,ram=4,
   mode="local",executor_id=make_unique_id("insertsizeMetrics"),
   task_name="insertsizeMetrics",
   time="48:0:0",update_time=60,wait=FALSE,hold=""){
@@ -216,7 +220,7 @@ insertsize_metrics_bam_picard=function(
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
-       exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+       exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
 
   if(verbose){
@@ -248,8 +252,6 @@ insertsize_metrics_bam_picard=function(
 }
 
 
-
-
 #' Generate BAM Summary for Targeted data
 #'
 #'
@@ -271,7 +273,8 @@ insertsize_metrics_bam_picard=function(
 
 tg_summary_metrics_bam_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,bam="",output_dir="",
-  verbose=FALSE,tmp_dir=".",ref_genome="",threads=1,ram=4,bi="",ti="",
+  verbose=FALSE,batch_config=build_default_preprocess_config(),
+  tmp_dir=".",ref_genome="",threads=1,ram=4,bi="",ti="",
   mode="local",executor_id=make_unique_id("TGsummaryMetrics"),
   task_name="TGsummaryMetrics",time="48:0:0",update_time=60,
   wait=FALSE,hold=""){
@@ -307,7 +310,7 @@ tg_summary_metrics_bam_picard=function(
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
         threads=threads,output_dir=out_file_dir2)
-        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
 
 
@@ -375,7 +378,8 @@ tg_summary_metrics_bam_picard=function(
 
 rnaseq_summary_metrics_bam_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
-  bam="",output_dir="",verbose=FALSE,tmp_dir=".",threads=1,ram=4,
+  bam="",output_dir="",verbose=FALSE,
+  batch_config=build_default_preprocess_config(),tmp_dir=".",threads=1,ram=4,
   ri="",ref_flat="",mode="local",executor_id=make_unique_id("RNAsummaryMetrics"),
   task_name="RNAsummaryMetrics",time="48:0:0",
   update_time=60,wait=FALSE,hold=""){
@@ -403,7 +407,7 @@ job=build_job(executor_id=executor_id,task_id=task_id)
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
-       exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+       exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
 
 
@@ -457,7 +461,9 @@ job=build_job(executor_id=executor_id,task_id=task_id)
 
 wgs_summary_metrics_bam_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
-  bam="",output_dir="",verbose=FALSE,tmp_dir=".",threads=1,ram=4,mode="local",
+  bam="",output_dir="",verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  tmp_dir=".",threads=1,ram=4,mode="local",
   executor_id=make_unique_id("WGSsummaryMetrics"),
   task_name="WGSsummaryMetrics",time="48:0:0",
   update_time=60,wait=FALSE,hold=""){
@@ -483,7 +489,7 @@ job=build_job(executor_id=executor_id,task_id=task_id)
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
-       exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+       exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
 
 

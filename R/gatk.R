@@ -23,10 +23,11 @@
 
 
 markdups_gatk=function(
-bin_gatk=build_default_tool_binary_list()$bin_gatk,bam="",output_dir="",
-verbose=FALSE,tmp_dir="",threads=3,ram=4,remove_duplicates=TRUE,
-executor_id=make_unique_id("markdupsGATK"),task_name="markdupsGATK",
-mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
+  bin_gatk=build_default_tool_binary_list()$bin_gatk,bam="",output_dir="",
+  verbose=FALSE,batch_config=build_default_preprocess_config(),
+  tmp_dir="",threads=3,ram=4,remove_duplicates=TRUE,
+  executor_id=make_unique_id("markdupsGATK"),task_name="markdupsGATK",
+  mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
@@ -58,7 +59,7 @@ mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
         output_dir=out_file_dir2,hold=hold)
-        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
     }
   
     if(verbose){
@@ -106,6 +107,7 @@ mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @param dbsnp [REQUIRED] Known variant database.Requires atleast 1.
 #' @param threads [OPTIONAL] Number of threads to split the work.
 #' @param ram [OPTIONAL] RAM memory per thread.
+#' @param tmp_dir [OPTIONAL] Path to the temporary directory.
 #' @param clean Clean input files. Default TRUE.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
@@ -124,7 +126,8 @@ recal_gatk=function(
   bin_gatk=build_default_tool_binary_list()$bin_gatk,
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bam="",ref_genome="",dbsnp="",ram=4,threads=4,output_dir="",
-  verbose=FALSE, executor_id=make_unique_id("recalGATK"),
+  tmp_dir="",verbose=FALSE,batch_config=build_default_preprocess_config(),
+  executor_id=make_unique_id("recalGATK"),
   task_name="recalGATK",clean=TRUE,mode="local",time="48:0:0",
   update_time=60,wait=FALSE,hold=""
   ){
@@ -136,7 +139,6 @@ recal_gatk=function(
 
   out_file_dir=set_dir(dir=output_dir,name="recal_reports/recal_before")
   out_file_dir2=set_dir(dir=output_dir,name="recal_reports/recal_after")
-  out_file_dir3=set_dir(dir=output_dir,name="recal_reports/recal_tmp")
   out_file_dir4=set_dir(dir=output_dir,name="recal_reports")
 
 
@@ -171,7 +173,7 @@ recal_gatk=function(
   job_report[["steps"]][["par_bqsr_before"]] <- parallel_generate_BQSR_gatk(
     bin_samtools=bin_samtools,bin_gatk=bin_gatk,bam=bam,
     ref_genome=ref_genome,dbsnp=dbsnp,regions=regions,
-    output_dir=out_file_dir,clean=clean,
+    output_dir=out_file_dir,clean=clean,tmp_dir=tmp_dir,
     verbose=verbose,executor_id=task_id,mode=mode,threads=threads,ram=ram,
     time=time,update_time=update_time,wait=FALSE,
     hold=hold)
@@ -181,7 +183,7 @@ recal_gatk=function(
     bin_samtools=bin_samtools,bin_gatk=bin_gatk,bin_picard=bin_picard,
     bam=bam,ref_genome=ref_genome,
     rec_table=job_report[["steps"]][["par_bqsr_before"]][["steps"]][["gather_bqsr_report"]]$out_files$table,
-    output_dir=out_file_dir3,regions=regions,
+    output_dir=tmp_dir,regions=regions,tmp_dir=tmp_dir,
     clean=clean,verbose=verbose,executor_id=task_id,
     threads=threads,mode=mode,ram=ram,time=time,
     update_time=update_time,wait=FALSE,
@@ -201,7 +203,7 @@ recal_gatk=function(
  
 
   job_report[["steps"]][["par_bqsr_after"]] <- parallel_generate_BQSR_gatk(
-    bin_samtools=bin_samtools,bin_gatk=bin_gatk,
+    bin_samtools=bin_samtools,bin_gatk=bin_gatk,tmp_dir=tmp_dir,
     bam=job_report[["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam,
     ref_genome=ref_genome,dbsnp=dbsnp,threads=threads,regions=regions,
     output_dir=out_file_dir2,verbose=verbose,executor_id=task_id,clean=clean,
@@ -210,7 +212,7 @@ recal_gatk=function(
   
 
  job_report[["steps"]][["analyse_covariates"]] <- analyze_covariates_gatk(
-  bin_gatk=bin_gatk,
+  bin_gatk=bin_gatk,tmp_dir=tmp_dir,
   before=job_report[["steps"]][["par_bqsr_before"]][["steps"]][["gather_bqsr_report"]]$out_files$table,
   after=job_report[["steps"]][["par_bqsr_after"]][["steps"]][["gather_bqsr_report"]]$out_files$table,
   output_dir=out_file_dir4,executor_id=task_id,mode=mode,threads=threads,
@@ -241,6 +243,7 @@ recal_gatk=function(
 #' @param dbsnp [REQUIRED] Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param tmp_dir [OPTIONAL] Path to the temporary directory.
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
 #' @param executor_id Task EXECUTOR ID. Default "generateBQSR"
 #' @param task_id Task NAME ID. Default "generateBQSR"
@@ -254,15 +257,23 @@ recal_gatk=function(
 generate_BQSR_gatk=function(
   region="",
   bin_gatk=build_default_tool_binary_list()$bin_gatk,bam="",ref_genome="",
-  dbsnp="",output_dir="",verbose=FALSE, threads=4,ram=4,mode="local",
+  dbsnp="",output_dir="",verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  threads=4,ram=4,mode="local",
   executor_id=make_unique_id("generateBQSR"),task_name="generateBQSR",
   time="48:0:0",update_time=60,wait=FALSE,hold=""
 ){
 
 
+
+
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
+
+  if(tmp_dir!=""){
+    tmp_dir=paste0(" --tmp-dir ",tmp_dir)
+  }
 
   reg=""
   if (region==""){
@@ -279,7 +290,7 @@ generate_BQSR_gatk=function(
   }
 
   exec_code=paste0(bin_gatk," BaseRecalibrator -I ",bam, " -R ", ref_genome, dbsnp,
-  reg," -O ",out_file)
+  reg," -O ",out_file,tmp_dir)
 
 
   job=build_job(executor_id=executor_id,task_id=task_id)
@@ -287,7 +298,7 @@ generate_BQSR_gatk=function(
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
-       exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+       exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
 
   if(verbose){
@@ -333,6 +344,7 @@ generate_BQSR_gatk=function(
 #' @param ref_genome [REQUIRED] Path to reference genome
 #' @param dbsnp [REQUIRED] Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.
 #' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param tmp_dir [OPTIONAL] Path to the temporary directory.
 #' @param regions [OPTIONAL] Regions to parallelize through.
 #' @param clean Remove intermediary files. Default TRUE
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
@@ -353,10 +365,12 @@ generate_BQSR_gatk=function(
 parallel_generate_BQSR_gatk=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bin_gatk=build_default_tool_binary_list()$bin_gatk,bam="",
-  regions="",ref_genome="", clean=TRUE, dbsnp="",threads=3,ram=4,
+  regions="",ref_genome="", clean=TRUE, dbsnp="",
+  tmp_dir="",threads=3,ram=4,
   executor_id=make_unique_id("par_generateBQSR"),
   task_name="par_generateBQSR",output_dir="",
-  verbose=FALSE,mode="local",time="48:0:0",
+  verbose=FALSE,batch_config=build_default_preprocess_config(),
+  mode="local",time="48:0:0",
   update_time=60,wait=FALSE,hold=""){
 
   options(scipen = 999)
@@ -398,7 +412,7 @@ parallel_generate_BQSR_gatk=function(
   job_report[["steps"]][["generate_bqsr_report"]]<-parallel::mclapply(
   region_list,FUN=function(region){
         job_report <- generate_BQSR_gatk(
-        region=region,
+        region=region,tmp_dir=tmp_dir,
         bin_gatk=bin_gatk,bam=bam,ref_genome=ref_genome,
         dbsnp=dbsnp,output_dir=out_file_dir,verbose=verbose,
         executor_id=task_id,mode=mode,time=time,
@@ -411,7 +425,7 @@ parallel_generate_BQSR_gatk=function(
   job_report[["steps"]][["gather_bqsr_report"]]<- gather_BQSR_reports_gatk(
     bin_gatk=bin_gatk,
     report=unlist_lvl(named_list=job_report[["steps"]][["generate_bqsr_report"]],var="recal_table"),
-    executor_id=task_id,output_dir=out_file_dir,clean=clean,
+    executor_id=task_id,tmp_dir=tmp_dir,output_dir=out_file_dir,clean=clean,
     output_name=get_file_name(bam),verbose=verbose,mode=mode,time=time,
     threads=threads,ram=ram,update_time=update_time,wait=FALSE,
     hold=unlist_lvl(named_list=job_report[["steps"]][["generate_bqsr_report"]],var="job_id",recursive=TRUE))
@@ -438,8 +452,10 @@ parallel_generate_BQSR_gatk=function(
 #' @param output_name [OPTIONAL] Name for the output report file.
 #' @param clean Clean input files. Default TRUE.
 #' @param executor_id Task EXECUTOR ID. Default "gatherBQSR"
+#' @param tmp_dir [OPTIONAL] Path to the temporary directory.
 #' @param task_name Task name. Default "gatherBQSR"
 #' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param tmp_dir [OPTIONAL] Path to temporary directory.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
 #' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
@@ -453,17 +469,22 @@ parallel_generate_BQSR_gatk=function(
 gather_BQSR_reports_gatk=function(
   bin_gatk=build_default_tool_binary_list()$bin_gatk,
   report="",executor_id=make_unique_id("gatherBQSR"),
-  task_name="gatherBQSR",output_name="Report", clean=FALSE,
-  output_dir="",verbose=FALSE,mode="local",time="48:0:0",
+  task_name="gatherBQSR",output_name="Report",tmp_dir="",clean=FALSE,
+  output_dir="",verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  mode="local",time="48:0:0",
   threads=4,ram=4,update_time=60,wait=FALSE,hold=""){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
 
+  if(tmp_dir!=""){
+    tmp_dir=paste0(" --tmp-dir ",tmp_dir)
+  }
   out_file=paste0(out_file_dir,output_name,".recal.table")
   exec_code=paste0(bin_gatk," GatherBQSRReports ",paste(" -I ",report,collapse=" "),
-    " -O ",out_file)
+    " -O ",out_file,tmp_dir)
 
 
   if(clean){
@@ -479,7 +500,7 @@ gather_BQSR_reports_gatk=function(
        exec_batch=build_job_exec(job=job,
        time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
-       exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+       exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
 
   if(verbose){
@@ -523,6 +544,7 @@ gather_BQSR_reports_gatk=function(
 #' @param ref_genome [REQUIRED] Path to reference genome
 #' @param rec_table [REQUIRED] Path to covariates table generated by generate_BSQR.
 #' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param tmp_dir [OPTIONAL] Path to the temporary directory.
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
 #' @param threads Number of threads to split the work. Default 3
 #' @param ram [OPTIONAL] If batch mode. RAM memory in GB per job. Default 1
@@ -539,7 +561,8 @@ gather_BQSR_reports_gatk=function(
 apply_BQSR_gatk=function(
   region="",
   bin_gatk=build_default_tool_binary_list()$bin_gatk,bam="",ref_genome="",
-  rec_table="",output_dir="",verbose=FALSE,mode="local", threads=4,ram=4,
+  rec_table="",output_dir="",verbose=FALSE,tmp_dir="",
+  batch_config=build_default_preprocess_config(),mode="local", threads=4,ram=4,
   executor_id=make_unique_id("applyBQSR"),task_name="applyBQSR",time="48:0:0",
   update_time=60,wait=TRUE,hold=""){
 
@@ -547,6 +570,10 @@ apply_BQSR_gatk=function(
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
  
+  if(tmp_dir!=""){
+    tmp_dir=paste0(" --tmp-dir ",tmp_dir)
+  }
+
   reg=""
   if (region==""){
       out_file=paste0(" ", out_file_dir,"/", get_file_name(bam),".recal.",get_file_ext(bam))
@@ -563,7 +590,7 @@ apply_BQSR_gatk=function(
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
-       exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+       exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
 
   if(verbose){
@@ -589,7 +616,6 @@ apply_BQSR_gatk=function(
     )
   )
 
-
   if(wait&&mode=="batch"){
       job_validator(job=job,
       time=update_time,verbose=verbose,threads=threads)
@@ -611,6 +637,7 @@ apply_BQSR_gatk=function(
 #' @param ref_genome [REQUIRED] Path to reference genome
 #' @param rec_table [REQUIRED] Path to the recalibratio table.
 #' @param clean Clean intermediary files.
+#' @param tmp_dir [OPTIONAL] Path to the temporary directory.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param regions [OPTIONAL] Regions to parallelize through.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
@@ -631,7 +658,8 @@ parallel_apply_BQSR_gatk=function(
   bin_gatk=build_default_tool_binary_list()$bin_gatk,
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bam="",regions="",ref_genome="",rec_table="",clean=TRUE,
-  output_dir="",verbose=FALSE,mode="local",
+  output_dir="",verbose=FALSE,tmp_dir="",
+  batch_config=build_default_preprocess_config(),mode="local",
   executor_id=make_unique("par_applyBQSR"),
   task_name="par_applyBQSR",
   time="48:0:0",threads=4,ram=4,
@@ -646,7 +674,7 @@ parallel_apply_BQSR_gatk=function(
 
    if(regions==""){
       job_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
-      bin_samtools=bin_samtools,
+      bin_samtools=bin_samtools,tmp_dir=tmp_dir,
       bam=bam,verbose=verbose,output_dir=output_dir,
       executor_id=task_id,mode=mode,threads=threads,ram=ram,
       time=time,update_time=update_time,wait=FALSE,hold=hold)
@@ -680,7 +708,7 @@ parallel_apply_BQSR_gatk=function(
       job_report<-apply_BQSR_gatk(
       region=region,
       bin_gatk=bin_gatk,bam=bam,ref_genome=ref_genome,
-      executor_id=executor_id,rec_table=rec_table,
+      executor_id=executor_id,rec_table=rec_table,tmp_dir=tmp_dir,
       output_dir=out_file_dir,verbose=verbose,mode=mode,time=time,
       threads=ifelse(mode=="local",threads,2),
       ram=ram,update_time=update_time,hold=hold,wait=FALSE)},
@@ -718,10 +746,10 @@ parallel_apply_BQSR_gatk=function(
 #'
 #' @param bin_picard [REQUIRED] Path to picard executable. Default tools/picard/build/libs/picard.jar.
 #' @param bam [REQUIRED] Path to BAM file/s.
-
 #' @param output_name [OPTIONAL] Name for the output file name.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param clean Clean input files. Default TRUE.
+#' @param tmp_dir [OPTIONAL] Path to the temporary directory.
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
 #' @param threads [OPTIONAL] Number of threads to split the work. Default 4
 #' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
@@ -735,8 +763,9 @@ parallel_apply_BQSR_gatk=function(
 
 gather_bam_files=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
-  bam="",output_name="File",output_dir="",
-  verbose=FALSE,threads=4, ram=4, mode="local",clean=FALSE,
+  bam="",output_name="File",output_dir="",tmp_dir="",
+  verbose=FALSE,batch_config=build_default_preprocess_config(),
+  threads=4, ram=4, mode="local",clean=FALSE,
   executor_id=make_unique_id("gatherBAM"),task_name="gatherBAM",
   time="48:0:0",update_time=60,wait=FALSE,hold=""
 ){
@@ -745,13 +774,19 @@ gather_bam_files=function(
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
 
+  if(tmp_dir!=""){
+    tmp_dir=paste0(" --TMP_DIR ",tmp_dir)
+    
+  }
+  
   out_file=paste0(out_file_dir,"/",output_name,".bam")
   bam=bam[order(as.numeric(lapply(lapply(lapply(lapply(lapply(lapply(basename(bam),
     FUN=strsplit,split="\\."),FUN="[[",index=1),FUN="[",index=2),
     FUN=strsplit,split="__"),FUN="[[",index=1),FUN="[",index=1)))]
 
+
   exec_code=paste0("java -jar ",bin_picard," GatherBamFiles ",
-    paste0(" I=",bam,collapse=" ")," O=",out_file)
+    paste0(" I=",bam,collapse=" ")," O=",out_file,tmp_dir)
 
   if(clean){
     exec_code=paste(exec_code," && rm",paste(bam,collapse=" "),
@@ -765,7 +800,7 @@ gather_bam_files=function(
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
-       exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+       exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
 
   if(verbose){
@@ -807,6 +842,7 @@ gather_bam_files=function(
 #' @param before [REQUIRED] Recalibration table produced by generate_BQSR function.
 #' @param after [OPTIONAL] Recalibration table produced by generate_BQSR function.
 #' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param tmp_dir [OPTIONAL] Path to the temporary directory.
 #' @param threads [OPTIONAL] Number of threads to split the work. Default 4
 #' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
@@ -822,7 +858,9 @@ gather_bam_files=function(
 
 analyze_covariates_gatk=function(
   bin_gatk=build_default_tool_binary_list()$bin_gatk,before="",after="",
-  output_dir="",verbose=FALSE,threads=4,ram=4,mode="local",
+  output_dir="",verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  threads=4,ram=4,mode="local",
   executor_id=make_unique_id("recalCovariates"),
   task_name="recalCovariates",time="48:0:0",
   update_time=60,wait=FALSE,hold=""
@@ -831,19 +869,34 @@ analyze_covariates_gatk=function(
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(name=output_dir)
+
+
+
+  if(tmp_dir!=""){
+    tmp_dir=paste0(" --tmp-dir ",tmp_dir)
+  }
  
   if (before!="" & after==""){
     out_file=paste0(out_file_dir,"/",get_file_name(before),
     "_covariates_analysis_before.pdf")
-    exec_code=paste0(bin_gatk," AnalyzeCovariates -bqsr ",before," -plots ",out_file)
+
+    out_file_csv=paste0(out_file_dir,"/",get_file_name(before),
+    "_covariates_analysis_before.csv")
+
+    exec_code=paste0(bin_gatk," AnalyzeCovariates -bqsr ",before, " -plots ",out_file,tmp_dir," -csv ",out_file_csv)
   }else if(before=="" & after!=""){
+
     out_file=paste0(out_file_dir,"/",get_file_name(after),
        "_covariates_analysis_after.pdf")
-    exec_code=paste0(bin_gatk," AnalyzeCovariates -bqsr ",after," -plots ",out_file)
+
+    out_file_csv=paste0(out_file_dir,"/",get_file_name(after),
+    "_covariates_analysis_after.csv")
+
+    exec_code=paste0(bin_gatk," AnalyzeCovariates -bqsr ",after, " -plots ",out_file,tmp_dir," -csv ",out_file_csv)
   }else{
     out_file=paste0(out_file_dir,"/",get_file_name(before),"_covariates_analysis.pdf")
     exec_code=paste0(bin_gatk," AnalyzeCovariates -before ",before," -after ",after,
-      " -plots ",out_file)
+      " -plots ",out_file,tmp_dir," -csv ",out_file_csv)
   }
 
   job=build_job(executor_id=executor_id,task=task_id)
@@ -852,7 +905,7 @@ analyze_covariates_gatk=function(
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
-       exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+       exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
 
   if(verbose){

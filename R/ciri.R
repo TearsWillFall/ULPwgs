@@ -29,7 +29,8 @@ bin_ciri=build_default_tool_binary_list()$bin_ciri,
 file_R1="",file_R2="",output_dir="",
 ref_genome="database/Homo_sapiens_GRCh38.fa",
 db_annot="database/human_gencode_vch38.gtf",output_name="",
-verbose=FALSE,executor_id=make_unique_id("circRNA"),
+verbose=FALSE,batch_config=build_default_preprocess_config(),
+executor_id=make_unique_id("circRNA"),
 task_name="circRNA",mode="local",threads=3,ram=4,time="48:0:0",
 update_time=60,wait=FALSE,hold=""){
 
@@ -51,7 +52,7 @@ update_time=60,wait=FALSE,hold=""){
     out_file_dir2=set_dir(dir=out_file_dir,name="batch")
     batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
     output_dir=out_file_dir2,hold=hold)
-    exec_code=paste0("echo 'source ~/.bashrc;",exec_code,"'|",batch_code)
+    exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
 
   if(verbose){
@@ -115,7 +116,8 @@ circ_quant_rna=function(
 bin_ciri_quant=build_default_tool_binary_list()$bin_ciri_quant,
 file_R1="",file_R2="",ciri_input="",output_dir="",
 config="database/yaml/config/yaml",output_name="",
-verbose=FALSE,executor_id=make_unique_id("circRNAquant"),
+verbose=FALSE,batch_config=build_default_preprocess_config(),
+executor_id=make_unique_id("circRNAquant"),
 task_name="circRNAquant",mode="local",threads=3,
 ram=4,time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
@@ -142,7 +144,7 @@ ram=4,time="48:0:0",update_time=60,wait=FALSE,hold=""){
     out_file_dir2=set_dir(dir=out_file_dir,name="batch")
     batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
     output_dir=out_file_dir2,hold=hold)
-    exec_code=paste0("echo 'source ~/.bashrc;",exec_code,"'|",batch_code)
+    exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
 
   if(verbose){

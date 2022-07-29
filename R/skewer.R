@@ -27,6 +27,7 @@ trimming_skewer=function(
   file_R1="",file_R2="",xadapt="",
   yadapt="",mean_quality=0,min_length=18,max_length="",
   threads=3,ram=4,output_dir="",verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
   output_name="",mode="local",executor_id=make_unique_id("trimmingSkewer"),
   task_name="trimmingSkewer",time="48:0:0",
   update_time=60,wait=FALSE,hold=""
@@ -63,7 +64,7 @@ trimming_skewer=function(
   if(mode=="batch"){
     out_file_dir2=set_dir(dir=out_file_dir,name="batch")
     batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,output_dir=out_file_dir2)
-    exec_code=paste0("echo 'source ~/.bashrc;",exec_code,"'|",batch_code)
+    exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
   
 

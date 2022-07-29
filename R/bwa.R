@@ -39,7 +39,8 @@ alignment_bwa=function(
   pu_tag="NA",pl_tag="ILLUMINA",lb_tag="NA",
   sm_tag="",sort=TRUE,coord_sort=TRUE,index=TRUE,
   clean=TRUE,stats="all",ref_genome="",output_dir="",
-  verbose=FALSE,executor_id=make_unique_id("alignment"),
+  verbose=FALSE,batch_config=build_default_preprocess_config(),
+  executor_id=make_unique_id("alignment"),
   task_name="alignment",mode="local",time="48:0:0",
   update_time=60,wait=FALSE,hold=""
 ){
@@ -69,7 +70,7 @@ alignment_bwa=function(
       out_file_dir2=set_dir(dir=out_file_dir,name="batch")
       batch_code=build_job_exec(job=job,time=time,ram=ram,
       threads=threads,output_dir=out_file_dir2,hold=hold)
-      exec_code=paste0("echo 'source ~/.bashrc;",exec_code,"'|",batch_code)
+      exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
     }
 
     if(verbose){
@@ -135,6 +136,7 @@ alignment_bwa=function(
 index_ref_bwa=function(
   bin_bwa=build_default_tool_binary_list()$bin_bwa,
   file="",threads=4,ram=4,verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
   executor_id=make_unique_id("refIndex"),
   task_name="refIndex",mode="local",time="48:0:0",
   update_time=60,wait=FALSE,hold=""
@@ -149,8 +151,9 @@ index_ref_bwa=function(
   if(mode=="batch"){
 
     out_file_dir2=set_dir(dir=".",name="batch")
-    batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,output_dir=out_file_dir2,hold=hold)
-    exec_code=paste0("echo 'source ~/.bashrc;",exec_code,"'|",batch_code)
+    batch_code=build_job_exec(job=job,time=time,ram=ram,
+    threads=threads,output_dir=out_file_dir2,hold=hold)
+    exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
 
   if(verbose){

@@ -46,8 +46,9 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
 #' @export
 
 concatenate_bams=function(
-bin_samtools=build_default_tool_binary_list()$bin_samtools,
-bams="",output_name="",verbose=FALSE,threads=3){
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bams="",output_name="",verbose=FALSE,
+  batch_config=build_default_preprocess_config(),threads=3){
 
     exec_code=paste(bin_samtools,"cat -o",paste0(output_name,".bam"), " --threads",
       threads,paste(bams,collapse=" "))
@@ -105,7 +106,8 @@ metrics_alignqc=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bin_bedtools=build_default_tool_binary_list()$bin_bedtools,
   bam="",output_dir="",ref_genome="",
-  verbose=FALSE,tmp_dir=".",mapq=0,bi="",
+  verbose=FALSE,batch_config=build_default_preprocess_config(),
+  tmp_dir=".",mapq=0,bi="",
   ti="",ri="",ref_flat="",method="tg",
   mode="local",executor_id=make_unique_id("alignQC"),
   task_name="alignQC",time="48:0:0",
@@ -241,7 +243,8 @@ metrics_alignqc=function(
 read_counter=function(bin_samtools=build_default_tool_binary_list()$bin_samtools,
 bin_readcount=build_default_tool_binary_list()$bin_readcount,
 chrs=c(1:22,"X","Y"),win=500000, format="wig", bam="",
-output_dir="",verbose=FALSE,threads=3){
+output_dir="",verbose=FALSE,batch_config=build_default_preprocess_config(),
+threads=3){
 
     win=format(win,scientific=F)
 
@@ -310,9 +313,11 @@ output_dir="",verbose=FALSE,threads=3){
 #' @param verbose Enables progress messages. Default False.
 #' @export
 
-filter_bam=function(bin_samtools=build_default_tool_binary_list()$bin_samtools,
-bam="",position="",bed="",
-verbose=FALSE,output_dir="",threads=1){
+filter_bam=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam="",position="",bed="",verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  output_dir="",threads=1){
 
 
   out_file_dir=set_dir(dir=output_dir,name="filtered")

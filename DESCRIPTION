@@ -33,7 +33,9 @@ Imports:
     htmlwidgets,
     ggnewscale
 biocViews:
-Remotes: git::https://github.com/TearsWillFall/BTools.git
+Remotes:
+        git::https://github.com/TearsWillFall/BTools.git,
+        git::https://github.com/broadinstitute/gsalib.git
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)

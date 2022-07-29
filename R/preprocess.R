@@ -56,12 +56,14 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     parameter_config_check(sample_sheet=sample_sheet,config=config,
     vars_list=vars_list,steps_list=steps_list)))
     job=build_job(executor_id=executor_id,task_id=task_id)
-    for_id(seq_info=seq_info,output_dir=out_file_dir,
+    for_id(seq_info=seq_info,output_dir=out_file_dir,batch_config=batch_config,
     vars_list=vars_list,nesting=nesting,merge_level=merge_level,executor_id = executor_id,task_id=task_id,
     pmts_list=pmts_list,bin_list=bin_list,ref_list=ref_list,print_tree=TRUE)
-    job_report[["steps"]][["samples"]]=for_id(seq_info=seq_info,output_dir=output_dir,
+    Sys.sleep(10)
+    job_report[["steps"]][["samples"]]=for_id(seq_info=seq_info,output_dir=output_dir,batch_config=batch_config,
     vars_list=vars_list,nesting=nesting,merge_level=merge_level,executor_id = executor_id,task_id=task_id,
     pmts_list=pmts_list,bin_list=bin_list,ref_list=ref_list,print_tree=FALSE)
+    
     return(job_report)
 
 }
@@ -76,6 +78,7 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
 #' @param pmts_list List with parameters
 #' @param bin_list List with binaries
 #' @param ref_list List with references
+#' @param batch_config Batch method configuration
 #' @param nesting Starting nesting level
 #' @param nest_ws Nesting ws to provide. Default 1
 #' @param merge_level Level to merge samples. Default library
@@ -83,8 +86,6 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
 #' @param task_name Task name . Default "preprocessSEQ"
 #' @param output_dir Path to output directory. Default none
 #' @export
-
-
 
 for_id=function(seq_info,output_dir="",name="",
              vars_list=build_default_variable_list(),
@@ -108,7 +109,6 @@ for_id=function(seq_info,output_dir="",name="",
                         ## Filter sequencing info for id
                         seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
                         out_file_dir=set_dir(dir=output_dir,name=id)
-                        out_file_dir_tmp=set_dir(dir=out_file_dir,name="tmp")
                         new_name=set_name(current_name=name,name=id)
                 
                         if(print_tree){
@@ -158,6 +158,8 @@ for_id=function(seq_info,output_dir="",name="",
 
                             seq_info_id=seq_info_id %>% dplyr::select(-c("order",pmts_list$parameter)) %>%  
                             dplyr::distinct()
+
+                            out_file_dir_tmp=set_dir(dir=out_file_dir,name="tmp")
 
                             seq_info_R1=seq_info_id[seq_info_id$read_group=="R1",]
                             seq_info_R2=seq_info_id[seq_info_id$read_group=="R2",]
@@ -231,6 +233,7 @@ for_id=function(seq_info,output_dir="",name="",
                                                 executor_id=task_id,
                                                 verbose=tool_config_id[step,]$verbose,
                                                 mode=tool_config_id[step,]$mode,
+                                                batch_config=tool_config_id[step,]$batch_config,
                                                 threads=tool_config_id[step,]$threads,
                                                 ram=tool_config_id[step,]$ram,
                                                 time=tool_config_id[step,]$time,
@@ -257,6 +260,7 @@ for_id=function(seq_info,output_dir="",name="",
                                                 threads=tool_config_id[step,]$threads,
                                                 output_name=new_name,
                                                 ram=tool_config_id[step,]$ram,
+                                                batch_config=tool_config_id[step,]$batch_config,
                                                 verbose=tool_config_id[step,]$verbose,
                                                 mode=tool_config_id[step,]$mode,
                                                 time=tool_config_id[step,]$time,
@@ -278,6 +282,7 @@ for_id=function(seq_info,output_dir="",name="",
                                             file_R2=file_R2,
                                             output_dir=paste0(out_file_dir,"/fastqc_reports/post_trim"),
                                             executor_id=task_id,
+                                            batch_config=tool_config_id[step,]$batch_config,
                                             verbose=tool_config_id[step,]$verbose,
                                             mode=tool_config_id[step,]$mode,
                                             threads=tool_config_id[step,]$threads,
@@ -312,6 +317,7 @@ for_id=function(seq_info,output_dir="",name="",
                                             coord_sort=as.logical(args["coord_sort",]$value),
                                             stats=args["stats",]$value,
                                             clean=as.logical(args["clean",]$value),
+                                            batch_config=tool_config_id[step,]$batch_config,
                                             verbose=tool_config_id[step,]$verbose,
                                             mode=tool_config_id[step,]$mode,
                                             time=tool_config_id[step,]$time,
@@ -337,13 +343,14 @@ for_id=function(seq_info,output_dir="",name="",
                                                 bin_gatk=bin_list$markdups$bin_gatk,
                                                 bam=bam,
                                                 output_dir=out_file_dir,
+                                                remove_duplicates=as.logical(args["remove_duplicates",]$value),
+                                                batch_config=tool_config_id[step,]$batch_config,
+                                                mode=tool_config_id[step,]$mode,
                                                 verbose=tool_config_id[step,]$verbose,
                                                 threads=tool_config_id[step,]$threads,
                                                 ram=tool_config_id[step,]$ram,
-                                                remove_duplicates=as.logical(args["remove_duplicates",]$value),
-                                                mode=tool_config_id[step,]$mode,
-                                                tmp=out_file_dir_tmp,
                                                 time=tool_config_id[step,]$time,
+                                                tmp=out_file_dir_tmp,
                                                 executor_id=task_id,
                                                 update_time=60,wait=FALSE,
                                                 hold=hold)
@@ -362,12 +369,13 @@ for_id=function(seq_info,output_dir="",name="",
                                                     bin_samtools=bin_list$recalibrate$bin_samtools,
                                                     bin_gatk=bin_list$recalibrate$bin_gatk,
                                                     bin_picard=bin_list$recalibrate$bin_picard,
-                                                    bam=bam,
+                                                    bam=bam,tmp_dir=out_file_dir_tmp,
                                                     output_dir=out_file_dir,
                                                     ref_genome=ref_list[[seq_info_R1$reference]]$reference$genome,
                                                     dbsnp=ref_list[[seq_info_R1$reference]]$database$all_common,
                                                     clean=as.logical(args["clean",]$value),
                                                     verbose=tool_config_id[step,]$verbose,
+                                                    batch_config=tool_config_id[step,]$batch_config,
                                                     threads=tool_config_id[step,]$threads,
                                                     ram=tool_config_id[step,]$ram,
                                                     mode=tool_config_id[step,]$mode,
@@ -419,6 +427,7 @@ for_id=function(seq_info,output_dir="",name="",
                                                 ref_flat=ref_flat,
                                                 method=method,
                                                 executor_id=task_id,
+                                                batch_config=tool_config_id[step,]$batch_config,
                                                 mode=tool_config_id[step,]$mode,
                                                 time=tool_config_id[step,]$time,
                                                 threads=tool_config_id[step,]$threads,

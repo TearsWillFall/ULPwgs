@@ -24,6 +24,7 @@
 preprocess_seq_trento=function(
     sif_path="Singularity_Images/preProcess_latest.sif",
     fastq_dir="", threads=3,ram=4,ref_genome="",output_dir="",verbose=FALSE,
+    batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("preprocess_trento"),tmp_dir="",
     task_name="reprocess_trento",mode="local",time="48:0:0",
     update_time=60,wait=FALSE,hold=""){
@@ -46,7 +47,7 @@ preprocess_seq_trento=function(
     if(mode=="batch"){
         exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,threads=threads,
         output_dir=out_file_dir2)
-        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
     }
 
     if(verbose){
@@ -112,6 +113,7 @@ multisample_clonet_trento=function(
     sif_path="Singularity_Images/preProcess_latest.sif",
     bam_dir="",normal_id="",patient_id="",tmp_dir="",threads=3,
     ram=4,output_dir="",verbose=FALSE,
+    batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("multi_clonet"),
     task_name="multi_clonet",mode="local",time="48:0:0",
     update_time=60,wait=FALSE,hold=""){
@@ -190,6 +192,7 @@ clonet_trento=function(
     sif_path="Singularity_Images/preProcess_latest.sif",
     tumour="",normal="",patient_id="",tmp_dir="",threads=3,
     ram=4,output_dir="",verbose=FALSE,
+    batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("clonet"),
     task_name="clonet",mode="local",time="48:0:0",
     update_time=60,wait=FALSE,hold=""){
@@ -217,7 +220,7 @@ clonet_trento=function(
     if(mode=="batch"){
         exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,threads=threads,
         output_dir=out_file_dir2)
-        exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
     }
 
     if(verbose){
@@ -275,10 +278,12 @@ clonet_trento=function(
 
 clonet_view_trento=function(method="beta_log2", clonet_dir="",threads=3,
     ram=4,output_dir=".",verbose=FALSE,
+    batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("clonet_view"),
     task_name="clonet_view",mode="local",time="48:0:0",
     update_time=60,wait=FALSE,hold="",cn_list=build_default_cn_list(),
-    clonet_dirs=build_default_clonet_dir_list()){
+    clonet_dirs=build_default_clonet_dir_list(),
+    config=build_default_myriad_config()){
 
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
@@ -316,19 +321,8 @@ clonet_view_trento=function(method="beta_log2", clonet_dir="",threads=3,
     annot_input_file <- system.file("extdata", "gene_annotations_hg19.bed", package="ULPwgs")
     annot_data=read.delim( annot_input_file,header=TRUE)
  
-    cn_data=cn_data %>% dplyr::filter(Class!="") %>%
-    mutate(
-        cn_class=ifelse(order==10,"CNNL",
-        ifelse(order>1&order<10,"Gain",
-        ifelse(order< -1,"Loss","Wt"))))
-    summ=cn_data %>% group_by(sample,Class,cn_class) %>% 
-    summarise(N=n()) %>% group_by(sample,Class) %>% mutate(Freq=N/sum(N))
-    unique(summ$sample)
+   
 
-    ggradar(summ %>% filter(sample=="K180063") %>% ungroup()%>%select(-c(N,sample)) %>% 
-    pivot_wider(names_from=Class,values_from=Freq,values_fill = 0) %>% mutate(cn_class=as.factor(cn_class)),
-    values.radar =c(""), group.line.width = 1,group.point.size = 3)
-    
     cn_data=dplyr::bind_rows(cn_data)
     cn_data=dplyr::left_join(cn_data,cn_list,by=c("cn.call.corr"="cn"))
     cn_data=dplyr::left_join(cn_data,annot_data,by=c("gene"="hgnc_symbol"))
@@ -339,11 +333,11 @@ clonet_view_trento=function(method="beta_log2", clonet_dir="",threads=3,
     plt_data[["tc_data"]]=tc_data
 
 
-        summ_beta=cn_data %>% group_by(sample) %>% summarise(beta=mean(
-            as.numeric(beta[(all_log2+log2(ploidy/2)) < - 0.05 & gene_type=="target"& evidence!=0 ]),na.rm=TRUE),
-            genes=paste0(gene[(all_log2+log2(ploidy/2)) < - 0.05 & gene_type=="target"& evidence!=0 ],collapse=";")) %>% 
-            mutate(tc_manual=1-round(beta/(2-beta), digits = 2))
- 
+    summ_beta=cn_data %>% group_by(sample) %>% summarise(beta=mean(
+    as.numeric(beta[(all_log2+log2(ploidy/2)) < - 0.05 & gene_type=="target"& evidence!=0 ]),na.rm=TRUE),
+    genes=paste0(gene[(all_log2+log2(ploidy/2)) < - 0.05 & gene_type=="target"& evidence!=0 ],collapse=";")) %>% 
+    mutate(tc_manual=1-round(beta/(2-beta), digits = 2))
+
 
     if(method=="log2_beta"){
         clonet_log2_beta(plt_data=plt_data[["cn_data"]])
@@ -386,7 +380,7 @@ clonet_log2_beta=function(plt_data){
                 gene_lbl_size=input[[paste0(id,"_gene_lbl_size")]]
                 )
             })
-    
+        
             boxes[[id]] <<- shinydashboardPlus::box(
             width = 12, 
             id =paste0(id,"_box"),
@@ -395,9 +389,9 @@ clonet_log2_beta=function(plt_data){
             sidebar =shinydashboardPlus::boxSidebar(
                 
                 id=paste0(id,"_sb"),
-                width=26,
+                width=25,
              
-                    shiny::radioButtons(paste0(id,"_gene_lbl"), "Labels:", c(
+                shiny::radioButtons(paste0(id,"_gene_lbl"), "Labels:", c(
                 "Genes" = 1,
                 "SNPS" = 2, "Informative SNPS" = 3, "No labels" = 4
                 ),
@@ -446,8 +440,57 @@ clonet_log2_beta=function(plt_data){
     shiny::shinyApp(ui = build_ui, server = server_log2_beta)
 }
 
+
+#' @export
+clonet_pathways=function(plt_data){
+
+    server_pathways=function(input,output,session){
+        boxes=list()
+        
+        summ_plt_data=cn_data %>%dplyr::filter(Class!="") %>% 
+        dplyr::group_by(sample,Class,cn_class,class_col,tc,ploidy) %>% 
+        dplyr::summarise(N=n()) %>% dplyr::group_by(sample,Class) %>% 
+        dplyr::mutate(Freq=N/sum(N))%>% dplyr::ungroup() %>% 
+        tidyr::complete(nesting(sample,tc,ploidy),
+        Class,nesting(cn_class,class_col),fill=list(Freq=0,N=0))
+
+        lapply(unique(plt_data$sample),FUN=function(id){
+            tmp_plt_data=summ_plt_data %>% dplyr::filter(sample==id)
+            output[[paste0(id,"_plot")]]<- shiny::renderPlot({
+                plot_pathways(summ_plt_data)
+            })
+
+
+            boxes[[id]] <<- shinydashboardPlus::box(
+            width = 12, 
+            id =paste0(id,"_box"),
+            footer=paste0("Tumour Content=",unique(tmp_plt_data$tc),
+            "; Ploidy=",unique(tmp_plt_data$ploidy)),
+            sidebar =shinydashboardPlus::boxSidebar(
+                id=paste0(id,"_sb"),
+                width=26
+        ),
+        shiny::plotOutput(paste0(id,"_plot")),
+        title =id, collapsible = TRUE,
+        collapsed = FALSE, solidHeader = TRUE
+    )
+    })
+    
+    output[["UI"]] <- shiny::renderUI({
+        fluidRow(boxes)
+    })
+    session$onSessionEnded(function() {
+        stopApp()
+    })
+}
+    shiny::shinyApp(ui = build_ui, server = server_log2_beta)
+}
+
+
+
 #' @export
 clonet_ai=function(plt_data){
+
     server_ai=function(input,output,session){
             output[[paste0("ai_plot")]]<- shiny::renderPlot({
                 
@@ -613,7 +656,7 @@ clonet_stats=function(plt_data){
                         selected = c("Target")
                     )
             ),
-            shiny::plotOutput("ststs_plot",height=length(unique(plt_data$gene))*10),
+            shiny::plotOutput("stats_plot"),
             title ="Aberration Statistics", collapsible = TRUE,
             collapsed = FALSE, solidHeader = TRUE
      )
@@ -634,7 +677,7 @@ clonet_stats=function(plt_data){
 #' @export
 clonet_snp=function(plt_data){
 
-    server_cn=function(input,output,session){
+    server_snp=function(input,output,session){
 
         boxes=list()
         lapply(unique(plt_data$sample),FUN=function(id){

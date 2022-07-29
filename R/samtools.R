@@ -26,7 +26,8 @@
 
 sort_and_index_bam_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
-  bam="",output_dir="",verbose=FALSE,threads=3,ram=1,sort=TRUE,
+  bam="",output_dir="",verbose=FALSE,
+  batch_config=build_default_preprocess_config(),threads=3,ram=1,sort=TRUE,
   coord_sort=TRUE,index=TRUE,stats="all", clean=FALSE,
   mode="local",executor_id=make_unique_id("sortANDindex"),
   task_name="sortANDindex",time="48:0:0",
@@ -124,7 +125,9 @@ sort_and_index_bam_samtools=function(
 
 sort_bam_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
-  bam="",output_dir="",verbose=FALSE,threads=3,ram=1,coord_sort=TRUE,mode="local",
+  bam="",output_dir="",verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  threads=3,ram=1,coord_sort=TRUE,mode="local",
   executor_id=make_unique_id("sortBAM"),clean=FALSE,task_name="sortBAM",
   time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
@@ -151,7 +154,7 @@ sort_bam_samtools=function(
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
-       exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+       exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
 
     
@@ -185,8 +188,8 @@ sort_bam_samtools=function(
 
 index_bam_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
-  bam="",verbose=FALSE,threads=3,ram=4,
-  mode="local",executor_id=make_unique_id("indexBAM"),
+  bam="",verbose=FALSE,batch_config=build_default_preprocess_config(),
+  threads=3,ram=4,mode="local",executor_id=make_unique_id("indexBAM"),
   task_name="indexBAM",time="48:0:0",update_time=60, output_dir="",
   wait=FALSE,hold=""
 ){
@@ -201,7 +204,7 @@ index_bam_samtools=function(
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
-       exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+       exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
 
     
@@ -262,7 +265,8 @@ index_bam_samtools=function(
 
 stats_bam_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
-  bam="",output_dir="",verbose=FALSE,threads=3,ram=4,stats="all",
+  bam="",output_dir="",verbose=FALSE,
+  batch_config=build_default_preprocess_config(),threads=3,ram=4,stats="all",
   mode="local",executor_id=make_unique_id("statsBAM"),
   task_name="statsBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""
 ){
@@ -332,8 +336,9 @@ stats_bam_samtools=function(
 
 stats_flag_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
-  bam="",output_dir="",verbose=FALSE,threads=3,ram=4,mode="local",
-  executor_id=make_unique_id("statsFlag"),
+  bam="",output_dir="",verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  threads=3,ram=4,mode="local",executor_id=make_unique_id("statsFlag"),
   task_name="statsFlag",time="48:0:0",update_time=60,
   wait=FALSE,hold=""
 ){
@@ -350,7 +355,7 @@ stats_flag_samtools=function(
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
-       exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+       exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
 
     
@@ -407,7 +412,8 @@ stats_flag_samtools=function(
 
 stats_index_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
-  bam="",output_dir="",verbose=FALSE,threads=3,ram=4,mode="local",
+  bam="",output_dir="",verbose=FALSE,
+  batch_config=build_default_preprocess_config(),threads=3,ram=4,mode="local",
   executor_id=make_unique_id("statsINDEX"),task_name="statsINDEX",
   time="48:0:0",update_time=60,wait=FALSE,hold=""
 ){
@@ -425,7 +431,7 @@ stats_index_samtools=function(
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
-       exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+       exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
 
     
@@ -480,7 +486,8 @@ mapq_metrics_bam_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam="",
   output_dir="",
-  verbose=FALSE,threads=3,ram=4,mode="local",
+  verbose=FALSE,batch_config=build_default_preprocess_config(),
+  threads=3,ram=4,mode="local",
   executor_id=make_unique_id("metricsMAPQ"),
   task_name="metricsMAPQ",time="48:0:0",update_time=60,wait=FALSE,hold=""
 ){
@@ -501,7 +508,7 @@ mapq_metrics_bam_samtools=function(
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
-       exec_code=paste("echo 'source ~/.bashrc;",exec_code,"'|",exec_batch)
+       exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
 
   

@@ -205,30 +205,153 @@ build_default_sample_sheet=function(
         reference="HG19",
         library_id="LB1",
         R1=c(
-        "test/test_data/multi_lane/P1_S1_L1_R1.fq.gz",
-        "test/test_data/multi_lane/P1_S1_L2_R1.fq.gz",
-        "test/test_data/multi_lane/P1_S2_L1_R1.fq.gz",
-        "test/test_data/multi_lane/P2_S1_L1_R1.fq.gz",
-        "test/test_data/multi_lane/P2_S2_L1_R1.fq.gz"),
+        "/lustre/scratch/scratch/PCF/test/test_data/multi_lane/P1_S1_L1_R1.fq.gz",
+        "/lustre/scratch/scratch/PCF/test/test_data/multi_lane/P1_S1_L2_R1.fq.gz",
+        "/lustre/scratch/scratch/PCF/test/test_data/multi_lane/P1_S2_L1_R1.fq.gz",
+        "/lustre/scratch/scratch/PCF/test/test_data/multi_lane/P2_S1_L1_R1.fq.gz",
+        "/lustre/scratch/scratch/PCF/test/test_data/multi_lane/P2_S2_L1_R1.fq.gz"),
         R2=c(
-        "test/test_data/multi_lane/P1_S1_L1_R2.fq.gz",
-        "test/test_data/multi_lane/P1_S1_L2_R2.fq.gz",
-        "test/test_data/multi_lane/P1_S2_L1_R2.fq.gz",
-        "test/test_data/multi_lane/P2_S1_L1_R2.fq.gz",
-        "test/test_data/multi_lane/P2_S2_L1_R2.fq.gz"),
-        step="pre_fastqc=TRUE;trimming=TRUE;post_fastqc=TRUE;alignment=TRUE;markdups=TRUE;recalibrate=TRUE;alignqc=TRUE",
-        threads="pre_fastqc=6;trimming=6;post_fastqc=6;alignment=12;merge_bam=6;markdups=12;recalibrate=2;alignqc=6",
-        ram="pre_fastqc=8;trimming=8;post_fastqc=8;alignment=16;merge_bam=16;markdups=16;recalibrate=8;alignqc=8",
-        time="pre_fastqc=48:0:0;trimming=48:0:0;post_fastqc=48:0:0;alignment=48:0:0;merge_bam=48:0:0;markdups=48:0:0;recalibrate=48:0:0;alignqc=48:0:0",
-        mode="pre_fastqc=local;trimming=local;post_fastqc=local;alignment=local;merge_bam=local;markdups=local;recalibrate=local;alignqc=local",
-        verbose="pre_fastqc=TRUE;trimming=TRUE;post_fastqc=TRUE;alignment=TRUE;merge_bam=TRUE;markdups=TRUE;recalibrate=TRUE;alignqc=TRUE",
-        args="trimming={mean_quality=0|min_length=18|max_length=|xadapt=|yadapt=};alignment={clean=TRUE|stats=all|coord_sort=FALSE};markdups={remove_duplicates=TRUE};recalibrate={clean=TRUE}"
+        "/lustre/scratch/scratch/PCF/test/test_data/multi_lane/P1_S1_L1_R2.fq.gz",
+        "/lustre/scratch/scratch/PCF/test/test_data/multi_lane/P1_S1_L2_R2.fq.gz",
+        "/lustre/scratch/scratch/PCF/test/test_data/multi_lane/P1_S2_L1_R2.fq.gz",
+        "/lustre/scratch/scratch/PCF/test/test_data/multi_lane/P2_S1_L1_R2.fq.gz",
+        "/lustre/scratch/scratch/PCF/test/test_data/multi_lane/P2_S2_L1_R2.fq.gz"),
+        step=build_default_steps(),
+        threads=build_default_step_threads(),
+        ram=build_default_step_ram(),
+        batch_config=build_default_step_batch(),
+        time=build_default_step_time(),
+        mode=build_default_step_mode(),
+        verbose=build_default_step_verbose(),
+        args="trimming={mean_quality=0|min_length=18|max_length=|xadapt=|yadapt=};alignment={clean=TRUE|stats=all|coord_sort=FALSE};markdups={remove_duplicates=FALSE};recalibrate={clean=TRUE}"
     )
 ){
 
     sample_sheet=data.frame(sample_sheet,stringsAsFactors = FALSE)
     return(sample_sheet)
 }
+
+
+#' @export
+
+build_default_step_time=function(
+    time=list(
+        pre_fastqc="48:0:0",
+        trimming="48:0:0",
+        post_fastqc="48:0:0",
+        alignment="48:0:0",
+        merge_bam="48:0:0",
+        markdups="48:0:0",
+        recalibrate="48:0:0",
+        alignqc="48:0:0"
+    )
+){
+    paste0(names(time),"=",time,collapse=";")    
+}
+
+#' @export
+build_default_step_threads=function(
+   threads=list(
+        pre_fastqc=6,
+        trimming=6,
+        post_fastqc=6,
+        alignment=12,
+        merge_bam=12,
+        markdups=12,
+        recalibrate=12,
+        alignqc=6
+    )
+){
+    paste0(names(threads),"=",threads,collapse=";")    
+}
+
+#' @export
+build_default_steps=function(
+    steps=list(
+        pre_fastqc=TRUE,
+        trimming=TRUE,
+        post_fastqc=TRUE,
+        alignment=TRUE,
+        merge_bam=TRUE,
+        markdups=TRUE,
+        recalibrate=TRUE,
+        alignqc=TRUE
+    )
+){
+    paste0(names(steps),"=",steps,collapse=";")    
+}
+
+#' @export
+
+build_default_step_mode=function(
+    mode=list(
+        pre_fastqc="local",
+        trimming="local",
+        post_fastqc="local",
+        alignment="local",
+        merge_bam="local",
+        markdups="local",
+        recalibrate="local",
+        alignqc="local"
+    )
+){
+    paste0(names(mode),"=",mode,collapse=";")    
+}
+
+#' @export
+
+build_default_step_verbose=function(
+    verbose=list(
+        pre_fastqc=TRUE,
+        trimming=TRUE,
+        post_fastqc=TRUE,
+        alignment=TRUE,
+        merge_bam=TRUE,
+        markdups=TRUE,
+        recalibrate=TRUE,
+        alignqc=TRUE
+    )
+){
+    paste0(names(verbose),"=",verbose,collapse=";")    
+}
+
+#' @export
+
+build_default_step_batch=function(
+     config=list(
+        pre_fastqc=build_default_preprocess_config(),
+        trimming=build_default_preprocess_config(),
+        post_fastqc=build_default_preprocess_config(),
+        alignment=build_default_preprocess_config(),
+        merge_bam=build_default_preprocess_config(),
+        markdups=build_default_preprocess_config(),
+        recalibrate=build_default_preprocess_config(),
+        alignqc=build_default_preprocess_config()
+
+    )
+){
+       paste0(names(config),"=",config,collapse=";")    
+}
+
+#' @export
+build_default_step_ram=function(
+    ram=list(
+        pre_fastqc=6,
+        trimming=6,
+        post_fastqc=6,
+        alignment=6,
+        merge_bam=6,
+        markdups=8,
+        recalibrate=8,
+        alignqc=6
+    )
+){
+    paste0(names(ram),"=",ram,collapse=";")    
+}
+
+
+
+
 
 #' Build default binaries config
 #' 
@@ -425,33 +548,33 @@ build_default_reference_list=function(
     references=list(
             HG19=list(
                 reference=list(
-                    genome="references/hg19/reference/hs37d5.fa"
+                    genome="/lustre/scratch/scratch/PCF/references/hg19/reference/hs37d5.fa"
                 ),
                 database=list(
-                    all_snps="references/hg19/database/00-All.vcf.gz",
-                    all_common="references/hg19/database/00-common_all.vcf.gz"
+                    all_snps="/lustre/scratch/scratch/PCF/references/hg19/database/00-All.vcf.gz",
+                    all_common="/lustre/scratch/scratch/PCF/references/hg19/database/00-common_all.vcf.gz"
                 ),
                 panel=list(
                     PCF_V2=list(
                         intervals=list(
-                            bi="references/hg19/panel/v2/cap_tg.interval_list",
-                            ti="references/hg19/panel/v2/prim_tg.interval_list"
+                            bi="/lustre/scratch/scratch/PCF/references/hg19/panel/v2/cap_tg.interval_list",
+                            ti="/lustre/scratch/scratch/PCF/references/hg19/panel/v2/prim_tg.interval_list"
                         ),
                         bed=list(
-                            bait="references/hg19/panel/v2/cap_tg.bed",
-                            target="references/hg19/panel/v2/prim_tg.bed",
-                            antitarget="references/hg19/panel/v2/off_tg.bed"
+                            bait="/lustre/scratch/scratch/PCF/references/hg19/panel/v2/cap_tg.bed",
+                            target="/lustre/scratch/scratch/PCF/references/hg19/panel/v2/prim_tg.bed",
+                            antitarget="/lustre/scratch/scratch/PCF/references/hg19/panel/v2/off_tg.bed"
                         )
                     ),
                     PCF_V3=list(
                         intervals=list(
-                            bi="references/hg19/panel/v3/cap_tg.interval_list",
-                            ti="references/hg19/panel/v3/prim_tg.interval_list"
+                            bi="/lustre/scratch/scratch/PCF/references/hg19/panel/v3/cap_tg.interval_list",
+                            ti="/lustre/scratch/scratch/PCF/references/hg19/panel/v3/prim_tg.interval_list"
                         ),
                         bed=list(
-                            bait="references/hg19/panel/v3/cap_tg.bed",
-                            target="references/hg19/panel/v3/prim_tg.bed",
-                            antitarget="references/hg19/panel/v3/off_tg.bed"
+                            bait="/lustre/scratch/scratch/PCF/references/hg19/panel/v3/cap_tg.bed",
+                            target="/lustre/scratch/scratch/PCF/references/hg19/panel/v3/prim_tg.bed",
+                            antitarget="/lustre/scratch/scratch/PCF/references/hg19/panel/v3/off_tg.bed"
                         )
                 
                     )
@@ -459,21 +582,21 @@ build_default_reference_list=function(
                 ),
                 rnaseq=list(
                     intervals=list(
-                        ri="references/hg19/rnaseq//intervals/rRNA.interval_list"
+                        ri="/lustre/scratch/scratch/PCF/references/hg19/rnaseq//intervals/rRNA.interval_list"
                     ),
                     reference=list(
-                        ref_flat="references/hg19/rnaseq/reference/refFlat.txt"
+                        ref_flat="/lustre/scratch/scratch/PCF/references/hg19/rnaseq/reference/refFlat.txt"
                     )
                 )
             ),
             HG38=list(
                 reference=list(
-                    genome="references/hg38/reference/ucsc.hg38.fa"
+                    genome="/lustre/scratch/scratch/PCF/references/hg38/reference/ucsc.hg38.fa"
                     
                 ),
                 database=list(
-                    all_snps="references/hg38/database/00-All.vcf.gz",
-                    all_common="references/hg38/database/00-common_all.vcf.gz"
+                    all_snps="/lustre/scratch/scratch/PCF/references/hg38/database/00-All.vcf.gz",
+                    all_common="/lustre/scratch/scratch/PCF/references/hg38/database/00-common_all.vcf.gz"
                 )
             )
         )
@@ -528,7 +651,6 @@ build_default_clonet_dir_list=function(
     ))
 ){
     return(clonet_dirs)
-
 }
 
 
@@ -556,6 +678,36 @@ build_default_cn_list=function(
             "Uncertain HomoDel",
             "Deletion on chrX"
         ),
+       cn_class=c(
+            "Gain",
+            "Wt",
+            "Wt",
+            "Wt",
+            "Loss",
+            "Loss",
+            "Wt",
+            "Gain",
+            "Gain",
+            "Gain",
+            "Loss",
+            "Loss",
+            "Loss"
+       ),
+       class_col=c(
+            "#FF0000",
+            "#CDCDCD",
+            "#CDCDCD",
+            "#CDCDCD",
+            "#00B0F0",
+            "#00B0F0",
+            "#CDCDCD",
+            "#FF0000",
+            "#FF0000",
+            "#FF0000",
+            "#00B0F0",
+            "#00B0F0",
+            "#00B0F0"
+       ),
         col=c(
             "#ED7D31",
             "#CDCDCD",
@@ -604,5 +756,59 @@ build_default_cn_list=function(
     )
 ){
     return(data.frame(cn_list,stringsAsFactors = FALSE))
+}
+
+
+
+
+#' Build default myriad module list
+#' 
+#'
+#' @param modules List modules
+#' @export
+
+#' @export
+
+build_default_myriad_module_list=function(
+    modules=list(
+        core=list(
+            "rcps-core/1.0.0"
+        ),
+        compilers=list(
+            mpi="compilers mpi",
+            intel="compilers/intel/2018/update3",
+            openblas=list(
+                v0214="openblas/0.2.14/gnu-4.9.2",
+                v0370="openblas/0.3.7-serial/gnu-4.9.2"
+            )
+        ),
+        python3=list(
+            v3910="python/3.9.10",
+            recommended="python3/recommended"
+        ),
+        r=list(
+            recommended="r/recommended"
+        )
+    )
+){
+    return(modules)
+}
+
+
+
+#' Build default myriad module list
+#' 
+#'
+#' @param modules List of modules
+#' @export
+
+#' @export
+
+build_default_preprocess_config=function(
+   modules=c(
+    build_default_myriad_module_list()$r,
+    build_default_myriad_module_list()$r)
+){
+    return(paste0(lapply(modules,FUN=myriad_module,mode="load"),collapse=";"))
 }
 
