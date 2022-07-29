@@ -56,11 +56,11 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     parameter_config_check(sample_sheet=sample_sheet,config=config,
     vars_list=vars_list,steps_list=steps_list)))
     job=build_job(executor_id=executor_id,task_id=task_id)
-    for_id(seq_info=seq_info,output_dir=out_file_dir,batch_config=batch_config,
+    for_id(seq_info=seq_info,output_dir=out_file_dir,
     vars_list=vars_list,nesting=nesting,merge_level=merge_level,executor_id = executor_id,task_id=task_id,
     pmts_list=pmts_list,bin_list=bin_list,ref_list=ref_list,print_tree=TRUE)
     Sys.sleep(10)
-    job_report[["steps"]][["samples"]]=for_id(seq_info=seq_info,output_dir=output_dir,batch_config=batch_config,
+    job_report[["steps"]][["samples"]]=for_id(seq_info=seq_info,output_dir=output_dir,
     vars_list=vars_list,nesting=nesting,merge_level=merge_level,executor_id = executor_id,task_id=task_id,
     pmts_list=pmts_list,bin_list=bin_list,ref_list=ref_list,print_tree=FALSE)
     
