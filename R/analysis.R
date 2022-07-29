@@ -138,6 +138,7 @@ metrics_alignqc=function(
    verbose=verbose,time=time,mode=mode,
    threads=threads,ram=ram,
    update_time=update_time,
+   batch_config=batch_config,
    wait=FALSE, hold=hold)
 
   job_report[["steps"]][["summary_metrics"]] <- summary_metrics_bam_picard(
@@ -146,6 +147,7 @@ metrics_alignqc=function(
     verbose=verbose,tmp_dir=tmp_dir,
     mode=mode,executor_id=task_id,
     threads=threads,
+    batch_config=batch_config,
     ram=ram,update_time=update_time,
     wait=FALSE, hold=hold)
     
@@ -155,6 +157,7 @@ metrics_alignqc=function(
    verbose=verbose,tmp_dir=tmp_dir,
    mode=mode,executor_id=task_id,
    threads=threads,ram=ram,
+   batch_config=batch_config,
    update_time=update_time,
    wait=FALSE,hold=hold)
 
@@ -169,6 +172,7 @@ metrics_alignqc=function(
       verbose=verbose,
       tmp_dir=tmp_dir,bi=bi,
       ti=ti,mode=mode,
+      batch_config=batch_config,
       executor_id=task_id,
       threads=threads,ram=ram,
       update_time=update_time,
@@ -206,6 +210,7 @@ metrics_alignqc=function(
         ri=ri,ref_flat=ref_flat,
         mode=mode,executor_id=task_id,
         threads=threads,ram=ram,
+        batch_config=batch_config,
         update_time=update_time,
         wait=FALSE,hold=hold)
     }else if(method=="wgs"){
@@ -214,6 +219,7 @@ metrics_alignqc=function(
         bam=bam,
         output_dir=out_file_dir,
         verbose=verbose,
+        batch_config=batch_config,
         tmp_dir=tmp_dir,mode=mode,
         executor_id=task_id,
         threads=threads,ram=ram,

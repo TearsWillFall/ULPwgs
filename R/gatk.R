@@ -162,7 +162,8 @@ recal_gatk=function(
   
   job_report[["steps"]][["getChr"]] <- get_fai_reference_chr(
     fasta=ref_genome,verbose=verbose,output_dir=output_dir,
-    executor_id=task_id,mode="local",threads=threads,ram=ram,
+    batch_config=batch_config,executor_id=task_id,mode="local",
+    threads=threads,ram=ram,
     time=time,update_time=update_time,wait=FALSE,hold=hold)
 
 
@@ -171,7 +172,7 @@ recal_gatk=function(
 
   
   job_report[["steps"]][["par_bqsr_before"]] <- parallel_generate_BQSR_gatk(
-    bin_samtools=bin_samtools,bin_gatk=bin_gatk,bam=bam,
+    bin_samtools=bin_samtools,bin_gatk=bin_gatk,bam=bam,batch_config=batch_config,
     ref_genome=ref_genome,dbsnp=dbsnp,regions=regions,
     output_dir=out_file_dir_before,clean=clean,tmp_dir=tmp_dir,
     verbose=verbose,executor_id=task_id,mode=mode,threads=threads,ram=ram,
@@ -181,7 +182,7 @@ recal_gatk=function(
 
   job_report[["steps"]][["par_apply_bqsr"]] <- parallel_apply_BQSR_gatk(
     bin_samtools=bin_samtools,bin_gatk=bin_gatk,bin_picard=bin_picard,
-    bam=bam,ref_genome=ref_genome,
+    bam=bam,ref_genome=ref_genome,batch_config=batch_config,
     rec_table=job_report[["steps"]][["par_bqsr_before"]][["steps"]][["gather_bqsr_report"]]$out_files$table,
     output_dir=tmp_dir,regions=regions,tmp_dir=tmp_dir,
     clean=clean,verbose=verbose,executor_id=task_id,
@@ -193,7 +194,7 @@ recal_gatk=function(
   job_report[["steps"]][["sort_and_index"]] <- sort_and_index_bam_samtools(
     bin_samtools=bin_samtools,
     bam=job_report[["steps"]][["par_apply_bqsr"]][["steps"]][["gather_bam"]]$out_files$bam,
-    output_dir=out_file_dir_main,
+    output_dir=out_file_dir_main,batch_config=batch_config,
     ram=ram,verbose=verbose,threads=threads,sort=TRUE,
     stats="",index=TRUE,clean=clean,
     mode=mode,executor_id=task_id,time=time,
@@ -203,7 +204,7 @@ recal_gatk=function(
  
 
   job_report[["steps"]][["par_bqsr_after"]] <- parallel_generate_BQSR_gatk(
-    bin_samtools=bin_samtools,bin_gatk=bin_gatk,tmp_dir=tmp_dir,
+    bin_samtools=bin_samtools,bin_gatk=bin_gatk,tmp_dir=tmp_dir,batch_config=batch_config,
     bam=job_report[["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam,
     ref_genome=ref_genome,dbsnp=dbsnp,threads=threads,regions=regions,
     output_dir=out_file_dir_after,verbose=verbose,executor_id=task_id,clean=clean,
@@ -212,7 +213,7 @@ recal_gatk=function(
   
 
  job_report[["steps"]][["analyse_covariates"]] <- analyze_covariates_gatk(
-  bin_gatk=bin_gatk,tmp_dir=tmp_dir,
+  bin_gatk=bin_gatk,tmp_dir=tmp_dir,batch_config=batch_config,
   before=job_report[["steps"]][["par_bqsr_before"]][["steps"]][["gather_bqsr_report"]]$out_files$table,
   after=job_report[["steps"]][["par_bqsr_after"]][["steps"]][["gather_bqsr_report"]]$out_files$table,
   output_dir=out_file_dir_main,executor_id=task_id,mode=mode,threads=threads,
@@ -412,7 +413,7 @@ parallel_generate_BQSR_gatk=function(
   job_report[["steps"]][["generate_bqsr_report"]]<-parallel::mclapply(
   region_list,FUN=function(region){
         job_report <- generate_BQSR_gatk(
-        region=region,tmp_dir=tmp_dir,
+        region=region,tmp_dir=tmp_dir,batch_config=batch_config,
         bin_gatk=bin_gatk,bam=bam,ref_genome=ref_genome,
         dbsnp=dbsnp,output_dir=out_file_dir,verbose=verbose,
         executor_id=task_id,mode=mode,time=time,
@@ -706,7 +707,7 @@ parallel_apply_BQSR_gatk=function(
     region_list,FUN=function(region){
 
       job_report<-apply_BQSR_gatk(
-      region=region,
+      region=region,batch_config=batch_config,
       bin_gatk=bin_gatk,bam=bam,ref_genome=ref_genome,
       executor_id=executor_id,rec_table=rec_table,tmp_dir=tmp_dir,
       output_dir=out_file_dir,verbose=verbose,mode=mode,time=time,
@@ -934,7 +935,7 @@ analyze_covariates_gatk=function(
     job_validator(job=job_report$job_id,time=update_time,
     verbose=verbose,threads=threads)
   }
-
+  
   return(job_report)
 }
 
