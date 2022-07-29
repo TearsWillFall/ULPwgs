@@ -891,6 +891,7 @@ analyze_covariates_gatk=function(
     exec_code=paste0(bin_gatk," AnalyzeCovariates -bqsr ",after, " -plots ",out_file,tmp_dir," -csv ",out_file_csv)
   }else{
     out_file=paste0(out_file_dir,"/",get_file_name(before),"_covariates_analysis.pdf")
+    out_file_csv=paste0(out_file_dir,"/",get_file_name(before),"_covariates_analysis.csv")
     exec_code=paste0(bin_gatk," AnalyzeCovariates -before ",before," -after ",after,
       " -plots ",out_file,tmp_dir," -csv ",out_file_csv)
   }
