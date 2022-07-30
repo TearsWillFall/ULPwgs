@@ -571,7 +571,7 @@ update_time=60,wait=FALSE,hold=""){
 
   if(mode=="batch"){
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
         threads=threads,output_dir=out_file_dir2)
         exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
@@ -714,7 +714,7 @@ complement_bed=function(
 
   if(mode=="batch"){
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-        exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
+        batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
         output_dir=out_file_dir2,hold=hold)
         exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
@@ -779,7 +779,7 @@ pad_bed=function(bin_bedtools=build_default_tool_binary_list()$bin_bedtools,bed=
  
   if(mode=="batch"){
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-        exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
+        batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
         output_dir=out_file_dir2,hold=hold)
         exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
     }
@@ -1072,7 +1072,7 @@ get_bam_reference_chr=function(
     if(mode=="batch"){
     
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-        exec_batch=build_job_exec(job=job,
+        batch_code=build_job_exec(job=job,
         time=time,ram=ram,threads=threads,
         output_dir=out_file_dir2,hold=hold)
         exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
@@ -1159,7 +1159,7 @@ get_fai_reference_chr=function(
     if(mode=="batch"){
     
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-        exec_batch=build_job_exec(job=job,
+        batch_code=build_job_exec(job=job,
         time=time,ram=ram,threads=threads,
         output_dir=out_file_dir2,hold=hold)
         exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)

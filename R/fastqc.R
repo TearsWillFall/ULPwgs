@@ -51,7 +51,6 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
     out_file_dir2=set_dir(dir=out_file_dir,name="batch")
     batch_code=build_job_exec(job=job,time=time,
     ram=ram,threads=threads,output_dir=out_file_dir2,hold=hold)
-
     exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
 

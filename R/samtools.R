@@ -152,7 +152,7 @@ sort_bam_samtools=function(
 
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-       exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
+       batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
@@ -202,7 +202,7 @@ index_bam_samtools=function(
 
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-       exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
+       batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
@@ -353,7 +353,7 @@ stats_flag_samtools=function(
   job=build_job(executor_id=executor_id,task_id=task_id)
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-       exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
+       batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
@@ -429,7 +429,7 @@ stats_index_samtools=function(
   job=build_job(executor_id=executor_id,task_id=task_id)
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-       exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
+       batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
@@ -506,7 +506,7 @@ mapq_metrics_bam_samtools=function(
 
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-       exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
+       batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }

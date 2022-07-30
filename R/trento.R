@@ -45,7 +45,7 @@ preprocess_seq_trento=function(
     job=build_job(executor_id=executor_id,task_id=make_unique_id(task_id))
 
     if(mode=="batch"){
-        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,threads=threads,
+        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,threads=threads,
         output_dir=out_file_dir2)
         exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
     }
@@ -218,7 +218,7 @@ clonet_trento=function(
     job=build_job(executor_id=executor_id,task_id=make_unique_id(task_id))
 
     if(mode=="batch"){
-        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,threads=threads,
+        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,threads=threads,
         output_dir=out_file_dir2)
         exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
     }

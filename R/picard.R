@@ -57,7 +57,7 @@ markdups_picard=function(
     
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-       exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+       batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
@@ -138,7 +138,7 @@ summary_metrics_bam_picard=function(
 
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-       exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+       batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
@@ -218,7 +218,7 @@ insertsize_metrics_bam_picard=function(
   job=build_job(executor_id=executor_id,task_id=task_id)
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-       exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+       batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
@@ -308,7 +308,7 @@ tg_summary_metrics_bam_picard=function(
 
   if(mode=="batch"){
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-        exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
         threads=threads,output_dir=out_file_dir2)
         exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
@@ -405,7 +405,7 @@ rnaseq_summary_metrics_bam_picard=function(
 job=build_job(executor_id=executor_id,task_id=task_id)
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-       exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+       batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
@@ -487,7 +487,7 @@ wgs_summary_metrics_bam_picard=function(
 job=build_job(executor_id=executor_id,task_id=task_id)
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-       exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+       batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }

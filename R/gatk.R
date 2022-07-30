@@ -57,7 +57,7 @@ markdups_gatk=function(
 
     if(mode=="batch"){
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-        exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
+        batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
         output_dir=out_file_dir2,hold=hold)
         exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
     }
@@ -296,7 +296,7 @@ generate_BQSR_gatk=function(
   job=build_job(executor_id=executor_id,task_id=task_id)
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-       exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
+       batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
@@ -497,7 +497,7 @@ gather_BQSR_reports_gatk=function(
   if(mode=="batch"){
   
       out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-       exec_batch=build_job_exec(job=job,
+       batch_code=build_job_exec(job=job,
        time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
@@ -588,7 +588,7 @@ apply_BQSR_gatk=function(
 
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-       exec_batch=build_job_exec(job=job,time=time,ram=ram,threads=threads,
+       batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
@@ -794,7 +794,7 @@ gather_bam_files=function(
 
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-       exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+       batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
@@ -900,7 +900,7 @@ analyze_covariates_gatk=function(
 
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-       exec_batch=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+       batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
   }
