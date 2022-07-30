@@ -55,7 +55,7 @@ sort_and_index_bam_samtools=function(
       job_report[["steps"]][["sort"]]=sort_bam_samtools(
         bin_samtools=bin_samtools,bam=bam,output_dir=out_file_dir,
         ram=ram,verbose=verbose,threads=threads,coord_sort=coord_sort,clean=clean,
-        executor_id=task_id,mode=mode,time=time,
+        executor_id=task_id,mode=mode,time=time,batch_config = batch_config,
         update_time=update_time,wait=FALSE,hold=hold)
 
       out_file_dir=set_dir(dir=output_dir,name="sorted")
@@ -65,13 +65,13 @@ sort_and_index_bam_samtools=function(
             job_report[["steps"]][["index"]] <-index_bam_samtools(
               bin_samtools=bin_samtools,
               bam=bam,verbose=verbose,threads=threads,ram=ram,
-              executor_id=task_id,mode=mode,time=time,
+              executor_id=task_id,mode=mode,time=time,batch_config = batch_config,
               update_time=update_time,wait=FALSE,hold=job_report[["steps"]][["sort"]]$job_id,
               output_dir = out_file_dir)
 
           if(stats=="index"|stats=="all"){
               job_report[["steps"]][["index_stats"]]<- stats_bam_samtools(
-                bin_samtools=bin_samtools,bam=bam,output_dir=out_file_dir,
+                bin_samtools=bin_samtools,bam=bam,output_dir=out_file_dir,batch_config = batch_config,
                 verbose=verbose,threads=threads,stats="index",executor_id=task_id,
                 mode=mode,time=time,update_time=update_time,wait=FALSE,hold=job_report[["steps"]][["index"]]$job_id)
           }
@@ -80,7 +80,7 @@ sort_and_index_bam_samtools=function(
   }else{
      job_report[["steps"]][["index"]] <- index_bam_samtools(
       bin_samtools=bin_samtools,bam=bam,verbose=verbose,threads=threads,
-      executor_id=task_id,mode=mode,time=time,
+      executor_id=task_id,mode=mode,time=time,batch_config = batch_config,
       update_time=update_time,wait=FALSE,hold=hold)
   }
 
@@ -88,7 +88,7 @@ sort_and_index_bam_samtools=function(
     job_report[["steps"]][["flag_stats"]] <- stats_bam_samtools(
       bin_samtools=bin_samtools,bam=bam,output_dir=out_file_dir,
       verbose=verbose,threads=threads,stats="flag",executor_id=task_id,
-      mode=mode,time=time,update_time=update_time,
+      mode=mode,time=time,update_time=update_time,batch_config = batch_config,
       wait=FALSE,hold=hold)
   }
 

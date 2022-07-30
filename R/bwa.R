@@ -96,7 +96,7 @@ alignment_bwa=function(
     if(sort){
       job_report[["steps"]][["sort_and_index"]]=sort_and_index_bam_samtools(
         bin_samtools=bin_samtools,
-        bam=out_file,output_dir=out_file_dir, batch_config=batch_config, 
+        bam=out_file,output_dir=out_file_dir,batch_config=batch_config, 
         executor_id=task_id,ram=ram,verbose=verbose,threads=threads,
         coord_sort=coord_sort,index=index,stats=stats,clean=clean,mode=mode,time=time,
         update_time=update_time,wait=FALSE,hold=job_report$job_id)
