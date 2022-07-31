@@ -113,7 +113,6 @@ for_id=function(seq_info,output_dir="",name="",
 process_variable=function(ct,merge){
                         report=list()
                         id=info[ct]
-                        cat(paste0(ct,id,collapse="\n"))
                         ## Filter sequencing info for id
                         seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
                         out_file_dir=set_dir(dir=output_dir,name=id)
@@ -125,7 +124,7 @@ process_variable=function(ct,merge){
                             if(grepl(merge_level,var)&nrow(seq_info_id %>% dplyr::distinct(path))>2){
                                 merge=TRUE
                             }
-
+        
                             merge_txt=""
                             if(merge){
                                 merge_txt=crayon::bold(" <<<<===== INFO::SAMPLES WILL BE MERGED AT THIS LEVEL")
