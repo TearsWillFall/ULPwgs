@@ -98,7 +98,6 @@ alignment_bwa=function(
         bin_samtools=bin_samtools,
         bam=out_file,output_dir=out_file_dir,batch_config=batch_config,
         executor_id=task_id,ram=ram,verbose=verbose,threads=threads,
-        exec_code=exec_code, 
         coord_sort=coord_sort,index=index,stats=stats,clean=clean,mode=mode,time=time,
         update_time=update_time,wait=FALSE,hold=job_report$job_id)
     
