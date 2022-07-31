@@ -600,6 +600,7 @@ update_time=60,wait=FALSE,hold=""){
   job_report=build_job_report(
     job_id=job,
     executor_id=executor_id,
+    exec_code=exec_code, 
     task_id=task_id, 
     input_args = argg,
     out_file_dir=out_file_dir,
@@ -697,7 +698,8 @@ complement_bed=function(
 
   job_report=build_job_report(
     job_id=job, 
-    executor_id=executor_id, 
+    executor_id=executor_id,
+    exec_code=exec_code, 
     task_id=task_id,
     input_args=argg,
     out_file_dir=out_file_dir,
@@ -806,7 +808,8 @@ pad_bed=function(bin_bedtools=build_default_tool_binary_list()$bin_bedtools,bed=
 
     job_report=build_job_report(
     job_id=job, 
-    executor_id=executor_id, 
+    executor_id=executor_id,
+    exec_code=exec_code, 
     task_id=task_id,
     input_args=argg,
     out_file_dir=out_file_dir,
@@ -1105,6 +1108,7 @@ get_bam_reference_chr=function(
   job_report=build_job_report(
     job_id=job,
     executor_id=executor_id,
+    exec_code=exec_code, 
     task_id=task_id, 
     input_args = argg,
     out_file_dir=out_file_dir,
@@ -1192,6 +1196,7 @@ get_fai_reference_chr=function(
     job_report=build_job_report(
       job_id=job,
       executor_id=executor_id,
+      exec_code=exec_code,
       task_id=task_id, 
       input_args = argg,
       out_file_dir=out_file_dir,

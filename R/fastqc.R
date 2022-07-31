@@ -66,6 +66,7 @@ time="48:0:0",update_time=60,wait=FALSE,hold=""){
   job_report=build_job_report(
     job_id=job,
     executor_id=executor_id,
+    exec_code=exec_code, 
     task_id=task_id,
     input_args=argg,
     out_file_dir=out_file_dir,

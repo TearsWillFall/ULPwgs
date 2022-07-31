@@ -75,6 +75,7 @@ markdups_gatk=function(
   job_report=build_job_report(
     job_id=job, 
     executor_id=executor_id, 
+    exec_code=exec_code, 
     task_id=task_id,
     input_args=argg,
     out_file_dir=out_file_dir,
@@ -148,6 +149,7 @@ recal_gatk=function(
   job_report=build_job_report(
     job_id=job, 
     executor_id=executor_id, 
+    exec_code=list(), 
     task_id=task_id,
     input_args=argg,
     out_file_dir=list(
@@ -313,6 +315,7 @@ generate_BQSR_gatk=function(
    job_report=build_job_report(
     job_id=job,
     executor_id=executor_id,
+    exec_code=exec_code, 
     task_id=task_id,
     input_args = argg,
     out_file_dir=out_file_dir,
@@ -378,6 +381,19 @@ parallel_generate_BQSR_gatk=function(
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
+  job=build_job(executor_id=executor_id,task_id=task_id)
+
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    exec_code=list(), 
+    task_id=task_id,
+    input_args=argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+      )
+    )
+
   if(regions==""){
 
     job_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
@@ -394,17 +410,6 @@ parallel_generate_BQSR_gatk=function(
   regions$start=regions$start+1
   regions=regions %>% dplyr::mutate(region=paste0(chr,":",start,"-",end))
 
-  job=build_job(executor_id=executor_id,task_id=task_id)
-
-  job_report=build_job_report(
-    job_id=job,
-    executor_id=executor_id,
-    task_id=task_id,
-    input_args=argg,
-    out_file_dir=out_file_dir,
-    out_files=list(
-      )
-    )
 
     region_list=regions$region
     names(region_list)=regions$region
@@ -516,6 +521,7 @@ gather_BQSR_reports_gatk=function(
   job_report=build_job_report(
     job_id=job,
     executor_id=executor_id,
+    exec_code=exec_code, 
     task_id=task_id, 
     input_args = argg,
     out_file_dir=out_file_dir,
@@ -607,6 +613,7 @@ apply_BQSR_gatk=function(
   job_report=build_job_report(
     job_id=job,
     executor_id=executor_id,
+    exec_code=exec_code,
     task_id=task_id,
     input_args = argg,
     out_file_dir=out_file_dir,
@@ -692,6 +699,7 @@ parallel_apply_BQSR_gatk=function(
   job_report=build_job_report(
     job_id=job,
     executor_id=executor_id,
+    exec_code=list(),
     task_id=task_id,
     input_args=argg,
     out_file_dir=out_file_dir,
@@ -814,6 +822,7 @@ gather_bam_files=function(
   job_report=build_job_report(
     job_id=job,
     executor_id=executor_id,
+    exec_code=exec_code, 
     task_id=task_id,
     input_args = argg,
     out_file_dir=out_file_dir,
@@ -919,6 +928,7 @@ analyze_covariates_gatk=function(
   job_report=build_job_report(
     job_id=job,
     executor_id=executor_id,
+    exec_code=exec_code, 
     task_id=task_id,
     input_args = argg,
     out_file_dir=out_file_dir,
