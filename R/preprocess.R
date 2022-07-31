@@ -211,7 +211,7 @@ for_id=function(seq_info,output_dir="",name="",
                                 })
                             }else{
                                 rdata_file=paste0(out_file_dir,"/",new_name,".RData")
-                                save.image(file =  rdata_file)
+                                save(list=ls(),file =  rdata_file)
                                 process_sample(rdata= rdata_file)
                             }
                 }
