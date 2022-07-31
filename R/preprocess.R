@@ -87,31 +87,49 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
 #' @param output_dir Path to output directory. Default none
 #' @export
 
-for_id=function(seq_info,output_dir="",name="",
-             vars_list=build_default_variable_list(),
-             pmts_list=build_default_parameter_list(),
-             bin_list=build_default_binary_list(),
-             ref_list=build_default_reference_list(),
-             nesting="",merge_level="library",
-             executor_id=make_unique_id("preprocessSEQ"),
-             task_name="preprocessSEQ",
-                nest_ws=1,print_tree=FALSE){  
+for_id=function(
+    seq_info,output_dir="",name="",
+    vars_list=build_default_variable_list(),
+    pmts_list=build_default_parameter_list(),
+    bin_list=build_default_binary_list(),
+    ref_list=build_default_reference_list(),
+    nesting="",merge_level="library",
+    executor_id=make_unique_id("loopVariables"),
+    task_name="loopVariables",
+    nest_ws=1,print_tree=FALSE){  
                 task_id=make_unique_id(task_name)
                 var=vars_list$variable[1]
                 var_text=vars_list$text[1]
                 vars_list_left=vars_list[-1,]
                 info=unique(seq_info[,var,drop=TRUE])
                 scroll=seq(1,length(info))
-                for(ct in scroll){
-                    with_env(process_variable(ct))
-                }
+                rs=lapply(X=scroll,FUN=process_variable,
+                output_dir=output_dir,
+                name=name,
+                vars_list=vars_list,
+                pmts_list=pmts_list,
+                bin_list=bin_list,
+                ref_list=ref_list,
+                nesting=nesting,
+                merge_level=merge_level,
+                executor_id=task_id)
+
 }
 
 
 #' @export
 
-
-process_variable=function(ct,merge){
+process_variable=function(
+    ct,seq_info,var,var_text,
+    vars_list_left,info,
+    output_dir="",name="",
+    pmts_list=build_default_parameter_list(),
+    bin_list=build_default_binary_list(),
+    ref_list=build_default_reference_list(),
+    nesting="",merge_level="library",
+    executor_id=make_unique_id("loopSteps"),
+    task_name="loopSteps"){
+                        merge=FALSE
                         report=list()
                         id=info[ct]
                         ## Filter sequencing info for id
@@ -220,8 +238,8 @@ process_variable=function(ct,merge){
                             }else{
                                 rdata_file=paste0(out_file_dir,"/",new_name,".RData")
                                 save(list=ls(),file =  rdata_file)  
-                                    process_sample(rdata= rdata_file)
-                                }
+                                            process_sample(rdata= rdata_file)
+                                        }
                             }
                             }
 
