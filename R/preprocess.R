@@ -214,7 +214,7 @@ for_id=function(seq_info,output_dir="",name="",
                             }
                 }
                 }
-                process_variable=with_env(process_variable)
+                process_variable=with_env(process_variable,e=environment())
                 rs=lapply(X=seq(1,length(info)),FUN=process_variable)
 
 
