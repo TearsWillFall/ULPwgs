@@ -218,7 +218,7 @@ process_variable=function(ct,merge){
                                 })
                             }else{
                                 rdata_file=paste0(out_file_dir,"/",new_name,".RData")
-                                save.image(list=ls(),file =  rdata_file)  
+                                save.image(file =  rdata_file)  
                                     process_sample=function(rdata=""){
                                                 load(rdata)
                                                 report=list()
@@ -447,7 +447,6 @@ process_variable=function(ct,merge){
 
 
                                     }
-
                                             process_sample(rdata= rdata_file)
                                         }
                             }
