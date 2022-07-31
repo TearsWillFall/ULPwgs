@@ -101,7 +101,7 @@ for_id=function(seq_info,output_dir="",name="",
                 var_text=vars_list$text[1]
                 vars_list_left=vars_list[-1,]
                 info=unique(seq_info[,var,drop=TRUE])
-                rs=lapply(X=seq(1,length(info)),FUN=function(count,merge=FALSE,...){
+                process_variable=function(count,merge=FALSE){
                         report=list()
                         id=info[count]
                         ## Filter sequencing info for id
@@ -213,11 +213,14 @@ for_id=function(seq_info,output_dir="",name="",
                                 process_sample(rdata= rdata_file)
                             }
                 }
-    },merge=FALSE,ls())
+                }
+                process_variable=wit_env(process_variable)
+                rs=lapply(X=seq(1,length(info)),FUN=process_variable)
 
 
    
 }
+
 
 
 

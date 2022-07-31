@@ -128,6 +128,18 @@ req_cols){
 
 }
 
+#' Set an enviroment for a function
+#' 
+#'
+#' @param f Function
+#' @param e Enviroment
+#' @export
+
+with_env <- function(f, e=parent.frame()) {
+    stopifnot(is.function(f))
+    environment(f) <- e
+    f
+}
 
 
 #' Check required variable values for a column
