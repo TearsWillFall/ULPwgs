@@ -101,12 +101,19 @@ for_id=function(seq_info,output_dir="",name="",
                 var_text=vars_list$text[1]
                 vars_list_left=vars_list[-1,]
                 info=unique(seq_info[,var,drop=TRUE])
-                env=as.list.environment(environment())
-                process_variable=function(ct,merge,env){
+                rs=lapply(X=seq(1,length(info)),FUN=with_env(process_variable),merge=FALSE)
+           
+   
+}
+
+
+#' @export
+
+
+process_variable=function(ct,merge){
                         report=list()
-                        do.call("<-",env)
                         id=info[ct]
-                        print(paste0(ct,id,collapse="\n"))
+                        cat(paste0(ct,id,collapse="\n"))
                         ## Filter sequencing info for id
                         seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
                         out_file_dir=set_dir(dir=output_dir,name=id)
@@ -445,17 +452,6 @@ for_id=function(seq_info,output_dir="",name="",
                                         }
                             }
                             }
-               
-                rs=lapply(X=seq(1,length(info)),FUN=process_variable,merge=FALSE,env)
-           
-   
-}
-
-
-
-
-
-
 
 
 
