@@ -101,9 +101,9 @@ for_id=function(seq_info,output_dir="",name="",
                 var_text=vars_list$text[1]
                 vars_list_left=vars_list[-1,]
                 info=unique(seq_info[,var,drop=TRUE])
-                rs=lapply(X=seq(1,length(info)),FUN=with_env(process_variable),merge=FALSE)
-           
-   
+                scroll=seq(1,length(info))
+                names(scroll)=info
+                rs=lapply(X=scroll,FUN=with_env(process_variable),merge=FALSE)
 }
 
 
