@@ -101,12 +101,10 @@ for_id=function(seq_info,output_dir="",name="",
                 var_text=vars_list$text[1]
                 vars_list_left=vars_list[-1,]
                 env=as.list.environment(environment())
-                # info=unique(seq_info[,var,drop=TRUE])
+                info=unique(seq_info[,var,drop=TRUE])
                 process_variable=function(count,merge=FALSE,...){
-
                         report=list()
                         do.call("<-",list(names(...),...))
-                        print(as.list.environment(environment()))
                         id=info[count]
                         ## Filter sequencing info for id
                         seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
@@ -447,7 +445,7 @@ for_id=function(seq_info,output_dir="",name="",
                             }
                             }
                
-                rs=lapply(X=seq(1,2),FUN=process_variable,merge=FALSE,env)
+                rs=lapply(X=seq(1,length(info)),FUN=process_variable,merge=FALSE,env)
            
    
 }
