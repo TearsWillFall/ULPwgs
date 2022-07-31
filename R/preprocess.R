@@ -205,12 +205,12 @@ for_id=function(seq_info,output_dir="",name="",
                                     }else{
                                         cat(add_nesting_ws(nesting=nesting,nest="        "))
                                     }
-
+ 
                    
                                 })
                             }else{
                                 rdata_file=paste0(out_file_dir,"/",new_name,".RData")
-                                save(list=unlist(lapply(c(.GlobalEnv,environment()),FUN=as.list.environment),recursive=FALSE),file =  rdata_file)
+                                save(list=list(.GlobalEnv,environment()),file =  rdata_file)
                                 process_sample(rdata= rdata_file)
                             }
                 }
