@@ -104,8 +104,7 @@ for_id=function(seq_info,output_dir="",name="",
                 env=as.list.environment(environment())
                 process_variable=function(ct,merge,env){
                         report=list()
-                        do.call("<-",list(names(env),env))
-                       
+                        do.call("<-",env)
                         id=info[ct]
                         print(paste0(ct,id,collapse="\n"))
                         ## Filter sequencing info for id
