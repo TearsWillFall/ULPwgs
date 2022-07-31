@@ -105,8 +105,12 @@ for_id=function(
                 scroll=seq(1,length(info))
                 rs=lapply(X=scroll,FUN=process_variable,
                 output_dir=output_dir,
+                seq_info=seq_info,
                 name=name,
-                vars_list=vars_list,
+                var=var,
+                info=info,
+                var_text=var_text,
+                vars_list_left=vars_list_left,
                 pmts_list=pmts_list,
                 bin_list=bin_list,
                 ref_list=ref_list,
@@ -129,6 +133,7 @@ process_variable=function(
     nesting="",merge_level="library",
     executor_id=make_unique_id("loopSteps"),
     task_name="loopSteps"){
+                        task_id=make_unique_id(task_name)
                         merge=FALSE
                         report=list()
                         id=info[ct]
