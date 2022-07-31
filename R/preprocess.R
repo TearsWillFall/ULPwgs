@@ -94,8 +94,9 @@ for_id=function(seq_info,output_dir="",name="",
              ref_list=build_default_reference_list(),
              nesting="",merge_level="library",
              executor_id=make_unique_id("preprocessSEQ"),
-             task_id=make_unique_id("preprocessSEQ"),
+             task_name="preprocessSEQ",
                 nest_ws=1,print_tree=FALSE){  
+                task_id=make_unique_id(task_name)
                 var=vars_list$variable[1]
                 var_text=vars_list$text[1]
                 vars_list_left=vars_list[-1,]
@@ -215,7 +216,18 @@ for_id=function(seq_info,output_dir="",name="",
                             }
                 }
         count<<-count+1
-    },...=ls())
+    },seq_info=seq_info,
+    output_dir=output_dir,name=name,
+    vars_list=vars_list,
+    pmts_list=pmts_list,
+    bin_list=bin_list,
+    ref_list=ref_list,
+    nesting=nesting,
+    merge_level=merge_level,
+    executor_id=task_id,
+    nest_ws=nest_ws,
+    print_tree,print_tree)
+    
     return(reports)
    
 }
