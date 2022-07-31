@@ -100,8 +100,8 @@ for_id=function(seq_info,output_dir="",name="",
                 var=vars_list$variable[1]
                 var_text=vars_list$text[1]
                 vars_list_left=vars_list[-1,]
-                env=as.list.environment(environment())
                 info=unique(seq_info[,var,drop=TRUE])
+                env=as.list.environment(environment())
                 process_variable=function(count,merge=FALSE,...){
                         report=list()
                         do.call("<-",list(names(...),...))
