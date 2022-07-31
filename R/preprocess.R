@@ -103,7 +103,7 @@ for_id=function(seq_info,output_dir="",name="",
                 info=unique(seq_info[,var,drop=TRUE])
                 scroll=seq(1,length(info))
                 for(ct in scroll){
-                    process_variable(ct)
+                    with_env(process_variable(ct))
                 }
 }
 
