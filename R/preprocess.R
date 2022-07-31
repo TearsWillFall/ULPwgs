@@ -224,6 +224,8 @@ process_variable=function(ct,merge){
                             }
                             }
 
+
+#' @export
 process_sample=function(rdata=""){
                                                 load(rdata)
                                                 report=list()
