@@ -104,19 +104,15 @@ for_id=function(seq_info,output_dir="",name="",
                 merge=FALSE
                 reports=list()
                 rs=lapply(X=info,FUN=function(id){
-
                         report=list()
                         ## Filter sequencing info for id
                         seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
                         out_file_dir=set_dir(dir=output_dir,name=id)
                         new_name=set_name(current_name=name,name=id)
-                
                         if(print_tree){
                                 if(var!="project_id"){
                                     cat(add_nesting_ws(nesting,n=nest_ws))
                             }
-
-                        
                             if(grepl(merge_level,var)&nrow(seq_info_id %>% dplyr::distinct(path))>2){
                                 merge=TRUE
                             }
@@ -168,7 +164,6 @@ for_id=function(seq_info,output_dir="",name="",
                             file_R2=seq_info_R2$path
                             hold=""
                             bam=""
-                        
                             if(print_tree){
                                 cat(add_nesting_ws(nesting,n=nest_ws))
                                 cat(paste0(nesting,"|----",crayon::green(paste0("R1: ",seq_info_R1$path)),"\n"))
@@ -215,235 +210,12 @@ for_id=function(seq_info,output_dir="",name="",
                    
                                 })
                             }else{
-
-                                cat("\t\n")
-                                cat(crayon::magenta(paste0("Processing sample: ",new_name,"\n")))
-                                cat("\t\n")
-                              
-                                lapply(seq(1,nrow(tool_config_id)),FUN=function(step){
-                                    if(tool_config_id[step,]$name=="pre_fastqc"){
-                                        cat("\t\n")
-                                        cat(crayon::bold("pre_fastqc: \n"))
-                                        cat("\t\n")
-                                            report[[new_name]][["steps"]][["pre_fastqc"]]<<-qc_fastqc(
-                                                bin_fastqc=bin_list$pre_fastqc$bin_fastqc,
-                                                file_R1=file_R1,
-                                                file_R2=file_R2,
-                                                output_dir=paste0(out_file_dir,"/fastqc_reports/pre_trim"),
-                                                executor_id=task_id,
-                                                verbose=tool_config_id[step,]$verbose,
-                                                mode=tool_config_id[step,]$mode,
-                                                batch_config=tool_config_id[step,]$batch_config,
-                                                threads=tool_config_id[step,]$threads,
-                                                ram=tool_config_id[step,]$ram,
-                                                time=tool_config_id[step,]$time,
-                                                update_time=60,wait=FALSE,hold=hold)
-                                    }
-
-                                    if(tool_config_id[step,]$name=="trimming"){
-                                            cat("\t\n")
-                                            cat(crayon::bold("trimming: \n"))
-                                            cat("\t\n")
-
-                                            args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="trimming"))
-
-                                            report[[new_name]][["steps"]][["trimming"]]<<-trimming_skewer(
-                                                bin_skewer=bin_list$trimming$bin_skewer,
-                                                file_R1=file_R1,
-                                                file_R2=file_R2,
-                                                output_dir=out_file_dir,
-                                                xadapt=args["xadapt",]$value,
-                                                yadapt=args["yadapt",]$value,
-                                                mean_quality=args["mean_quality",]$value,
-                                                min_length=args["min_length",]$value,
-                                                max_length=args["max_length",]$value,
-                                                threads=tool_config_id[step,]$threads,
-                                                output_name=new_name,
-                                                ram=tool_config_id[step,]$ram,
-                                                batch_config=tool_config_id[step,]$batch_config,
-                                                verbose=tool_config_id[step,]$verbose,
-                                                mode=tool_config_id[step,]$mode,
-                                                time=tool_config_id[step,]$time,
-                                                executor_id=task_id,
-                                                update_time=60,wait=FALSE,hold=hold)
-
-                                        file_R1 <<- report[[new_name]][["steps"]][["trimming"]]$out_files$r1
-                                        file_R2 <<- report[[new_name]][["steps"]][["trimming"]]$out_files$r2
-                                        hold <<- unlist_lvl(report[[new_name]][["steps"]][["trimming"]],var="job_id",recursive=TRUE)
-                                    }
-
-                                    if(tool_config_id[step,]$name=="post_fastqc"){
-                                            cat("\t\n")
-                                            cat(crayon::bold("post_fastqc: \n"))
-                                            cat("\t\n")
-                                        report[[new_name]][["steps"]][["post_fastqc"]]<<-qc_fastqc(
-                                            bin_fastqc=bin_list$pre_fastqc$bin_fastqc,
-                                            file_R1=file_R1,
-                                            file_R2=file_R2,
-                                            output_dir=paste0(out_file_dir,"/fastqc_reports/post_trim"),
-                                            executor_id=task_id,
-                                            batch_config=tool_config_id[step,]$batch_config,
-                                            verbose=tool_config_id[step,]$verbose,
-                                            mode=tool_config_id[step,]$mode,
-                                            threads=tool_config_id[step,]$threads,
-                                            ram=tool_config_id[step,]$ram,
-                                            time=tool_config_id[step,]$time,
-                                            update_time=60,wait=FALSE,
-                                            hold=hold)
-                                    }
-
-                                    if(tool_config_id[step,]$name=="alignment"){
-                                        cat("\t\n")
-                                        cat(crayon::bold("alignment \n"))
-                                        cat("\t\n")
-
-                                        args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="alignment"))
-
-                                        report[[new_name]][["steps"]][["alignment"]]<<-alignment_bwa(
-                                            bin_bwa=bin_list$alignment$bin_bwa,
-                                            bin_samtools=bin_list$alignment$bin_samtools,
-                                            file_R1=file_R1,
-                                            file_R2=file_R2,
-                                            output_dir=out_file_dir,
-                                            id_tag=paste0(seq_info_R1$flowcell_id,".",seq_info_R1$lane_id),
-                                            pu_tag=paste0(seq_info_R1$flowcell_id,".",seq_info_R1$lane_id,".",
-                                            seq_info_R1$library_id),
-                                            pl_tag=seq_info_R1$instrument_by_flowcell_id,
-                                            lb_tag=seq_info_R1$library_id,
-                                            sm_tag=new_name,
-                                            threads=tool_config_id[step,]$threads,
-                                            ram=tool_config_id[step,]$ram,
-                                            ref_genome=ref_list[[seq_info_R1$reference]]$reference$genome,
-                                            coord_sort=as.logical(args["coord_sort",]$value),
-                                            stats=args["stats",]$value,
-                                            clean=as.logical(args["clean",]$value),
-                                            batch_config=tool_config_id[step,]$batch_config,
-                                            verbose=tool_config_id[step,]$verbose,
-                                            mode=tool_config_id[step,]$mode,
-                                            time=tool_config_id[step,]$time,
-                                            executor_id=task_id,
-                                            update_time=60,
-                                            wait=FALSE,
-                                            hold= hold)
-                                        
-                                        bam <<- report[[new_name]][["steps"]][["alignment"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam
-                                        hold <<- unlist_lvl(report[[new_name]][["steps"]][["alignment"]],var="job_id",recursive=TRUE)
-                                    }
-
-                                    if(!merge){
-
-                                        if(tool_config_id[step,]$name=="markdups"){
-                                            cat("\t\n")
-                                            cat(crayon::bold("markdups: \n"))
-                                            cat("\t\n")
-                                            
-                                            args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="markdups"))
-
-                                            report[[new_name]][["steps"]][["markdups"]]<<-markdups_gatk(
-                                                bin_gatk=bin_list$markdups$bin_gatk,
-                                                bam=bam,
-                                                output_dir=out_file_dir,
-                                                remove_duplicates=as.logical(args["remove_duplicates",]$value),
-                                                batch_config=tool_config_id[step,]$batch_config,
-                                                mode=tool_config_id[step,]$mode,
-                                                verbose=tool_config_id[step,]$verbose,
-                                                threads=tool_config_id[step,]$threads,
-                                                ram=tool_config_id[step,]$ram,
-                                                time=tool_config_id[step,]$time,
-                                                tmp=out_file_dir_tmp,
-                                                executor_id=task_id,
-                                                update_time=60,wait=FALSE,
-                                                hold=hold)
-                                            bam <<- report[[new_name]][["steps"]][["markdups"]]$out_files$bam
-                                            hold <<- unlist_lvl(report[[new_name]][["steps"]][["markdups"]],var="job_id",recursive=TRUE)
-                                            }
-                                   
-                                            if(tool_config_id[step,]$name=="recalibrate"){
-                                            cat("\t\n")
-                                            cat(crayon::bold("recalibrate: \n"))
-                                            cat("\t\n")
-                                        
-                                            args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="recalibrate"))
-                                            
-                                                report[[new_name]][["steps"]][["recalibrate"]] <<- recal_gatk(
-                                                    bin_samtools=bin_list$recalibrate$bin_samtools,
-                                                    bin_gatk=bin_list$recalibrate$bin_gatk,
-                                                    bin_picard=bin_list$recalibrate$bin_picard,
-                                                    bam=bam,tmp_dir=out_file_dir_tmp,
-                                                    output_dir=out_file_dir,
-                                                    ref_genome=ref_list[[seq_info_R1$reference]]$reference$genome,
-                                                    dbsnp=ref_list[[seq_info_R1$reference]]$database$all_common,
-                                                    clean=as.logical(args["clean",]$value),
-                                                    verbose=tool_config_id[step,]$verbose,
-                                                    batch_config=tool_config_id[step,]$batch_config,
-                                                    threads=tool_config_id[step,]$threads,
-                                                    ram=tool_config_id[step,]$ram,
-                                                    mode=tool_config_id[step,]$mode,
-                                                    time=tool_config_id[step,]$time,
-                                                    executor_id=task_id,
-                                                    update_time=60,wait=FALSE,
-                                                    hold=hold)
-                                                bam <<- report[[new_name]][["steps"]][["recalibrate"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam
-                                                hold <<- unlist_lvl(report[[new_name]][["steps"]][["recalibrate"]],var="job_id",recursive = TRUE)
-                                            
-                                            }
-
-
-                                        if(tool_config_id[step,]$name=="alignqc"){
-                                            cat("\t\n")
-                                            cat(crayon::bold("alignqc: \n"))
-                                            cat("\t\n")
-
-                                            bi=""
-                                            ti=""
-                                            ri=""
-                                            ref_flat=""
-                                            if(seq_info_R1$method_type=="CAPTURE"|seq_info_R1$method_type=="EXOME"){
-                                                method="tg"
-                                                bi=ref_list[[seq_info_R1$reference]][["panel"]][[seq_info_R1$method_version]]$intervals$bi
-                                                ti=ref_list[[seq_info_R1$reference]][["panel"]][[seq_info_R1$method_version]]$intervals$ti
-                                            } else if(seq_info_R1$method_type=="WGS"){
-                                                method="wgs"
-                                            } else if(seq_info_R1$method_type=="RNASEQ"){
-                                                method="rna"
-                                                ri=ref_list[[seq_info_R1$reference]][["rnaseq"]][[seq_info_R1$method_version]]$intervals$ri
-                                                ref_flat=ref_list[[seq_info_R1$reference]][["rnaseq"]][[seq_info_R1$method_version]]$reference$ref_flat
-                                            }
-                                        
-                                            args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="alignqc"))
-
-                                            report[[new_name]][["steps"]][["metrics_alignqc"]] <<- metrics_alignqc(
-                                                bin_samtools=bin_list$alignqc$bin_samtools,
-                                                bin_picard=bin_list$alignqc$bin_picard,
-                                                bin_bedtools=bin_list$alignqc$bin_bedtools,
-                                                bam=bam,
-                                                output_dir=out_file_dir,
-                                                ref_genome=ref_list[[seq_info_R1$reference]]$reference$genome,
-                                                verbose=tool_config_id[step,]$verbose,
-                                                tmp_dir=out_file_dir,
-                                                bi=bi,
-                                                ti=ti,
-                                                ri=ri,
-                                                ref_flat=ref_flat,
-                                                method=method,
-                                                executor_id=task_id,
-                                                batch_config=tool_config_id[step,]$batch_config,
-                                                mode=tool_config_id[step,]$mode,
-                                                time=tool_config_id[step,]$time,
-                                                threads=tool_config_id[step,]$threads,
-                                                ram=tool_config_id[step,]$ram,
-                                                update_time=60,wait=FALSE,
-                                                hold=hold
-                                            )
-                                        }
-                                    }    
-                                            
-                                })
+                                rdata_file=paste0(out_file_dir,"/",new_name,".RData")
+                                save.image(file =  rdata_file)
+                                process_sample(rdata= rdata_file)
                             }
                 }
-        if(length(report)>0){
-            reports<<-append(reports,report)
-        }
+
     
         count<<-count+1
     })
@@ -453,6 +225,241 @@ for_id=function(seq_info,output_dir="",name="",
 
 
 
+
+#'  Process a sample
+#' 
+#'  Process a sequencing sample 
+#'
+#' @param rdata Load data from main workspace
+#' @export
+
+process_sample=function(rdata=""){
+                load(rdata)
+                cat("\t\n")
+                cat(crayon::magenta(paste0("Processing sample: ",new_name,"\n")))
+                cat("\t\n")
+                lapply(seq(1,nrow(tool_config_id)),FUN=function(step){
+                    if(tool_config_id[step,]$name=="pre_fastqc"){
+                        cat("\t\n")
+                        cat(crayon::bold("pre_fastqc: \n"))
+                        cat("\t\n")
+                            report[[new_name]][["steps"]][["pre_fastqc"]]<<-qc_fastqc(
+                                bin_fastqc=bin_list$pre_fastqc$bin_fastqc,
+                                file_R1=file_R1,
+                                file_R2=file_R2,
+                                output_dir=paste0(out_file_dir,"/fastqc_reports/pre_trim"),
+                                executor_id=task_id,
+                                verbose=tool_config_id[step,]$verbose,
+                                mode=tool_config_id[step,]$mode,
+                                batch_config=tool_config_id[step,]$batch_config,
+                                threads=tool_config_id[step,]$threads,
+                                ram=tool_config_id[step,]$ram,
+                                time=tool_config_id[step,]$time,
+                                update_time=60,wait=FALSE,hold=hold)
+                    }
+
+                    if(tool_config_id[step,]$name=="trimming"){
+                            cat("\t\n")
+                            cat(crayon::bold("trimming: \n"))
+                            cat("\t\n")
+
+                            args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="trimming"))
+
+                            report[[new_name]][["steps"]][["trimming"]]<<-trimming_skewer(
+                                bin_skewer=bin_list$trimming$bin_skewer,
+                                file_R1=file_R1,
+                                file_R2=file_R2,
+                                output_dir=out_file_dir,
+                                xadapt=args["xadapt",]$value,
+                                yadapt=args["yadapt",]$value,
+                                mean_quality=args["mean_quality",]$value,
+                                min_length=args["min_length",]$value,
+                                max_length=args["max_length",]$value,
+                                threads=tool_config_id[step,]$threads,
+                                output_name=new_name,
+                                ram=tool_config_id[step,]$ram,
+                                batch_config=tool_config_id[step,]$batch_config,
+                                verbose=tool_config_id[step,]$verbose,
+                                mode=tool_config_id[step,]$mode,
+                                time=tool_config_id[step,]$time,
+                                executor_id=task_id,
+                                update_time=60,wait=FALSE,hold=hold)
+
+                        file_R1 <<- report[[new_name]][["steps"]][["trimming"]]$out_files$r1
+                        file_R2 <<- report[[new_name]][["steps"]][["trimming"]]$out_files$r2
+                        hold <<- unlist_lvl(report[[new_name]][["steps"]][["trimming"]],var="job_id",recursive=TRUE)
+                    }
+
+                    if(tool_config_id[step,]$name=="post_fastqc"){
+                            cat("\t\n")
+                            cat(crayon::bold("post_fastqc: \n"))
+                            cat("\t\n")
+                        report[[new_name]][["steps"]][["post_fastqc"]]<<-qc_fastqc(
+                            bin_fastqc=bin_list$pre_fastqc$bin_fastqc,
+                            file_R1=file_R1,
+                            file_R2=file_R2,
+                            output_dir=paste0(out_file_dir,"/fastqc_reports/post_trim"),
+                            executor_id=task_id,
+                            batch_config=tool_config_id[step,]$batch_config,
+                            verbose=tool_config_id[step,]$verbose,
+                            mode=tool_config_id[step,]$mode,
+                            threads=tool_config_id[step,]$threads,
+                            ram=tool_config_id[step,]$ram,
+                            time=tool_config_id[step,]$time,
+                            update_time=60,wait=FALSE,
+                            hold=hold)
+                    }
+
+                    if(tool_config_id[step,]$name=="alignment"){
+                        cat("\t\n")
+                        cat(crayon::bold("alignment \n"))
+                        cat("\t\n")
+
+                        args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="alignment"))
+
+                        report[[new_name]][["steps"]][["alignment"]]<<-alignment_bwa(
+                            bin_bwa=bin_list$alignment$bin_bwa,
+                            bin_samtools=bin_list$alignment$bin_samtools,
+                            file_R1=file_R1,
+                            file_R2=file_R2,
+                            output_dir=out_file_dir,
+                            id_tag=paste0(seq_info_R1$flowcell_id,".",seq_info_R1$lane_id),
+                            pu_tag=paste0(seq_info_R1$flowcell_id,".",seq_info_R1$lane_id,".",
+                            seq_info_R1$library_id),
+                            pl_tag=seq_info_R1$instrument_by_flowcell_id,
+                            lb_tag=seq_info_R1$library_id,
+                            sm_tag=new_name,
+                            threads=tool_config_id[step,]$threads,
+                            ram=tool_config_id[step,]$ram,
+                            ref_genome=ref_list[[seq_info_R1$reference]]$reference$genome,
+                            coord_sort=as.logical(args["coord_sort",]$value),
+                            stats=args["stats",]$value,
+                            clean=as.logical(args["clean",]$value),
+                            batch_config=tool_config_id[step,]$batch_config,
+                            verbose=tool_config_id[step,]$verbose,
+                            mode=tool_config_id[step,]$mode,
+                            time=tool_config_id[step,]$time,
+                            executor_id=task_id,
+                            update_time=60,
+                            wait=FALSE,
+                            hold= hold)
+                        
+                        bam <<- report[[new_name]][["steps"]][["alignment"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam
+                        hold <<- unlist_lvl(report[[new_name]][["steps"]][["alignment"]],var="job_id",recursive=TRUE)
+                    }
+
+                    if(!merge){
+
+                        if(tool_config_id[step,]$name=="markdups"){
+                            cat("\t\n")
+                            cat(crayon::bold("markdups: \n"))
+                            cat("\t\n")
+                            
+                            args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="markdups"))
+
+                            report[[new_name]][["steps"]][["markdups"]]<<-markdups_gatk(
+                                bin_gatk=bin_list$markdups$bin_gatk,
+                                bam=bam,
+                                output_dir=out_file_dir,
+                                remove_duplicates=as.logical(args["remove_duplicates",]$value),
+                                batch_config=tool_config_id[step,]$batch_config,
+                                mode=tool_config_id[step,]$mode,
+                                verbose=tool_config_id[step,]$verbose,
+                                threads=tool_config_id[step,]$threads,
+                                ram=tool_config_id[step,]$ram,
+                                time=tool_config_id[step,]$time,
+                                tmp=out_file_dir_tmp,
+                                executor_id=task_id,
+                                update_time=60,wait=FALSE,
+                                hold=hold)
+                            bam <<- report[[new_name]][["steps"]][["markdups"]]$out_files$bam
+                            hold <<- unlist_lvl(report[[new_name]][["steps"]][["markdups"]],var="job_id",recursive=TRUE)
+                            }
+                    
+                            if(tool_config_id[step,]$name=="recalibrate"){
+                            cat("\t\n")
+                            cat(crayon::bold("recalibrate: \n"))
+                            cat("\t\n")
+                        
+                            args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="recalibrate"))
+                            
+                                report[[new_name]][["steps"]][["recalibrate"]] <<- recal_gatk(
+                                    bin_samtools=bin_list$recalibrate$bin_samtools,
+                                    bin_gatk=bin_list$recalibrate$bin_gatk,
+                                    bin_picard=bin_list$recalibrate$bin_picard,
+                                    bam=bam,tmp_dir=out_file_dir_tmp,
+                                    output_dir=out_file_dir,
+                                    ref_genome=ref_list[[seq_info_R1$reference]]$reference$genome,
+                                    dbsnp=ref_list[[seq_info_R1$reference]]$database$all_common,
+                                    clean=as.logical(args["clean",]$value),
+                                    verbose=tool_config_id[step,]$verbose,
+                                    batch_config=tool_config_id[step,]$batch_config,
+                                    threads=tool_config_id[step,]$threads,
+                                    ram=tool_config_id[step,]$ram,
+                                    mode=tool_config_id[step,]$mode,
+                                    time=tool_config_id[step,]$time,
+                                    executor_id=task_id,
+                                    update_time=60,wait=FALSE,
+                                    hold=hold)
+                                bam <<- report[[new_name]][["steps"]][["recalibrate"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam
+                                hold <<- unlist_lvl(report[[new_name]][["steps"]][["recalibrate"]],var="job_id",recursive = TRUE)
+                            
+                            }
+
+
+                        if(tool_config_id[step,]$name=="alignqc"){
+                            cat("\t\n")
+                            cat(crayon::bold("alignqc: \n"))
+                            cat("\t\n")
+
+                            bi=""
+                            ti=""
+                            ri=""
+                            ref_flat=""
+                            if(seq_info_R1$method_type=="CAPTURE"|seq_info_R1$method_type=="EXOME"){
+                                method="tg"
+                                bi=ref_list[[seq_info_R1$reference]][["panel"]][[seq_info_R1$method_version]]$intervals$bi
+                                ti=ref_list[[seq_info_R1$reference]][["panel"]][[seq_info_R1$method_version]]$intervals$ti
+                            } else if(seq_info_R1$method_type=="WGS"){
+                                method="wgs"
+                            } else if(seq_info_R1$method_type=="RNASEQ"){
+                                method="rna"
+                                ri=ref_list[[seq_info_R1$reference]][["rnaseq"]][[seq_info_R1$method_version]]$intervals$ri
+                                ref_flat=ref_list[[seq_info_R1$reference]][["rnaseq"]][[seq_info_R1$method_version]]$reference$ref_flat
+                            }
+                        
+                            args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="alignqc"))
+
+                            report[[new_name]][["steps"]][["metrics_alignqc"]] <<- metrics_alignqc(
+                                bin_samtools=bin_list$alignqc$bin_samtools,
+                                bin_picard=bin_list$alignqc$bin_picard,
+                                bin_bedtools=bin_list$alignqc$bin_bedtools,
+                                bam=bam,
+                                output_dir=out_file_dir,
+                                ref_genome=ref_list[[seq_info_R1$reference]]$reference$genome,
+                                verbose=tool_config_id[step,]$verbose,
+                                tmp_dir=out_file_dir,
+                                bi=bi,
+                                ti=ti,
+                                ri=ri,
+                                ref_flat=ref_flat,
+                                method=method,
+                                executor_id=task_id,
+                                batch_config=tool_config_id[step,]$batch_config,
+                                mode=tool_config_id[step,]$mode,
+                                time=tool_config_id[step,]$time,
+                                threads=tool_config_id[step,]$threads,
+                                ram=tool_config_id[step,]$ram,
+                                update_time=60,wait=FALSE,
+                                hold=hold
+                            )
+                        }
+                    }    
+                            
+                })
+
+
+}
  
 
 
