@@ -104,7 +104,7 @@ for_id=function(seq_info,output_dir="",name="",
                 count=1
                 merge=FALSE
                 reports=list()
-                rs=lapply(X=info,FUN=function(id){
+                rs=for( id in info){
                         report=list()
                         ## Filter sequencing info for id
                         seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
@@ -216,17 +216,7 @@ for_id=function(seq_info,output_dir="",name="",
                             }
                 }
         count<<-count+1
-    },seq_info=seq_info,
-    output_dir=output_dir,name=name,
-    vars_list=vars_list,
-    pmts_list=pmts_list,
-    bin_list=bin_list,
-    ref_list=ref_list,
-    nesting=nesting,
-    merge_level=merge_level,
-    executor_id=task_id,
-    nest_ws=nest_ws,
-    print_tree,print_tree)
+    }
 
     return(reports)
    
