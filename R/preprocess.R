@@ -115,6 +115,8 @@ for_id=function(
                 bin_list=bin_list,
                 ref_list=ref_list,
                 nesting=nesting,
+                nest_ws=nest_ws,
+                print_tree=print_tree,
                 merge_level=merge_level,
                 executor_id=task_id)
 
@@ -130,9 +132,12 @@ process_variable=function(
     pmts_list=build_default_parameter_list(),
     bin_list=build_default_binary_list(),
     ref_list=build_default_reference_list(),
-    nesting="",merge_level="library",
     executor_id=make_unique_id("loopSteps"),
-    task_name="loopSteps"){
+    task_name="loopSteps",
+    nesting="",
+    merge_level="library",
+    nest_ws=1,
+    print_tree=FALSE){
                         task_id=make_unique_id(task_name)
                         merge=FALSE
                         report=list()
