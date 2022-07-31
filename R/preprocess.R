@@ -215,7 +215,7 @@ for_id=function(seq_info,output_dir="",name="",
                             }
                 }
         count<<-count+1
-    },ls())
+    },...=ls())
     return(reports)
    
 }
