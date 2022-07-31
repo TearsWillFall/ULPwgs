@@ -218,7 +218,7 @@ process_variable=function(ct,merge){
                                 })
                             }else{
                                 rdata_file=paste0(out_file_dir,"/",new_name,".RData")
-                                save(list=as.list(.GlobalEnv),file =  rdata_file)  
+                                save(list=ls(),file =  rdata_file,envir=.GlobalEnv)  
                                             process_sample(rdata= rdata_file)
                                         }
                             }
