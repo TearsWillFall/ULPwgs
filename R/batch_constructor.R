@@ -30,13 +30,14 @@ options(scipen = 999)
 #' @param job_id Job ID
 #' @param executor_id Task executor ID
 #' @param task_id Task ID
+#' @param exec_code Execution code
 #' @param input Input arguments for job
 #' @param job_order Job execution order
 #' @param out_file_fir Output dir for 
 #' @param out_files Output files for job
 #' @export
 
-build_job_report=function(job_id="job_1",executor_id="",task_id="",
+build_job_report=function(job_id="job_1",executor_id="",task_id="",exec_code="",
 job_order=1, input_args="",out_file_dir="", out_files=list(file="file")){
   options(scipen = 999)
   job_report=list(job_id=job_id,executor_id=executor_id,task_id=task_id,
