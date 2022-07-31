@@ -213,7 +213,7 @@ for_id=function(seq_info,output_dir="",name="",
                                 process_sample(rdata= rdata_file)
                             }
                 }
-    },...=ls())
+    },merge=FALSE,ls())
 
 
    
