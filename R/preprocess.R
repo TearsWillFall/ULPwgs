@@ -101,10 +101,7 @@ for_id=function(seq_info,output_dir="",name="",
                 var_text=vars_list$text[1]
                 vars_list_left=vars_list[-1,]
                 info=unique(seq_info[,var,drop=TRUE])
-                rs=lapply(X=seq(1,length(info)),FUN=function(count,var,var_text,
-                var_list_left,info,vars_list,pmts_list,bin_list,ref_list,
-                nesting,merge_level,executor_id,nest_ws,print_tree,
-                merge=FALSE){
+                rs=lapply(X=seq(1,length(info)),FUN=function(count,merge=FALSE,...){
                         report=list()
                         id=info[count]
                         ## Filter sequencing info for id
