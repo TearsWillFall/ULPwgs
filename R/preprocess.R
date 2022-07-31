@@ -102,11 +102,12 @@ for_id=function(seq_info,output_dir="",name="",
                 vars_list_left=vars_list[-1,]
                 info=unique(seq_info[,var,drop=TRUE])
                 env=as.list.environment(environment())
-                process_variable=function(count,merge=FALSE,env){
+                process_variable=function(ct,merge,env){
                         report=list()
                         do.call("<-",list(names(env),env))
-                        print(info)
-                        id=info[count]
+                       
+                        id=info[ct]
+                        print(paste0(ct,id,collapse="\n"))
                         ## Filter sequencing info for id
                         seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
                         out_file_dir=set_dir(dir=output_dir,name=id)
@@ -139,7 +140,7 @@ for_id=function(seq_info,output_dir="",name="",
                             crayon::silver(instrument_name),merge_txt,"\n"))
                         
 
-                            nesting=break_nest(count=count,info=info,nesting=nesting)
+                            nesting=break_nest(count=ct,info=info,nesting=nesting)
 
 
                         }
