@@ -102,8 +102,9 @@ for_id=function(seq_info,output_dir="",name="",
                 vars_list_left=vars_list[-1,]
                 info=unique(seq_info[,var,drop=TRUE])
                 scroll=seq(1,length(info))
-                names(scroll)=info
-                rs=lapply(X=scroll,FUN=with_env(process_variable),merge=FALSE)
+                for(ct in scroll){
+                    process_variable(ct)
+                }
 }
 
 
@@ -218,9 +219,9 @@ process_variable=function(ct,merge){
                                 })
                             }else{
                                 rdata_file=paste0(out_file_dir,"/",new_name,".RData")
-                                save(list=ls(),file =  rdata_file,envir=.GlobalEnv)  
-                                            process_sample(rdata= rdata_file)
-                                        }
+                                save(list=ls(),file =  rdata_file)  
+                                    process_sample(rdata= rdata_file)
+                                }
                             }
                             }
 
