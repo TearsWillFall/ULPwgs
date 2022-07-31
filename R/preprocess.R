@@ -210,12 +210,12 @@ for_id=function(seq_info,output_dir="",name="",
                                 })
                             }else{
                                 rdata_file=paste0(out_file_dir,"/",new_name,".RData")
-                                save(list=ls(.GlobalEnv,environment()),file =  rdata_file)
+                                save(list=ls(environment()),file =  rdata_file)
                                 process_sample(rdata= rdata_file)
                             }
                 }
         count<<-count+1
-    })
+    },ls())
     return(reports)
    
 }
