@@ -102,9 +102,10 @@ for_id=function(seq_info,output_dir="",name="",
                 vars_list_left=vars_list[-1,]
                 info=unique(seq_info[,var,drop=TRUE])
                 env=as.list.environment(environment())
-                process_variable=function(count,merge=FALSE,...){
+                process_variable=function(count,merge=FALSE,env){
                         report=list()
-                        do.call("<-",list(names(...),...))
+                        do.call("<-",list(names(env),env))
+                        print(info)
                         id=info[count]
                         ## Filter sequencing info for id
                         seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
