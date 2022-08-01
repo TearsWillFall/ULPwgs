@@ -419,11 +419,8 @@ parallel_generate_BQSR_gatk=function(
         region=region,tmp_dir=tmp_dir,batch_config=batch_config,
         bin_gatk=bin_gatk,bam=bam,ref_genome=ref_genome,
         dbsnp=dbsnp,output_dir=out_file_dir,verbose=verbose,
-        executor_id=task_id,mode=mode,time=time,
-        threads=ifelse(mode=="local",threads,2),ram=ram,update_time=update_time,
-        wait=FALSE,hold=hold
-    )
-  },mc.cores=ifelse(mode=="local",threads,3))
+        executor_id=task_id)
+  },mc.cores=threads)
 
 
   job_report[["steps"]][["gather_bqsr_report"]]<- gather_BQSR_reports_gatk(
@@ -716,10 +713,8 @@ parallel_apply_BQSR_gatk=function(
       region=region,batch_config=batch_config,
       bin_gatk=bin_gatk,bam=bam,ref_genome=ref_genome,
       executor_id=executor_id,rec_table=rec_table,tmp_dir=tmp_dir,
-      output_dir=out_file_dir,verbose=verbose,mode=mode,time=time,
-      threads=ifelse(mode=="local",threads,2),
-      ram=ram,update_time=update_time,hold=hold,wait=FALSE)},
-      mc.cores=ifelse(mode=="local",threads,3)
+      output_dir=out_file_dir,verbose=verbose},
+      mc.cores=threads
   )
   
   job_report[["steps"]][["gather_bam"]]=gather_bam_files(

@@ -48,7 +48,6 @@ job_order=1, input_args="",out_file_dir="", out_files=list(file="file")){
 
 
 
-
 #' Build job executor in SGE
 #'
 #' @param job Name of job or jobs.
