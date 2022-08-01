@@ -247,16 +247,10 @@ process_variable=function(
                             }else{
                                 rdata_file=paste0(out_file_dir,"/",new_name,".RData")
                                 save(list=ls(),file =  rdata_file)
-                                tmp=process_sample(rdata=rdata_file)
+                                report[[new_name]]=process_sample(rdata=rdata_file)
                            
                             }
-                           
-
                     }
-    if(length(tmp)>0){
-            report[[new_name]]<-tmp
-        }
-     return(report)
     }
 
 
