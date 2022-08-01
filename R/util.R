@@ -587,7 +587,7 @@ update_time=60,wait=FALSE,hold=""){
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
         threads=threads,output_dir=out_file_dir2)
-        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
+        exec_code=paste0("echo '. /etc/bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
    if(verbose){
        print_verbose(job=job,arg=argg,exec_code=exec_code)
@@ -732,7 +732,7 @@ complement_bed=function(
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
         output_dir=out_file_dir2,hold=hold)
-        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
+        exec_code=paste0("echo '. /etc/bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
 
   if(verbose){
@@ -797,7 +797,7 @@ pad_bed=function(bin_bedtools=build_default_tool_binary_list()$bin_bedtools,bed=
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
         output_dir=out_file_dir2,hold=hold)
-        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
+        exec_code=paste0("echo '. /etc/bashrc;",batch_config,";",exec_code,"'|",batch_code)
     }
    if(verbose){
          print_verbose(job=job,arg=argg,exec_code=exec_code)
@@ -1092,7 +1092,7 @@ get_bam_reference_chr=function(
         batch_code=build_job_exec(job=job,
         time=time,ram=ram,threads=threads,
         output_dir=out_file_dir2,hold=hold)
-        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
+        exec_code=paste0("echo '. /etc/bashrc;",batch_config,";",exec_code,"'|",batch_code)
     }
 
 
@@ -1180,7 +1180,7 @@ get_fai_reference_chr=function(
         batch_code=build_job_exec(job=job,
         time=time,ram=ram,threads=threads,
         output_dir=out_file_dir2,hold=hold)
-        exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
+        exec_code=paste0("echo '. /etc/bashrc;",batch_config,";",exec_code,"'|",batch_code)
     }
 
 
