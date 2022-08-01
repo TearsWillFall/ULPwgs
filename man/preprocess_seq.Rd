@@ -33,17 +33,31 @@ preprocess_seq(
 \arguments{
 \item{sample_sheet}{Input sample sheet}
 
-\item{executor_id}{Task EXECUTOR ID . Default "preprocessSEQ"}
+\item{executor_id}{Executor ID. Default "fastQC"}
 
 \item{config}{Default tool configure}
 
 \item{nest_ws}{Nesting white-space separator}
 
-\item{task_name}{Task name . Default "preprocessSEQ"}
+\item{task_name}{Name of the task. Default "fastQC"}
 
-\item{output_dir}{Path to output directory}
+\item{output_dir}{Path to the output directory.}
 
 \item{merge_level}{Which level to merge samples}
+
+\item{ram}{RAM memory for batched job. Default 4}
+
+\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+
+\item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
+
+\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
+
+\item{hold}{Job to hold on in batched mode.}
+
+\item{verbose}{Enables progress messages. Default False.}
 
 \item{vars}{Default variables}
 }

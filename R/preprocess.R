@@ -11,6 +11,16 @@
 #' @param output_dir Path to output directory
 #' @param merge_level Which level to merge samples
 #' @param nest_ws Nesting white-space separator
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Executor ID. Default "fastQC"
+#' @param task_name Name of the task. Default "fastQC"
+#' @param ram RAM memory for batched job. Default 4
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param hold Job to hold on in batched mode.
 #' @export
 
 
@@ -64,6 +74,7 @@ preprocess_seq=function(
     parameter_config_check(sample_sheet=sample_sheet,config=config,
     vars_list=vars_list,steps_list=steps_list)))
     job=build_job(executor_id=executor_id,task_id=task_id)
+
     for_id(seq_info=seq_info,output_dir=out_file_dir,
     vars_list=vars_list,nesting=nesting,
     merge_level=merge_level,executor_id = task_id,
@@ -100,7 +111,16 @@ preprocess_seq=function(
 #' @param merge_level Level to merge samples. Default library
 #' @param executor_id Task EXECUTOR ID . Default "preprocessSEQ"
 #' @param task_name Task name . Default "preprocessSEQ"
-#' @param output_dir Path to output directory. Default none
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Executor ID. Default "fastQC"
+#' @param task_name Name of the task. Default "fastQC"
+#' @param ram RAM memory for batched job. Default 4
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param hold Job to hold on in batched mode.
 #' @export
 
 for_id=function(
@@ -117,7 +137,7 @@ for_id=function(
     threads=1,
     mode="local",
     batch_config=build_default_preprocess_config(),
-    clean=TRUE,time="48:0:0",
+    time="48:0:0",
     update_time=60,wait=FALSE,hold="",
     verbose=FALSE
    ){              
@@ -125,23 +145,26 @@ for_id=function(
                 process_variable=function(
                     ct,seq_info,var,var_text,
                     vars_list_left,info,
-                    output_dir="",name="",
-                    pmts_list=build_default_parameter_list(),
-                    bin_list=build_default_binary_list(),
-                    ref_list=build_default_reference_list(),
-                    print_tree=FALSE,
-                    nesting="",
-                    merge_level="library",
-                    nest_ws=1,
+                    output_dir,
+                    name,
+                    pmts_list,
+                    bin_list,
+                    ref_list,
+                    print_tree,
+                    nesting,
+                    merge_level,
+                    nest_ws,
                     executor_id=make_unique_id("loopSteps"),
-                    task_name="loopSteps",
-                    ram=1,
-                    threads=1,
-                    mode="local",
-                    batch_config=build_default_preprocess_config(),
-                    clean=TRUE,time="48:0:0",
-                    update_time=60,wait=FALSE,hold="",
-                    verbose=FALSE){
+                    task_name,
+                    ram,
+                    threads,
+                    mode,
+                    batch_config,
+                    time,
+                    update_time,
+                    wait,
+                    hold,
+                    verbose){
                                         argg <- as.list(environment())
                                         task_id=make_unique_id(task_name)
                                         merge=FALSE
@@ -281,7 +304,7 @@ for_id=function(
                 vars_list_left=vars_list[-1,]
                 info=unique(seq_info[,var,drop=TRUE])
                 scroll=seq(1,length(info))
-                rs=lapply(X=scroll,FUN=process_variable,
+                lapply(X=scroll,FUN=process_variable,
                 output_dir=output_dir,
                 seq_info=seq_info,
                 name=name,
