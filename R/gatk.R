@@ -59,7 +59,7 @@ markdups_gatk=function(
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
         output_dir=out_file_dir2,hold=hold)
-        exec_code=paste0("echo '. /etc/bashrc;",batch_config,";",exec_code,"'|",batch_code)
+        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
     }
   
     if(verbose){
@@ -504,7 +504,7 @@ gather_BQSR_reports_gatk=function(
        batch_code=build_job_exec(job=job,
        time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
-       exec_code=paste0("echo '. /etc/bashrc;",batch_config,";",exec_code,"'|",batch_code)
+       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
 
   if(verbose){
@@ -595,7 +595,7 @@ apply_BQSR_gatk=function(
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
-       exec_code=paste0("echo '. /etc/bashrc;",batch_config,";",exec_code,"'|",batch_code)
+       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
 
   if(verbose){
@@ -803,7 +803,7 @@ gather_bam_files=function(
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
-       exec_code=paste0("echo '. /etc/bashrc;",batch_config,";",exec_code,"'|",batch_code)
+       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
 
   if(verbose){
@@ -910,7 +910,7 @@ analyze_covariates_gatk=function(
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
-       exec_code=paste0("echo '. /etc/bashrc;",batch_config,";",exec_code,"'|",batch_code)
+       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
 
   if(verbose){

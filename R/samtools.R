@@ -155,7 +155,7 @@ sort_bam_samtools=function(
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
-       exec_code=paste0("echo '. /etc/bashrc;",batch_config,";",exec_code,"'|",batch_code)
+       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
 
     
@@ -206,7 +206,7 @@ index_bam_samtools=function(
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
-       exec_code=paste0("echo '. /etc/bashrc;",batch_config,";",exec_code,"'|",batch_code)
+       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
 
     
@@ -359,7 +359,7 @@ stats_flag_samtools=function(
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
-       exec_code=paste0("echo '. /etc/bashrc;",batch_config,";",exec_code,"'|",batch_code)
+       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
 
     
@@ -436,7 +436,7 @@ stats_index_samtools=function(
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
-       exec_code=paste0("echo '. /etc/bashrc;",batch_config,";",exec_code,"'|",batch_code)
+       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
 
     
@@ -514,7 +514,7 @@ mapq_metrics_bam_samtools=function(
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
        output_dir=out_file_dir2,hold=hold)
-       exec_code=paste0("echo '. /etc/bashrc;",batch_config,";",exec_code,"'|",batch_code)
+       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
 
   

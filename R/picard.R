@@ -59,7 +59,7 @@ markdups_picard=function(
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
-       exec_code=paste0("echo '. /etc/bashrc;",batch_config,";",exec_code,"'|",batch_code)
+       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
     
   if(verbose){
@@ -141,7 +141,7 @@ summary_metrics_bam_picard=function(
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
-       exec_code=paste0("echo '. /etc/bashrc;",batch_config,";",exec_code,"'|",batch_code)
+       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
 
  if(verbose){
@@ -222,7 +222,7 @@ insertsize_metrics_bam_picard=function(
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
-       exec_code=paste0("echo '. /etc/bashrc;",batch_config,";",exec_code,"'|",batch_code)
+       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
 
   if(verbose){
@@ -313,7 +313,7 @@ tg_summary_metrics_bam_picard=function(
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
         threads=threads,output_dir=out_file_dir2)
-        exec_code=paste0("echo '. /etc/bashrc;",batch_config,";",exec_code,"'|",batch_code)
+        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
 
 
@@ -411,7 +411,7 @@ job=build_job(executor_id=executor_id,task_id=task_id)
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
-       exec_code=paste0("echo '. /etc/bashrc;",batch_config,";",exec_code,"'|",batch_code)
+       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
 
 
@@ -494,7 +494,7 @@ job=build_job(executor_id=executor_id,task_id=task_id)
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
-       exec_code=paste0("echo '. /etc/bashrc;",batch_config,";",exec_code,"'|",batch_code)
+       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
 
 
