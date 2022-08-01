@@ -60,11 +60,10 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     vars_list=vars_list,nesting=nesting,merge_level=merge_level,executor_id = task_id,
     pmts_list=pmts_list,bin_list=bin_list,ref_list=ref_list,print_tree=TRUE)
     Sys.sleep(10)
-    job_report[["steps"]][["samples"]]=for_id(seq_info=seq_info,output_dir=output_dir,
+    for_id(seq_info=seq_info,output_dir=output_dir,
     vars_list=vars_list,nesting=nesting,merge_level=merge_level,executor_id = task_id,
     pmts_list=pmts_list,bin_list=bin_list,ref_list=ref_list,print_tree=FALSE)
-    
-    return(job_report)
+    cat("COMPLETE!")
 
 }
 
@@ -103,7 +102,7 @@ for_id=function(
                 vars_list_left=vars_list[-1,]
                 info=unique(seq_info[,var,drop=TRUE])
                 scroll=seq(1,length(info))
-                rs=unlist(lapply(X=scroll,FUN=process_variable,
+                rs=lapply(X=scroll,FUN=process_variable,
                 output_dir=output_dir,
                 seq_info=seq_info,
                 name=name,
@@ -118,7 +117,7 @@ for_id=function(
                 nest_ws=nest_ws,
                 print_tree=print_tree,
                 merge_level=merge_level,
-                executor_id=task_id),recursive=FALSE)
+                executor_id=task_id)
 
 }
 
@@ -141,7 +140,6 @@ process_variable=function(
                         task_id=make_unique_id(task_name)
                         merge=FALSE
                         id=info[ct]
-                        report=list()
                         ## Filter sequencing info for id
                         seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
                         out_file_dir=set_dir(dir=output_dir,name=id)
@@ -192,6 +190,8 @@ process_variable=function(
                             dplyr::distinct()
 
                             out_file_dir_tmp=set_dir(dir=out_file_dir,name="tmp")
+                            out_file_dir_job_report=set_dir(dir=out_file_dir,name="job_report")
+                            
 
                             seq_info_R1=seq_info_id[seq_info_id$read_group=="R1",]
                             seq_info_R2=seq_info_id[seq_info_id$read_group=="R2",]
@@ -247,8 +247,7 @@ process_variable=function(
                             }else{
                                 rdata_file=paste0(out_file_dir,"/",new_name,".RData")
                                 save(list=ls(),file =  rdata_file)
-                                report[[new_name]]=process_sample(rdata=rdata_file)
-                           
+                                process_sample(rdata=rdata_file)
                             }
                     }
     }
@@ -257,6 +256,7 @@ process_variable=function(
 #' @export
 process_sample=function(rdata=""){
                 load(rdata)
+                report=list()
                 cat("\t\n")
                 cat(crayon::magenta(paste0("Processing sample: ",new_name,"\n")))
                 cat("\t\n")
@@ -265,7 +265,7 @@ process_sample=function(rdata=""){
                         cat("\t\n")
                         cat(crayon::bold("pre_fastqc: \n"))
                         cat("\t\n")
-                            report[["steps"]][["pre_fastqc"]]<<-qc_fastqc(
+                            report[[new_name]][["steps"]][["pre_fastqc"]]<<-qc_fastqc(
                                 bin_fastqc=bin_list$pre_fastqc$bin_fastqc,
                                 file_R1=file_R1,
                                 file_R2=file_R2,
@@ -287,7 +287,7 @@ process_sample=function(rdata=""){
 
                     args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="trimming"))
 
-                    report[["steps"]][["trimming"]]<<-trimming_skewer(
+                    report[[new_name]][["steps"]][["trimming"]]<<-trimming_skewer(
                         bin_skewer=bin_list$trimming$bin_skewer,
                         file_R1=file_R1,
                         file_R2=file_R2,
@@ -307,16 +307,16 @@ process_sample=function(rdata=""){
                         executor_id=task_id,
                         update_time=60,wait=FALSE,hold=hold)
 
-                file_R1 <<- report[["steps"]][["trimming"]]$out_files$r1
-                file_R2 <<- report[["steps"]][["trimming"]]$out_files$r2
-                hold <<- unlist_lvl(report[["steps"]][["trimming"]],var="job_id",recursive=TRUE)
+                file_R1 <<- report[[new_name]][["steps"]][["trimming"]]$out_files$r1
+                file_R2 <<- report[[new_name]][["steps"]][["trimming"]]$out_files$r2
+                hold <<- unlist_lvl(report[[new_name]][["steps"]][["trimming"]],var="job_id",recursive=TRUE)
             }
 
             if(tool_config_id[step,]$name=="post_fastqc"){
                     cat("\t\n")
                     cat(crayon::bold("post_fastqc: \n"))
                     cat("\t\n")
-                report[["steps"]][["post_fastqc"]]<<-qc_fastqc(
+                report[[new_name]][["steps"]][["post_fastqc"]]<<-qc_fastqc(
                     bin_fastqc=bin_list$pre_fastqc$bin_fastqc,
                     file_R1=file_R1,
                     file_R2=file_R2,
@@ -339,7 +339,7 @@ process_sample=function(rdata=""){
 
                 args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="alignment"))
 
-                report[["steps"]][["alignment"]]<<-alignment_bwa(
+                report[[new_name]][["steps"]][["alignment"]]<<-alignment_bwa(
                     bin_bwa=bin_list$alignment$bin_bwa,
                     bin_samtools=bin_list$alignment$bin_samtools,
                     file_R1=file_R1,
@@ -366,8 +366,8 @@ process_sample=function(rdata=""){
                     wait=FALSE,
                     hold= hold)
                 
-                bam <<- report[["steps"]][["alignment"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam
-                hold <<- unlist_lvl(report[["steps"]][["alignment"]],var="job_id",recursive=TRUE)
+                bam <<- report[[new_name]][["steps"]][["alignment"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam
+                hold <<- unlist_lvl(report[[new_name]][["steps"]][["alignment"]],var="job_id",recursive=TRUE)
             }
 
             if(!merge){
@@ -379,7 +379,7 @@ process_sample=function(rdata=""){
                     
                     args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="markdups"))
 
-                    report[["steps"]][["markdups"]]<<-markdups_gatk(
+                    report[[new_name]][["steps"]][["markdups"]]<<-markdups_gatk(
                         bin_gatk=bin_list$markdups$bin_gatk,
                         bam=bam,
                         output_dir=out_file_dir,
@@ -394,8 +394,8 @@ process_sample=function(rdata=""){
                         executor_id=task_id,
                         update_time=60,wait=FALSE,
                         hold=hold)
-                    bam <<- report[["steps"]][["markdups"]]$out_files$bam
-                    hold <<- unlist_lvl(report[["steps"]][["markdups"]],var="job_id",recursive=TRUE)
+                    bam <<- report[[new_name]][["steps"]][["markdups"]]$out_files$bam
+                    hold <<- unlist_lvl(report[[new_name]][["steps"]][["markdups"]],var="job_id",recursive=TRUE)
                     }
             
                     if(tool_config_id[step,]$name=="recalibrate"){
@@ -405,7 +405,7 @@ process_sample=function(rdata=""){
                 
                     args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="recalibrate"))
                     
-                        report[["steps"]][["recalibrate"]] <<- recal_gatk(
+                        report[[new_name]][["steps"]][["recalibrate"]] <<- recal_gatk(
                             bin_samtools=bin_list$recalibrate$bin_samtools,
                             bin_gatk=bin_list$recalibrate$bin_gatk,
                             bin_picard=bin_list$recalibrate$bin_picard,
@@ -423,8 +423,8 @@ process_sample=function(rdata=""){
                             executor_id=task_id,
                             update_time=60,wait=FALSE,
                             hold=hold)
-                        bam <<- report[["steps"]][["recalibrate"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam
-                        hold <<- unlist_lvl(report[["steps"]][["recalibrate"]],var="job_id",recursive = TRUE)
+                        bam <<- report[[new_name]][["steps"]][["recalibrate"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam
+                        hold <<- unlist_lvl(report[[new_name]][["steps"]][["recalibrate"]],var="job_id",recursive = TRUE)
                     
                     }
 
@@ -452,7 +452,7 @@ process_sample=function(rdata=""){
                 
                     args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="alignqc"))
 
-                    report[["steps"]][["metrics_alignqc"]] <<- metrics_alignqc(
+                    report[[new_name]][["steps"]][["metrics_alignqc"]] <<- metrics_alignqc(
                         bin_samtools=bin_list$alignqc$bin_samtools,
                         bin_picard=bin_list$alignqc$bin_picard,
                         bin_bedtools=bin_list$alignqc$bin_bedtools,
@@ -480,8 +480,11 @@ process_sample=function(rdata=""){
                     
         })
 
-        return(report)
+        save(list=report,file=paste0(out_file_dir_job_report,"/",new_name,".job_report.RData"))
 }
+
+
+
 
 
         
