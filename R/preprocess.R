@@ -44,7 +44,7 @@ preprocess_seq=function(
     time="48:0:0",
     update_time=60,wait=FALSE,hold="",
     verbose=FALSE){
-
+          
     argg <- as.list(environment())
 
   
@@ -81,15 +81,14 @@ preprocess_seq=function(
     pmts_list=pmts_list,bin_list=bin_list,
     ref_list=ref_list,print_tree=TRUE,ram=ram,threads=threads,
     mode=mode,batch_config=batch_config,
-    verbose=verbose,time=time,
-    hold=hold,wait=wait,update_time=update_time)
+    verbose=verbose,hold=hold,wait=wait,update_time=update_time)
 
     for_id(seq_info=seq_info,output_dir=output_dir,
     vars_list=vars_list,nesting=nesting,
     merge_level=merge_level,executor_id = task_id,
     pmts_list=pmts_list,bin_list=bin_list,
     ref_list=ref_list,print_tree=FALSE,
-    ram=ram,threads=threads,time=time,
+    ram=ram,threads=threads,
     mode=mode,batch_config=batch_config,
     verbose=verbose,hold=hold,wait=wait,update_time=update_time)
     cat("COMPLETE!\n")
@@ -142,30 +141,27 @@ for_id=function(
     update_time=60,wait=FALSE,hold="",
     verbose=FALSE
    ){              
-                print(verbose)
+                
                 process_variable=function(
                     ct,seq_info,var,var_text,
                     vars_list_left,info,
-                    output_dir,
-                    name,
-                    pmts_list,
-                    bin_list,
-                    ref_list,
-                    print_tree,
-                    nesting,
-                    merge_level,
-                    nest_ws,
-                    executor_id,
-                    task_name="loopSample",
-                    ram,
-                    threads,
-                    mode,
-                    batch_config,
-                    time,
-                    update_time,
-                    wait,
-                    hold,
-                    verbose){
+                    output_dir="",name="",
+                    pmts_list=build_default_parameter_list(),
+                    bin_list=build_default_binary_list(),
+                    ref_list=build_default_reference_list(),
+                    print_tree=FALSE,
+                    nesting="",
+                    merge_level="library",
+                    nest_ws=1,
+                    executor_id=make_unique_id("loopSteps"),
+                    task_name="loopSteps",
+                    ram=1,
+                    threads=1,
+                    mode="local",
+                    batch_config=build_default_preprocess_config(),
+                    clean=TRUE,time="48:0:0",
+                    update_time=60,wait=FALSE,hold="",
+                    verbose=FALSE){
                                         argg <- as.list(environment())
                                         task_id=make_unique_id(task_name)
                                         merge=FALSE
@@ -211,7 +207,8 @@ for_id=function(
                                     
                                         if(length(vars_list_left$variable)>0){
                                             for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars_list=vars_list_left,
-                                            nesting=nesting,nest_ws=nest_ws,name=new_name,ref_list=ref_list,print_tree=print_tree)
+                                            nesting=nesting,nest_ws=nest_ws,name=new_name,ref_list=ref_list,print_tree=print_tree,
+                                              ram=ram,threads=threads,mode=mode,batch_config=batch_config,verbose=verbose,hold=hold,wait=wait,update_time=update_time)
                                         }else{
                                             tool_config_id=seq_info_id %>% dplyr::select(-c(read_group,path)) %>%  
                                             dplyr::distinct() %>% dplyr::filter(step==TRUE)
