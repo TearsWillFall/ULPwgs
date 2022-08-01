@@ -41,7 +41,8 @@ build_job_report=function(job_id="job_1",executor_id="",task_id="",exec_code="",
 job_order=1, input_args="",out_file_dir="", out_files=list(file="file")){
   options(scipen = 999)
   job_report=list(job_id=job_id,executor_id=executor_id,task_id=task_id,
-  job_order=job_order,input_args=input_args,exec_code=exec_code,out_file_dir=out_file_dir,out_files=out_files)
+  job_order=job_order,input_args=input_args,exec_code=exec_code,
+  out_file_dir=out_file_dir,out_files=out_files)
   return(job_report)
 }
 
