@@ -44,7 +44,7 @@ preprocess_seq=function(
     time="48:0:0",
     update_time=60,wait=FALSE,hold="",
     verbose=FALSE){
-    print(verbose)
+
     argg <- as.list(environment())
 
   
@@ -142,7 +142,7 @@ for_id=function(
     update_time=60,wait=FALSE,hold="",
     verbose=FALSE
    ){              
-                
+                print(verbose)
                 process_variable=function(
                     ct,seq_info,var,var_text,
                     vars_list_left,info,
