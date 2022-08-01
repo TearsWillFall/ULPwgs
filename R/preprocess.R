@@ -44,7 +44,7 @@ preprocess_seq=function(
     time="48:0:0",
     update_time=60,wait=FALSE,hold="",
     verbose=FALSE){
-          
+    print(verbose)
     argg <- as.list(environment())
 
   
@@ -81,14 +81,15 @@ preprocess_seq=function(
     pmts_list=pmts_list,bin_list=bin_list,
     ref_list=ref_list,print_tree=TRUE,ram=ram,threads=threads,
     mode=mode,batch_config=batch_config,
-    verbose=verbose,hold=hold,wait=wait,update_time=update_time)
+    verbose=verbose,time=time,
+    hold=hold,wait=wait,update_time=update_time)
 
     for_id(seq_info=seq_info,output_dir=output_dir,
     vars_list=vars_list,nesting=nesting,
     merge_level=merge_level,executor_id = task_id,
     pmts_list=pmts_list,bin_list=bin_list,
     ref_list=ref_list,print_tree=FALSE,
-    ram=ram,threads=threads,
+    ram=ram,threads=threads,time=time,
     mode=mode,batch_config=batch_config,
     verbose=verbose,hold=hold,wait=wait,update_time=update_time)
     cat("COMPLETE!\n")
