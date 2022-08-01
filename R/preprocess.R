@@ -120,7 +120,161 @@ for_id=function(
     clean=TRUE,time="48:0:0",
     update_time=60,wait=FALSE,hold="",
     verbose=FALSE
-   ){  
+   ){              
+                
+                process_variable=function(
+                    ct,seq_info,var,var_text,
+                    vars_list_left,info,
+                    output_dir="",name="",
+                    pmts_list=build_default_parameter_list(),
+                    bin_list=build_default_binary_list(),
+                    ref_list=build_default_reference_list(),
+                    print_tree=FALSE,
+                    nesting="",
+                    merge_level="library",
+                    nest_ws=1,
+                    executor_id=make_unique_id("loopSteps"),
+                    task_name="loopSteps",
+                    ram=1,
+                    threads=1,
+                    mode="local",
+                    batch_config=build_default_preprocess_config(),
+                    clean=TRUE,time="48:0:0",
+                    update_time=60,wait=FALSE,hold="",
+                    verbose=FALSE){
+                                        argg <- as.list(environment())
+                                        task_id=make_unique_id(task_name)
+                                        merge=FALSE
+                                        id=info[ct]
+                                        ## Filter sequencing info for id
+                                        seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
+                                        out_file_dir=set_dir(dir=output_dir,name=id)
+                                        new_name=set_name(current_name=name,name=id)
+                                        if(print_tree){
+                                                if(var!="project_id"){
+                                                    cat(add_nesting_ws(nesting,n=nest_ws))
+                                            }
+                                            if(grepl(merge_level,var)&nrow(seq_info_id %>% dplyr::distinct(path))>2){
+                                                merge=TRUE
+                                            }
+                        
+                                            merge_txt=""
+                                            if(merge){
+                                                merge_txt=crayon::bold(" <<<<===== INFO::SAMPLES WILL BE MERGED AT THIS LEVEL")
+                                                seq_info_id[seq_info_id$name=="merge_bam",]$step="TRUE"
+                                                samples=seq_info_id %>% dplyr::distinct(path)
+                                                samples$last=FALSE
+                                                samples[seq(nrow(samples)-1,nrow(samples)),]$last=TRUE
+                                                seq_info_id=dplyr::left_join(seq_info_id,samples,by="path")
+                                                seq_info_id[seq_info_id$last!=TRUE&seq_info_id$order>4,]$step="FALSE"
+                                            }
+                                
+                                            instrument_name=""
+                                            if(var=="flowcell_id"){
+                                                instrument_name=paste0("   Platform: ",unique(seq_info_id$instrument_by_flowcell_id))
+                                            }
+
+                                            cat(paste0(nesting,"|----",crayon::blue(var_text),crayon::red(id),
+                                            crayon::silver(instrument_name),merge_txt,"\n"))
+                        
+                                            nesting=break_nest(count=ct,info=info,nesting=nesting)
+
+
+                                        }
+
+                                        
+                                        ## Call recursively if variables
+                                    
+                                        if(length(vars_list_left$variable)>0){
+                                            for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars_list=vars_list_left,
+                                            nesting=nesting,nest_ws=nest_ws,name=new_name,ref_list=ref_list,print_tree=print_tree)
+                                        }else{
+                                            tool_config_id=seq_info_id %>% dplyr::select(-c(read_group,path)) %>%  
+                                            dplyr::distinct() %>% dplyr::filter(step==TRUE)
+
+                                            seq_info_id=seq_info_id %>% dplyr::select(-c("order",pmts_list$parameter)) %>%  
+                                            dplyr::distinct()
+
+                                            out_file_dir_tmp=set_dir(dir=out_file_dir,name="tmp")
+                                            out_file_dir_job_report=set_dir(dir=out_file_dir,name="job_report")
+                                            
+
+                                            seq_info_R1=seq_info_id[seq_info_id$read_group=="R1",]
+                                            seq_info_R2=seq_info_id[seq_info_id$read_group=="R2",]
+
+                                            file_R1=seq_info_R1$path
+                                            file_R2=seq_info_R2$path
+                                            hold=""
+                                            bam=""
+                                        
+                                            if(print_tree){
+                                                cat(add_nesting_ws(nesting,n=nest_ws))
+                                                cat(paste0(nesting,"|----",crayon::green(paste0("R1: ",seq_info_R1$path)),"\n"))
+                                                cat(add_nesting_ws(nesting,n=nest_ws))
+                                                cat(paste0(nesting,"|----",crayon::green(paste0("R2: ",seq_info_R2$path)),"\n")) 
+                                                bold_text=FALSE
+                                                lapply(seq(1,nrow(tool_config_id)),FUN=function(step){
+                                                    
+                                                    cat(add_nesting_ws(nesting=nesting,nest="        "))
+
+                                                    if(tool_config_id[step,]$name=="merge_bam"){
+                                                            bold_text<<-TRUE
+                                                    }
+                                                    lapply(seq(1,length(pmts_list$parameter)),FUN=function(pmt){
+                                                        
+                                                        space="       |"
+                                                        if(pmt==ceiling(length(pmts_list$parameter)/2)){
+                                                            space=paste0("STEP ",step," |")
+                                                        }
+                                                    
+                                                        txt=paste0(space,pmts_list$text[pmt],
+                                                            tool_config_id[step,pmts_list$parameter[pmt]],"\n")
+
+                                                        if(bold_text){
+                                                            cat(paste0(nesting,crayon::bold(txt)))
+                                                        }else{
+                                                            cat(paste0(nesting,txt))
+                                                        }
+
+                                                    })
+                                
+
+                                                    if(step!=nrow(tool_config_id)){
+                                                            if(bold_text){
+                                                                cat(add_arrow(nesting=nesting,n=2,bold=TRUE))
+                                                            }else{
+                                                                cat(add_arrow(nesting=nesting,n=2))
+                                                            }
+                                                    }else{
+                                                        cat(add_nesting_ws(nesting=nesting,nest="        "))
+                                                    }
+                                
+                                                })
+                                            }else{
+                                                rdata_file=paste0(out_file_dir,"/",new_name,".RData")
+                                                save(list=ls(),file = rdata_file)
+                                                job=build_job(executor_id=executor_id,task=task_id)
+                                                exec_code=paste0("Rscript -e \'ULPwgs::process_sample(rdata=\"",rdata_file,"\")\'")
+                                                if(mode=="batch"){
+                                                    out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+                                                    batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
+                                                    output_dir=out_file_dir2,hold=hold)
+                                                    exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
+                                                }
+                                                if(verbose){
+                                                    print_verbose(job=job,arg=argg,exec_code=exec_code)
+                                                }
+
+                                                error=system(exec_code)
+                                                if(error!=0){
+                                                    stop("Process sample failed to run due to unknown error.
+                                                    Check std error for more information.")
+                                                }
+                                    
+                                            }
+                                    }
+                }
+
                 task_id=make_unique_id(task_name)
                 var=vars_list$variable[1]
                 var_text=vars_list$text[1]
@@ -144,167 +298,14 @@ for_id=function(
                 merge_level=merge_level,
                 executor_id=task_id,
                 ram=ram,threads=threads,
-                mode=mode,batch_config=batch_config,
+                mode=mode,
+                batch_config=batch_config,
                 verbose=verbose,hold=hold,wait=wait,
                 update_time=update_time)
 
 }
 
 
-#' @export
-
-process_variable=function(
-    ct,seq_info,var,var_text,
-    vars_list_left,info,
-    output_dir="",name="",
-    pmts_list=build_default_parameter_list(),
-    bin_list=build_default_binary_list(),
-    ref_list=build_default_reference_list(),
-    print_tree=FALSE,
-    nesting="",
-    merge_level="library",
-    nest_ws=1,
-    executor_id=make_unique_id("loopSteps"),
-    task_name="loopSteps",
-    ram=1,
-    threads=1,
-    mode="local",
-    batch_config=build_default_preprocess_config(),
-    clean=TRUE,time="48:0:0",
-    update_time=60,wait=FALSE,hold="",
-    verbose=FALSE){
-                        argg <- as.list(environment())
-                        task_id=make_unique_id(task_name)
-                        merge=FALSE
-                        id=info[ct]
-                        ## Filter sequencing info for id
-                        seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
-                        out_file_dir=set_dir(dir=output_dir,name=id)
-                        new_name=set_name(current_name=name,name=id)
-                        if(print_tree){
-                                if(var!="project_id"){
-                                    cat(add_nesting_ws(nesting,n=nest_ws))
-                            }
-                            if(grepl(merge_level,var)&nrow(seq_info_id %>% dplyr::distinct(path))>2){
-                                merge=TRUE
-                            }
-        
-                            merge_txt=""
-                            if(merge){
-                                merge_txt=crayon::bold(" <<<<===== INFO::SAMPLES WILL BE MERGED AT THIS LEVEL")
-                                seq_info_id[seq_info_id$name=="merge_bam",]$step="TRUE"
-                                samples=seq_info_id %>% dplyr::distinct(path)
-                                samples$last=FALSE
-                                samples[seq(nrow(samples)-1,nrow(samples)),]$last=TRUE
-                                seq_info_id=dplyr::left_join(seq_info_id,samples,by="path")
-                                seq_info_id[seq_info_id$last!=TRUE&seq_info_id$order>4,]$step="FALSE"
-                            }
-                
-                            instrument_name=""
-                            if(var=="flowcell_id"){
-                                instrument_name=paste0("   Platform: ",unique(seq_info_id$instrument_by_flowcell_id))
-                            }
-
-                            cat(paste0(nesting,"|----",crayon::blue(var_text),crayon::red(id),
-                            crayon::silver(instrument_name),merge_txt,"\n"))
-        
-                            nesting=break_nest(count=ct,info=info,nesting=nesting)
-
-
-                        }
-
-                        
-                        ## Call recursively if variables
-                       
-                        if(length(vars_list_left$variable)>0){
-                            for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars_list=vars_list_left,
-                            nesting=nesting,nest_ws=nest_ws,name=new_name,ref_list=ref_list,print_tree=print_tree)
-                        }else{
-                            tool_config_id=seq_info_id %>% dplyr::select(-c(read_group,path)) %>%  
-                            dplyr::distinct() %>% dplyr::filter(step==TRUE)
-
-                            seq_info_id=seq_info_id %>% dplyr::select(-c("order",pmts_list$parameter)) %>%  
-                            dplyr::distinct()
-
-                            out_file_dir_tmp=set_dir(dir=out_file_dir,name="tmp")
-                            out_file_dir_job_report=set_dir(dir=out_file_dir,name="job_report")
-                            
-
-                            seq_info_R1=seq_info_id[seq_info_id$read_group=="R1",]
-                            seq_info_R2=seq_info_id[seq_info_id$read_group=="R2",]
-
-                            file_R1=seq_info_R1$path
-                            file_R2=seq_info_R2$path
-                            hold=""
-                            bam=""
-                        
-                            if(print_tree){
-                                cat(add_nesting_ws(nesting,n=nest_ws))
-                                cat(paste0(nesting,"|----",crayon::green(paste0("R1: ",seq_info_R1$path)),"\n"))
-                                cat(add_nesting_ws(nesting,n=nest_ws))
-                                cat(paste0(nesting,"|----",crayon::green(paste0("R2: ",seq_info_R2$path)),"\n")) 
-                                bold_text=FALSE
-                                lapply(seq(1,nrow(tool_config_id)),FUN=function(step){
-                                    
-                                    cat(add_nesting_ws(nesting=nesting,nest="        "))
-
-                                    if(tool_config_id[step,]$name=="merge_bam"){
-                                            bold_text<<-TRUE
-                                    }
-                                    lapply(seq(1,length(pmts_list$parameter)),FUN=function(pmt){
-                                        
-                                        space="       |"
-                                        if(pmt==ceiling(length(pmts_list$parameter)/2)){
-                                            space=paste0("STEP ",step," |")
-                                        }
-                                    
-                                        txt=paste0(space,pmts_list$text[pmt],
-                                            tool_config_id[step,pmts_list$parameter[pmt]],"\n")
-
-                                        if(bold_text){
-                                            cat(paste0(nesting,crayon::bold(txt)))
-                                        }else{
-                                            cat(paste0(nesting,txt))
-                                        }
-
-                                    })
-                
-
-                                    if(step!=nrow(tool_config_id)){
-                                            if(bold_text){
-                                                cat(add_arrow(nesting=nesting,n=2,bold=TRUE))
-                                            }else{
-                                                cat(add_arrow(nesting=nesting,n=2))
-                                            }
-                                    }else{
-                                        cat(add_nesting_ws(nesting=nesting,nest="        "))
-                                    }
-                   
-                                })
-                            }else{
-                                rdata_file=paste0(out_file_dir,"/",new_name,".RData")
-                                save(list=ls(),file = rdata_file)
-                                job=build_job(executor_id=executor_id,task=task_id)
-                                exec_code=paste0("Rscript -e \'ULPwgs::process_sample(rdata=\"",rdata_file,"\")\'")
-                                if(mode=="batch"){
-                                    out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-                                    batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
-                                    output_dir=out_file_dir2,hold=hold)
-                                    exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
-                                }
-                                if(verbose){
-                                    print_verbose(job=job,arg=argg,exec_code=exec_code)
-                                }
-
-                                error=system(exec_code)
-                                if(error!=0){
-                                    stop("Process sample failed to run due to unknown error.
-                                    Check std error for more information.")
-                                }
-                    
-                            }
-                    }
-}
 
 
 #' For each variable in sample sheet 
