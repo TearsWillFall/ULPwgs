@@ -141,6 +141,7 @@ process_variable=function(
                         task_id=make_unique_id(task_name)
                         merge=FALSE
                         id=info[ct]
+                        report=list()
                         ## Filter sequencing info for id
                         seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
                         out_file_dir=set_dir(dir=output_dir,name=id)
@@ -181,9 +182,9 @@ process_variable=function(
                         ## Call recursively if variables
                        
                         if(length(vars_list_left$variable)>0){
-                            report=for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars_list=vars_list_left,
+                            for_id(seq_info=seq_info_id,output_dir=out_file_dir,vars_list=vars_list_left,
                             nesting=nesting,nest_ws=nest_ws,name=new_name,ref_list=ref_list,print_tree=print_tree)
-
+                        }else{
                             tool_config_id=seq_info_id %>% dplyr::select(-c(read_group,path)) %>%  
                             dplyr::distinct() %>% dplyr::filter(step==TRUE)
 
@@ -247,14 +248,16 @@ process_variable=function(
                                 rdata_file=paste0(out_file_dir,"/",new_name,".RData")
                                 save(list=ls(),file =  rdata_file)
                                 tmp=process_sample(rdata=rdata_file)
-                                if(length(tmp)>0){
-                                    report[[new_name]]<-tmp
-                                }
-                                
-                                }
+                           
                             }
-                            return(report)
+                           
+
                     }
+    if(length(tmp)>0){
+            report[[new_name]]<-tmp
+        }
+     return(report)
+    }
 
 
 #' @export
