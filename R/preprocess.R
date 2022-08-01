@@ -276,7 +276,7 @@ process_variable=function(
                                 })
                             }else{
                                 rdata_file=paste0(out_file_dir,"/",new_name,".RData")
-                                save(list=ls(),file =  rdata_file)
+                                save(list=ls(),file = rdata_file)
                             
                                 exec_code=paste0("Rscript -e \"ULPwgs::process_sample(rdata=",rdata_file,")\"")
                                 if(mode=="batch"){
@@ -307,7 +307,8 @@ process_variable=function(
 #' @param rdata Path to RData file
 #' @export
 process_sample=function(rdata=""){
-                load(rdata)
+                print(rdata)
+                load(file=rdata)
                 report=list()
                 cat("\t\n")
                 cat(crayon::magenta(paste0("Processing sample: ",new_name,"\n")))
