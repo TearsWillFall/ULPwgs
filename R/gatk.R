@@ -432,7 +432,7 @@ parallel_generate_BQSR_gatk=function(
         
         rdata_file=paste0(tmp_dir,"/",job,".regions.RData")
         save(regions,bin_gatk,bam,ref_genome,dbsnp,output_dir,verbose,tmp_dir,file = rdata_file)
-        exec_code=paste0("Rscript -e \"ULPwgs::generate_BQSR_gatk(rdata=\\\"",rdata_file,"\\\"selected=$SGE_TASK_ID)")
+        exec_code=paste0("Rscript -e \"ULPwgs::generate_BQSR_gatk(rdata=\\\"",rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         batch_code=build_job_exec(job=job,time=time,ram=ram,
         threads=2,output_dir=out_file_dir2,
@@ -768,8 +768,8 @@ parallel_apply_BQSR_gatk=function(
   }else if(mode=="batch"){
         
         rdata_file=paste0(tmp_dir,"/",job,".regions.RData")
-        save(regions,bin_gatk,bam,ref_genome,rec_table,output_dir,verbose,tmp_dir,file = rdata_file)
-        exec_code=paste0("Rscript -e \"ULPwgs::apply_BQSR_gatk(rdata=\\\"",rdata_file,"\\\"selected=$SGE_TASK_ID)")
+        save(region_list,bin_gatk,bam,ref_genome,rec_table,output_dir,verbose,tmp_dir,file = rdata_file)
+        exec_code=paste0("Rscript -e \"ULPwgs::apply_BQSR_gatk(rdata=\\\"",rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         batch_code=build_job_exec(job=job,time=time,ram=ram,
         threads=2,output_dir=out_file_dir2,
