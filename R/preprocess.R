@@ -278,7 +278,7 @@ process_variable=function(
                                 rdata_file=paste0(out_file_dir,"/",new_name,".RData")
                                 save(list=ls(),file =  rdata_file)
                             
-                                exec_code=paste0("Rscript 'ULPwgs::process_sample(rdata=",rdata_file,")'")
+                                exec_code=paste0("Rscript -e \"ULPwgs::process_sample(rdata=",rdata_file,")\"")
                                 if(mode=="batch"){
                                     out_file_dir2=set_dir(dir=out_file_dir,name="batch")
                                     batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
