@@ -180,7 +180,6 @@ recal_gatk=function(
     time=time,update_time=update_time,wait=FALSE,
     hold=hold)
 
-
   job_report[["steps"]][["par_apply_bqsr"]] <- parallel_apply_BQSR_gatk(
     bin_samtools=bin_samtools,bin_gatk=bin_gatk,bin_picard=bin_picard,
     bam=bam,ref_genome=ref_genome,batch_config=batch_config,

@@ -247,10 +247,27 @@ process_variable=function(
                             }else{
                                 rdata_file=paste0(out_file_dir,"/",new_name,".RData")
                                 save(list=ls(),file =  rdata_file)
-                                process_sample(rdata=rdata_file)
+                            
+                                exec_code=paste0("Rscript 'ULPwgs::process_sample(rdata=",rdata_file,")'")
+                                if(mode=="batch"){
+                                    out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+                                    batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
+                                    output_dir=out_file_dir2,hold=hold)
+                                    exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
+                                }
+                                if(verbose){
+                                    print_verbose(job=job,arg=argg,exec_code=exec_code)
+                                }
+
+                                error=system(exec_code)
+                                if(error!=0){
+                                    stop("Process sample failed to run due to unknown error.
+                                    Check std error for more information.")
+                                }
+                    
                             }
                     }
-    }
+}
 
 
 #' @export
@@ -480,12 +497,32 @@ process_sample=function(rdata=""){
                     
         })
 
-        save(list=report,file=paste0(out_file_dir_job_report,"/",new_name,".job_report.RData"))
+        save(report,file=paste0(out_file_dir_job_report,"/",new_name,".job_report.RData"))
 }
 
 
+#' @export
+process_sample_batch=function(rdata="",
+  ram=1,threads=1,output_dir="",
+  tmp_dir="",verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  executor_id=make_unique_id("processSampleBatch"),
+  task_name="processSampleBatch",
+  clean=TRUE,time="48:0:0",
+  update_time=60,wait=FALSE,hold=""){
 
-
+    argg <- as.list(environment())
+    task_id=make_unique_id(task_name)
+    out_file_dir=set_dir(dir=output_dir)
+    
+    job=build_job(executor_id=executor_id,task_id=task_id)
+    exec_code=paste0("Rscript 'ULPwgs::process_sample(rdata=",rdata,")'")
+    out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+    batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
+    output_dir=out_file_dir2,hold=hold)
+    exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
+    
+}
 
         
        

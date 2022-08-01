@@ -279,14 +279,13 @@ clonet_trento=function(
 #' @export
 
 
-clonet_view_trento=function(method="beta_log2", clonet_dir="",threads=3,
-    ram=4,output_dir=".",verbose=FALSE,
+clonet_view_trento=function(method="log2_beta", clonet_dir="",threads=3,
+    ram=4,output_dir=".",verbose=FALSE,sample_labels,
     batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("clonet_view"),
     task_name="clonet_view",mode="local",time="48:0:0",
     update_time=60,wait=FALSE,hold="",cn_list=build_default_cn_list(),
-    clonet_dirs=build_default_clonet_dir_list(),
-    config=build_default_myriad_config()){
+    clonet_dirs=build_default_clonet_dir_list()){
 
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
@@ -294,7 +293,7 @@ clonet_view_trento=function(method="beta_log2", clonet_dir="",threads=3,
     lapply(clonet_dir,FUN=check_clonet_output,clonet_dirs=clonet_dirs)
 
     plt_data=list()
-
+    
     ## Reac CN data
     cn_input_files=paste0(clonet_dir,"/",clonet_dirs$cn_snv_calls$CN_SNVs_calls.csv)
     cn_data=lapply(cn_input_files,FUN=function(x){
@@ -323,15 +322,25 @@ clonet_view_trento=function(method="beta_log2", clonet_dir="",threads=3,
     ### Gene Annotations
     annot_input_file <- system.file("extdata", "gene_annotations_hg19.bed", package="ULPwgs")
     annot_data=read.delim( annot_input_file,header=TRUE)
- 
-   
+    panel=annot_data %>% group_by(PANEL_VERSION) %>% summarise(N=n())
+    panel$diff=abs(panel$N-length(unique(cn_data$gene)))
+    
 
+  
     cn_data=dplyr::bind_rows(cn_data)
     cn_data=dplyr::left_join(cn_data,cn_list,by=c("cn.call.corr"="cn"))
-    cn_data=dplyr::left_join(cn_data,annot_data,by=c("gene"="hgnc_symbol"))
-    
+    cn_data=dplyr::left_join(cn_data,annot_data %>% dplyr::filter(PANEL_VERSION==panel[which.min(panel$diff),]$PANEL_VERSION),
+    by=c("gene"="hgnc_symbol"))
+    if(!is.null(sample_labels)){
+        label_annotation=data.frame(name=make.unique(names(sample_labels)),id=sample_labels)
+        cn_data=dplyr::left_join(cn_data,label_annotation,by=c("sample"="id"))
+    }
+ 
+
+  
     tc_data=dplyr::bind_rows(tc_data)
 
+  
     plt_data[["cn_data"]]=cn_data
     plt_data[["tc_data"]]=tc_data
 
@@ -499,6 +508,7 @@ clonet_ai=function(plt_data){
                 
                plot_ai(
                     plt_data,
+                    ai_limit=input[["ai_gene_lbl_evi"]],
                     gene_tg=any(grepl("Target",input[["ai_gene_type"]])),
                     gene_ctrl=any(grepl("Control",input[["ai_gene_type"]])),
                     gene_other=any(grepl("Other",input[["ai_gene_type"]]))
@@ -526,7 +536,7 @@ clonet_ai=function(plt_data){
                         selected = c("Target")
                     )
             ),
-            shiny::plotOutput("ai_plot",height=length(unique(plt_data$gene))*10),
+            shiny::plotOutput("ai_plot",height=length(unique(plt_data$gene))*20),
             title ="Allelic Imbalance", collapsible = TRUE,
             collapsed = FALSE, solidHeader = TRUE
      )
