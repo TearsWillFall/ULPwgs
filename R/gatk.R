@@ -713,7 +713,7 @@ parallel_apply_BQSR_gatk=function(
       region=region,batch_config=batch_config,
       bin_gatk=bin_gatk,bam=bam,ref_genome=ref_genome,
       executor_id=executor_id,rec_table=rec_table,tmp_dir=tmp_dir,
-      output_dir=out_file_dir,verbose=verbose},
+      output_dir=out_file_dir,verbose=verbose)},
       mc.cores=threads
   )
   
