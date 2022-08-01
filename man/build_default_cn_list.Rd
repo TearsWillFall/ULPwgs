@@ -7,9 +7,15 @@
 build_default_cn_list(
   cn_list = list(cn = c("Unb.Gain", "wt", "CNNL", "NoImb_WTGrayZoneCN", "Likely Loss",
     "HemiDel", "Imb_WTGrayZoneCN", "Bal.Gain", "Likely Gain", "Uncertain Bal.Gain",
-    "HomoDe", "Uncertain HomoDel", "Deletion on chrX"), col = c("#ED7D31", "#CDCDCD",
-    "#FFE699", "#CDCDCD", "#00B0F0", "#94F6F6", "#CDCDCD", "#C00000", "#FF0000",
-    "#C00000", "#0070C0", "#0070C0", "#305496"))
+    "HomoDel", "Uncertain HomoDel", "Deletion on chrX"), cn_class = c("Gain", "Wt", "Wt",
+    "Wt", "Loss", "Loss", "Wt", "Gain", "Gain", "Gain", "Loss", "Loss", "Loss"),
+    class_col = c("#FF0000", "#CDCDCD", "#CDCDCD", "#CDCDCD", "#00B0F0", "#00B0F0",
+    "#CDCDCD", "#FF0000", "#FF0000", "#FF0000", "#00B0F0", "#00B0F0", "#00B0F0"), col =
+    c("#ED7D31", "#CDCDCD", 
+     "#FFE699", "#CDCDCD", "#00B0F0", "#94F6F6", "#CDCDCD",
+    "#C00000", "#FF0000", "#C00000", "#0070C0", "#0070C0", "#305496"), alpha = c(1, 0.75,
+    1, 1, 1, 1, 1, 1, 1, 0.75, 1, 0.75, 0.75), order = c(3, 0, 10, 1, -2, -3, -1, 5, 2,
+    4, -5, -4, -10))
 )
 }
 \arguments{

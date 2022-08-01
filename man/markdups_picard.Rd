@@ -9,14 +9,15 @@ markdups_picard(
   bam = "",
   output_dir = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   hnd = 1000,
   threads,
   ram = 4,
   tmp_dir = "",
   remove_duplicates = TRUE,
   mode = "local",
-  executor = make_unique_id("markDups"),
-  task = "markDups",
+  executor_id = make_unique_id("markDups"),
+  task_name = "markDups",
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
@@ -40,10 +41,6 @@ markdups_picard(
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
-\item{executor}{\link{OPTIONAL} Task executor name. Default "recalCovariates"}
-
-\item{task}{\link{OPTIONAL} Task name. Default "recalCovariates"}
-
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 
 \item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
@@ -51,6 +48,10 @@ markdups_picard(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
+
+\item{executor}{\link{OPTIONAL} Task executor name. Default "recalCovariates"}
+
+\item{task}{\link{OPTIONAL} Task name. Default "recalCovariates"}
 }
 \description{
 This function marks duplicated reads (artifacts) found in aligned sequences.

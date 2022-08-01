@@ -13,6 +13,7 @@ circ_quant_rna(
   config = "database/yaml/config/yaml",
   output_name = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   executor_id = make_unique_id("circRNAquant"),
   task_name = "circRNAquant",
   mode = "local",

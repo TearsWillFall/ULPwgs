@@ -13,6 +13,7 @@ circ_rna(
   db_annot = "database/human_gencode_vch38.gtf",
   output_name = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   executor_id = make_unique_id("circRNA"),
   task_name = "circRNA",
   mode = "local",

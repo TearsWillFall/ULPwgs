@@ -14,6 +14,7 @@ clonet_trento(
   ram = 4,
   output_dir = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   executor_id = make_unique_id("clonet"),
   task_name = "clonet",
   mode = "local",

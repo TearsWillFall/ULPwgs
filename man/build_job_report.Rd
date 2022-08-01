@@ -8,6 +8,7 @@ build_job_report(
   job_id = "job_1",
   executor_id = "",
   task_id = "",
+  exec_code = "",
   job_order = 1,
   input_args = "",
   out_file_dir = "",
@@ -20,6 +21,8 @@ build_job_report(
 \item{executor_id}{Task executor ID}
 
 \item{task_id}{Task ID}
+
+\item{exec_code}{Execution code}
 
 \item{job_order}{Job execution order}
 

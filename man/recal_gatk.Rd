@@ -14,7 +14,9 @@ recal_gatk(
   ram = 4,
   threads = 4,
   output_dir = "",
+  tmp_dir = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   executor_id = make_unique_id("recalGATK"),
   task_name = "recalGATK",
   clean = TRUE,
@@ -43,6 +45,8 @@ recal_gatk(
 \item{threads}{\link{OPTIONAL} Number of threads to split the work.}
 
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
+
+\item{tmp_dir}{\link{OPTIONAL} Path to the temporary directory.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.#}
 

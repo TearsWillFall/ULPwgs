@@ -24,6 +24,7 @@ alignment_bwa(
   ref_genome = "",
   output_dir = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   executor_id = make_unique_id("alignment"),
   task_name = "alignment",
   mode = "local",

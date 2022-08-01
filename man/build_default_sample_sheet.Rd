@@ -8,31 +8,30 @@ build_default_sample_sheet(
   sample_sheet = list(project_id = "TRAILS", patient_id = c("TR001", "TR001", "TR001",
     "TR002", "TR002"), sample_id = c("ID1", "ID1", "ID2", "ID1", "ID2"), sequencing_type
     = "BULK", method_type = "CAPTURE", method_version = "PCF_V3", reference = "HG19",
-    library_id = "LB1", R1 = c("test/test_data/multi_lane/P1_S1_L1_R1.fq.gz",
-    "test/test_data/multi_lane/P1_S1_L2_R1.fq.gz",
-    "test/test_data/multi_lane/P1_S2_L1_R1.fq.gz",
-    "test/test_data/multi_lane/P2_S1_L1_R1.fq.gz",
-    "test/test_data/multi_lane/P2_S2_L1_R1.fq.gz"), R2 =
-    c("test/test_data/multi_lane/P1_S1_L1_R2.fq.gz", 
-    
-    "test/test_data/multi_lane/P1_S1_L2_R2.fq.gz",
-    "test/test_data/multi_lane/P1_S2_L1_R2.fq.gz",
-    "test/test_data/multi_lane/P2_S1_L1_R2.fq.gz",
-    "test/test_data/multi_lane/P2_S2_L1_R2.fq.gz"), step =
-    "pre_fastqc=TRUE;trimming=TRUE;post_fastqc=TRUE;alignment=TRUE;markdups=TRUE;recalibrate=TRUE;alignqc=TRUE",
-    threads =
-    "pre_fastqc=6;trimming=6;post_fastqc=6;alignment=12;merge_bam=6;markdups=12;recalibrate=12;alignqc=6",
-    ram =
-    "pre_fastqc=8;trimming=8;post_fastqc=8;alignment=16;merge_bam=16;markdups=16;recalibrate=8;alignqc=8",
-    
-     time =
-    "pre_fastqc=48:0:0;trimming=48:0:0;post_fastqc=48:0:0;alignment=48:0:0;merge_bam=48:0:0;markdups=48:0:0;recalibrate=48:0:0;alignqc=48:0:0",
-    mode =
-    "pre_fastqc=local;trimming=local;post_fastqc=local;alignment=local;merge_bam=local;markdups=local;recalibrate=local;alignqc=local",
-    verbose =
-    "pre_fastqc=TRUE;trimming=TRUE;post_fastqc=TRUE;alignment=TRUE;merge_bam=TRUE;markdups=TRUE;recalibrate=TRUE;alignqc=TRUE",
-    args =
-    "trimming={mean_quality=0|min_length=18|max_length=|xadapt=|yadapt=};alignment={clean=TRUE|stats=all|coord_sort=FALSE};markdups={remove_duplicates=TRUE};recalibrate={clean=TRUE}")
+    library_id = "LB1", R1 =
+    c("/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P1_S1_L1_R1.fq.gz",
+    "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P1_S1_L2_R1.fq.gz",
+    "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P1_S2_L1_R1.fq.gz", 
+ 
+       "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P2_S1_L1_R1.fq.gz",
+    "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P2_S2_L1_R1.fq.gz"),
+    R2 =
+    c("/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P1_S1_L1_R2.fq.gz",
+    "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P1_S1_L2_R2.fq.gz",
+    "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P1_S2_L1_R2.fq.gz",
+    "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P2_S1_L1_R2.fq.gz", 
+ 
+      
+    "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P2_S2_L1_R2.fq.gz"),
+    step = collapse_step_list(build_default_step_list()), threads =
+    collapse_step_list(build_default_step_threads_list()), ram =
+    collapse_step_list(build_default_step_ram_list()), batch_config =
+    collapse_step_list(build_default_step_batch_list()), time =
+    collapse_step_list(build_default_step_time_list()), mode =
+    collapse_step_list(build_default_step_mode_list()), verbose =
+    collapse_step_list(build_default_step_verbose_list()), 
+     args =
+    build_default_args())
 )
 }
 \arguments{

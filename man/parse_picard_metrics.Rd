@@ -5,11 +5,11 @@
 \title{Parse HS metrics and WGS metrics picard info}
 \usage{
 parse_picard_metrics(
-  metrics = "",
+  summary = "",
   output_dir = "",
   output_name = "",
-  extract = "stats",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   threads = 1,
   ram = 4,
   mode = "local",
@@ -22,13 +22,11 @@ parse_picard_metrics(
 )
 }
 \arguments{
-\item{metrics}{Path to Picard metrics file}
+\item{summary}{Path to Picard summary file}
 
 \item{output_dir}{Path to the output directory.}
 
 \item{output_name}{File output name}
-
-\item{extract}{Metric to extract}
 
 \item{verbose}{Enables progress messages. Default False.}
 

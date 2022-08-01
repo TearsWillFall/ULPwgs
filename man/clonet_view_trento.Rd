@@ -5,12 +5,14 @@
 \title{View CLONET output}
 \usage{
 clonet_view_trento(
-  method = "beta_log2",
+  method = "log2_beta",
   clonet_dir = "",
   threads = 3,
   ram = 4,
-  output_dir = "",
+  output_dir = ".",
   verbose = FALSE,
+  sample_labels,
+  batch_config = build_default_preprocess_config(),
   executor_id = make_unique_id("clonet_view"),
   task_name = "clonet_view",
   mode = "local",

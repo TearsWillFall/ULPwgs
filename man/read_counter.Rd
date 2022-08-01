@@ -13,6 +13,7 @@ read_counter(
   bam = "",
   output_dir = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   threads = 3
 )
 }

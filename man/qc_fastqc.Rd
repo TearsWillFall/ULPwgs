@@ -10,6 +10,7 @@ qc_fastqc(
   file_R2 = "",
   output_dir = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   executor_id = make_unique_id("fastQC"),
   task_name = "fastQC",
   mode = "local",

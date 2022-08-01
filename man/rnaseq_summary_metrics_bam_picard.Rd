@@ -9,14 +9,15 @@ rnaseq_summary_metrics_bam_picard(
   bam = "",
   output_dir = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   tmp_dir = ".",
   threads = 1,
   ram = 4,
   ri = "",
   ref_flat = "",
   mode = "local",
-  executor = make_unique_id("RNAsummaryMetrics"),
-  task = "RNAsummaryMetrics",
+  executor_id = make_unique_id("RNAsummaryMetrics"),
+  task_name = "RNAsummaryMetrics",
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
@@ -38,9 +39,9 @@ rnaseq_summary_metrics_bam_picard(
 
 \item{ref_flat}{Path to flat refrence. Interval format.}
 
-\item{executor}{\link{OPTIONAL} Task executor name. Default "recalCovariates"}
+\item{executor_id}{\link{OPTIONAL} Task executor name. Default "recalCovariates"}
 
-\item{task}{\link{OPTIONAL} Task name. Default "recalCovariates"}
+\item{task_name}{\link{OPTIONAL} Task name. Default "recalCovariates"}
 
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 

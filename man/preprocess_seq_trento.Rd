@@ -12,6 +12,7 @@ preprocess_seq_trento(
   ref_genome = "",
   output_dir = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   executor_id = make_unique_id("preprocess_trento"),
   tmp_dir = "",
   task_name = "reprocess_trento",

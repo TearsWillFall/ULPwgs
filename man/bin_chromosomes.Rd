@@ -8,6 +8,7 @@ bin_chromosomes(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   bin_size = 40000000
 )
 }

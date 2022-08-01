@@ -10,6 +10,7 @@ get_bam_reference_chr(
   output_name = "chrReference",
   output_dir = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   executor_id = make_unique_id("getBAMchr"),
   task_name = "getBAMchr",
   mode = "local",

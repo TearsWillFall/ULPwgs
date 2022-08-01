@@ -17,6 +17,7 @@ trimming_skewer(
   ram = 4,
   output_dir = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   output_name = "",
   mode = "local",
   executor_id = make_unique_id("trimmingSkewer"),

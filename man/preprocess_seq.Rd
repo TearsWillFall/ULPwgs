@@ -14,11 +14,20 @@ preprocess_seq(
   steps_list = build_default_steps_list(),
   bin_list = build_default_binary_list(),
   ref_list = build_default_reference_list(),
+  nest_ws = 1,
+  nesting = "",
   task_name = "preprocessSEQ",
   output_dir = "",
   merge_level = "library",
-  nest_ws = 1,
-  nesting = ""
+  ram = 1,
+  threads = 1,
+  mode = "local",
+  batch_config = build_default_preprocess_config(),
+  time = "48:0:0",
+  update_time = 60,
+  wait = FALSE,
+  hold = "",
+  verbose = FALSE
 )
 }
 \arguments{
@@ -28,13 +37,13 @@ preprocess_seq(
 
 \item{config}{Default tool configure}
 
+\item{nest_ws}{Nesting white-space separator}
+
 \item{task_name}{Task name . Default "preprocessSEQ"}
 
 \item{output_dir}{Path to output directory}
 
 \item{merge_level}{Which level to merge samples}
-
-\item{nest_ws}{Nesting white-space separator}
 
 \item{vars}{Default variables}
 }

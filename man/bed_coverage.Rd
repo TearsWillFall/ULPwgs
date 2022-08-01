@@ -9,6 +9,7 @@ bed_coverage(
   bam = "",
   bed = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   sorted = TRUE,
   mean = TRUE,
   fai = "",

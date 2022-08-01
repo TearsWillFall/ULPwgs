@@ -9,12 +9,13 @@ insertsize_metrics_bam_picard(
   bam = "",
   output_dir = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   tmp_dir = ".",
   threads = 1,
   ram = 4,
   mode = "local",
-  executor = make_unique_id("insertsizeMetrics"),
-  task = "insertsizeMetrics",
+  executor_id = make_unique_id("insertsizeMetrics"),
+  task_name = "insertsizeMetrics",
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
@@ -34,9 +35,9 @@ insertsize_metrics_bam_picard(
 
 \item{ram}{RAM memory to use in GB. Default 4.}
 
-\item{executor}{\link{OPTIONAL} Task executor name. Default "recalCovariates"}
+\item{executor_id}{\link{OPTIONAL} Task executor name. Default "recalCovariates"}
 
-\item{task}{\link{OPTIONAL} Task name. Default "recalCovariates"}
+\item{task_name}{\link{OPTIONAL} Task name. Default "recalCovariates"}
 
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 

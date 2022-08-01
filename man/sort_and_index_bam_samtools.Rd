@@ -9,6 +9,7 @@ sort_and_index_bam_samtools(
   bam = "",
   output_dir = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   threads = 3,
   ram = 1,
   sort = TRUE,

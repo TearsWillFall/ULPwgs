@@ -5,23 +5,63 @@
 \title{Build default tool configuration}
 \usage{
 build_default_steps_list(
-  steps = list(pre_fastqc = list(order = 1, step = TRUE, threads = 6, ram = 8, mode =
-    "local", verbose = TRUE, time = "48:0:0", args = list()), trimming = list(order = 2,
-    step = TRUE, threads = 6, ram = 8, mode = "local", verbose = TRUE, time = "48:0:0",
-    args = list(mean_quality = 0, min_length = 18, max_length = "", xadapt = "", yadapt =
-    "")), post_fastqc = list(order = 3, step = TRUE, threads = 6, ram = 8, mode =
-    "local", verbose = TRUE, time = "48:0:0", args = list()), alignment = list(order = 4,
-    step = TRUE, 
-     threads = 12, ram = 16, mode = "local", verbose = TRUE, time =
-    "48:0:0", args = list(clean = TRUE, stats = "all", coord_sort = FALSE)), merge_bam =
-    list(order = 5, step = FALSE, threads = 6, ram = 16, mode = "local", verbose = TRUE,
-    time = "48:0:0", args = list()), markdups = list(order = 6, step = TRUE, threads =
-    12, ram = 16, mode = "local", verbose = TRUE, time = "48:0:0", args =
-    list(remove_duplicates = TRUE)), recalibrate = list(order = 7, step = TRUE, threads =
-    2, ram = 8, mode = "local", 
-     verbose = TRUE, time = "48:0:0", args = list(clean
-    = TRUE)), alignqc = list(order = 8, step = TRUE, threads = 2, ram = 8, mode =
-    "local", verbose = TRUE, time = "48:0:0", args = list()))
+  steps = list(pre_fastqc = list(order = 1, step =
+    build_default_step_list()$pre_fastqc, threads =
+    build_default_step_threads_list()$pre_fastqc, ram =
+    build_default_step_ram_list()$pre_fastqc, batch_config =
+    build_default_preprocess_config(), mode = build_default_step_mode_list()$pre_fastqc,
+    verbose = build_default_step_verbose_list()$pre_fastqc, time =
+    build_default_step_time_list()$pre_fastqc, args = list()), trimming = list(order = 2,
+    step = build_default_step_list()$trimming, threads =
+    build_default_step_threads_list()$trimming, 
+     ram =
+    build_default_step_ram_list()$trimming, batch_config =
+    build_default_preprocess_config(), mode = build_default_step_mode_list()$trimming,
+    verbose = build_default_step_verbose_list()$trimming, time =
+    build_default_step_time_list()$trimming, args = list(mean_quality = 0, min_length =
+    18, max_length = "", xadapt = "", yadapt = "")), post_fastqc = list(order = 3, step =
+    build_default_step_list()$post_fastqc, threads =
+    build_default_step_threads_list()$post_fastqc, ram =
+    build_default_step_ram_list()$post_fastqc, 
+     batch_config =
+    build_default_preprocess_config(), mode = build_default_step_mode_list()$post_fastqc,
+    verbose = build_default_step_verbose_list()$post_fastqc, time =
+    build_default_step_time_list()$post_fastqc, args = list()), alignment = list(order =
+    4, step = build_default_step_list()$alignment, threads =
+    build_default_step_threads_list()$alignment, ram =
+    build_default_step_ram_list()$alignment, batch_config =
+    build_default_preprocess_config(), mode = build_default_step_mode_list()$alignment, 
+
+        verbose = build_default_step_verbose_list()$alignment, time =
+    build_default_step_time_list()$alignment, args = list(clean = TRUE, stats = "all",
+    coord_sort = FALSE)), merge_bam = list(order = 5, step =
+    build_default_step_list()$merge_bam, threads =
+    build_default_step_threads_list()$merge_bam, ram =
+    build_default_step_ram_list()$merge_bam, batch_config =
+    build_default_preprocess_config(), mode = build_default_step_mode_list()$merge_bam,
+    verbose = build_default_step_verbose_list()$merge_bam, time =
+    build_default_step_time_list()$merge_bam, 
+     args = list()), markdups = list(order
+    = 6, step = build_default_step_list()$markdups, threads =
+    build_default_step_threads_list()$markdups, ram =
+    build_default_step_ram_list()$markdups, batch_config =
+    build_default_preprocess_config(), mode = build_default_step_mode_list()$markdups,
+    verbose = build_default_step_verbose_list()$markdups, time =
+    build_default_step_time_list()$markdups, args = list(remove_duplicates = FALSE)),
+    recalibrate = list(order = 7, step = build_default_step_list()$recalibrate, 
+    
+    threads = build_default_step_threads_list()$recalibrate, ram =
+    build_default_step_ram_list()$recalibrate, batch_config =
+    build_default_preprocess_config(), mode = build_default_step_mode_list()$recalibrate,
+    verbose = build_default_step_verbose_list()$recalibrate, time =
+    build_default_step_time_list()$recalibrate, args = list(clean = TRUE)), alignqc =
+    list(order = 8, step = build_default_step_list()$alignqc, threads =
+    build_default_step_threads_list()$alignqc, ram =
+    build_default_step_ram_list()$alignqc, 
+     batch_config =
+    build_default_preprocess_config(), mode = build_default_step_mode_list()$alignqc,
+    verbose = build_default_step_verbose_list()$alignqc, time =
+    build_default_step_time_list()$alignqc, args = list()))
 )
 }
 \arguments{

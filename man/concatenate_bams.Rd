@@ -9,6 +9,7 @@ concatenate_bams(
   bams = "",
   output_name = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   threads = 3
 )
 }

@@ -11,7 +11,9 @@ generate_BQSR_gatk(
   ref_genome = "",
   dbsnp = "",
   output_dir = "",
+  tmp_dir = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   threads = 4,
   ram = 4,
   mode = "local",
@@ -33,6 +35,8 @@ generate_BQSR_gatk(
 \item{dbsnp}{\link{REQUIRED} Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.}
 
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
+
+\item{tmp_dir}{\link{OPTIONAL} Path to the temporary directory.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 

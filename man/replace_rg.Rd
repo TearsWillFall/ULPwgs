@@ -9,6 +9,7 @@ replace_rg(
   bam = "",
   output_dir = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   index = TRUE,
   ID = "",
   PL = "",

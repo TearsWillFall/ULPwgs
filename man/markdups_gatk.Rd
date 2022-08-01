@@ -9,6 +9,7 @@ markdups_gatk(
   bam = "",
   output_dir = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   tmp_dir = "",
   threads = 3,
   ram = 4,

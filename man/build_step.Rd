@@ -4,7 +4,7 @@
 \alias{build_step}
 \title{Build default tool configuration}
 \usage{
-build_step(step, steps_list = build_default_steps_list())
+build_step(step, steps_list = build_default_steps_list(), sep = "||")
 }
 \arguments{
 \item{step}{Step to build for configuration}

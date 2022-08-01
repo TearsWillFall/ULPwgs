@@ -12,12 +12,14 @@ parallel_generate_BQSR_gatk(
   ref_genome = "",
   clean = TRUE,
   dbsnp = "",
+  tmp_dir = "",
   threads = 3,
   ram = 4,
   executor_id = make_unique_id("par_generateBQSR"),
   task_name = "par_generateBQSR",
   output_dir = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   mode = "local",
   time = "48:0:0",
   update_time = 60,
@@ -39,6 +41,8 @@ parallel_generate_BQSR_gatk(
 \item{clean}{Remove intermediary files. Default TRUE}
 
 \item{dbsnp}{\link{REQUIRED} Path to known snp positions in VCF format. Multiple vcf can be supplied as a vector.}
+
+\item{tmp_dir}{\link{OPTIONAL} Path to the temporary directory.}
 
 \item{threads}{Number of threads to split the work. Default 3}
 

@@ -11,6 +11,7 @@ complement_bed(
   output_name = "Complement",
   genome = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   threads = 3,
   ram = 1,
   coord_sort = TRUE,

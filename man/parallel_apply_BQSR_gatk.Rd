@@ -15,6 +15,8 @@ parallel_apply_BQSR_gatk(
   clean = TRUE,
   output_dir = "",
   verbose = FALSE,
+  tmp_dir = "",
+  batch_config = build_default_preprocess_config(),
   mode = "local",
   executor_id = make_unique("par_applyBQSR"),
   task_name = "par_applyBQSR",
@@ -46,6 +48,8 @@ parallel_apply_BQSR_gatk(
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
+
+\item{tmp_dir}{\link{OPTIONAL} Path to the temporary directory.}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 

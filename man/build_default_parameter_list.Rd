@@ -6,8 +6,8 @@
 \usage{
 build_default_parameter_list(
   parameters = list(parameter = c("name", "step", "mode", "time", "threads", "ram",
-    "args"), text = c("Step Name: ", "Run: ", "Run Mode: ", "Run Time: ", "Threads: ",
-    "Ram: ", "Tool Parameters : "))
+    "batch_config", "args"), text = c("Step Name: ", "Run: ", "Run Mode: ", "Run Time: ",
+    "Threads: ", "Ram: ", "Batch Config: ", "Tool Parameters : "))
 )
 }
 \arguments{

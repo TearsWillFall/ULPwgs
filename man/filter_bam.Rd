@@ -10,6 +10,7 @@ filter_bam(
   position = "",
   bed = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   output_dir = "",
   threads = 1
 )

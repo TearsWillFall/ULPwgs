@@ -10,6 +10,7 @@ gather_bam_files(
   output_name = "File",
   output_dir = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   threads = 4,
   ram = 4,
   mode = "local",
@@ -50,6 +51,8 @@ gather_bam_files(
 \item{update_time}{\link{OPTIONAL} If batch mode. Show job updates every update time. Default 60}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
+
+\item{tmp_dir}{\link{OPTIONAL} Path to the temporary directory.}
 }
 \description{
 This functions collects the Recalibration reports generated from scattered parallel_apply_BQSR output

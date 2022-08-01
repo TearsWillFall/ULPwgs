@@ -300,6 +300,11 @@ process_variable=function(
 }
 
 
+#' For each variable in sample sheet 
+#' 
+#' Run through each variable in sample sheet and report information
+#'
+#' @param rdata Path to RData file
 #' @export
 process_sample=function(rdata=""){
                 load(rdata)

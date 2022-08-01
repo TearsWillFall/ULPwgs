@@ -14,10 +14,20 @@ for_id(
   ref_list = build_default_reference_list(),
   nesting = "",
   merge_level = "library",
-  executor_id = make_unique_id("preprocessSEQ"),
-  task_id = make_unique_id("preprocessSEQ"),
   nest_ws = 1,
-  print_tree = FALSE
+  print_tree = FALSE,
+  executor_id = make_unique_id("loopVariables"),
+  task_name = "loopVariables",
+  ram = 1,
+  threads = 1,
+  mode = "local",
+  batch_config = build_default_preprocess_config(),
+  clean = TRUE,
+  time = "48:0:0",
+  update_time = 60,
+  wait = FALSE,
+  hold = "",
+  verbose = FALSE
 )
 }
 \arguments{
@@ -35,13 +45,15 @@ for_id(
 
 \item{merge_level}{Level to merge samples. Default library}
 
-\item{executor_id}{Task EXECUTOR ID . Default "preprocessSEQ"}
-
 \item{nest_ws}{Nesting ws to provide. Default 1}
 
-\item{var_list}{List with variables}
+\item{executor_id}{Task EXECUTOR ID . Default "preprocessSEQ"}
 
 \item{task_name}{Task name . Default "preprocessSEQ"}
+
+\item{batch_config}{Batch method configuration}
+
+\item{var_list}{List with variables}
 }
 \description{
 Run through each variable in sample sheet and report information

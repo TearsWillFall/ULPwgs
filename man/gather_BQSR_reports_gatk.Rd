@@ -13,6 +13,8 @@ gather_BQSR_reports_gatk(
   clean = FALSE,
   output_dir = "",
   verbose = FALSE,
+  tmp_dir = "",
+  batch_config = build_default_preprocess_config(),
   mode = "local",
   time = "48:0:0",
   threads = 4,
@@ -38,6 +40,8 @@ gather_BQSR_reports_gatk(
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
+
+\item{tmp_dir}{\link{OPTIONAL} Path to temporary directory.}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 

@@ -10,6 +10,8 @@ analyze_covariates_gatk(
   after = "",
   output_dir = "",
   verbose = FALSE,
+  tmp_dir = "",
+  batch_config = build_default_preprocess_config(),
   threads = 4,
   ram = 4,
   mode = "local",
@@ -31,6 +33,8 @@ analyze_covariates_gatk(
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
+
+\item{tmp_dir}{\link{OPTIONAL} Path to the temporary directory.}
 
 \item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
 

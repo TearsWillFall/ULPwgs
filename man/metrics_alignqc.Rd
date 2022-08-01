@@ -12,6 +12,7 @@ metrics_alignqc(
   output_dir = "",
   ref_genome = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   tmp_dir = ".",
   mapq = 0,
   bi = "",

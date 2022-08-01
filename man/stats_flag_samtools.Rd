@@ -9,6 +9,7 @@ stats_flag_samtools(
   bam = "",
   output_dir = "",
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   threads = 3,
   ram = 4,
   mode = "local",

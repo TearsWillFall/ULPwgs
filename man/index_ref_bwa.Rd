@@ -10,6 +10,7 @@ index_ref_bwa(
   threads = 4,
   ram = 4,
   verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   executor_id = make_unique_id("refIndex"),
   task_name = "refIndex",
   mode = "local",
