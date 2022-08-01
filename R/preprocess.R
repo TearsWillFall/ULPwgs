@@ -23,9 +23,16 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     steps_list=build_default_steps_list(),
     bin_list=build_default_binary_list(),
     ref_list=build_default_reference_list(),
+    nest_ws=1,nesting="",
     task_name="preprocessSEQ",output_dir="",
-    merge_level="library",nest_ws=1,
-    nesting=""){
+    merge_level="library",
+    ram=1,
+    threads=1,
+    mode="local",
+    batch_config=build_default_preprocess_config(),
+    time="48:0:0",
+    update_time=60,wait=FALSE,hold="",
+    verbose=FALSE){
           
     argg <- as.list(environment())
 
@@ -58,11 +65,15 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     job=build_job(executor_id=executor_id,task_id=task_id)
     for_id(seq_info=seq_info,output_dir=out_file_dir,
     vars_list=vars_list,nesting=nesting,merge_level=merge_level,executor_id = task_id,
-    pmts_list=pmts_list,bin_list=bin_list,ref_list=ref_list,print_tree=TRUE)
+    pmts_list=pmts_list,bin_list=bin_list,ref_list=ref_list,print_tree=TRUE,ram=ram,threads=threads,
+    mode=mode,batch_config=batch_config,verbose=verbose,hold=hold,wait=wait,update_time=update_time)
     Sys.sleep(10)
     for_id(seq_info=seq_info,output_dir=output_dir,
     vars_list=vars_list,nesting=nesting,merge_level=merge_level,executor_id = task_id,
-    pmts_list=pmts_list,bin_list=bin_list,ref_list=ref_list,print_tree=FALSE)
+    pmts_list=pmts_list,bin_list=bin_list,ref_list=ref_list,print_tree=FALSE,
+    ram=ram,threads=threads,
+    mode=mode,batch_config=batch_config,
+    verbose=verbose,hold=hold,wait=wait,update_time=update_time)
     cat("COMPLETE!")
 
 }
@@ -93,9 +104,17 @@ for_id=function(
     bin_list=build_default_binary_list(),
     ref_list=build_default_reference_list(),
     nesting="",merge_level="library",
+    nest_ws=1,print_tree=FALSE,
     executor_id=make_unique_id("loopVariables"),
     task_name="loopVariables",
-    nest_ws=1,print_tree=FALSE){  
+    ram=1,
+    threads=1,
+    mode="local",
+    batch_config=build_default_preprocess_config(),
+    clean=TRUE,time="48:0:0",
+    update_time=60,wait=FALSE,hold="",
+    verbose=FALSE
+   ){  
                 task_id=make_unique_id(task_name)
                 var=vars_list$variable[1]
                 var_text=vars_list$text[1]
@@ -117,7 +136,11 @@ for_id=function(
                 nest_ws=nest_ws,
                 print_tree=print_tree,
                 merge_level=merge_level,
-                executor_id=task_id)
+                executor_id=task_id,
+                ram=ram,threads=threads,
+                mode=mode,batch_config=batch_config,
+                verbose=verbose,hold=hold,wait=wait,
+                update_time=update_time)
 
 }
 
@@ -131,12 +154,19 @@ process_variable=function(
     pmts_list=build_default_parameter_list(),
     bin_list=build_default_binary_list(),
     ref_list=build_default_reference_list(),
-    executor_id=make_unique_id("loopSteps"),
-    task_name="loopSteps",
+    print_tree=FALSE,
     nesting="",
     merge_level="library",
     nest_ws=1,
-    print_tree=FALSE){
+    executor_id=make_unique_id("loopSteps"),
+    task_name="loopSteps",
+    ram=1,
+    threads=1,
+    mode="local",
+    batch_config=build_default_preprocess_config(),
+    clean=TRUE,time="48:0:0",
+    update_time=60,wait=FALSE,hold="",
+    verbose=FALSE){
                         task_id=make_unique_id(task_name)
                         merge=FALSE
                         id=info[ct]
@@ -501,28 +531,6 @@ process_sample=function(rdata=""){
 }
 
 
-#' @export
-process_sample_batch=function(rdata="",
-  ram=1,threads=1,output_dir="",
-  tmp_dir="",verbose=FALSE,
-  batch_config=build_default_preprocess_config(),
-  executor_id=make_unique_id("processSampleBatch"),
-  task_name="processSampleBatch",
-  clean=TRUE,time="48:0:0",
-  update_time=60,wait=FALSE,hold=""){
-
-    argg <- as.list(environment())
-    task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir)
-    
-    job=build_job(executor_id=executor_id,task_id=task_id)
-    exec_code=paste0("Rscript 'ULPwgs::process_sample(rdata=",rdata,")'")
-    out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-    batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
-    output_dir=out_file_dir2,hold=hold)
-    exec_code=paste0("echo '",batch_config,";",exec_code,"'|",batch_code)
-    
-}
 
         
        
