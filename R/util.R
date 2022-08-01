@@ -94,12 +94,14 @@ print_verbose=function(exec_code,arg,job,ws=1){
       rep(cat("    \n"),ws)
       cat(paste0(crayon::red(job,"\n")))
       rep(cat("    \n"),ws)
-      cat(crayon::blue("Arguments:"))
-      rep(cat("    \n"),ws)
-      lapply(names(arg),FUN=function(ag){
+      if(!is.null(arg)){
+         cat(crayon::blue("Arguments:"))
+         rep(cat("    \n"),ws)
+         lapply(names(arg),FUN=function(ag){
           rep(cat("    \n"),ws)
           cat(paste0(crayon::silver(ag),": ",arg[[ag]],"\n"))
       })
+      }
       rep(cat("    \n"),ws)
       cat(crayon::blue("Command:"))
       rep(cat("    \n"),ws)
