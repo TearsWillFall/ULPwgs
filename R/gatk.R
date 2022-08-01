@@ -256,17 +256,21 @@ recal_gatk=function(
 #' @export
 
 generate_BQSR_gatk=function(
-  region="",
+  region="",rdata=NULL,selected=NULL,
   bin_gatk=build_default_tool_binary_list()$bin_gatk,bam="",
   ref_genome="",dbsnp="",output_dir="",tmp_dir="",verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("generateBQSR"),task_name="generateBQSR",
   time="48:0:0",update_time=60,wait=FALSE,hold=""
-){
+){  
 
-
-
+  if(!is.null(rdata)){
+    load(rdata)
+    if(!is.null(selected)){
+      region=regions[selected]
+    }
+  }
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -397,7 +401,7 @@ parallel_generate_BQSR_gatk=function(
 
     job_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
       bin_samtools=bin_samtools,
-      bam=bam,verbose=verbose,output_dir=output_dir,
+      bam=bam,verbose=verbose,output_dir=tmp_dir,
       executor_id=task_id,mode=mode,threads=threads,ram=ram,
       time=time,update_time=update_time,wait=FALSE,hold=hold)
 
@@ -413,15 +417,54 @@ parallel_generate_BQSR_gatk=function(
     region_list=regions$region
     names(region_list)=regions$region
 
-  job_report[["steps"]][["generate_bqsr_report"]]<-parallel::mclapply(
-  region_list,FUN=function(region){
+  if(mode=="local"){
+      job_report[["steps"]][["generate_bqsr_report"]]<-parallel::mclapply(
+        region_list,FUN=function(region){
         job_report <- generate_BQSR_gatk(
-        region=region,tmp_dir=tmp_dir,batch_config=batch_config,
+        region=region,regions=regions,tmp_dir=tmp_dir,batch_config=batch_config,
         bin_gatk=bin_gatk,bam=bam,ref_genome=ref_genome,
         dbsnp=dbsnp,output_dir=out_file_dir,verbose=verbose,
-        executor_id=task_id)
+        executor_id=task_id,mode=mode,time=time,
+        threads=threads,ram=ram,update_time=update_time,
+        wait=FALSE,hold=hold
+    )
   },mc.cores=threads)
 
+  }else{
+        
+        rdata_file=paste0(tmp_dir,"/",job,".regions.RData")
+        save(regions,bin_gatk,bam,ref_genome,dbsnp,output_dir,verbose,tmp_dir,file = rdata_file)
+        exec_code=paste0("Rscript -e \"ULPwgs::generate_BQSR_gatk(rdata=\\\"",rdata_file,"\\\"selected=$SGE_TASK_ID)")
+        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+        batch_code=build_job_exec(job=job,time=time,ram=ram,
+        threads=threads,output_dir=out_file_dir2,
+        hold=hold,array=length(region_list))
+        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+
+
+        if(verbose){
+            print_verbose(job=job,arg=argg,exec_code=exec_code)
+        }
+        error=system(exec_code)
+        if(error!=0){
+            stop("gatk failed to run due to unknown error.
+            Check std error for more information.")
+        }
+
+        job_report[["steps"]][["generate_bqsr_report"]]<- build_job_report(
+              job_id=job,
+              executor_id=executor_id,
+              exec_code=exec_code, 
+              task_id=task_id,
+              input_args=argg,
+              out_file_dir=out_file_dir,
+              out_files=list(
+                  recal_table=paste0(out_file_dir,get_file_name(bam),".",regions,".recal.table")
+                )
+        )
+
+  }
+  
 
   job_report[["steps"]][["gather_bqsr_report"]]<- gather_BQSR_reports_gatk(
     bin_gatk=bin_gatk,
@@ -713,8 +756,10 @@ parallel_apply_BQSR_gatk=function(
       region=region,batch_config=batch_config,
       bin_gatk=bin_gatk,bam=bam,ref_genome=ref_genome,
       executor_id=executor_id,rec_table=rec_table,tmp_dir=tmp_dir,
-      output_dir=out_file_dir,verbose=verbose)},
-      mc.cores=threads
+      output_dir=out_file_dir,verbose=verbose,mode=mode,time=time,
+      threads=ifelse(mode=="local",threads,2),
+      ram=ram,update_time=update_time,hold=hold,wait=FALSE)},
+      mc.cores=ifelse(mode=="local",threads,3)
   )
   
   job_report[["steps"]][["gather_bam"]]=gather_bam_files(

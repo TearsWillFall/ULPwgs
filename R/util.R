@@ -82,8 +82,10 @@ unlist_lvl=function(named_list,var,recursive=FALSE){
 }
 
 
-
-
+#' @export
+parse_var=function(var,sep="\\\""){
+    paste0(sep,var,sep)
+}
 
 
 #' @export
