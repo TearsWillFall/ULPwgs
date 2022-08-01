@@ -14,7 +14,8 @@
 #' @export
 
 
-preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
+preprocess_seq=function(
+    sample_sheet=build_default_sample_sheet(),
     executor_id=make_unique_id("preprocessSEQ"), 
     vars_list=build_default_variable_list(),
     config=suppressWarnings(build_default_config()),
@@ -64,13 +65,18 @@ preprocess_seq=function(sample_sheet=build_default_sample_sheet(),
     vars_list=vars_list,steps_list=steps_list)))
     job=build_job(executor_id=executor_id,task_id=task_id)
     for_id(seq_info=seq_info,output_dir=out_file_dir,
-    vars_list=vars_list,nesting=nesting,merge_level=merge_level,executor_id = task_id,
-    pmts_list=pmts_list,bin_list=bin_list,ref_list=ref_list,print_tree=TRUE,ram=ram,threads=threads,
-    mode=mode,batch_config=batch_config,verbose=verbose,hold=hold,wait=wait,update_time=update_time)
-    Sys.sleep(10)
+    vars_list=vars_list,nesting=nesting,
+    merge_level=merge_level,executor_id = task_id,
+    pmts_list=pmts_list,bin_list=bin_list,
+    ref_list=ref_list,print_tree=TRUE,ram=ram,threads=threads,
+    mode=mode,batch_config=batch_config,
+    verbose=verbose,hold=hold,wait=wait,update_time=update_time)
+
     for_id(seq_info=seq_info,output_dir=output_dir,
-    vars_list=vars_list,nesting=nesting,merge_level=merge_level,executor_id = task_id,
-    pmts_list=pmts_list,bin_list=bin_list,ref_list=ref_list,print_tree=FALSE,
+    vars_list=vars_list,nesting=nesting,
+    merge_level=merge_level,executor_id = task_id,
+    pmts_list=pmts_list,bin_list=bin_list,
+    ref_list=ref_list,print_tree=FALSE,
     ram=ram,threads=threads,
     mode=mode,batch_config=batch_config,
     verbose=verbose,hold=hold,wait=wait,update_time=update_time)
@@ -278,7 +284,7 @@ process_variable=function(
                                 rdata_file=paste0(out_file_dir,"/",new_name,".RData")
                                 save(list=ls(),file = rdata_file)
                             
-                                exec_code=paste0("Rscript -e \"ULPwgs::process_sample(rdata=",rdata_file,")\"")
+                                exec_code=paste0("Rscript -e \"ULPwgs::process_sample(rdata=\'",rdata_file,"\')\"")
                                 if(mode=="batch"){
                                     out_file_dir2=set_dir(dir=out_file_dir,name="batch")
                                     batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
