@@ -431,7 +431,7 @@ parallel_generate_BQSR_gatk=function(
   }else if(mode=="batch"){
         
         rdata_file=paste0(tmp_dir,"/",job,".regions.RData")
-        save(regions,bin_gatk,bam,ref_genome,dbsnp,output_dir,verbose,tmp_dir,file = rdata_file)
+        save(region_list,bin_gatk,bam,ref_genome,dbsnp,output_dir,verbose,tmp_dir,file = rdata_file)
         exec_code=paste0("Rscript -e \"ULPwgs::generate_BQSR_gatk(rdata=\\\"",rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         batch_code=build_job_exec(job=job,time=time,ram=ram,
