@@ -88,7 +88,7 @@ unlist_lvl=function(named_list,var,recursive=FALSE){
 
 #' @export
 
-print_verbose=function(exec_code,arg,job,ws=1){
+print_verbose=function(exec_code,arg=NULL,job,ws=1){
       rep(cat("    \n"),ws)
       cat(crayon::blue("Job:"))
       rep(cat("    \n"),ws)
