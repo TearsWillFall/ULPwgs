@@ -80,7 +80,7 @@ preprocess_seq=function(
     ram=ram,threads=threads,
     mode=mode,batch_config=batch_config,
     verbose=verbose,hold=hold,wait=wait,update_time=update_time)
-    cat("COMPLETE!")
+    cat("COMPLETE!\n")
 
 }
 
@@ -173,6 +173,7 @@ process_variable=function(
     clean=TRUE,time="48:0:0",
     update_time=60,wait=FALSE,hold="",
     verbose=FALSE){
+                        argg <- as.list(environment())
                         task_id=make_unique_id(task_name)
                         merge=FALSE
                         id=info[ct]
@@ -283,7 +284,7 @@ process_variable=function(
                             }else{
                                 rdata_file=paste0(out_file_dir,"/",new_name,".RData")
                                 save(list=ls(),file = rdata_file)
-                            
+                                job=build_job(executor_id=executor_id,task=task_id)
                                 exec_code=paste0("Rscript -e \'ULPwgs::process_sample(rdata=\"",rdata_file,"\")\'")
                                 if(mode=="batch"){
                                     out_file_dir2=set_dir(dir=out_file_dir,name="batch")
@@ -313,7 +314,7 @@ process_variable=function(
 #' @param rdata Path to RData file
 #' @export
 process_sample=function(rdata=""){
-                print(rdata)
+      
                 load(file=rdata)
                 report=list()
                 cat("\t\n")
