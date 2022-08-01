@@ -435,7 +435,7 @@ parallel_generate_BQSR_gatk=function(
         exec_code=paste0("Rscript -e \"ULPwgs::generate_BQSR_gatk(rdata=\\\"",rdata_file,"\\\"selected=$SGE_TASK_ID)")
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         batch_code=build_job_exec(job=job,time=time,ram=ram,
-        threads=threads,output_dir=out_file_dir2,
+        threads=2,output_dir=out_file_dir2,
         hold=hold,array=length(region_list))
         exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
 
@@ -772,7 +772,7 @@ parallel_apply_BQSR_gatk=function(
         exec_code=paste0("Rscript -e \"ULPwgs::apply_BQSR_gatk(rdata=\\\"",rdata_file,"\\\"selected=$SGE_TASK_ID)")
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         batch_code=build_job_exec(job=job,time=time,ram=ram,
-        threads=threads,output_dir=out_file_dir2,
+        threads=2,output_dir=out_file_dir2,
         hold=hold,array=length(region_list))
         exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
 
@@ -785,7 +785,7 @@ parallel_apply_BQSR_gatk=function(
             Check std error for more information.")
         }
 
-        job_report[["steps"]][["apply_bqsr"]]<- build_job_report(
+        job_report[["steps"]][["apply_bqsr"]] <- build_job_report(
               job_id=job,
               executor_id=executor_id,
               exec_code=exec_code, 
