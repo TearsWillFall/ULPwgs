@@ -186,7 +186,7 @@ for_id=function(
                                                 samples$last=FALSE
                                                 samples[seq(nrow(samples)-1,nrow(samples)),]$last=TRUE
                                                 seq_info_id=dplyr::left_join(seq_info_id,samples,by="path")
-                                                seq_info_id[seq_info_id$last!=TRUE&seq_info_id$order>4,]$step="FALSE"
+                                                seq_info_id[seq_info_id$last!=TRUE&seq_info_id$order>5,]$step="FALSE"
                                             }
                                 
                                             instrument_name=""
@@ -225,8 +225,7 @@ for_id=function(
 
                                             file_R1=seq_info_R1$path
                                             file_R2=seq_info_R2$path
-                                            hold=""
-                                            bam=""
+                                     
                                         
                                             if(print_tree){
                                                 cat(add_nesting_ws(nesting,n=nest_ws))
@@ -339,6 +338,8 @@ process_sample=function(rdata=""){
       
                 load(file=rdata)
                 report=list()
+                hold=""
+                bam=""
                 cat("\t\n")
                 cat(crayon::magenta(paste0("Processing sample: ",new_name,"\n")))
                 cat("\t\n")
@@ -452,6 +453,56 @@ process_sample=function(rdata=""){
                 hold <<- unlist_lvl(report[[new_name]][["steps"]][["alignment"]],var="job_id",recursive=TRUE)
             }
 
+
+
+              if(tool_config_id[step,]$name=="pre_alignqc"){
+                    cat("\t\n")
+                    cat(crayon::bold("pre_alignqc: \n"))
+                    cat("\t\n")
+
+                    bi=""
+                    ti=""
+                    ri=""
+                    ref_flat=""
+                    if(seq_info_R1$method_type=="CAPTURE"|seq_info_R1$method_type=="EXOME"){
+                        method="tg"
+                        bi=ref_list[[seq_info_R1$reference]][["panel"]][[seq_info_R1$method_version]]$intervals$bi
+                        ti=ref_list[[seq_info_R1$reference]][["panel"]][[seq_info_R1$method_version]]$intervals$ti
+                    } else if(seq_info_R1$method_type=="WGS"){
+                        method="wgs"
+                    } else if(seq_info_R1$method_type=="RNASEQ"){
+                        method="rna"
+                        ri=ref_list[[seq_info_R1$reference]][["rnaseq"]][[seq_info_R1$method_version]]$intervals$ri
+                        ref_flat=ref_list[[seq_info_R1$reference]][["rnaseq"]][[seq_info_R1$method_version]]$reference$ref_flat
+                    }
+                
+                    args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="pre_alignqc"))
+
+                    report[[new_name]][["steps"]][["metrics_pre_alignqc"]] <<- metrics_alignqc(
+                        bin_samtools=bin_list$alignqc$bin_samtools,
+                        bin_picard=bin_list$alignqc$bin_picard,
+                        bin_bedtools=bin_list$alignqc$bin_bedtools,
+                        bam=bam,
+                        output_dir=paste0(out_file_dir,"/alignqc_reports/pre_alignqc"),
+                        ref_genome=ref_list[[seq_info_R1$reference]]$reference$genome,
+                        verbose=tool_config_id[step,]$verbose,
+                        tmp_dir=out_file_dir,
+                        bi=bi,
+                        ti=ti,
+                        ri=ri,
+                        ref_flat=ref_flat,
+                        method=method,
+                        executor_id=task_id,
+                        batch_config=tool_config_id[step,]$batch_config,
+                        mode=tool_config_id[step,]$mode,
+                        time=tool_config_id[step,]$time,
+                        threads=tool_config_id[step,]$threads,
+                        ram=tool_config_id[step,]$ram,
+                        update_time=60,wait=FALSE,
+                        hold=hold
+                    )
+                }  
+
             if(!merge){
 
                 if(tool_config_id[step,]$name=="markdups"){
@@ -480,7 +531,7 @@ process_sample=function(rdata=""){
                     hold <<- unlist_lvl(report[[new_name]][["steps"]][["markdups"]],var="job_id",recursive=TRUE)
                     }
             
-                    if(tool_config_id[step,]$name=="recalibrate"){
+                if(tool_config_id[step,]$name=="recalibrate"){
                     cat("\t\n")
                     cat(crayon::bold("recalibrate: \n"))
                     cat("\t\n")
@@ -511,9 +562,9 @@ process_sample=function(rdata=""){
                     }
 
 
-                if(tool_config_id[step,]$name=="alignqc"){
+                if(tool_config_id[step,]$name=="post_alignqc"){
                     cat("\t\n")
-                    cat(crayon::bold("alignqc: \n"))
+                    cat(crayon::bold("post_alignqc: \n"))
                     cat("\t\n")
 
                     bi=""
@@ -532,14 +583,14 @@ process_sample=function(rdata=""){
                         ref_flat=ref_list[[seq_info_R1$reference]][["rnaseq"]][[seq_info_R1$method_version]]$reference$ref_flat
                     }
                 
-                    args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="alignqc"))
+                    args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="post_alignqc"))
 
-                    report[[new_name]][["steps"]][["metrics_alignqc"]] <<- metrics_alignqc(
+                    report[[new_name]][["steps"]][["metrics_post_alignqc"]] <<- metrics_alignqc(
                         bin_samtools=bin_list$alignqc$bin_samtools,
                         bin_picard=bin_list$alignqc$bin_picard,
                         bin_bedtools=bin_list$alignqc$bin_bedtools,
                         bam=bam,
-                        output_dir=out_file_dir,
+                        output_dir=paste0(out_file_dir,"/alignqc_reports/post_alignqc"),
                         ref_genome=ref_list[[seq_info_R1$reference]]$reference$genome,
                         verbose=tool_config_id[step,]$verbose,
                         tmp_dir=out_file_dir,
@@ -563,6 +614,7 @@ process_sample=function(rdata=""){
         })
 
         save(report,file=paste0(out_file_dir_job_report,"/",new_name,".job_report.RData"))
+        unlink(tmp, recursive = TRUE)
 }
 
 

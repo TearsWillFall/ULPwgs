@@ -103,8 +103,20 @@ build_default_steps_list=function(
                 stats="all",
                 coord_sort=FALSE
             )),
-        merge_bam=list(
+
+        ,
+        pre_alignqc=list(
             order=5,
+            step=build_default_step_list()$pre_alignqc,
+            threads=build_default_step_threads_list()$pre_alignqc,
+            ram=build_default_step_ram_list()$pre_alignqc,
+            batch_config=build_default_preprocess_config(),
+            mode=build_default_step_mode_list()$pre_alignqc,
+            verbose=build_default_step_verbose_list()$pre_alignqc,
+            time=build_default_step_time_list()$pre_alignqc,
+            args=list()),
+        merge_bam=list(
+            order=6,
             step=build_default_step_list()$merge_bam,
             threads=build_default_step_threads_list()$merge_bam,
             ram=build_default_step_ram_list()$merge_bam,
@@ -116,7 +128,7 @@ build_default_steps_list=function(
             )),
 
         markdups=list(
-            order=6,
+            order=7,
             step=build_default_step_list()$markdups,
             threads=build_default_step_threads_list()$markdups,
             ram=build_default_step_ram_list()$markdups,
@@ -128,7 +140,7 @@ build_default_steps_list=function(
                 remove_duplicates=FALSE)
             ),
          recalibrate=list(
-            order=7,
+            order=8,
             step=build_default_step_list()$recalibrate,
             threads=build_default_step_threads_list()$recalibrate,
             ram=build_default_step_ram_list()$recalibrate,
@@ -140,15 +152,15 @@ build_default_steps_list=function(
                 clean=TRUE
             )
             ),
-        alignqc=list(
-            order=8,
-            step=build_default_step_list()$alignqc,
-            threads=build_default_step_threads_list()$alignqc,
-            ram=build_default_step_ram_list()$alignqc,
+        post_alignqc=list(
+            order=9,
+            step=build_default_step_list()$post_alignqc,
+            threads=build_default_step_threads_list()$post_alignqc,
+            ram=build_default_step_ram_list()$post_alignqc,
             batch_config=build_default_preprocess_config(),
-            mode=build_default_step_mode_list()$alignqc,
-            verbose=build_default_step_verbose_list()$alignqc,
-            time=build_default_step_time_list()$alignqc,
+            mode=build_default_step_mode_list()$post_alignqc,
+            verbose=build_default_step_verbose_list()$post_alignqc,
+            time=build_default_step_time_list()$post_alignqc,
             args=list()))
         ){
     return(steps)
@@ -269,9 +281,10 @@ build_default_step_time_list=function(
         post_fastqc="48:0:0",
         alignment="48:0:0",
         merge_bam="48:0:0",
+        pre_alignqc="48:0:0",
         markdups="48:0:0",
         recalibrate="48:0:0",
-        alignqc="48:0:0"
+        post_alignqc="48:0:0"
     )
 ){
     return(time)  
@@ -285,9 +298,10 @@ build_default_step_threads_list=function(
         post_fastqc=6,
         alignment=12,
         merge_bam=12,
+        pre_alignqc=6,
         markdups=12,
         recalibrate=12,
-        alignqc=6
+        post_alignqc=6
     )
 ){
     return(threads)   
@@ -301,9 +315,10 @@ build_default_step_list=function(
         post_fastqc=TRUE,
         alignment=TRUE,
         merge_bam=TRUE,
+        pre_alignqc=TRUE,
         markdups=TRUE,
         recalibrate=TRUE,
-        alignqc=TRUE
+        post_alignqc=TRUE
     )
 ){
    return(steps)    
@@ -318,9 +333,10 @@ build_default_step_mode_list=function(
         post_fastqc="local",
         alignment="local",
         merge_bam="local",
+        pre_alignqc="local",
         markdups="local",
         recalibrate="local",
-        alignqc="local"
+        post_alignqc="local"
     )
 ){
     return(mode)
@@ -335,9 +351,10 @@ build_default_step_verbose_list=function(
         post_fastqc=TRUE,
         alignment=TRUE,
         merge_bam=TRUE,
+        pre_alignqc=TRUE,
         markdups=TRUE,
         recalibrate=TRUE,
-        alignqc=TRUE
+        post_alignqc=TRUE
     )
 ){
    return(verbose)   
@@ -352,9 +369,10 @@ build_default_step_batch_list=function(
         post_fastqc=build_default_preprocess_config(),
         alignment=build_default_preprocess_config(),
         merge_bam=build_default_preprocess_config(),
+        pre_alignqc=build_default_preprocess_config(),
         markdups=build_default_preprocess_config(),
         recalibrate=build_default_preprocess_config(),
-        alignqc=build_default_preprocess_config()
+        post_alignqc=build_default_preprocess_config()
 
     )
 ){
@@ -369,9 +387,10 @@ build_default_step_ram_list=function(
         post_fastqc=6,
         alignment=6,
         merge_bam=6,
+        pre_alignqc=6,
         markdups=8,
         recalibrate=8,
-        alignqc=6
+        post_alignqc=6
     )
 ){
     return(ram)  
@@ -408,6 +427,12 @@ build_default_binary_list=function(
                 merge_bams=list(
                     bin_samtools=build_default_tool_binary_list()$bin_samtools
                 ),
+                ,
+                pre_alignqc=list(  
+                    bin_samtools=build_default_tool_binary_list()$bin_samtools,
+                    bin_picard=build_default_tool_binary_list()$bin_picard,
+                    bin_bedtools=build_default_tool_binary_list()$bin_bedtools
+                ),
                 markdups=list(
                     bin_gatk=build_default_tool_binary_list()$bin_gatk
                 ),
@@ -416,7 +441,7 @@ build_default_binary_list=function(
                     bin_gatk=build_default_tool_binary_list()$bin_gatk,
                     bin_picard=build_default_tool_binary_list()$bin_picard
                 ),
-                alignqc=list(  
+                post_alignqc=list(  
                     bin_samtools=build_default_tool_binary_list()$bin_samtools,
                     bin_picard=build_default_tool_binary_list()$bin_picard,
                     bin_bedtools=build_default_tool_binary_list()$bin_bedtools
