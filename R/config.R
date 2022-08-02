@@ -136,7 +136,7 @@ build_default_steps_list=function(
             verbose=build_default_step_verbose_list()$markdups,
             time=build_default_step_time_list()$markdups,
             args=list(
-                remove_duplicates=FALSE)
+                remove_duplicates=TRUE)
             ),
          recalibrate=list(
             order=8,
