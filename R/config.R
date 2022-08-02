@@ -104,7 +104,6 @@ build_default_steps_list=function(
                 coord_sort=FALSE
             )),
 
-        ,
         pre_alignqc=list(
             order=5,
             step=build_default_step_list()$pre_alignqc,
