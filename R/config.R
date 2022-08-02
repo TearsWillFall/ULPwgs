@@ -295,11 +295,11 @@ build_default_step_threads_list=function(
         pre_fastqc=6,
         trimming=6,
         post_fastqc=6,
-        alignment=12,
-        merge_bam=12,
+        alignment=8,
+        merge_bam=4,
         pre_alignqc=6,
-        markdups=12,
-        recalibrate=12,
+        markdups=8,
+        recalibrate=6,
         post_alignqc=6
     )
 ){
