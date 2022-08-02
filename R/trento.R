@@ -376,8 +376,8 @@ clonet_log2_beta=function(plt_data){
     server_log2_beta=function(input,output,session){
 
         boxes=list()
-        lapply(unique(plt_data$sample),FUN=function(id){
-            tmp_plt_data=plt_data %>% dplyr::filter(sample==id)
+        lapply(unique(plt_data$name),FUN=function(id){
+            tmp_plt_data=plt_data %>% dplyr::filter(name==id)
             output[[paste0(id,"_plot")]]<- shiny::renderPlot({
                 
                 plot_log2_beta(tmp_plt_data,
@@ -681,7 +681,7 @@ clonet_stats=function(plt_data){
     })
     }
 
-    shiny::shinyApp(ui = build_ui, server = server_ai)
+    shiny::shinyApp(ui = build_ui, server = server_stats)
 }
 
 
