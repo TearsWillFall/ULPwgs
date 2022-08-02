@@ -479,9 +479,9 @@ process_sample=function(rdata=""){
                     args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="pre_alignqc"))
 
                     report[[new_name]][["steps"]][["metrics_pre_alignqc"]] <<- metrics_alignqc(
-                        bin_samtools=bin_list$alignqc$bin_samtools,
-                        bin_picard=bin_list$alignqc$bin_picard,
-                        bin_bedtools=bin_list$alignqc$bin_bedtools,
+                        bin_samtools=bin_list$pre_alignqc$bin_samtools,
+                        bin_picard=bin_list$pre_alignqc$bin_picard,
+                        bin_bedtools=bin_list$pre_alignqc$bin_bedtools,
                         bam=bam,
                         output_dir=paste0(out_file_dir,"/alignqc_reports/pre_alignqc"),
                         ref_genome=ref_list[[seq_info_R1$reference]]$reference$genome,
@@ -586,9 +586,9 @@ process_sample=function(rdata=""){
                     args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="post_alignqc"))
 
                     report[[new_name]][["steps"]][["metrics_post_alignqc"]] <<- metrics_alignqc(
-                        bin_samtools=bin_list$alignqc$bin_samtools,
-                        bin_picard=bin_list$alignqc$bin_picard,
-                        bin_bedtools=bin_list$alignqc$bin_bedtools,
+                        bin_samtools=bin_list$post_alignqc$bin_samtools,
+                        bin_picard=bin_list$post_alignqc$bin_picard,
+                        bin_bedtools=bin_list$post_alignqc$bin_bedtools,
                         bam=bam,
                         output_dir=paste0(out_file_dir,"/alignqc_reports/post_alignqc"),
                         ref_genome=ref_list[[seq_info_R1$reference]]$reference$genome,
