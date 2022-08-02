@@ -614,7 +614,7 @@ process_sample=function(rdata=""){
         })
 
         save(report,file=paste0(out_file_dir_job_report,"/",new_name,".job_report.RData"))
-        unlink(tmp, recursive = TRUE)
+        unlink(out_file_dir_tmp, recursive = TRUE)
 }
 
 
