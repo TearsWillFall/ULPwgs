@@ -426,7 +426,6 @@ build_default_binary_list=function(
                 merge_bams=list(
                     bin_samtools=build_default_tool_binary_list()$bin_samtools
                 ),
-                ,
                 pre_alignqc=list(  
                     bin_samtools=build_default_tool_binary_list()$bin_samtools,
                     bin_picard=build_default_tool_binary_list()$bin_picard,
