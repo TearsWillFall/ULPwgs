@@ -505,7 +505,7 @@ mapq_metrics_bam_samtools=function(
 
   out_file=paste0(out_file_dir,"/",get_file_name(bam),".mapq_dist.txt")
   exec_code=paste(bin_samtools,"view",bam," -@ ",threads, " | awk \'{c[$5]++} END { for (i in c) printf(\"%s\\t%s\\n\",i,c[i]) }\'",
-    " | sort -t '\\t' -k 1 -g >", out_file)
+    " | sort -t$'\\t' -k 1 -g >", out_file)
 
   job=build_job(executor_id=executor_id,task_id=task_id)
 
