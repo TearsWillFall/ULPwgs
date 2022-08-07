@@ -466,7 +466,7 @@ job=build_job(executor_id=executor_id,task_id=task_id)
 
 wgs_summary_metrics_bam_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
-  bam="",output_dir="",verbose=FALSE,
+  bam="",mapq=0,output_dir="",verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   tmp_dir=".",threads=1,ram=4,mode="local",
   executor_id=make_unique_id("WGSsummaryMetrics"),
