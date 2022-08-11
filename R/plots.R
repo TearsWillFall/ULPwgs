@@ -245,7 +245,7 @@ gene_lbl=1, gene_lbl_evi=0.2, gene_lbl_beta_low=0.2, gene_lbl_beta_high=1, gene_
 #' @import patchwork
 #' @export
 
-plot_ai=function(plt_data,ai_limit=0.2,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
+plot_ai=function(plt_data,ai_limit=0.2,min_log2_limit=-0.3,max_log2_limit=0.5,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
 
 
   filt <- c()
@@ -274,17 +274,11 @@ plot_ai=function(plt_data,ai_limit=0.2,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=F
     return(newdata)
   }
 
-  plt_data=plt_data %>% dplyr::mutate(cn_t=ifelse(chr=="X",round(2**all_log2.corr),2*round(2**all_log2.corr)),
-  beta=ifelse(evidence>=ai_limit,beta,1))
-  if(!is.null(plt_data$name)){
-    plt_data=plt_data %>% arrange(name)
-    plt_data$s_order=as.numeric(as.factor(plt_data$name))
-    plt_data$id=plt_data$name
-  }else{
-    plt_data=plt_data %>% arrange(sample)
-    plt_data$s_order=as.numeric(as.factor(plt_data$sample))
-    plt_data$id=plt_data$sample
-  }
+  plt_data=plt_data %>% dplyr::mutate(cn_t=ifelse(chr=="X",round(2**all_log2),
+  2*round(2**all_log2)),
+  beta=ifelse(evidence>=ai_limit,beta,1),log2=ifelse(min_log2_limit>all_log2,
+  min_log2_limit,ifelse(max_log2_limit<all_log2,max_log2_limit,all_log2)))
+
   to_plot=list()
  
   to_plot[["X"]]<-map_triangles(plt_data %>% dplyr::filter(chr=="X"))
@@ -294,14 +288,14 @@ plot_ai=function(plt_data,ai_limit=0.2,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=F
 
 
   tc_pl_plot=function(plt_data){
-    tc_data=plt_data %>% dplyr::group_by(id,s_order) %>% 
+    tc_data=plt_data %>% dplyr::group_by(s_name,s_order) %>% 
     dplyr::distinct(tc,ploidy)%>% dplyr::ungroup() %>%
     dplyr::mutate(nc=1-tc) %>% 
-    tidyr::pivot_longer(cols = -c(id,s_order,ploidy)) %>% 
+    tidyr::pivot_longer(cols = -c(s_name,s_order,ploidy)) %>% 
     dplyr::mutate(col=ifelse(name=="tc","red","grey"),total=1,n_samples=max(s_order))
 
     df.grobs <- tc_data %>%
-        dplyr::group_by(id,s_order,ploidy, total,n_samples) %>%
+        dplyr::group_by(s_name,s_order,ploidy, total,n_samples) %>%
         dplyr::do(subplots = ggplot(., aes(1, value, fill = col)) +
           geom_col(position = "fill", colour = "black") +
           coord_polar(theta = "y") +
@@ -341,12 +335,12 @@ plot_ai=function(plt_data,ai_limit=0.2,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=F
 main_plot=function(data,type="autosome",show_cn=TRUE){
     
     p=ggplot(data[[type]]) +
-    geom_polygon(aes(x = x, y = y, fill =1-beta, 
-    group = interaction(id, gene)),col="black",size=0.1) +
+    geom_polygon(aes(x = x, y = y, fill =(1-beta)/tc, 
+    group = interaction(s_order, gene)),col="black",size=0.1) +
     scale_fill_gradient(low = "grey", high = "#fbff00", limits = c(0, 1))+
     ggnewscale::new_scale_fill() +
-    geom_polygon(aes(x=xdown, y = ydown, fill = all_log2,
-    group = interaction(id, gene)),col="black",size=0.1)+
+    geom_polygon(aes(x=xdown, y = ydown, fill = log2,
+    group = interaction(s_order, gene)),col="black",size=0.1)+
     scale_fill_gradient2(low="blue",mid="grey",high="red")+
     theme(
         plot.margin = unit(c(0, 0, 0, 0), "pt"),
@@ -366,16 +360,15 @@ main_plot=function(data,type="autosome",show_cn=TRUE){
     print(p&coord_equal())
   }
 
-
+  
 
   name_plot=function(plt_data){
-   p <- ggplot(plt_data %>% distinct(id,s_order),aes(x = s_order, y = 2.5*max(s_order)))+ geom_tile(fill=NA, col = NA)
+   p <- ggplot(plt_data %>% dplyr::distinct(s_name,s_order),aes(x = s_order, y = 2.5*max(s_order)))+ geom_tile(fill=NA, col = NA)
    p<-p+theme_void()+scale_x_continuous(expand = c(0,0))
-   p<- p+geom_text(aes(x = s_order, y = 1.25*max(s_order),label=id),angle=45, hjust=0)
+   p<- p+geom_text(aes(x = s_order, y = 1.25*max(s_order),label=s_name),angle=45, hjust=0)
 
   print(p&coord_equal(clip="off"))
   }
-
   
   plts=list()
   plts[["names"]]=name_plot(plt_data)
@@ -405,19 +398,17 @@ plot_stats=function(plt_data,gene_tg=TRUE, gene_ctrl=FALSE, gene_other=FALSE){
       filt <- c(filt, "other")
     }
     plt_data <- plt_data[plt_data$gene_type %in% filt, ]
-    plt_data$s_order <- as.numeric(as.factor(plt_data$id))
-
 
     tc_pl_plot=function(plt_data){
     
-    tc_data=plt_data %>% dplyr::group_by(id,s_order) %>% 
+    tc_data=plt_data %>% dplyr::group_by(s_name,s_order) %>% 
     dplyr::distinct(tc,ploidy)%>% dplyr::ungroup() %>%
     dplyr::mutate(nc=1-tc) %>% 
-    tidyr::pivot_longer(cols = -c(id,s_order,ploidy)) %>% 
+    tidyr::pivot_longer(cols = -c(s_name,s_order,ploidy)) %>% 
     dplyr::mutate(col=ifelse(name=="tc","red","grey"),total=1,n_samples=max(s_order))
 
     df.grobs <- tc_data %>%
-        dplyr::group_by(id,s_order,ploidy, total,n_samples) %>%
+        dplyr::group_by(s_name,s_order,ploidy, total,n_samples) %>%
         dplyr::do(subplots = ggplot(., aes(1, value, fill = col)) +
           geom_col(position = "fill", colour = "black") +
           coord_polar(theta = "y") +
@@ -456,16 +447,16 @@ plot_stats=function(plt_data,gene_tg=TRUE, gene_ctrl=FALSE, gene_other=FALSE){
 
   main_plot=function(plt_data){
 
-    summ=plt_data %>% dplyr::filter(gene_type=="target") %>%
-    dplyr::group_by(id,cn.call.corr,order,alpha,col,s_order) %>% 
-    summarise(N=n(),genes=paste0(gene,collapse=";")) %>% 
+    summ=plt_data %>%
+    dplyr::group_by(s_name,cn.call.corr,order,alpha,col,s_order) %>% 
+    dplyr::summarise(N=dplyr::n(),genes=paste0(gene,collapse=";")) %>% 
     dplyr::arrange(desc(s_order),desc(N)) %>%
-    dplyr::group_by(id) %>% 
+    dplyr::group_by(s_name,s_order) %>% 
     dplyr::mutate(Freq=N/sum(N),col=col) %>% dplyr::ungroup()
   
 
-    p1<-ggplot(summ)+geom_bar(position="stack",stat="identity",aes(y=reorder(id,s_order),
-        x=Freq,fill=fct_reorder(col,order),alpha=alpha,group = order),col="black")+
+    p1<-ggplot(summ)+geom_bar(position="stack",stat="identity",aes(y=reorder(paste0(s_name,"_",s_order),s_order),
+        x=Freq,fill=col,alpha=alpha,group = order),col="black")+
         scale_fill_identity()+
         theme_classic()+scale_x_continuous(expand=c(0,0))+
         xlab("Aberration Frequency %")+ylab("Samples")+scale_alpha_identity()
@@ -480,16 +471,14 @@ plot_stats=function(plt_data,gene_tg=TRUE, gene_ctrl=FALSE, gene_other=FALSE){
 
 
 
-
 plot_pathways=function(plt_data){
 
 
       main_plot <- function(plt_data){
- 
 
         p <- ggplot(plt_data,stat="identity",position="stack",
         aes(x=Class,y=Freq))+geom_point(shape=21,aes(fill=class_col))+geom_polygon(fill=NA,aes(
-        group=cn_class,col=class_col))+coord_radar()+theme_bw()+scale_y_continuous(limits=c(0,1))+
+        group=cn_class,col=class_col))+ggiraphExtra::coord_radar()+theme_bw()+scale_y_continuous(limits=c(0,1))+
         theme(axis.text.y =element_blank(),axis.ticks.y =element_blank())+
         scale_color_identity()+scale_fill_identity()
         

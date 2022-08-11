@@ -26,7 +26,6 @@
 
 preprocess_seq=function(
     sample_sheet=build_default_sample_sheet(),
-    executor_id=make_unique_id("preprocessSEQ"), 
     vars_list=build_default_variable_list(),
     config=suppressWarnings(build_default_config()),
     opts_list=build_default_option_list(),
@@ -34,10 +33,13 @@ preprocess_seq=function(
     steps_list=build_default_steps_list(),
     bin_list=build_default_binary_list(),
     ref_list=build_default_reference_list(),
-    nest_ws=1,nesting="",
-    task_name="preprocessSEQ",output_dir="",
     merge_level="library",
+    nest_ws=1,nesting="",
+    executor_id=make_unique_id("preprocessSEQ"), 
+    task_name="preprocessSEQ",output_dir="",
     ram=1,
+    header=TRUE,
+    sep="",
     threads=1,
     mode="local",
     batch_config=build_default_preprocess_config(),
@@ -64,8 +66,21 @@ preprocess_seq=function(
         out_file_dir=out_file_dir,
         out_files=list()
       )
-
-    validate_sample_sheet(sample_sheet=sample_sheet,
+    if(!is.null(sample_sheet)){
+        
+        if(!is.data.frame(sample_sheet)){
+                sample_sheet=read.csv(sample_sheet,header=header,sep=sep)
+                if(!header){
+                    names(sample_sheet)=c("project_id","patient_id","sample_id","sequencing_type","method_type",
+                    "method_version","reference","library_id","R1","R2","step","threads",
+                    "ram","batch_config","time","mode","verbose","args")
+                }
+        }
+    }
+    
+ 
+    validate_sample_sheet(
+    sample_sheet=sample_sheet,
     vars_list=vars_list,opts_list=opts_list)
     
     seq_info=seq_info_check(sample_sheet=sample_sheet,vars_list=vars_list)

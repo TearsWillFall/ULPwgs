@@ -167,7 +167,7 @@ summary_metrics_bam_picard=function(
 )
 
 
- if(wait&&mode=="batch"){
+if(wait&&mode=="batch"){
     job_validator(job=job_report$job_id,
     time=update_time,verbose=verbose,threads=threads)
   }
@@ -526,3 +526,4 @@ job=build_job(executor_id=executor_id,task_id=task_id)
   }
   return(job_report)
 }
+

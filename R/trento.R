@@ -90,7 +90,6 @@ preprocess_seq_trento=function(
 #' This function identifies a set of BAM files as tumour and normal
 #' and processes them using the CLONET pipeline
 #'
-#' @param sif_path Path to singularity image file. 
 #' @param bam_dir Path to bam directory. 
 #' @param normal_id Normal sample identifier. 
 #' @param patient_id Patient id. 
@@ -111,13 +110,13 @@ preprocess_seq_trento=function(
 
 
 multisample_clonet_trento=function(
-    sif_path="Singularity_Images/preProcess_latest.sif",
-    bam_dir="",normal_id="",patient_id="",tmp_dir="",threads=3,
-    ram=4,output_dir="",verbose=FALSE,
+    sample_sheet,bam_dir="",normal_id="",patient_id="",version="V3",
+    tmp_dir="",header=TRUE,sep="",threads=3,ram=4,output_dir="",verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("multi_clonet"),
     task_name="multi_clonet",mode="local",time="48:0:0",
     update_time=60,wait=FALSE,hold=""){
+
 
         argg <- as.list(environment())
 
@@ -136,6 +135,34 @@ multisample_clonet_trento=function(
                 out_files=list(
                 )
         )
+
+
+    if(!is.null(sample_sheet)){
+      
+        if(!is.data.frame(sample_sheet)){
+                file_info=read.csv(sample_sheet,header=header,sep=sep)
+                if(!header){
+                    names(file_info)=c("patient_id","tumour","normal","version")
+                }
+        }else{
+                file_info=sample_sheet
+        }
+
+      
+
+        parallel::mclapply(seq(1,nrow(file_info)),FUN=function(x){
+        job_report[["steps"]][["clonet"]][[ULPwgs::get_file_name(file_info[x,]$tumour)]]<<-clonet_trento(
+            tumour=file_info[x,]$tumour,normal=file_info[x,]$normal,
+            patient_id=file_info[x,]$patient_id,
+            version=file_info[x,]$version,
+            threads=threads,
+            ram=ram,output_dir=paste0(out_file_dir,patient_id),verbose=verbose,
+            executor_id=task_id,mode=mode,time=time,
+            update_time=60,wait=FALSE,hold="")
+        },mc.cores=ifelse(mode=="local",1,3))
+
+
+    }else{
         bam_dir_path=system(paste("realpath",bam_dir),intern=TRUE)
         bam_files=system(paste0("find ",bam_dir_path,"| grep bam$"),intern=TRUE)
         t_files=bam_files[!grepl(normal_id,bam_files)]
@@ -143,14 +170,16 @@ multisample_clonet_trento=function(
 
         parallel::mclapply(t_files,FUN=function(tumour){
             job_report[["steps"]][["clonet"]][[ULPwgs::get_file_name(tumour)]]<<-clonet_trento(
-                sif_path=sif_path,
                 tumour=tumour,normal=normal,
                 patient_id=patient_id,
+                version=version,
                 threads=threads,
                 ram=ram,output_dir=paste0(out_file_dir,patient_id),verbose=verbose,
                 executor_id=task_id,mode=mode,time=time,
                 update_time=60,wait=FALSE,hold="")
         },mc.cores=ifelse(mode=="local",1,3))
+
+    }
 
 
     if(wait&&mode=="batch"){
@@ -171,7 +200,8 @@ multisample_clonet_trento=function(
 #' normal BAMS and applies the CLONET pipeline
 #'
 #'
-#' @param sif_path Path to singularity image file. 
+#' @param sif_path Path to singularity image file
+#' @param version PCF Select panel version to use
 #' @param tumour Path to tumour BAM file 
 #' @param normal Path to normal BAM file
 #' @param patient_id Patient id. 
@@ -191,8 +221,9 @@ multisample_clonet_trento=function(
 
 
 clonet_trento=function(
-    sif_path="Singularity_Images/preProcess_latest.sif",
-    tumour="",normal="",patient_id="",tmp_dir="",threads=3,
+    sif_path=build_default_sif_list()$sif_path$V3,version,
+    sample_sheet="",tumour="",normal="",patient_id="",
+    tmp_dir="",threads=3,
     ram=4,output_dir="",verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("clonet"),
@@ -201,14 +232,26 @@ clonet_trento=function(
 
     argg <- as.list(environment())
 
+   
+
+    if(!is.null(version)){
+        sif_path=build_default_sif_list()$pcf_select[ver]
+        if(is.null(sif_path)){
+            stop(paste0(ver, " is not a valid PCF Select panel version"))
+        }
+    }
+  
     task_id=make_unique_id(task_name)
     out_file_dir=set_dir(dir=output_dir,name="clonet_reports")
     out_file_dir_tmp=set_dir(dir=output_dir,name="clonet_tmp")
     out_file_dir=set_dir(dir=out_file_dir,name=get_file_name(tumour))
     out_file_dir_tmp=set_dir(dir= out_file_dir_tmp,name=get_file_name(tumour))
 
+
+
     file_info=data.frame(Patient=patient_id,Tumour=tumour,Normal=normal)
 
+   
     sample_sheet=paste0(getwd(),"/",out_file_dir_tmp,"/",patient_id,"_",get_file_name(tumour),"_tmp.txt")
     write.table(file_info,file=sample_sheet,quote=FALSE,row.names=FALSE,col.names=TRUE,sep="\t")
 
@@ -216,6 +259,8 @@ clonet_trento=function(
     sif_path, " -s ", sample_sheet ," -o ", paste0(getwd(),"/",out_file_dir)," -t ",out_file_dir_tmp,
     " -n " , threads)
     
+
+ 
     out_file_dir2=set_dir(dir=out_file_dir,name="batch")
     job=build_job(executor_id=executor_id,task_id=make_unique_id(task_id))
 
@@ -280,7 +325,7 @@ clonet_trento=function(
 
 
 clonet_view_trento=function(method="log2_beta", clonet_dir="",threads=3,
-    ram=4,output_dir=".",verbose=FALSE,sample_labels,
+    ram=4,output_dir=".",verbose=FALSE,sample_labels=NULL,
     batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("clonet_view"),
     task_name="clonet_view",mode="local",time="48:0:0",
@@ -305,6 +350,9 @@ clonet_view_trento=function(method="log2_beta", clonet_dir="",threads=3,
         })
     })
 
+    write.csv(dplyr::bind_rows(cn_data),file="TR273.csv")
+    
+
     ### Read TC data
     tc_input_files=paste0(clonet_dir,"/",clonet_dirs$tcEstimation$tc_estimations_CLONETv2.tsv)
     tc_data=lapply(tc_input_files,FUN=function(x){
@@ -317,38 +365,45 @@ clonet_view_trento=function(method="log2_beta", clonet_dir="",threads=3,
     })
 
 
-
+    clonet_dir
     
     ### Gene Annotations
     annot_input_file <- system.file("extdata", "gene_annotations_hg19.bed", package="ULPwgs")
     annot_data=read.delim( annot_input_file,header=TRUE)
-    panel=annot_data %>% group_by(PANEL_VERSION) %>% summarise(N=n())
+    panel=annot_data %>% dplyr::group_by(PANEL_VERSION) %>% dplyr::summarise(N=dplyr::n())
     panel$diff=abs(panel$N-length(unique(cn_data$gene)))
     
 
   
     cn_data=dplyr::bind_rows(cn_data)
     cn_data=dplyr::left_join(cn_data,cn_list,by=c("cn.call.corr"="cn"))
-    cn_data=dplyr::left_join(cn_data,annot_data %>% dplyr::filter(PANEL_VERSION==panel[which.min(panel$diff),]$PANEL_VERSION),
+    cn_data=dplyr::left_join(cn_data,annot_data %>% 
+    dplyr::filter(PANEL_VERSION==panel[which.min(panel$diff),]$PANEL_VERSION),
     by=c("gene"="hgnc_symbol"))
     if(!is.null(sample_labels)){
-        label_annotation=data.frame(name=make.unique(names(sample_labels)),id=sample_labels)
+        label_annotation=data.frame(s_name=names(sample_labels),id=sample_labels)
         cn_data=dplyr::left_join(cn_data,label_annotation,by=c("sample"="id"))
-    }
- 
+        cn_data=cn_data %>% dplyr::arrange(s_name,sample)
+        cn_data$s_order=as.numeric(as.factor(paste0(cn_data$s_name,"_",cn_data$sample)))
 
+    }else{
+        cn_data=cn_data %>% dplyr::arrange(sample)
+        cn_data$s_name=cn_data$sample
+        cn_data$s_order=as.numeric(as.factor(cn_data$sample))
+    }
+  
   
     tc_data=dplyr::bind_rows(tc_data)
 
-  
+
     plt_data[["cn_data"]]=cn_data
     plt_data[["tc_data"]]=tc_data
 
 
-    summ_beta=cn_data %>% group_by(sample) %>% summarise(beta=mean(
+    summ_beta=cn_data %>% dplyr::group_by(sample) %>% dplyr::summarise(beta=mean(
     as.numeric(beta[(all_log2+log2(ploidy/2)) < - 0.05 & gene_type=="target"& evidence!=0 ]),na.rm=TRUE),
     genes=paste0(gene[(all_log2+log2(ploidy/2)) < - 0.05 & gene_type=="target"& evidence!=0 ],collapse=";")) %>% 
-    mutate(tc_manual=1-round(beta/(2-beta), digits = 2))
+    dplyr::mutate(tc_manual=1-round(beta/(2-beta), digits = 2))
 
 
     if(method=="log2_beta"){
@@ -364,8 +419,6 @@ clonet_view_trento=function(method="log2_beta", clonet_dir="",threads=3,
     }else if(method=="pathways"){
         clonet_pathways(plt_data=plt_data[["cn_data"]])
     }
-
-
 }
 
 
@@ -376,10 +429,9 @@ clonet_log2_beta=function(plt_data){
     server_log2_beta=function(input,output,session){
 
         boxes=list()
-        lapply(unique(plt_data$name),FUN=function(id){
-            tmp_plt_data=plt_data %>% dplyr::filter(name==id)
+        lapply(unique(plt_data$s_name),FUN=function(id){
+            tmp_plt_data=plt_data %>% dplyr::filter(s_name==id)
             output[[paste0(id,"_plot")]]<- shiny::renderPlot({
-                
                 plot_log2_beta(tmp_plt_data,
                 gene_tg=any(grepl("Target",input[[paste0(id,"_gene_type")]])),
                 gene_ctrl=any(grepl("Control",input[[paste0(id,"_gene_type")]])),
@@ -399,9 +451,8 @@ clonet_log2_beta=function(plt_data){
             footer=paste0("Tumour Content=",unique(tmp_plt_data$tc),
             "; Ploidy=",unique(tmp_plt_data$ploidy)),
             sidebar =shinydashboardPlus::boxSidebar(
-                
                 id=paste0(id,"_sb"),
-                width=25,
+                width=40,
              
                 shiny::radioButtons(paste0(id,"_gene_lbl"), "Labels:", c(
                 "Genes" = 1,
@@ -453,6 +504,8 @@ clonet_log2_beta=function(plt_data){
 }
 
 
+
+
 #' @export
 clonet_pathways=function(plt_data){
 
@@ -460,11 +513,11 @@ clonet_pathways=function(plt_data){
         boxes=list()
         
         summ_plt_data=cn_data %>%dplyr::filter(Class!="") %>% 
-        dplyr::group_by(sample,Class,cn_class,class_col,tc,ploidy) %>% 
-        dplyr::summarise(N=n()) %>% dplyr::group_by(sample,Class) %>% 
+        dplyr::group_by(s_name,s_order,Class,cn_class,class_col,tc,ploidy) %>% 
+        dplyr::summarise(N=n()) %>% dplyr::group_by(s_name,s_order,Class) %>% 
         dplyr::mutate(Freq=N/sum(N))%>% dplyr::ungroup() %>% 
-        tidyr::complete(nesting(sample,tc,ploidy),
-        Class,nesting(cn_class,class_col),fill=list(Freq=0,N=0))
+        tidyr::complete(tidyr::nesting(sample,tc,ploidy),
+        Class,tidyr::nesting(cn_class,class_col),fill=list(Freq=0,N=0))
 
         lapply(unique(plt_data$sample),FUN=function(id){
             tmp_plt_data=summ_plt_data %>% dplyr::filter(sample==id)
@@ -472,13 +525,12 @@ clonet_pathways=function(plt_data){
                 plot_pathways(summ_plt_data)
             })
 
-
             boxes[[id]] <<- shinydashboardPlus::box(
             width = 12, 
             id =paste0(id,"_box"),
             footer=paste0("Tumour Content=",unique(tmp_plt_data$tc),
             "; Ploidy=",unique(tmp_plt_data$ploidy)),
-            sidebar =shinydashboardPlus::boxSidebar(
+            sidebar=shinydashboardPlus::boxSidebar(
                 id=paste0(id,"_sb"),
                 width=26
         ),
@@ -495,7 +547,7 @@ clonet_pathways=function(plt_data){
         stopApp()
     })
 }
-    shiny::shinyApp(ui = build_ui, server = server_log2_beta)
+    shiny::shinyApp(ui = build_ui, server = server_pathways)
 }
 
 
@@ -505,13 +557,15 @@ clonet_ai=function(plt_data){
 
     server_ai=function(input,output,session){
             output[[paste0("ai_plot")]]<- shiny::renderPlot({
-                
+        
                plot_ai(
                     plt_data,
                     ai_limit=input[["ai_gene_lbl_evi"]],
                     gene_tg=any(grepl("Target",input[["ai_gene_type"]])),
                     gene_ctrl=any(grepl("Control",input[["ai_gene_type"]])),
-                    gene_other=any(grepl("Other",input[["ai_gene_type"]]))
+                    gene_other=any(grepl("Other",input[["ai_gene_type"]])),
+                    min_log2_limit=input[["ai_gene_min_log2"]],
+                    max_log2_limit = input[["ai_gene_max_log2"]]
                 )
          
             })
@@ -522,12 +576,18 @@ clonet_ai=function(plt_data){
                 footer=paste0("Min TC=",min(plt_data$tc),"; ",
                 "Max TC=",max(plt_data$tc),"; ",
                 "Min Ploidy=",min(plt_data$ploidy),"; ",
-                "max Ploidy=",max(plt_data$ploidy)),
+                "Max Ploidy=",max(plt_data$ploidy)),
                 sidebar =shinydashboardPlus::boxSidebar(
                     id="ai_sb",
                     width=26,
                     shiny::sliderInput("ai_gene_lbl_evi", "AI Evidence:",
                     min = 0, max = 1, value = 0.2, step = 0.1, ticks = FALSE
+                    ),
+                    shiny::sliderInput("ai_gene_min_log2", "Min Log Limit:",
+                    min = -1, max = 0, value = -0.3, step = 0.1, ticks = FALSE
+                    ),
+                    shiny::sliderInput("ai_gene_max_log2", "Max Log Limit:",
+                    min = 0, max = 4, value = 0.5, step = 0.1, ticks = FALSE
                     ),
                     shinyWidgets::awesomeCheckboxGroup(
                         inputId = "ai_gene_type",
@@ -557,8 +617,8 @@ clonet_cn=function(plt_data){
     server_cn=function(input,output,session){
 
         boxes=list()
-        lapply(unique(plt_data$sample),FUN=function(id){
-            tmp_plt_data=plt_data %>% dplyr::filter(sample==id)
+        lapply(unique(plt_data$s_name),FUN=function(id){
+            tmp_plt_data=plt_data %>% dplyr::filter(s_name==id)
             output[[paste0(id,"_plot")]]<- shiny::renderPlot({
                 
                 plot_cn(tmp_plt_data,
@@ -617,7 +677,7 @@ clonet_cn=function(plt_data){
                     selected = c("Target")
                 )
         ),
-        shiny::plotOutput(paste0(id,"_plot")),
+        shiny::plotOutput(paste0(id,"_plot"),width="500px"),
         title =id, collapsible = TRUE,
         collapsed = FALSE, solidHeader = TRUE
     )
@@ -634,11 +694,10 @@ clonet_cn=function(plt_data){
 }
 
 
-
 #' @export
 clonet_stats=function(plt_data){
     server_stats=function(input,output,session){
-            output[[paste0("ai_plot")]]<- shiny::renderPlot({
+            output[[paste0("stats_plot")]]<- shiny::renderPlot({
                 
                plot_stats(
                     plt_data,
@@ -655,7 +714,7 @@ clonet_stats=function(plt_data){
                 footer=paste0("Min TC=",min(plt_data$tc),"; ",
                 "Max TC=",max(plt_data$tc),"; ",
                 "Min Ploidy=",min(plt_data$ploidy),"; ",
-                "max Ploidy=",max(plt_data$ploidy)),
+                "Max Ploidy=",max(plt_data$ploidy)),
                 sidebar =shinydashboardPlus::boxSidebar(
                     id="stats_sb",
                     width=26,

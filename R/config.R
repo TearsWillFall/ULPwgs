@@ -215,6 +215,7 @@ build_default_parameter_list=function(
 #' @export
 
 
+
 build_default_sample_sheet=function(
     sample_sheet=list(
         project_id="TRAILS",
@@ -481,6 +482,31 @@ build_default_tool_binary_list=function(
     ){
          return(binaries)
 }
+
+
+
+#' Build default sif list
+#' 
+#'
+#' @param sifs
+#' @export
+
+
+build_default_sif_list=function(
+    sifs=
+        list(
+            pcf_select=list(
+                V2="/lustre/scratch/scratch/regmova/Singularity_Images/pcf_select_v2_09_08_2022.sif",
+                V3="/lustre/scratch/scratch/regmova/Singularity_Images/pcf_select_v3_09_08_2022.sif"
+            ),
+            preprocess="/lustre/scratch/scratch/regmova/Singularity_Images/preProcess_latest.sif"
+        )
+    ){
+         return(sifs)
+}
+
+
+
 
 #' Build default binaries config
 #' 
@@ -858,7 +884,7 @@ build_default_myriad_module_list=function(
 build_default_preprocess_config=function(
    modules=c(
     build_default_myriad_module_list()$r,
-    build_default_myriad_module_list()$r)
+    build_default_myriad_module_list()$core)
 ){
     return(paste0(lapply(modules,FUN=myriad_module,mode="load"),collapse=";"))
 }
