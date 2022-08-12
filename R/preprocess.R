@@ -69,7 +69,8 @@ preprocess_seq=function(
     if(!is.null(sample_sheet)){
         
         if(!is.data.frame(sample_sheet)){
-                sample_sheet=read.csv(sample_sheet,header=header,sep=sep)
+                sample_sheet=read.csv(sample_sheet,header=header,sep=sep,
+                stringsAsFactors=FALSE)
                 if(!header){
                     names(sample_sheet)=c("project_id","patient_id","sample_id","sequencing_type","method_type",
                     "method_version","reference","library_id","R1","R2","step","threads",

@@ -140,7 +140,8 @@ multisample_clonet_trento=function(
     if(!is.null(sample_sheet)){
       
         if(!is.data.frame(sample_sheet)){
-                file_info=read.csv(sample_sheet,header=header,sep=sep)
+                file_info=read.csv(sample_sheet,header=header,sep=sep,
+                stringsAsFactors=FALSE)
                 if(!header){
                     names(file_info)=c("patient_id","tumour","normal","version")
                 }
