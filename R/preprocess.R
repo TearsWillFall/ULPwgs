@@ -78,7 +78,7 @@ preprocess_seq=function(
                 }
         }
     }
-    sample_sheet=sample_sheet %>% dplyr::arrange(across(vars_list[vars_list$required,]$variable))
+    sample_sheet=sample_sheet %>% dplyr::arrange(dplyr::across(vars_list[vars_list$required,]$variable))
     
  
     validate_sample_sheet(
