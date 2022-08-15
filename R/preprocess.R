@@ -183,6 +183,7 @@ for_id=function(
                                         task_id=make_unique_id(task_name)
                                         merge=FALSE
                                         id=info[ct]
+                                        
                                         ## Filter sequencing info for id
                                         seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
                                         out_file_dir=set_dir(dir=output_dir,name=id)
@@ -243,12 +244,13 @@ for_id=function(
                                             file_R1=seq_info_R1$path
                                             file_R2=seq_info_R2$path
                                      
-                                        
+                                            
+
                                             if(print_tree){
                                                 cat(add_nesting_ws(nesting,n=nest_ws))
-                                                cat(paste0(nesting,"|----",crayon::green(paste0("R1: ",seq_info_R1$path)),"\n"))
-                                                cat(add_nesting_ws(nesting,n=nest_ws))
-                                                cat(paste0(nesting,"|----",crayon::green(paste0("R2: ",seq_info_R2$path)),"\n")) 
+                                                # cat(paste0(nesting,"|----",crayon::green(paste0("R1: ",seq_info_R1$path)),"\n"))
+                                                # cat(add_nesting_ws(nesting,n=nest_ws))
+                                                # cat(paste0(nesting,"|----",crayon::green(paste0("R2: ",seq_info_R2$path)),"\n")) 
                                                 bold_text=FALSE
                                                 lapply(seq(1,nrow(tool_config_id)),FUN=function(step){
                                                     
