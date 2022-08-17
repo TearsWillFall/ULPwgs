@@ -59,6 +59,7 @@ build_flowcell_id=function(flowcells=list(
       "NovaSeq 6000",
       "NovaSeq 6000",
       "NovaSeq 6000",
+      "NovaSeq 6000",
       "NovaSeq 6000"
 
     ),flowcell=c(
