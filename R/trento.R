@@ -233,8 +233,6 @@ clonet_trento=function(
 
     argg <- as.list(environment())
 
-   
-
     if(!is.null(version)){
         sif_path=build_default_sif_list()$pcf_select[ver]
         if(is.null(sif_path)){
