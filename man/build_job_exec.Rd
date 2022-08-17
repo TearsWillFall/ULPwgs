@@ -11,7 +11,8 @@ build_job_exec(
   threads = 1,
   output_dir = "",
   hold = "",
-  wd = getwd()
+  wd = getwd(),
+  array = ""
 )
 }
 \arguments{

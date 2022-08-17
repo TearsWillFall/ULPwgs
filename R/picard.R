@@ -66,7 +66,7 @@ markdups_picard=function(
        print_verbose(job=job,arg=argg,exec_code=exec_code)
     }
 
-    error=system(exec_code)
+    error=execute_job(exec_code=exec_code)
     
     if(error!=0){
       stop("markdups failed to run due to unknown error.
@@ -148,7 +148,7 @@ summary_metrics_bam_picard=function(
        print_verbose(job=job,arg=argg,exec_code=exec_code)
   }
 
-  error=system(exec_code)
+  error=execute_job(exec_code=exec_code)
   if(error!=0){
     stop("picard failed to run due to unknown error.
     Check std error for more information.")
@@ -228,7 +228,7 @@ insertsize_metrics_bam_picard=function(
   if(verbose){
        print_verbose(job=job,arg=argg,exec_code=exec_code)
     }
-  error=system(exec_code)
+  error=execute_job(exec_code=exec_code)
   if(error!=0){
     stop("picard failed to run due to unknown error.
     Check std error for more information.")
@@ -321,7 +321,7 @@ tg_summary_metrics_bam_picard=function(
        print_verbose(job=job,arg=argg,exec_code=exec_code)
    }
 
-  error=system(exec_code)
+  error=execute_job(exec_code=exec_code)
   if(error!=0){
     stop("picard failed to run due to unknown error.
     Check std error for more information.")
@@ -419,7 +419,7 @@ job=build_job(executor_id=executor_id,task_id=task_id)
        print_verbose(job=job,arg=argg,exec_code=exec_code)
   }
 
-  error=system(exec_code)
+  error=execute_job(exec_code=exec_code)
   if(error!=0){
     stop("picard failed to run due to unknown error.
     Check std error for more information.")
@@ -501,7 +501,7 @@ job=build_job(executor_id=executor_id,task_id=task_id)
  if(verbose){
        print_verbose(job=job,arg=argg,exec_code=exec_code)
     }
-  error=system(exec_code)
+  error=execute_job(exec_code=exec_code)
   if(error!=0){
     stop("picard failed to run due to unknown error.
     Check std error for more information.")

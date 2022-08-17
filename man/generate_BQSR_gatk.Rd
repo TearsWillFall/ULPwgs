@@ -6,6 +6,8 @@
 \usage{
 generate_BQSR_gatk(
   region = "",
+  rdata = NULL,
+  selected = NULL,
   bin_gatk = build_default_tool_binary_list()$bin_gatk,
   bam = "",
   ref_genome = "",

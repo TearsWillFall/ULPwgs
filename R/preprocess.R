@@ -36,7 +36,7 @@ preprocess_seq=function(
     merge_level="library",
     nest_ws=1,nesting="",
     executor_id=make_unique_id("preprocessSEQ"), 
-    task_name="preprocessSEQ",output_dir="",
+    task_name="preprocessSEQ",output_dir=".",
     ram=1,
     header=TRUE,
     sep="",

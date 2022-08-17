@@ -7,6 +7,7 @@
 wgs_summary_metrics_bam_picard(
   bin_picard = build_default_tool_binary_list()$bin_picard,
   bam = "",
+  mapq = 0,
   output_dir = "",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),

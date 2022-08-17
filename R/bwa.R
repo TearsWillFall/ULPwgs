@@ -77,7 +77,7 @@ alignment_bwa=function(
        print_verbose(job=job,arg=argg,exec_code=exec_code)
     }
 
-    error=system(exec_code)
+    error=execute_job(exec_code=exec_code)
     if(error!=0){
       stop("bwa failed to run due to unknown error.
       Check std error for more information.")
@@ -160,7 +160,7 @@ index_ref_bwa=function(
        print_verbose(job=job,arg=argg,exec_code=exec_code)
     }
 
-  error=system(exec_code)
+  error=execute_job(exec_code=exec_code)
   if(error!=0){
     stop("bwa failed to run due to unknown error.
     Check std error for more information.")

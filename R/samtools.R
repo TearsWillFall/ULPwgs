@@ -162,7 +162,7 @@ sort_bam_samtools=function(
   if (verbose){
     print_verbose(job=job,arg=argg,exec_code=exec_code)
   }
-  error=system(exec_code)
+  error=execute_job(exec_code=exec_code)
   if(error!=0){
     stop("samtools failed to run due to unknown error.
     Check std error for more information.")
@@ -214,7 +214,7 @@ index_bam_samtools=function(
     print_verbose(job=job,arg=argg,exec_code=exec_code)
   }
 
-  error=system(exec_code)
+  error=execute_job(exec_code=exec_code)
   if(error!=0){
     stop("samtools failed to run due to unknown error.
     Check std error for more information.")
@@ -369,7 +369,7 @@ stats_flag_samtools=function(
   }
 
 
-  error=system(exec_code)
+  error=execute_job(exec_code=exec_code)
   if(error!=0){
     stop("samtools failed to run due to unknown error.
     Check std error for more information.")
@@ -443,7 +443,7 @@ stats_index_samtools=function(
   if (verbose){
     print_verbose(job=job,arg=argg,exec_code=exec_code)
   }
-     error=system(exec_code)
+     error=execute_job(exec_code=exec_code)
   if(error!=0){
     stop("samtools failed to run due to unknown error.
     Check std error for more information.")
@@ -522,7 +522,7 @@ mapq_metrics_bam_samtools=function(
     print_verbose(job=job,arg=argg,exec_code=exec_code)
   }
 
-  error=system(exec_code)
+  error=execute_job(exec_code=exec_code)
   if(error!=0){
     stop("samtools failed to run due to unknown error.
     Check std error for more information.")

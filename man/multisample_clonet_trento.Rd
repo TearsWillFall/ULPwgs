@@ -5,11 +5,14 @@
 \title{Process multiple tumour samples using CLONET}
 \usage{
 multisample_clonet_trento(
-  sif_path = "Singularity_Images/preProcess_latest.sif",
+  sample_sheet,
   bam_dir = "",
   normal_id = "",
   patient_id = "",
+  version = "V3",
   tmp_dir = "",
+  header = TRUE,
+  sep = "",
   threads = 3,
   ram = 4,
   output_dir = "",
@@ -25,8 +28,6 @@ multisample_clonet_trento(
 )
 }
 \arguments{
-\item{sif_path}{Path to singularity image file.}
-
 \item{bam_dir}{Path to bam directory.}
 
 \item{normal_id}{Normal sample identifier.}

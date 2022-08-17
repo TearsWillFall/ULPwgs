@@ -66,7 +66,7 @@ markdups_gatk=function(
          print_verbose(job=job,arg=argg,exec_code=exec_code)
     }
 
-    error=system(exec_code)
+    error=execute_job(exec_code=exec_code)
     if(error!=0){
         stop("markdups failed to run due to unknown error.
         Check std error for more information.")
@@ -309,7 +309,7 @@ generate_BQSR_gatk=function(
   if(verbose){
      print_verbose(job=job,arg=argg,exec_code=exec_code)
   }
-  error=system(exec_code)
+  error=execute_job(exec_code=exec_code)
   if(error!=0){
     stop("gatk failed to run due to unknown error.
     Check std error for more information.")
@@ -443,7 +443,7 @@ parallel_generate_BQSR_gatk=function(
         if(verbose){
             print_verbose(job=job,arg=argg,exec_code=exec_code)
         }
-        error=system(exec_code)
+        error=execute_job(exec_code=exec_code)
         if(error!=0){
             stop("gatk failed to run due to unknown error.
             Check std error for more information.")
@@ -549,7 +549,7 @@ gather_BQSR_reports_gatk=function(
      print_verbose(job=job,arg=argg,exec_code=exec_code)
   }
 
-  error=system(exec_code)
+  error=execute_job(exec_code=exec_code)
   if(error!=0){
     stop("gatk failed to run due to unknown error.
     Check std error for more information.")
@@ -648,7 +648,7 @@ apply_BQSR_gatk=function(
   }
 
 
-  error=system(exec_code)
+  error=execute_job(exec_code=exec_code)
   if(error!=0){
     stop("gatk failed to run due to unknown error.
     Check std error for more information.")
@@ -779,7 +779,7 @@ parallel_apply_BQSR_gatk=function(
         if(verbose){
             print_verbose(job=job,arg=argg,exec_code=exec_code)
         }
-        error=system(exec_code)
+        error=execute_job(exec_code=exec_code)
         if(error!=0){
             stop("gatk failed to run due to unknown error.
             Check std error for more information.")
@@ -887,7 +887,7 @@ gather_bam_files=function(
    print_verbose(job=job,arg=argg,exec_code=exec_code)
   }
 
-  error=system(exec_code)
+  error=execute_job(exec_code=exec_code)
 
   if(error!=0){
     stop("picard failed to run due to unknown error.
@@ -994,7 +994,7 @@ analyze_covariates_gatk=function(
      print_verbose(job=job,arg=argg,exec_code=exec_code)
   }
 
-  error=system(exec_code)
+  error=execute_job(exec_code=exec_code)
   
   if(error!=0){
     stop("gatk failed to run due to unknown error.

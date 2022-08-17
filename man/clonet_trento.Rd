@@ -5,7 +5,9 @@
 \title{Process a pair of tumour-normal samples using CLONET}
 \usage{
 clonet_trento(
-  sif_path = "Singularity_Images/preProcess_latest.sif",
+  sif_path = build_default_sif_list()$sif_path$V3,
+  version,
+  sample_sheet = "",
   tumour = "",
   normal = "",
   patient_id = "",
@@ -25,7 +27,9 @@ clonet_trento(
 )
 }
 \arguments{
-\item{sif_path}{Path to singularity image file.}
+\item{sif_path}{Path to singularity image file}
+
+\item{version}{PCF Select panel version to use}
 
 \item{tumour}{Path to tumour BAM file}
 

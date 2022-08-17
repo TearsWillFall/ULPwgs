@@ -488,7 +488,7 @@ build_default_tool_binary_list=function(
 #' Build default sif list
 #' 
 #'
-#' @param sifs
+#' @param sifs List of sif files
 #' @export
 
 

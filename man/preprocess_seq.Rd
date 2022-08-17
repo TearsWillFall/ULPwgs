@@ -6,7 +6,6 @@
 \usage{
 preprocess_seq(
   sample_sheet = build_default_sample_sheet(),
-  executor_id = make_unique_id("preprocessSEQ"),
   vars_list = build_default_variable_list(),
   config = suppressWarnings(build_default_config()),
   opts_list = build_default_option_list(),
@@ -14,12 +13,15 @@ preprocess_seq(
   steps_list = build_default_steps_list(),
   bin_list = build_default_binary_list(),
   ref_list = build_default_reference_list(),
+  merge_level = "library",
   nest_ws = 1,
   nesting = "",
+  executor_id = make_unique_id("preprocessSEQ"),
   task_name = "preprocessSEQ",
   output_dir = "",
-  merge_level = "library",
   ram = 1,
+  header = TRUE,
+  sep = "",
   threads = 1,
   mode = "local",
   batch_config = build_default_preprocess_config(),
@@ -33,17 +35,17 @@ preprocess_seq(
 \arguments{
 \item{sample_sheet}{Input sample sheet}
 
-\item{executor_id}{Executor ID. Default "fastQC"}
-
 \item{config}{Default tool configure}
 
+\item{merge_level}{Which level to merge samples}
+
 \item{nest_ws}{Nesting white-space separator}
+
+\item{executor_id}{Executor ID. Default "fastQC"}
 
 \item{task_name}{Name of the task. Default "fastQC"}
 
 \item{output_dir}{Path to the output directory.}
-
-\item{merge_level}{Which level to merge samples}
 
 \item{ram}{RAM memory for batched job. Default 4}
 

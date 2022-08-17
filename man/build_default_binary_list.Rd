@@ -11,14 +11,18 @@ build_default_binary_list(
     build_default_tool_binary_list()$bin_fastqc), alignment = list(bin_bwa =
     build_default_tool_binary_list()$bin_bwa, bin_samtools =
     build_default_tool_binary_list()$bin_samtools), merge_bams = list(bin_samtools =
-    build_default_tool_binary_list()$bin_samtools), markdups = list(bin_gatk =
-    build_default_tool_binary_list()$bin_gatk), 
-     recalibrate = list(bin_samtools =
+    build_default_tool_binary_list()$bin_samtools), pre_alignqc = list(bin_samtools =
+    build_default_tool_binary_list()$bin_samtools, 
+     bin_picard =
+    build_default_tool_binary_list()$bin_picard, bin_bedtools =
+    build_default_tool_binary_list()$bin_bedtools), markdups = list(bin_gatk =
+    build_default_tool_binary_list()$bin_gatk), recalibrate = list(bin_samtools =
     build_default_tool_binary_list()$bin_samtools, bin_gatk =
     build_default_tool_binary_list()$bin_gatk, bin_picard =
-    build_default_tool_binary_list()$bin_picard), alignqc = list(bin_samtools =
+    build_default_tool_binary_list()$bin_picard), post_alignqc = list(bin_samtools =
     build_default_tool_binary_list()$bin_samtools, bin_picard =
-    build_default_tool_binary_list()$bin_picard, bin_bedtools =
+    build_default_tool_binary_list()$bin_picard, 
+     bin_bedtools =
     build_default_tool_binary_list()$bin_bedtools))
 )
 }
