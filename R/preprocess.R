@@ -324,6 +324,13 @@ for_id=function(
 
 
                 scroll=seq(1,length(info))
+                
+                job_n=system("qstat | grep loopVariables | wc -l", intern=TRUE)
+
+                while(job_n>=16){
+                    Sys.sleep(600)
+                    job_n=system("qstat | grep loopVariables | wc -l", intern=TRUE)
+                }
 
                 lapply(X=scroll,
                 FUN=process_variable,
@@ -348,6 +355,7 @@ for_id=function(
                 verbose=verbose,hold=hold,
                 wait=wait,
                 update_time=update_time)
+                
 
 }
 
