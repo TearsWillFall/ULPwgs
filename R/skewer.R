@@ -71,7 +71,7 @@ trimming_skewer=function(
   if(verbose){
       print_verbose(job=job,arg=argg,exec_code=exec_code)
     }
-  error=system(exec_code)
+  error=execute_job(exec_code=exec_code)
   if(error!=0){
     stop("skewer failed to run due to unknown error.
     Check std error for more information.")

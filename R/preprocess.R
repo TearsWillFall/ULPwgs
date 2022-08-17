@@ -183,7 +183,6 @@ for_id=function(
                                         task_id=make_unique_id(task_name)
                                         merge=FALSE
                                         id=info[ct]
-                                        
                                         ## Filter sequencing info for id
                                         seq_info_id=seq_info[seq_info[,var,drop=TRUE]==id,]
                                         out_file_dir=set_dir(dir=output_dir,name=id)
@@ -290,6 +289,7 @@ for_id=function(
                                 
                                                 })
                                             }else{
+                                
                                                 rdata_file=paste0(out_file_dir,"/",new_name,".RData")
                                                 save(list=ls(),file = rdata_file)
                                                 job=build_job(executor_id=executor_id,task=task_id)
@@ -303,8 +303,8 @@ for_id=function(
                                                 if(verbose){
                                                     print_verbose(job=job,exec_code=exec_code)
                                                 }
-
-                                                error=system(exec_code)
+            
+                                                error=execute_job(exec_code=exec_code)
                                                 if(error!=0){
                                                     stop("Process sample failed to run due to unknown error.
                                                     Check std error for more information.")
@@ -318,9 +318,15 @@ for_id=function(
                 var=vars_list$variable[1]
                 var_text=vars_list$text[1]
                 vars_list_left=vars_list[-1,]
+
                 info=unique(seq_info[,var,drop=TRUE])
-                scroll=seq(1,length(info))
-                lapply(X=scroll,FUN=process_variable,
+
+
+
+                scroll=seq(1,length(scroll))
+
+                lapply(X=scroll,
+                FUN=process_variable,
                 output_dir=output_dir,
                 seq_info=seq_info,
                 name=name,
@@ -339,7 +345,8 @@ for_id=function(
                 ram=ram,threads=threads,
                 mode=mode,
                 batch_config=batch_config,
-                verbose=verbose,hold=hold,wait=wait,
+                verbose=verbose,hold=hold,
+                wait=wait,
                 update_time=update_time)
 
 }

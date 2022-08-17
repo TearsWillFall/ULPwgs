@@ -67,7 +67,7 @@ preprocess_seq_trento=function(
         )
     )
 
-    error=system(exec_code)
+    error=execute_job(exec_code=exec_code)
     if(error!=0){
         stop("Preprocess failed to run due to unknown error.
         Check std error for more information.")
@@ -288,7 +288,7 @@ clonet_trento=function(
         )
     )
 
-    error=system(exec_code)
+    error=execute_job(exec_code=exec_code)
     if(error!=0){
         stop("Clonet failed to run due to unknown error.
         Check std error for more information.")

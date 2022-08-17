@@ -171,6 +171,38 @@ check_req_types=function(sheet_col,col_name,types){
 
 
 
+#' Check for job limit in Myriad SGE
+#'
+
+check_job_limit=function(job_limit=900){
+  n_jobs=system("qstat -u $USER | wc -l",intern=TRUE)
+  return(n_jobs>=job_limit)
+}
+
+
+#' Execute job with delay if job limit in Myriad SGE reached
+#' 
+#' @param exec_code Execution code
+#' @param delay Time to wait for job limit checks in seconds
+#' @export
+
+execute_job=function(exec_code,delay=600){
+  limit=check_job_limit()
+  while(limit){
+    Sys.sleep(delay)
+    limit=check_job_limit()
+  }
+  error=system(exec_code)
+  return(error)
+}
+
+
+
+
+
+
+
+
 #' Validate sample sheet input columns
 #' 
 #'
@@ -595,7 +627,7 @@ update_time=60,wait=FALSE,hold=""){
        print_verbose(job=job,arg=argg,exec_code=exec_code)
    }
 
-  error=system(exec_code)
+  error=execute_job(exec_code=exec_code)
   if(error!=0){
     stop("picard failed to run due to unknown error.
     Check std error for more information.")
@@ -740,7 +772,7 @@ complement_bed=function(
   if(verbose){
         print_verbose(job=job,arg=argg,exec_code=exec_code)
   }
-      error=system(exec_code)
+      error=execute_job(exec_code=exec_code)
   if(error!=0){
     stop("bedtools failed to run due to unknown error.
     Check std error for more information.")
@@ -804,7 +836,7 @@ pad_bed=function(bin_bedtools=build_default_tool_binary_list()$bin_bedtools,bed=
    if(verbose){
          print_verbose(job=job,arg=argg,exec_code=exec_code)
     }
-  error=system(exec_code)
+  error=execute_job(exec_code=exec_code)
   if(error!=0){
     stop("bedtools failed to run due to unknown error.
     Check std error for more information.")
@@ -1034,7 +1066,7 @@ bed_coverage=function(
     if(verbose){
         print(exec_code)
     }
-        error=system(exec_code)
+        error=execute_job(exec_code=exec_code)
   if(error!=0){
     stop("bedtools failed to run due to unknown error.
     Check std error for more information.")
@@ -1103,7 +1135,7 @@ get_bam_reference_chr=function(
     }
 
 
-  error=system(exec_code)
+  error=execute_job(exec_code=exec_code)
   if(error!=0){
     stop("samtools failed to run due to unknown error.
     Check std error for more information.")
@@ -1191,7 +1223,7 @@ get_fai_reference_chr=function(
     }
 
 
-    error=system(exec_code)
+    error=execute_job(exec_code=exec_code)
     if(error!=0){
       stop("samtools failed to run due to unknown error.
       Check std error for more information.")
