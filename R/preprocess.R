@@ -323,7 +323,7 @@ for_id=function(
 
 
 
-                scroll=seq(1,length(scroll))
+                scroll=seq(1,length(info))
 
                 lapply(X=scroll,
                 FUN=process_variable,
