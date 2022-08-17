@@ -189,7 +189,8 @@ check_job_limit=function(job_limit=900){
 execute_job=function(exec_code,delay=600){
   limit=check_job_limit()
   while(limit){
-    Sys.sleep(delay)
+    date_time<-Sys.time()
+    while((as.numeric(Sys.time()) - as.numeric(date_time))<delay){}
     limit=check_job_limit()
   }
   error=system(exec_code)
