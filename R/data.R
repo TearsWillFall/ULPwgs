@@ -92,6 +92,7 @@ build_flowcell_id=function(flowcells=list(
         "S2 flow cell",
         "S4 flow cell",
         "S4 flow cell",
+        "S4 flow cell",
         "SP flow cell",
         "SP flow cell"
 
@@ -128,6 +129,7 @@ build_flowcell_id=function(flowcells=list(
       "H[A-Z,0-9]{4}DMXX$",
       "H[A-Z,0-9]{4}DMXY$",
       "H[A-Z,0-9]{4}DSXX$",
+      "H[A-Z,0-9]{4}DSX3$",
       "H[A-Z,0-9]{4}DSXY$",
       "H[A-Z,0-9]{4}DRXX$",
       "H[A-Z,0-9]{4}DRXY$"
