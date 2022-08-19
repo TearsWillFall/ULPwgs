@@ -433,11 +433,11 @@ build_default_binary_list=function(
                     bin_bedtools=build_default_tool_binary_list()$bin_bedtools
                 ),
                 markdups=list(
-                    bin_gatk=build_default_tool_binary_list()$bin_gatk
+                    bin_gatk=build_default_tool_binary_list()$sif_gatk
                 ),
                 recalibrate=list(
                     bin_samtools=build_default_tool_binary_list()$bin_samtools,
-                    bin_gatk=build_default_tool_binary_list()$bin_gatk,
+                    bin_gatk=build_default_sif_list()$sif_gatk,
                     bin_picard=build_default_tool_binary_list()$bin_picard
                 ),
                 post_alignqc=list(  
@@ -496,10 +496,11 @@ build_default_sif_list=function(
     sifs=
         list(
             pcf_select=list(
-                V2="/lustre/scratch/scratch/regmova/Singularity_Images/pcf_select_v2_09_08_2022.sif",
-                V3="/lustre/scratch/scratch/regmova/Singularity_Images/pcf_select_v3_09_08_2022.sif"
+                V2="/lustre/scratch/scratch/regmova/Singularity_Images/pcf_select_v2_12_08_2022.sif",
+                V3="/lustre/scratch/scratch/regmova/Singularity_Images/pcf_select_v3_12_08_2022.sif"
             ),
-            preprocess="/lustre/scratch/scratch/regmova/Singularity_Images/preProcess_latest.sif"
+            preprocess="/lustre/scratch/scratch/regmova/Singularity_Images/preProcess_latest.sif",
+            gatk="/lustre/scratch/scratch/Singularity_Images/gatk_latest.sif"
         )
     ){
          return(sifs)

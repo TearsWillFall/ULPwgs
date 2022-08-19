@@ -22,7 +22,7 @@
 
 
 preprocess_seq_trento=function(
-    sif_path="Singularity_Images/preProcess_latest.sif",
+    sif_path=build_default_sif_list()$preprocess,
     fastq_dir="", threads=3,ram=4,ref_genome="",output_dir="",verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("preprocess_trento"),tmp_dir="",
@@ -222,7 +222,7 @@ multisample_clonet_trento=function(
 
 
 clonet_trento=function(
-    sif_path=build_default_sif_list()$sif_path$V3,version,
+    sif_path=build_default_sif_list()$sif_path$V3,version=NULL,
     sample_sheet="",tumour="",normal="",patient_id="",
     tmp_dir="",threads=3,
     ram=4,output_dir="",verbose=FALSE,
@@ -349,7 +349,6 @@ clonet_view_trento=function(method="log2_beta", clonet_dir="",threads=3,
         })
     })
 
-    write.csv(dplyr::bind_rows(cn_data),file="TR273.csv")
     
 
     ### Read TC data
@@ -363,8 +362,6 @@ clonet_view_trento=function(method="log2_beta", clonet_dir="",threads=3,
         })
     })
 
-
-    clonet_dir
     
     ### Gene Annotations
     annot_input_file <- system.file("extdata", "gene_annotations_hg19.bed", package="ULPwgs")
@@ -375,6 +372,7 @@ clonet_view_trento=function(method="log2_beta", clonet_dir="",threads=3,
 
   
     cn_data=dplyr::bind_rows(cn_data)
+    cn_data %>% tidyr::complete(sample,gene)
     cn_data=dplyr::left_join(cn_data,cn_list,by=c("cn.call.corr"="cn"))
     cn_data=dplyr::left_join(cn_data,annot_data %>% 
     dplyr::filter(PANEL_VERSION==panel[which.min(panel$diff),]$PANEL_VERSION),
@@ -383,26 +381,21 @@ clonet_view_trento=function(method="log2_beta", clonet_dir="",threads=3,
         label_annotation=data.frame(s_name=names(sample_labels),id=sample_labels)
         cn_data=dplyr::left_join(cn_data,label_annotation,by=c("sample"="id"))
         cn_data=cn_data %>% dplyr::arrange(s_name,sample)
+        cn_data$g_order=as.numeric(as.factor(cn_data$gene))
         cn_data$s_order=as.numeric(as.factor(paste0(cn_data$s_name,"_",cn_data$sample)))
-
     }else{
-        cn_data=cn_data %>% dplyr::arrange(sample)
+        cn_data=cn_data %>% dplyr::arrange(sample,gene)
         cn_data$s_name=cn_data$sample
         cn_data$s_order=as.numeric(as.factor(cn_data$sample))
+        cn_data$g_order=as.numeric(as.factor(cn_data$gene))
     }
-  
-  
+
+   
     tc_data=dplyr::bind_rows(tc_data)
 
 
     plt_data[["cn_data"]]=cn_data
     plt_data[["tc_data"]]=tc_data
-
-
-    summ_beta=cn_data %>% dplyr::group_by(sample) %>% dplyr::summarise(beta=mean(
-    as.numeric(beta[(all_log2+log2(ploidy/2)) < - 0.05 & gene_type=="target"& evidence!=0 ]),na.rm=TRUE),
-    genes=paste0(gene[(all_log2+log2(ploidy/2)) < - 0.05 & gene_type=="target"& evidence!=0 ],collapse=";")) %>% 
-    dplyr::mutate(tc_manual=1-round(beta/(2-beta), digits = 2))
 
 
     if(method=="log2_beta"){
@@ -417,6 +410,8 @@ clonet_view_trento=function(method="log2_beta", clonet_dir="",threads=3,
         clonet_stats(plt_data=plt_data[["cn_data"]])
     }else if(method=="pathways"){
         clonet_pathways(plt_data=plt_data[["cn_data"]])
+    }else if(method=="tc"){
+        clonet_tc(plt_data=plt_data[["cn_data"]])
     }
 }
 
@@ -572,10 +567,10 @@ clonet_ai=function(plt_data){
             my_box <- shinydashboardPlus::box(
                 width = 12,
                 id="ai_box",
-                footer=paste0("Min TC=",min(plt_data$tc),"; ",
-                "Max TC=",max(plt_data$tc),"; ",
-                "Min Ploidy=",min(plt_data$ploidy),"; ",
-                "Max Ploidy=",max(plt_data$ploidy)),
+                footer=paste0("Min TC=",min(plt_data$tc,na.rm=TRUE),"; ",
+                "Max TC=",max(plt_data$tc,na.rm=TRUE),"; ",
+                "Min Ploidy=",min(plt_data$ploidy,na.rm=TRUE),"; ",
+                "Max Ploidy=",max(plt_data$ploidy,na.rm=TRUE)),
                 sidebar =shinydashboardPlus::boxSidebar(
                     id="ai_sb",
                     width=26,
@@ -693,6 +688,93 @@ clonet_cn=function(plt_data){
 }
 
 
+
+#' @export
+clonet_tc=function(plt_data){
+
+    server_tc=function(input,output,session){
+
+        boxes=list()
+        lapply(unique(plt_data$s_name),FUN=function(id){
+            tmp_plt_data=plt_data %>% dplyr::filter(s_name==id)
+            output[[paste0(id,"_plot")]]<- shiny::renderPlot({
+                plot_tc(tmp_plt_data,
+                gene_tg=any(grepl("Target",input[[paste0(id,"_gene_type")]])),
+                gene_ctrl=any(grepl("Control",input[[paste0(id,"_gene_type")]])),
+                gene_other=any(grepl("Other",input[[paste0(id,"_gene_type")]])),
+                gene_ai_limit=input[[paste0(id,"_gene_ai_limit")]],
+                gene_log2_loss=input[[paste0(id,"_gene_log2_loss")]]
+                )
+            })
+
+            output[[paste0(id,"_table")]]<- DT::renderDataTable({
+                tc_table(tmp_plt_data,
+                gene_tg=any(grepl("Target",input[[paste0(id,"_gene_type")]])),
+                gene_ctrl=any(grepl("Control",input[[paste0(id,"_gene_type")]])),
+                gene_other=any(grepl("Other",input[[paste0(id,"_gene_type")]])),
+                gene_ai_limit=input[[paste0(id,"_gene_ai_limit")]],
+                gene_log2_loss=input[[paste0(id,"_gene_log2_loss")]]
+                )
+            },extensions = c('Buttons','FixedHeader',
+            'KeyTable','ColReorder','FixedColumns'),
+
+                options = list(scrollX = TRUE,dom = 'Bfrtip', 
+                colReorder = TRUE,fixedHeader = TRUE,
+                keys = TRUE,
+                dom = 't',
+                fixedColumns = list(leftColumns = 3),
+                buttons = c('copy', 'csv', 'excel', 'pdf', 'print')))
+
+
+
+            boxes[[id]] <<- shinydashboardPlus::box(
+            width = 12, 
+            id =paste0(id,"_box"),
+            footer=paste0("TC=",unique(tmp_plt_data$tc),";TC_Manual=",
+            unique(tmp_plt_data$tc_manual),
+            "; Ploidy=",unique(tmp_plt_data$ploidy)),
+            sidebar =shinydashboardPlus::boxSidebar(
+                id=paste0(id,"_sb"),
+                width=26,
+                shiny::sliderInput(paste0(id,"_gene_ai_limit"), "AI Evidence:",
+                min = 0, max = 1, value = 0, step = 0.01, ticks = FALSE
+                ),
+                shiny::sliderInput(paste0(id,"_gene_log2_loss"), "Log2 Loss Limit:",
+                min = -1, max = 0, value = -0.05, step = 0.05, ticks = FALSE
+                ),
+                shinyWidgets::awesomeCheckboxGroup(
+                    inputId = paste0(id,"_gene_type"),
+                    label = "Genes:",
+                    choices = c("Target", "Control", "Other"),
+                    selected = c("Target")
+                )
+        ),
+        shiny::plotOutput(paste0(id,"_plot")),
+        DT::dataTableOutput(paste0(id,"_table"))
+        ,
+        title =id, collapsible = TRUE,
+        collapsed = FALSE, solidHeader = TRUE
+     )
+    })
+    
+    output[["UI"]] <- shiny::renderUI({
+        fluidRow(boxes)
+    })
+    session$onSessionEnded(function() {
+        stopApp()
+    })
+}
+    shiny::shinyApp(ui = build_ui, server = server_tc)
+}
+
+
+
+
+
+
+
+
+
 #' @export
 clonet_stats=function(plt_data){
     server_stats=function(input,output,session){
@@ -710,10 +792,10 @@ clonet_stats=function(plt_data){
             my_box <- shinydashboardPlus::box(
                 width = 12,
                 id="stats_box",
-                footer=paste0("Min TC=",min(plt_data$tc),"; ",
-                "Max TC=",max(plt_data$tc),"; ",
-                "Min Ploidy=",min(plt_data$ploidy),"; ",
-                "Max Ploidy=",max(plt_data$ploidy)),
+                footer=paste0("Min TC=",min(plt_data$tc,na.rm=TRUE),"; ",
+                "Max TC=",max(plt_data$tc,na.rm=TRUE),"; ",
+                "Min Ploidy=",min(plt_data$ploidy,na.rm=TRUE),"; ",
+                "Max Ploidy=",max(plt_data$ploidy,na.rm=TRUE)),
                 sidebar =shinydashboardPlus::boxSidebar(
                     id="stats_sb",
                     width=26,
@@ -741,8 +823,6 @@ clonet_stats=function(plt_data){
 
     shiny::shinyApp(ui = build_ui, server = server_stats)
 }
-
-
 
 
 #' @export

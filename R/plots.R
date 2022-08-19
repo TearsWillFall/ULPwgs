@@ -245,7 +245,8 @@ gene_lbl=1, gene_lbl_evi=0.2, gene_lbl_beta_low=0.2, gene_lbl_beta_high=1, gene_
 #' @import patchwork
 #' @export
 
-plot_ai=function(plt_data,ai_limit=0.2,min_log2_limit=-0.3,max_log2_limit=0.5,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
+plot_ai=function(plt_data,ai_limit=0.2,min_log2_limit=-0.3,
+max_log2_limit=0.5,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
 
 
   filt <- c()
@@ -262,10 +263,10 @@ plot_ai=function(plt_data,ai_limit=0.2,min_log2_limit=-0.3,max_log2_limit=0.5,ge
   
   map_triangles=function(plt_data){
     newcoord_up <- make_triangles(plt_data$s_order,
-    as.factor(plt_data$gene))
+      plt_data$g_order)
 
     newcoord_down <- make_triangles(plt_data$s_order,
-    as.factor(plt_data$gene),point="down")
+    plt_data$g_order,point="down")
 
     newcoord_down <- newcoord_down %>% dplyr::select(xdown = x, ydown = y)
 
@@ -274,16 +275,20 @@ plot_ai=function(plt_data,ai_limit=0.2,min_log2_limit=-0.3,max_log2_limit=0.5,ge
     return(newdata)
   }
 
+
   plt_data=plt_data %>% dplyr::mutate(cn_t=ifelse(chr=="X",round(2**all_log2),
   2*round(2**all_log2)),
-  beta=ifelse(evidence>=ai_limit,beta,1),log2=ifelse(min_log2_limit>all_log2,
+  beta=ifelse(evidence>=ai_limit,beta,1),log2.c=ifelse(min_log2_limit>all_log2,
   min_log2_limit,ifelse(max_log2_limit<all_log2,max_log2_limit,all_log2)))
+
 
   to_plot=list()
  
-  to_plot[["X"]]<-map_triangles(plt_data %>% dplyr::filter(chr=="X"))
+  to_plot[["X"]]<-map_triangles(plt_data %>% dplyr::filter(chr=="X") %>% 
+  dplyr::arrange(s_order,gene) %>% dplyr::mutate(g_order=as.numeric(as.factor(gene))))
 
-  to_plot[["autosome"]]<-map_triangles(plt_data %>% dplyr::filter(chr!="X"))
+  to_plot[["autosome"]]<- map_triangles(plt_data%>% dplyr::filter(chr!="X") %>% 
+  dplyr::arrange(s_order,gene) %>%dplyr::mutate(g_order=as.numeric(as.factor(gene))))
 
 
 
@@ -333,13 +338,13 @@ plot_ai=function(plt_data,ai_limit=0.2,min_log2_limit=-0.3,max_log2_limit=0.5,ge
   }
 
 main_plot=function(data,type="autosome",show_cn=TRUE){
-    
+    tmp=data[[type]] %>% dplyr::arrange(g_order)
     p=ggplot(data[[type]]) +
     geom_polygon(aes(x = x, y = y, fill =(1-beta)/tc, 
     group = interaction(s_order, gene)),col="black",size=0.1) +
     scale_fill_gradient(low = "grey", high = "#fbff00", limits = c(0, 1))+
     ggnewscale::new_scale_fill() +
-    geom_polygon(aes(x=xdown, y = ydown, fill = log2,
+    geom_polygon(aes(x=xdown, y = ydown, fill = log2.c,
     group = interaction(s_order, gene)),col="black",size=0.1)+
     scale_fill_gradient2(low="blue",mid="grey",high="red")+
     theme(
@@ -348,9 +353,9 @@ main_plot=function(data,type="autosome",show_cn=TRUE){
         axis.line.x = element_blank(), axis.title.x = element_blank(),
         axis.text.y = element_text(), axis.ticks.y = element_blank(),
         axis.title.y = element_text(angle = 90, vjust = 0.5), legend.position = "none"
-      )+ylab(ifelse(type=="autosome","GENES AUTOSOMES","GENES X"))+
-    scale_y_continuous(breaks = seq_along(as.numeric(unique(as.factor(data[[type]]$gene)))), 
-                      labels = unique(unique(data[[type]]$gene)),expand=c(0,0))+
+    )+ylab(ifelse(type=="autosome","GENES AUTOSOMES","GENES X"))+
+    scale_y_continuous(breaks = seq_along(unique(tmp$gene)), 
+                      labels = unique(tmp$gene),expand=c(0,0))+
     scale_x_continuous(expand=c(0,0))
 
     if(show_cn){
@@ -490,6 +495,53 @@ plot_pathways=function(plt_data){
 
   }
     
-   
+plot_tc=function(plt_data,gene_ai_limit=0,
+gene_log2_loss=-0.05,gene_tg=TRUE,gene_ctrl=FALSE,
+gene_other=FALSE){
+
+
+  filt <- c()
+  if (gene_tg) {
+    filt <- c(filt, "target")
+  }
+  if (gene_ctrl) {
+    filt <- c(filt, "control")
+  }
+  if (gene_other) {
+    filt <- c(filt, "other")
+  }
+  plt_data <- plt_data[plt_data$gene_type %in% filt, ]
+
+  plt_data <- plt_data %>% dplyr::group_by(sample) %>% dplyr::summarise(beta=mean(
+  as.numeric(beta[(all_log2+log2(ploidy/2)) < gene_log2_loss & evidence>gene_ai_limit]),na.rm=TRUE),
+  genes=paste0(gene[(all_log2+log2(ploidy/2)) < gene_log2_loss & evidence>gene_ai_limit ],collapse=";")) %>% 
+  dplyr::mutate(tc=1-round(beta/(2-beta), digits = 2)) %>% dplyr::mutate(nc=1-tc)
+
+  main_plot=function(plt_data){
+    tc_data=plt_data[1,] %>%
+    dplyr::distinct(tc,nc,genes)%>% dplyr::ungroup() %>%
+    tidyr::pivot_longer(cols = -c(genes)) %>% 
+    dplyr::mutate(col=ifelse(name=="tc","red","grey"),total=1)
+
+    p<-ggplot(tc_data, aes(1, value, fill = col)) +
+          geom_col(position = "fill", colour = "black",size=1.5) +
+          coord_polar(theta = "y") +
+          theme_void() +
+          theme(legend.position = "none") +
+          scale_fill_identity()+
+          geom_text(position = position_stack(vjust = 0.5),
+          aes(label=paste0(value*100,"%")),size=8)
+
+    print(p)
+  
+  }
+
+  p=main_plot(plt_data)
+  p<-p+ggtitle("TC Manual")
+
+  print(p)
+}
+
+
       
 

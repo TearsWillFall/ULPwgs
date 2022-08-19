@@ -32,7 +32,8 @@ Imports:
     shinydashboardPlus,
     shinyjs,
     htmlwidgets,
-    ggnewscale
+    ggnewscale,
+    patchwork
 biocViews:
 Remotes:
         git::https://github.com/TearsWillFall/BTools.git,

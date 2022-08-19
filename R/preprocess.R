@@ -541,7 +541,7 @@ process_sample=function(rdata=""){
                     args=suppressWarnings(parse_args(tool_config_id[step,]$args,step="markdups"))
 
                     report[[new_name]][["steps"]][["markdups"]]<<-markdups_gatk(
-                        bin_gatk=bin_list$markdups$bin_gatk,
+                        sif_gatk=bin_list$markdups$bin_gatk,
                         bam=bam,
                         output_dir=out_file_dir,
                         remove_duplicates=as.logical(args["remove_duplicates",]$value),
@@ -568,7 +568,7 @@ process_sample=function(rdata=""){
                     
                         report[[new_name]][["steps"]][["recalibrate"]] <<- recal_gatk(
                             bin_samtools=bin_list$recalibrate$bin_samtools,
-                            bin_gatk=bin_list$recalibrate$bin_gatk,
+                            sif_gatk=bin_list$recalibrate$bin_gatk,
                             bin_picard=bin_list$recalibrate$bin_picard,
                             bam=bam,tmp_dir=out_file_dir_tmp,
                             output_dir=out_file_dir,
