@@ -33,7 +33,8 @@ Imports:
     shinyjs,
     htmlwidgets,
     ggnewscale,
-    patchwork
+    patchwork,
+    DT
 biocViews:
 Remotes:
         git::https://github.com/TearsWillFall/BTools.git,

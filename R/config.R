@@ -433,7 +433,7 @@ build_default_binary_list=function(
                     bin_bedtools=build_default_tool_binary_list()$bin_bedtools
                 ),
                 markdups=list(
-                    bin_gatk=build_default_tool_binary_list()$sif_gatk
+                    bin_gatk=build_default_sif_list()$sif_gatk
                 ),
                 recalibrate=list(
                     bin_samtools=build_default_tool_binary_list()$bin_samtools,
