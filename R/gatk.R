@@ -48,7 +48,7 @@ markdups_gatk=function(
     get_file_ext(bam))
     
     out_file_md=paste0(out_file_dir,"/",get_file_name(bam),".gatk_rmdup.txt")
-    exec_code=paste0(" singularity run ",sif_gatk," /gatk/gatk MarkDuplicatesSpark -I ",bam, " -O ",  out_file,
+    exec_code=paste0(" singularity exec -H ",getwd(),":/home ",sif_gatk," /gatk/gatk MarkDuplicatesSpark -I ",bam, " -O ",  out_file,
     " -M ",out_file_md," ",tmp," --conf \'spark.executor.cores=",threads,"\'", dups)
 
 
@@ -293,7 +293,7 @@ generate_BQSR_gatk=function(
     dbsnp=paste(" --known-sites ",dbsnp,collapse=" ")
   }
 
-  exec_code=paste0("singularity run ",sif_gatk," /gatk/gatk BaseRecalibrator -I ",bam, " -R ", ref_genome, dbsnp,
+  exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk," /gatk/gatk BaseRecalibrator -I ",bam, " -R ", ref_genome, dbsnp,
   reg," -O ",out_file,tmp_dir)
 
 
@@ -524,7 +524,7 @@ gather_BQSR_reports_gatk=function(
     tmp_dir=paste0(" --tmp-dir ",tmp_dir)
   }
   out_file=paste0(out_file_dir,output_name,".recal.table")
-  exec_code=paste0("singularity run " ,sif_gatk," /gatk/gatk GatherBQSRReports ",paste(" -I ",report,collapse=" "),
+  exec_code=paste0("singularity exec -H ",getwd(),":/home " ,sif_gatk," /gatk/gatk GatherBQSRReports ",paste(" -I ",report,collapse=" "),
     " -O ",out_file,tmp_dir)
 
 
@@ -630,7 +630,7 @@ apply_BQSR_gatk=function(
       reg=paste0(" -L ",strsplit(region,"__")[[1]][2], " ")
       out_file=paste0(out_file_dir,"/", get_file_name(bam),".",region,".recal.",get_file_ext(bam))
   }
-  exec_code=paste("singularity run ",sif_gatk," /gatk/gatk ApplyBQSR -I ",bam, " -R ", ref_genome,
+  exec_code=paste("singularity exec -H ",getwd(),":/home ",sif_gatk," /gatk/gatk ApplyBQSR -I ",bam, " -R ", ref_genome,
    " --bqsr-recal-file ",rec_table, " -O ",out_file,reg)
    
   job=build_job(executor_id=executor_id,task_id=task_id)
@@ -965,7 +965,7 @@ analyze_covariates_gatk=function(
     out_file_csv=paste0(out_file_dir,"/",get_file_name(before),
     "_covariates_analysis_before.csv")
 
-    exec_code=paste0("singularity run ",sif_gatk," /gatk/gatk  AnalyzeCovariates -bqsr ",before, " -plots ",out_file,tmp_dir," -csv ",out_file_csv)
+    exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk," /gatk/gatk  AnalyzeCovariates -bqsr ",before, " -plots ",out_file,tmp_dir," -csv ",out_file_csv)
   }else if(before=="" & after!=""){
 
     out_file=paste0(out_file_dir,"/",get_file_name(after),
@@ -974,11 +974,11 @@ analyze_covariates_gatk=function(
     out_file_csv=paste0(out_file_dir,"/",get_file_name(after),
     "_covariates_analysis_after.csv")
 
-    exec_code=paste0("singularity run ",sif_gatk," /gatk/gatk AnalyzeCovariates -bqsr ",after, " -plots ",out_file,tmp_dir," -csv ",out_file_csv)
+    exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk," /gatk/gatk AnalyzeCovariates -bqsr ",after, " -plots ",out_file,tmp_dir," -csv ",out_file_csv)
   }else{
     out_file=paste0(out_file_dir,"/",get_file_name(before),"_covariates_analysis.pdf")
     out_file_csv=paste0(out_file_dir,"/",get_file_name(before),"_covariates_analysis.csv")
-    exec_code=paste0("singularity run ",sif_gatk," /gatk/gatk  AnalyzeCovariates -before ",before," -after ",after,
+    exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk," /gatk/gatk  AnalyzeCovariates -before ",before," -after ",after,
       " -plots ",out_file,tmp_dir," -csv ",out_file_csv)
   }
 
