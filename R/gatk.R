@@ -630,7 +630,7 @@ apply_BQSR_gatk=function(
       reg=paste0(" -L ",strsplit(region,"__")[[1]][2], " ")
       out_file=paste0(out_file_dir,"/", get_file_name(bam),".",region,".recal.",get_file_ext(bam))
   }
-  exec_code=paste("singularity exec -H ",getwd(),":/home ",sif_gatk," /gatk/gatk ApplyBQSR -I ",bam, " -R ", ref_genome,
+  exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk," /gatk/gatk ApplyBQSR -I ",bam, " -R ", ref_genome,
    " --bqsr-recal-file ",rec_table, " -O ",out_file,reg)
    
   job=build_job(executor_id=executor_id,task_id=task_id)
