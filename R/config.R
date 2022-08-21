@@ -500,7 +500,7 @@ build_default_sif_list=function(
                 V3="/lustre/scratch/scratch/regmova/Singularity_Images/pcf_select_v3_12_08_2022.sif"
             ),
             preprocess="/lustre/scratch/scratch/regmova/Singularity_Images/preProcess_latest.sif",
-            gatk="/lustre/scratch/scratch/Singularity_Images/gatk_latest.sif"
+            gatk="/lustre/scratch/scratch/regmova/Singularity_Images/gatk_latest.sif"
         )
     ){
          return(sifs)
