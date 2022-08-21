@@ -1023,6 +1023,127 @@ analyze_covariates_gatk=function(
 }
 
 
+#' Variant calling using MuTECT2
+#'
+#' This function calls somatic variants in a pair of tumor-normal matched samples, or
+#' just in a tumor sample if no matched sample is not available.
+#'
+#' @param tumour Path to tumor bam file.
+#' @param normal Path to germline bam file.
+#' @param sif_gatk Path to gatk sif file.
+#' @param ref_genome Path to reference genome fasta file.
+#' @param region Region to analyze. Optional
+#' @param germ_resource Path to germline resources vcf file.
+#' @param output_name [OPTIONAL] Name for the output. If not given the name of one of the samples will be used.
+#' @param pon [Optional] Path to panel of normal.
+#' @param output_dir Path to the output directory.
+#' @param mnps Report MNPs in vcf file.
+#' @param verbose Enables progress messages. Default False.
+#' @export
+
+
+mutect2_gatk=function(region="",
+sif_gatk=build_default_sif_list()$sif_gatk,
+tumour="",normal="",ref_genome="",
+germ_resource="",pon="",output_dir="",tmp_dir="",
+id="",verbose=FALSE,orientation=TRUE,mnps=TRUE,
+batch_config=build_default_preprocess_config(),
+threads=4,ram=4,mode="local",
+executor_id=make_unique_id("Mutect2"),
+task_name="Mutect2",time="48:0:0",
+update_time=60,wait=FALSE,hold=""){
+
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
+  out_file_dir=set_dir(name=output_dir)
+  
+  if(tmp_dir!=""){
+    tmp_dir=paste0(" --tmp-dir ",tmp_dir)
+  }
+  
+  reg=""
+  if (region==""){
+      out_file=paste0(out_file_dir,"/",get_file_name(tumour),".unfilt.vcf")
+  }else{
+      reg=paste0(" -L ",region)
+      out_file=paste0(out_file_dir,"/",get_file_name(tumour),".",region,".unfilt.vcf")
+  }
+
+  if (is.vector(tumor_bam)){
+    tumor=paste0(" -I ",paste(tumor,collapse=" -I "))
+  }else{
+    tumor=paste0(" -I ",tumor)
+  }
+  norm=" "
+  if (normal_bam!=""){
+    if (is.vector(normal_bam)){
+      norm=paste0(" -I ",paste(normal_bam,collapse=" -I ")," -normal ",
+      paste(as.vector(sapply(normal_bam,FUN=get_file_name)),collapse=" -normal "))
+  }else{
+      norm=paste0(" -I ",normal_bam," -normal ",get_file_name(normal_bam))
+      }
+  }
+
+  if (pon!=""){
+    pon=paste0(" --panel-of-normals ",pon)
+  }
+
+  f1r2=""
+  if (orientation){
+      f1r2=paste0(" --f1r2-tar-gz ",out_file,".f1r2.tar.gz")
+  }
+
+
+
+
+  filter_mnps=""
+  if (!mnps){
+    filter_mnps=" -max-mnp-distance 0 "
+  }
+
+  exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk,
+  " /gatk/gatk   Mutect2 -R ",ref_genome,tumor, norm,
+   " --germline-resource ",germ_resource, pon, " -O ",out_file, reg,f1r2,filter_mnps)
+
+  job=build_job(executor_id=executor_id,task=task_id)
+  if(mode=="batch"){
+       out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+       batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+       threads=threads,output_dir=out_file_dir2)
+       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+  }
+
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    exec_code=exec_code, 
+    task_id=task_id,
+    input_args = argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+      vcf=out_file,
+      f1r2=f1r2)
+  )
+
+
+  error=execute_job(exec_code=exec_code)
+  
+  if(error!=0){
+    stop("gatk failed to run due to unknown error.
+    Check std error for more information.")
+  }
+
+  if(wait&&mode=="batch"){
+    job_validator(job=job_report$job_id,time=update_time,
+    verbose=verbose,threads=threads)
+  }
+
+  return(job_report)
+
+}
+
+
+
 
 
 
