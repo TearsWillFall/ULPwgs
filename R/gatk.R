@@ -123,7 +123,7 @@ markdups_gatk=function(
 
 recal_gatk=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
-  gatk_sif=build_default_sif_list()$gatk,
+  sif_gatk=build_default_sif_list()$gatk,
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bam="",ref_genome="",dbsnp="",ram=4,threads=4,output_dir="",
   tmp_dir="",verbose=FALSE,batch_config=build_default_preprocess_config(),
