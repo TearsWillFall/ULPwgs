@@ -1104,7 +1104,7 @@ bed_coverage=function(
 get_bam_reference_chr=function(
     bin_samtools=build_default_tool_binary_list()$bin_samtools,
     bam="",output_name="chrReference",
-    output_dir=".",verbose=FALSE,batch_config=build_default_preprocess_config(),
+    output_dir="",verbose=FALSE,batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("getBAMchr"),task_name="getBAMchr",
     mode="local",time="48:0:0",
     threads=4,ram=4,update_time=60,wait=FALSE,hold=""
