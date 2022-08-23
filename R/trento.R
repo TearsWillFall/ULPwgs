@@ -89,6 +89,12 @@ preprocess_seq_trento=function(
 #'
 #' This function identifies a set of BAM files as tumour and normal
 #' and processes them using the CLONET pipeline in parallel
+#' If sample sheet is provided data has to be supplied in the following format:
+#' patient_id   tumour  normal  version
+#' 
+#' Header can be ommitted if data is given in the order above and header argument is set to FALSE.
+#' Sample sheet separator can be set using the sep argument.
+#' 
 #' 
 #' @param sample_sheet Path to sample sheet or data.frame. 
 #' @param bam_dir Path to bam directory. Only if sample sheet is not provided. 
@@ -111,7 +117,7 @@ preprocess_seq_trento=function(
 
 
 multisample_clonet_trento=function(
-    sample_sheet=NULL,bam_dir="",normal_id="",patient_id="",version="V3",
+    sample_sheet=NULL,bam_dir="",normal_id="",patient_id="",
     tmp_dir=".",header=TRUE,sep="",threads=3,ram=4,output_dir=".",verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("multi_clonet"),
