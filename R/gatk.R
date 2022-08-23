@@ -1090,18 +1090,18 @@ mutect2_gatk=function(region="",
       out_file=paste0(out_file_dir,"/",get_file_name(tumour),".",region,".unfilt.vcf")
   }
 
-  if (is.vector(tumor_bam)){
-    tumor=paste0(" -I ",paste(tumor,collapse=" -I "))
+  if (is.vector(tumour)){
+    tumor=paste0(" -I ",paste(tumour,collapse=" -I "))
   }else{
-    tumor=paste0(" -I ",tumor)
+    tumor=paste0(" -I ",tumour)
   }
   norm=" "
-  if (normal_bam!=""){
+  if (normal!=""){
     if (is.vector(normal_bam)){
-      norm=paste0(" -I ",paste(normal_bam,collapse=" -I ")," -normal ",
-      paste(as.vector(sapply(normal_bam,FUN=get_file_name)),collapse=" -normal "))
+      norm=paste0(" -I ",paste(normal,collapse=" -I ")," -normal ",
+      paste(as.vector(sapply(normalizePath(),FUN=get_file_name)),collapse=" -normal "))
   }else{
-      norm=paste0(" -I ",normal_bam," -normal ",get_file_name(normal_bam))
+      norm=paste0(" -I ",normal," -normal ",get_file_name(normal))
       }
   }
 
@@ -1123,7 +1123,7 @@ mutect2_gatk=function(region="",
   }
 
   exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk,
-  " /gatk/gatk   Mutect2 -R ",ref_genome,tumor, norm,
+  " /gatk/gatk   Mutect2 -R ",ref_genome,tumour, norm,
    " --germline-resource ",germ_resource, pon, " -O ",out_file, reg,f1r2,filter_mnps)
 
   job=build_job(executor_id=executor_id,task=task_id)
@@ -1156,10 +1156,9 @@ mutect2_gatk=function(region="",
 
   if(biallelic_db!=""&db_inteval!=""){
     if(pileup=="tumour"|pileup=="both"){
-  
       job_reports[["steps"]][["tPileup"]]<-pileup_summary_gatk(
         sif_gatk=sif_gatk,
-        tumour=tumour,output_name=get_file_name(tumour),
+        gatk=tumour,output_name=get_file_name(tumour),
         output_dir=out_file_dir,
         verbose=verbose,batch_config=batch_config,
         biallelic_db=biallelic_db,
@@ -1170,7 +1169,7 @@ mutect2_gatk=function(region="",
     }else if(pileup=="normal"|pileup=="both"){
       job_reports[["steps"]][["nPileup"]]<-pileup_summary_gatk(
         sif_gatk=sif_gatk,
-        normal=normal,output_name=get_file_name(normal),
+        gatk=normal,output_name=get_file_name(normal),
         output_dir=out_file_dir,
         verbose=verbose,batch_config=batch_config,
         biallelic_db=biallelic_db,
@@ -1180,6 +1179,9 @@ mutect2_gatk=function(region="",
       )
     }
   }
+
+
+
 
   if(wait&&mode=="batch"){
     job_validator(job=job_report$job_id,time=update_time,

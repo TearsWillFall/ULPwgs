@@ -23,17 +23,18 @@
 
 
 concat_vcf=function(
-bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
-bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
-bin_tabix=build_default_tool_binary_list()$bin_tabix,
-vcf="",sort=TRUE,compress=FALSE,format="vcf",
-output_name="",output_dir=".",tmp_dir=".",
-verbose=FALSE,
-batch_config=build_default_preprocess_config(),
-threads=1,ram=4,mode="local",
-executor_id=make_unique_id("concatVCF"),
-task_name="concatVCF",time="48:0:0",
-update_time=60,wait=FALSE,hold=""){
+    bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
+    bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+    bin_tabix=build_default_tool_binary_list()$bin_tabix,
+    vcf="",sort=TRUE,compress=FALSE,clean=TRUE,format="vcf",
+    output_name="",output_dir=".",tmp_dir=".",
+    verbose=FALSE,
+    batch_config=build_default_preprocess_config(),
+    threads=1,ram=4,mode="local",
+    executor_id=make_unique_id("concatVCF"),
+    task_name="concatVCF",time="48:0:0",
+    update_time=60,wait=FALSE,hold=""
+){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -154,17 +155,18 @@ if(clean){
 
 
 sort_vcf=function(
-bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
-bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
-bin_tabix=build_default_tool_binary_list()$bin_tabix,
-vcf="",compress=FALSE,format="vcf",
-output_name="",output_dir=".",tmp_dir=".",
-verbose=FALSE,
-batch_config=build_default_preprocess_config(),
-threads=1,ram=4,mode="local",
-executor_id=make_unique_id("concatVCF"),
-task_name="concatVCF",time="48:0:0",
-update_time=60,wait=FALSE,hold=""){
+    bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
+    bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+    bin_tabix=build_default_tool_binary_list()$bin_tabix,
+    vcf="",compress=FALSE,clean=TRUE,format="vcf",
+    output_name="",output_dir=".",tmp_dir=".",
+    verbose=FALSE,
+    batch_config=build_default_preprocess_config(),
+    threads=1,ram=4,mode="local",
+    executor_id=make_unique_id("concatVCF"),
+    task_name="concatVCF",time="48:0:0",
+    update_time=60,wait=FALSE,hold=""
+){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
