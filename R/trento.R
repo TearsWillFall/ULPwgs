@@ -88,11 +88,12 @@ preprocess_seq_trento=function(
 #' Process multiple tumour samples using CLONET
 #'
 #' This function identifies a set of BAM files as tumour and normal
-#' and processes them using the CLONET pipeline
-#'
-#' @param bam_dir Path to bam directory. 
-#' @param normal_id Normal sample identifier. 
-#' @param patient_id Patient id. 
+#' and processes them using the CLONET pipeline in parallel
+#' 
+#' @param sample_sheet Path to sample sheet or data.frame. 
+#' @param bam_dir Path to bam directory. Only if sample sheet is not provided. 
+#' @param normal_id Normal sample identifier. Only if sample sheet is not provided. 
+#' @param patient_id Patient id. Only if sample sheet is not provided. 
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
 #' @param executor_id Executor ID. Default "preprocess_trento"
 #' @param task_name Name of the task. Default "preprocess_trento"
@@ -136,7 +137,6 @@ multisample_clonet_trento=function(
                 out_files=list(
                 )
         )
-
 
     if(!is.null(sample_sheet)){
       
@@ -225,7 +225,7 @@ multisample_clonet_trento=function(
 clonet_trento=function(
     sif_path=build_default_sif_list()$sif_path$V3,
     version="V3",tumour="",normal="",
-    patient_id="",tmp_dir="",threads=3,
+    patient_id="",tmp_dir=".",threads=3,
     ram=4,output_dir=".",verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("clonet"),
