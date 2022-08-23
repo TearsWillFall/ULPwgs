@@ -163,7 +163,7 @@ multisample_clonet_trento=function(
             threads=threads,
             ram=ram,output_dir=paste0(out_file_dir,patient_id),verbose=verbose,
             executor_id=task_id,mode=mode,time=time,
-            update_time=60,wait=FALSE,hold="")
+            hold=hold)
         },mc.cores=ifelse(mode=="local",1,3))
 
 
@@ -181,7 +181,7 @@ multisample_clonet_trento=function(
                 threads=threads,
                 ram=ram,output_dir=paste0(out_file_dir,patient_id),verbose=verbose,
                 executor_id=task_id,mode=mode,time=time,
-                update_time=60,wait=FALSE,hold="")
+                hold=hold)
         },mc.cores=ifelse(mode=="local",1,3))
 
     }
