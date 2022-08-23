@@ -505,7 +505,6 @@ clonet_pathways=function(plt_data){
 
     server_pathways=function(input,output,session){
         boxes=list()
-        
         summ_plt_data=cn_data %>%dplyr::filter(Class!="") %>% 
         dplyr::group_by(s_name,s_order,Class,cn_class,class_col,tc,ploidy) %>% 
         dplyr::summarise(N=n()) %>% dplyr::group_by(s_name,s_order,Class) %>% 
@@ -766,9 +765,6 @@ clonet_tc=function(plt_data){
 }
     shiny::shinyApp(ui = build_ui, server = server_tc)
 }
-
-
-
 
 
 
