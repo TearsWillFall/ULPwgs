@@ -950,7 +950,7 @@ analyze_covariates_gatk=function(
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(name=output_dir)
+  out_file_dir=set_dir(dir=output_dir)
 
 
 
@@ -1076,7 +1076,7 @@ mutect2_gatk=function(region="",
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(name=output_dir)
+  out_file_dir=set_dir(dir=output_dir)
   
   if(tmp_dir!=""){
     tmp_dir=paste0(" --tmp-dir ",tmp_dir)
@@ -1158,7 +1158,7 @@ mutect2_gatk=function(region="",
     if(pileup=="tumour"|pileup=="both"){
       job_reports[["steps"]][["tPileup"]]<-pileup_summary_gatk(
         sif_gatk=sif_gatk,
-        gatk=tumour,output_name=get_file_name(tumour),
+        bam=tumour,output_name=get_file_name(tumour),
         output_dir=out_file_dir,
         verbose=verbose,batch_config=batch_config,
         biallelic_db=biallelic_db,
@@ -1169,7 +1169,7 @@ mutect2_gatk=function(region="",
     }else if(pileup=="normal"|pileup=="both"){
       job_reports[["steps"]][["nPileup"]]<-pileup_summary_gatk(
         sif_gatk=sif_gatk,
-        gatk=normal,output_name=get_file_name(normal),
+        bam=normal,output_name=get_file_name(normal),
         output_dir=out_file_dir,
         verbose=verbose,batch_config=batch_config,
         biallelic_db=biallelic_db,
@@ -1367,7 +1367,7 @@ update_time=60,wait=FALSE,hold=""){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(name=output_dir)
+  out_file_dir=set_dir(dir=output_dir)
   job=build_job(executor_id=executor_id,task_id=task_id)
 
   job_report=build_job_report(
@@ -1467,7 +1467,7 @@ learn_orientation_gatk=function(
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(name=output_dir)
+  out_file_dir=set_dir(dir=output_dir)
   job=build_job(executor_id=executor_id,task_id=task_id)
 
 
@@ -1564,7 +1564,7 @@ estimate_contamination_gatk=function(
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(name=output_dir)
+  out_file_dir=set_dir(dir=output_dir)
   job=build_job(executor_id=executor_id,task_id=task_id)
 
 
@@ -1665,7 +1665,7 @@ pileup_summary_gatk=function(
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(name=output_dir)
+  out_file_dir=set_dir(dir=output_dir)
   job=build_job(executor_id=executor_id,task_id=task_id)
 
 
@@ -1759,7 +1759,7 @@ parallel_pileup_summary_gatk=function(
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(name=output_dir)
+  out_file_dir=set_dir(dir=output_dir)
   job=build_job(executor_id=executor_id,task_id=task_id)
 
   job_report=build_job_report(
@@ -1870,7 +1870,7 @@ merge_mutect_stats_gatk=function(
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(name=output_dir)
+  out_file_dir=set_dir(dir=output_dir)
   job=build_job(executor_id=executor_id,
   task_id=task_id)
 
