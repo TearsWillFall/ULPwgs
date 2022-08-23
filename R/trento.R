@@ -25,7 +25,7 @@ preprocess_seq_trento=function(
     sif_path=build_default_sif_list()$preprocess,
     fastq_dir="", threads=3,ram=4,ref_genome="",output_dir=".",verbose=FALSE,
     batch_config=build_default_preprocess_config(),
-    executor_id=make_unique_id("preprocess_trento"),tmp_dir="",
+    executor_id=make_unique_id("preprocess_trento"),tmp_dir=".",
     task_name="reprocess_trento",mode="local",time="48:0:0",
     update_time=60,wait=FALSE,hold=""){
 
@@ -110,12 +110,13 @@ preprocess_seq_trento=function(
 
 
 multisample_clonet_trento=function(
-    sample_sheet,bam_dir="",normal_id="",patient_id="",version="V3",
-    tmp_dir="",header=TRUE,sep="",threads=3,ram=4,output_dir=".",verbose=FALSE,
+    sample_sheet=NULL,bam_dir="",normal_id="",patient_id="",version="V3",
+    tmp_dir=".",header=TRUE,sep="",threads=3,ram=4,output_dir=".",verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("multi_clonet"),
     task_name="multi_clonet",mode="local",time="48:0:0",
-    update_time=60,wait=FALSE,hold=""){
+    update_time=60,wait=FALSE,hold=""
+){
 
 
         argg <- as.list(environment())
@@ -197,7 +198,7 @@ multisample_clonet_trento=function(
 
 #' Process a pair of tumour-normal samples using CLONET
 #'
-#' This function takes a pair of tumour of tumour and 
+#' This function takes a pair of tumour and 
 #' normal BAMS and applies the CLONET pipeline
 #'
 #'
@@ -207,8 +208,8 @@ multisample_clonet_trento=function(
 #' @param normal Path to normal BAM file
 #' @param patient_id Patient id. 
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
-#' @param executor_id Executor ID. Default "preprocess_trento"
-#' @param task_name Name of the task. Default "preprocess_trento"
+#' @param executor_id Executor ID. Default "clonet"
+#' @param task_name Name of the task. Default "clonet"
 #' @param threads Number of CPU cores to use. Default 3.
 #' @param ram RAM memory for batched job. Default 4
 #' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
@@ -222,19 +223,20 @@ multisample_clonet_trento=function(
 
 
 clonet_trento=function(
-    sif_path=build_default_sif_list()$sif_path$V3,version=NULL,
-    sample_sheet="",tumour="",normal="",patient_id="",
-    tmp_dir="",threads=3,
+    sif_path=build_default_sif_list()$sif_path$V3,
+    version="V3",tumour="",normal="",
+    patient_id="",tmp_dir="",threads=3,
     ram=4,output_dir=".",verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("clonet"),
     task_name="clonet",mode="local",time="48:0:0",
-    update_time=60,wait=FALSE,hold=""){
+    update_time=60,wait=FALSE,hold=""
+){
 
     argg <- as.list(environment())
 
     if(!is.null(version)){
-        sif_path=build_default_sif_list()$pcf_select[ver]
+        sif_path=build_default_sif_list()$pcf_select[version]
         if(is.null(sif_path)){
             stop(paste0(ver, " is not a valid PCF Select panel version"))
         }
@@ -245,14 +247,12 @@ clonet_trento=function(
     out_file_dir_tmp=set_dir(dir=output_dir,name="clonet_tmp")
     out_file_dir=set_dir(dir=out_file_dir,name=get_file_name(tumour))
     out_file_dir_tmp=set_dir(dir= out_file_dir_tmp,name=get_file_name(tumour))
+    
+    
 
-
-
-    file_info=data.frame(Patient=patient_id,Tumour=tumour,Normal=normal)
-
-   
     sample_sheet=paste0(getwd(),"/",out_file_dir_tmp,"/",patient_id,"_",get_file_name(tumour),"_tmp.txt")
     write.table(file_info,file=sample_sheet,quote=FALSE,row.names=FALSE,col.names=TRUE,sep="\t")
+
 
     exec_code=paste(paste0(" export SINGULARITY_BINDPATH=",getwd()),"; singularity run --app pcfs ",
     sif_path, " -s ", sample_sheet ," -o ", paste0(getwd(),"/",out_file_dir)," -t ",out_file_dir_tmp,
