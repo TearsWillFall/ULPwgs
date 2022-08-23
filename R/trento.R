@@ -114,8 +114,6 @@ preprocess_seq_trento=function(
 #' @param hold Job to hold on in batched mode.
 #' @export
 
-
-
 multisample_clonet_trento=function(
     sample_sheet=NULL,bam_dir="",normal_id="",patient_id="",
     tmp_dir=".",header=TRUE,sep="",threads=3,ram=4,output_dir=".",verbose=FALSE,
