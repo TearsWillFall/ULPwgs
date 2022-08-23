@@ -9,7 +9,7 @@ metrics_alignqc(
   bin_picard = build_default_tool_binary_list()$bin_picard,
   bin_bedtools = build_default_tool_binary_list()$bin_bedtools,
   bam = "",
-  output_dir = "",
+  output_dir = ".",
   ref_genome = "",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),

@@ -38,7 +38,7 @@ alignment_bwa=function(
   file_R1="",file_R2="",threads=3,ram=4,id_tag="NA",
   pu_tag="NA",pl_tag="ILLUMINA",lb_tag="NA",
   sm_tag="",sort=TRUE,coord_sort=TRUE,index=TRUE,
-  clean=TRUE,stats="all",ref_genome="",output_dir="",
+  clean=TRUE,stats="all",ref_genome="",output_dir=".",
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   executor_id=make_unique_id("alignment"),
   task_name="alignment",mode="local",time="48:0:0",

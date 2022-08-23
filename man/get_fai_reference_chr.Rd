@@ -7,7 +7,7 @@
 get_fai_reference_chr(
   fasta = "",
   output_name = "chrRef",
-  output_dir = "",
+  output_dir = ".",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   executor_id = make_unique_id("getFAIchr"),

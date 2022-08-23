@@ -19,7 +19,7 @@ ichorCNA(
   centromere = "tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",
  
     normal_panel = "tools/ichorCNA/inst/extdata/HD_ULP_PoN_500kb_median_normAutosome_mapScoreFiltered_median.rds",
-  output_dir = "",
+  output_dir = ".",
   verbose = TRUE,
   libdir = "tools/ichorCNA",
   male_tresh = 1e-04,

@@ -605,7 +605,7 @@ collapse_step_list=function(list,sep="||"){
 #' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 
-parse_picard_metrics=function(summary="",output_dir="",output_name="",
+parse_picard_metrics=function(summary="",output_dir=".",output_name="",
 verbose=FALSE,batch_config=build_default_preprocess_config(),threads=1,ram=4,
 mode="local",executor_id=make_unique_id("parsePicardMetrics"),
 task_name="parsePicardMetrics",time="48:0:0",
@@ -815,7 +815,7 @@ complement_bed=function(
 #' @export
 
 pad_bed=function(bin_bedtools=build_default_tool_binary_list()$bin_bedtools,bed="",pad=10,
-  output_name="Padded",output_dir="",genome="",verbose=FALSE,batch_config=build_default_preprocess_config(),
+  output_name="Padded",output_dir=".",genome="",verbose=FALSE,batch_config=build_default_preprocess_config(),
   threads=3,ram=1,coord_sort=TRUE,mode="local",executor_id=make_unique_id("padBED"),task_name="padBED",
   time="48:0:0",update_time=60,wait=FALSE,hold=""
 ){
@@ -961,7 +961,7 @@ add_arrow=function(nesting="",n=2,bold=FALSE){
 #' @export
 
 replace_rg=function(
-  bin_samtools=build_default_tool_binary_list()$bin_samtools,bam="",output_dir="",
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,bam="",output_dir=".",
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   index=TRUE,ID="",PL="",PU="",LB="",SM="",threads=3,jobs=1){
 
@@ -1034,7 +1034,7 @@ replace_rg=function(
 bed_coverage=function(
   bin_bedtools=build_default_tool_binary_list()$bin_bedtools,bam="",bed="",
   verbose=FALSE,batch_config=build_default_preprocess_config(),
-  sorted=TRUE,mean=TRUE,fai="",suffix="",output_dir="",hist=FALSE
+  sorted=TRUE,mean=TRUE,fai="",suffix="",output_dir=".",hist=FALSE
 ){
     
     out_file_dir=set_dir(dir=output_dir,name="coverage")
@@ -1104,7 +1104,7 @@ bed_coverage=function(
 get_bam_reference_chr=function(
     bin_samtools=build_default_tool_binary_list()$bin_samtools,
     bam="",output_name="chrReference",
-    output_dir="",verbose=FALSE,batch_config=build_default_preprocess_config(),
+    output_dir=".",verbose=FALSE,batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("getBAMchr"),task_name="getBAMchr",
     mode="local",time="48:0:0",
     threads=4,ram=4,update_time=60,wait=FALSE,hold=""
@@ -1190,7 +1190,7 @@ get_bam_reference_chr=function(
 #' @export
 
 get_fai_reference_chr=function(
-    fasta="",output_name="chrRef",output_dir="",
+    fasta="",output_name="chrRef",output_dir=".",
     verbose=FALSE,batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("getFAIchr"),
     task_name="getFAIrchr",

@@ -8,7 +8,7 @@ qc_fastqc(
   bin_fastqc = build_default_tool_binary_list()$bin_fastqc,
   file_R1 = "",
   file_R2 = "",
-  output_dir = "",
+  output_dir = ".",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   executor_id = make_unique_id("fastQC"),

@@ -8,7 +8,7 @@ get_bam_reference_chr(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = "",
   output_name = "chrReference",
-  output_dir = "",
+  output_dir = ".",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   executor_id = make_unique_id("getBAMchr"),

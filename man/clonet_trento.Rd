@@ -6,7 +6,7 @@
 \usage{
 clonet_trento(
   sif_path = build_default_sif_list()$sif_path$V3,
-  version,
+  version = NULL,
   sample_sheet = "",
   tumour = "",
   normal = "",
@@ -14,7 +14,7 @@ clonet_trento(
   tmp_dir = "",
   threads = 3,
   ram = 4,
-  output_dir = "",
+  output_dir = ".",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   executor_id = make_unique_id("clonet"),

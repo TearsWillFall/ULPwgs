@@ -5,9 +5,9 @@
 \title{Wrapper for MarkDuplicatesSpark from gatk}
 \usage{
 markdups_gatk(
-  bin_gatk = build_default_tool_binary_list()$bin_gatk,
+  sif_gatk = build_default_sif_list()$gatk,
   bam = "",
-  output_dir = "",
+  output_dir = ".",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   tmp_dir = "",
@@ -24,7 +24,7 @@ markdups_gatk(
 )
 }
 \arguments{
-\item{bin_gatk}{Path to gatk executable. Default path tools/picard/build/libs/picard.jar.}
+\item{sif_gatk}{Path to gatk executable. Default path tools/picard/build/libs/picard.jar.}
 
 \item{bam}{Path to the input file with the aligned sequence.}
 

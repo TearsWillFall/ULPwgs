@@ -9,7 +9,7 @@ circ_quant_rna(
   file_R1 = "",
   file_R2 = "",
   ciri_input = "",
-  output_dir = "",
+  output_dir = ".",
   config = "database/yaml/config/yaml",
   output_name = "",
   verbose = FALSE,

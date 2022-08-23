@@ -8,11 +8,11 @@ apply_BQSR_gatk(
   region = "",
   rdata = NULL,
   selected = NULL,
-  bin_gatk = build_default_tool_binary_list()$bin_gatk,
+  sif_gatk = build_default_sif_list()$sif_gatk,
   bam = "",
   ref_genome = "",
   rec_table = "",
-  output_dir = "",
+  output_dir = ".",
   verbose = FALSE,
   tmp_dir = "",
   batch_config = build_default_preprocess_config(),
@@ -28,7 +28,7 @@ apply_BQSR_gatk(
 )
 }
 \arguments{
-\item{bin_gatk}{\link{REQUIRED} Path to gatk executable. Default tools/gatk/gatk.}
+\item{sif_gatk}{\link{REQUIRED} Path to gatk executable. Default tools/gatk/gatk.}
 
 \item{bam}{\link{REQUIRED} Path to the BAM file.}
 

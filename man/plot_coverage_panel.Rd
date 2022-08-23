@@ -11,7 +11,7 @@ plot_coverage_panel(
   height = 6,
   width = 12,
   verbose = FALSE,
-  output_dir = ""
+  output_dir = "."
 )
 }
 \arguments{

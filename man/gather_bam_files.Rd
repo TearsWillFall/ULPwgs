@@ -8,7 +8,7 @@ gather_bam_files(
   bin_picard = build_default_tool_binary_list()$bin_picard,
   bam = "",
   output_name = "File",
-  output_dir = "",
+  output_dir = ".",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 4,

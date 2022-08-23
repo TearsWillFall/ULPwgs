@@ -8,7 +8,7 @@ circ_rna(
   bin_ciri = build_default_tool_binary_list()$bin_ciri,
   file_R1 = "",
   file_R2 = "",
-  output_dir = "",
+  output_dir = ".",
   ref_genome = "database/Homo_sapiens_GRCh38.fa",
   db_annot = "database/human_gencode_vch38.gtf",
   output_name = "",

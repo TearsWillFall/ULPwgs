@@ -6,14 +6,14 @@
 \usage{
 parallel_apply_BQSR_gatk(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
-  bin_gatk = build_default_tool_binary_list()$bin_gatk,
+  sif_gatk = build_default_sif_list()$sif_gatk,
   bin_picard = build_default_tool_binary_list()$bin_picard,
   bam = "",
   regions = "",
   ref_genome = "",
   rec_table = "",
   clean = TRUE,
-  output_dir = "",
+  output_dir = ".",
   verbose = FALSE,
   tmp_dir = "",
   batch_config = build_default_preprocess_config(),
@@ -31,7 +31,7 @@ parallel_apply_BQSR_gatk(
 \arguments{
 \item{bin_samtools}{\link{REQUIRED} Path to samtools executable. Default tools/samtools/samtools.}
 
-\item{bin_gatk}{\link{REQUIRED} Path to gatk executable. Default tools/gatk/gatk.}
+\item{sif_gatk}{\link{REQUIRED} Path to gatk executable. Default tools/gatk/gatk.}
 
 \item{bin_picard}{\link{REQUIRED} Path to picard executable. Default tools/picard/build/libs/picard.jar}
 
@@ -43,7 +43,7 @@ parallel_apply_BQSR_gatk(
 
 \item{rec_table}{\link{REQUIRED} Path to the recalibratio table.}
 
-\item{clean}{Clean intermediary files.}
+\item{clean}{Clean intermediary files Default TRUE}
 
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 

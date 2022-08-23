@@ -5,13 +5,13 @@
 \title{Wrapper around gatk GatherBQSRReports function}
 \usage{
 gather_BQSR_reports_gatk(
-  bin_gatk = build_default_tool_binary_list()$bin_gatk,
+  sif_gatk = build_default_sif_list()$sif_gatk,
   report = "",
   executor_id = make_unique_id("gatherBQSR"),
   task_name = "gatherBQSR",
   output_name = "Report",
   clean = FALSE,
-  output_dir = "",
+  output_dir = ".",
   verbose = FALSE,
   tmp_dir = "",
   batch_config = build_default_preprocess_config(),
@@ -25,7 +25,7 @@ gather_BQSR_reports_gatk(
 )
 }
 \arguments{
-\item{bin_gatk}{\link{REQUIRED} Path to gatk executable. Default tools/gatk/gatk.}
+\item{sif_gatk}{\link{REQUIRED} Path to gatk executable. Default tools/gatk/gatk.}
 
 \item{report}{\link{REQUIRED} Path to indivual reports.}
 

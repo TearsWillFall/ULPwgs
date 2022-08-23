@@ -11,7 +11,7 @@ filter_bam(
   bed = "",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
-  output_dir = "",
+  output_dir = ".",
   threads = 1
 )
 }

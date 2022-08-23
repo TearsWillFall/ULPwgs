@@ -21,7 +21,7 @@
 
 markdups_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,bam="",
-  output_dir="",verbose=FALSE,
+  output_dir=".",verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   hnd=1000,threads,ram=4,tmp_dir="",
   remove_duplicates=TRUE,mode="local",executor_id=make_unique_id("markDups"),
@@ -115,7 +115,7 @@ markdups_picard=function(
 
 summary_metrics_bam_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
-  bam="",output_dir="",verbose=FALSE,
+  bam="",output_dir=".",verbose=FALSE,
   batch_config=build_default_preprocess_config(),tmp_dir=".",
   threads=3,ram=4,mode="local",executor_id=make_unique_id("summaryMetrics"),
   task_name="summaryMetrics",
@@ -195,7 +195,7 @@ if(wait&&mode=="batch"){
 
 insertsize_metrics_bam_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
-  bam="",output_dir="",verbose=FALSE,
+  bam="",output_dir=".",verbose=FALSE,
   batch_config=build_default_preprocess_config(),tmp_dir=".",threads=1,ram=4,
   mode="local",executor_id=make_unique_id("insertsizeMetrics"),
   task_name="insertsizeMetrics",
@@ -275,7 +275,7 @@ insertsize_metrics_bam_picard=function(
 #' @export
 
 tg_summary_metrics_bam_picard=function(
-  bin_picard=build_default_tool_binary_list()$bin_picard,bam="",output_dir="",
+  bin_picard=build_default_tool_binary_list()$bin_picard,bam="",output_dir=".",
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   tmp_dir=".",ref_genome="",threads=1,ram=4,bi="",ti="",
   mode="local",executor_id=make_unique_id("TGsummaryMetrics"),
@@ -382,7 +382,7 @@ tg_summary_metrics_bam_picard=function(
 
 rnaseq_summary_metrics_bam_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
-  bam="",output_dir="",verbose=FALSE,
+  bam="",output_dir=".",verbose=FALSE,
   batch_config=build_default_preprocess_config(),tmp_dir=".",threads=1,ram=4,
   ri="",ref_flat="",mode="local",executor_id=make_unique_id("RNAsummaryMetrics"),
   task_name="RNAsummaryMetrics",time="48:0:0",
@@ -466,7 +466,7 @@ job=build_job(executor_id=executor_id,task_id=task_id)
 
 wgs_summary_metrics_bam_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
-  bam="",mapq=0,output_dir="",verbose=FALSE,
+  bam="",mapq=0,output_dir=".",verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   tmp_dir=".",threads=1,ram=4,mode="local",
   executor_id=make_unique_id("WGSsummaryMetrics"),

@@ -18,7 +18,7 @@ preprocess_seq(
   nesting = "",
   executor_id = make_unique_id("preprocessSEQ"),
   task_name = "preprocessSEQ",
-  output_dir = "",
+  output_dir = ".",
   ram = 1,
   header = TRUE,
   sep = "",

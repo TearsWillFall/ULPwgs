@@ -14,7 +14,7 @@ bed_coverage(
   mean = TRUE,
   fai = "",
   suffix = "",
-  output_dir = "",
+  output_dir = ".",
   hist = FALSE
 )
 }

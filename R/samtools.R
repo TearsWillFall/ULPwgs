@@ -26,7 +26,7 @@
 
 sort_and_index_bam_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
-  bam="",output_dir="",verbose=FALSE,
+  bam="",output_dir=".",verbose=FALSE,
   batch_config=build_default_preprocess_config(),threads=3,ram=1,sort=TRUE,
   coord_sort=TRUE,index=TRUE,stats="all", clean=FALSE,
   mode="local",executor_id=make_unique_id("sortANDindex"),
@@ -126,7 +126,7 @@ sort_and_index_bam_samtools=function(
 
 sort_bam_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
-  bam="",output_dir="",verbose=FALSE,
+  bam="",output_dir=".",verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=3,ram=1,coord_sort=TRUE,mode="local",
   executor_id=make_unique_id("sortBAM"),clean=FALSE,task_name="sortBAM",
@@ -192,7 +192,7 @@ index_bam_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam="",verbose=FALSE,batch_config=build_default_preprocess_config(),
   threads=3,ram=4,mode="local",executor_id=make_unique_id("indexBAM"),
-  task_name="indexBAM",time="48:0:0",update_time=60, output_dir="",
+  task_name="indexBAM",time="48:0:0",update_time=60, output_dir=".",
   wait=FALSE,hold=""
 ){
 
@@ -268,7 +268,7 @@ index_bam_samtools=function(
 
 stats_bam_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
-  bam="",output_dir="",verbose=FALSE,
+  bam="",output_dir=".",verbose=FALSE,
   batch_config=build_default_preprocess_config(),threads=3,ram=4,stats="all",
   mode="local",executor_id=make_unique_id("statsBAM"),
   task_name="statsBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""
@@ -340,7 +340,7 @@ stats_bam_samtools=function(
 
 stats_flag_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
-  bam="",output_dir="",verbose=FALSE,
+  bam="",output_dir=".",verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=3,ram=4,mode="local",executor_id=make_unique_id("statsFlag"),
   task_name="statsFlag",time="48:0:0",update_time=60,
@@ -417,7 +417,7 @@ stats_flag_samtools=function(
 
 stats_index_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
-  bam="",output_dir="",verbose=FALSE,
+  bam="",output_dir=".",verbose=FALSE,
   batch_config=build_default_preprocess_config(),threads=3,ram=4,mode="local",
   executor_id=make_unique_id("statsINDEX"),task_name="statsINDEX",
   time="48:0:0",update_time=60,wait=FALSE,hold=""
@@ -491,7 +491,7 @@ stats_index_samtools=function(
 mapq_metrics_bam_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam="",
-  output_dir="",
+  output_dir=".",
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   threads=3,ram=4,mode="local",
   executor_id=make_unique_id("metricsMAPQ"),

@@ -7,7 +7,7 @@
 markdups_picard(
   bin_picard = build_default_tool_binary_list()$bin_picard,
   bam = "",
-  output_dir = "",
+  output_dir = ".",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   hnd = 1000,

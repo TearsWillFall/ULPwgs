@@ -18,7 +18,7 @@
 
 
 plot_coverage_panel=function(on_target="",off_target="",col=c(5,4),
-height=6,width=12,verbose=FALSE,output_dir=""){
+height=6,width=12,verbose=FALSE,output_dir="."){
   
   out_file_dir=set_dir(dir=output_dir,name="plots")
 
@@ -68,7 +68,7 @@ height=6,width=12,verbose=FALSE,output_dir=""){
 
 
 plot_cumulative_cov=function(on_target="",off_target="",col=list(c(2,5),c(2,5)),
-height=6,width=12,verbose=FALSE,output_dir=""){
+height=6,width=12,verbose=FALSE,output_dir="."){
   
   out_file_dir=set_dir(dir=output_dir,name="plots")
 

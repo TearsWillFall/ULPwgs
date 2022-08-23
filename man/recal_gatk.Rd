@@ -6,14 +6,14 @@
 \usage{
 recal_gatk(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
-  bin_gatk = build_default_tool_binary_list()$bin_gatk,
+  sif_gatk = build_default_sif_list()$gatk,
   bin_picard = build_default_tool_binary_list()$bin_picard,
   bam = "",
   ref_genome = "",
   dbsnp = "",
   ram = 4,
   threads = 4,
-  output_dir = "",
+  output_dir = ".",
   tmp_dir = "",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
@@ -30,7 +30,7 @@ recal_gatk(
 \arguments{
 \item{bin_samtools}{\link{REQUIRED} Path to picard executable. Default path tools/samtools/samtools.}
 
-\item{bin_gatk}{\link{REQUIRED} Path to picard executable. Default path tools/gatk/gatk.}
+\item{sif_gatk}{\link{REQUIRED} Path to picard executable. Default path tools/gatk/gatk.}
 
 \item{bin_picard}{\link{REQUIRED} Path to picard executable. Default path tools/picard/build/libs/picard.jar.}
 

@@ -105,7 +105,7 @@ metrics_alignqc=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bin_bedtools=build_default_tool_binary_list()$bin_bedtools,
-  bam="",output_dir="",ref_genome="",
+  bam="",output_dir=".",ref_genome="",
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   tmp_dir=".",mapq=0,bi="",
   ti="",ri="",ref_flat="",method="tg",
@@ -249,7 +249,7 @@ metrics_alignqc=function(
 read_counter=function(bin_samtools=build_default_tool_binary_list()$bin_samtools,
 bin_readcount=build_default_tool_binary_list()$bin_readcount,
 chrs=c(1:22,"X","Y"),win=500000, format="wig", bam="",
-output_dir="",verbose=FALSE,batch_config=build_default_preprocess_config(),
+output_dir=".",verbose=FALSE,batch_config=build_default_preprocess_config(),
 threads=3){
 
     win=format(win,scientific=F)
@@ -323,7 +323,7 @@ filter_bam=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam="",position="",bed="",verbose=FALSE,
   batch_config=build_default_preprocess_config(),
-  output_dir="",threads=1){
+  output_dir=".",threads=1){
 
 
   out_file_dir=set_dir(dir=output_dir,name="filtered")
@@ -383,7 +383,7 @@ gc="tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",
 map="tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",
 centromere="tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",
 normal_panel="tools/ichorCNA/inst/extdata/HD_ULP_PoN_500kb_median_normAutosome_mapScoreFiltered_median.rds",
-output_dir="",verbose=TRUE,libdir="tools/ichorCNA",male_tresh=0.0001,chrs="'c(1:22,\"X\")'",chrTrain="'c(1:22)'"){
+output_dir=".",verbose=TRUE,libdir="tools/ichorCNA",male_tresh=0.0001,chrs="'c(1:22,\"X\")'",chrTrain="'c(1:22)'"){
 
 
     out_file_dir=set_dir(dir=output_dir,name="ichorcna")

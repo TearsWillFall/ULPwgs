@@ -54,7 +54,7 @@ build_default_steps_list(
     build_default_step_ram_list()$markdups, batch_config =
     build_default_preprocess_config(), mode = build_default_step_mode_list()$markdups,
     verbose = build_default_step_verbose_list()$markdups, time =
-    build_default_step_time_list()$markdups, args = list(remove_duplicates = TRUE)),
+    build_default_step_time_list()$markdups, args = list(remove_duplicates = FALSE)),
     recalibrate = list(order = 8, step = build_default_step_list()$recalibrate, threads =
     build_default_step_threads_list()$recalibrate, ram =
     build_default_step_ram_list()$recalibrate, 

@@ -6,7 +6,7 @@
 \usage{
 parallel_generate_BQSR_gatk(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
-  bin_gatk = build_default_tool_binary_list()$bin_gatk,
+  sif_gatk = build_default_sif_list()$gatk,
   bam = "",
   regions = "",
   ref_genome = "",
@@ -17,7 +17,7 @@ parallel_generate_BQSR_gatk(
   ram = 4,
   executor_id = make_unique_id("par_generateBQSR"),
   task_name = "par_generateBQSR",
-  output_dir = "",
+  output_dir = ".",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   mode = "local",
@@ -30,7 +30,7 @@ parallel_generate_BQSR_gatk(
 \arguments{
 \item{bin_samtools}{\link{REQUIRED} Path to gatk executable. Default tools/samtools/samtools.}
 
-\item{bin_gatk}{\link{REQUIRED} Path to gatk executable. Default tools/gatk/gatk.}
+\item{sif_gatk}{\link{REQUIRED} Path to gatk executable. Default tools/gatk/gatk.}
 
 \item{bam}{\link{REQUIRED} Path to the BAM file.}
 

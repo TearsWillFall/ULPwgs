@@ -9,7 +9,7 @@ build_job_exec(
   time = "48:0:0",
   ram = 3,
   threads = 1,
-  output_dir = "",
+  output_dir = ".",
   hold = "",
   wd = getwd(),
   array = ""

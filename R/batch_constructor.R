@@ -61,7 +61,7 @@ job_order=1, input_args="",out_file_dir="", out_files=list(file="file")){
 #' @export
 
 build_job_exec=function(job="",time="48:0:0",ram=3,threads=1,
-output_dir="",hold="",wd=getwd(),array=""){
+output_dir=".",hold="",wd=getwd(),array=""){
   
   if(hold!=""){
     hold=paste0(" -hold_jid ",paste0(hold,collapse=","))

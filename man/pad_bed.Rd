@@ -9,7 +9,7 @@ pad_bed(
   bed = "",
   pad = 10,
   output_name = "Padded",
-  output_dir = "",
+  output_dir = ".",
   genome = "",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),

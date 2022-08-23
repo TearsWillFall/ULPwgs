@@ -15,7 +15,7 @@ trimming_skewer(
   max_length = "",
   threads = 3,
   ram = 4,
-  output_dir = "",
+  output_dir = ".",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   output_name = "",

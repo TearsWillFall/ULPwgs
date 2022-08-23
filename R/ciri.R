@@ -26,7 +26,7 @@
 
 circ_rna=function(
 bin_ciri=build_default_tool_binary_list()$bin_ciri,
-file_R1="",file_R2="",output_dir="",
+file_R1="",file_R2="",output_dir=".",
 ref_genome="database/Homo_sapiens_GRCh38.fa",
 db_annot="database/human_gencode_vch38.gtf",output_name="",
 verbose=FALSE,batch_config=build_default_preprocess_config(),
@@ -115,7 +115,7 @@ update_time=60,wait=FALSE,hold=""){
 
 circ_quant_rna=function(
 bin_ciri_quant=build_default_tool_binary_list()$bin_ciri_quant,
-file_R1="",file_R2="",ciri_input="",output_dir="",
+file_R1="",file_R2="",ciri_input="",output_dir=".",
 config="database/yaml/config/yaml",output_name="",
 verbose=FALSE,batch_config=build_default_preprocess_config(),
 executor_id=make_unique_id("circRNAquant"),

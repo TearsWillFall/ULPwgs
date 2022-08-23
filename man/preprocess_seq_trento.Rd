@@ -5,12 +5,12 @@
 \title{Generate a quality control (QC) report from a fastaqc file}
 \usage{
 preprocess_seq_trento(
-  sif_path = "Singularity_Images/preProcess_latest.sif",
+  sif_path = build_default_sif_list()$preprocess,
   fastq_dir = "",
   threads = 3,
   ram = 4,
   ref_genome = "",
-  output_dir = "",
+  output_dir = ".",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   executor_id = make_unique_id("preprocess_trento"),

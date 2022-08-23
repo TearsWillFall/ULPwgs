@@ -15,7 +15,7 @@ multisample_clonet_trento(
   sep = "",
   threads = 3,
   ram = 4,
-  output_dir = "",
+  output_dir = ".",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   executor_id = make_unique_id("multi_clonet"),

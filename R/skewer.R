@@ -26,7 +26,7 @@ trimming_skewer=function(
   bin_skewer=build_default_tool_binary_list()$bin_skewer,
   file_R1="",file_R2="",xadapt="",
   yadapt="",mean_quality=0,min_length=18,max_length="",
-  threads=3,ram=4,output_dir="",verbose=FALSE,
+  threads=3,ram=4,output_dir=".",verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   output_name="",mode="local",executor_id=make_unique_id("trimmingSkewer"),
   task_name="trimmingSkewer",time="48:0:0",

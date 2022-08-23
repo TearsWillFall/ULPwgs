@@ -6,7 +6,7 @@
 \usage{
 parse_picard_metrics(
   summary = "",
-  output_dir = "",
+  output_dir = ".",
   output_name = "",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),

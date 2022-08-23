@@ -466,6 +466,10 @@ build_default_tool_binary_list=function(
                 bin_fastqc="/lustre/scratch/scratch/regmova/tools/FastQC/bin/fastqc",
                 bin_skewer="/lustre/scratch/scratch/regmova/tools/skewer/skewer",
                 bin_fastqc="/lustre/scratch/scratch/regmova/tools/FastQC/bin/fastqc",
+                bin_bcftools="/lustre/scratch/scratch/regmova/tools/bcftools/bcftools",
+                bin_bgzip="/lustre/scratch/scratch/regmova/tools/htslib/bin/bgzip",
+                bin_tabix="/lustre/scratch/scratch/regmova/tools/htslib/bin/tabix",
+                bin_htsfile="/lustre/scratch/scratch/regmova/tools/htslib/bin/htsfile",
                 bin_bwa="/lustre/scratch/scratch/regmova/tools/bwa/bwa",
                 bin_ichor_pon="/lustre/scratch/scratch/regmova/tools/ichorCNA/scripts/createPanelOfNormals.R",
                 bin_ichor="/lustre/scratch/scratch/regmova/tools/ichorCNA/scripts/runIchorCNA.R",
@@ -664,6 +668,26 @@ build_default_reference_list=function(
                     ),
                     reference=list(
                         ref_flat="/lustre/scratch/scratch/regmova/PCF/references/hg19/rnaseq/reference/refFlat.txt"
+                    )
+                ),
+                variant=list(
+                    germ_reference="/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/af-only-gnomad.raw.sites.vcf",
+                    biallelic_reference="/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/small_exac_common_3.vcf",
+                    panel=list(
+                        PCF_V2=list(
+                            pon=list(
+                                vcf="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon/40_Pooled_PoN.vcf",
+                                vcf_gz="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon/40_Pooled_PoN.vcf.gz",
+                                tbi="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon/40_Pooled_PoN.vcf.gz.tbi"
+                            )
+                        ),
+                        PCF_V3=list(
+                            pon=list(
+                                vcf="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/pon/40_Pooled_PoN.vcf",
+                                vcf_gz="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/pon/40_Pooled_PoN.vcf.gz",
+                                tbi="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/pon/40_Pooled_PoN.vcf.gz.tbi"
+                            )
+                        )
                     )
                 )
             ),

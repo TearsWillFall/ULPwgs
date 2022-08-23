@@ -6,6 +6,11 @@
 \usage{
 check_job_limit(job_limit = 900)
 }
+\arguments{
+\item{exec_code}{Execution code}
+
+\item{delay}{Time to wait for job limit checks in seconds}
+}
 \description{
 Check for job limit in Myriad SGE
 }

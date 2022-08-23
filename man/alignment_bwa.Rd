@@ -22,7 +22,7 @@ alignment_bwa(
   clean = TRUE,
   stats = "all",
   ref_genome = "",
-  output_dir = "",
+  output_dir = ".",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   executor_id = make_unique_id("alignment"),

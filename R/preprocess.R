@@ -141,7 +141,7 @@ preprocess_seq=function(
 #' @export
 
 for_id=function(
-    seq_info,output_dir="",name="",
+    seq_info,output_dir=".",name="",
     vars_list=build_default_variable_list(),
     pmts_list=build_default_parameter_list(),
     bin_list=build_default_binary_list(),
@@ -162,7 +162,7 @@ for_id=function(
                 process_variable=function(
                     ct,seq_info,var,var_text,
                     vars_list_left,info,
-                    output_dir="",name="",
+                    output_dir=".",name="",
                     pmts_list=build_default_parameter_list(),
                     bin_list=build_default_binary_list(),
                     ref_list=build_default_reference_list(),
