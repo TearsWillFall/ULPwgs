@@ -119,7 +119,6 @@ multisample_clonet_trento=function(
     update_time=60,wait=FALSE,hold=""
 ){
 
-
         argg <- as.list(environment())
 
         task_id=make_unique_id(task_name)
