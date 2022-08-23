@@ -252,6 +252,8 @@ clonet_trento=function(
     out_file_dir_tmp=set_dir(dir= out_file_dir_tmp,name=get_file_name(tumour))
     
     
+    
+    file_info=data.frame(Patient=patient_id,Tumour=tumour,Normal=normal)
 
     sample_sheet=paste0(getwd(),"/",out_file_dir_tmp,"/",patient_id,"_",get_file_name(tumour),"_tmp.txt")
     write.table(file_info,file=sample_sheet,quote=FALSE,row.names=FALSE,col.names=TRUE,sep="\t")
