@@ -115,7 +115,7 @@ preprocess_seq_trento=function(
 #' @export
 
 multisample_clonet_trento=function(
-    sample_sheet=NULL,bam_dir="",normal_id="",patient_id="",
+    sample_sheet=NULL,bam_dir="",normal_id="",patient_id="",version="V3",
     tmp_dir=".",header=TRUE,sep="",threads=3,ram=4,output_dir=".",verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("multi_clonet"),
