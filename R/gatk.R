@@ -1065,8 +1065,8 @@ mutect2_gatk=function(region="",
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
   db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
   pon="",output_dir=".",tmp_dir="",
-  verbose=FALSE,orientation=TRUE,
-  mnps=TRUE,pileup="both",
+  verbose=FALSE,orientation=FALSE,
+  mnps=FALSE,pileup="both",
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("Mutect2"),
@@ -1118,7 +1118,7 @@ mutect2_gatk=function(region="",
 
 
   filter_mnps=""
-  if (!mnps){
+  if (mnps){
     filter_mnps=" -max-mnp-distance 0 "
   }
 
@@ -1352,18 +1352,19 @@ parallel_regions_mutect2_gatk=function(
 
 
 gather_mutect2_gatk=function(
-sif_gatk=build_default_sif_list()$sif_gatk,
-bin_samtools=build_default_tool_binary_list()$bin_samtools,
-bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
-bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
-bin_tabix=build_default_tool_binary_list()$bin_tabix,
-vcf="",output_dir=".",tmp_dir=".",
-verbose=FALSE,orientation=FALSE,
-batch_config=build_default_preprocess_config(),
-threads=4,ram=4,mode="local",
-executor_id=make_unique_id("gatherMutect"),
-task_name="gatherMutect",time="48:0:0",
-update_time=60,wait=FALSE,hold=""){
+  sif_gatk=build_default_sif_list()$sif_gatk,
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
+  bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+  bin_tabix=build_default_tool_binary_list()$bin_tabix,
+  vcf="",output_dir=".",tmp_dir=".",
+  verbose=FALSE,orientation=FALSE,
+  batch_config=build_default_preprocess_config(),
+  threads=4,ram=4,mode="local",
+  executor_id=make_unique_id("gatherMutect"),
+  task_name="gatherMutect",time="48:0:0",
+  update_time=60,wait=FALSE,hold=""
+){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -1432,7 +1433,7 @@ update_time=60,wait=FALSE,hold=""){
 
   return(job_report)
 
-}
+}   
 
 #' Create Read Orientation Model for Mutect2 Filter
 #'
@@ -1982,7 +1983,6 @@ update_time=60,wait=FALSE,hold=""){
   tumours_list=tumours
   names(tumours_list)=Vectorize(get_file_name)(tumours)
 
-
 if(mode=="local"){
   job_report[["steps"]][["parSampleCallVariantsMutect2"]]<-
   parallel::mclapply(tumours_list,FUN=function(tumour){
@@ -2049,9 +2049,6 @@ if(mode=="local"){
   return(job_report)
 
 }
-
-
-
 
 
 
