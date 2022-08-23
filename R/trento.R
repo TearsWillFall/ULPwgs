@@ -259,7 +259,7 @@ clonet_trento=function(
     write.table(file_info,file=sample_sheet,quote=FALSE,row.names=FALSE,col.names=TRUE,sep="\t")
 
 
-    exec_code=paste(paste0(" export SINGULARITY_BINDPATH=",getwd()),"; singularity run --app pcfs ",
+    exec_code=paste(" singularity run -H ",getwd(),":/home  --app pcfs ",
     sif_path, " -s ", sample_sheet ," -o ", paste0(getwd(),"/",out_file_dir)," -t ",out_file_dir_tmp,
     " -n " , threads)
     
