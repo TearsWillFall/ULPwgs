@@ -162,7 +162,7 @@ multisample_clonet_trento=function(
     parallel::mclapply(seq(1,nrow(file_info)),FUN=function(x){
         
         lapply(columns,FUN=function(col){
-            file_info[[col]]<<-ifelse(check_missing(file_info[[col]]),get(col),file_info[[col]])
+            file_info[[col]]<<-ifelse(is.null(file_info[[col]]),get(col),file_info[[col]])
         })
 
         job_report[["steps"]][["clonet"]][[ULPwgs::get_file_name(file_info[x,]$tumour)]]<<- 
