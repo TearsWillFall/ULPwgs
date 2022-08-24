@@ -1074,6 +1074,13 @@ mutect2_gatk=function(region="",
   update_time=60,wait=FALSE,hold=""
 ){
 
+  if(!is.null(rdata)){
+    load(rdata)
+    if(!is.null(selected)){
+      region=region_list[selected]
+    }
+  }
+
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
@@ -1245,12 +1252,7 @@ parallel_regions_mutect2_gatk=function(
   update_time=60,wait=FALSE,hold=""
 ){
 
-  if(!is.null(rdata)){
-    load(rdata)
-    if(!is.null(selected)){
-      region=region_list[selected]
-    }
-  }
+
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
