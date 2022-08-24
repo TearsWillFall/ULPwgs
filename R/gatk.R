@@ -1237,13 +1237,20 @@ parallel_regions_mutect2_gatk=function(
   ref_genome=build_default_reference_list()$HG19$reference,
   germ_resources=build_default_reference_list()$HG19$variant$germ_reference,
   regions="",pon="",output_dir=".",tmp_dir=".",
-  verbose=FALSE,orientation=FALSE,mnps=FALSE,
+  verbose=FALSE,orientation=FALSE,mnps=FALSE,pileup="both",
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("parSampleMutect2"),
   task_name="parSampleMutect2",time="48:0:0",
   update_time=60,wait=FALSE,hold=""
 ){
+
+  if(!is.null(rdata)){
+    load(rdata)
+    if(!is.null(selected)){
+      region=region_list[selected]
+    }
+  }
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -1297,6 +1304,7 @@ parallel_regions_mutect2_gatk=function(
             output_dir=out_file_dir,tmp_dir=tmp_dir,
             verbose=verbose,orientation=orientation,mnps=mnps,
             batch_config=batch_config,
+            pileup=ifelse(region_list[1]==region,pileup,""),
             threads=threads,ram=ram,mode=mode,
             executor_id=task_id,
             time=time,hold=hold)
@@ -1304,7 +1312,7 @@ parallel_regions_mutect2_gatk=function(
     
     }else if(mode=="batch"){
           rdata_file=paste0(tmp_dir,"/",job,".regions.RData")
-          save(tumour,normal,sif_gatk,ref_genome,orientation,mnps,output_dir,verbose,tmp_dir,file = rdata_file)
+          save(region_list,tumour,normal,sif_gatk,ref_genome,orientation,mnps,output_dir,verbose,tmp_dir,file = rdata_file)
           exec_code=paste0("Rscript -e \"ULPwgs::mutect2_gatk(rdata=\\\"",rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
           out_file_dir2=set_dir(dir=out_file_dir,name="batch")
           batch_code=build_job_exec(job=job,time=time,ram=ram,
