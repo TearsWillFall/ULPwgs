@@ -1934,7 +1934,7 @@ pileup_summary_gatk=function(
 
 parallel_pileup_summary_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
-  bams="",output_dir="",verbose=FALSE,
+  bams="",output_dir="",tmp_dir=".",verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
   db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
