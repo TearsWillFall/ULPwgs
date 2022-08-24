@@ -149,8 +149,7 @@ multisample_clonet_trento=function(
     if(!is.null(sample_sheet)){
       
         if(!is.data.frame(sample_sheet)){
-                file_info=read.csv(sample_sheet,header=header,sep=sep,
-                stringsAsFactors=FALSE)
+                file_info=read.csv(sample_sheet,header=header,sep=sep,stringsAsFactors=FALSE)
                 if(!header){
                     names(file_info)=columns
                 }
@@ -171,6 +170,7 @@ multisample_clonet_trento=function(
             }
            
         })
+        print(file_info)
 
         job_report[["steps"]][["clonet"]][[ULPwgs::get_file_name(file_info[x,]$tumour)]]<<- 
         clonet_trento(
