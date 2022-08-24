@@ -1247,7 +1247,7 @@ parallel_regions_mutect2_gatk=function(
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir,name="pon")
+  out_file_dir=set_dir(dir=output_dir,name="mutect2_reports")
   job=build_job(executor_id=executor_id,task_id=task_id)
 
 
