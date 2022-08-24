@@ -170,18 +170,20 @@ multisample_clonet_trento=function(
             }
            
         })
-        print(file_info)
-
+       
         job_report[["steps"]][["clonet"]][[ULPwgs::get_file_name(file_info[x,]$tumour)]]<<- 
         clonet_trento(
             tumour=file_info[x,]$tumour,
             normal=file_info[x,]$normal,
             patient_id=file_info[x,]$patient_id,
             version=file_info[x,]$version,
-            threads=threads,
-            ram=ram,output_dir=paste0(out_file_dir,file_info[x,]$patient_id),verbose=verbose,
-            executor_id=task_id,mode=mode,time=time,
-            hold=hold)
+            threads=file_info[x,]$threads,
+            ram=file_info[x,]$ram,output_dir=paste0(out_file_dir,file_info[x,]$patient_id),
+            verbose=file_info[x,]$verbose,
+            executor_id=task_id,
+            mode=file_info[x,]$mode,
+            time=file_info[x,]$time,
+            hold=file_info[x,]$hold)
         },mc.cores=ifelse(mode=="local",1,3))
 
 
