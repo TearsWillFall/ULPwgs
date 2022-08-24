@@ -1319,7 +1319,7 @@ parallel_regions_mutect2_gatk=function(
 
   }
 
-  if(biallelic_db!=""&db_inteval!=""){
+  if(biallelic_db!=""&db_interval!=""){
     if(pileup=="tumour"|pileup=="both"){
       job_reports[["steps"]][["tPileup"]]<-pileup_summary_gatk(
         sif_gatk=sif_gatk,
