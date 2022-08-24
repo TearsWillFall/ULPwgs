@@ -401,7 +401,7 @@ parallel_generate_BQSR_gatk=function(
     job_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
       bin_samtools=bin_samtools,
       bam=bam,verbose=verbose,output_dir=tmp_dir,
-      executor_id=task_id,mode=mode,threads=threads,ram=ram,
+      executor_id=task_id,mode="local",threads=threads,ram=ram,
       time=time,update_time=update_time,wait=FALSE,hold=hold)
 
 
@@ -726,7 +726,7 @@ parallel_apply_BQSR_gatk=function(
       job_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
       bin_samtools=bin_samtools,
       bam=bam,verbose=verbose,output_dir=tmp_dir,
-      executor_id=task_id,mode=mode,threads=threads,ram=ram,
+      executor_id=task_id,mode="local",threads=threads,ram=ram,
       time=time,update_time=update_time,wait=FALSE,hold=hold)
 
 
@@ -1277,7 +1277,7 @@ parallel_regions_mutect2_gatk=function(
     job_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
       bin_samtools=bin_samtools,
       bam=tumour,verbose=verbose,output_dir=tmp_dir,
-      executor_id=task_id,mode=mode,threads=threads,ram=ram,
+      executor_id=task_id,mode="local",threads=threads,ram=ram,
       time=time,update_time=update_time,wait=FALSE,hold=hold)
 
 
