@@ -1323,7 +1323,6 @@ parallel_regions_mutect2_gatk=function(
   }
 
 
-
   if(biallelic_db!=""&db_interval!=""){
     tumour_pileups=""
     normal_pileup=""
