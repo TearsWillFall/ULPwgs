@@ -141,27 +141,38 @@ multisample_clonet_trento=function(
                 )
         )
 
+
+
+    columns=c("patient_id","tumour","normal","version","batch_config","threads","ram","time","mode","hold")
+
+
     if(!is.null(sample_sheet)){
       
         if(!is.data.frame(sample_sheet)){
                 file_info=read.csv(sample_sheet,header=header,sep=sep,
                 stringsAsFactors=FALSE)
                 if(!header){
-                    names(file_info)=c("patient_id","tumour","normal","version")
+                    names(file_info)=columns
                 }
         }else{
                 file_info=sample_sheet
         }
+    
 
-      
+    parallel::mclapply(seq(1,nrow(file_info)),FUN=function(x){
+        
+        lapply(columns,FUN=function(col){
+            file_info[[col]]<<-ifelse(check_missing(file_info[[col]]),get(col),file_info[[col]])
+        })
 
-        parallel::mclapply(seq(1,nrow(file_info)),FUN=function(x){
-        job_report[["steps"]][["clonet"]][[ULPwgs::get_file_name(file_info[x,]$tumour)]]<<-clonet_trento(
-            tumour=file_info[x,]$tumour,normal=file_info[x,]$normal,
+        job_report[["steps"]][["clonet"]][[ULPwgs::get_file_name(file_info[x,]$tumour)]]<<- 
+        clonet_trento(
+            tumour=file_info[x,]$tumour,
+            normal=file_info[x,]$normal,
             patient_id=file_info[x,]$patient_id,
             version=file_info[x,]$version,
             threads=threads,
-            ram=ram,output_dir=paste0(out_file_dir,patient_id),verbose=verbose,
+            ram=ram,output_dir=paste0(out_file_dir,file_info[x,]$patient_id),verbose=verbose,
             executor_id=task_id,mode=mode,time=time,
             hold=hold)
         },mc.cores=ifelse(mode=="local",1,3))
@@ -173,8 +184,9 @@ multisample_clonet_trento=function(
         t_files=bam_files[!grepl(normal_id,bam_files)]
         normal=bam_files[grepl(normal_id,bam_files)]
 
-        parallel::mclapply(t_files,FUN=function(tumour){
-            job_report[["steps"]][["clonet"]][[ULPwgs::get_file_name(tumour)]]<<-clonet_trento(
+    parallel::mclapply(t_files,FUN=function(tumour){
+        job_report[["steps"]][["clonet"]][[ULPwgs::get_file_name(tumour)]]<<-
+        clonet_trento(
                 tumour=tumour,normal=normal,
                 patient_id=patient_id,
                 version=version,
