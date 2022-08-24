@@ -1097,7 +1097,7 @@ mutect2_gatk=function(region="",
   }
   norm=" "
   if (normal!=""){
-    if (is.vector(normal_bam)){
+    if (is.vector(normal)){
       norm=paste0(" -I ",paste(normal,collapse=" -I ")," -normal ",
       paste(as.vector(sapply(normalizePath(),FUN=get_file_name)),collapse=" -normal "))
   }else{
