@@ -1611,7 +1611,7 @@ learn_orientation_gatk=function(
 estimate_contamination_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
   rdata=NULL,selected=NULL,
-  pileup_tumour="",pileup_normal="",output_name="",output_dir="",
+  tumour_pileup="",pnormal_pileup="",output_name="",output_dir="",
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   threads=1,ram=4,mode="local",
   executor_id=make_unique_id("estimateContaminationGatk"),
@@ -1642,13 +1642,13 @@ estimate_contamination_gatk=function(
   out_file2=paste0(out_file_dir,"/",id,".segmentation.table")
 
 
-  if (pileup_normal!=""){
-        pileup_normal=paste0("-matched ",pileup_normal)
+  if (normal_pileup!=""){
+        normal_pileup=paste0("-matched ",normal_pileup)
   }
 
   exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk,
   " /gatk/gatk   CalculateContamination  -O ",out_file, " -tumor-segmentation ", out_file2,
-  " -I ",pileup_tumour,pileup_normal)
+  " -I ",tumour_pileup,normal_pileup)
 
 
   if(mode=="batch"){
@@ -1719,7 +1719,7 @@ estimate_contamination_gatk=function(
 
 parallel_estimate_contamination_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
-  pileup_tumour="",pileup_normal="",output_name="",output_dir="",
+  tumour_pileup="",normal_pileup="",output_name="",output_dir="",
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   threads=1,ram=4,mode="local",
   executor_id=make_unique_id("parEstimateContaminationGatk"),
@@ -1744,16 +1744,16 @@ parallel_estimate_contamination_gatk=function(
         )
       )
 
-    pileup_tumour_list=pileup_tumour
-    names(pileup_tumour_list)=Vectorize(get_file_name)(pileup_tumour)
+    tumour_pileup_list=tumour_pileup
+    names(tumour_pileup_list)=Vectorize(get_file_name)(tumour_pileup)
 
     if(mode=="local"){
       job_report[["steps"]][["parEstimateContaminationGatk"]]<-
-      parallel::mclapply(pileup_tumour_list,FUN=function(t_p){
+      parallel::mclapply(tumour_pileup_list,FUN=function(t_p){
         job_report <-  estimate_contamination_gatk(
             sif_gatk=sif_gatk,
-            pileup_tumour=t_p,
-            pileup_normal=pileup_normal,
+            tumour_pileup=t_p,
+            normal_pileup=normal_pileup,
             output_name=get_file_name(t_p),
             output_dir=out_file_dir,
             verbose=verbose,
@@ -1761,12 +1761,12 @@ parallel_estimate_contamination_gatk=function(
       },mc.cores=threads)
       }else if(mode=="batch"){
             rdata_file=paste0(tmp_dir,"/",job,".pileups.RData")
-            save(pileup_tumour_list,pileup_normal,sif_gatk,output_dir,verbose,tmp_dir,file = rdata_file)
+            save(tumour_pileup_list,normal_pileup,sif_gatk,output_dir,verbose,tmp_dir,file = rdata_file)
             exec_code=paste0("Rscript -e \"ULPwgs::estimate_contamination(rdata=\\\"",rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
             out_file_dir2=set_dir(dir=out_file_dir,name="batch")
             batch_code=build_job_exec(job=job,time=time,ram=ram,
             threads=2,output_dir=out_file_dir2,
-            hold=hold,array=length(pileup_tumour_list))
+            hold=hold,array=length(tumour_pileup_list))
             exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
 
             if(verbose){
