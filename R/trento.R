@@ -157,35 +157,34 @@ multisample_clonet_trento=function(
         }else{
                 file_info=sample_sheet
         }
-    
-
-    job_report[["steps"]][["clonet"]]=parallel::mclapply(seq(1,nrow(file_info)),FUN=function(x){
         
-        lapply(columns,FUN=function(col){
-            if(is.null(file_info[[col]])){
-                file_info[[col]]<<-get(col)
-            }
 
-            if(is.null(file_info[[x,col]])){
-                file_info[[x,col]]<<-get(col)
-            }
-           
-        })
-       
-       
-        job_report<- clonet_trento(
-            tumour=file_info[x,]$tumour,
-            normal=file_info[x,]$normal,
-            patient_id=file_info[x,]$patient_id,
-            version=file_info[x,]$version,
-            threads=file_info[x,]$threads,
-            ram=file_info[x,]$ram,output_dir=paste0(out_file_dir,file_info[x,]$patient_id),
-            verbose=file_info[x,]$verbose,
-            executor_id=task_id,
-            mode=file_info[x,]$mode,
-            time=file_info[x,]$time,
-            hold=file_info[x,]$hold)
-        },mc.cores=ifelse(mode=="local",1,3))
+        job_report[["steps"]][["clonet"]]=parallel::mclapply(seq(1,nrow(file_info)),FUN=function(x){
+            
+            lapply(columns,FUN=function(col){
+                if(is.null(file_info[[col]])){
+                    file_info[[col]]<<-get(col)
+                }
+
+                if(is.null(file_info[[x,col]])){
+                    file_info[[x,col]]<<-get(col)
+                }
+            
+            })
+        
+            job_report<- clonet_trento(
+                tumour=file_info[x,]$tumour,
+                normal=file_info[x,]$normal,
+                patient_id=file_info[x,]$patient_id,
+                version=file_info[x,]$version,
+                threads=file_info[x,]$threads,
+                ram=file_info[x,]$ram,output_dir=paste0(out_file_dir,file_info[x,]$patient_id),
+                verbose=file_info[x,]$verbose,
+                executor_id=task_id,
+                mode=file_info[x,]$mode,
+                time=file_info[x,]$time,
+                hold=file_info[x,]$hold)
+            },mc.cores=ifelse(mode=="local",1,3))
 
     }else{
         bam_dir_path=system(paste("realpath",bam_dir),intern=TRUE)
@@ -193,7 +192,7 @@ multisample_clonet_trento=function(
         t_files=bam_files[!grepl(normal_id,bam_files)]
         normal=bam_files[grepl(normal_id,bam_files)]
 
-    job_report[["steps"]][["clonet"]]=parallel::mclapply(t_files,FUN=function(tumour){
+        job_report[["steps"]][["clonet"]]=parallel::mclapply(t_files,FUN=function(tumour){
         job_report<-clonet_trento(
                         tumour=tumour,normal=normal,
                         patient_id=patient_id,
