@@ -1267,13 +1267,14 @@ parallel_regions_mutect2_gatk=function(
 
     job_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
       bin_samtools=bin_samtools,
-      bam=bam,verbose=verbose,output_dir=tmp_dir,
+      bam=tumour,verbose=verbose,output_dir=tmp_dir,
       executor_id=task_id,mode=mode,threads=threads,ram=ram,
       time=time,update_time=update_time,wait=FALSE,hold=hold)
 
 
     regions=read.table(job_report[["steps"]][["getChr"]]$out_files$ref,
     sep="\t",header=TRUE)
+    hold=job_report[["steps"]][["getChr"]]$job_id
   }
 
   regions$start=regions$start+1
@@ -1297,7 +1298,7 @@ parallel_regions_mutect2_gatk=function(
             batch_config=batch_config,
             threads=threads,ram=ram,mode=mode,
             executor_id=task_id,
-            time=time)
+            time=time,hold=hold)
     },mc.cores=threads)
     
     }else if(mode=="batch"){
