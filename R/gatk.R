@@ -1116,13 +1116,12 @@ mutect2_gatk=function(region="",
 
 
 
-
   filter_mnps=""
   if (mnps){
     filter_mnps=" -max-mnp-distance 0 "
   }
 
-  exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk,
+  exec_code=paste0("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
   " /gatk/gatk   Mutect2 -R ",ref_genome,tumour, norm,
    " --germline-resource ",germ_resource, pon, " -O ",out_file, reg,f1r2,filter_mnps)
 
@@ -1132,6 +1131,10 @@ mutect2_gatk=function(region="",
        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+  }
+
+  if(verbose){
+       print_verbose(job=job,arg=argg,exec_code=exec_code)
   }
 
   error=execute_job(exec_code=exec_code)
@@ -1332,6 +1335,9 @@ parallel_regions_mutect2_gatk=function(
 
   }
 
+  if(verbose){
+       print_verbose(job=job,arg=argg,exec_code=exec_code)
+  }
   error=execute_job(exec_code=exec_code)
   
   if(error!=0){
