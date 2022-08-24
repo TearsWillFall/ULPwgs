@@ -246,7 +246,7 @@ multisample_clonet_trento=function(
 
 
 clonet_trento=function(
-    sif_path=build_default_sif_list()$sif_path$V3,
+    sif_clonet=build_default_sif_list()$sif_clonet$V3,
     version="V3",tumour="",normal="",
     patient_id="",tmp_dir=".",threads=3,
     ram=4,output_dir=".",verbose=FALSE,
@@ -259,8 +259,8 @@ clonet_trento=function(
     argg <- as.list(environment())
 
     if(!is.null(version)){
-        sif_path=build_default_sif_list()$pcf_select[version]
-        if(is.null(sif_path)){
+        sif_path=build_default_sif_list()$sif_clonet[version]
+        if(is.null(sif_clonet)){
             stop(paste0(ver, " is not a valid PCF Select panel version"))
         }
     }

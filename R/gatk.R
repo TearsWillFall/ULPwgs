@@ -1121,7 +1121,7 @@ mutect2_gatk=function(region="",
     filter_mnps=" -max-mnp-distance 0 "
   }
 
-  exec_code=paste0("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
+  exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
   " /gatk/gatk   Mutect2 -R ",ref_genome,tumour, norm,
    " --germline-resource ",germ_resource, pon, " -O ",out_file, reg,f1r2,filter_mnps)
 
