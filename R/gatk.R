@@ -1062,11 +1062,8 @@ mutect2_gatk=function(region="",
   tumour="",normal="",id="",
   ref_genome=build_default_reference_list()$HG19$reference,
   germ_resource=build_default_reference_list()$HG19$variant$germ_reference,
-  biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
-  db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
   pon="",output_dir=".",tmp_dir="",
-  verbose=FALSE,orientation=FALSE,
-  mnps=FALSE,pileup="both",
+  verbose=FALSE,orientation=FALSE,mnps=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("Mutect2"),
@@ -1164,32 +1161,6 @@ mutect2_gatk=function(region="",
       f1r2=f1r2)
   )
 
-  if(biallelic_db!=""&db_inteval!=""){
-    if(pileup=="tumour"|pileup=="both"){
-      job_reports[["steps"]][["tPileup"]]<-pileup_summary_gatk(
-        sif_gatk=sif_gatk,
-        bam=tumour,output_name=get_file_name(tumour),
-        output_dir=out_file_dir,
-        verbose=verbose,batch_config=batch_config,
-        biallelic_db=biallelic_db,
-        db_interval=db_interval,
-        threads=1,ram=ram,mode=mode,
-        executor_id=task_id)
-        
-    }else if(pileup=="normal"|pileup=="both"){
-      job_reports[["steps"]][["nPileup"]]<-pileup_summary_gatk(
-        sif_gatk=sif_gatk,
-        bam=normal,output_name=get_file_name(normal),
-        output_dir=out_file_dir,
-        verbose=verbose,batch_config=batch_config,
-        biallelic_db=biallelic_db,
-        db_interval=db_interval,
-        threads=1,ram=ram,mode=mode,
-        executor_id=task_id
-      )
-    }
-  }
-
 
 
 
@@ -1243,6 +1214,8 @@ parallel_regions_mutect2_gatk=function(
   tumour="",normal="",
   ref_genome=build_default_reference_list()$HG19$reference,
   germ_resources=build_default_reference_list()$HG19$variant$germ_reference,
+  biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
+  db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
   regions="",pon="",output_dir=".",tmp_dir=".",
   verbose=FALSE,orientation=FALSE,mnps=FALSE,pileup="both",
   batch_config=build_default_preprocess_config(),
@@ -1306,7 +1279,6 @@ parallel_regions_mutect2_gatk=function(
             output_dir=out_file_dir,tmp_dir=tmp_dir,
             verbose=verbose,orientation=orientation,mnps=mnps,
             batch_config=batch_config,
-            pileup=ifelse(region_list[1]==region,pileup,""),
             threads=threads,ram=ram,mode=mode,
             executor_id=task_id,
             time=time,hold=hold)
@@ -1314,8 +1286,10 @@ parallel_regions_mutect2_gatk=function(
     
     }else if(mode=="batch"){
           rdata_file=paste0(tmp_dir,"/",job,".regions.RData")
-          save(region_list,tumour,normal,sif_gatk,ref_genome,orientation,mnps,output_dir,verbose,tmp_dir,file = rdata_file)
-          exec_code=paste0("Rscript -e \"ULPwgs::mutect2_gatk(rdata=\\\"",rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
+          save(region_list,tumour,normal,sif_gatk,ref_genome,
+          orientation,mnps,output_dir,verbose,tmp_dir,file = rdata_file)
+          exec_code=paste0("Rscript -e \"ULPwgs::mutect2_gatk(rdata=\\\"",
+          rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
           out_file_dir2=set_dir(dir=out_file_dir,name="batch")
           batch_code=build_job_exec(job=job,time=time,ram=ram,
           threads=2,output_dir=out_file_dir2,
@@ -1330,8 +1304,6 @@ parallel_regions_mutect2_gatk=function(
               stop("gatk failed to run due to unknown error.
               Check std error for more information.")
           }
-
-      
   
          job_report[["steps"]][["par_region_call_variants_mutect2"]]<- build_job_report(
               job_id=job,
@@ -1341,11 +1313,38 @@ parallel_regions_mutect2_gatk=function(
               input_args=argg,
               out_file_dir=out_file_dir,
               out_files=list(
-                  vcf=paste0(out_file_dir,get_file_name(bam),region_list,".unfilt.vcf")
+                  vcf=paste0(out_file_dir,get_file_name(tumour),".",region_list,".unfilt.vcf")
                 )
         )
 
   }
+
+  if(biallelic_db!=""&db_inteval!=""){
+    if(pileup=="tumour"|pileup=="both"){
+      job_reports[["steps"]][["tPileup"]]<-pileup_summary_gatk(
+        sif_gatk=sif_gatk,
+        bam=tumour,output_name=get_file_name(tumour),
+        output_dir=out_file_dir,
+        verbose=verbose,batch_config=batch_config,
+        biallelic_db=biallelic_db,
+        db_interval=db_interval,
+        threads=1,ram=ram,mode=mode,
+        executor_id=task_id)
+        
+    }else if(pileup=="normal"|pileup=="both"){
+      job_reports[["steps"]][["nPileup"]]<-pileup_summary_gatk(
+        sif_gatk=sif_gatk,
+        bam=normal,output_name=get_file_name(normal),
+        output_dir=out_file_dir,
+        verbose=verbose,batch_config=batch_config,
+        biallelic_db=biallelic_db,
+        db_interval=db_interval,
+        threads=1,ram=ram,mode=mode,
+        executor_id=task_id
+      )
+    }
+  }
+
 
   if(verbose){
        print_verbose(job=job,arg=argg,exec_code=exec_code)
