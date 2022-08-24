@@ -1292,7 +1292,7 @@ parallel_regions_mutect2_gatk=function(
           rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
           out_file_dir2=set_dir(dir=out_file_dir,name="batch")
           batch_code=build_job_exec(job=job,time=time,ram=ram,
-          threads=2,output_dir=out_file_dir2,
+          threads=1,output_dir=out_file_dir2,
           hold=hold,array=length(region_list))
           exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
 
@@ -1321,7 +1321,7 @@ parallel_regions_mutect2_gatk=function(
 
   if(biallelic_db!=""&db_interval!=""){
     if(pileup=="tumour"|pileup=="both"){
-      job_reports[["steps"]][["tPileup"]]<-pileup_summary_gatk(
+      job_report[["steps"]][["tPileup"]]<-pileup_summary_gatk(
         sif_gatk=sif_gatk,
         bam=tumour,output_name=get_file_name(tumour),
         output_dir=out_file_dir,
@@ -1332,7 +1332,7 @@ parallel_regions_mutect2_gatk=function(
         executor_id=task_id)
         
     }else if(pileup=="normal"|pileup=="both"){
-      job_reports[["steps"]][["nPileup"]]<-pileup_summary_gatk(
+      job_report[["steps"]][["nPileup"]]<-pileup_summary_gatk(
         sif_gatk=sif_gatk,
         bam=normal,output_name=get_file_name(normal),
         output_dir=out_file_dir,
