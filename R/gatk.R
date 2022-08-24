@@ -1091,9 +1091,9 @@ mutect2_gatk=function(region="",
   }
 
   if (is.vector(tumour)){
-    tumor=paste0(" -I ",paste(tumour,collapse=" -I "))
+    tumour=paste0(" -I ",paste(tumour,collapse=" -I "))
   }else{
-    tumor=paste0(" -I ",tumour)
+    tumour=paste0(" -I ",tumour)
   }
   norm=" "
   if (normal!=""){
