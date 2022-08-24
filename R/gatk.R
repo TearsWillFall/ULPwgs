@@ -1099,7 +1099,7 @@ mutect2_gatk=function(region="",
   if (normal!=""){
     if (is.vector(normal)){
       norm=paste0(" -I ",paste(normal,collapse=" -I ")," -normal ",
-      paste(as.vector(sapply(normalizePath(),FUN=get_file_name)),collapse=" -normal "))
+      paste(Vectorize(get_file_name)(normal),collapse=" -normal "))
   }else{
       norm=paste0(" -I ",normal," -normal ",get_file_name(normal))
       }
