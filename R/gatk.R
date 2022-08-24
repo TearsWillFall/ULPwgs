@@ -1331,7 +1331,8 @@ parallel_regions_mutect2_gatk=function(
         threads=1,ram=ram,mode=mode,
         executor_id=task_id)
         
-    }else if(pileup=="normal"|pileup=="both"){
+    }
+    if(pileup=="normal"|pileup=="both"){
       job_report[["steps"]][["nPileup"]]<-pileup_summary_gatk(
         sif_gatk=sif_gatk,
         bam=normal,output_name=get_file_name(normal),
@@ -1343,17 +1344,6 @@ parallel_regions_mutect2_gatk=function(
         executor_id=task_id
       )
     }
-  }
-
-
-  if(verbose){
-       print_verbose(job=job,arg=argg,exec_code=exec_code)
-  }
-  error=execute_job(exec_code=exec_code)
-  
-  if(error!=0){
-    stop("gatk failed to run due to unknown error.
-    Check std error for more information.")
   }
 
   if(wait&&mode=="batch"){
