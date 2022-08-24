@@ -1960,8 +1960,8 @@ parallel_pileup_summary_gatk=function(
       )
     )
 
-  bam_list=bam
-  names(bam_list)=Vectorize(get_file_name)(bam)
+  bam_list=bams
+  names(bam_list)=Vectorize(get_file_name)(bams)
 
 
 
