@@ -428,7 +428,6 @@ parallel_generate_BQSR_gatk=function(
   },mc.cores=threads)
 
   }else if(mode=="batch"){
-        
         rdata_file=paste0(tmp_dir,"/",job,".regions.RData")
         save(region_list,sif_gatk,bam,ref_genome,dbsnp,output_dir,verbose,tmp_dir,file = rdata_file)
         exec_code=paste0("Rscript -e \"ULPwgs::generate_BQSR_gatk(rdata=\\\"",rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
@@ -1080,7 +1079,9 @@ mutect2_gatk=function(region="",
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir)
+  out_file_dir=set_dir(dir=output_dir,name="mutect2_reports")
+  out_file_dir=set_dir(dir=out_file_dir,name="vcf")
+
   
   if(tmp_dir!=""){
     tmp_dir=paste0(" --tmp-dir ",tmp_dir)
@@ -1088,10 +1089,12 @@ mutect2_gatk=function(region="",
   
   reg=""
   if (region==""){
-      out_file=paste0(out_file_dir,"/",get_file_name(tumour),".unfilt.vcf")
+      fname=get_file_name(tumour)
+      out_file=paste0(out_file_dir,"/",fname,".unfilt.vcf")
   }else{
       reg=paste0(" -L ",region)
-      out_file=paste0(out_file_dir,"/",get_file_name(tumour),".",region,".unfilt.vcf")
+      fname=paste0(get_file_name(tumour),".",region)
+      out_file=paste0(out_file_dir,"/",fname,".unfilt.vcf")
   }
 
   if (is.vector(tumour)){
@@ -1115,7 +1118,9 @@ mutect2_gatk=function(region="",
 
   f1r2=""
   if (orientation){
-      f1r2=paste0(" --f1r2-tar-gz ",out_file,".f1r2.tar.gz")
+      out_file_dir_ort=set_dir(dir=output_dir,name="orientation")
+      out_file2=paste0(out_file_dir_ort,"/",fname,".f1r2.tar.gz")
+      f1r2=paste0(" --f1r2-tar-gz ",out_file2)
   }
 
 
@@ -1158,7 +1163,7 @@ mutect2_gatk=function(region="",
     out_file_dir=out_file_dir,
     out_files=list(
       vcf=out_file,
-      f1r2=f1r2)
+      f1r2=out_file2)
   )
 
 
@@ -1229,11 +1234,11 @@ parallel_regions_mutect2_gatk=function(
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir,name="mutect2_reports")
+  out_file_dir=set_dir(dir=output_dir)
   job=build_job(executor_id=executor_id,task_id=task_id)
 
 
-  job_report=build_job_report(
+  jobs_report=build_job_report(
     job_id=job,
     executor_id=executor_id,
     exec_code=list(), 
@@ -1247,7 +1252,7 @@ parallel_regions_mutect2_gatk=function(
 
   if(regions==""){
 
-    job_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
+    jobs_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
       bin_samtools=bin_samtools,
       bam=tumour,verbose=verbose,output_dir=tmp_dir,
       executor_id=task_id,mode="local",threads=threads,ram=ram,
@@ -1267,7 +1272,7 @@ parallel_regions_mutect2_gatk=function(
   names(region_list)=regions$region
 
   if(mode=="local"){
-    job_report[["steps"]][["par_region_call_variants_mutect2"]]<-
+    jobs_report[["steps"]][["par_region_call_variants"]]<-
     parallel::mclapply(region_list,FUN=function(region){
       job_report <- mutect2_gatk(
             sif_gatk=sif_gatk,
@@ -1278,10 +1283,7 @@ parallel_regions_mutect2_gatk=function(
             ref_genome=ref_genome,
             output_dir=out_file_dir,tmp_dir=tmp_dir,
             verbose=verbose,orientation=orientation,mnps=mnps,
-            batch_config=batch_config,
-            threads=threads,ram=ram,mode=mode,
-            executor_id=task_id,
-            time=time,hold=hold)
+            executor_id=task_id)
     },mc.cores=threads)
     
     }else if(mode=="batch"){
@@ -1304,8 +1306,8 @@ parallel_regions_mutect2_gatk=function(
               stop("gatk failed to run due to unknown error.
               Check std error for more information.")
           }
-  
-         job_report[["steps"]][["par_region_call_variants_mutect2"]]<- build_job_report(
+         fname=paste0(get_file_name(tumour),".",region_list)
+         jobs_report[["steps"]][["par_region_call_variants"]]<- build_job_report(
               job_id=job,
               executor_id=executor_id,
               exec_code=exec_code, 
@@ -1313,38 +1315,66 @@ parallel_regions_mutect2_gatk=function(
               input_args=argg,
               out_file_dir=out_file_dir,
               out_files=list(
-                  vcf=paste0(out_file_dir,get_file_name(tumour),".",region_list,".unfilt.vcf")
+                  vcf=paste0(out_file_dir,"/vcf/",fname,".unfilt.vcf"),
+                  orientation=paste0(out_file_dir,"/orientation/",fname,".f1r2.tar.gz")
                 )
         )
 
   }
 
+
+
   if(biallelic_db!=""&db_interval!=""){
-    if(pileup=="tumour"|pileup=="both"){
-      job_report[["steps"]][["tPileup"]]<-pileup_summary_gatk(
-        sif_gatk=sif_gatk,
-        bam=tumour,output_name=get_file_name(tumour),
-        output_dir=out_file_dir,
-        verbose=verbose,batch_config=batch_config,
-        biallelic_db=biallelic_db,
-        db_interval=db_interval,
-        threads=1,ram=ram,mode=mode,
-        executor_id=task_id)
-        
-    }
-    if(pileup=="normal"|pileup=="both"){
-      job_report[["steps"]][["nPileup"]]<-pileup_summary_gatk(
-        sif_gatk=sif_gatk,
-        bam=normal,output_name=get_file_name(normal),
-        output_dir=out_file_dir,
-        verbose=verbose,batch_config=batch_config,
-        biallelic_db=biallelic_db,
-        db_interval=db_interval,
-        threads=1,ram=ram,mode=mode,
-        executor_id=task_id
-      )
+    tumour_pileups=""
+    normal_pileup=""
+      if(pileup=="tumour"|pileup=="both"){
+        jobs_report[["steps"]][["tPileupGatk"]]<-parallel_pileup_summary_gatk(
+            sif_gatk=sif_gatk,
+            bams=tumour,output_dir=paste0(out_file_dir,"tumour"),
+            verbose=verbose,
+            batch_config=batch_config,
+            biallelic_db=biallelic_db,
+            db_interval=db_interval,
+            threads=threads,ram=ram,mode=mode,
+            executor_id=task_id,
+            time=time,
+            hold=hold)
+        normal_pileup<-unlist_lvl(job_report[["steps"]][["tPileupGatk"]],var="pileup_table")
+      }
+    
+      if(pileup=="normal"|pileup=="both"){
+        jobs_report[["steps"]][["nPileupGatk"]]<-pileup_summary_gatk(
+          sif_gatk=sif_gatk,
+          bam=normal,output_name=get_file_name(normal),
+          output_dir=paste0(out_file_dir,"normal"),
+          verbose=verbose,batch_config=batch_config,
+          biallelic_db=biallelic_db,
+          db_interval=db_interval,
+          threads=1,ram=ram,mode=mode,
+          executor_id=task_id,hold=hold
+        )
+        normal_pileup<-job_report[["steps"]][["nPileupGatk"]]$out_file$pileup_table
+      }
+
+      
+      if(contamination){
+        jobs_report[["steps"]][["estimateContaminationGatk"]]<-parallel::mclapply(
+          tumour_pileups,FUN=function(tumour_pileup){
+            estimate_contamination_gatk(
+            sif_gatk=sif_gatk,
+            tumour_pileup=tumour_pileup,
+            normal_pileup=normal_pileup,
+            output_name=get_file_name(tumour),output_dir=out_file_dir,
+            verbose=verbose,batch_config=batch_config,
+            threads=1,ram=ram,mode=mode,
+            executor_id=task_id,
+            time=time,hold=unlist_lvl(job_report[["steps"]],var="job_id"))
+        },mc.cores=threads)
+
     }
   }
+
+
 
   if(wait&&mode=="batch"){
     job_validator(job=job_report$job_id,time=update_time,
@@ -1405,7 +1435,19 @@ gather_mutect2_gatk=function(
 
   job_report[["steps"]][["mergeStatMutect"]] <- merge_mutect_stats_gatk(
     sif_gatk=sif_gatk,
-    stats=stats,output_name=output_name,output_dir=out_file_dir,
+    stats=stats,output_name=output_name,
+    output_dir=out_file_dir,
+    verbose=verbose,batch_config=batch_config,
+    threads=1,ram=4,mode=mode,
+    executor_id=task_id,
+    time=time,hold=hold
+  )
+
+
+   job_report[["steps"]][["mergeStatMutect"]] <- merge_mutect_stats_gatk(
+    sif_gatk=sif_gatk,
+    stats=stats,output_name=output_name,
+    output_dir=out_file_dir,
     verbose=verbose,batch_config=batch_config,
     threads=1,ram=4,mode=mode,
     executor_id=task_id,
@@ -1414,11 +1456,17 @@ gather_mutect2_gatk=function(
 
 
 
-
-
-
-
-
+  if(orientation){
+      job_report[["steps"]][["orientationModel"]] <- merge_mutect_stats_gatk(
+        sif_gatk=sif_gatk,
+        stats=stats,output_name=output_name,
+        output_dir=out_file_dir,
+        verbose=verbose,batch_config=batch_config,
+        threads=1,ram=4,mode=mode,
+        executor_id=task_id,
+        time=time,hold=hold
+      )
+  }
 
 
   if(verbose){
@@ -1475,7 +1523,7 @@ learn_orientation_gatk=function(
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir)
+  out_file_dir=set_dir(dir=output_dir,name="orientation")
   job=build_job(executor_id=executor_id,task_id=task_id)
 
 
@@ -1539,7 +1587,7 @@ learn_orientation_gatk=function(
 
 
 
-#' Estimate sample contamination Mutect2
+#' Estimate sample contamination Gatk
 #'
 #' This function estimates the sample cross-contamination
 #'
@@ -1563,16 +1611,24 @@ learn_orientation_gatk=function(
 
 estimate_contamination_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
+  rdata=NULL,selected=NULL,
   pileup_tumour="",pileup_normal="",output_name="",output_dir="",
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   threads=1,ram=4,mode="local",
-  executor_id=make_unique_id("estimateContaminationMutect2"),
-  task_name="estimateContamination",time="48:0:0",
+  executor_id=make_unique_id("estimateContaminationGatk"),
+  task_name="estimateContaminationGatk",time="48:0:0",
   update_time=60,wait=FALSE,hold=""){
+
+  if(!is.null(rdata)){
+    load(rdata)
+    if(!is.null(selected)){
+      bam=bam_list[selected]
+    }
+  }
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir)
+  out_file_dir=set_dir(dir=output_dir,name="contamination")
   job=build_job(executor_id=executor_id,task_id=task_id)
 
 
@@ -1592,7 +1648,7 @@ estimate_contamination_gatk=function(
   }
 
   exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk,
-  " /gatk/gatk   CalculateContamination "," -O ",out_file, " -tumor-segmentation", out_file2,
+  " /gatk/gatk   CalculateContamination  -O ",out_file, " -tumor-segmentation ", out_file2,
   " -I ",pileup_tumour,pileup_normal)
 
 
@@ -1638,6 +1694,122 @@ estimate_contamination_gatk=function(
 
 
 
+
+
+#' Estimate multis-sample contamination GATK
+#'
+#' This function estimates the sample cross-contamination
+#'
+#' @param f1r2 Path to f1r2 files.
+#' @param sif_gatk Path to gatk sif file.
+#' @param ref_genome Path to reference genome fasta file.
+#' @param output_name [OPTIONAL] Name for the output. If not given the name of one of the samples will be used.
+#' @param output_dir Path to the output directory.
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+parallel_estimate_contamination_gatk=function(
+  sif_gatk=build_default_sif_list()$sif_gatk,
+  pileup_tumour="",pileup_normal="",output_name="",output_dir="",
+  verbose=FALSE,batch_config=build_default_preprocess_config(),
+  threads=1,ram=4,mode="local",
+  executor_id=make_unique_id("parEstimateContaminationGatk"),
+  task_name="parEstimateContaminationGatk",time="48:0:0",
+  update_time=60,wait=FALSE,hold=""
+){
+
+    argg <- as.list(environment())
+    task_id=make_unique_id(task_name)
+    out_file_dir=set_dir(dir=output_dir)
+    job=build_job(executor_id=executor_id,task_id=task_id)
+
+      
+    job_report=build_job_report(
+      job_id=job,
+      executor_id=executor_id,
+      exec_code=list(), 
+      task_id=task_id,
+      input_args=argg,
+      out_file_dir=out_file_dir,
+      out_files=list(
+        )
+      )
+
+    pileup_tumour_list=pileup_tumour
+    names(pileup_tumour_list)=Vectorize(get_file_name)(pileup_tumour)
+
+    if(mode=="local"){
+      job_report[["steps"]][["parEstimateContaminationGatk"]]<-
+      parallel::mclapply(pileup_tumour_list,FUN=function(t_p){
+        job_report <-  estimate_contamination_gatk(
+            sif_gatk=sif_gatk,
+            pileup_tumour=t_p,
+            pileup_normal=pileup_normal,
+            output_name=get_file_name(t_p),
+            output_dir=out_file_dir,
+            verbose=verbose,
+            executor_id=task_id)
+      },mc.cores=threads)
+      }else if(mode=="batch"){
+            rdata_file=paste0(tmp_dir,"/",job,".pileups.RData")
+            save(pileup_tumour_list,pileup_normal,sif_gatk,output_dir,verbose,tmp_dir,file = rdata_file)
+            exec_code=paste0("Rscript -e \"ULPwgs::estimate_contamination(rdata=\\\"",rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
+            out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+            batch_code=build_job_exec(job=job,time=time,ram=ram,
+            threads=2,output_dir=out_file_dir2,
+            hold=hold,array=length(pileup_tumour_list))
+            exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+
+            if(verbose){
+                print_verbose(job=job,arg=argg,exec_code=exec_code)
+            }
+            error=execute_job(exec_code=exec_code)
+            if(error!=0){
+                stop("gatk failed to run due to unknown error.
+                Check std error for more information.")
+            }
+          
+            job_report[["steps"]][["parEstimateContaminationGatk"]]<- build_job_report(
+                  job_id=job,
+                  executor_id=executor_id,
+                  exec_code=exec_code, 
+                  task_id=task_id,
+                  input_args=argg,
+                  out_file_dir=out_file_dir,
+                  out_files=list(
+                      pileup_table=paste0(out_file_dir,"/pileup/",bam_list,".pileup.table")
+                    )
+            )
+    }
+
+
+
+
+
+
+    if(wait&&mode=="batch"){
+      job_validator(job=job_report$job_id,time=update_time,
+      verbose=verbose,threads=threads)
+    }
+
+    return(job_report)
+
+}
+
+
+
+
+
 #' Generate a pileup summary for BAM file
 #'
 #' This function generates a pilelup summary for a bam file
@@ -1670,10 +1842,17 @@ pileup_summary_gatk=function(
   executor_id=make_unique_id("pileupSummaryGatk"),
   task_name="pileupSummaryGatk",time="48:0:0",
   update_time=60,wait=FALSE,hold=""){
+  
+  if(!is.null(rdata)){
+    load(rdata)
+  if(!is.null(selected)){
+    bam=bam_list[selected]
+  }
+  }
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir)
+  out_file_dir=set_dir(dir=output_dir,name="pileup")
   job=build_job(executor_id=executor_id,task_id=task_id)
 
 
@@ -1681,7 +1860,7 @@ pileup_summary_gatk=function(
   if(output_name!=""){
     id=output_name
   }else{
-     id=get_file_name()
+     id=get_file_name(bam)
   }
 
   out_file=paste0(out_file_dir,"/",id,".pileup.table")
@@ -1756,14 +1935,15 @@ pileup_summary_gatk=function(
 
 parallel_pileup_summary_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
-  bam="",germline_id="",output_dir="",
-  verbose=FALSE,batch_config=build_default_preprocess_config(),
+  bams="",output_dir="",verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
   db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
   threads=1,ram=4,mode="local",
   executor_id=make_unique_id("parPileupSummaryGatk"),
   task_name="parPileupSummaryGatk",time="48:0:0",
   update_time=60,wait=FALSE,hold=""){
+
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -1798,9 +1978,9 @@ parallel_pileup_summary_gatk=function(
           executor_id=task_id,
           time=time,hold=hold)
     },mc.cores=threads)
-    
     }else if(mode=="batch"){
-          rdata_file=paste0(tmp_dir,"/",job,".RData")
+          rdata_file=paste0(tmp_dir,"/",job,".tumours.RData")
+          output_dir=out_file_dir
           save(bam_list,sif_gatk,output_dir,biallelic_db,db_interval,verbose,tmp_dir,file = rdata_file)
           exec_code=paste0("Rscript -e \"ULPwgs::pileup_summary_gatk(rdata=\\\"",rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
           out_file_dir2=set_dir(dir=out_file_dir,name="batch")
@@ -1817,7 +1997,7 @@ parallel_pileup_summary_gatk=function(
               stop("gatk failed to run due to unknown error.
               Check std error for more information.")
           }
-
+        
           job_report[["steps"]][["parPileupSummaryGatk"]]<- build_job_report(
                 job_id=job,
                 executor_id=executor_id,
@@ -1826,8 +2006,7 @@ parallel_pileup_summary_gatk=function(
                 input_args=argg,
                 out_file_dir=out_file_dir,
                 out_files=list(
-                    tumour_pileup=paste0(out_file_dir,Vectorize(FUN=get_file_name)(bam_list[!grepl(germline_id,bam_list)]),".pileup.table"),
-                    normal_pileup=paste0(out_file_dir,Vectorize(FUN=get_file_name)(bam_list[grepl(germline_id,bam_list)]),".pileup.table")
+                    pileup_table=paste0(out_file_dir,"/pileup/",bam_list,".pileup.table")
                   )
           )
   }
