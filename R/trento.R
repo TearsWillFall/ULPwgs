@@ -143,7 +143,8 @@ multisample_clonet_trento=function(
 
 
 
-    columns=c("patient_id","tumour","normal","version","batch_config","threads","ram","time","mode","hold")
+    columns=c("patient_id","tumour","normal","version","verbose",
+    "batch_config","threads","ram","time","mode","hold")
 
 
     if(!is.null(sample_sheet)){
