@@ -1286,9 +1286,10 @@ parallel_regions_mutect2_gatk=function(
 
   if(mode=="local"){
     job_report[["steps"]][["par_region_call_variants_mutect2"]]<-
-    parallel::mclapply(region_list,FUN=function(region_list){
+    parallel::mclapply(region_list,FUN=function(region){
       job_report <- mutect2_gatk(
             sif_gatk=sif_gatk,
+            region=region,
             tumour=tumour,
             normal=normal,
             id=get_file_name(tumour),
