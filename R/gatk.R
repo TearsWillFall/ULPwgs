@@ -1611,7 +1611,7 @@ learn_orientation_gatk=function(
 estimate_contamination_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
   rdata=NULL,selected=NULL,
-  tumour_pileup="",pnormal_pileup="",output_name="",output_dir="",
+  tumour_pileup="",normal_pileup="",output_name="",output_dir="",
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   threads=1,ram=4,mode="local",
   executor_id=make_unique_id("estimateContaminationGatk"),
