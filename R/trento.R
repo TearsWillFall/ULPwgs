@@ -159,7 +159,7 @@ multisample_clonet_trento=function(
         }
     
 
-    parallel::mclapply(seq(1,nrow(file_info)),FUN=function(x){
+    job_report[["steps"]][["clonet"]]=parallel::mclapply(seq(1,nrow(file_info)),FUN=function(x){
         
         lapply(columns,FUN=function(col){
             if(is.null(file_info[[col]])){
@@ -172,8 +172,8 @@ multisample_clonet_trento=function(
            
         })
        
-        job_report[["steps"]][["clonet"]][[ULPwgs::get_file_name(file_info[x,]$tumour)]]<<- 
-        clonet_trento(
+       
+        job_report<- clonet_trento(
             tumour=file_info[x,]$tumour,
             normal=file_info[x,]$normal,
             patient_id=file_info[x,]$patient_id,
@@ -187,23 +187,22 @@ multisample_clonet_trento=function(
             hold=file_info[x,]$hold)
         },mc.cores=ifelse(mode=="local",1,3))
 
-
     }else{
         bam_dir_path=system(paste("realpath",bam_dir),intern=TRUE)
         bam_files=system(paste0("find ",bam_dir_path,"| grep bam$"),intern=TRUE)
         t_files=bam_files[!grepl(normal_id,bam_files)]
         normal=bam_files[grepl(normal_id,bam_files)]
 
-    parallel::mclapply(t_files,FUN=function(tumour){
-        job_report[["steps"]][["clonet"]][[ULPwgs::get_file_name(tumour)]]<<-
-        clonet_trento(
-                tumour=tumour,normal=normal,
-                patient_id=patient_id,
-                version=version,
-                threads=threads,
-                ram=ram,output_dir=paste0(out_file_dir,patient_id),verbose=verbose,
-                executor_id=task_id,mode=mode,time=time,
-                hold=hold)
+    job_report[["steps"]][["clonet"]]=parallel::mclapply(t_files,FUN=function(tumour){
+        job_report<-clonet_trento(
+                        tumour=tumour,normal=normal,
+                        patient_id=patient_id,
+                        version=version,
+                        threads=threads,
+                        ram=ram,output_dir=paste0(out_file_dir,patient_id),verbose=verbose,
+                        executor_id=task_id,mode=mode,time=time,
+                        hold=hold
+                    )
         },mc.cores=ifelse(mode=="local",1,3))
 
     }
