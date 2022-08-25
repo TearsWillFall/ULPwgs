@@ -23,7 +23,7 @@ parallel_regions_mutect2_gatk(
   verbose = FALSE,
   orientation = FALSE,
   mnps = FALSE,
-  pileup = "both",
+  contamination = TRUE,
   batch_config = build_default_preprocess_config(),
   threads = 4,
   ram = 4,
