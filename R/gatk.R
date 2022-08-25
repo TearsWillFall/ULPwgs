@@ -1324,12 +1324,12 @@ parallel_regions_mutect2_gatk=function(
 
 
   if(biallelic_db!=""&db_interval!=""){
-    tumour_pileups=""
+    tumours_pileup=""
     normal_pileup=""
       if(pileup=="tumour"|pileup=="both"){
         jobs_report[["steps"]][["tPileupGatk"]]<-parallel_pileup_summary_gatk(
             sif_gatk=sif_gatk,
-            bams=tumour,output_dir=paste0(out_file_dir,"tumour"),
+            bams=tumour,output_dir=paste0(out_file_dir,"/mutect2_reports/pileup_reports/tumour"),
             verbose=verbose,
             batch_config=batch_config,
             biallelic_db=biallelic_db,
@@ -1338,14 +1338,14 @@ parallel_regions_mutect2_gatk=function(
             executor_id=task_id,
             time=time,
             hold=hold)
-        normal_pileup<-unlist_lvl(job_report[["steps"]][["tPileupGatk"]],var="pileup_table")
+        tumours_pileup<-unlist_lvl(job_report[["steps"]][["tPileupGatk"]],var="pileup_table")
       }
     
       if(pileup=="normal"|pileup=="both"){
         jobs_report[["steps"]][["nPileupGatk"]]<-pileup_summary_gatk(
           sif_gatk=sif_gatk,
           bam=normal,output_name=get_file_name(normal),
-          output_dir=paste0(out_file_dir,"normal"),
+          output_dir=paste0(out_file_dir,"/mutect2_reports/pileup_reports/normal"),
           verbose=verbose,batch_config=batch_config,
           biallelic_db=biallelic_db,
           db_interval=db_interval,
@@ -1357,19 +1357,18 @@ parallel_regions_mutect2_gatk=function(
 
       
       if(contamination){
-        jobs_report[["steps"]][["estimateContaminationGatk"]]<-parallel::mclapply(
-          tumour_pileups,FUN=function(tumour_pileup){
-            estimate_contamination_gatk(
-            sif_gatk=sif_gatk,
-            tumour_pileup=tumour_pileup,
-            normal_pileup=normal_pileup,
-            output_name=get_file_name(tumour),output_dir=out_file_dir,
-            verbose=verbose,batch_config=batch_config,
-            threads=1,ram=ram,mode=mode,
-            executor_id=task_id,
-            time=time,hold=unlist_lvl(job_report[["steps"]],var="job_id"))
-        },mc.cores=threads)
-
+        jobs_report[["steps"]][["estimateContaminationGatk"]]<-parallel_estimate_contamination_gatk(
+              sif_gatk=sif_gatk,
+              tumours_pileup=tumours_pileup,
+              normal_pileup=normal_pileup,
+              output_dir=out_file_dir,
+              verbose=verbose,
+              batch_config=batch_config,
+              threads=threads,ram=ram,mode=mode,
+              executor_id=task_id,
+              time=time,
+              hold=unlist_lvl(job_report[["steps"]],var="job_id")
+        )
     }
   }
 
@@ -1627,7 +1626,8 @@ estimate_contamination_gatk=function(
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir,name="contamination")
+  out_file_dir_tab=set_dir(dir=output_dir,name="contamination")
+  out_file_dir_seg=set_dir(dir=output_dir,name="segmentation")
   job=build_job(executor_id=executor_id,task_id=task_id)
 
 
@@ -1638,8 +1638,8 @@ estimate_contamination_gatk=function(
      id=get_file_name(f1r2[1])
   }
 
-  out_file=paste0(out_file_dir,"/",id,".contamination.table")
-  out_file2=paste0(out_file_dir,"/",id,".segmentation.table")
+  out_file=paste0(out_file_dir_tab,"/",id,".contamination.table")
+  out_file2=paste0(out_file_dir_seg,"/",id,".segmentation.table")
 
 
   if (normal_pileup!=""){
@@ -1675,10 +1675,14 @@ estimate_contamination_gatk=function(
     exec_code=exec_code, 
     task_id=task_id,
     input_args = argg,
-    out_file_dir=out_file_dir,
+    out_file_dir=list(
+      contamination=out_file_dir_tab,
+      segmentation=out_file_dir_seg
+      ),
     out_files=list(
       contam_table=out_file,
-      seg_table=out_file)
+      seg_table=out_file2
+    )
   )
 
 
@@ -1719,7 +1723,7 @@ estimate_contamination_gatk=function(
 
 parallel_estimate_contamination_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
-  tumours_pileup="",normal_pileup="",output_name="",output_dir=".",
+  tumours_pileup="",normal_pileup="",output_dir=".",
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   threads=1,ram=4,mode="local",
   executor_id=make_unique_id("parEstimateContaminationGatk"),
@@ -1786,7 +1790,8 @@ parallel_estimate_contamination_gatk=function(
                   input_args=argg,
                   out_file_dir=out_file_dir,
                   out_files=list(
-                      pileup_table=paste0(out_file_dir,"/pileup/",bam_list,".pileup.table")
+                      contamination_table=paste0(out_file_dir,"/contamination_reports/contamination/",bam_list,".contamination.table"),
+                      segmentation_table=paste0(out_file_dir,"/contamination_reports/segmentation/",bam_list,".segmentation.table")
                     )
             )
     }
