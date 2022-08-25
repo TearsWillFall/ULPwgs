@@ -1338,7 +1338,7 @@ parallel_regions_mutect2_gatk=function(
             executor_id=task_id,
             time=time,
             hold=hold)
-        tumours_pileup<-unlist_lvl(job_report[["steps"]][["tPileupGatk"]],var="pileup_table")
+        tumours_pileup<-unlist_lvl(jobs_reports[["steps"]][["tPileupGatk"]],var="pileup_table")
       }
     
       if(pileup=="normal"|pileup=="both"){
@@ -1352,7 +1352,7 @@ parallel_regions_mutect2_gatk=function(
           threads=1,ram=ram,mode=mode,
           executor_id=task_id,hold=hold
         )
-        normal_pileup<-job_report[["steps"]][["nPileupGatk"]]$out_file$pileup_table
+        normal_pileup<-jobs_report[["steps"]][["nPileupGatk"]]$out_file$pileup_table
       }
 
       
