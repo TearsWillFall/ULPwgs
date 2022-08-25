@@ -8,7 +8,6 @@ parallel_estimate_contamination_gatk(
   sif_gatk = build_default_sif_list()$sif_gatk,
   tumours_pileup = "",
   normal_pileup = "",
-  output_name = "",
   output_dir = ".",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
@@ -25,8 +24,6 @@ parallel_estimate_contamination_gatk(
 }
 \arguments{
 \item{sif_gatk}{Path to gatk sif file.}
-
-\item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of one of the samples will be used.}
 
 \item{output_dir}{Path to the output directory.}
 
@@ -53,6 +50,8 @@ parallel_estimate_contamination_gatk(
 \item{f1r2}{Path to f1r2 files.}
 
 \item{ref_genome}{Path to reference genome fasta file.}
+
+\item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of one of the samples will be used.}
 }
 \description{
 This function estimates the sample cross-contamination
