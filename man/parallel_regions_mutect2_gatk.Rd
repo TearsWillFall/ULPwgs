@@ -12,6 +12,7 @@ parallel_regions_mutect2_gatk(
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
   tumour = "",
   normal = "",
+  patient_id = "",
   ref_genome = build_default_reference_list()$HG19$reference,
   germ_resources = build_default_reference_list()$HG19$variant$germ_reference,
   biallelic_db = build_default_reference_list()$HG19$variant$biallelic_reference,

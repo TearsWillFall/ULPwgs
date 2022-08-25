@@ -11,7 +11,7 @@ mutect2_gatk(
   sif_gatk = build_default_sif_list()$sif_gatk,
   tumour = "",
   normal = "",
-  id = "",
+  patient_id = "",
   ref_genome = build_default_reference_list()$HG19$reference,
   germ_resource = build_default_reference_list()$HG19$variant$germ_reference,
   pon = "",
