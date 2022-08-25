@@ -11,6 +11,7 @@ concat_vcf(
   vcf = "",
   sort = TRUE,
   compress = FALSE,
+  clean = TRUE,
   format = "vcf",
   output_name = "",
   output_dir = ".",

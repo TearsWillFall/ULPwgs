@@ -14,7 +14,7 @@ recal_gatk(
   ram = 4,
   threads = 4,
   output_dir = ".",
-  tmp_dir = "",
+  tmp_dir = ".",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   executor_id = make_unique_id("recalGATK"),

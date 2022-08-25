@@ -12,7 +12,7 @@ parallel_generate_BQSR_gatk(
   ref_genome = "",
   clean = TRUE,
   dbsnp = "",
-  tmp_dir = "",
+  tmp_dir = ".",
   threads = 3,
   ram = 4,
   executor_id = make_unique_id("par_generateBQSR"),

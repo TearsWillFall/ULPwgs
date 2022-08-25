@@ -13,7 +13,7 @@ markdups_picard(
   hnd = 1000,
   threads,
   ram = 4,
-  tmp_dir = "",
+  tmp_dir = ".",
   remove_duplicates = TRUE,
   mode = "local",
   executor_id = make_unique_id("markDups"),

@@ -2,21 +2,23 @@
 % Please edit documentation in R/gatk.R
 \name{estimate_contamination_gatk}
 \alias{estimate_contamination_gatk}
-\title{Estimate sample contamination Mutect2}
+\title{Estimate sample contamination Gatk}
 \usage{
 estimate_contamination_gatk(
   sif_gatk = build_default_sif_list()$sif_gatk,
-  pileup_tumour = "",
-  pileup_normal = "",
+  rdata = NULL,
+  selected = NULL,
+  tumour_pileup = "",
+  normal_pileup = "",
   output_name = "",
-  output_dir = "",
+  output_dir = ".",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 1,
   ram = 4,
   mode = "local",
-  executor_id = make_unique_id("estimateContaminationMutect2"),
-  task_name = "estimateContamination",
+  executor_id = make_unique_id("estimateContaminationGatk"),
+  task_name = "estimateContaminationGatk",
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,

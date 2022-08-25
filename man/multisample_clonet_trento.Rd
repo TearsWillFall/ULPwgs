@@ -5,12 +5,12 @@
 \title{Process multiple tumour samples using CLONET}
 \usage{
 multisample_clonet_trento(
-  sample_sheet,
+  sample_sheet = NULL,
   bam_dir = "",
   normal_id = "",
   patient_id = "",
   version = "V3",
-  tmp_dir = "",
+  tmp_dir = ".",
   header = TRUE,
   sep = "",
   threads = 3,
@@ -28,11 +28,13 @@ multisample_clonet_trento(
 )
 }
 \arguments{
-\item{bam_dir}{Path to bam directory.}
+\item{sample_sheet}{Path to sample sheet or data.frame.}
 
-\item{normal_id}{Normal sample identifier.}
+\item{bam_dir}{Path to bam directory. Only if sample sheet is not provided.}
 
-\item{patient_id}{Patient id.}
+\item{normal_id}{Normal sample identifier. Only if sample sheet is not provided.}
+
+\item{patient_id}{Patient id. Only if sample sheet is not provided.}
 
 \item{tmp_dir}{Path to temporary file directory.}
 
@@ -60,5 +62,11 @@ multisample_clonet_trento(
 }
 \description{
 This function identifies a set of BAM files as tumour and normal
-and processes them using the CLONET pipeline
+and processes them using the CLONET pipeline in parallel
+If sample sheet is provided data has to be supplied in the following format:
+patient_id   tumour  normal  version
+}
+\details{
+Header can be ommitted if data is given in the order above and header argument is set to FALSE.
+Sample sheet separator can be set using the sep argument.
 }

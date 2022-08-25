@@ -13,13 +13,13 @@ mutect2_gatk(
   normal = "",
   id = "",
   ref_genome = build_default_reference_list()$HG19$reference,
+  germ_resource = build_default_reference_list()$HG19$variant$germ_reference,
   pon = "",
   output_dir = ".",
-  tmp_dir = "",
+  tmp_dir = ".",
   verbose = FALSE,
-  orientation = TRUE,
-  mnps = TRUE,
-  pileup = "both",
+  orientation = FALSE,
+  mnps = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 4,
   ram = 4,
@@ -42,6 +42,8 @@ mutect2_gatk(
 \item{normal}{Path to germline bam file.}
 
 \item{ref_genome}{Path to reference genome fasta file.}
+
+\item{germ_resource}{Path to germline resources vcf file.}
 
 \item{pon}{\link{Optional} Path to panel of normal.}
 
@@ -68,8 +70,6 @@ mutect2_gatk(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
-
-\item{germ_resource}{Path to germline resources vcf file.}
 
 \item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of one of the samples will be used.}
 }

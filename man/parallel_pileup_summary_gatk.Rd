@@ -6,9 +6,9 @@
 \usage{
 parallel_pileup_summary_gatk(
   sif_gatk = build_default_sif_list()$sif_gatk,
-  bam = "",
-  germline_id = "",
-  output_dir = "",
+  bams = "",
+  output_dir = ".",
+  tmp_dir = ".",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   biallelic_db = build_default_reference_list()$HG19$variant$biallelic_reference,
@@ -26,8 +26,6 @@ parallel_pileup_summary_gatk(
 }
 \arguments{
 \item{sif_gatk}{Path to gatk sif file.}
-
-\item{bam}{Path to a BAM file}
 
 \item{output_dir}{Path to the output directory.}
 
@@ -50,6 +48,8 @@ parallel_pileup_summary_gatk(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
+
+\item{bam}{Path to a BAM file}
 
 \item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of one of the samples will be used.}
 }

@@ -10,6 +10,7 @@ sort_vcf(
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
   vcf = "",
   compress = FALSE,
+  clean = TRUE,
   format = "vcf",
   output_name = "",
   output_dir = ".",

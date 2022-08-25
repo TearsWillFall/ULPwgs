@@ -14,7 +14,7 @@ apply_BQSR_gatk(
   rec_table = "",
   output_dir = ".",
   verbose = FALSE,
-  tmp_dir = "",
+  tmp_dir = ".",
   batch_config = build_default_preprocess_config(),
   mode = "local",
   threads = 4,

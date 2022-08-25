@@ -13,7 +13,7 @@ gather_BQSR_reports_gatk(
   clean = FALSE,
   output_dir = ".",
   verbose = FALSE,
-  tmp_dir = "",
+  tmp_dir = ".",
   batch_config = build_default_preprocess_config(),
   mode = "local",
   time = "48:0:0",

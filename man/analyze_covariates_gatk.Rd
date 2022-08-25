@@ -10,7 +10,7 @@ analyze_covariates_gatk(
   after = "",
   output_dir = ".",
   verbose = FALSE,
-  tmp_dir = "",
+  tmp_dir = ".",
   batch_config = build_default_preprocess_config(),
   threads = 4,
   ram = 4,

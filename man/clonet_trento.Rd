@@ -5,13 +5,12 @@
 \title{Process a pair of tumour-normal samples using CLONET}
 \usage{
 clonet_trento(
-  sif_path = build_default_sif_list()$sif_path$V3,
-  version = NULL,
-  sample_sheet = "",
+  sif_clonet = build_default_sif_list()$sif_clonet$V3,
+  version = "V3",
   tumour = "",
   normal = "",
   patient_id = "",
-  tmp_dir = "",
+  tmp_dir = ".",
   threads = 3,
   ram = 4,
   output_dir = ".",
@@ -27,8 +26,6 @@ clonet_trento(
 )
 }
 \arguments{
-\item{sif_path}{Path to singularity image file}
-
 \item{version}{PCF Select panel version to use}
 
 \item{tumour}{Path to tumour BAM file}
@@ -47,9 +44,9 @@ clonet_trento(
 
 \item{verbose}{Enables progress messages. Default False.}
 
-\item{executor_id}{Executor ID. Default "preprocess_trento"}
+\item{executor_id}{Executor ID. Default "clonet"}
 
-\item{task_name}{Name of the task. Default "preprocess_trento"}
+\item{task_name}{Name of the task. Default "clonet"}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
@@ -60,8 +57,10 @@ clonet_trento(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{Job to hold on in batched mode.}
+
+\item{sif_path}{Path to singularity image file}
 }
 \description{
-This function takes a pair of tumour of tumour and
+This function takes a pair of tumour and
 normal BAMS and applies the CLONET pipeline
 }

@@ -15,7 +15,7 @@ parallel_apply_BQSR_gatk(
   clean = TRUE,
   output_dir = ".",
   verbose = FALSE,
-  tmp_dir = "",
+  tmp_dir = ".",
   batch_config = build_default_preprocess_config(),
   mode = "local",
   executor_id = make_unique("par_applyBQSR"),

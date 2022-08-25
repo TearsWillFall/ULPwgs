@@ -8,7 +8,7 @@ learn_orientation_gatk(
   sif_gatk = build_default_sif_list()$sif_gatk,
   f1r2 = "",
   output_name = "",
-  output_dir = "",
+  output_dir = ".",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 4,

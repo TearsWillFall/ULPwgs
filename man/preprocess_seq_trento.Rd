@@ -14,7 +14,7 @@ preprocess_seq_trento(
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   executor_id = make_unique_id("preprocess_trento"),
-  tmp_dir = "",
+  tmp_dir = ".",
   task_name = "reprocess_trento",
   mode = "local",
   time = "48:0:0",

@@ -13,7 +13,7 @@ generate_BQSR_gatk(
   ref_genome = "",
   dbsnp = "",
   output_dir = ".",
-  tmp_dir = "",
+  tmp_dir = ".",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 4,
