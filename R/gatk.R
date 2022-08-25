@@ -1624,10 +1624,9 @@ estimate_contamination_gatk=function(
   out_file=paste0(out_file_dir_tab,"/",id,".contamination.table")
   out_file2=paste0(out_file_dir_seg,"/",id,".segmentation.table")
 
-  job_report=build_job_report(
+  jobs_report=build_job_report(
     job_id=job,
     executor_id=executor_id,
-    exec_code=exec_code, 
     task_id=task_id,
     input_args = argg,
     out_file_dir=list(
@@ -1675,6 +1674,9 @@ estimate_contamination_gatk=function(
         normal_pileup=paste0(" -matched ",normal_pileup)
   }
 
+
+
+
   exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk,
   " /gatk/gatk   CalculateContamination  -O ",out_file, " -tumor-segmentation ", out_file2,
   " -I ",tumour_pileup,normal_pileup)
@@ -1686,6 +1688,8 @@ estimate_contamination_gatk=function(
        threads=threads,output_dir=out_file_dir2)
        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
+
+   jobs_report$exec_code=exec_code
 
   if(verbose){
        print_verbose(job=job,arg=argg,exec_code=exec_code)
@@ -2180,16 +2184,17 @@ merge_mutect_stats_gatk=function(
 
 
 parallel_sample_mutect2_gatk=function(
-sif_gatk=build_default_sif_list()$sif_gatk,
-tumours="",normal="",
-ref_genome=build_default_reference_list()$HG19$reference,
-regions="",pon="",output_dir=".",tmp_dir=".",
-verbose=FALSE,orientation=FALSE,mnps=FALSE,
-batch_config=build_default_preprocess_config(),
-threads=4,ram=4,mode="local",
-executor_id=make_unique_id("parSampleMutect2"),
-task_name="parSampleMutect2",time="48:0:0",
-update_time=60,wait=FALSE,hold=""){
+  sif_gatk=build_default_sif_list()$sif_gatk,
+  tumours="",normal="",
+  ref_genome=build_default_reference_list()$HG19$reference,
+  regions="",pon="",output_dir=".",tmp_dir=".",
+  verbose=FALSE,orientation=FALSE,mnps=FALSE,
+  batch_config=build_default_preprocess_config(),
+  threads=4,ram=4,mode="local",
+  executor_id=make_unique_id("parSampleMutect2"),
+  task_name="parSampleMutect2",time="48:0:0",
+  update_time=60,wait=FALSE,hold=""
+){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
