@@ -1723,7 +1723,7 @@ estimate_contamination_gatk=function(
 
 parallel_estimate_contamination_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
-  tumours="",normal="",output_dir=".",
+  tumours="",normal="",output_dir=".",tmp_dir=".",
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
   db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
   verbose=FALSE,batch_config=build_default_preprocess_config(),
