@@ -1350,7 +1350,7 @@ parallel_regions_mutect2_gatk=function(
       vcfs=vcfs,stats=stats,
       f1r2=f1r2,
       clean=clean,
-      output_name=output_name,
+      output_name=patient_id,
       output_dir=out_file_dir,tmp_dir=tmp_dir,
       verbose=verbose,orientation=orientation,
       batch_config=batch_config,
