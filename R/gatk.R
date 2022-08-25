@@ -1228,7 +1228,7 @@ parallel_regions_mutect2_gatk=function(
   germ_resources=build_default_reference_list()$HG19$variant$germ_reference,
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
   db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
-  regions="",pon="",output_dir=".",tmp_dir=".",
+  regions="",pon="",output_dir=".",
   verbose=FALSE,orientation=FALSE,mnps=FALSE,
   contamination=TRUE,clean=TRUE,
   batch_config=build_default_preprocess_config(),
@@ -1243,7 +1243,7 @@ parallel_regions_mutect2_gatk=function(
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="mutect2_reports")
-  tmp_dir=set_dir(dir=tmp_dir,name="mutect2_tmp")
+  tmp_dir=set_dir(dir=out_file_dir,name="mutect2_tmp")
 
   job=build_job(executor_id=executor_id,task_id=task_id)
 
