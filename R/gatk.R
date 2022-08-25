@@ -1230,7 +1230,7 @@ parallel_regions_mutect2_gatk=function(
   db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
   regions="",pon="",output_dir=".",tmp_dir=".",
   verbose=FALSE,orientation=FALSE,mnps=FALSE,
-  contamination=TRUE,
+  contamination=TRUE,clean=TRUE,
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("parSampleMutect2"),
@@ -1347,7 +1347,9 @@ parallel_regions_mutect2_gatk=function(
       bin_bcftools=bin_bcftools,
       bin_bgzip=bin_bgzip,
       bin_tabix=bin_tabix,
-      vcfs=vcfs,stats=stats,f1r2=f1r2,
+      vcfs=vcfs,stats=stats,
+      f1r2=f1r2,
+      clean=clean,
       output_dir=out_file_dir,tmp_dir=tmp_dir,
       verbose=verbose,orientation=orientation,
       batch_config=batch_config,
@@ -1392,7 +1394,7 @@ gather_mutect2_gatk=function(
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
   vcfs="",stats="",f1r2="",output_dir=".",tmp_dir=".",
-  verbose=FALSE,orientation=FALSE,
+  verbose=FALSE,orientation=FALSE,clean=TRUE,
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("gatherMutect"),
@@ -1433,7 +1435,7 @@ gather_mutect2_gatk=function(
   job_report[["steps"]][["mergeStatMutect"]] <- merge_mutect_stats_gatk(
     sif_gatk=sif_gatk,
     stats=stats,output_name=output_name,
-    output_dir=out_file_dir,
+    output_dir=out_file_dir,clean=clean,
     verbose=verbose,batch_config=batch_config,
     threads=1,ram=ram,mode=mode,
     executor_id=task_id,
@@ -1444,7 +1446,7 @@ gather_mutect2_gatk=function(
       job_report[["steps"]][["orientationModel"]] <- learn_orientation_gatk(
         sif_gatk=sif_gatk,
         f1r2=f1r2,output_name=output_name,
-        output_dir=out_file_dir,
+        output_dir=out_file_dir,clean=clean,
         verbose=verbose,batch_config=batch_config,
         threads=1,ram=4,mode=mode,
         executor_id=task_id,
@@ -1498,7 +1500,7 @@ gather_mutect2_gatk=function(
 
 learn_orientation_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
-  f1r2="",output_name="",output_dir=".",
+  f1r2="",output_name="",output_dir=".",clean=TRUE,
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("parSampleMutect2"),
@@ -1519,13 +1521,18 @@ learn_orientation_gatk=function(
   }
  
   if (f1r2!=""){
-    f1r2=paste0(" -I ",paste0(f1r2,collapse=" -I "))
+    f1r2_list=paste0(" -I ",paste0(f1r2,collapse=" -I "))
   }
   
   out_file=paste0(out_file_dir,"/",id,".ROM.tar.gz")
 
   exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk,
-  " /gatk/gatk   LearnReadOrientationModel  ",f1r2," -O ",out_file)
+  " /gatk/gatk   LearnReadOrientationModel  ",f1r2_list," -O ",out_file)
+
+
+  if(clean){
+    exec_code=paste(exec_code," && rm",f1r2)
+}
 
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
@@ -2090,7 +2097,7 @@ parallel_pileup_summary_gatk=function(
 
 merge_mutect_stats_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
-  stats="",output_name="",output_dir=".",
+  stats="",output_name="",output_dir=".",clean=FALSE,
   verbose=TRUE, batch_config=build_default_preprocess_config(),
   threads=1,ram=4,mode="local",
   executor_id=make_unique_id("mergeMutectStats"),
@@ -2111,13 +2118,17 @@ merge_mutect_stats_gatk=function(
   }
  
   if (stats!=""){
-    stats=paste0(" -stats ",paste0(stats,collapse=" -stats "))
+    stat=paste0(" -stats ",paste0(stats,collapse=" -stats "))
   }
   
   out_file=paste0(out_file_dir,"/",id,".merged.vcf.stats")
 
   exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk,
-  " /gatk/gatk  MergeMutectStats -O ", out_file ,stats)
+  " /gatk/gatk  MergeMutectStats -O ", out_file ,stat)
+
+  if(clean){
+    exec_code=paste(exec_code," && rm",stats)
+}
 
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")

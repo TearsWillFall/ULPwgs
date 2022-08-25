@@ -26,7 +26,7 @@ concat_vcf=function(
     bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
     bin_tabix=build_default_tool_binary_list()$bin_tabix,
-    vcf="",sort=TRUE,compress=FALSE,clean=TRUE,format="vcf",
+    vcfs="",sort=TRUE,compress=FALSE,clean=TRUE,format="vcf",
     output_name="",output_dir=".",tmp_dir=".",
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
@@ -46,10 +46,10 @@ concat_vcf=function(
   if(output_name!=""){
     id=output_name
   }else{
-    id=get_file_name(vcf[1])
+    id=get_file_name(vcfs[1])
   }
 
-  vcf=paste(vcf, collapse=' ' )
+  vcfs=paste(vcfs, collapse=' ' )
 
 
 
@@ -74,10 +74,10 @@ if(compress){
 
 
 
-exec_code=paste(bin_bcftools,"concat -o",out_file, paste0(" -O", out_type), vcf)
+exec_code=paste(bin_bcftools,"concat -o",out_file, paste0(" -O", out_type), vcfs)
 
 if(clean){
-    exec_code=paste(exec_code," && rm",vcf)
+    exec_code=paste(exec_code," && rm",vcfs)
 }
   
   if(mode=="batch"){
