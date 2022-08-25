@@ -87,6 +87,11 @@ if(clean){
        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
 
+  
+  if(verbose){
+       print_verbose(job=job,arg=argg,exec_code=exec_code)
+  }
+
   error=execute_job(exec_code=exec_code)
   
   if(error!=0){
@@ -221,6 +226,12 @@ if(clean){
        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+  }
+  
+
+  
+  if(verbose){
+       print_verbose(job=job,arg=argg,exec_code=exec_code)
   }
 
   error=execute_job(exec_code=exec_code)
