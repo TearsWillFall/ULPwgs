@@ -1646,7 +1646,7 @@ estimate_contamination_gatk=function(
       jobs_report[["steps"]][["nPileupGatk"]]<-pileup_summary_gatk(
         sif_gatk=sif_gatk,
         bam=normal,output_name=get_file_name(normal),
-        output_dir=paste0(tmp_dir,"pileup_reports/normal"),
+        output_dir=paste0(tmp_dir,"/pileup_reports/normal"),
         verbose=verbose,batch_config=batch_config,
         biallelic_db=biallelic_db,
         db_interval=db_interval,
@@ -1661,7 +1661,7 @@ estimate_contamination_gatk=function(
         jobs_report[["steps"]][["tPileupGatk"]]<-pileup_summary_gatk(
           sif_gatk=sif_gatk,
           bam=tumour,output_name=get_file_name(tumour),
-          output_dir=paste0(tmp_dir,"pileup_reports/tumour"),
+          output_dir=paste0(tmp_dir,"/pileup_reports/tumour"),
           verbose=verbose,batch_config=batch_config,
           biallelic_db=biallelic_db,
           db_interval=db_interval,
@@ -1772,7 +1772,6 @@ parallel_estimate_contamination_gatk=function(
       )
 
 
-
     tumour_list=tumours
     names(tumour_list)=Vectorize(get_file_name)(tumours)
       
@@ -1780,7 +1779,7 @@ parallel_estimate_contamination_gatk=function(
         jobs_report[["steps"]][["nPileupGatk"]]<-pileup_summary_gatk(
           sif_gatk=sif_gatk,
           bam=normal,output_name=get_file_name(normal),
-          output_dir=paste0(output_dir,"pileup_reports/normal"),
+          output_dir=paste0(output_dir,"/pileup_reports/normal"),
           verbose=verbose,batch_config=batch_config,
           biallelic_db=biallelic_db,
           db_interval=db_interval,
@@ -1801,6 +1800,7 @@ parallel_estimate_contamination_gatk=function(
             normal=normal_pileup,
             output_name=get_file_name(tumour),
             output_dir=out_file_dir,
+            tmp_dir=tmp_dir,
             verbose=verbose,
             executor_id=task_id)
       },mc.cores=threads)
