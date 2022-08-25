@@ -1752,8 +1752,8 @@ parallel_estimate_contamination_gatk=function(
 
 
 
-    tumours_list=tumours
-    names(tumours_list)=Vectorize(get_file_name)(tumours)
+    tumour_list=tumours
+    names(tumour_list)=Vectorize(get_file_name)(tumours)
       
     if(normal!=""){
         jobs_report[["steps"]][["nPileupGatk"]]<-pileup_summary_gatk(
@@ -1773,7 +1773,7 @@ parallel_estimate_contamination_gatk=function(
 
     if(mode=="local"){
       jobs_report[["steps"]][["parEstimateContaminationGatk"]]<-
-      parallel::mclapply(tumours,FUN=function(tumour){
+      parallel::mclapply(tumour_list,FUN=function(tumour){
         job_report <-  estimate_contamination_gatk(
             sif_gatk=sif_gatk,
             tumour = tumour,
@@ -1812,8 +1812,8 @@ parallel_estimate_contamination_gatk=function(
                   input_args=argg,
                   out_file_dir=out_file_dir,
                   out_files=list(
-                      contamination_table=paste0(out_file_dir,"/contamination_reports/contamination/",tumours_list,".contamination.table"),
-                      segmentation_table=paste0(out_file_dir,"/contamination_reports/segmentation/",tumours_list,".segmentation.table")
+                      contamination_table=paste0(out_file_dir,"/contamination_reports/contamination/",tumour_list,".contamination.table"),
+                      segmentation_table=paste0(out_file_dir,"/contamination_reports/segmentation/",tumour_list,".segmentation.table")
                     )
             )
     }
