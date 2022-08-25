@@ -63,7 +63,7 @@ if(format=="vcf"){
     stop("Not supported format supplied")
 }
 
-if(compressed){
+if(compress){
     if(format=="vcf"){
         out_type=" z "
     }else if(format=="bcf"){
@@ -199,7 +199,7 @@ if(format=="vcf"){
     stop("Not supported format supplied")
 }
 
-if(compressed){
+if(compress){
     if(format=="vcf"){
         out_type=" z "
     }else if(format=="bcf"){

@@ -1341,7 +1341,7 @@ parallel_regions_mutect2_gatk=function(
       vcfs=vcfs,stats=stats,f1r2=f1r2,
       output_dir=out_file_dir,tmp_dir=tmp_dir,
       verbose=verbose,orientation=orientation,
-      batch_config=build_default_preprocess_config(),
+      batch_config=batch_config,
       threads=threads,ram=ram,mode=mode,
       executor_id=task_id,
       time=time,
@@ -2098,7 +2098,7 @@ merge_mutect_stats_gatk=function(
   if(output_name!=""){
     id=output_name
   }else{
-     id=get_file_name(f1r2[1])
+     id=get_file_name(stats[1])
   }
  
   if (stats!=""){
