@@ -1590,7 +1590,7 @@ estimate_contamination_gatk=function(
   if(!is.null(rdata)){
     load(rdata)
     if(!is.null(selected)){
-      bam=bam_list[selected]
+      tumour=tumour_list[selected]
     }
   }
 
