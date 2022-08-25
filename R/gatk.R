@@ -1643,7 +1643,7 @@ estimate_contamination_gatk=function(
 
 
   if (normal_pileup!=""){
-        normal_pileup=paste0("-matched ",normal_pileup)
+        normal_pileup=paste0(" -matched ",normal_pileup)
   }
 
   exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk,
