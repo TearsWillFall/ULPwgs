@@ -1653,7 +1653,7 @@ estimate_contamination_gatk=function(
         threads=1,ram=ram,mode=mode,
         executor_id=task_id,hold=hold
       )
-      normal_pileup<-jobs_report[["steps"]][["nPileupGatk"]]$out_file$pileup_table
+      normal_pileup<-jobs_report[["steps"]][["nPileupGatk"]]$out_files$pileup_table
 
   }
 
@@ -1668,7 +1668,7 @@ estimate_contamination_gatk=function(
           threads=1,ram=ram,mode=mode,
           executor_id=task_id,hold=hold
         )
-        tumour_pileup<-jobs_report[["steps"]][["tPileupGatk"]]$out_file$pileup_table
+        tumour_pileup<-jobs_report[["steps"]][["tPileupGatk"]]$out_files$pileup_table
   }
 
 
@@ -1786,7 +1786,7 @@ parallel_estimate_contamination_gatk=function(
           threads=1,ram=ram,mode=mode,
           executor_id=task_id,hold=hold
         )
-        normal_pileup<-jobs_report[["steps"]][["nPileupGatk"]]$out_file$pileup_table
+        normal_pileup<-jobs_report[["steps"]][["nPileupGatk"]]$out_files$pileup_table
         hold=jobs_report[["steps"]][["nPileupGatk"]]$job_id
     }
 
