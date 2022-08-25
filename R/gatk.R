@@ -1323,37 +1323,8 @@ parallel_regions_mutect2_gatk=function(
 
   }
 
-      
   if(contamination){
-      tumours_pileup=""
-      normal_pileup=""
-          jobs_report[["steps"]][["tPileupGatk"]]<-parallel_pileup_summary_gatk(
-              sif_gatk=sif_gatk,
-              bams=tumour,output_dir=paste0(out_file_dir,"/mutect2_reports/pileup_reports/tumour"),
-              verbose=verbose,
-              batch_config=batch_config,
-              biallelic_db=biallelic_db,
-              db_interval=db_interval,
-              threads=threads,ram=ram,mode=mode,
-              executor_id=task_id,
-              time=time,
-              hold=hold)
-          tumours_pileup<-unlist_lvl(jobs_report[["steps"]][["tPileupGatk"]],var="pileup_table")
-        
-          jobs_report[["steps"]][["nPileupGatk"]]<-pileup_summary_gatk(
-            sif_gatk=sif_gatk,
-            bam=normal,output_name=get_file_name(normal),
-            output_dir=paste0(out_file_dir,"/mutect2_reports/pileup_reports/normal"),
-            verbose=verbose,batch_config=batch_config,
-            biallelic_db=biallelic_db,
-            db_interval=db_interval,
-            threads=1,ram=ram,mode=mode,
-            executor_id=task_id,hold=hold
-          )
-          normal_pileup<-jobs_report[["steps"]][["nPileupGatk"]]$out_file$pileup_table
-    
-
-          jobs_report[["steps"]][["estimateContaminationGatk"]]<-parallel_estimate_contamination_gatk(
+          jobs_report[["steps"]][["estimateContaminationGatk"]]<- parallel_estimate_contamination_gatk(
                 sif_gatk=sif_gatk,
                 tumours_pileup=tumours_pileup,
                 normal_pileup=normal_pileup,
@@ -1363,9 +1334,9 @@ parallel_regions_mutect2_gatk=function(
                 threads=threads,ram=ram,mode=mode,
                 executor_id=task_id,
                 time=time,
-                hold=unlist_lvl(jobs_report[["steps"]],var="job_id")
+                hold=unlist_lvl(jobs_report,var="job_id")
           )
-      }
+    }
   
 
 
