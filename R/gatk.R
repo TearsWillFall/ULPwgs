@@ -1301,7 +1301,7 @@ parallel_regions_mutect2_gatk=function(
           orientation,mnps,output_dir,verbose,tmp_dir,file = rdata_file)
           exec_code=paste0("Rscript -e \"ULPwgs::mutect2_gatk(rdata=\\\"",
           rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
-          out_file_dir2=set_dir(dir=out_file_dir_tmp,name="batch")
+          out_file_dir2=set_dir(dir=out_file_dir,name="batch")
           batch_code=build_job_exec(job=job,time=time,ram=ram,
           threads=1,output_dir=out_file_dir2,
           hold=hold,array=length(region_list))
