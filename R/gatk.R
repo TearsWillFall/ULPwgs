@@ -1118,7 +1118,7 @@ mutect2_gatk=function(region="",
 
   f1r2=""
   if (orientation){
-      out_file_dir_ort=set_dir(dir=output_dir,name="orientation")
+      out_file_dir_ort=set_dir(dir=out_file_dir,name="orientation")
       out_file2=paste0(out_file_dir_ort,"/",fname,".f1r2.tar.gz")
       f1r2=paste0(" --f1r2-tar-gz ",out_file2)
   }
@@ -1163,6 +1163,8 @@ mutect2_gatk=function(region="",
     out_file_dir=out_file_dir,
     out_files=list(
       vcf=out_file,
+      stats=paste0(out_file,".stats"),
+      idx=paste0(out_file,".idx"),
       f1r2=out_file2)
   )
 
@@ -1317,11 +1319,34 @@ parallel_regions_mutect2_gatk=function(
               out_file_dir=out_file_dir,
               out_files=list(
                   vcf=paste0(out_file_dir,"/vcf/",fname,".unfilt.vcf"),
-                  orientation=paste0(out_file_dir,"/orientation/",fname,".f1r2.tar.gz")
+                  stats=paste0(out_file_dir,"/vcf/",fname,".unfilt.vcf.stats"),
+                  idx=paste0(out_file_dir,"/vcf/",fname,".unfilt.vcf.stats"),
+                  f1r2=paste0(out_file_dir,"/orientation/",fname,".f1r2.tar.gz")
                 )
         )
 
   }
+
+  vcfs=unlist_lvl(jobs_report[["steps"]][["par_region_call_variants"]]$vcf)
+  stats=unlist_lvl(jobs_report[["steps"]][["par_region_call_variants"]]$stats)
+  f1r2=unlist_lvl(jobs_report[["steps"]][["par_region_call_variants"]]$f1r2)
+  hold=unlist_lvl(jobs_report,var="job_id")
+
+  jobs_report[["steps"]][["gatherFilesGatk"]]<-gather_mutect2_gatk(
+      sif_gatk=sif_gatk,
+      bin_samtools=bin_samtools,
+      bin_bcftools=bin_bcftools,
+      bin_bgzip=bin_bgzip,
+      bin_tabix=bin_tabix,
+      vcfs=vcfs,stats=stats,f1r2=f1r2,
+      output_dir=out_file_dir,tmp_dir=tmp_dir,
+      verbose=verbose,orientation=orientation,
+      batch_config=build_default_preprocess_config(),
+      threads=threads,ram=ram,mode=mode,
+      executor_id=task_id,
+      time=time,
+      hold=hold
+  )
 
   if(contamination){
           jobs_report[["steps"]][["estimateContaminationGatk"]]<- parallel_estimate_contamination_gatk(
@@ -1334,11 +1359,9 @@ parallel_regions_mutect2_gatk=function(
                 threads=threads,ram=ram,mode=mode,
                 executor_id=task_id,
                 time=time,
-                hold=unlist_lvl(jobs_report,var="job_id")
+                hold=hold
           )
-    }
-  
-
+  }
 
 
   if(wait&&mode=="batch"){
@@ -1359,7 +1382,7 @@ gather_mutect2_gatk=function(
   bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  vcf="",output_dir=".",tmp_dir=".",
+  vcfs="",stats="",f1r2="",output_dir=".",tmp_dir=".",
   verbose=FALSE,orientation=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
@@ -1393,7 +1416,7 @@ gather_mutect2_gatk=function(
     verbose=verbose,output_name=output_name,
     output_dir=out_file_dir,
     tmp_dir=tmp_dir,batch_config=batch_config,
-    threads=1,ram=4,mode=mode,
+    threads=1,ram=ram,mode=mode,
     executor_id=task_id,
     time=time,hold=hold
   )
@@ -1403,28 +1426,15 @@ gather_mutect2_gatk=function(
     stats=stats,output_name=output_name,
     output_dir=out_file_dir,
     verbose=verbose,batch_config=batch_config,
-    threads=1,ram=4,mode=mode,
+    threads=1,ram=ram,mode=mode,
     executor_id=task_id,
     time=time,hold=hold
   )
-
-
-   job_report[["steps"]][["mergeStatMutect"]] <- merge_mutect_stats_gatk(
-    sif_gatk=sif_gatk,
-    stats=stats,output_name=output_name,
-    output_dir=out_file_dir,
-    verbose=verbose,batch_config=batch_config,
-    threads=1,ram=4,mode=mode,
-    executor_id=task_id,
-    time=time,hold=hold
-  )
-
-
 
   if(orientation){
-      job_report[["steps"]][["orientationModel"]] <- merge_mutect_stats_gatk(
+      job_report[["steps"]][["orientationModel"]] <- learn_orientation_gatk(
         sif_gatk=sif_gatk,
-        stats=stats,output_name=output_name,
+        f1r2=f1r2,output_name=output_name,
         output_dir=out_file_dir,
         verbose=verbose,batch_config=batch_config,
         threads=1,ram=4,mode=mode,
@@ -2029,7 +2039,7 @@ parallel_pileup_summary_gatk=function(
                 input_args=argg,
                 out_file_dir=out_file_dir,
                 out_files=list(
-                    pileup_table=paste0(out_file_dir,"/pileup/",bam_list,".pileup.table")
+                    pileup_table=paste0(out_file_dir,"/pileup/",names(bam_list),".pileup.table")
                   )
           )
   }
