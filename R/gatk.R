@@ -1812,8 +1812,8 @@ parallel_estimate_contamination_gatk=function(
                   input_args=argg,
                   out_file_dir=out_file_dir,
                   out_files=list(
-                      contamination_table=paste0(out_file_dir,"/contamination_reports/contamination/",tumour_list,".contamination.table"),
-                      segmentation_table=paste0(out_file_dir,"/contamination_reports/segmentation/",tumour_list,".segmentation.table")
+                      contamination_table=paste0(out_file_dir,"/contamination_reports/contamination/",names(tumour_list),".contamination.table"),
+                      segmentation_table=paste0(out_file_dir,"/contamination_reports/segmentation/",names(tumour_list),".segmentation.table")
                     )
             )
     }
