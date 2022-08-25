@@ -1326,8 +1326,8 @@ parallel_regions_mutect2_gatk=function(
   if(contamination){
           jobs_report[["steps"]][["estimateContaminationGatk"]]<- parallel_estimate_contamination_gatk(
                 sif_gatk=sif_gatk,
-                tumours_pileup=tumours_pileup,
-                normal_pileup=normal_pileup,
+                tumours=tumour,
+                normal=normal,
                 output_dir=out_file_dir,
                 verbose=verbose,
                 batch_config=batch_config,
