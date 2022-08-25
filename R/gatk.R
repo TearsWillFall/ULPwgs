@@ -25,7 +25,7 @@
 markdups_gatk=function(
   sif_gatk=build_default_sif_list()$gatk,bam="",output_dir=".",
   verbose=FALSE,batch_config=build_default_preprocess_config(),
-  tmp_dir="",threads=3,ram=4,remove_duplicates=TRUE,
+  tmp_dir=".",threads=3,ram=4,remove_duplicates=TRUE,
   executor_id=make_unique_id("markdupsGATK"),task_name="markdupsGATK",
   mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
 
@@ -126,7 +126,7 @@ recal_gatk=function(
   sif_gatk=build_default_sif_list()$gatk,
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bam="",ref_genome="",dbsnp="",ram=4,threads=4,output_dir=".",
-  tmp_dir="",verbose=FALSE,batch_config=build_default_preprocess_config(),
+  tmp_dir=".",verbose=FALSE,batch_config=build_default_preprocess_config(),
   executor_id=make_unique_id("recalGATK"),
   task_name="recalGATK",clean=TRUE,mode="local",time="48:0:0",
   update_time=60,wait=FALSE,hold=""
@@ -257,7 +257,7 @@ recal_gatk=function(
 generate_BQSR_gatk=function(
   region="",rdata=NULL,selected=NULL,
   sif_gatk=build_default_sif_list()$gatk,bam="",
-  ref_genome="",dbsnp="",output_dir=".",tmp_dir="",verbose=FALSE,
+  ref_genome="",dbsnp="",output_dir=".",tmp_dir=".",verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("generateBQSR"),task_name="generateBQSR",
@@ -371,7 +371,7 @@ parallel_generate_BQSR_gatk=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   sif_gatk=build_default_sif_list()$gatk,bam="",
   regions="",ref_genome="", clean=TRUE, dbsnp="",
-  tmp_dir="",threads=3,ram=4,
+  tmp_dir=".",threads=3,ram=4,
   executor_id=make_unique_id("par_generateBQSR"),
   task_name="par_generateBQSR",output_dir=".",
   verbose=FALSE,batch_config=build_default_preprocess_config(),
@@ -510,7 +510,7 @@ gather_BQSR_reports_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
   report="",executor_id=make_unique_id("gatherBQSR"),
   task_name="gatherBQSR",output_name="Report",clean=FALSE,
-  output_dir=".",verbose=FALSE,tmp_dir="",
+  output_dir=".",verbose=FALSE,tmp_dir=".",
   batch_config=build_default_preprocess_config(),
   mode="local",time="48:0:0",
   threads=4,ram=4,update_time=60,wait=FALSE,hold=""){
@@ -602,7 +602,7 @@ gather_BQSR_reports_gatk=function(
 apply_BQSR_gatk=function(
   region="",rdata=NULL,selected=NULL,
   sif_gatk=build_default_sif_list()$sif_gatk,bam="",ref_genome="",
-  rec_table="",output_dir=".",verbose=FALSE,tmp_dir="",
+  rec_table="",output_dir=".",verbose=FALSE,tmp_dir=".",
   batch_config=build_default_preprocess_config(),mode="local", threads=4,ram=4,
   executor_id=make_unique_id("applyBQSR"),task_name="applyBQSR",time="48:0:0",
   update_time=60,wait=TRUE,hold=""){
@@ -707,7 +707,7 @@ parallel_apply_BQSR_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bam="",regions="",ref_genome="",rec_table="",clean=TRUE,
-  output_dir=".",verbose=FALSE,tmp_dir="",
+  output_dir=".",verbose=FALSE,tmp_dir=".",
   batch_config=build_default_preprocess_config(),mode="local",
   executor_id=make_unique("par_applyBQSR"),
   task_name="par_applyBQSR",
@@ -939,7 +939,7 @@ gather_bam_files=function(
 
 analyze_covariates_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,before="",after="",
-  output_dir=".",verbose=FALSE,tmp_dir="",
+  output_dir=".",verbose=FALSE,tmp_dir=".",
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("recalCovariates"),
@@ -1061,7 +1061,7 @@ mutect2_gatk=function(region="",
   tumour="",normal="",id="",
   ref_genome=build_default_reference_list()$HG19$reference,
   germ_resource=build_default_reference_list()$HG19$variant$germ_reference,
-  pon="",output_dir=".",tmp_dir="",
+  pon="",output_dir=".",tmp_dir=".",
   verbose=FALSE,orientation=FALSE,mnps=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
@@ -1513,7 +1513,7 @@ gather_mutect2_gatk=function(
 
 learn_orientation_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
-  f1r2="",output_name="",output_dir="",
+  f1r2="",output_name="",output_dir=".",
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("parSampleMutect2"),
@@ -1611,7 +1611,7 @@ learn_orientation_gatk=function(
 estimate_contamination_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
   rdata=NULL,selected=NULL,
-  tumour_pileup="",normal_pileup="",output_name="",output_dir="",
+  tumour_pileup="",normal_pileup="",output_name="",output_dir=".",
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   threads=1,ram=4,mode="local",
   executor_id=make_unique_id("estimateContaminationGatk"),
@@ -1719,7 +1719,7 @@ estimate_contamination_gatk=function(
 
 parallel_estimate_contamination_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
-  tumour_pileup="",normal_pileup="",output_name="",output_dir="",
+  tumours_pileup="",normal_pileup="",output_name="",output_dir=".",
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   threads=1,ram=4,mode="local",
   executor_id=make_unique_id("parEstimateContaminationGatk"),
@@ -1744,17 +1744,17 @@ parallel_estimate_contamination_gatk=function(
         )
       )
 
-    tumour_pileup_list=tumour_pileup
-    names(tumour_pileup_list)=Vectorize(get_file_name)(tumour_pileup)
+    tumours_pileup_list=tumours_pileup
+    names(tumours_pileup_list)=Vectorize(get_file_name)(tumours_pileup)
 
     if(mode=="local"){
       job_report[["steps"]][["parEstimateContaminationGatk"]]<-
-      parallel::mclapply(tumour_pileup_list,FUN=function(t_p){
+      parallel::mclapply(tumours_pileup_list,FUN=function(tumour_pileup){
         job_report <-  estimate_contamination_gatk(
             sif_gatk=sif_gatk,
-            tumour_pileup=t_p,
+            tumour_pileup=tumour_pileup,
             normal_pileup=normal_pileup,
-            output_name=get_file_name(t_p),
+            output_name=get_file_name(tumour_pileup),
             output_dir=out_file_dir,
             verbose=verbose,
             executor_id=task_id)
@@ -1765,7 +1765,7 @@ parallel_estimate_contamination_gatk=function(
             exec_code=paste0("Rscript -e \"ULPwgs::estimate_contamination(rdata=\\\"",rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
             out_file_dir2=set_dir(dir=out_file_dir,name="batch")
             batch_code=build_job_exec(job=job,time=time,ram=ram,
-            threads=2,output_dir=out_file_dir2,
+            threads=1,output_dir=out_file_dir2,
             hold=hold,array=length(tumour_pileup_list))
             exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
 
@@ -1832,7 +1832,7 @@ parallel_estimate_contamination_gatk=function(
 
 pileup_summary_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
-  bam="",output_name="",output_dir="",
+  bam="",output_name="",output_dir=".",
   rdata=NULL,selected=NULL,
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
@@ -1934,7 +1934,7 @@ pileup_summary_gatk=function(
 
 parallel_pileup_summary_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
-  bams="",output_dir="",tmp_dir=".",verbose=FALSE,
+  bams="",output_dir=".",tmp_dir=".",verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
   db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
@@ -1984,7 +1984,7 @@ parallel_pileup_summary_gatk=function(
           exec_code=paste0("Rscript -e \"ULPwgs::pileup_summary_gatk(rdata=\\\"",rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
           out_file_dir2=set_dir(dir=out_file_dir,name="batch")
           batch_code=build_job_exec(job=job,time=time,ram=ram,
-          threads=2,output_dir=out_file_dir2,
+          threads=1,output_dir=out_file_dir2,
           hold=hold,array=length(bam_list))
           exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
 
@@ -2047,7 +2047,7 @@ parallel_pileup_summary_gatk=function(
 
 merge_mutect_stats_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
-  stats="",output_name="",output_dir="",
+  stats="",output_name="",output_dir=".",
   verbose=TRUE, batch_config=build_default_preprocess_config(),
   threads=1,ram=4,mode="local",
   executor_id=make_unique_id("mergeMutectStats"),
@@ -2191,7 +2191,7 @@ if(mode=="local"){
         exec_code=paste0("Rscript -e \"ULPwgs::mutect2_gatk(rdata=\\\"",rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         batch_code=build_job_exec(job=job,time=time,ram=ram,
-        threads=2,output_dir=out_file_dir2,
+        threads=1,output_dir=out_file_dir2,
         hold=hold,array=length(normals))
         exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
 

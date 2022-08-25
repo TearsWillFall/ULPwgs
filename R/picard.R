@@ -23,7 +23,7 @@ markdups_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,bam="",
   output_dir=".",verbose=FALSE,
   batch_config=build_default_preprocess_config(),
-  hnd=1000,threads,ram=4,tmp_dir="",
+  hnd=1000,threads,ram=4,tmp_dir=".",
   remove_duplicates=TRUE,mode="local",executor_id=make_unique_id("markDups"),
   task_name="markDups",time="48:0:0",
   update_time=60,wait=FALSE,hold=""
