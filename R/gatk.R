@@ -1327,10 +1327,10 @@ parallel_regions_mutect2_gatk=function(
               input_args=argg,
               out_file_dir=out_file_dir,
               out_files=list(
-                  vcf=paste0(out_file_dir,"/vcf/",fname,".unfilt.vcf"),
-                  stats=paste0(out_file_dir,"/vcf/",fname,".unfilt.vcf.stats"),
-                  idx=paste0(out_file_dir,"/vcf/",fname,".unfilt.vcf.stats"),
-                  f1r2=paste0(out_file_dir,"/orientation/",fname,".f1r2.tar.gz")
+                  vcf=paste0(out_file_dir,"/vcf/",fname,".",region_list,".unfilt.vcf"),
+                  stats=paste0(out_file_dir,"/vcf/",fname,".",region_list,".unfilt.vcf.stats"),
+                  idx=paste0(out_file_dir,"/vcf/",fname,".",region_list,".unfilt.vcf.stats"),
+                  f1r2=paste0(out_file_dir,"/orientation/",".",fname,region_list,".f1r2.tar.gz")
                 )
         )
 
@@ -1408,7 +1408,7 @@ gather_mutect2_gatk=function(
   out_file_dir=set_dir(dir=output_dir)
   job=build_job(executor_id=executor_id,task_id=task_id)
 
-  job_report=build_job_report(
+  jobs_report=build_job_report(
     job_id=job,
     executor_id=executor_id,
     exec_code=list(), 
@@ -1419,7 +1419,7 @@ gather_mutect2_gatk=function(
       )
     )
 
-  job_report[["steps"]][["concatVCF"]] <- concat_vcf(
+  jobs_report[["steps"]][["concatVCF"]] <- concat_vcf(
     bin_bcftools=bin_bcftools,
     bin_bgzip=bin_bgzip,
     bin_tabix=bin_tabix,
@@ -1433,7 +1433,7 @@ gather_mutect2_gatk=function(
     time=time,hold=hold
   )
 
-  job_report[["steps"]][["mergeStatMutect"]] <- merge_mutect_stats_gatk(
+  jobs_report[["steps"]][["mergeStatMutect"]] <- merge_mutect_stats_gatk(
     sif_gatk=sif_gatk,
     stats=stats,output_name=output_name,
     output_dir=out_file_dir,clean=clean,
@@ -1444,7 +1444,7 @@ gather_mutect2_gatk=function(
   )
 
   if(orientation){
-      job_report[["steps"]][["orientationModel"]] <- learn_orientation_gatk(
+      jobs_report[["steps"]][["orientationModel"]] <- learn_orientation_gatk(
         sif_gatk=sif_gatk,
         f1r2=f1r2,output_name=output_name,
         output_dir=out_file_dir,clean=clean,
@@ -1455,25 +1455,12 @@ gather_mutect2_gatk=function(
       )
   }
 
-
-  if(verbose){
-       print_verbose(job=job,arg=argg,exec_code=exec_code)
-  }
- 
-  
-  error=execute_job(exec_code=exec_code)
-  
-  if(error!=0){
-    stop("gatk failed to run due to unknown error.
-    Check std error for more information.")
-  }
-
   if(wait&&mode=="batch"){
-    job_validator(job=job_report$job_id,time=update_time,
+    job_validator(job=jobs_report$job_id,time=update_time,
     verbose=verbose,threads=threads)
   }
 
-  return(job_report)
+  return(jobs_report)
 
 }   
 

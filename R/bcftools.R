@@ -168,8 +168,8 @@ sort_vcf=function(
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     threads=1,ram=4,mode="local",
-    executor_id=make_unique_id("concatVCF"),
-    task_name="concatVCF",time="48:0:0",
+    executor_id=make_unique_id("sortVCF"),
+    task_name="sortVCF",time="48:0:0",
     update_time=60,wait=FALSE,hold=""
 ){
 
