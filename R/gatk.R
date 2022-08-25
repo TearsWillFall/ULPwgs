@@ -1330,7 +1330,7 @@ parallel_regions_mutect2_gatk=function(
                   vcf=paste0(out_file_dir,"/vcf/",fname,".",region_list,".unfilt.vcf"),
                   stats=paste0(out_file_dir,"/vcf/",fname,".",region_list,".unfilt.vcf.stats"),
                   idx=paste0(out_file_dir,"/vcf/",fname,".",region_list,".unfilt.vcf.stats"),
-                  f1r2=paste0(out_file_dir,"/orientation/",".",fname,region_list,".f1r2.tar.gz")
+                  f1r2=paste0(out_file_dir,"/orientation/",fname,".",region_list,".f1r2.tar.gz")
                 )
         )
 
