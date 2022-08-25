@@ -1079,9 +1079,9 @@ mutect2_gatk=function(region="",
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir,name="mutect2_reports")
-  out_file_dir=set_dir(dir=out_file_dir,name="vcf")
-
+  out_file_dir=set_dir(dir=output_dir,name="vcf")
+  job=build_job(executor_id=executor_id,task=task_id)
+  
   
   if(tmp_dir!=""){
     tmp_dir=paste0(" --tmp-dir ",tmp_dir)
@@ -1124,7 +1124,7 @@ mutect2_gatk=function(region="",
 
   f1r2=""
   if (orientation){
-      out_file_dir_ort=set_dir(dir=out_file_dir,name="orientation")
+      out_file_dir_ort=set_dir(dir=output_dir,name="orientation")
       out_file2=paste0(out_file_dir_ort,"/",fname,".f1r2.tar.gz")
       f1r2=paste0(" --f1r2-tar-gz ",out_file2)
   }
@@ -1140,7 +1140,6 @@ mutect2_gatk=function(region="",
   " /gatk/gatk   Mutect2 -R ",ref_genome,tumour, norm,
    " --germline-resource ",germ_resource, pon, " -O ",out_file, reg,f1r2,filter_mnps)
 
-  job=build_job(executor_id=executor_id,task=task_id)
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
