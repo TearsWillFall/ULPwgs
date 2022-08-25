@@ -1516,7 +1516,7 @@ learn_orientation_gatk=function(
   out_file=paste0(out_file_dir,"/",id,".ROM.tar.gz")
 
   exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk,
-  " /gatk/gatk   LearnReadOrientationModel  ",fir2," -O ",out_file)
+  " /gatk/gatk   LearnReadOrientationModel  ",f1r2," -O ",out_file)
 
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
