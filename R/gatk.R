@@ -1336,9 +1336,9 @@ parallel_regions_mutect2_gatk=function(
 
   }
 
-  vcfs=unlist_lvl(jobs_report[["steps"]][["par_region_call_variants"]]$vcf)
-  stats=unlist_lvl(jobs_report[["steps"]][["par_region_call_variants"]]$stats)
-  f1r2=unlist_lvl(jobs_report[["steps"]][["par_region_call_variants"]]$f1r2)
+  vcfs=unlist_lvl(jobs_report[["steps"]][["par_region_call_variants"]],var="vcf")
+  stats=unlist_lvl(jobs_report[["steps"]][["par_region_call_variants"]],var="stats")
+  f1r2=unlist_lvl(jobs_report[["steps"]][["par_region_call_variants"]],var="f1r2")
   hold=unlist_lvl(jobs_report,var="job_id")
 
   jobs_report[["steps"]][["gatherFilesGatk"]]<-gather_mutect2_gatk(
