@@ -74,7 +74,7 @@ if(compress){
 
 
 
-exec_code=paste(bin_bcftools,"concat -o",out_file, " - O ", out_type, vcf)
+exec_code=paste(bin_bcftools,"concat -o",out_file, paste0(" -O", out_type), vcf)
 
 if(clean){
     exec_code=paste(exec_code," && rm",vcf)
@@ -215,7 +215,7 @@ if(compress){
 
 
 
-exec_code=paste0(bin_bcftools," sort ",vcf , paste0(" -m ",ram,"G "), tmp_dir, " -o ",out_file, " -O ",out_type)
+exec_code=paste0(bin_bcftools," sort ",vcf , paste0(" -m ",ram,"G "), tmp_dir, " -o ",out_file, paste0(" -O", out_type))
 
 if(clean){
     exec_code=paste(exec_code," && rm",vcf)

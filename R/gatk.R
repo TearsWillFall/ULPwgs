@@ -1058,7 +1058,7 @@ analyze_covariates_gatk=function(
 mutect2_gatk=function(region="",
   rdata=NULL,selected=NULL,
   sif_gatk=build_default_sif_list()$sif_gatk,
-  tumour="",normal="",id="",
+  tumour="",normal="",patient_id="",
   ref_genome=build_default_reference_list()$HG19$reference,
   germ_resource=build_default_reference_list()$HG19$variant$germ_reference,
   pon="",output_dir=".",tmp_dir=".",
@@ -1087,13 +1087,19 @@ mutect2_gatk=function(region="",
     tmp_dir=paste0(" --tmp-dir ",tmp_dir)
   }
   
+
+  if(patient_id!=""&length(tumour)>1){
+    fname=patient_id
+  }else{  
+    fname=get_file_name(tumour[1])
+  }
+  
   reg=""
   if (region==""){
-      fname=get_file_name(tumour)
       out_file=paste0(out_file_dir,"/",fname,".unfilt.vcf")
   }else{
       reg=paste0(" -L ",region)
-      fname=paste0(get_file_name(tumour),".",region)
+      fname=paste0(fname,".",region)
       out_file=paste0(out_file_dir,"/",fname,".unfilt.vcf")
   }
 
@@ -1218,7 +1224,7 @@ parallel_regions_mutect2_gatk=function(
   bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  tumour="",normal="",
+  tumour="",normal="",patient_id="",
   ref_genome=build_default_reference_list()$HG19$reference,
   germ_resources=build_default_reference_list()$HG19$variant$germ_reference,
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
@@ -1252,7 +1258,6 @@ parallel_regions_mutect2_gatk=function(
       )
     )
 
-
   if(regions==""){
 
     jobs_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
@@ -1282,7 +1287,7 @@ parallel_regions_mutect2_gatk=function(
             region=region,
             tumour=tumour,
             normal=normal,
-            id=get_file_name(tumour),
+            patient_id=patient_id,
             ref_genome=ref_genome,
             output_dir=out_file_dir,tmp_dir=tmp_dir,
             verbose=verbose,orientation=orientation,mnps=mnps,
@@ -1291,7 +1296,7 @@ parallel_regions_mutect2_gatk=function(
     
     }else if(mode=="batch"){
           rdata_file=paste0(tmp_dir,"/",job,".regions.RData")
-          save(region_list,tumour,normal,sif_gatk,ref_genome,
+          save(region_list,tumour,normal,sif_gatk,ref_genome,patient_id,
           orientation,mnps,output_dir,verbose,tmp_dir,file = rdata_file)
           exec_code=paste0("Rscript -e \"ULPwgs::mutect2_gatk(rdata=\\\"",
           rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
@@ -1309,7 +1314,12 @@ parallel_regions_mutect2_gatk=function(
               stop("gatk failed to run due to unknown error.
               Check std error for more information.")
           }
-         fname=paste0(get_file_name(tumour),".",region_list)
+           if(patient_id!=""&length(tumour)>1){
+              fname=patient_id
+           }else{  
+              fname=get_file_name(tumour[1])
+           }
+  
          jobs_report[["steps"]][["par_region_call_variants"]]<- build_job_report(
               job_id=job,
               executor_id=executor_id,
@@ -1498,7 +1508,7 @@ learn_orientation_gatk=function(
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir,name="orientation")
+  out_file_dir=set_dir(dir=output_dir,name="model")
   job=build_job(executor_id=executor_id,task_id=task_id)
 
 
@@ -1797,7 +1807,7 @@ parallel_estimate_contamination_gatk=function(
             rdata_file=paste0(tmp_dir,"/",job,".pileups.RData")
             save(tumour_list,normal_pileup,sif_gatk,biallelic_db,db_interval,
             output_dir,verbose,tmp_dir,file = rdata_file)
-            exec_code=paste0("Rscript -e \"ULPwgs::estimate_contamination(rdata=\\\"",
+            exec_code=paste0("Rscript -e \"ULPwgs::estimate_contamination_gatk(rdata=\\\"",
             rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
             out_file_dir2=set_dir(dir=out_file_dir,name="batch")
             batch_code=build_job_exec(job=job,time=time,ram=ram,
