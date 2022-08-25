@@ -1422,7 +1422,7 @@ gather_mutect2_gatk=function(
     bin_bcftools=bin_bcftools,
     bin_bgzip=bin_bgzip,
     bin_tabix=bin_tabix,
-    vcf=vcf,clean=clean,sort=TRUE,
+    vcfs=vcfs,clean=clean,sort=TRUE,
     compress=FALSE,format="vcf",
     verbose=verbose,output_name=output_name,
     output_dir=out_file_dir,
