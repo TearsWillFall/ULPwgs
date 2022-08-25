@@ -1259,9 +1259,9 @@ parallel_regions_mutect2_gatk=function(
       time=time,update_time=update_time,wait=FALSE,hold=hold)
 
 
-    regions=read.table(job_report[["steps"]][["getChr"]]$out_files$ref,
+    regions=read.table(jobs_report[["steps"]][["getChr"]]$out_files$ref,
     sep="\t",header=TRUE)
-    hold=job_report[["steps"]][["getChr"]]$job_id
+    hold=jobs_report[["steps"]][["getChr"]]$job_id
   }
 
   regions$start=regions$start+1
