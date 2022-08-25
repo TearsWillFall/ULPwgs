@@ -1499,7 +1499,7 @@ learn_orientation_gatk=function(
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir,name="model")
+  out_file_dir=set_dir(dir=output_dir)
   job=build_job(executor_id=executor_id,task_id=task_id)
 
 
@@ -1521,7 +1521,7 @@ learn_orientation_gatk=function(
 
 
   if(clean){
-    exec_code=paste(exec_code," && rm",f1r2)
+    exec_code=paste(exec_code," && rm",paste(f1r2,collapse=" "))
 }
 
   if(mode=="batch"){
@@ -1779,7 +1779,7 @@ parallel_estimate_contamination_gatk=function(
         jobs_report[["steps"]][["nPileupGatk"]]<-pileup_summary_gatk(
           sif_gatk=sif_gatk,
           bam=normal,output_name=get_file_name(normal),
-          output_dir=paste0(output_dir,"/pileup_reports/normal"),
+          output_dir=paste0(tmp_dir,"/pileup_reports/normal"),
           verbose=verbose,batch_config=batch_config,
           biallelic_db=biallelic_db,
           db_interval=db_interval,
@@ -2122,7 +2122,7 @@ merge_mutect_stats_gatk=function(
   " /gatk/gatk  MergeMutectStats -O ", out_file ,stat)
 
   if(clean){
-    exec_code=paste(exec_code," && rm",stats)
+    exec_code=paste(exec_code," && rm",paste(stats,collapse=" "))
 }
 
   if(mode=="batch"){

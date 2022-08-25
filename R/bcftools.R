@@ -77,7 +77,7 @@ if(compress){
 exec_code=paste(bin_bcftools,"concat -o",out_file, paste0(" -O", out_type), vcfs)
 
 if(clean){
-    exec_code=paste(exec_code," && rm",vcfs)
+    exec_code=paste(exec_code," && rm",paste(vcfs,collapse=" "))
 }
   
   if(mode=="batch"){
