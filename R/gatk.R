@@ -1242,7 +1242,9 @@ parallel_regions_mutect2_gatk=function(
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir)
+  out_file_dir=set_dir(dir=output_dir,name="mutect2_reports")
+  tmp_dir=set_dir(dir=tmp_dir,name="mutect2_tmp")
+
   job=build_job(executor_id=executor_id,task_id=task_id)
 
 
@@ -1288,7 +1290,7 @@ parallel_regions_mutect2_gatk=function(
             normal=normal,
             patient_id=patient_id,
             ref_genome=ref_genome,
-            output_dir=out_file_dir,tmp_dir=tmp_dir,
+            output_dir=tmp_dir,tmp_dir=tmp_dir,
             verbose=verbose,orientation=orientation,mnps=mnps,
             executor_id=task_id)
     },mc.cores=threads)
@@ -1299,7 +1301,7 @@ parallel_regions_mutect2_gatk=function(
           orientation,mnps,output_dir,verbose,tmp_dir,file = rdata_file)
           exec_code=paste0("Rscript -e \"ULPwgs::mutect2_gatk(rdata=\\\"",
           rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
-          out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+          out_file_dir2=set_dir(dir=out_file_dir_tmp,name="batch")
           batch_code=build_job_exec(job=job,time=time,ram=ram,
           threads=1,output_dir=out_file_dir2,
           hold=hold,array=length(region_list))
@@ -1327,10 +1329,10 @@ parallel_regions_mutect2_gatk=function(
               input_args=argg,
               out_file_dir=out_file_dir,
               out_files=list(
-                  vcf=paste0(out_file_dir,"/vcf/",fname,".",region_list,".unfilt.vcf"),
-                  stats=paste0(out_file_dir,"/vcf/",fname,".",region_list,".unfilt.vcf.stats"),
-                  idx=paste0(out_file_dir,"/vcf/",fname,".",region_list,".unfilt.vcf.stats"),
-                  f1r2=paste0(out_file_dir,"/orientation/",fname,".",region_list,".f1r2.tar.gz")
+                  vcf=paste0(tmp_dir,"/vcf/",fname,".",region_list,".unfilt.vcf"),
+                  stats=paste0(tmp_dir,"/vcf/",fname,".",region_list,".unfilt.vcf.stats"),
+                  idx=paste0(tmp_dir,"/vcf/",fname,".",region_list,".unfilt.vcf.stats"),
+                  f1r2=paste0(tmp_dir,"/orientation/",fname,".",region_list,".f1r2.tar.gz")
                 )
         )
 
@@ -1366,7 +1368,7 @@ parallel_regions_mutect2_gatk=function(
                 tumours=tumour,
                 normal=normal,
                 output_dir=out_file_dir,
-                verbose=verbose,
+                verbose=verbose,tmp_dir=tmp_dir,
                 batch_config=batch_config,
                 threads=threads,ram=ram,mode=mode,
                 executor_id=task_id,
@@ -1592,7 +1594,7 @@ estimate_contamination_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
   rdata=NULL,selected=NULL,
   tumour="",normal="",tumour_pileup="",
-  normal_pileup="",output_name="",output_dir=".",
+  normal_pileup="",output_name="",output_dir=".",tmp_dir=".",
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
   db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
   verbose=FALSE,batch_config=build_default_preprocess_config(),
@@ -1610,8 +1612,9 @@ estimate_contamination_gatk=function(
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir_tab=set_dir(dir=output_dir,name="contamination")
-  out_file_dir_seg=set_dir(dir=output_dir,name="segmentation")
+  out_file_dir=set_dir(dir=output_dir,name="contamination_reports")
+  out_file_dir_tab=set_dir(dir=out_file_dir,name="contamination")
+  out_file_dir_seg=set_dir(dir=out_file_dir,name="segmentation")
   job=build_job(executor_id=executor_id,task_id=task_id)
 
   id=""
@@ -1643,7 +1646,7 @@ estimate_contamination_gatk=function(
       jobs_report[["steps"]][["nPileupGatk"]]<-pileup_summary_gatk(
         sif_gatk=sif_gatk,
         bam=normal,output_name=get_file_name(normal),
-        output_dir=paste0(output_dir,"pileup_reports/normal"),
+        output_dir=paste0(tmp_dir,"pileup_reports/normal"),
         verbose=verbose,batch_config=batch_config,
         biallelic_db=biallelic_db,
         db_interval=db_interval,
@@ -1658,7 +1661,7 @@ estimate_contamination_gatk=function(
         jobs_report[["steps"]][["tPileupGatk"]]<-pileup_summary_gatk(
           sif_gatk=sif_gatk,
           bam=tumour,output_name=get_file_name(tumour),
-          output_dir=paste0(out_file_dir,"pileup_reports/tumour"),
+          output_dir=paste0(tmp_dir,"pileup_reports/tumour"),
           verbose=verbose,batch_config=batch_config,
           biallelic_db=biallelic_db,
           db_interval=db_interval,
