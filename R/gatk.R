@@ -1238,8 +1238,6 @@ parallel_regions_mutect2_gatk=function(
   update_time=60,wait=FALSE,hold=""
 ){
 
-
-
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="mutect2_reports")
@@ -1843,7 +1841,7 @@ parallel_estimate_contamination_gatk=function(
         jobs_report[["steps"]][["nPileupGatk"]]<-pileup_summary_gatk(
           sif_gatk=sif_gatk,
           bam=normal,output_name=get_file_name(normal),
-          output_dir=paste0(out_file_dir,"/contamination/pileup_reports/normal"),
+          output_dir=paste0(out_file_dir,"/contamination_reports/pileup_reports/normal"),
           verbose=verbose,batch_config=batch_config,
           biallelic_db=biallelic_db,
           db_interval=db_interval,
