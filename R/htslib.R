@@ -1,8 +1,8 @@
 
 compress_vcf_htslib=function(
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
-    vcf="",bgzip_index=FALSE,output_dir=".",
-    clean=FALSE,verbose=FALSE,
+    vcf="",output_name="",bgzip_index=FALSE,
+    output_dir=".",clean=FALSE,verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     threads=1,ram=4,mode="local",
     executor_id=make_unique_id("compressVCF"),
@@ -31,11 +31,11 @@ compress_vcf_htslib=function(
         out_index=paste0(out_file,".gzi")
     }
     
-    exec_code=paste0(bin_bgzip, idx," -f -@ ",threads," -c > ",out_file)
+    exec_code=paste(bin_bgzip, idx," -f -@ ",threads," -c",vcf,">",out_file)
 
 
     if(clean){
-        exec_code=paste(exec_code," && rm",paste(f1r2,collapse=" "))
+        exec_code=paste(exec_code," && rm",vcf)
     }
 
     if(mode=="batch"){
@@ -79,6 +79,80 @@ compress_vcf_htslib=function(
 
 
 }
+
+
+uncompress_vcf_htslib=function(
+    bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+    vcf="",output_dir=".",output_name="",
+    clean=FALSE,verbose=FALSE,
+    batch_config=build_default_preprocess_config(),
+    threads=1,ram=4,mode="local",
+    executor_id=make_unique_id("uncompressVCF"),
+    task_name="uncompressVCF",time="48:0:0",
+    update_time=60,wait=FALSE,hold=""
+){
+    argg <- as.list(environment())
+    task_id=make_unique_id(task_name)
+    out_file_dir=set_dir(dir=output_dir)
+    job=build_job(executor_id=executor_id,task_id=task_id)
+
+
+    id=""
+    if(output_name!=""){
+        id=output_name
+    }else{
+        id=get_file_name(vcf)
+    }
+
+    out_file=paste0(out_file_dir,"/",id,".vcf")
+
+    exec_code=paste(bin_bgzip," -f -d -@ ",threads," -c ",vcf," > ",out_file)
+
+
+    if(clean){
+        exec_code=paste(exec_code," && rm",vcf)
+    }
+
+    if(mode=="batch"){
+        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+        threads=threads,output_dir=out_file_dir2)
+        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+    }
+
+    if(verbose){
+        print_verbose(job=job,arg=argg,exec_code=exec_code)
+    }
+
+    error=execute_job(exec_code=exec_code)
+    
+    if(error!=0){
+        stop("htslib failed to run due to unknown error.
+        Check std error for more information.")
+    }
+
+    job_report=build_job_report(
+        job_id=job,
+        executor_id=executor_id,
+        exec_code=exec_code, 
+        task_id=task_id,
+        input_args = argg,
+        out_file_dir=out_file_dir,
+        out_files=list(
+            uncompressed_vcf=out_file)
+    )
+
+
+    if(wait&&mode=="batch"){
+        job_validator(job=job_report$job_id,time=update_time,
+        verbose=verbose,threads=threads)
+    }
+
+    return(job_report)
+
+
+}
+
 
 
 index_vcf_htslib=function(
@@ -150,8 +224,8 @@ index_vcf_htslib=function(
 compress_and_index_vcf_htslib=function(
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
     bin_tabix=build_default_tool_binary_list()$bin_tabix,
-    vcf="",index=TRUE,index_format="tbi",bgzip_index=FALSE,
-    output_dir=".",clean=FALSE,verbose=FALSE,
+    vcf="",compress=TRUE,index=TRUE,index_format="tbi",
+    bgzip_index=FALSE,output_dir=".",clean=FALSE,verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     threads=1,ram=4,mode="local",
     executor_id=make_unique_id("CompressAndIndexVCF"),
