@@ -227,7 +227,6 @@ index_vcf_htslib=function(
 ){
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir)
     job=build_job(executor_id=executor_id,task_id=task_id)
 
     
@@ -265,7 +264,7 @@ index_vcf_htslib=function(
         exec_code=exec_code, 
         task_id=task_id,
         input_args = argg,
-        out_file_dir=out_file_dir,
+        out_file_dir=list(),
         out_files=list(
             vcf_idx=paste0(vcf,".tbi"))
     )
