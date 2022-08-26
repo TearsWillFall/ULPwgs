@@ -238,7 +238,7 @@ index_vcf_htslib=function(
         out_file=paste0(vcf,".tbi")
     }
     
-    exec_code=paste0(bin_bgzip, fmt," -f ",vcf)
+    exec_code=paste0(bin_tabix, fmt," -f ",vcf)
 
     if(mode=="batch"){
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
