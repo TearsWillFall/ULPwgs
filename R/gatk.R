@@ -1388,6 +1388,71 @@ parallel_regions_mutect2_gatk=function(
 
 }
 
+mutect2_filter_gatk=function(
+  sif_gatk=build_default_sif_list()$sif_gatk,
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
+  bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+  bin_tabix=build_default_tool_binary_list()$bin_tabix,
+  vcf="",stats="",contamination_table="",
+  segmentation_table="",orientation_model="",
+  output_name="",
+  ref_genome=build_default_reference_list()$HG19$reference,
+  output_dir=".",verbose=FALSE,clean=TRUE,
+  batch_config=build_default_preprocess_config(),
+  threads=4,ram=4,mode="local",
+  executor_id=make_unique_id("filterMutect2Gatk"),
+  task_name="filterMutect2Gatk",time="48:0:0",
+  update_time=60,wait=FALSE,hold=""
+){
+
+
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
+  out_file_dir=set_dir(dir=output_dir)
+
+
+  job=build_job(executor_id=executor_id,task_id=task_id)
+
+
+   id=""
+  if(output_name!=""){
+    id=output_name
+  }else{
+     id=get_file_name(f1r2[1])
+  }
+
+
+  if (contamination_table!=""){
+     contamination_table=paste0(" --contamination-table ", paste0(contamination_table,collapse=" --contamination-table "))
+  }
+  
+  if(segmentation_table!=""){
+      segmentation_table=paste0(" --tumor-segmentation ",paste0(segmentation_table,collapse=" --tumor-segmentation "))
+    }
+
+  if(orientation_model!=""){
+
+
+  }
+  
+  out_file=paste0(out_file_dir,"/",id,".filtered.vcf")
+
+  exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk,
+  " /gatk/gatk   FilterMutectCalls -R ",ref_genom," -O ",out_file," -V ",vcf," -stats ",stats,contamination_table,
+  segmentation_table,orientation_model
+  )
+
+
+  if(wait&&mode=="batch"){
+    job_validator(job=unlist_lvl(jobs_report[["steps"]],var="job_id"),time=update_time,
+    verbose=verbose,threads=threads)
+  }
+
+  return(jobs_report)
+
+}
+
 
 
 

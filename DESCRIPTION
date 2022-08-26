@@ -34,7 +34,8 @@ Imports:
     htmlwidgets,
     ggnewscale,
     patchwork,
-    DT
+    DT,
+    pacman
 biocViews:
 Remotes:
         git::https://github.com/TearsWillFall/BTools.git,
