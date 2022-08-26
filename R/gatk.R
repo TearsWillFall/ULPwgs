@@ -1297,8 +1297,9 @@ parallel_regions_mutect2_gatk=function(
     
     }else if(mode=="batch"){
           rdata_file=paste0(tmp_dir,"/",job,".regions.RData")
+          output_dir=tmp_dir
           save(region_list,tumour,normal,sif_gatk,ref_genome,patient_id,
-          orientation,mnps,output_dir,verbose,tmp_dir,file = rdata_file)
+          orientation,mnps,verbose,tmp_dir,file = rdata_file)
           exec_code=paste0("Rscript -e \"ULPwgs::mutect2_gatk(rdata=\\\"",
           rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
           out_file_dir2=set_dir(dir=out_file_dir,name="batch")
@@ -1327,7 +1328,7 @@ parallel_regions_mutect2_gatk=function(
               exec_code=exec_code, 
               task_id=task_id,
               input_args=argg,
-              out_file_dir=out_file_dir,
+              out_file_dir=tmp_dir,
               out_files=list(
                   vcf=paste0(tmp_dir,"/vcf/",fname,".",region_list,".unfilt.vcf"),
                   stats=paste0(tmp_dir,"/vcf/",fname,".",region_list,".unfilt.vcf.stats"),
