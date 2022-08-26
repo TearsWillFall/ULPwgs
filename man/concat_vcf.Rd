@@ -8,7 +8,7 @@ concat_vcf(
   bin_bcftools = build_default_tool_binary_list()$bin_bcftools,
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
-  vcf = "",
+  vcfs = "",
   sort = TRUE,
   compress = FALSE,
   clean = TRUE,
@@ -30,8 +30,6 @@ concat_vcf(
 )
 }
 \arguments{
-\item{vcf}{\link{Optional} Path to vcf files to merge.}
-
 \item{compress}{Output compressed file. Default file.}
 
 \item{format}{Output file format. vcf/bcf}
@@ -59,6 +57,8 @@ concat_vcf(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
+
+\item{vcf}{\link{Optional} Path to vcf files to merge.}
 
 \item{pon}{\link{Optional} Path to panel of normal.}
 }

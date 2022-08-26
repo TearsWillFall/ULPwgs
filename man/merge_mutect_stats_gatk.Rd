@@ -9,6 +9,7 @@ merge_mutect_stats_gatk(
   stats = "",
   output_name = "",
   output_dir = ".",
+  clean = FALSE,
   verbose = TRUE,
   batch_config = build_default_preprocess_config(),
   threads = 1,

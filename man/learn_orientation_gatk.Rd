@@ -9,6 +9,7 @@ learn_orientation_gatk(
   f1r2 = "",
   output_name = "",
   output_dir = ".",
+  clean = TRUE,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 4,
