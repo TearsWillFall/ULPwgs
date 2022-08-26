@@ -1669,10 +1669,12 @@ estimate_contamination_gatk=function(
   task_name="estimateContaminationGatk",time="48:0:0",
   update_time=60,wait=FALSE,hold=""){
 
+  id=""
   if(!is.null(rdata)){
     load(rdata)
     if(!is.null(selected)){
       tumour=tumour_list[selected]
+      id=get_file_name(tumour)
     }
   }
 
@@ -1683,11 +1685,11 @@ estimate_contamination_gatk=function(
   out_file_dir_seg=set_dir(dir=out_file_dir,name="segmentation")
   job=build_job(executor_id=executor_id,task_id=task_id)
 
-  id=""
-  if(output_name!=""){
+
+  if(output_name!=""&id==""){
     id=output_name
   }else{
-     id=get_file_name(tumour_pileup)
+    id=get_file_name(tumour_pileup)
   }
 
   out_file=paste0(out_file_dir_tab,"/",id,".contamination.table")
@@ -1712,7 +1714,7 @@ estimate_contamination_gatk=function(
       jobs_report[["steps"]][["nPileupGatk"]]<-pileup_summary_gatk(
         sif_gatk=sif_gatk,
         bam=normal,output_name=get_file_name(normal),
-        output_dir=paste0(tmp_dir,"/pileup_reports/normal"),
+        output_dir=paste0(out_file_dir,"/pileup_reports/normal"),
         verbose=verbose,batch_config=batch_config,
         biallelic_db=biallelic_db,
         db_interval=db_interval,
@@ -1727,7 +1729,7 @@ estimate_contamination_gatk=function(
         jobs_report[["steps"]][["tPileupGatk"]]<-pileup_summary_gatk(
           sif_gatk=sif_gatk,
           bam=tumour,output_name=get_file_name(tumour),
-          output_dir=paste0(tmp_dir,"/pileup_reports/tumour"),
+          output_dir=paste0(out_file_dir,"/pileup_reports/tumour"),
           verbose=verbose,batch_config=batch_config,
           biallelic_db=biallelic_db,
           db_interval=db_interval,
@@ -1845,7 +1847,7 @@ parallel_estimate_contamination_gatk=function(
         jobs_report[["steps"]][["nPileupGatk"]]<-pileup_summary_gatk(
           sif_gatk=sif_gatk,
           bam=normal,output_name=get_file_name(normal),
-          output_dir=paste0(tmp_dir,"/pileup_reports/normal"),
+          output_dir=paste0(out_file_dir,"/contamination/pileup_reports/normal"),
           verbose=verbose,batch_config=batch_config,
           biallelic_db=biallelic_db,
           db_interval=db_interval,
