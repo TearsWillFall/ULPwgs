@@ -1233,8 +1233,8 @@ parallel_regions_mutect2_gatk=function(
   contamination=TRUE,clean=TRUE,
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
-  executor_id=make_unique_id("parSampleMutect2"),
-  task_name="parSampleMutect2",time="48:0:0",
+  executor_id=make_unique_id("parRegionMutect2"),
+  task_name="parRegionMutect2",time="48:0:0",
   update_time=60,wait=FALSE,hold=""
 ){
 
@@ -1299,7 +1299,7 @@ parallel_regions_mutect2_gatk=function(
           rdata_file=paste0(tmp_dir,"/",job,".regions.RData")
           output_dir=tmp_dir
           save(region_list,tumour,normal,sif_gatk,ref_genome,patient_id,
-          orientation,mnps,verbose,tmp_dir,file = rdata_file)
+          orientation,mnps,output_dir,verbose,tmp_dir,file = rdata_file)
           exec_code=paste0("Rscript -e \"ULPwgs::mutect2_gatk(rdata=\\\"",
           rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
           out_file_dir2=set_dir(dir=out_file_dir,name="batch")
@@ -1406,16 +1406,13 @@ mutect2_filter_gatk=function(
   update_time=60,wait=FALSE,hold=""
 ){
 
-
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
-
-
   job=build_job(executor_id=executor_id,task_id=task_id)
 
 
-   id=""
+  id=""
   if(output_name!=""){
     id=output_name
   }else{
@@ -1432,15 +1429,14 @@ mutect2_filter_gatk=function(
     }
 
   if(orientation_model!=""){
-
-
+      orientation_model=paste0(" --ob-priors ",orientation_model)
   }
   
   out_file=paste0(out_file_dir,"/",id,".filtered.vcf")
 
   exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk,
-  " /gatk/gatk   FilterMutectCalls -R ",ref_genom," -O ",out_file," -V ",vcf," -stats ",stats,contamination_table,
-  segmentation_table,orientation_model
+  " /gatk/gatk   FilterMutectCalls -R ",ref_genom," -O ",out_file," -V ",vcf,
+  " -stats ",stats,contamination_table,segmentation_table,orientation_model
   )
 
 
