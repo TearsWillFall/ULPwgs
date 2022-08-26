@@ -357,7 +357,7 @@ compress_and_index_vcf_htslib=function(
             bin_tabix=bin_tabix,
             vcf=job_report[["step"]][["compressVCF"]]$out_files$compressed_vcf,
             index_format=index_format,verbose=verbose,
-            batch_config=build_config,
+            batch_config=batch_config,
             threads=threads,ram=ram,
             mode=mode,
             executor_id=task_id,

@@ -196,10 +196,10 @@ sort_vcf=function(
 
 if(format=="vcf"){
     out_type=" v "
-    out_file=paste0(out_file_dir,"/",id,".sorted.vcf.gz")
+    out_file=paste0(out_file_dir,"/",id,".sorted.vcf")
 }else if(format=="bcf"){
     out_type=" t "
-    out_file=paste0(out_file_dir,"/",id,".sorted.bcf.gz")
+    out_file=paste0(out_file_dir,"/",id,".sorted.bcf")
 }else{
     stop("Not supported format supplied")
 }
