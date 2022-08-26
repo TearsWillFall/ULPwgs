@@ -159,53 +159,58 @@ compress_and_index_vcf_htslib=function(
     update_time=60,wait=FALSE,hold=""
 
 ){
- argg <- as.list(environment())
-
-  task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir)
-  job=build_job(executor_id=executor_id,task=task_id)
-  
-  job_report=build_job_report(
-    job_id=job,
-    executor_id=executor_id, 
-    exec_code=list(), 
-    task_id=task_id,
-    input_args=argg,
-    out_file_dir=out_file_dir,
-      out_files=list()
-  )
-
-
-  
-
-job_report[["step"]][["compressVCF"]]<-compress_vcf_htslib(
-    bin_bgzip=bin_bgzip,
-    vcf=vcf,bgzip_index=bgzip_index,output_dir=out_file_dir,
-    clean=clean,verbose=verbose,
-    batch_config=batch_config,
-    threads=threads,ram=ram,mode=mode,
-    executor_id=task_id,
-    time=time,
-    hold=hold
-)
-
-job_report[["step"]][["indexVCF"]]<-index_vcf_htslib(
-    bin_tabix=bin_tabix,
-    vcf=job_report[["step"]][["compressVCF"]]$out_files$compressed_vcf,
-    index_format=index_format,verbose=verbose,
-    batch_config=build_config,
-    threads=threads,ram=ram,
-    mode=mode,
-    executor_id=task_id,
-    time=time,
-    hold=hold
-)
+    argg <- as.list(environment())
+    task_id=make_unique_id(task_name)
+    out_file_dir=set_dir(dir=output_dir)
+    job=build_job(executor_id=executor_id,task=task_id)
+    
+    job_report=build_job_report(
+        job_id=job,
+        executor_id=executor_id, 
+        exec_code=list(), 
+        task_id=task_id,
+        input_args=argg,
+        out_file_dir=out_file_dir,
+        out_files=list()
+    )
 
 
+    if(compress){
+        job_report[["step"]][["compressVCF"]]<-compress_vcf_htslib(
+            bin_bgzip=bin_bgzip,
+            vcf=vcf,bgzip_index=bgzip_index,output_dir=out_file_dir,
+            clean=clean,verbose=verbose,
+            batch_config=batch_config,
+            threads=threads,ram=ram,mode=mode,
+            executor_id=task_id,
+            time=time,
+            hold=hold
+        )
+        vcf=job_report[["step"]][["compressVCF"]]$out_files$compressed_vcf
+    }
+
+    if(index){
+        job_report[["step"]][["indexVCF"]]<-index_vcf_htslib(
+            bin_tabix=bin_tabix,
+            vcf=job_report[["step"]][["compressVCF"]]$out_files$compressed_vcf,
+            index_format=index_format,verbose=verbose,
+            batch_config=build_config,
+            threads=threads,ram=ram,
+            mode=mode,
+            executor_id=task_id,
+            time=time,
+            hold=hold
+        )
+    }
 
 
 
+    if(wait&&mode=="batch"){
+        job_validator(job=job_report$job_id,time=update_time,
+        verbose=verbose,threads=threads)
+    }
 
+    return(job_report)
 
 }
 

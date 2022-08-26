@@ -60,7 +60,8 @@ sort_and_index_bam_samtools=function(
         update_time=update_time,wait=FALSE,hold=hold)
 
       out_file_dir=set_dir(dir=output_dir,name="sorted")
-      bam=paste0(out_file_dir,"/",get_file_name(bam),".sorted.",get_file_ext(bam))
+      bam=job_report[["steps"]][["sort"]]$out_files$bam
+      
       if (coord_sort){
         if(index){
             job_report[["steps"]][["index"]] <-index_bam_samtools(
