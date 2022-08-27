@@ -2001,7 +2001,8 @@ parallel_estimate_contamination_gatk=function(
         job_report <-  estimate_contamination_gatk(
             sif_gatk= sif_gatk,
             tumour = tumour,
-            normal_pileup=normal_pileup,
+            normal="",
+            normal_pileup= normal_pileup,
             output_name=get_file_name(tumour),
             output_dir=out_file_dir,
             tmp_dir=tmp_dir,
