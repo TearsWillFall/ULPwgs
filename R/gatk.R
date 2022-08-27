@@ -1253,7 +1253,7 @@ parallel_regions_mutect2_gatk=function(
   db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
   regions="",pon="",output_dir=".",
   verbose=FALSE,orientation=FALSE,mnps=FALSE,
-  contamination=TRUE,clean=TRUE,
+  contamination=TRUE,clean=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("parRegionMutect2"),
@@ -1384,6 +1384,10 @@ parallel_regions_mutect2_gatk=function(
       hold=hold
   )
 
+  vcf=unlist_lvl(jobs_report[["steps"]][["gatherFilesGatk"]],var="concat_vcf")
+  stats=unlist_lvl(jobs_report[["steps"]][["gatherFilesGatk"]],var="merged_stats")
+  orientation_model=unlist_lvl(jobs_report[["steps"]][["gatherFilesGatk"]],var="orientation_model")
+
   if(contamination){
           jobs_report[["steps"]][["estimateContaminationGatk"]]<- parallel_estimate_contamination_gatk(
                 sif_gatk=sif_gatk,
@@ -1397,8 +1401,36 @@ parallel_regions_mutect2_gatk=function(
                 time=time,
                 hold=hold
           )
+
+        contamination_table=unlist_lvl(jobs_report[["steps"]][["estimateContaminationGatk"]],var="contamination_table")
+        segmentation_table=unlist_lvl(jobs_report[["steps"]][["estimateContaminationGatk"]],var="segmentation_table")
+  
+  }else{
+    contamination_table=""
+    segmentation_table=""
   }
 
+  if(filter){
+
+   jobs_report[["steps"]][["filterMutectGatk"]]<- mutect_filter_gatk(
+          sif_gatk=sif_gatk,
+          bin_bcftools=bin_bcftools,
+          bin_bgzip=bin_bgzip,
+          bin_tabix=bin_tabix,
+          vcf=vcf,stats=stats,contamination_table=contamination_table,
+          segmentation_table=segmentation_table,
+          orientation_model=orientation_model,output_name=output_name,
+          ref_genome=ref_genome,
+          output_dir=out_file_dir,
+          verbose=verbose,clean=clean,
+          batch_config=batch_config,
+          threads=threads,ram=ram,mode=mode,
+          executor_id=task_id,
+          time=time,
+          hold=unlist_lvl(jobs_report[["steps"]],var="job_id")
+      )
+
+  }
 
   if(wait&&mode=="batch"){
     job_validator(job=unlist_lvl(jobs_report[["steps"]],var="job_id"),time=update_time,
@@ -1709,7 +1741,7 @@ learn_orientation_gatk=function(
     input_args = argg,
     out_file_dir=out_file_dir,
     out_files=list(
-      model=out_file)
+      orientation_model=out_file)
   )
 
 
