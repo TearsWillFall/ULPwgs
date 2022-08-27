@@ -1436,7 +1436,7 @@ parallel_regions_mutect2_gatk=function(
             output_dir=out_file_dir,
             verbose=verbose,clean=clean,
             batch_config=batch_config,
-            threads=threads,ram=ram,mode=mode,
+            threads=1,ram=ram,mode=mode,
             executor_id=task_id,
             time=time,
             hold=unlist_lvl(jobs_report[["steps"]],var="job_id")
