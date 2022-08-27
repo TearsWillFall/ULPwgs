@@ -1805,12 +1805,10 @@ estimate_contamination_gatk=function(
   task_name="estimateContaminationGatk",time="48:0:0",
   update_time=60,wait=FALSE,hold=""){
 
-  id=""
   if(!is.null(rdata)){
     load(rdata)
     if(!is.null(selected)){
       tumour=tumour_list[selected]
-      id=get_file_name(tumour)
     }
   }
 
@@ -1822,9 +1820,11 @@ estimate_contamination_gatk=function(
   job=build_job(executor_id=executor_id,task_id=task_id)
 
 
-  if(output_name!=""&id==""){
+  if(output_name!=""){
     id=output_name
-  }else if(output_name==""&id==""){
+  }else if(tumour!=""){
+    id=get_file_name(tumour)
+  }else if(tumour_pileup!=""){
     id=get_file_name(tumour_pileup)
   }
 
@@ -1999,7 +1999,7 @@ parallel_estimate_contamination_gatk=function(
       jobs_report[["steps"]][["parEstimateContaminationGatk"]]<-
       parallel::mclapply(tumour_list,FUN=function(tumour){
         job_report <-  estimate_contamination_gatk(
-            sif_gatk=sif_gatk,
+            sif_gatk= sif_gatk,
             tumour = tumour,
             normal=normal_pileup,
             output_name=get_file_name(tumour),
