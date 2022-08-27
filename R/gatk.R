@@ -1822,7 +1822,7 @@ estimate_contamination_gatk=function(
 
   if(output_name!=""&id==""){
     id=output_name
-  }else{
+  }else if(output_name==""&id==""){
     id=get_file_name(tumour_pileup)
   }
 
