@@ -339,7 +339,7 @@ compress_and_index_vcf_htslib=function(
         out_files=list()
     )
 
-       if(!index&!compress){
+    if(!index&!compress){
         stop("No action has been performed as neither compress and/or index arguments are set to TRUE.")
     }
 

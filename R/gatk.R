@@ -1025,23 +1025,26 @@ analyze_covariates_gatk=function(
 
 
 
-
-#' Variant calling using MuTECT2
+#' Variant Calling using Mutect2
 #'
-#' This function calls somatic variants in a pair of tumor-normal matched samples, or
-#' just in a tumor sample if no matched sample is not available.
+#' This function functions calls Mutect2 for variant calling.
+#' If a vector of tumour samples are provided these will be processed in multi-sample mode.
+#' To run in tumour-normal mode suppply a single tumour and normal sample.
+#' If no normal is supplied this will run in tumour only.
+#' TO DO// Implement mitochondrial mode feature
+#' 
+#' For more information read:
+#' https://gatk.broadinstitute.org/hc/en-us/articles/360037593851-Mutect2
 #'
-#' @param tumour Path to tumor bam file.
-#' @param normal Path to germline bam file.
-#' @param sif_gatk Path to gatk sif file.
-#' @param ref_genome Path to reference genome fasta file.
-#' @param region Region to analyze. Optional
-#' @param germ_resource Path to germline resources vcf file.
-#' @param output_name [OPTIONAL] Name for the output. If not given the name of one of the samples will be used.
-#' @param pon [Optional] Path to panel of normal.
-#' @param output_dir Path to the output directory.
-#' @param mnps Report MNPs in vcf file.
-#' @param verbose Enables progress messages. Default False.
+#' @param sif_gatk [REQUIRED] Path to gatk sif file.
+#' @param tumour [REQUIRED] Path to tumour BAM file.
+#' @param normal [OPTIONAL] Path to normal BAM file.
+#' @param ref_genome [REQUIRED] Path to reference genome fasta file.
+#' @param germ_resource [REQUIRED]Path to germline resources vcf file.
+#' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
+#' @param pon [OPTIONAL] Path to panel of normal.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param mnps [OPTIONAL] Report MNPs in vcf file.
 #' @param threads [OPTIONAL] Number of threads to split the work. Default 4
 #' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
@@ -1055,10 +1058,11 @@ analyze_covariates_gatk=function(
 #' @export
 
 
+
 mutect2_gatk=function(region="",
   rdata=NULL,selected=NULL,
   sif_gatk=build_default_sif_list()$sif_gatk,
-  tumour="",normal="",patient_id="",
+  tumour="",normal="",output_name="",
   ref_genome=build_default_reference_list()$HG19$reference,
   germ_resource=build_default_reference_list()$HG19$variant$germ_reference,
   pon="",output_dir=".",tmp_dir=".",
@@ -1088,8 +1092,8 @@ mutect2_gatk=function(region="",
   }
   
 
-  if(patient_id!=""&length(tumour)>1){
-    fname=patient_id
+  if(output_name!=""&length(tumour)>1){
+    fname=output_name
   }else{  
     fname=get_file_name(tumour[1])
   }
@@ -1189,18 +1193,28 @@ mutect2_gatk=function(region="",
 
 #' Multiregion parallelization across Mutect2 Gatk Variant Calling
 #'
-#' This function functions calls Mutect2 across multiple regions in parallel
+#' This function functions calls Mutect2 across multiple regions in parallel.
+#' If a vector of tumour samples are provided these will be processed in multi-sample mode.
+#' To run in tumour-normal mode suppply a single tumour and normal sample.
+#' If no normal is supplied this will run in tumour only.
+#' TO DO// Implement mitochondrial mode feature
+#' 
+#' For more information read:
+#' https://gatk.broadinstitute.org/hc/en-us/articles/360037593851-Mutect2
 #'
-#' @param tumour Path to tumour bam file.
-#' @param normal Path to normal bam file.
-#' @param sif_gatk Path to gatk sif file.
-#' @param ref_genome Path to reference genome fasta file.
-#' @param regions Regions to analyze. Optional
-#' @param germ_resource Path to germline resources vcf file.
+#' @param sif_gatk [REQUIRED] Path to gatk sif file.
+#' @param bin_bcftools [REQUIRED] Path to bcftools binary file.
+#' @param bin_bgzip [REQUIRED] Path to bgzip binary file.
+#' @param bin_tabix [REQUIRED] Path to tabix binary file.
+#' @param tumour [REQUIRED] Path to tumour BAM file.
+#' @param normal [OPTIONAL] Path to normal BAM file.
+#' @param ref_genome [REQUIRED] Path to reference genome fasta file.
+#' @param germ_resource [REQUIRED]Path to germline resources vcf file.
+#' @param regions [OPTIONAL] Regions to analyze. If regions for parallelization are not provided then these will be infered from BAM file.
 #' @param output_name [OPTIONAL] Name for the output. If not given the name of one of the samples will be used.
-#' @param pon [Optional] Path to panel of normal.
-#' @param output_dir Path to the output directory.
-#' @param mnps Report MNPs in vcf file.
+#' @param pon [OPTIONAL] Path to panel of normal.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param mnps [OPTIONAL] Report MNPs in vcf file.
 #' @param threads [OPTIONAL] Number of threads to split the work. Default 4
 #' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
@@ -1219,11 +1233,10 @@ mutect2_gatk=function(region="",
 
 parallel_regions_mutect2_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
-  bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  tumour="",normal="",patient_id="",
+  tumour="",normal="",output_name="",
   ref_genome=build_default_reference_list()$HG19$reference,
   germ_resources=build_default_reference_list()$HG19$variant$germ_reference,
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
@@ -1286,7 +1299,7 @@ parallel_regions_mutect2_gatk=function(
             region=region,
             tumour=tumour,
             normal=normal,
-            patient_id=patient_id,
+            output_name=output_name,
             ref_genome=ref_genome,
             output_dir=tmp_dir,tmp_dir=tmp_dir,
             verbose=verbose,orientation=orientation,mnps=mnps,
@@ -1296,7 +1309,7 @@ parallel_regions_mutect2_gatk=function(
     }else if(mode=="batch"){
           rdata_file=paste0(tmp_dir,"/",job,".regions.RData")
           output_dir=tmp_dir
-          save(region_list,tumour,normal,sif_gatk,ref_genome,patient_id,
+          save(region_list,tumour,normal,sif_gatk,ref_genome,output_name,
           orientation,mnps,output_dir,verbose,tmp_dir,file = rdata_file)
           exec_code=paste0("Rscript -e \"ULPwgs::mutect2_gatk(rdata=\\\"",
           rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
@@ -1314,8 +1327,8 @@ parallel_regions_mutect2_gatk=function(
               stop("gatk failed to run due to unknown error.
               Check std error for more information.")
           }
-           if(patient_id!=""&length(tumour)>1){
-              fname=patient_id
+           if(output_name!=""&length(tumour)>1){
+              fname=output_name
            }else{  
               fname=get_file_name(tumour[1])
            }
@@ -1351,7 +1364,7 @@ parallel_regions_mutect2_gatk=function(
       vcfs=vcfs,stats=stats,
       f1r2=f1r2,
       clean=clean,
-      output_name=patient_id,
+      output_name=output_name,
       output_dir=out_file_dir,tmp_dir=tmp_dir,
       verbose=verbose,orientation=orientation,
       batch_config=batch_config,
@@ -1386,17 +1399,50 @@ parallel_regions_mutect2_gatk=function(
 
 }
 
-mutect2_filter_gatk=function(
+
+#' Filter Mutect2 Calls wrapper for R
+#'
+#' This function filters Mutect2 callsets under multiple conditions
+#'
+#' For more information: 
+#' 
+#' https://gatk.broadinstitute.org/hc/en-us/articles/360036856831-FilterMutectCalls
+#' 
+#' 
+#' @param sif_gatk [REQUIRED] Path to gatk sif file.
+#' @param bin_bcftools [REQUIRED] Path to bcftools binary file.
+#' @param bin_bgzip [REQUIRED] Path to bgzip binary file.
+#' @param bin_tabix [REQUIRED] Path to tabix binary file.
+#' @param vcf [REQUIRED] Path to VCF file.
+#' @param stats [OPTIONAL] Path to stats information generated by Mutect2 for supplied VCF.
+#' @param contamination_table [OPTIONAL] Path to contamination tables for each tumour samples in VCF.
+#' @param segmentation_table [OPTIONAL] Path to segmentation tables for each tumour samples in VCF.
+#' @param orientation_model [OPTIONAL] Path to orientation model generated F1R2 read information.
+#' @param clean [OPTIONAL] Remove unfiltered VCF after completion. Default FALSE.
+#' @param output_name [OPTIONAL] Name for the output. If not given the name of one of the samples will be used.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [OPTIONAL]  Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id [OPTIONAL] Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name [OPTIONAL] Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+mutect_filter_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
-  bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
   vcf="",stats="",contamination_table="",
-  segmentation_table="",orientation_model="",
-  output_name="",
+  segmentation_table="",orientation_model="",output_name="",
   ref_genome=build_default_reference_list()$HG19$reference,
-  output_dir=".",verbose=FALSE,clean=TRUE,
+  output_dir=".",verbose=FALSE,clean=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("filterMutect2Gatk"),
@@ -1414,9 +1460,12 @@ mutect2_filter_gatk=function(
   if(output_name!=""){
     id=output_name
   }else{
-     id=get_file_name(f1r2[1])
+     id=get_file_name(vcf)
   }
 
+  if(stats!=""){
+      stats=paste0(" -stats ",stats)
+  }
 
   if (contamination_table!=""){
      contamination_table=paste0(" --contamination-table ", paste0(contamination_table,collapse=" --contamination-table "))
@@ -1432,18 +1481,56 @@ mutect2_filter_gatk=function(
   
   out_file=paste0(out_file_dir,"/",id,".filtered.vcf")
 
+
   exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk,
-  " /gatk/gatk   FilterMutectCalls -R ",ref_genom," -O ",out_file," -V ",vcf,
-  " -stats ",stats,contamination_table,segmentation_table,orientation_model
+  " /gatk/gatk   FilterMutectCalls -R ",ref_genome," -O ",out_file," -V ",vcf, stats,
+  contamination_table,segmentation_table,orientation_model
+  )
+
+  if(clean){
+    exec_code=paste(exec_code," && rm",vcf)
+  }
+
+
+ if(mode=="batch"){
+       out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+       batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+       threads=threads,output_dir=out_file_dir2)
+       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+  }
+
+  if(verbose){
+       print_verbose(job=job,arg=argg,exec_code=exec_code)
+  }
+
+  error=execute_job(exec_code=exec_code)
+  
+  
+  if(error!=0){
+    stop("gatk failed to run due to unknown error.
+    Check std error for more information.")
+  }
+
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    exec_code=exec_code, 
+    task_id=task_id,
+    input_args = argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+      filtered_vcf=out_file)
   )
 
 
+
+
   if(wait&&mode=="batch"){
-    job_validator(job=unlist_lvl(jobs_report[["steps"]],var="job_id"),time=update_time,
+    job_validator(job=job_report$job_id,time=update_time,
     verbose=verbose,threads=threads)
   }
 
-  return(jobs_report)
+  return(job_report)
 
 }
 
