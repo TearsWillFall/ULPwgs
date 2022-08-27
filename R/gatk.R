@@ -1055,6 +1055,8 @@ analyze_covariates_gatk=function(
 #' @param pon [OPTIONAL] Path to panel of normal.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param mnps [OPTIONAL] Report MNPs in vcf file.
+#' @param contamination [OPTIONAL] Produce sample cross-contamination reports. Default TRUE.
+#' @param orientation [OPTIONAL] Produce read orientation inforamtion. Default FALSE
 #' @param threads [OPTIONAL] Number of threads to split the work. Default 4
 #' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
@@ -1225,6 +1227,9 @@ mutect2_gatk=function(region="",
 #' @param pon [OPTIONAL] Path to panel of normal.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param mnps [OPTIONAL] Report MNPs in vcf file.
+#' @param contamination [OPTIONAL] Produce sample cross-contamination reports. Default TRUE.
+#' @param orientation [OPTIONAL] Produce read orientation inforamtion. Default FALSE
+#' @param filter [OPTIONAL] Filter Mutect2. Default TRUE.
 #' @param threads [OPTIONAL] Number of threads to split the work. Default 4
 #' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
@@ -1252,7 +1257,8 @@ parallel_regions_mutect2_gatk=function(
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
   db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
   regions="",pon="",output_dir=".",
-  verbose=FALSE,orientation=FALSE,mnps=FALSE,
+  verbose=FALSE,filter=TRUE,
+  orientation=TRUE,mnps=FALSE,
   contamination=TRUE,clean=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
@@ -1386,7 +1392,12 @@ parallel_regions_mutect2_gatk=function(
 
   vcf=unlist_lvl(jobs_report[["steps"]][["gatherFilesGatk"]],var="concat_vcf")
   stats=unlist_lvl(jobs_report[["steps"]][["gatherFilesGatk"]],var="merged_stats")
-  orientation_model=unlist_lvl(jobs_report[["steps"]][["gatherFilesGatk"]],var="orientation_model")
+  if(orientation){
+    orientation_model=unlist_lvl(jobs_report[["steps"]][["gatherFilesGatk"]],var="orientation_model")
+  }else{
+    orientation_model=""
+  }
+ 
 
   if(contamination){
           jobs_report[["steps"]][["estimateContaminationGatk"]]<- parallel_estimate_contamination_gatk(
@@ -1411,25 +1422,23 @@ parallel_regions_mutect2_gatk=function(
   }
 
   if(filter){
-
-   jobs_report[["steps"]][["filterMutectGatk"]]<- mutect_filter_gatk(
-          sif_gatk=sif_gatk,
-          bin_bcftools=bin_bcftools,
-          bin_bgzip=bin_bgzip,
-          bin_tabix=bin_tabix,
-          vcf=vcf,stats=stats,contamination_table=contamination_table,
-          segmentation_table=segmentation_table,
-          orientation_model=orientation_model,output_name=output_name,
-          ref_genome=ref_genome,
-          output_dir=out_file_dir,
-          verbose=verbose,clean=clean,
-          batch_config=batch_config,
-          threads=threads,ram=ram,mode=mode,
-          executor_id=task_id,
-          time=time,
-          hold=unlist_lvl(jobs_report[["steps"]],var="job_id")
-      )
-
+    jobs_report[["steps"]][["filterMutectGatk"]]<- mutect_filter_gatk(
+            sif_gatk=sif_gatk,
+            bin_bcftools=bin_bcftools,
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            vcf=vcf,stats=stats,contamination_table=contamination_table,
+            segmentation_table=segmentation_table,
+            orientation_model=orientation_model,output_name=output_name,
+            ref_genome=ref_genome,
+            output_dir=out_file_dir,
+            verbose=verbose,clean=clean,
+            batch_config=batch_config,
+            threads=threads,ram=ram,mode=mode,
+            executor_id=task_id,
+            time=time,
+            hold=unlist_lvl(jobs_report[["steps"]],var="job_id")
+        )
   }
 
   if(wait&&mode=="batch"){
