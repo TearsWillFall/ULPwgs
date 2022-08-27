@@ -236,6 +236,8 @@ index_vcf_htslib=function(
     }else if(index_format=="tbi"){
         fmt=""
         out_file=paste0(vcf,".tbi")
+    }else{
+        stop("Non valid index format provided. Valid formats are tbi/csi.")
     }
     
     exec_code=paste0(bin_tabix, fmt," -f ",vcf)
@@ -266,7 +268,7 @@ index_vcf_htslib=function(
         input_args = argg,
         out_file_dir=list(),
         out_files=list(
-            vcf_idx=paste0(vcf,".tbi"))
+            vcf_idx=out_file)
     )
 
 
@@ -337,6 +339,10 @@ compress_and_index_vcf_htslib=function(
         out_files=list()
     )
 
+       if(!index&!compress){
+        stop("No action has been performed as neither compress and/or index arguments are set to TRUE.")
+    }
+
     if(compress){
         job_report[["step"]][["compressVCF"]]<-compress_vcf_htslib(
             bin_bgzip=bin_bgzip,
@@ -364,6 +370,8 @@ compress_and_index_vcf_htslib=function(
             hold=hold
         )
     }
+
+ 
 
     if(wait&&mode=="batch"){
         job_validator(job=job_report$job_id,time=update_time,
