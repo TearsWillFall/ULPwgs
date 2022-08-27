@@ -2,7 +2,7 @@
 % Please edit documentation in R/gatk.R
 \name{mutect2_gatk}
 \alias{mutect2_gatk}
-\title{Variant calling using MuTECT2}
+\title{Variant Calling using Mutect2}
 \usage{
 mutect2_gatk(
   region = "",
@@ -11,7 +11,7 @@ mutect2_gatk(
   sif_gatk = build_default_sif_list()$sif_gatk,
   tumour = "",
   normal = "",
-  patient_id = "",
+  output_name = "",
   ref_genome = build_default_reference_list()$HG19$reference,
   germ_resource = build_default_reference_list()$HG19$variant$germ_reference,
   pon = "",
@@ -33,25 +33,25 @@ mutect2_gatk(
 )
 }
 \arguments{
-\item{region}{Region to analyze. Optional}
+\item{sif_gatk}{\link{REQUIRED} Path to gatk sif file.}
 
-\item{sif_gatk}{Path to gatk sif file.}
+\item{tumour}{\link{REQUIRED} Path to tumour BAM file.}
 
-\item{tumour}{Path to tumor bam file.}
+\item{normal}{\link{OPTIONAL} Path to normal BAM file.}
 
-\item{normal}{Path to germline bam file.}
+\item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
 
-\item{ref_genome}{Path to reference genome fasta file.}
+\item{ref_genome}{\link{REQUIRED} Path to reference genome fasta file.}
 
-\item{germ_resource}{Path to germline resources vcf file.}
+\item{germ_resource}{\link{REQUIRED}Path to germline resources vcf file.}
 
-\item{pon}{\link{Optional} Path to panel of normal.}
+\item{pon}{\link{OPTIONAL} Path to panel of normal.}
 
-\item{output_dir}{Path to the output directory.}
+\item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
-\item{mnps}{Report MNPs in vcf file.}
+\item{mnps}{\link{OPTIONAL} Report MNPs in vcf file.}
 
 \item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
 
@@ -70,10 +70,15 @@ mutect2_gatk(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
-
-\item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of one of the samples will be used.}
 }
 \description{
-This function calls somatic variants in a pair of tumor-normal matched samples, or
-just in a tumor sample if no matched sample is not available.
+This function functions calls Mutect2 for variant calling.
+If a vector of tumour samples are provided these will be processed in multi-sample mode.
+To run in tumour-normal mode suppply a single tumour and normal sample.
+If no normal is supplied this will run in tumour only.
+TO DO// Implement mitochondrial mode feature
+}
+\details{
+For more information read:
+https://gatk.broadinstitute.org/hc/en-us/articles/360037593851-Mutect2
 }

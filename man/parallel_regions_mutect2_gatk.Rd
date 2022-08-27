@@ -6,13 +6,12 @@
 \usage{
 parallel_regions_mutect2_gatk(
   sif_gatk = build_default_sif_list()$sif_gatk,
-  bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bin_bcftools = build_default_tool_binary_list()$bin_bcftools,
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
   tumour = "",
   normal = "",
-  patient_id = "",
+  output_name = "",
   ref_genome = build_default_reference_list()$HG19$reference,
   germ_resources = build_default_reference_list()$HG19$variant$germ_reference,
   biallelic_db = build_default_reference_list()$HG19$variant$biallelic_reference,
@@ -38,23 +37,31 @@ parallel_regions_mutect2_gatk(
 )
 }
 \arguments{
-\item{sif_gatk}{Path to gatk sif file.}
+\item{sif_gatk}{\link{REQUIRED} Path to gatk sif file.}
 
-\item{tumour}{Path to tumour bam file.}
+\item{bin_bcftools}{\link{REQUIRED} Path to bcftools binary file.}
 
-\item{normal}{Path to normal bam file.}
+\item{bin_bgzip}{\link{REQUIRED} Path to bgzip binary file.}
 
-\item{ref_genome}{Path to reference genome fasta file.}
+\item{bin_tabix}{\link{REQUIRED} Path to tabix binary file.}
 
-\item{regions}{Regions to analyze. Optional}
+\item{tumour}{\link{REQUIRED} Path to tumour BAM file.}
 
-\item{pon}{\link{Optional} Path to panel of normal.}
+\item{normal}{\link{OPTIONAL} Path to normal BAM file.}
 
-\item{output_dir}{Path to the output directory.}
+\item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of one of the samples will be used.}
+
+\item{ref_genome}{\link{REQUIRED} Path to reference genome fasta file.}
+
+\item{regions}{\link{OPTIONAL} Regions to analyze. If regions for parallelization are not provided then these will be infered from BAM file.}
+
+\item{pon}{\link{OPTIONAL} Path to panel of normal.}
+
+\item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
-\item{mnps}{Report MNPs in vcf file.}
+\item{mnps}{\link{OPTIONAL} Report MNPs in vcf file.}
 
 \item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
 
@@ -74,10 +81,16 @@ parallel_regions_mutect2_gatk(
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
 
-\item{germ_resource}{Path to germline resources vcf file.}
-
-\item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of one of the samples will be used.}
+\item{germ_resource}{\link{REQUIRED}Path to germline resources vcf file.}
 }
 \description{
-This function functions calls Mutect2 across multiple regions in parallel
+This function functions calls Mutect2 across multiple regions in parallel.
+If a vector of tumour samples are provided these will be processed in multi-sample mode.
+To run in tumour-normal mode suppply a single tumour and normal sample.
+If no normal is supplied this will run in tumour only.
+TO DO// Implement mitochondrial mode feature
+}
+\details{
+For more information read:
+https://gatk.broadinstitute.org/hc/en-us/articles/360037593851-Mutect2
 }

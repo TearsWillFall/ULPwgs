@@ -430,7 +430,8 @@ parallel_generate_BQSR_gatk=function(
   }else if(mode=="batch"){
         rdata_file=paste0(tmp_dir,"/",job,".regions.RData")
         save(region_list,sif_gatk,bam,ref_genome,dbsnp,output_dir,verbose,tmp_dir,file = rdata_file)
-        exec_code=paste0("Rscript -e \"ULPwgs::generate_BQSR_gatk(rdata=\\\"",rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
+        exec_code=paste0("Rscript -e \"ULPwgs::generate_BQSR_gatk(rdata=\\\"",
+        rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         batch_code=build_job_exec(job=job,time=time,ram=ram,
         threads=2,output_dir=out_file_dir2,
@@ -523,7 +524,8 @@ gather_BQSR_reports_gatk=function(
     tmp_dir=paste0(" --tmp-dir ",tmp_dir)
   }
   out_file=paste0(out_file_dir,output_name,".recal.table")
-  exec_code=paste0("singularity exec -H ",getwd(),":/home " ,sif_gatk," /gatk/gatk GatherBQSRReports ",paste(" -I ",report,collapse=" "),
+  exec_code=paste0("singularity exec -H ",getwd(),":/home " ,sif_gatk,
+  " /gatk/gatk GatherBQSRReports ",paste(" -I ",report,collapse=" "),
     " -O ",out_file,tmp_dir)
 
 
@@ -629,7 +631,8 @@ apply_BQSR_gatk=function(
       reg=paste0(" -L ",strsplit(region,"__")[[1]][2], " ")
       out_file=paste0(out_file_dir,"/", get_file_name(bam),".",region,".recal.",get_file_ext(bam))
   }
-  exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk," /gatk/gatk ApplyBQSR -I ",bam, " -R ", ref_genome,
+  exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
+  " /gatk/gatk ApplyBQSR -I ",bam, " -R ", ref_genome,
    " --bqsr-recal-file ",rec_table, " -O ",out_file,reg)
    
   job=build_job(executor_id=executor_id,task_id=task_id)
@@ -767,7 +770,8 @@ parallel_apply_BQSR_gatk=function(
         
         rdata_file=paste0(tmp_dir,"/",job,".regions.RData")
         save(region_list,sif_gatk,bam,ref_genome,rec_table,output_dir,verbose,tmp_dir,file = rdata_file)
-        exec_code=paste0("Rscript -e \"ULPwgs::apply_BQSR_gatk(rdata=\\\"",rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
+        exec_code=paste0("Rscript -e \"ULPwgs::apply_BQSR_gatk(rdata=\\\"",
+        rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         batch_code=build_job_exec(job=job,time=time,ram=ram,
         threads=2,output_dir=out_file_dir2,
@@ -793,7 +797,8 @@ parallel_apply_BQSR_gatk=function(
               input_args=argg,
               out_file_dir=out_file_dir,
               out_files=list(
-                  recal_bam=paste0(out_file_dir,"/", get_file_name(bam),".",region_list,".recal.",get_file_ext(bam))
+                  recal_bam=paste0(out_file_dir,"/", get_file_name(bam),".",region_list,
+                  ".recal.",get_file_ext(bam))
                 )
         )
 
@@ -964,7 +969,8 @@ analyze_covariates_gatk=function(
     out_file_csv=paste0(out_file_dir,"/",get_file_name(before),
     "_covariates_analysis_before.csv")
 
-    exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk," /gatk/gatk  AnalyzeCovariates -bqsr ",before, " -plots ",out_file,tmp_dir," -csv ",out_file_csv)
+    exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk,
+    " /gatk/gatk  AnalyzeCovariates -bqsr ",before, " -plots ",out_file,tmp_dir," -csv ",out_file_csv)
   }else if(before=="" & after!=""){
 
     out_file=paste0(out_file_dir,"/",get_file_name(after),
@@ -973,11 +979,13 @@ analyze_covariates_gatk=function(
     out_file_csv=paste0(out_file_dir,"/",get_file_name(after),
     "_covariates_analysis_after.csv")
 
-    exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk," /gatk/gatk AnalyzeCovariates -bqsr ",after, " -plots ",out_file,tmp_dir," -csv ",out_file_csv)
+    exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk,
+    " /gatk/gatk AnalyzeCovariates -bqsr ",after, " -plots ",out_file,tmp_dir," -csv ",out_file_csv)
   }else{
     out_file=paste0(out_file_dir,"/",get_file_name(before),"_covariates_analysis.pdf")
     out_file_csv=paste0(out_file_dir,"/",get_file_name(before),"_covariates_analysis.csv")
-    exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk," /gatk/gatk  AnalyzeCovariates -before ",before," -after ",after,
+    exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk,
+    " /gatk/gatk  AnalyzeCovariates -before ",before," -after ",after,
       " -plots ",out_file,tmp_dir," -csv ",out_file_csv)
   }
 
@@ -1040,6 +1048,8 @@ analyze_covariates_gatk=function(
 #' @param tumour [REQUIRED] Path to tumour BAM file.
 #' @param normal [OPTIONAL] Path to normal BAM file.
 #' @param ref_genome [REQUIRED] Path to reference genome fasta file.
+#' @param rdata [OPTIONAL] Import R data information with list of BAM.
+#' @param selected [OPTIONAL] Select BAM from list.
 #' @param germ_resource [REQUIRED]Path to germline resources vcf file.
 #' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
 #' @param pon [OPTIONAL] Path to panel of normal.
@@ -1468,11 +1478,13 @@ mutect_filter_gatk=function(
   }
 
   if (contamination_table!=""){
-     contamination_table=paste0(" --contamination-table ", paste0(contamination_table,collapse=" --contamination-table "))
+     contamination_table=paste0(" --contamination-table ", paste0(contamination_table,
+     collapse=" --contamination-table "))
   }
   
   if(segmentation_table!=""){
-      segmentation_table=paste0(" --tumor-segmentation ",paste0(segmentation_table,collapse=" --tumor-segmentation "))
+      segmentation_table=paste0(" --tumor-segmentation ",paste0(segmentation_table,
+      collapse=" --tumor-segmentation "))
     }
 
   if(orientation_model!=""){
