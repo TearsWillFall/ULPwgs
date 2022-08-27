@@ -1218,6 +1218,7 @@ mutect2_gatk=function(region="",
 #' @param bin_bcftools [REQUIRED] Path to bcftools binary file.
 #' @param bin_bgzip [REQUIRED] Path to bgzip binary file.
 #' @param bin_tabix [REQUIRED] Path to tabix binary file.
+#' @param bin_samtools [REQUIRED] Path to samtools binary file.
 #' @param tumour [REQUIRED] Path to tumour BAM file.
 #' @param normal [OPTIONAL] Path to normal BAM file.
 #' @param ref_genome [REQUIRED] Path to reference genome fasta file.
@@ -1249,6 +1250,7 @@ mutect2_gatk=function(region="",
 parallel_regions_mutect2_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
   bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
   tumour="",normal="",output_name="",
