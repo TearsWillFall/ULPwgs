@@ -33,6 +33,10 @@ mutect2_gatk(
 )
 }
 \arguments{
+\item{rdata}{\link{OPTIONAL} Import R data information with list of BAM.}
+
+\item{selected}{\link{OPTIONAL} Select BAM from list.}
+
 \item{sif_gatk}{\link{REQUIRED} Path to gatk sif file.}
 
 \item{tumour}{\link{REQUIRED} Path to tumour BAM file.}
@@ -50,6 +54,8 @@ mutect2_gatk(
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
+
+\item{orientation}{\link{OPTIONAL} Produce read orientation inforamtion. Default FALSE}
 
 \item{mnps}{\link{OPTIONAL} Report MNPs in vcf file.}
 
@@ -70,6 +76,8 @@ mutect2_gatk(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
+
+\item{contamination}{\link{OPTIONAL} Produce sample cross-contamination reports. Default TRUE.}
 }
 \description{
 This function functions calls Mutect2 for variant calling.

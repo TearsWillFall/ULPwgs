@@ -7,6 +7,7 @@
 parallel_regions_mutect2_gatk(
   sif_gatk = build_default_sif_list()$sif_gatk,
   bin_bcftools = build_default_tool_binary_list()$bin_bcftools,
+  bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
   tumour = "",
@@ -20,10 +21,11 @@ parallel_regions_mutect2_gatk(
   pon = "",
   output_dir = ".",
   verbose = FALSE,
-  orientation = FALSE,
+  filter = TRUE,
+  orientation = TRUE,
   mnps = FALSE,
   contamination = TRUE,
-  clean = TRUE,
+  clean = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 4,
   ram = 4,
@@ -40,6 +42,8 @@ parallel_regions_mutect2_gatk(
 \item{sif_gatk}{\link{REQUIRED} Path to gatk sif file.}
 
 \item{bin_bcftools}{\link{REQUIRED} Path to bcftools binary file.}
+
+\item{bin_samtools}{\link{REQUIRED} Path to samtools binary file.}
 
 \item{bin_bgzip}{\link{REQUIRED} Path to bgzip binary file.}
 
@@ -61,7 +65,13 @@ parallel_regions_mutect2_gatk(
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
+\item{filter}{\link{OPTIONAL} Filter Mutect2. Default TRUE.}
+
+\item{orientation}{\link{OPTIONAL} Produce read orientation inforamtion. Default FALSE}
+
 \item{mnps}{\link{OPTIONAL} Report MNPs in vcf file.}
+
+\item{contamination}{\link{OPTIONAL} Produce sample cross-contamination reports. Default TRUE.}
 
 \item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
 
