@@ -23,7 +23,7 @@
 
 preprocess_seq_trento=function(
     sif_path=build_default_sif_list()$preprocess,
-    fastq_dir="", threads=3,ram=4,ref_genome="",output_dir=".",verbose=FALSE,
+    fastq_dir="", threads=3,ram=4,output_dir=".",verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("preprocess_trento"),tmp_dir=".",
     task_name="reprocess_trento",mode="local",time="48:0:0",
@@ -35,7 +35,7 @@ preprocess_seq_trento=function(
     out_file_dir=set_dir(dir=output_dir,name="preprocess")
     
  
-    exec_code=paste(" singularity run --app preProcess ",
+    exec_code=paste(" singularity run -H ",paste0(getwd(),":/home"),
     sif_path, " -i ", fastq_dir ," -o ", out_file_dir," -t ",tmp_dir,
     " -n " , threads, " -m ", ram, 
     "-f .+_R1_.+[.]f.+[.]gz,.+_1[.].+[.]gz,R1[.].+[.]gz -r .+_R2_.+[.]f.+[.]gz,.+_2[.].+[.]gz,R2[.].+[.]gz")

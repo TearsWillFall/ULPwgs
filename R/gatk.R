@@ -1841,8 +1841,8 @@ estimate_contamination_gatk=function(
       segmentation=out_file_dir_seg
       ),
     out_files=list(
-      contam_table=out_file,
-      seg_table=out_file2
+      contamination_table=out_file,
+      segmentation_table=out_file2
     )
   )
 
@@ -1896,7 +1896,7 @@ estimate_contamination_gatk=function(
        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
 
-   jobs_report$exec_code=exec_code
+  jobs_report$exec_code=exec_code
 
   if(verbose){
        print_verbose(job=job,arg=argg,exec_code=exec_code)
