@@ -5,7 +5,7 @@
 \title{Generate a quality control (QC) report from a fastaqc file}
 \usage{
 preprocess_seq_trento(
-  sif_path = build_default_sif_list()$preprocess,
+  sif_preprocess = build_default_sif_list()$sif_preprocess,
   fastq_dir = "",
   threads = 3,
   ram = 4,
@@ -23,8 +23,6 @@ preprocess_seq_trento(
 )
 }
 \arguments{
-\item{sif_path}{Path to singularity image file.}
-
 \item{fastq_dir}{Path to fastq directory.}
 
 \item{threads}{Number of CPU cores to use. Default 3.}
@@ -48,6 +46,8 @@ preprocess_seq_trento(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{Job to hold on in batched mode.}
+
+\item{sif_path}{Path to singularity image file.}
 }
 \description{
 This function takes a set of sequence files (fastq,SAM,BAM...) and

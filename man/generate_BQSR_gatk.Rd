@@ -8,7 +8,7 @@ generate_BQSR_gatk(
   region = "",
   rdata = NULL,
   selected = NULL,
-  sif_gatk = build_default_sif_list()$gatk,
+  sif_gatk = build_default_sif_list()$sif_gatk,
   bam = "",
   ref_genome = "",
   dbsnp = "",

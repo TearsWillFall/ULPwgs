@@ -471,7 +471,10 @@ build_default_tool_binary_list=function(
                 bin_tabix="/lustre/scratch/scratch/regmova/tools/htslib/bin/tabix",
                 bin_htsfile="/lustre/scratch/scratch/regmova/tools/htslib/bin/htsfile",
                 bin_bwa="/lustre/scratch/scratch/regmova/tools/bwa/bwa",
-                bin_strelka="/lustre/scratch/scratch/regmova/tools/strelka-2.9.10/build/bin/configureStrelkaSomaticWorkflow.py",
+                bin_strelka=list(
+                    somatic="/lustre/scratch/scratch/regmova/tools/strelka-2.9.10/build/bin/configureStrelkaSomaticWorkflow.py",
+                    germline="/lustre/scratch/scratch/regmova/tools/strelka-2.9.10/build/bin/configureStrelkaGermlineWorkflow.py"
+                ),    
                 bin_manta="/lustre/scratch/scratch/regmova/tools/manta-1.6.0/build/bin/configManta.py",
                 bin_ichor_pon="/lustre/scratch/scratch/regmova/tools/ichorCNA/scripts/createPanelOfNormals.R",
                 bin_ichor="/lustre/scratch/scratch/regmova/tools/ichorCNA/scripts/runIchorCNA.R",

@@ -5,7 +5,7 @@
 \title{Wrapper for MarkDuplicatesSpark from gatk}
 \usage{
 markdups_gatk(
-  sif_gatk = build_default_sif_list()$gatk,
+  sif_gatk = build_default_sif_list()$sif_gatk,
   bam = "",
   output_dir = ".",
   verbose = FALSE,
