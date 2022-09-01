@@ -163,20 +163,20 @@ call_sv_manta=function(
     input_args = argg,
     out_file_dir=out_file_dir,
     out_files=list(
-      workflow=paste0(out_file_dir,"MantaWorkflow/runWorkflow.py"),
+      workflow=paste0(out_file_dir,"/MantaWorkflow/runWorkflow.py"),
       stats=list(
-        aligment=paste0(out_file_dir,"MantaWorkflow/results/stats/alignmentStatsSummary.txt"),
-        tsv=paste0(out_file_dir,"MantaWorkflow/results/stats/svCandidateGenerationStats.tsv"),
-        xml=paste0(out_file_dir,"MantaWorkflow/results/stats/svCandidateGenerationStats.xml"),
-        graph=paste0(out_file_dir,"MantaWorkflow/results/stats/svLocusGraphStats.tsv")
+        aligment=paste0(out_file_dir,"/MantaWorkflow/results/stats/alignmentStatsSummary.txt"),
+        tsv=paste0(out_file_dir,"/MantaWorkflow/results/stats/svCandidateGenerationStats.tsv"),
+        xml=paste0(out_file_dir,"/MantaWorkflow/results/stats/svCandidateGenerationStats.xml"),
+        graph=paste0(out_file_dir,"/MantaWorkflow/results/stats/svLocusGraphStats.tsv")
       ),
       variants=list(
-        small_indel_candidate=paste0(out_file_dir,"MantaWorkflow/results/variants/candidateSmallIndels.vcf.gz"),
-        small_indel_candidate_index=paste0(out_file_dir,"MantaWorkflow/results/variants/candidateSmallIndels.vcf.gz.tbi"),
-        sv_candidate=paste0(out_file_dir,"MantaWorkflow/results/variants/candidateSV.vcf.gz"),
-        sv_candidate_index=paste0(out_file_dir,"MantaWorkflow/results/variants/candidateSV.vcf.gz.tbi"),
-        diploid_sv=paste0(out_file_dir,"MantaWorkflow/results/variants/diploidSV.vcf.gz"),
-        diploid_sv_index=paste0(out_file_dir,"MantaWorkflow/results/variants/diploidSV.vcf.gz.tbi"),
+        small_indel_candidate=paste0(out_file_dir,"/MantaWorkflow/results/variants/candidateSmallIndels.vcf.gz"),
+        small_indel_candidate_index=paste0(out_file_dir,"/MantaWorkflow/results/variants/candidateSmallIndels.vcf.gz.tbi"),
+        sv_candidate=paste0(out_file_dir,"/MantaWorkflow/results/variants/candidateSV.vcf.gz"),
+        sv_candidate_index=paste0(out_file_dir,"/MantaWorkflow/results/variants/candidateSV.vcf.gz.tbi"),
+        diploid_sv=paste0(out_file_dir,"/MantaWorkflow/results/variants/diploidSV.vcf.gz"),
+        diploid_sv_index=paste0(out_file_dir,"/MantaWorkflow/results/variants/diploidSV.vcf.gz.tbi"),
         somatic_sv=somatic_sv,
         somatic_sv_index=somatic_sv_index
         )
@@ -186,7 +186,7 @@ call_sv_manta=function(
   
     exec_code=paste0(bin_manta,tumour_input,normal_input," --referenceFasta ", 
     ref_genome ," --runDir ", out_file_dir, exome, "; ",
-    paste0(out_file_dir,"MantaWorkflow/runWorkflow.py -m local -j ",threads))
+    paste0(out_file_dir,"/MantaWorkflow/runWorkflow.py -m local -j ",threads))
 
     if(mode=="batch"){
         hold=unlist_lvl(jobs_report[["steps"]],var="job_id")
@@ -370,16 +370,16 @@ call_somatic_snvs_strelka=function(
     input_args = argg,
     out_file_dir=out_file_dir,
     out_files=list(
-      workflow=paste0(out_file_dir,"StrelkaSomaticWorkflow/runWorkflow.py"),
+      workflow=paste0(out_file_dir,"/StrelkaSomaticWorkflow/runWorkflow.py"),
       stats=list(
-        tsv=paste0(out_file_dir,"StrelkaSomaticWorkflow/results/stats/runStats.tsv"),
-        xml=paste0(out_file_dir,"StrelkaSomaticWorkflow/results/stats/runStats.tsv")
+        tsv=paste0(out_file_dir,"/StrelkaSomaticWorkflow/results/stats/runStats.tsv"),
+        xml=paste0(out_file_dir,"/StrelkaSomaticWorkflow/results/stats/runStats.tsv")
     ),
     variants=list(
-        indel=paste0(out_file_dir,"StrelkaSomaticWorkflow/results/variants/somatic.indels.vcf.gz"),
-        indel_index=paste0(out_file_dir,"StrelkaSomaticWorkflow/results/variants/somatic.indels.vcf.gz.tbi"),
-        snvs=paste0(out_file_dir,"StrelkaSomaticWorkflow/results/variants/somatic.snvs.vcf.gz"),
-        snvs_index=paste0(out_file_dir,"StrelkaSomaticWorkflow/results/variants/somatic.snvs.vcf.gz.tbi")
+        indel=paste0(out_file_dir,"/StrelkaSomaticWorkflow/results/variants/somatic.indels.vcf.gz"),
+        indel_index=paste0(out_file_dir,"/StrelkaSomaticWorkflow/results/variants/somatic.indels.vcf.gz.tbi"),
+        snvs=paste0(out_file_dir,"/StrelkaSomaticWorkflow/results/variants/somatic.snvs.vcf.gz"),
+        snvs_index=paste0(out_file_dir,"/StrelkaSomaticWorkflow/results/variants/somatic.snvs.vcf.gz.tbi")
     )
     )
   )
@@ -391,7 +391,7 @@ call_somatic_snvs_strelka=function(
 
     exec_code=paste0(bin_strelka,tumour_input,normal_input," --referenceFasta ", 
     ref_genome ," --runDir ", out_file_dir, exome, indel_candidates, "; ",
-    paste0(out_file_dir,"StrelkaSomaticWorkflow/runWorkflow.py -m local -j ",threads))
+    paste0(out_file_dir,"/StrelkaSomaticWorkflow/runWorkflow.py -m local -j ",threads))
 
     if(mode=="batch"){
         hold=unlist_lvl(jobs_report[["steps"]],var="job_id")
@@ -482,16 +482,16 @@ call_germline_snvs_strelka=function(
     input_args = argg,
     out_file_dir=out_file_dir,
     out_files=list(
-      workflow=paste0(out_file_dir,"StrelkaGermlineWorkflow/runWorkflow.py"),
+      workflow=paste0(out_file_dir,"/StrelkaGermlineWorkflow/runWorkflow.py"),
       stats=list(
-        tsv=paste0(out_file_dir,"StrelkaGermlineWorkflow/results/stats/runStats.tsv"),
-        xml=paste0(out_file_dir,"StrelkaGermlineWorkflow/results/stats/runStats.tsv")
+        tsv=paste0(out_file_dir,"/StrelkaGermlineWorkflow/results/stats/runStats.tsv"),
+        xml=paste0(out_file_dir,"/StrelkaGermlineWorkflow/results/stats/runStats.tsv")
     ),
     variants=list(
-        indel=paste0(out_file_dir,"StrelkaGermlineWorkflow/results/variants/somatic.indels.vcf.gz"),
-        indel_index=paste0(out_file_dir,"StrelkaGermlineWorkflow/results/variants/somatic.indels.vcf.gz.tbi"),
-        snvs=paste0(out_file_dir,"StrelkaGermlineWorkflow/results/variants/somatic.snvs.vcf.gz"),
-        snvs_index=paste0(out_file_dir,"StrelkaGermlineWorkflow/results/variants/somatic.snvs.vcf.gz.tbi")
+        indel=paste0(out_file_dir,"/StrelkaGermlineWorkflow/results/variants/somatic.indels.vcf.gz"),
+        indel_index=paste0(out_file_dir,"/StrelkaGermlineWorkflow/results/variants/somatic.indels.vcf.gz.tbi"),
+        snvs=paste0(out_file_dir,"/StrelkaGermlineWorkflow/results/variants/somatic.snvs.vcf.gz"),
+        snvs_index=paste0(out_file_dir,"/StrelkaGermlineWorkflow/results/variants/somatic.snvs.vcf.gz.tbi")
     )
     )
   )
@@ -503,7 +503,7 @@ call_germline_snvs_strelka=function(
 
     exec_code=paste0(bin_strelka,normal_input," --referenceFasta ", 
     ref_genome ," --runDir ", out_file_dir, exome, indel_candidates, "; ",
-    paste0(out_file_dir,"StrelkaGermlineWorkflow/runWorkflow.py -m local -j ",threads))
+    paste0(out_file_dir,"/StrelkaGermlineWorkflow/runWorkflow.py -m local -j ",threads))
 
     if(mode=="batch"){
         hold=unlist_lvl(jobs_report[["steps"]],var="job_id")
