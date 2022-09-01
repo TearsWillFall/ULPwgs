@@ -31,8 +31,8 @@ read_vcf=function(vcf=""){
   }
   header=read[grepl("^#",read)]
   body=read[!grepl("^#",read)]
-  col_names=header[nrow(header)]
-  header=header[-nrow(header)]
+  col_names=header[length(header)]
+  header=header[-length(header)]
   body=read.table(body)
   names(body)=read.table(sub("#","",col_names))
   vcf=list(header=header,body=body,
