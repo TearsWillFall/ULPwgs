@@ -70,8 +70,7 @@ write_vcf=function(
     if(output_name!=""){
       stop("File output name can't be empty.")
     }
-
-
+devtoo
     write.table(
       x=vcf$header,
       file=paste0(out_file_dir,"/",output_name,".vcf")
@@ -105,7 +104,7 @@ write_vcf=function(
       output_dir=out_file_dir,output_name=file,
       clean=clean,verbose=verboe
   )
-  
+
   return()
 }
 
