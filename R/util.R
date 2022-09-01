@@ -12,6 +12,108 @@ get_file_name=function(file_path=""){
   return(filename)
 }
 
+
+#' Read a VCF file
+#' This function read a VCF file and stores it in a list format
+#' 
+#' 
+#'
+#' @param vcf Path to the VCF file
+#' @return A list with the header, body and column names of the VCF
+#' @export
+
+
+read_vcf=function(vcf=""){
+  if(check_if_compressed(vcf)){
+      read=system(paste0("gunzip -c ",vcf),intern=TRUE)
+  }else{
+      read=system(paste0("cat ",vcf),intern=TRUE)
+  }
+  header=read[grepl("^#",read)]
+  body=read[!grepl("^#",read)]
+  col_names=header[nrow(header)]
+  header=header[-nrow(header)]
+  body=read.table(body)
+  names(body)=read.table(sub("#","",col_names))
+  vcf=list(header=header,body=body,
+  col_names=names(body),vcf_origin=normalizePath(vcf))
+}
+
+
+#' Writes VCF file from a VCF data.structure
+#'
+#' VCF datastructure is in list format and contains a header, a body and
+#' the corresponding col_names
+#'
+#' @param bin_bgzip Path to bgzip executable.
+#' @param bin_tabix Path to TABIX executable.
+#' @param vcf Path to the input VCF file.
+#' @param output_name Output file name.
+#' @param compress Compress VCF file. Default TRUE.
+#' @param index Index VCF file. Default TRUE.
+#' @param index_format VCF index format. Default tbi. Options [tbi,cbi].
+#' @param bgzip_index Create BGZIP index for compressed file. Default FALSE
+#' @param output_dir Path to the output directory.
+#' @param clean Remove input VCF after completion. Default FALSE.
+#' @param verbose Enables progress messages. Default False.
+#' @export
+#' 
+
+write_vcf=function(
+  vcf="",
+  output_name="",
+  compress=TRUE,index=TRUE,
+  index_format="tbi",bgzip_index=FALSE,
+  clean=TRUE,output_dir=".",
+  verbose=FALSE
+){
+    if(output_name!=""){
+      stop("File output name can't be empty.")
+    }
+
+
+    write.table(
+      x=vcf$header,
+      file=paste0(out_file_dir,"/",output_name,".vcf")
+    )
+
+    write.table(
+      x=paste0("#",vcf$col_names),
+      file=paste0(out_file_dir,
+      "/",output_name,".vcf"),sep="\t",quote=FALSE,
+      row.names=FALSE,
+      col.names=FALSE,
+      append=TRUE
+    )
+
+    write.table(
+      x=vcf$body,
+      file=paste0(out_file_dir,"/",output_name,".vcf"),
+      sep="\t",
+      quote=FALSE,
+      row.names=FALSE,
+      col.names=FALSE,
+      append=TRUE
+    )
+
+    compress_and_index_vcf_htslib(
+      bin_bgzip=bin_bgzip,
+      bin_tabix=bin_tabix,
+      vcf=file,compress=compress,
+      index=index,index_format=index_format,
+      bgzip_index=bgzip_index,
+      output_dir=out_file_dir,output_name=file,
+      clean=clean,verbose=verboe
+  )
+  
+  return()
+}
+
+
+
+
+
+
 #' Set the current dir
 #' This function sets and/or creates the directory
 #' for a function
