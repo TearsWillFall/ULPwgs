@@ -64,7 +64,7 @@ call_variants_strelka=function(
     if(variants=="sv"|variants=="all"){
          jobs_report[["steps"]][["callSVManta"]]=call_sv_manta(
             bin_manta=bin_manta,
-            tumor=tumour,normal=normal,
+            tumour=tumour,normal=normal,
             ref_genome=ref_genome,output_dir=output_dir,
             targeted=targeted,verbose=verbose,
             batch_config=batch_config,threads=threads,
