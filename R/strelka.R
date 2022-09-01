@@ -96,8 +96,6 @@ call_variants_strelka=function(
 }
 
 
-
-
 #' Manta  wrapper for structural variant calling
 #'
 #' This function wraps the Manta workflow functions for structural variant calling 
