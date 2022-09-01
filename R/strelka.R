@@ -65,7 +65,7 @@ call_variants_strelka=function(
          jobs_report[["steps"]][["callSVManta"]]=call_sv_manta(
             bin_manta=bin_manta,
             tumour=tumour,normal=normal,
-            ref_genome=ref_genome,output_dir=output_dir,
+            ref_genome=ref_genome,output_dir=out_file_dir,
             targeted=targeted,verbose=verbose,
             batch_config=batch_config,threads=threads,
             ram=ram,mode=mode,executor_id=task_id,
@@ -85,7 +85,7 @@ call_variants_strelka=function(
           bin_strelka_somatic=bin_strelka_somatic,
           bin_strelka_germline=bin_strelka_germline,
           tumour=tumour,normal=normal,
-          ref_genome=ref_genome,output_dir=output_dir,
+          ref_genome=ref_genome,output_dir=out_file_dir,
           targeted=targeted,verbose=verbose,
           batch_config=batch_config,threads=threads,
           ram=ram,mode=mode,executor_id=task_id,
