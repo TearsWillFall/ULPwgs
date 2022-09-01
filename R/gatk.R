@@ -23,7 +23,7 @@
 
 
 markdups_gatk=function(
-  sif_gatk=build_default_sif_list()$gatk,bam="",output_dir=".",
+  sif_gatk=build_default_sif_list()$sif_gatk,bam="",output_dir=".",
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   tmp_dir=".",threads=3,ram=4,remove_duplicates=TRUE,
   executor_id=make_unique_id("markdupsGATK"),task_name="markdupsGATK",
@@ -123,7 +123,7 @@ markdups_gatk=function(
 
 recal_gatk=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
-  sif_gatk=build_default_sif_list()$gatk,
+  sif_gatk=build_default_sif_list()$sif_gatk,
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bam="",ref_genome="",dbsnp="",ram=4,threads=4,output_dir=".",
   tmp_dir=".",verbose=FALSE,batch_config=build_default_preprocess_config(),
@@ -256,7 +256,7 @@ recal_gatk=function(
 
 generate_BQSR_gatk=function(
   region="",rdata=NULL,selected=NULL,
-  sif_gatk=build_default_sif_list()$gatk,bam="",
+  sif_gatk=build_default_sif_list()$sif_gatk,bam="",
   ref_genome="",dbsnp="",output_dir=".",tmp_dir=".",verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
@@ -369,7 +369,7 @@ generate_BQSR_gatk=function(
 
 parallel_generate_BQSR_gatk=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
-  sif_gatk=build_default_sif_list()$gatk,bam="",
+  sif_gatk=build_default_sif_list()$sif_gatk,bam="",
   regions="",ref_genome="", clean=TRUE, dbsnp="",
   tmp_dir=".",threads=3,ram=4,
   executor_id=make_unique_id("par_generateBQSR"),
