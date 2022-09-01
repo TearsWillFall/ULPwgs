@@ -189,7 +189,7 @@ call_sv_manta=function(
     paste0(out_file_dir,"/runWorkflow.py -m local -j ",threads))
 
     if(mode=="batch"){
-        hold=unlist_lvl(jobs_report[["steps"]],var="job_id")
+        hold=unlist_lvl(job_report[["steps"]],var="job_id")
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
         threads=threads,output_dir=out_file_dir2)
@@ -212,7 +212,7 @@ call_sv_manta=function(
         verbose=verbose,threads=threads)
     }
 
-    return(jobs_report)
+    return(job_report)
 
 
 
@@ -363,7 +363,7 @@ call_somatic_snvs_strelka=function(
     }
     
 
-    jobs_report=build_job_report(
+    job_report=build_job_report(
     job_id=job,
     executor_id=executor_id,
     task_id=task_id,
@@ -394,14 +394,14 @@ call_somatic_snvs_strelka=function(
     paste0(out_file_dir,"/runWorkflow.py -m local -j ",threads))
 
     if(mode=="batch"){
-        hold=unlist_lvl(jobs_report[["steps"]],var="job_id")
+        hold=unlist_lvl(job_report[["steps"]],var="job_id")
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
         threads=threads,output_dir=out_file_dir2)
         exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
     } 
 
-    jobs_report$exec_code=exec_code
+    job_report$exec_code=exec_code
 
     if(verbose){
         print_verbose(job=job,arg=argg,exec_code=exec_code)
@@ -415,11 +415,11 @@ call_somatic_snvs_strelka=function(
     }
 
     if(wait&&mode=="batch"){
-        job_validator(job=jobs_report$job_id,time=update_time,
+        job_validator(job=job_report$job_id,time=update_time,
         verbose=verbose,threads=threads)
     }
 
-    return(jobs_report)
+    return(job_report)
 
 
 
@@ -475,7 +475,7 @@ call_germline_snvs_strelka=function(
       stop("Missing normal BAM file.")
     }
     
-    jobs_report=build_job_report(
+    job_report=build_job_report(
     job_id=job,
     executor_id=executor_id,
     task_id=task_id,
@@ -506,14 +506,14 @@ call_germline_snvs_strelka=function(
     paste0(out_file_dir,"/runWorkflow.py -m local -j ",threads))
 
     if(mode=="batch"){
-        hold=unlist_lvl(jobs_report[["steps"]],var="job_id")
+        hold=unlist_lvl(job_report[["steps"]],var="job_id")
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
         threads=threads,output_dir=out_file_dir2)
         exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
     } 
 
-    jobs_report$exec_code=exec_code
+    job_report$exec_code=exec_code
 
     if(verbose){
         print_verbose(job=job,arg=argg,exec_code=exec_code)
@@ -527,10 +527,10 @@ call_germline_snvs_strelka=function(
     }
 
     if(wait&&mode=="batch"){
-        job_validator(job=jobs_report$job_id,time=update_time,
+        job_validator(job=job_report$job_id,time=update_time,
         verbose=verbose,threads=threads)
     }
 
-    return(jobs_report)
+    return(job_report)
 
 }
