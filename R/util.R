@@ -22,8 +22,8 @@ get_file_name=function(file_path=""){
 #' @return A list with the header, body and column names of the VCF
 #' @export
 
-
 read_vcf=function(vcf=""){
+  cols=c("CHROM","POS","ID","REF","ALT","QUAL","FILTER","INFO","FORMAT")
   if(check_if_compressed(vcf)){
       read=system(paste0("gunzip -c ",vcf),intern=TRUE)
   }else{
@@ -32,12 +32,132 @@ read_vcf=function(vcf=""){
   header=read[grepl("^#",read)]
   body=read[!grepl("^#",read)]
   col_names=header[length(header)]
-  header=header[-length(header)]
+  raw_header=header[-length(header)]
+  descriptors=extract_descriptors_vcf(raw_header)
   body=read.table(text=body,stringsAsFactors = FALSE)
   names(body)=read.table(text=sub("#","",col_names),stringsAsFactors = FALSE)
-  vcf=list(header=header,body=body,
-  col_names=names(body),vcf_origin=normalizePath(vcf))
+  samples=setdiff(names(body),cols)
+  body=extract_body_vcf(body,samples)
+  vcf_object=list(
+    vcf_origin=normalizePath(vcf),
+    samples=samples,
+    descriptors=descriptors,
+    body=body
+  )
+  return(vcf_object)
 }
+
+#' Extract VCF body
+#' This function VCF body columns in a easy to access format
+#' 
+#'
+#' @param vcf_body VCF body structure
+#' @param samples Sample columns in VCF file
+#' @export
+
+extract_body_vcf=function(vcf_body,samples){
+  extract_col_vcf=function(col,sep=";"){
+    tmp=Vectorize(strsplit,USE.NAMES=FALSE)(col,split=sep)
+    return(tmp)
+  }
+  vcf_body$FILTER=extract_col_vcf(vcf_body$FILTER)
+  extract_info_vcf=function(col){
+     info=extract_col_vcf(col,sep=";")
+     extract_key_value=function(row){
+      split=unlist(stringi::stri_split_fixed(row,pattern="=",n=2))
+      hash=list(values=ifelse(is.na(split[2]),"",split[2]))
+      names(hash)=split[1]
+      return(hash)
+     }
+    info=lapply(info,FUN=function(row){
+        tmp=unlist(lapply(row,FUN=extract_key_value),recursive=FALSE)
+       
+     })
+    return(info)
+  }
+
+  vcf_body$INFO=extract_info_vcf(vcf_body$INFO)
+  vcf_body$FORMAT=extract_col_vcf(vcf_body$FORMAT,sep=":")
+
+  lapply(samples,FUN=function(sample){
+     vcf_body[[sample]]<<-as.list(extract_col_vcf(vcf_body[[sample]],sep=":"))
+  })
+  vcf_body=vcf_body %>% tidyr::pivot_longer(names_to="SAMPLE",
+  cols=c(NORMAL,TUMOR),values_to="VALUE") %>%
+  tidyr::nest(SAMPLE=SAMPLE,FORMAT=FORMAT,VALUE=VALUE)
+
+  return(vcf_body)
+}
+
+
+#' Extract VCF body
+#' This function VCF body columns in a easy to access format
+#' 
+#'
+#' @param vcf_body VCF body structure
+#' @export
+
+
+add_af_strelka_vcf=function(vcf){
+  
+  vcf_dat=read_vcf(vcf)
+  vcf_dat$body=vcf_dat$body %>% tidyr::unnest(c(SAMPLE,FORMAT,VALUE)) %>% tidyr::unnest(c(FORMAT,VALUE))
+  vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
+  ##Extract Tier1 read information for REF and ALT
+  vcf_dat$body=vcf_dat$body %>% dplyr::mutate(
+    UREF=strsplit(VALUE[FORMAT==paste0(REF,"U")],split=",")[[1]][1],
+    UALT=strsplit(VALUE[FORMAT==paste0(ALT,"U")],split=",")[[1]][1]) %>%
+    dplyr::mutate(VALUE=ifelse(FORMAT=="AF",
+    as.numeric(UALT)/(as.numeric(UREF)+as.numeric(UALT)),VALUE))%>% dplyr::select(-c(UALT,UREF))
+  vcf_dat$body=vcf_dat$body %>%  tidyr::nest(FORMAT=FORMAT,VALUE=VALUE) %>% ungroup()%>% 
+  tidyr::nest(SAMPLE=SAMPLE,FORMAT=FORMAT,VALUE=VALUE) 
+  add_af_descriptor<-function(){
+      list(Number="1",Type="Float",Description="\"Variant allelic frequency for tier 1 reads\"")
+  }
+  vcf_dat$descriptors$FORMAT[["AF"]]<-add_af_descriptor()
+  return(vcf_dat)
+}
+
+#' Extract VCF header descriptors
+#' This function extracts VCF header descriptors
+#' 
+#'
+#' @param vcf_header VCF header structure
+#' @export
+
+extract_descriptors_vcf=function(vcf_header){
+    extract_key_value=function(row){
+      split=unlist(stringi::stri_split_fixed(row,pattern="=",n=2))
+      id=split[1]
+      if(grepl("<",split[2])&&grepl(">",split[2])){
+           tmp=unlist(lapply(
+                unlist(
+                  stringi::stri_split_fixed(
+                    gsub("<|>","",split[2]),
+                    pattern=",",n=4)
+                ),FUN=extract_key_value),
+                recursive=FALSE)
+          
+          values=list(tmp[-1])
+          names(values)<-tmp[1]
+
+        }else{
+            values=split[2]
+        }
+
+      hash=list(
+        values=values
+      )
+
+    names(hash)<- id
+    return(hash)
+  }
+  rslt=unlist(lapply(gsub("##","",vcf_header),FUN=extract_key_value),recursive=FALSE)
+  rslt=Map(function(x) Reduce(append, rslt[names(rslt)==x]), unique(names(rslt)))
+  return(rslt)
+}
+
+
 
 
 #' Writes VCF file from a VCF data.structure
@@ -66,13 +186,48 @@ write_vcf=function(
   index_format="tbi",bgzip_index=FALSE,
   clean=TRUE,output_dir=".",
   verbose=FALSE
-){
+){  
+
+
+    build_header_vcf=function(vcf_descriptors){
+      header=unlist(lapply(names(vcf_descriptors),
+        FUN=function(col){
+          val=vcf_descriptors[[col]];
+        
+          if(length(val)>1){
+            ids=names(val)
+            lapply(ids,FUN=function(id){
+                paste0(paste0("##",col,"=<ID=",id),",",paste0(names(val[[id]]),"=",val[[id]],collapse=","),">")
+            })
+          }else{
+            paste0("##",col,"=",val)      }
+        }
+      )) 
+    }
+
+    build_body_vcf=function(vcf_body,samples){
+      vcf_body=vcf_body %>% tidyr::unnest(c(SAMPLE,FORMAT,VALUE)) %>%
+      tidyr::unnest(c(FORMAT,VALUE)) %>% 
+      tidyr::pivot_wider(names_from=SAMPLE,values_from=VALUE) %>%
+      tidyr::nest(FORMAT=FORMAT,NORMAL=NORMAL,TUMOR=TUMOR)
+      vcf_body=vcf_body%>% dplyr::rowwise() %>%
+       dplyr::mutate(across(c("FORMAT",all_of(samples)),
+       function(x) paste0(unlist(x),collapse=":")))%>%
+       dplyr::mutate(FILTER=paste0(FILTER,collapse=","),
+       INFO=paste0(paste0(names(unlist(INFO)),
+       ifelse(unlist(INFO)!="","=",""),unlist(INFO)),collapse=","))
+      return(vcf_body)
+    }
+
+
+
     if(output_name!=""){
       stop("File output name can't be empty.")
     }
-devtoo
+
+
     write.table(
-      x=vcf$header,
+      x=build_header_vcf(vcf$descriptors),
       file=paste0(out_file_dir,"/",output_name,".vcf")
     )
 
@@ -86,7 +241,7 @@ devtoo
     )
 
     write.table(
-      x=vcf$body,
+      x=build_body_vcf(vcf$body),
       file=paste0(out_file_dir,"/",output_name,".vcf"),
       sep="\t",
       quote=FALSE,
