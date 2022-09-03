@@ -221,7 +221,7 @@ write_vcf=function(
 
 
 
-    if(output_name!=""){
+    if(output_name==""){
       stop("File output name can't be empty.")
     }
 
