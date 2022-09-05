@@ -1249,6 +1249,7 @@ mutect2_gatk=function(region="",
 
 
 parallel_regions_mutect2_gatk=function(
+  rdata=NULL,selected=NULL,
   sif_gatk=build_default_sif_list()$sif_gatk,
   bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
@@ -1256,7 +1257,7 @@ parallel_regions_mutect2_gatk=function(
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
   tumour="",normal="",output_name="",
   ref_genome=build_default_reference_list()$HG19$reference,
-  germ_resources=build_default_reference_list()$HG19$variant$germ_reference,
+  germ_resource=build_default_reference_list()$HG19$variant$germ_reference,
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
   db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
   regions="",pon="",output_dir=".",
@@ -1269,6 +1270,13 @@ parallel_regions_mutect2_gatk=function(
   task_name="parRegionMutect2",time="48:0:0",
   update_time=60,wait=FALSE,hold=""
 ){
+
+  if(!is.null(rdata)){
+    load(rdata)
+    if(!is.null(selected)){
+      tumour=tumours_list[selected]
+    }
+  }
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -1293,7 +1301,8 @@ parallel_regions_mutect2_gatk=function(
 
     jobs_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
       bin_samtools=bin_samtools,
-      bam=tumour,verbose=verbose,output_dir=tmp_dir,
+      bam=tumour[1],verbose=verbose,output_dir=tmp_dir,
+      output_name=paste0(get_file_name(tumour[1]),"_Ref"),
       executor_id=task_id,mode="local",threads=threads,ram=ram,
       time=time,update_time=update_time,wait=FALSE,hold=hold)
 
@@ -1320,7 +1329,8 @@ parallel_regions_mutect2_gatk=function(
             normal=normal,
             output_name=output_name,
             ref_genome=ref_genome,
-            output_dir=tmp_dir,tmp_dir=tmp_dir,
+            germ_resource = germ_resource,
+            pon=pon,output_dir=tmp_dir,tmp_dir=tmp_dir,
             verbose=verbose,orientation=orientation,mnps=mnps,
             executor_id=task_id)
     },mc.cores=threads)
@@ -1329,7 +1339,7 @@ parallel_regions_mutect2_gatk=function(
           rdata_file=paste0(tmp_dir,"/",job,".regions.RData")
           output_dir=tmp_dir
           save(region_list,tumour,normal,sif_gatk,ref_genome,output_name,
-          orientation,mnps,output_dir,verbose,tmp_dir,file = rdata_file)
+          germ_resource,pon,orientation,mnps,output_dir,verbose,tmp_dir,file = rdata_file)
           exec_code=paste0("Rscript -e \"ULPwgs::mutect2_gatk(rdata=\\\"",
           rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
           out_file_dir2=set_dir(dir=out_file_dir,name="batch")
@@ -1452,6 +1462,183 @@ parallel_regions_mutect2_gatk=function(
   return(jobs_report)
 
 }
+
+
+#' Multiregion parallelization across Mutect2 Gatk Variant Calling
+#'
+#' This function functions calls Mutect2 across multiple regions in parallel.
+#' If a vector of tumour samples are provided these will be processed in multi-sample mode.
+#' To run in tumour-normal mode suppply a single tumour and normal sample.
+#' If no normal is supplied this will run in tumour only.
+#' TO DO// Implement mitochondrial mode feature
+#' 
+#' For more information read:
+#' https://gatk.broadinstitute.org/hc/en-us/articles/360037593851-Mutect2
+#'
+#' @param sif_gatk [REQUIRED] Path to gatk sif file.
+#' @param bin_bcftools [REQUIRED] Path to bcftools binary file.
+#' @param bin_bgzip [REQUIRED] Path to bgzip binary file.
+#' @param bin_tabix [REQUIRED] Path to tabix binary file.
+#' @param bin_samtools [REQUIRED] Path to samtools binary file.
+#' @param tumour [REQUIRED] Path to tumour BAM file.
+#' @param normal [OPTIONAL] Path to normal BAM file.
+#' @param ref_genome [REQUIRED] Path to reference genome fasta file.
+#' @param germ_resource [REQUIRED]Path to germline resources vcf file.
+#' @param regions [OPTIONAL] Regions to analyze. If regions for parallelization are not provided then these will be infered from BAM file.
+#' @param output_name [OPTIONAL] Name for the output. If not given the name of one of the samples will be used.
+#' @param pon [OPTIONAL] Path to panel of normal.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param mnps [OPTIONAL] Report MNPs in vcf file.
+#' @param contamination [OPTIONAL] Produce sample cross-contamination reports. Default TRUE.
+#' @param orientation [OPTIONAL] Produce read orientation inforamtion. Default FALSE
+#' @param filter [OPTIONAL] Filter Mutect2. Default TRUE.
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+
+parallel_samples_mutect2_gatk=function(
+  sif_gatk=build_default_sif_list()$sif_gatk,
+  bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+  bin_tabix=build_default_tool_binary_list()$bin_tabix,
+  tumours="",normal="",
+  ref_genome=build_default_reference_list()$HG19$reference,
+  germ_resource=build_default_reference_list()$HG19$variant$germ_reference,
+  biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
+  db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
+  regions="",pon="",output_dir=".",
+  verbose=FALSE,filter=TRUE,
+  orientation=TRUE,mnps=FALSE,
+  contamination=TRUE,clean=FALSE,
+  batch_config=build_default_preprocess_config(),
+  threads=4,ram=4,mode="local",
+  executor_id=make_unique_id("parRegionMutect2"),
+  task_name="parRegionMutect2",time="48:0:0",
+  update_time=60,wait=FALSE,hold=""
+){
+
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
+  out_file_dir=set_dir(dir=output_dir,name="mutect2_reports")
+  tmp_dir=set_dir(dir=out_file_dir,name="mutect2_tmp")
+
+  job=build_job(executor_id=executor_id,task_id=task_id)
+
+
+  jobs_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    exec_code=list(), 
+    task_id=task_id,
+    input_args=argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+      )
+    )
+
+
+
+  tumours_list=tumours
+  names(tumours_list)=Vectorize(get_file_name)(tumours)
+
+  if(mode=="local"){
+    jobs_report[["steps"]][["par_sample_call_variants"]]<-
+    parallel::mclapply(tumours_list,FUN=function(tumour){
+      job_report <- parallel_regions_mutect2_gatk(
+            sif_gatk=sif_gatk,
+            bin_bcftools=bin_bcftools,
+            bin_samtools=bin_samtools,
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            regions=regions,
+            output_name=get_file_name(tumour),
+            ref_genome=ref_genome,
+            germ_resource=germ_resource,
+            biallelic_db=biallelic_db,
+            db_interval=db_interval,
+            regions=regions,pon=pon,
+            output_dir=out_file_dir,
+            filter=filter,
+            orientation=orientation,
+            mnps=mnps,
+            contamination=contamination,
+            clean=clean,
+            tumour=tumour,
+            normal=normal,
+            output_dir=out_file_dir,
+            tmp_dir=tmp_dir,
+            verbose=verbose,
+            executor_id=task_id)
+    },mc.cores=threads)
+    
+  }else if(mode=="batch"){
+
+          rdata_file=paste0(tmp_dir,"/",job,".samples.RData")
+          output_dir=out_file_dir
+          save(tumours_list,normal,
+          sif_gatk,
+          bin_bcftools,
+          bin_samtools,
+          bin_bgzip,
+          bin_tabix,
+          germ_resource,
+          biallelic_db,db_interval,pon,ref_genome,
+          filter,orientation,mnps,output_dir,contamination,clean,
+          verbose,tmp_dir,file = rdata_file)
+          exec_code=paste0("Rscript -e \"ULPwgs::parallel_regions_mutect2_gatk(rdata=\\\"",
+          rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
+          out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+          batch_code=build_job_exec(job=job,time=time,ram=ram,
+          threads=1,output_dir=out_file_dir2,
+          hold=hold,array=length(tumours_list))
+          exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+
+          if(verbose){
+              print_verbose(job=job,arg=argg,exec_code=exec_code)
+          }
+          error=execute_job(exec_code=exec_code)
+          if(error!=0){
+              stop("gatk failed to run due to unknown error.
+              Check std error for more information.")
+          }
+  
+         jobs_report[["steps"]][["par_sample_call_variants"]]<- build_job_report(
+              job_id=job,
+              executor_id=executor_id,
+              exec_code=exec_code, 
+              task_id=task_id,
+              input_args=argg,
+              out_file_dir=out_file_dir,
+              out_files=list(
+                )
+              )
+
+  }
+
+
+  if(wait&&mode=="batch"){
+    job_validator(job=unlist_lvl(jobs_report[["steps"]],var="job_id"),time=update_time,
+    verbose=verbose,threads=threads)
+  }
+
+  return(jobs_report)
+
+}
+
+
+
+
 
 
 #' Filter Mutect2 Calls wrapper for R
@@ -1696,9 +1883,10 @@ learn_orientation_gatk=function(
   f1r2="",output_name="",output_dir=".",clean=TRUE,
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
-  executor_id=make_unique_id("parSampleMutect2"),
-  task_name="parSampleMutect2",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""){
+  executor_id=make_unique_id("learnOrientationMutect2"),
+  task_name="learnOrientationMutect2",time="48:0:0",
+  update_time=60,wait=FALSE,hold=""
+){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -1725,7 +1913,7 @@ learn_orientation_gatk=function(
 
   if(clean){
     exec_code=paste(exec_code," && rm",paste(f1r2,collapse=" "))
-}
+  }
 
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
@@ -2091,7 +2279,8 @@ pileup_summary_gatk=function(
   threads=1,ram=4,mode="local",
   executor_id=make_unique_id("pileupSummaryGatk"),
   task_name="pileupSummaryGatk",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""){
+  update_time=60,wait=FALSE,hold=""
+){
   
   if(!is.null(rdata)){
     load(rdata)
@@ -2372,124 +2561,6 @@ merge_mutect_stats_gatk=function(
 
 }
 
-
-#' Multisample parallelization across Mutect2 Gatk Variant Calling
-#'
-#' This function functions calls Mutect2 across multiple tumour samples in parallel
-#'
-#' @param tumours Path to germline bam files.
-#' @param normal Path to germline bam files.
-#' @param sif_gatk Path to gatk sif file.
-#' @param ref_genome Path to reference genome fasta file.
-#' @param regions Regions to analyze. Optional
-#' @param germ_resource Path to germline resources vcf file.
-#' @param pon [Optional] Path to panel of normal.
-#' @param orientation Infer read orientation. Default FALSE
-#' @param mnps Remove multi-
-#' @param output_dir Path to the output directory.
-#' @param mnps Report MNPs in vcf file.
-#' @param verbose Enables progress messages. Default False.
-#' @export
-
-
-parallel_sample_mutect2_gatk=function(
-  sif_gatk=build_default_sif_list()$sif_gatk,
-  tumours="",normal="",
-  ref_genome=build_default_reference_list()$HG19$reference,
-  regions="",pon="",output_dir=".",tmp_dir=".",
-  verbose=FALSE,orientation=FALSE,mnps=FALSE,
-  batch_config=build_default_preprocess_config(),
-  threads=4,ram=4,mode="local",
-  executor_id=make_unique_id("parSampleMutect2"),
-  task_name="parSampleMutect2",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""
-){
-
-  argg <- as.list(environment())
-  task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir,name="pon")
-  job=build_job(executor_id=executor_id,task_id=task_id)
-
-
-  job_report=build_job_report(
-    job_id=job,
-    executor_id=executor_id,
-    exec_code=list(), 
-    task_id=task_id,
-    input_args=argg,
-    out_file_dir=out_file_dir,
-    out_files=list(
-      )
-     )
-  tumours_list=tumours
-  names(tumours_list)=Vectorize(get_file_name)(tumours)
-
-if(mode=="local"){
-  job_report[["steps"]][["parSampleCallVariantsMutect2"]]<-
-  parallel::mclapply(tumours_list,FUN=function(tumour){
-    job_report <-  mutect2_gatk(
-          sif_gatk=sif_gatk,
-          tumour=tumour,
-          normal=normal,
-          id=get_file_name(sample),
-          ref_genome=ref_genome,
-          output_dir=out_file_dir,tmp_dir=tmp_dir,
-          verbose=verbose,orientation=orientation,mnps=mnps,
-          batch_config=batch_config,
-          threads=threads,ram=ram,mode=mode,
-          executor_id=task_id,
-          time=time)
-  },mc.cores=threads)
-  
-  }else if(mode=="batch"){
-        rdata_file=paste0(tmp_dir,"/",job,".RData")
-        save(normals,sif_gatk,bam,ref_genome,orientation,mnps,output_dir,verbose,tmp_dir,file = rdata_file)
-        exec_code=paste0("Rscript -e \"ULPwgs::mutect2_gatk(rdata=\\\"",rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
-        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-        batch_code=build_job_exec(job=job,time=time,ram=ram,
-        threads=1,output_dir=out_file_dir2,
-        hold=hold,array=length(normals))
-        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
-
-        if(verbose){
-            print_verbose(job=job,arg=argg,exec_code=exec_code)
-        }
-        error=execute_job(exec_code=exec_code)
-        if(error!=0){
-            stop("gatk failed to run due to unknown error.
-            Check std error for more information.")
-        }
-
-      
-  
-         job_report[["steps"]][["parSampleCallVariantsMutect2"]]<- build_job_report(
-              job_id=job,
-              executor_id=executor_id,
-              exec_code=exec_code, 
-              task_id=task_id,
-              input_args=argg,
-              out_file_dir=out_file_dir,
-              out_files=list(
-                  vcf=paste0(out_file_dir,Vectorize(FUN=get_file_name)(normals),".unfilt.vcf")
-                )
-        )
-  }
-
-  error=execute_job(exec_code=exec_code)
-  
-  if(error!=0){
-    stop("gatk failed to run due to unknown error.
-    Check std error for more information.")
-  }
-
-  if(wait&&mode=="batch"){
-    job_validator(job=job_report$job_id,time=update_time,
-    verbose=verbose,threads=threads)
-  }
-
-  return(job_report)
-
-}
 
 
 
