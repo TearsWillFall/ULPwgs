@@ -302,7 +302,7 @@ write_vcf=function(
         vcf=out_file,compress=compress,
         index=index,index_format=index_format,
         bgzip_index=bgzip_index,
-        output_dir=out_file_dir,output_name=file,
+        output_dir=out_file_dir,output_name=output_name,
         clean=clean,verbose=verbose,mode=mode,
         batch_config=batch_config,
         time=time,threads=threads,
