@@ -5,7 +5,7 @@
 \title{Extract VCF body
 This function VCF body columns in a easy to access format}
 \usage{
-extract_body_vcf(vcf_body, samples)
+extract_body_vcf(vcf_body, vcf_samples)
 }
 \arguments{
 \item{vcf_body}{VCF body structure}

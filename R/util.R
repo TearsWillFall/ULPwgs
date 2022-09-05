@@ -94,7 +94,25 @@ extract_body_vcf=function(vcf_body,vcf_samples){
 #' This function VCF body columns in a easy to access format
 #' 
 #'
-#' @param vcf_body VCF body structure
+#' @param bin_bgzip Path to bgzip executable.
+#' @param bin_tabix Path to TABIX executable.
+#' @param vcf Path to VCF file
+#' @param compress Compress VCF file. Default TRUE.
+#' @param index Index VCF file. Default TRUE.
+#' @param index_format VCF index format. Default tbi. Options [tbi,cbi].
+#' @param bgzip_index Create BGZIP index for compressed file. Default FALSE
+#' @param output_dir Path to the output directory.
+#' @param clean Remove input VCF after completion. Default FALSE.
+#' @param verbose Enables progress messages. Default False.
+#' @param executor_id Task EXECUTOR ID. Default "gatherBQSR"
+#' @param task_name Task name. Default "gatherBQSR"
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param threads Number of threads to split the work. Default 3
+#' @param ram [OPTIONAL] If batch mode. RAM memory in GB per job. Default 1
+#' @param update_time [OPTIONAL] If batch mode. Show job updates every update time. Default 60
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 
 

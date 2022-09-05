@@ -7,13 +7,13 @@
 gather_BQSR_reports_gatk(
   sif_gatk = build_default_sif_list()$sif_gatk,
   report = "",
-  executor_id = make_unique_id("gatherBQSR"),
-  task_name = "gatherBQSR",
   output_name = "Report",
   clean = FALSE,
   output_dir = ".",
-  verbose = FALSE,
   tmp_dir = ".",
+  verbose = FALSE,
+  executor_id = make_unique_id("gatherBQSR"),
+  task_name = "gatherBQSR",
   batch_config = build_default_preprocess_config(),
   mode = "local",
   time = "48:0:0",
@@ -29,19 +29,19 @@ gather_BQSR_reports_gatk(
 
 \item{report}{\link{REQUIRED} Path to indivual reports.}
 
-\item{executor_id}{Task EXECUTOR ID. Default "gatherBQSR"}
-
-\item{task_name}{Task name. Default "gatherBQSR"}
-
 \item{output_name}{\link{OPTIONAL} Name for the output report file.}
 
 \item{clean}{Clean input files. Default TRUE.}
 
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
+\item{tmp_dir}{\link{OPTIONAL} Path to temporary directory.}
+
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
-\item{tmp_dir}{\link{OPTIONAL} Path to temporary directory.}
+\item{executor_id}{Task EXECUTOR ID. Default "gatherBQSR"}
+
+\item{task_name}{Task name. Default "gatherBQSR"}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
