@@ -98,24 +98,28 @@ extract_body_vcf=function(vcf_body,samples){
 #' @export
 
 
-add_af_strelka_vcf=function(vcf){
-  
+add_af_strelka_vcf=function(vcf,overwrite=FALSE){
   vcf_dat=read_vcf(vcf)
   vcf_dat$body=vcf_dat$body %>% tidyr::unnest(c(SAMPLE,FORMAT,VALUE)) %>% tidyr::unnest(c(FORMAT,VALUE))
-  vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
+  vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
+  dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
   ##Extract Tier1 read information for REF and ALT
   vcf_dat$body=vcf_dat$body %>% dplyr::mutate(
     UREF=strsplit(VALUE[FORMAT==paste0(REF,"U")],split=",")[[1]][1],
     UALT=strsplit(VALUE[FORMAT==paste0(ALT,"U")],split=",")[[1]][1]) %>%
     dplyr::mutate(VALUE=ifelse(FORMAT=="AF",
     as.numeric(UALT)/(as.numeric(UREF)+as.numeric(UALT)),VALUE))%>% dplyr::select(-c(UALT,UREF))
-  vcf_dat$body=vcf_dat$body %>%  tidyr::nest(FORMAT=FORMAT,VALUE=VALUE) %>% ungroup()%>% 
+  vcf_dat$body=vcf_dat$body %>%  tidyr::nest(FORMAT=FORMAT,VALUE=VALUE) %>% dplyr::ungroup()%>% 
   tidyr::nest(SAMPLE=SAMPLE,FORMAT=FORMAT,VALUE=VALUE) 
   add_af_descriptor<-function(){
       list(Number="1",Type="Float",Description="\"Variant allelic frequency for tier 1 reads\"")
   }
   vcf_dat$descriptors$FORMAT[["AF"]]<-add_af_descriptor()
-  return(vcf_dat)
+  out_file=get_file_name(vcf)
+  if(!overwrite){
+    out_file=paste0(out_file,".af")
+  }
+  write_vcf(vcf_dat,output_name=out_file,output_dir=dirname(vcf))
 }
 
 #' Extract VCF header descriptors
