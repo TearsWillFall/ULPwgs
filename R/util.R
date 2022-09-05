@@ -265,7 +265,7 @@ write_vcf=function(
 
     write.table(
       x=build_header_vcf(vcf$descriptors),
-      file=out_file
+      file=out_file,
       sep="\t",
       quote=FALSE,
       row.names=FALSE,
