@@ -364,7 +364,7 @@ add_sv_af_strelka_vcf=function(
     tidyr::unnest(c(FORMAT,VALUE))
     vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
     dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AFPR")) %>%
-    dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AFSR")) %>%
+    dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AFSR"))
     ##Extract Tier1 read information for REF and ALT
     vcf_dat$body=vcf_dat$body %>% dplyr::mutate(
       UREFPR=strsplit(VALUE[FORMAT=="PR"],split=",")[[1]][1],
@@ -441,7 +441,7 @@ extract_descriptors_vcf=function(vcf_header){
                 unlist(
                   stringi::stri_split_fixed(
                     gsub("<|>","",split[2]),
-                    pattern=",",n=4)
+                    pattern=",",n=stringr::str_count(split[2],"="))
                 ),FUN=extract_key_value),
                 recursive=FALSE)
           
