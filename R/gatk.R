@@ -1580,11 +1580,9 @@ parallel_samples_mutect2_gatk=function(
             normal=normal,
             output_dir=out_file_dir,
             verbose=verbose,
-            mode=mode,ram=ram,
-            threads=threads,
+            threads=threads
             executor_id=task_id)
     },mc.cores=threads)
-    
   }else if(mode=="batch"){
           rdata_file=paste0(tmp_dir,"/",job,".samples.RData")
           output_dir=out_file_dir
