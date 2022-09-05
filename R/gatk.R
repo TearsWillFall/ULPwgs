@@ -1533,7 +1533,7 @@ parallel_samples_mutect2_gatk=function(
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="mutect2_reports")
-  tmp_dir=set_dir(dir=out_file_dir,name="mutect2_tmp")
+ 
 
   job=build_job(executor_id=executor_id,task_id=task_id)
 
@@ -1578,14 +1578,13 @@ parallel_samples_mutect2_gatk=function(
             tumour=tumour,
             normal=normal,
             output_dir=out_file_dir,
-            tmp_dir=tmp_dir,
             verbose=verbose,
             executor_id=task_id)
     },mc.cores=threads)
     
   }else if(mode=="batch"){
 
-          rdata_file=paste0(tmp_dir,"/",job,".samples.RData")
+          rdata_file=paste0(out_file_dir,"/",job,".samples.RData")
           output_dir=out_file_dir
           save(tumours_list,normal,
           sif_gatk,
