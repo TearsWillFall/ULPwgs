@@ -83,7 +83,7 @@ extract_body_vcf=function(vcf_body,vcf_samples){
      vcf_body[[sample]]<<-as.list(extract_col_vcf(vcf_body[[sample]],sep=":"))
   })
   vcf_body=vcf_body %>% tidyr::pivot_longer(names_to="SAMPLE",
-  cols=c(NORMAL,TUMOR),values_to="VALUE") %>%
+  cols=vcf_samples,values_to="VALUE") %>%
   tidyr::nest(SAMPLE=SAMPLE,FORMAT=FORMAT,VALUE=VALUE)
 
   return(vcf_body)
@@ -137,7 +137,6 @@ add_snv_af_strelka_vcf=function(
     out_file_dir=dirname(vcf)
     job=build_job(executor_id=executor_id,task_id=task_id)
 
-
     job_report=build_job_report(
       job_id=job,
       executor_id=executor_id,
@@ -147,7 +146,6 @@ add_snv_af_strelka_vcf=function(
       out_file_dir=out_file_dir,
       out_files=list()
     )
-
 
     vcf_dat=read_vcf(vcf)
     vcf_dat$body=vcf_dat$body %>% tidyr::unnest(c(SAMPLE,FORMAT,VALUE)) %>% 
