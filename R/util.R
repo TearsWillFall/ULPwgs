@@ -369,8 +369,8 @@ add_sv_af_strelka_vcf=function(
     vcf_dat$body=vcf_dat$body %>% dplyr::mutate(
       UREFPR=strsplit(VALUE[FORMAT=="PR"],split=",")[[1]][1],
       UALTPR=strsplit(VALUE[FORMAT=="PR"],split=",")[[1]][2],
-      UREFSR=strsplit(VALUE[FORMAT=="PR"],split=",")[[1]][1],
-      UALTSR=strsplit(VALUE[FORMAT=="PR"],split=",")[[1]][2]) %>%
+      UREFSR=strsplit(VALUE[FORMAT=="SR"],split=",")[[1]][1],
+      UALTSR=strsplit(VALUE[FORMAT=="SR"],split=",")[[1]][2]) %>%
       dplyr::mutate(
         VALUE=ifelse(FORMAT=="AFPR",as.numeric(UALTPR)/(as.numeric(UREFPR)+as.numeric(UALTPR)),VALUE),
         VALUE=ifelse(FORMAT=="AFSR",as.numeric(UALTSR)/(as.numeric(UREFSR)+as.numeric(UALTSR)),VALUE))%>%
@@ -396,7 +396,6 @@ add_sv_af_strelka_vcf=function(
   
     vcf_dat$descriptors$FORMAT[["AFPR"]]<-add_pr_af_descriptor()
     vcf_dat$descriptors$FORMAT[["AFSR"]]<-add_sr_af_descriptor()
-
 
 
     if(!overwrite){
