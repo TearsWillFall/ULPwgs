@@ -55,7 +55,7 @@ read_vcf=function(vcf=""){
 #' @param samples Sample columns in VCF file
 #' @export
 
-extract_body_vcf=function(vcf_body,samples){
+extract_body_vcf=function(vcf_body,vcf_samples){
   extract_col_vcf=function(col,sep=";"){
     tmp=Vectorize(strsplit,USE.NAMES=FALSE)(col,split=sep)
     return(tmp)
@@ -79,7 +79,7 @@ extract_body_vcf=function(vcf_body,samples){
   vcf_body$INFO=extract_info_vcf(vcf_body$INFO)
   vcf_body$FORMAT=extract_col_vcf(vcf_body$FORMAT,sep=":")
 
-  lapply(samples,FUN=function(sample){
+  lapply(vcf_samples,FUN=function(sample){
      vcf_body[[sample]]<<-as.list(extract_col_vcf(vcf_body[[sample]],sep=":"))
   })
   vcf_body=vcf_body %>% tidyr::pivot_longer(names_to="SAMPLE",
@@ -100,7 +100,8 @@ extract_body_vcf=function(vcf_body,samples){
 
 add_af_strelka_vcf=function(vcf,overwrite=FALSE){
   vcf_dat=read_vcf(vcf)
-  vcf_dat$body=vcf_dat$body %>% tidyr::unnest(c(SAMPLE,FORMAT,VALUE)) %>% tidyr::unnest(c(FORMAT,VALUE))
+  vcf_dat$body=vcf_dat$body %>% tidyr::unnest(c(SAMPLE,FORMAT,VALUE)) %>% 
+  tidyr::unnest(c(FORMAT,VALUE))
   vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
   dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
   ##Extract Tier1 read information for REF and ALT
@@ -109,7 +110,9 @@ add_af_strelka_vcf=function(vcf,overwrite=FALSE){
     UALT=strsplit(VALUE[FORMAT==paste0(ALT,"U")],split=",")[[1]][1]) %>%
     dplyr::mutate(VALUE=ifelse(FORMAT=="AF",
     as.numeric(UALT)/(as.numeric(UREF)+as.numeric(UALT)),VALUE))%>% dplyr::select(-c(UALT,UREF))
-  vcf_dat$body=vcf_dat$body %>%  tidyr::nest(FORMAT=FORMAT,VALUE=VALUE) %>% dplyr::ungroup()%>% 
+  vcf_dat$body=vcf_dat$body %>% 
+   tidyr::nest(FORMAT=FORMAT,VALUE=VALUE) %>% 
+   dplyr::ungroup()%>% 
   tidyr::nest(SAMPLE=SAMPLE,FORMAT=FORMAT,VALUE=VALUE) 
   add_af_descriptor<-function(){
       list(Number="1",Type="Float",Description="\"Variant allelic frequency for tier 1 reads\"")
@@ -229,13 +232,13 @@ write_vcf=function(
       )) 
     }
 
-    build_body_vcf=function(vcf_body,samples){
+    build_body_vcf=function(vcf_body,vcf_samples){
       vcf_body=vcf_body %>% tidyr::unnest(c(SAMPLE,FORMAT,VALUE)) %>%
       tidyr::unnest(c(FORMAT,VALUE)) %>% 
       tidyr::pivot_wider(names_from=SAMPLE,values_from=VALUE) %>%
       tidyr::nest(FORMAT=FORMAT,NORMAL=NORMAL,TUMOR=TUMOR)
       vcf_body=vcf_body%>% dplyr::rowwise() %>%
-       dplyr::mutate(across(c("FORMAT",all_of(samples)),
+       dplyr::mutate(across(c("FORMAT",all_of(vcf_samples)),
        function(x) paste0(unlist(x),collapse=":")))%>%
        dplyr::mutate(FILTER=paste0(FILTER,collapse=","),
        INFO=paste0(paste0(names(unlist(INFO)),
@@ -264,7 +267,7 @@ write_vcf=function(
 
 
     write.table(
-      x=build_header_vcf(vcf$descriptors),
+      x=build_header_vcf(vcf_descriptors=vcf$descriptors),
       file=out_file,
       sep="\t",
       quote=FALSE,
@@ -283,7 +286,7 @@ write_vcf=function(
     )
 
     write.table(
-      x=build_body_vcf(vcf$body,vcf$samples),
+      x=build_body_vcf(vcf_body=vcf$body,vcf_samples=vcf$samples),
       file=out_file,
       sep="\t",
       quote=FALSE,
@@ -293,7 +296,7 @@ write_vcf=function(
     )
 
     if(compress){
-      job_report[["steps"]][["CompressAndIndexVCF"]]=compress_and_index_vcf_htslib(
+      job_report[["steps"]][["CompressAndIndexVCF"]]<-compress_and_index_vcf_htslib(
         bin_bgzip=bin_bgzip,
         bin_tabix=bin_tabix,
         vcf=out_file,compress=compress,
