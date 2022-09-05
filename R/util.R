@@ -250,17 +250,21 @@ write_vcf=function(
       append=TRUE
     )
 
-    compress_and_index_vcf_htslib(
-      bin_bgzip=bin_bgzip,
-      bin_tabix=bin_tabix,
-      vcf=file,compress=compress,
-      index=index,index_format=index_format,
-      bgzip_index=bgzip_index,
-      output_dir=out_file_dir,output_name=file,
-      clean=clean,verbose=verboe
-  )
+    if(compress){
+      compress_and_index_vcf_htslib(
+        bin_bgzip=bin_bgzip,
+        bin_tabix=bin_tabix,
+        vcf=file,compress=compress,
+        index=index,index_format=index_format,
+        bgzip_index=bgzip_index,
+        output_dir=out_file_dir,output_name=file,
+        clean=clean,verbose=verboe
+    )
 
+  }
   return()
+
+
 }
 
 
