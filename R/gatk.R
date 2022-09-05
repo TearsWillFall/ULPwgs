@@ -1276,7 +1276,7 @@ parallel_regions_mutect2_gatk=function(
     load(rdata)
     if(!is.null(selected)){
       tumour=tumours_list[selected]
-
+      output_name=get_file_name(tumour)
     }
   }
 
