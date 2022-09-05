@@ -193,6 +193,8 @@ extract_descriptors_vcf=function(vcf_header){
 #' 
 
 write_vcf=function(
+  bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+  bin_tabix=build_default_tool_binary_list()$bin_tabix,
   vcf="",
   output_name="",
   compress=TRUE,index=TRUE,
@@ -242,6 +244,8 @@ write_vcf=function(
     }
 
 
+    out_file=paste0(out_file_dir,"/",output_name,".vcf")
+
     job_report=build_job_report(
       job_id=job,
       executor_id=executor_id,
@@ -249,7 +253,8 @@ write_vcf=function(
       task_id=task_id,
       input_args = argg,
       out_file_dir=out_file_dir,
-      out_files=list()
+      out_files=list(
+        vcf=out_file)
     )
 
 
@@ -260,21 +265,26 @@ write_vcf=function(
 
     write.table(
       x=build_header_vcf(vcf$descriptors),
-      file=paste0(out_file_dir,"/",output_name,".vcf")
+      file=out_file
+      sep="\t",
+      quote=FALSE,
+      row.names=FALSE,
+      col.names=FALSE,
     )
 
     write.table(
-      x=paste0("#",vcf$col_names),
-      file=paste0(out_file_dir,
-      "/",output_name,".vcf"),sep="\t",quote=FALSE,
+      x=paste0("#",paste0(names(vcf$body),collapse="\t")),
+      file=out_file,
+      sep="\t",
+      quote=FALSE,
       row.names=FALSE,
       col.names=FALSE,
       append=TRUE
     )
 
     write.table(
-      x=build_body_vcf(vcf$body),
-      file=paste0(out_file_dir,"/",output_name,".vcf"),
+      x=build_body_vcf(vcf$body,vcf$samples),
+      file=out_file,
       sep="\t",
       quote=FALSE,
       row.names=FALSE,
@@ -286,7 +296,7 @@ write_vcf=function(
       job_report[["steps"]][["CompressAndIndexVCF"]]=compress_and_index_vcf_htslib(
         bin_bgzip=bin_bgzip,
         bin_tabix=bin_tabix,
-        vcf=file,compress=compress,
+        vcf=out_file,compress=compress,
         index=index,index_format=index_format,
         bgzip_index=bgzip_index,
         output_dir=out_file_dir,output_name=file,
