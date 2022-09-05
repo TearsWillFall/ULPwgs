@@ -1569,7 +1569,7 @@ parallel_samples_mutect2_gatk=function(
             germ_resource=germ_resource,
             biallelic_db=biallelic_db,
             db_interval=db_interval,
-            regions=regions,pon=pon,
+            pon=pon,
             filter=filter,
             orientation=orientation,
             mnps=mnps,
