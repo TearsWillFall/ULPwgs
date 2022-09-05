@@ -90,8 +90,9 @@ extract_body_vcf=function(vcf_body,vcf_samples){
 }
 
 
-#' Extract VCF body
-#' This function VCF body columns in a easy to access format
+#' Add SNV AF information to Strelka VCF file
+#' This function reads and modifies Strelka produced VCF files to 
+#' add an entry for AF within the VCF file
 #' 
 #'
 #' @param bin_bgzip Path to bgzip executable.
@@ -192,6 +193,115 @@ add_snv_af_strelka_vcf=function(
   
     return(job_report)
 }
+
+
+
+#' Add indel AF information to Strelka VCF file
+#' This function reads and modifies Strelka produced VCF files to 
+#' add an entry for AF within the VCF file
+#' 
+#' @param bin_bgzip Path to bgzip executable.
+#' @param bin_tabix Path to TABIX executable.
+#' @param vcf Path to VCF file
+#' @param compress Compress VCF file. Default TRUE.
+#' @param index Index VCF file. Default TRUE.
+#' @param index_format VCF index format. Default tbi. Options [tbi,cbi].
+#' @param bgzip_index Create BGZIP index for compressed file. Default FALSE
+#' @param output_dir Path to the output directory.
+#' @param clean Remove input VCF after completion. Default FALSE.
+#' @param verbose Enables progress messages. Default False.
+#' @param executor_id Task EXECUTOR ID. Default "gatherBQSR"
+#' @param task_name Task name. Default "gatherBQSR"
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param threads Number of threads to split the work. Default 3
+#' @param ram [OPTIONAL] If batch mode. RAM memory in GB per job. Default 1
+#' @param update_time [OPTIONAL] If batch mode. Show job updates every update time. Default 60
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+add_indel_af_strelka_vcf=function(
+  bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+  bin_tabix=build_default_tool_binary_list()$bin_tabix,
+  vcf,overwrite=FALSE,
+  compress=TRUE,index=TRUE,
+  index_format="tbi",bgzip_index=FALSE,
+  clean=TRUE,verbose=FALSE, 
+  executor_id=make_unique_id("addAFindelStrelka"),
+  task_name="addAFindelStrelka",
+  batch_config=build_default_preprocess_config(),
+  mode="local",time="48:0:0",
+  threads=1,ram=4,update_time=60,
+  wait=FALSE,hold=""){
+    
+    argg <- as.list(environment())
+    task_id=make_unique_id(task_name)
+    out_file=paste0(get_file_name(vcf),".indel")
+    out_file_dir=dirname(vcf)
+    job=build_job(executor_id=executor_id,task_id=task_id)
+
+
+    job_report=build_job_report(
+      job_id=job,
+      executor_id=executor_id,
+      exec_code=list(),
+      task_id=task_id,
+      input_args = argg,
+      out_file_dir=out_file_dir,
+      out_files=list()
+    )
+
+
+    vcf_dat=read_vcf(vcf)
+    vcf_dat$body=vcf_dat$body %>% tidyr::unnest(c(SAMPLE,FORMAT,VALUE)) %>% 
+    tidyr::unnest(c(FORMAT,VALUE))
+    vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
+    dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
+    ##Extract Tier1 read information for REF and ALT
+    vcf_dat$body=vcf_dat$body %>% dplyr::mutate(
+      UREF=strsplit(VALUE[FORMAT=="TAR"],split=",")[[1]][1],
+      UALT=strsplit(VALUE[FORMAT=="TIR"],split=",")[[1]][1]) %>%
+      dplyr::mutate(VALUE=ifelse(FORMAT=="AF",
+      as.numeric(UALT)/(as.numeric(UREF)+as.numeric(UALT)),VALUE))%>% dplyr::select(-c(UALT,UREF))
+    vcf_dat$body=vcf_dat$body %>% 
+    dplyr::mutate(VALUE=ifelse(is.na(VALUE),"",VALUE))%>%
+    tidyr::nest(FORMAT=FORMAT,VALUE=VALUE) %>% 
+    dplyr::ungroup()%>% 
+    tidyr::nest(SAMPLE=SAMPLE,FORMAT=FORMAT,VALUE=VALUE) 
+    
+    add_af_descriptor<-function(){
+        list(Number="1",Type="Float",Description="\"Variant allelic frequency for tier 1 reads\"")
+    }
+
+    vcf_dat$descriptors$FORMAT[["AF"]]<-add_af_descriptor()
+    
+    if(!overwrite){
+      out_file=paste0(out_file,".af")
+    }
+
+    job_report[["steps"]][["writeVCF"]]<-write_vcf(
+      vcf=vcf_dat,
+      output_name=out_file,
+      output_dir=out_file_dir,
+      bin_bgzip=bin_bgzip,
+      bin_tabix=bin_tabix,
+      compress=compress,
+      index=index,index_format=index_format,
+      bgzip_index=bgzip_index,
+      clean=clean,verbose=verbose,mode=mode,
+      batch_config=batch_config,
+      time=time,threads=threads,
+      ram=ram,hold=hold
+    )
+  
+    return(job_report)
+}
+
+
+
+
 
 #' Extract VCF header descriptors
 #' This function extracts VCF header descriptors
@@ -349,7 +459,7 @@ write_vcf=function(
     )
 
     write.table(
-      x=paste0("#",paste0(names(body),collapse="\t")),
+      x=paste0("#",paste0(names(vcf_body),collapse="\t")),
       file=out_file,
       sep="\t",
       quote=FALSE,
