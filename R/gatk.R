@@ -1533,6 +1533,7 @@ parallel_samples_mutect2_gatk=function(
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="mutect2_reports")
+  tmp_dir=set_dir(dir=out_file_dir,name="mutect2_tmp")
  
 
   job=build_job(executor_id=executor_id,task_id=task_id)
@@ -1583,8 +1584,7 @@ parallel_samples_mutect2_gatk=function(
     },mc.cores=threads)
     
   }else if(mode=="batch"){
-
-          rdata_file=paste0(out_file_dir,"/",job,".samples.RData")
+          rdata_file=paste0(tmp_dir,"/",job,".samples.RData")
           output_dir=out_file_dir
           save(tumours_list,normal,
           sif_gatk,
@@ -1594,13 +1594,14 @@ parallel_samples_mutect2_gatk=function(
           bin_tabix,
           germ_resource,
           biallelic_db,db_interval,pon,ref_genome,
-          filter,orientation,mnps,output_dir,contamination,clean,
+          filter,orientation,mnps,mode,
+          output_dir,contamination,clean,
           verbose,file = rdata_file)
           exec_code=paste0("Rscript -e \"ULPwgs::parallel_regions_mutect2_gatk(rdata=\\\"",
           rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
           out_file_dir2=set_dir(dir=out_file_dir,name="batch")
           batch_code=build_job_exec(job=job,time=time,ram=ram,
-          threads=1,output_dir=out_file_dir2,
+          threads=threads,output_dir=out_file_dir2,
           hold=hold,array=length(tumours_list))
           exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
 
