@@ -160,6 +160,7 @@ add_snv_af_strelka_vcf=function(
       dplyr::mutate(VALUE=ifelse(FORMAT=="AF",
       as.numeric(UALT)/(as.numeric(UREF)+as.numeric(UALT)),VALUE))%>% dplyr::select(-c(UALT,UREF))
     vcf_dat$body=vcf_dat$body %>% 
+    dplyr::mutate(VALUE=ifelse(is.na(VALUE),"",VALUE))%>%
     tidyr::nest(FORMAT=FORMAT,VALUE=VALUE) %>% 
     dplyr::ungroup()%>% 
     tidyr::nest(SAMPLE=SAMPLE,FORMAT=FORMAT,VALUE=VALUE) 
@@ -300,7 +301,7 @@ write_vcf=function(
     }
 
     build_body_vcf=function(vcf_body,vcf_samples){
-      vcf_body=vcf_body %>% tidyr::unnest(c(SAMPLE,FORMAT,VALUE)) %>%
+      vcf_body=vcf_body %>% tidyr::unnest(c(SAMPLE,FORMAT,VALUE)) %>% 
       tidyr::unnest(c(FORMAT,VALUE)) %>% 
       tidyr::pivot_wider(names_from=SAMPLE,values_from=VALUE) %>%
       tidyr::nest(FORMAT=FORMAT,NORMAL=NORMAL,TUMOR=TUMOR)
@@ -331,10 +332,15 @@ write_vcf=function(
     if(output_name==""){
       stop("File output name can't be empty.")
     }
+    
+    ###Construct VCF header
+    vcf_header=build_header_vcf(vcf_descriptors=vcf$descriptors)
 
+    ###Construct VCF body
+    vcf_body=build_body_vcf(vcf_body=vcf$body,vcf_samples=vcf$samples)
 
     write.table(
-      x=build_header_vcf(vcf_descriptors=vcf$descriptors),
+      x=vcf_header,
       file=out_file,
       sep="\t",
       quote=FALSE,
@@ -343,7 +349,7 @@ write_vcf=function(
     )
 
     write.table(
-      x=paste0("#",paste0(names(vcf$body),collapse="\t")),
+      x=paste0("#",paste0(names(body),collapse="\t")),
       file=out_file,
       sep="\t",
       quote=FALSE,
@@ -353,7 +359,7 @@ write_vcf=function(
     )
 
     write.table(
-      x=build_body_vcf(vcf_body=vcf$body,vcf_samples=vcf$samples),
+      x=vcf_body,
       file=out_file,
       sep="\t",
       quote=FALSE,
