@@ -100,6 +100,8 @@ extract_body_vcf=function(vcf_body,vcf_samples){
 
 add_af_strelka_vcf=function(vcf,overwrite=FALSE){
   vcf_dat=read_vcf(vcf)
+  out_file=get_file_name(vcf)
+  out_file_dir=dirname(vcf)
   vcf_dat$body=vcf_dat$body %>% tidyr::unnest(c(SAMPLE,FORMAT,VALUE)) %>% 
   tidyr::unnest(c(FORMAT,VALUE))
   vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
@@ -118,11 +120,11 @@ add_af_strelka_vcf=function(vcf,overwrite=FALSE){
       list(Number="1",Type="Float",Description="\"Variant allelic frequency for tier 1 reads\"")
   }
   vcf_dat$descriptors$FORMAT[["AF"]]<-add_af_descriptor()
-  out_file=get_file_name(vcf)
+  
   if(!overwrite){
     out_file=paste0(out_file,".af")
   }
-  write_vcf(vcf_dat,output_name=out_file,output_dir=dirname(vcf))
+  write_vcf(vcf=vcf_dat,output_name=out_file,output_dir=out_file_dir)
 }
 
 #' Extract VCF header descriptors
