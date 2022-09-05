@@ -1595,7 +1595,7 @@ parallel_samples_mutect2_gatk=function(
           germ_resource,
           biallelic_db,db_interval,pon,ref_genome,
           filter,orientation,mnps,output_dir,contamination,clean,
-          verbose,tmp_dir,file = rdata_file)
+          verbose,file = rdata_file)
           exec_code=paste0("Rscript -e \"ULPwgs::parallel_regions_mutect2_gatk(rdata=\\\"",
           rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
           out_file_dir2=set_dir(dir=out_file_dir,name="batch")
