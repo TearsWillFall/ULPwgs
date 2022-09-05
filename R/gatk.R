@@ -1271,16 +1271,18 @@ parallel_regions_mutect2_gatk=function(
   update_time=60,wait=FALSE,hold=""
 ){
 
+
   if(!is.null(rdata)){
     load(rdata)
     if(!is.null(selected)){
       tumour=tumours_list[selected]
+
     }
   }
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir,name="mutect2_reports")
+  out_file_dir=set_dir(dir=output_dir,name=paste0(output_name,"/mutect2_reports"))
   tmp_dir=set_dir(dir=out_file_dir,name="mutect2_tmp")
 
   job=build_job(executor_id=executor_id,task_id=task_id)
@@ -1568,7 +1570,6 @@ parallel_samples_mutect2_gatk=function(
             biallelic_db=biallelic_db,
             db_interval=db_interval,
             regions=regions,pon=pon,
-            output_dir=out_file_dir,
             filter=filter,
             orientation=orientation,
             mnps=mnps,
