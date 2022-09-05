@@ -1580,6 +1580,8 @@ parallel_samples_mutect2_gatk=function(
             normal=normal,
             output_dir=out_file_dir,
             verbose=verbose,
+            mode=mode,ram=ram,
+            threads=threads,
             executor_id=task_id)
     },mc.cores=threads)
     
@@ -1594,7 +1596,7 @@ parallel_samples_mutect2_gatk=function(
           bin_tabix,
           germ_resource,
           biallelic_db,db_interval,pon,ref_genome,
-          filter,orientation,mnps,mode,
+          filter,orientation,mnps,
           output_dir,contamination,clean,
           verbose,file = rdata_file)
           exec_code=paste0("Rscript -e \"ULPwgs::parallel_regions_mutect2_gatk(rdata=\\\"",
