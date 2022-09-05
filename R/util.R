@@ -180,6 +180,15 @@ extract_descriptors_vcf=function(vcf_header){
 #' @param output_dir Path to the output directory.
 #' @param clean Remove input VCF after completion. Default FALSE.
 #' @param verbose Enables progress messages. Default False.
+#' @param executor_id Task EXECUTOR ID. Default "gatherBQSR"
+#' @param task_name Task name. Default "gatherBQSR"
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param threads Number of threads to split the work. Default 3
+#' @param ram [OPTIONAL] If batch mode. RAM memory in GB per job. Default 1
+#' @param update_time [OPTIONAL] If batch mode. Show job updates every update time. Default 60
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 #' 
 
@@ -189,9 +198,18 @@ write_vcf=function(
   compress=TRUE,index=TRUE,
   index_format="tbi",bgzip_index=FALSE,
   clean=TRUE,output_dir=".",
-  verbose=FALSE
+  verbose=FALSE, 
+  executor_id=make_unique_id("writeVCF"),
+  task_name="writeVCF",
+  batch_config=build_default_preprocess_config(),
+  mode="local",time="48:0:0",
+  threads=4,ram=4,update_time=60,
+  wait=FALSE,hold=""
 ){  
-
+    argg <- as.list(environment())
+    task_id=make_unique_id(task_name)
+    out_file_dir=set_dir(dir=output_dir)
+    job=build_job(executor_id=executor_id,task_id=task_id)
 
     build_header_vcf=function(vcf_descriptors){
       header=unlist(lapply(names(vcf_descriptors),
@@ -224,6 +242,16 @@ write_vcf=function(
     }
 
 
+    job_report=build_job_report(
+      job_id=job,
+      executor_id=executor_id,
+      exec_code=exec_code,
+      task_id=task_id,
+      input_args = argg,
+      out_file_dir=out_file_dir,
+      out_files=list()
+    )
+
 
     if(output_name==""){
       stop("File output name can't be empty.")
@@ -255,18 +283,23 @@ write_vcf=function(
     )
 
     if(compress){
-      compress_and_index_vcf_htslib(
+      job_report[["steps"]][["CompressAndIndexVCF"]]=compress_and_index_vcf_htslib(
         bin_bgzip=bin_bgzip,
         bin_tabix=bin_tabix,
         vcf=file,compress=compress,
         index=index,index_format=index_format,
         bgzip_index=bgzip_index,
         output_dir=out_file_dir,output_name=file,
-        clean=clean,verbose=verboe
+        clean=clean,verbose=verbose,mode=mode,
+        batch_config=batch_config,
+        time=time,threads=threads,
+        ram=ram,hold=hold
+
+
     )
 
   }
-  return()
+  return(job_report)
 
 
 }

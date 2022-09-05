@@ -509,9 +509,10 @@ parallel_generate_BQSR_gatk=function(
 
 gather_BQSR_reports_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
-  report="",executor_id=make_unique_id("gatherBQSR"),
-  task_name="gatherBQSR",output_name="Report",clean=FALSE,
-  output_dir=".",verbose=FALSE,tmp_dir=".",
+  report="",output_name="Report",clean=FALSE,
+  output_dir=".",tmp_dir=".",verbose=FALSE,
+  executor_id=make_unique_id("gatherBQSR"),
+  task_name="gatherBQSR",
   batch_config=build_default_preprocess_config(),
   mode="local",time="48:0:0",
   threads=4,ram=4,update_time=60,wait=FALSE,hold=""){
