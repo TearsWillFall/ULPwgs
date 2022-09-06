@@ -3045,7 +3045,7 @@ parallel_regions_haplotypecaller_gatk=function(
 
       jobs_report[["steps"]][["filterVariantTranchesGatk"]]<-filter_variant_tranches_gatk(
         sif_gatk=sif_gatk,
-        vcf=vcf,
+        vcf=scored_vcf,
         ref_genome=ref_genome,
         indel_db=indel_db,
         haplotype_db=haplotype_db,
