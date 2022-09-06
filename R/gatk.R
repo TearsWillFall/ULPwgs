@@ -3000,7 +3000,7 @@ parallel_regions_haplotypecaller_gatk=function(
               input_args=argg,
               out_file_dir=tmp_dir,
               out_files=list(
-                  vcf=paste0(tmp_dir,"/vcf/",fname,".",region_list,".unfilt.vcf"),
+                  vcf=paste0(tmp_dir,"/vcf/",fname,".",region_list,".unfilt.vcf.gz"),
                   idx=paste0(tmp_dir,"/vcf/",fname,".",region_list,".unfilt.vcf.idx")
                 )
         )
