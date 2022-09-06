@@ -3040,7 +3040,7 @@ parallel_regions_haplotypecaller_gatk=function(
         hold=hold
     )
 
-      vcf<-jobs_report[["steps"]][["cnnScoreVariantsGatk"]]$out_files$vcf
+      vcf<-jobs_report[["steps"]][["cnnScoreVariantsGatk"]]$out_files$scored_vcf
       hold<-jobs_report[["steps"]][["cnnScoreVariantsGatk"]]$job_id
 
       jobs_report[["steps"]][["filterVariantTranchesGatk"]]<-filter_variant_tranches_gatk(
