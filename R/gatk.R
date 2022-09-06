@@ -2557,8 +2557,6 @@ merge_mutect_stats_gatk=function(
 
   return(job_report)
 
-
-
 }
 
 

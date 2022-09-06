@@ -2,24 +2,27 @@
 % Please edit documentation in R/gatk.R
 \name{create_pon_gatk}
 \alias{create_pon_gatk}
-\title{CreateSomaticPanelOfNormals}
+\title{Wrapper around CreateSomaticPanelOfNormals from GATK package}
 \usage{
 create_pon_gatk(
   sif_gatk = build_default_sif_list()$sif_gatk,
+  bin_bcftools = build_default_tool_binary_list()$bin_bcftools,
+  bin_samtools = build_default_tool_binary_list()$bin_samtools,
+  bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
+  bin_tabix = build_default_tool_binary_list()$bin_tabix,
   normals = "",
-  ref_genome = build_default_reference_list()$HG19$reference,
-  pon = "",
+  output_name = "PoN",
+  regions = "",
   output_dir = ".",
-  tmp_dir = ".",
+  ref_genome = build_default_reference_list()$HG19$reference,
+  germ_resource = build_default_reference_list()$HG19$variant$germ_reference,
   verbose = FALSE,
-  orientation = FALSE,
-  mnps = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 4,
   ram = 4,
   mode = "local",
-  executor_id = make_unique_id("createPoN"),
-  task_name = "createPoN",
+  executor_id = make_unique_id("createPoNGATK"),
+  task_name = "createPoNGATK",
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
@@ -27,26 +30,62 @@ create_pon_gatk(
 )
 }
 \arguments{
-\item{sif_gatk}{Path to gatk sif file.}
+\item{sif_gatk}{\link{REQUIRED} Path to gatk sif file.}
 
-\item{ref_genome}{Path to reference genome fasta file.}
+\item{bin_bcftools}{\link{REQUIRED} Path to bcftools binary file.}
 
-\item{pon}{\link{Optional} Path to panel of normal.}
+\item{bin_samtools}{\link{REQUIRED} Path to samtools binary file.}
 
-\item{output_dir}{Path to the output directory.}
+\item{bin_bgzip}{\link{REQUIRED} Path to bgzip binary file.}
 
-\item{verbose}{Enables progress messages. Default False.}
+\item{bin_tabix}{\link{REQUIRED} Path to tabix binary file.}
 
-\item{mnps}{Report MNPs in vcf file.}
-
-\item{normas}{Path to germline bam files.}
-
-\item{region}{Region to analyze. Optional}
-
-\item{germ_resource}{Path to germline resources vcf file.}
+\item{normals}{\link{OPTIONAL} Path to normal BAM file.}
 
 \item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of one of the samples will be used.}
+
+\item{regions}{\link{OPTIONAL} Regions to analyze. If regions for parallelization are not provided then these will be infered from BAM file.}
+
+\item{output_dir}{\link{OPTIONAL} Path to the output directory.}
+
+\item{ref_genome}{\link{REQUIRED} Path to reference genome fasta file.}
+
+\item{germ_resource}{\link{REQUIRED}Path to germline resources vcf file.}
+
+\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
+
+\item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
+
+\item{ram}{\link{OPTIONAL} RAM memory to asing to each thread. Default 4}
+
+\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
+\item{executor_id}{Task EXECUTOR ID. Default "recalCovariates"}
+
+\item{task_name}{Task name. Default "recalCovariates"}
+
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+
+\item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
+
+\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
+
+\item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
+
+\item{pon}{\link{OPTIONAL} Path to panel of normal.}
+
+\item{mnps}{\link{OPTIONAL} Report MNPs in vcf file.}
+
+\item{contamination}{\link{OPTIONAL} Produce sample cross-contamination reports. Default TRUE.}
+
+\item{orientation}{\link{OPTIONAL} Produce read orientation inforamtion. Default FALSE}
+
+\item{filter}{\link{OPTIONAL} Filter Mutect2. Default TRUE.}
 }
 \description{
-This function creates a somatic panel of normals from normal samples bam files
+This function creates a somatic panel of normals from normal samples bam files.
+Recommended minimum number of normal samples is around 40.
+}
+\details{
+For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360037058172-CreateSomaticPanelOfNormals-BETA-
 }
