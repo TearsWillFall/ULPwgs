@@ -3069,9 +3069,6 @@ parallel_regions_haplotypecaller_gatk=function(
 
 
 
-
-
-
 #' CNN to score germline variants in VCF
 #'
 #' This function functions calls CNNScoreVariants for a VCF files and scores
