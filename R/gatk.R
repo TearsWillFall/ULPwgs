@@ -2566,117 +2566,121 @@ merge_mutect_stats_gatk=function(
 
 
 
-#' CreateSomaticPanelOfNormals 
+#' Wrapper around CreateSomaticPanelOfNormals from GATK package 
 #'
-#' This function creates a somatic panel of normals from normal samples bam files
+#' This function creates a somatic panel of normals from normal samples bam files.
+#' Recommended minimum number of normal samples is around 40.
+#' 
+#' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360037058172-CreateSomaticPanelOfNormals-BETA-
 #'
-#' @param normas Path to germline bam files.
-#' @param sif_gatk Path to gatk sif file.
-#' @param ref_genome Path to reference genome fasta file.
-#' @param region Region to analyze. Optional
-#' @param germ_resource Path to germline resources vcf file.
+#' @param sif_gatk [REQUIRED] Path to gatk sif file.
+#' @param bin_bcftools [REQUIRED] Path to bcftools binary file.
+#' @param bin_bgzip [REQUIRED] Path to bgzip binary file.
+#' @param bin_tabix [REQUIRED] Path to tabix binary file.
+#' @param bin_samtools [REQUIRED] Path to samtools binary file.
+#' @param normals [OPTIONAL] Path to normal BAM file.
+#' @param ref_genome [REQUIRED] Path to reference genome fasta file.
+#' @param germ_resource [REQUIRED]Path to germline resources vcf file.
+#' @param regions [OPTIONAL] Regions to analyze. If regions for parallelization are not provided then these will be infered from BAM file.
 #' @param output_name [OPTIONAL] Name for the output. If not given the name of one of the samples will be used.
-#' @param pon [Optional] Path to panel of normal.
-#' @param output_dir Path to the output directory.
-#' @param mnps Report MNPs in vcf file.
-#' @param verbose Enables progress messages. Default False.
+#' @param pon [OPTIONAL] Path to panel of normal.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param mnps [OPTIONAL] Report MNPs in vcf file.
+#' @param contamination [OPTIONAL] Produce sample cross-contamination reports. Default TRUE.
+#' @param orientation [OPTIONAL] Produce read orientation inforamtion. Default FALSE
+#' @param filter [OPTIONAL] Filter Mutect2. Default TRUE.
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 
 
+
+
 create_pon_gatk=function(
-sif_gatk=build_default_sif_list()$sif_gatk,
-normals="",ref_genome=build_default_reference_list()$HG19$reference,
-pon="",output_dir=".",tmp_dir=".",
-verbose=FALSE,orientation=FALSE,mnps=FALSE,
-batch_config=build_default_preprocess_config(),
-threads=4,ram=4,mode="local",
-executor_id=make_unique_id("createPoN"),
-task_name="createPoN",time="48:0:0",
-update_time=60,wait=FALSE,hold=""){
+  sif_gatk=build_default_sif_list()$sif_gatk,
+  bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+  bin_tabix=build_default_tool_binary_list()$bin_tabix,
+  normals="",output_name="PoN",
+  regions="",output_dir=".",
+  ref_genome=build_default_reference_list()$HG19$reference,
+  germ_resource=build_default_reference_list()$HG19$variant$germ_reference,
+  verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  threads=4,ram=4,mode="local",
+  executor_id=make_unique_id("createPoNGATK"),
+  task_name="createPoNGATK",time="48:0:0",
+  update_time=60,wait=FALSE,hold=""
+){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir,name="pon")
+  out_file_dir=set_dir(dir=output_dir,name="pon_gatk")
   job=build_job(executor_id=executor_id,task_id=task_id)
 
 
+  out_file=paste0(out_file_dir,output_name,".vcf.gz")
   job_report=build_job_report(
     job_id=job,
     executor_id=executor_id,
-    exec_code=list(), 
-    task_id=task_id,
-    input_args=argg,
-    out_file_dir=out_file_dir,
-    out_files=list(
-      )
-    )
-
-
-if(mode=="local"){
-  job_report[["steps"]][["call_variants_mutect2"]]<-
-  parallel::mclapply(normals,FUN=function(sample){
-    job_report <-  mutect2_gatk(
-          sif_gatk=sif_gatk,
-          tumour=sample,
-          id=get_file_name(sample),
-          ref_genome=ref_genome,
-          output_dir=out_file_dir,tmp_dir=tmp_dir,
-          verbose=verbose,orientation=orientation,mnps=mnps,
-          batch_config=batch_config,
-          threads=threads,ram=ram,mode=mode,
-          executor_id=task_id,
-          time=time)
-  },mc.cores=threads)
-  
-  }else if(mode=="batch"){
-        rdata_file=paste0(tmp_dir,"/",job,".RData")
-        save(normals,sif_gatk,bam,ref_genome,orientation,mnps,output_dir,verbose,tmp_dir,file = rdata_file)
-        exec_code=paste0("Rscript -e \"ULPwgs::mutect2_gatk(rdata=\\\"",rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
-        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-        batch_code=build_job_exec(job=job,time=time,ram=ram,
-        threads=2,output_dir=out_file_dir2,
-        hold=hold,array=length(normals))
-        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
-
-        if(verbose){
-            print_verbose(job=job,arg=argg,exec_code=exec_code)
-        }
-        error=execute_job(exec_code=exec_code)
-        if(error!=0){
-            stop("gatk failed to run due to unknown error.
-            Check std error for more information.")
-        }
-
-      
-  
-         job_report[["steps"]][["call_variants_mutect2"]]<- build_job_report(
-              job_id=job,
-              executor_id=executor_id,
-              exec_code=exec_code, 
-              task_id=task_id,
-              input_args=argg,
-              out_file_dir=out_file_dir,
-              out_files=list(
-                  vcf=paste0(out_file_dir,Vectorize(FUN=get_file_name)(normals),".unfilt.vcf")
-                )
-        )
-
-  }
-
-
-
-  job_report=build_job_report(
-    job_id=job,
-    executor_id=executor_id,
-    exec_code=exec_code, 
+    exec_code="", 
     task_id=task_id,
     input_args = argg,
     out_file_dir=out_file_dir,
     out_files=list(
-      vcf=out_file,
-      f1r2=f1r2)
+      pon=out_file
+    )
   )
 
+
+
+  job_report[["steps"]][["par_samples_mutect2"]]<-parallel_samples_mutect2_gatk(
+    sif_gatk=sif_gatk,
+    bin_bcftools=bin_bcftools,
+    bin_samtools=bin_samtools,
+    bin_bgzip=bin_bgzip,
+    bin_tabix=bin_tabix,
+    tumours=normals,
+    ref_genome=ref_genome,
+    germ_resource=germ_resource,
+    biallelic_db=biallelic_db,
+    db_interval=db_interval,
+    output_dir=out_file_dir,
+    verbose=verbose,filter=FALSE,
+    orientation=FALSE,mnps=FALSE,
+    contamination=FALSE,clean=FALSE,
+    batch_config=batch_config,
+    threads=threads,ram=ram,mode=mode,
+    executor_id=task_id,
+    time=time,
+    hold=hold
+  )
+
+  vcfs=unlist_lvl(jobs_report[["steps"]][["par_samples_mutect2"]],var="concat_vcf")
+
+
+  vcfs=paste0(" -vcfs ",paste0(vcfs,collapse=" -vcfs "))
+
+  exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
+  " /gatk/gatk  CreateSomaticPanelOfNormals  ",vcfs," -O ",out_file)
+
+  if(mode=="batch"){
+       out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+       batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+       threads=threads,output_dir=out_file_dir2)
+       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+  }
+
+  job_report$exec_code=exec_code
 
   error=execute_job(exec_code=exec_code)
   
