@@ -3219,7 +3219,6 @@ cnn_score_variants_gatk=function(
 
 
 
-
 filter_variant_tranches_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
   vcf="",
