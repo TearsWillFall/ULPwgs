@@ -40,21 +40,26 @@ build_default_reference_list(
     
      biallelic_reference =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/small_exac_common_3.vcf",
+    hapmap_reference =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/hapmap_3.3.b37.vcf",
+    mills_reference =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/Mills_and_1000G_gold_standard.indels.b37.vcf",
     panel = list(PCF_V2 = list(pon = list(vcf =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon/40_Pooled_PoN.vcf",
     vcf_gz =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon/40_Pooled_PoN.vcf.gz",
-    tbi =
+    
+         tbi =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon/40_Pooled_PoN.vcf.gz.tbi")),
     PCF_V3 = list(pon = list(vcf =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/pon/40_Pooled_PoN.vcf",
-    
-         vcf_gz =
+    vcf_gz =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/pon/40_Pooled_PoN.vcf.gz",
     tbi =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/pon/40_Pooled_PoN.vcf.gz.tbi"))))),
     HG38 = list(reference = list(genome =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg38/reference/ucsc.hg38.fa"),
+    "/lustre/scratch/scratch/regmova/PCF/references/hg38/reference/ucsc.hg38.fa"), 
+    
     database = list(all_snps =
     "/lustre/scratch/scratch/regmova/PCF/references/hg38/database/00-All.vcf.gz",
     all_common =
