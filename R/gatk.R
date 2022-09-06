@@ -2961,7 +2961,8 @@ parallel_regions_haplotypecaller_gatk=function(
             output_dir=tmp_dir,
             tmp_dir=tmp_dir,
             verbose=verbose,
-            executor_id=task_id)
+            executor_id=task_id
+      )
     },mc.cores=threads)
     
     }else if(mode=="batch"){
@@ -3007,8 +3008,8 @@ parallel_regions_haplotypecaller_gatk=function(
   }
 
 
-  vcfs<-jobs_report[["steps"]][["par_region_call_variants"]]$out_files$vcf
-  hold<-jobs_report[["steps"]][["par_region_call_variants"]]$job_id
+  vcfs<-unlist_lvl(jobs_report[["steps"]][["par_region_call_variants"]],var="vcf")
+  hold<-unlist_lvl(jobs_report[["steps"]][["par_region_call_variants"]],var="job_id")
   jobs_report[["steps"]][["concatVCF"]] <- concat_vcf(
     bin_bcftools=bin_bcftools,
     bin_bgzip=bin_bgzip,

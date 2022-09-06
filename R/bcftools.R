@@ -53,39 +53,39 @@ concat_vcf=function(
 
 
 
-if(format=="vcf"){
-    out_type=" v "
-    out_file=paste0(out_file_dir,"/",id,".merged.vcf")
-}else if(format=="bcf"){
-    out_type=" t "
-    out_file=paste0(out_file_dir,"/",id,".merged.bcf")
-}else{
-    stop("Not supported format supplied")
-}
-
-if(compress){
-    if(format=="vcf"){
-        out_type=" z "
-    }else if(format=="bcf"){
-        out_type=" b "
-    }
-    out_file=paste0(out_file,".gz")
-}
-
-
-
-exec_code=paste(bin_bcftools,"concat -o",out_file, paste0(" -O", out_type), vcfs)
-
-if(clean){
-    exec_code=paste(exec_code," && rm",paste(vcfs,collapse=" "))
-}
-  
-  if(mode=="batch"){
-       out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-       batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
-       threads=threads,output_dir=out_file_dir2)
-       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+  if(format=="vcf"){
+      out_type=" v "
+      out_file=paste0(out_file_dir,"/",id,".merged.vcf")
+  }else if(format=="bcf"){
+      out_type=" t "
+      out_file=paste0(out_file_dir,"/",id,".merged.bcf")
+  }else{
+      stop("Not supported format supplied")
   }
+
+  if(compress){
+      if(format=="vcf"){
+          out_type=" z "
+      }else if(format=="bcf"){
+          out_type=" b "
+      }
+      out_file=paste0(out_file,".gz")
+  }
+
+
+
+  exec_code=paste(bin_bcftools,"concat -o",out_file, paste0(" -O", out_type), vcfs)
+
+  if(clean){
+      exec_code=paste(exec_code," && rm",paste(vcfs,collapse=" "))
+  }
+    
+    if(mode=="batch"){
+        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+        threads=threads,output_dir=out_file_dir2)
+        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+    }
 
   
   if(verbose){
@@ -160,17 +160,17 @@ if(clean){
 
 
 sort_vcf=function(
-    bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
-    bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
-    bin_tabix=build_default_tool_binary_list()$bin_tabix,
-    vcf="",compress=FALSE,clean=TRUE,format="vcf",
-    output_name="",output_dir=".",tmp_dir=".",
-    verbose=FALSE,
-    batch_config=build_default_preprocess_config(),
-    threads=1,ram=4,mode="local",
-    executor_id=make_unique_id("sortVCF"),
-    task_name="sortVCF",time="48:0:0",
-    update_time=60,wait=FALSE,hold=""
+  bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
+  bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+  bin_tabix=build_default_tool_binary_list()$bin_tabix,
+  vcf="",compress=FALSE,clean=TRUE,format="vcf",
+  output_name="",output_dir=".",tmp_dir=".",
+  verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  threads=1,ram=4,mode="local",
+  executor_id=make_unique_id("sortVCF"),
+  task_name="sortVCF",time="48:0:0",
+  update_time=60,wait=FALSE,hold=""
 ){
 
   argg <- as.list(environment())
