@@ -2786,7 +2786,7 @@ haplotypecaller_gatk=function(
 
 
   exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
-  " /gatk/gatk HaplotypeCaller -R ",ref_genome, normal," -O ",out_file)
+  " /gatk/gatk HaplotypeCaller -R ",ref_genome, normal," -O ",out_file,reg)
 
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
@@ -2859,6 +2859,7 @@ haplotypecaller_gatk=function(
 #' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param filter [OPTIONAL] Filter variants. Default TRUE
 #' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
@@ -2886,6 +2887,7 @@ parallel_regions_haplotypecaller_gatk=function(
   output_dir=".",
   indel_db=build_default_reference_list()$HG19$variant$mills_reference,
   haplotype_db=build_default_reference_list()$HG19$variant$hapmap_reference,
+  filter=TRUE,
   output_name="",
   info_key="CNN_1D",
   snp_tranche=99.95,
