@@ -2893,6 +2893,7 @@ parallel_regions_haplotypecaller_gatk=function(
   snp_tranche=99.95,
   indel_tranche=99.4,
   keep_previous_filters=FALSE,
+  clean=FALSE,
   verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
@@ -2966,8 +2967,8 @@ parallel_regions_haplotypecaller_gatk=function(
     }else if(mode=="batch"){
           rdata_file=paste0(tmp_dir,"/",job,".regions.RData")
           output_dir=tmp_dir
-          save(region_list,tumour,normal,sif_gatk,ref_genome,output_name,
-          germ_resource,pon,orientation,mnps,output_dir,verbose,tmp_dir,file = rdata_file)
+          save(region_list,normal,sif_gatk,ref_genome,output_name,
+          output_dir,verbose,tmp_dir,file = rdata_file)
           exec_code=paste0("Rscript -e \"ULPwgs::haplotypecaller_gatk(rdata=\\\"",
           rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
           out_file_dir2=set_dir(dir=out_file_dir,name="batch")
