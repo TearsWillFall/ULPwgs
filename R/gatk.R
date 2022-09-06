@@ -3064,7 +3064,7 @@ parallel_regions_haplotypecaller_gatk=function(
 
   }
 
-  return(job_report)
+  return(jobs_report)
 
 }
 
