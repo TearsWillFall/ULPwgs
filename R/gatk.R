@@ -3027,7 +3027,7 @@ parallel_regions_haplotypecaller_gatk=function(
   if(filter){
         vcf<-jobs_report[["steps"]][["concatVCF"]]$out_files$concat_vcf
         hold<-jobs_report[["steps"]][["concatVCF"]]$job_id
-        job_report[["steps"]][["cnnScoreVariantsGatk"]]<-cnn_score_variants_gatk(
+        jobs_report[["steps"]][["cnnScoreVariantsGatk"]]<-cnn_score_variants_gatk(
         sif_gatk=sif_gatk,
         vcf=vcf,bam=ifelse(info_key=="CNN_1D","",bam),
         ref_genome=ref_genome,
@@ -3043,23 +3043,23 @@ parallel_regions_haplotypecaller_gatk=function(
       vcf<-jobs_report[["steps"]][["cnnScoreVariantsGatk"]]$out_files$vcf
       hold<-jobs_report[["steps"]][["cnnScoreVariantsGatk"]]$job_id
 
-      job_report[["steps"]][["filterVariantTranchesGatk"]]<-filter_variant_tranches_gatk(
-      sif_gatk=sif_gatk,
-      vcf=vcf,
-      ref_genome=ref_genome,
-      indel_db=indel_db,
-      haplotype_db=haplotype_db,
-      output_dir=out_file_dir,output_name=output_name,
-      info_key=info_key,
-      snp_tranche=snp_tranche,
-      indel_tranche=indel_tranche,
-      keep_previous_filters=keep_previous_filters,
-      verbose=verbose,
-      batch_config=batch_config,
-      threads=threads,ram=ram,mode=mode,
-      executor_id=task_id,
-      time=time,
-      hold=hold
+      jobs_report[["steps"]][["filterVariantTranchesGatk"]]<-filter_variant_tranches_gatk(
+        sif_gatk=sif_gatk,
+        vcf=vcf,
+        ref_genome=ref_genome,
+        indel_db=indel_db,
+        haplotype_db=haplotype_db,
+        output_dir=out_file_dir,output_name=output_name,
+        info_key=info_key,
+        snp_tranche=snp_tranche,
+        indel_tranche=indel_tranche,
+        keep_previous_filters=keep_previous_filters,
+        verbose=verbose,
+        batch_config=batch_config,
+        threads=threads,ram=ram,mode=mode,
+        executor_id=task_id,
+        time=time,
+        hold=hold
     )
 
   }
