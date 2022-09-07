@@ -83,7 +83,7 @@ extract_body_vcf=function(vcf_body,vcf_samples){
      vcf_body[[sample]]<<-as.list(extract_col_vcf(vcf_body[[sample]],sep=":"))
   })
   vcf_body=vcf_body %>% tidyr::pivot_longer(names_to="SAMPLE",
-  cols=vcf_samples,values_to="VALUE") %>% nest_vcf_body()
+  cols=vcf_samples,values_to="VALUE") %>% tidyr::nest(SAMPLE=SAMPLE)
 
   return(vcf_body)
 }
