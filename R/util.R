@@ -309,7 +309,7 @@ add_indel_af_strelka_vcf=function(
 unnest_vcf_body=function(vcf_body,full=FALSE){
   vcf_body=vcf_body %>% dplyr::ungroup() %>% 
     tidyr::unnest(c(SAMPLE,FORMAT,VALUE)) %>%
-    tidyr::unnest(FORMAT=FORMAT,VALUE=VALUE) 
+    tidyr::unnest(c(FORMAT,VALUE))
   if(full){
    vcf_body=vcf_body %>% tidyr::unnest(INFO)
   }
