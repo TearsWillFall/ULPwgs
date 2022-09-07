@@ -18,11 +18,13 @@ parallel_regions_haplotypecaller_gatk(
   output_dir = ".",
   indel_db = build_default_reference_list()$HG19$variant$mills_reference,
   haplotype_db = build_default_reference_list()$HG19$variant$hapmap_reference,
+  filter = TRUE,
   output_name = "",
   info_key = "CNN_1D",
   snp_tranche = 99.95,
   indel_tranche = 99.4,
   keep_previous_filters = FALSE,
+  clean = FALSE,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 4,
@@ -62,6 +64,8 @@ parallel_regions_haplotypecaller_gatk(
 \item{indel_db}{\link{OPTIONAL} Path to database with indel info.}
 
 \item{haplotype_db}{\link{OPTIONAL} Path to database with haplotype info.}
+
+\item{filter}{\link{OPTIONAL} Filter variants. Default TRUE}
 
 \item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
 

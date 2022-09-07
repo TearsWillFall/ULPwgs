@@ -83,8 +83,7 @@ extract_body_vcf=function(vcf_body,vcf_samples){
      vcf_body[[sample]]<<-as.list(extract_col_vcf(vcf_body[[sample]],sep=":"))
   })
   vcf_body=vcf_body %>% tidyr::pivot_longer(names_to="SAMPLE",
-  cols=vcf_samples,values_to="VALUE") %>%
-  tidyr::nest(SAMPLE=SAMPLE,FORMAT=FORMAT,VALUE=VALUE)
+  cols=vcf_samples,values_to="VALUE") %>% nest_vcf_body()
 
   return(vcf_body)
 }
@@ -158,8 +157,8 @@ add_snv_af_strelka_vcf=function(
       dplyr::mutate(VALUE=ifelse(FORMAT=="AF",
       as.numeric(UALT)/(as.numeric(UREF)+as.numeric(UALT)),VALUE))%>% dplyr::select(-c(UALT,UREF))
     vcf_dat$body=vcf_dat$body %>% 
-    dplyr::mutate(VALUE=ifelse(is.na(VALUE),"",VALUE))%>%ungroup()%>% 
-    tidyr::nest(FORMAT=FORMAT,VALUE=VALUE,SAMPLE=SAMPLE) %>% 
+    dplyr::mutate(VALUE=ifelse(is.na(VALUE),"",VALUE)) %>% nest_vcf_body()
+   
 
     
     add_af_descriptor<-function(){
@@ -262,8 +261,7 @@ add_indel_af_strelka_vcf=function(
       as.numeric(UALT)/(as.numeric(UREF)+as.numeric(UALT)),VALUE))%>% dplyr::select(-c(UALT,UREF))
     vcf_dat$body=vcf_dat$body %>% 
     dplyr::mutate(VALUE=ifelse(is.na(VALUE),"",VALUE))%>%
-    dplyr::ungroup()%>% 
-    tidyr::nest(FORMAT=FORMAT,VALUE=VALUE,SAMPLE=SAMPLE)
+    nest_vcf_body()
     
     add_af_descriptor<-function(){
         list(Number="1",Type="Float",Description="\"Variant allelic frequency for tier 1 reads\"")
@@ -428,8 +426,7 @@ add_sv_af_strelka_vcf=function(
 
     vcf_dat$body=vcf_dat$body %>% 
     dplyr::mutate(VALUE=ifelse(is.na(VALUE),"",VALUE))%>%
-    dplyr::ungroup()%>% 
-    tidyr::nest(FORMAT=FORMAT,VALUE=VALUE,SAMPLE=SAMPLE)
+    nest_vcf_body()
     
 
     add_af_descriptor<-function(){
