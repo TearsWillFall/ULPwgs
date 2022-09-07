@@ -2636,7 +2636,6 @@ create_pon_gatk=function(
   )
 
 
-
   job_report[["steps"]][["par_samples_mutect2"]]<-parallel_samples_mutect2_gatk(
     sif_gatk=sif_gatk,
     bin_bcftools=bin_bcftools,
@@ -2646,8 +2645,8 @@ create_pon_gatk=function(
     tumours=normals,
     ref_genome=ref_genome,
     germ_resource=germ_resource,
-    biallelic_db=biallelic_db,
-    db_interval=db_interval,
+    biallelic_db="",
+    db_interval="",
     output_dir=out_file_dir,
     verbose=verbose,filter=FALSE,
     orientation=FALSE,mnps=FALSE,
@@ -2660,7 +2659,7 @@ create_pon_gatk=function(
   )
 
   vcfs=unlist_lvl(jobs_report[["steps"]][["par_samples_mutect2"]],var="concat_vcf")
-
+  hold=unlist_lvl(jobs_report[["steps"]][["par_samples_mutect2"]],var="job_id")
 
   vcfs=paste0(" -vcfs ",paste0(vcfs,collapse=" -vcfs "))
 
@@ -3100,7 +3099,7 @@ parallel_regions_haplotypecaller_gatk=function(
 
 
 cnn_score_variants_gatk=function(
-  
+
   sif_gatk=build_default_sif_list()$sif_gatk,
   vcf="",bam="",
   ref_genome=build_default_reference_list()$HG19$reference,
