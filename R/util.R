@@ -147,7 +147,7 @@ add_snv_af_strelka_vcf=function(
     )
 
     vcf_dat=read_vcf(vcf)
-    vcf_dat$body=vcf_dat$body %>% tidyr::unnest(c(SAMPLE,FORMAT,VALUE))
+    vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
     vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
     dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
     ##Extract Tier1 read information for REF and ALT
@@ -250,7 +250,7 @@ add_indel_af_strelka_vcf=function(
 
 
     vcf_dat=read_vcf(vcf)
-    vcf_dat$body=vcf_dat$body %>% tidyr::unnest(c(SAMPLE,FORMAT,VALUE))
+    vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
     vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
     dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
     ##Extract Tier1 read information for REF and ALT
@@ -307,7 +307,7 @@ add_indel_af_strelka_vcf=function(
 
 
 unnest_vcf_body=function(vcf_body,full=FALSE){
-  vcf_body=vcf_body %>% ungroup() %>% 
+  vcf_body=vcf_body %>% dplyr::ungroup() %>% 
     tidyr::unnest(c(SAMPLE,FORMAT,VALUE))
   if(full){
    vcf_body=vcf_body %>% tidyr::unnest(INFO)
@@ -331,7 +331,7 @@ unnest_vcf_body=function(vcf_body,full=FALSE){
 
 
 nest_vcf_body=function(vcf_body,full=FALSE){
-  vcf_body=vcf_body %>% ungroup() %>% 
+  vcf_body=vcf_body %>% dplyr::ungroup() %>% 
     tidyr::nest(SAMPLE=SAMPLE,FORMAT=FORMAT,VALUE=VALUE)
   if(full){
    vcf_body=vcf_body %>% tidyr::nest(INFO=INFO)
