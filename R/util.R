@@ -83,7 +83,8 @@ extract_body_vcf=function(vcf_body,vcf_samples){
      vcf_body[[sample]]<<-as.list(extract_col_vcf(vcf_body[[sample]],sep=":"))
   })
   vcf_body=vcf_body %>% tidyr::pivot_longer(names_to="SAMPLE",
-  cols=vcf_samples,values_to="VALUE") %>% nest_vcf_body()
+  cols=vcf_samples,values_to="VALUE") %>% 
+  tidyr::nest(SAMPLE=SAMPLE,FORMAT=FORMAT,VALUE=VALUE)
 
   return(vcf_body)
 }
@@ -260,8 +261,8 @@ add_indel_af_strelka_vcf=function(
       dplyr::mutate(VALUE=ifelse(FORMAT=="AF",
       as.numeric(UALT)/(as.numeric(UREF)+as.numeric(UALT)),VALUE))%>% dplyr::select(-c(UALT,UREF))
     vcf_dat$body=vcf_dat$body %>% 
-    dplyr::mutate(VALUE=ifelse(is.na(VALUE),"",VALUE))%>%
-    tidyr::nest(SAMPLE=SAMPLE,VALUE=VALUE,FORMAT=FORMAT)
+    dplyr::mutate(VALUE=ifelse(is.na(VALUE),"",VALUE)) %>% nest_vcf_body()
+
     
     add_af_descriptor<-function(){
         list(Number="1",Type="Float",Description="\"Variant allelic frequency for tier 1 reads\"")
@@ -311,7 +312,7 @@ unnest_vcf_body=function(vcf_body,full=FALSE){
     tidyr::unnest(c(SAMPLE,FORMAT,VALUE)) %>%
     tidyr::unnest(c(FORMAT,VALUE))
   if(full){
-   vcf_body=vcf_body %>% tidyr::unnest(FILTER)
+   vcf_body=vcf_body %>% tidyr::unnest(INFO)
   }
   return(vcf_body)
 }
@@ -336,7 +337,7 @@ nest_vcf_body=function(vcf_body,full=FALSE){
     tidyr::nest(FORMAT=FORMAT,VALUE=VALUE) %>% 
     tidyr::nest(SAMPLE=SAMPLE,FORMAT=FORMAT,VALUE=VALUE) 
   if(full){
-   vcf_body=vcf_body %>% tidyr::nest(FILTER=FILTER)
+   vcf_body=vcf_body %>% tidyr::nest(INFO=INFO)
   }
   return(vcf_body)
 }
