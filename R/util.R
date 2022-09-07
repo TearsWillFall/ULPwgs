@@ -83,7 +83,7 @@ extract_body_vcf=function(vcf_body,vcf_samples){
      vcf_body[[sample]]<<-as.list(extract_col_vcf(vcf_body[[sample]],sep=":"))
   })
   vcf_body=vcf_body %>% tidyr::pivot_longer(names_to="SAMPLE",
-  cols=vcf_samples,values_to="VALUE") %>% tidyr::nest(SAMPLE=SAMPLE)
+  cols=vcf_samples,values_to="VALUE") %>% nest_vcf_body()
 
   return(vcf_body)
 }
@@ -308,7 +308,8 @@ add_indel_af_strelka_vcf=function(
 
 unnest_vcf_body=function(vcf_body,full=FALSE){
   vcf_body=vcf_body %>% dplyr::ungroup() %>% 
-    tidyr::unnest(c(SAMPLE,FORMAT,VALUE))
+    tidyr::unnest(c(SAMPLE,FORMAT,VALUE)) %>%
+    tidyr::unnest(FORMAT=FORMAT,VALUE=VALUE) 
   if(full){
    vcf_body=vcf_body %>% tidyr::unnest(INFO)
   }
@@ -332,7 +333,8 @@ unnest_vcf_body=function(vcf_body,full=FALSE){
 
 nest_vcf_body=function(vcf_body,full=FALSE){
   vcf_body=vcf_body %>% dplyr::ungroup() %>% 
-    tidyr::nest(SAMPLE=SAMPLE,FORMAT=FORMAT,VALUE=VALUE)
+    tidyr::nest(FORMAT=FORMAT,VALUE=VALUE) %>% 
+    tidyr::nest(SAMPLE=SAMPLE,FORMAT=FORMAT,VALUE=VALUE) 
   if(full){
    vcf_body=vcf_body %>% tidyr::nest(INFO=INFO)
   }
