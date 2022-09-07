@@ -312,7 +312,7 @@ unnest_vcf_body=function(vcf_body,full=FALSE){
     tidyr::unnest(c(SAMPLE,FORMAT,VALUE)) %>%
     tidyr::unnest(c(FORMAT,VALUE))
   if(full){
-   vcf_body=vcf_body %>% tidyr::unnest(INFO)
+   vcf_body=vcf_body %>% tidyr::unnest(FILTER)
   }
   return(vcf_body)
 }
@@ -337,7 +337,7 @@ nest_vcf_body=function(vcf_body,full=FALSE){
     tidyr::nest(FORMAT=FORMAT,VALUE=VALUE) %>% 
     tidyr::nest(SAMPLE=SAMPLE,FORMAT=FORMAT,VALUE=VALUE) 
   if(full){
-   vcf_body=vcf_body %>% tidyr::nest(INFO=INFO)
+   vcf_body=vcf_body %>% tidyr::nest(FILTER=FILTER)
   }
   return(vcf_body)
 }

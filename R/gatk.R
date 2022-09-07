@@ -2658,8 +2658,8 @@ create_pon_gatk=function(
     hold=hold
   )
 
-  vcfs=unlist_lvl(jobs_report[["steps"]][["par_samples_mutect2"]],var="concat_vcf")
-  hold=unlist_lvl(jobs_report[["steps"]][["par_samples_mutect2"]],var="job_id")
+  vcfs=unlist_lvl(job_report[["steps"]][["par_samples_mutect2"]],var="concat_vcf")
+  hold=unlist_lvl(job_report[["steps"]][["par_samples_mutect2"]],var="job_id")
 
   vcfs=paste0(" -vcfs ",paste0(vcfs,collapse=" -vcfs "))
 
