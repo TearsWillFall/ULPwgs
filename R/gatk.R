@@ -3069,7 +3069,6 @@ parallel_regions_haplotypecaller_gatk=function(
 }
 
 
-
 #' CNN to score germline variants in VCF
 #'
 #' This function functions calls CNNScoreVariants for a VCF files and scores
@@ -3101,6 +3100,7 @@ parallel_regions_haplotypecaller_gatk=function(
 
 
 cnn_score_variants_gatk=function(
+  
   sif_gatk=build_default_sif_list()$sif_gatk,
   vcf="",bam="",
   ref_genome=build_default_reference_list()$HG19$reference,

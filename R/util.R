@@ -148,8 +148,7 @@ add_snv_af_strelka_vcf=function(
     )
 
     vcf_dat=read_vcf(vcf)
-    vcf_dat$body=vcf_dat$body %>% tidyr::unnest(c(SAMPLE,FORMAT,VALUE)) %>% 
-    tidyr::unnest(c(FORMAT,VALUE))
+    vcf_dat$body=vcf_dat$body %>% tidyr::unnest(c(SAMPLE,FORMAT,VALUE))
     vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
     dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
     ##Extract Tier1 read information for REF and ALT
@@ -159,10 +158,9 @@ add_snv_af_strelka_vcf=function(
       dplyr::mutate(VALUE=ifelse(FORMAT=="AF",
       as.numeric(UALT)/(as.numeric(UREF)+as.numeric(UALT)),VALUE))%>% dplyr::select(-c(UALT,UREF))
     vcf_dat$body=vcf_dat$body %>% 
-    dplyr::mutate(VALUE=ifelse(is.na(VALUE),"",VALUE))%>%
-    tidyr::nest(FORMAT=FORMAT,VALUE=VALUE) %>% 
-    dplyr::ungroup()%>% 
-    tidyr::nest(SAMPLE=SAMPLE,FORMAT=FORMAT,VALUE=VALUE) 
+    dplyr::mutate(VALUE=ifelse(is.na(VALUE),"",VALUE))%>%ungroup()%>% 
+    tidyr::nest(FORMAT=FORMAT,VALUE=VALUE,SAMPLE=SAMPLE) %>% 
+
     
     add_af_descriptor<-function(){
         list(Number="1",Type="Float",Description="\"Variant allelic frequency for tier 1 reads\"")
@@ -253,8 +251,7 @@ add_indel_af_strelka_vcf=function(
 
 
     vcf_dat=read_vcf(vcf)
-    vcf_dat$body=vcf_dat$body %>% tidyr::unnest(c(SAMPLE,FORMAT,VALUE)) %>% 
-    tidyr::unnest(c(FORMAT,VALUE))
+    vcf_dat$body=vcf_dat$body %>% tidyr::unnest(c(SAMPLE,FORMAT,VALUE))
     vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
     dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
     ##Extract Tier1 read information for REF and ALT
@@ -265,9 +262,8 @@ add_indel_af_strelka_vcf=function(
       as.numeric(UALT)/(as.numeric(UREF)+as.numeric(UALT)),VALUE))%>% dplyr::select(-c(UALT,UREF))
     vcf_dat$body=vcf_dat$body %>% 
     dplyr::mutate(VALUE=ifelse(is.na(VALUE),"",VALUE))%>%
-    tidyr::nest(FORMAT=FORMAT,VALUE=VALUE) %>% 
     dplyr::ungroup()%>% 
-    tidyr::nest(SAMPLE=SAMPLE,FORMAT=FORMAT,VALUE=VALUE) 
+    tidyr::nest(FORMAT=FORMAT,VALUE=VALUE,SAMPLE=SAMPLE)
     
     add_af_descriptor<-function(){
         list(Number="1",Type="Float",Description="\"Variant allelic frequency for tier 1 reads\"")
@@ -297,6 +293,53 @@ add_indel_af_strelka_vcf=function(
     return(job_report)
 }
 
+
+#' Unnest VCF body
+#' 
+#' Unnest VCF body structure
+#' 
+#' By default only SAMPLE,FORMAT and VALUE columns will be unnested
+#' To unnested also INFO columns argmument full has to be provided
+#' 
+#' 
+#' 
+#' @param vcf_body Nested VCF body data structure
+#' @param full Fully unnest vcf body data structure. Default FALSE
+#' @export
+
+
+unnest_vcf_body=function(vcf_body,full=FALSE){
+  vcf_body=vcf_body %>% ungroup() %>% 
+    tidyr::unnest(c(SAMPLE,FORMAT,VALUE))
+  if(full){
+   vcf_body=vcf_body %>% tidyr::unnest(INFO)
+  }
+  return(vcf_body)
+}
+
+
+#' Nest VCF body
+#' 
+#' Nest VCF body structure
+#' 
+#' By default only SAMPLE,FORMAT and VALUE columns will be unnested
+#' To unnested also INFO columns argmument full has to be provided
+#' 
+#' 
+#' 
+#' @param vcf_body Nested VCF body data structure
+#' @param full Fully unnest vcf body data structure. Default FALSE
+#' @export
+
+
+nest_vcf_body=function(vcf_body,full=FALSE){
+  vcf_body=vcf_body %>% ungroup() %>% 
+    tidyr::nest(SAMPLE=SAMPLE,FORMAT=FORMAT,VALUE=VALUE)
+  if(full){
+   vcf_body=vcf_body %>% tidyr::nest(INFO=INFO)
+  }
+  return(vcf_body)
+}
 
 
 
@@ -360,11 +403,16 @@ add_sv_af_strelka_vcf=function(
 
     
     vcf_dat=read_vcf(vcf)
-    vcf_dat$body=vcf_dat$body %>% tidyr::unnest(c(SAMPLE,FORMAT,VALUE)) %>% 
-    tidyr::unnest(c(FORMAT,VALUE))
-    vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
-    dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
+
+    vcf_dat$body=vcf_dat$body %>% unnest_vcf_body() %>% 
+      dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
+      dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF")
+    )
+   
+   
     ##Extract Tier1 read information for REF and ALT
+
+
     vcf_dat$body=vcf_dat$body %>% dplyr::mutate(
       UREFPR=tryCatch({strsplit(VALUE[FORMAT=="PR"],split=",")[[1]][1]},error=function(e){NA}),
       UALTPR=tryCatch({strsplit(VALUE[FORMAT=="PR"],split=",")[[1]][2]},error=function(e){NA}),
@@ -380,10 +428,10 @@ add_sv_af_strelka_vcf=function(
 
     vcf_dat$body=vcf_dat$body %>% 
     dplyr::mutate(VALUE=ifelse(is.na(VALUE),"",VALUE))%>%
-    tidyr::nest(FORMAT=FORMAT,VALUE=VALUE) %>% 
     dplyr::ungroup()%>% 
-    tidyr::nest(SAMPLE=SAMPLE,FORMAT=FORMAT,VALUE=VALUE) 
+    tidyr::nest(FORMAT=FORMAT,VALUE=VALUE,SAMPLE=SAMPLE)
     
+
     add_af_descriptor<-function(){
         list(
           Number="2",Type="Float",
@@ -531,12 +579,10 @@ write_vcf=function(
     build_body_vcf=function(vcf_body,vcf_samples){
       to_nest=c("FORMAT",vcf_samples)
       names(to_nest)=to_nest
-      vcf_body=sv$body %>% tidyr::unnest(c(SAMPLE,FORMAT,VALUE)) %>% 
-      tidyr::unnest(c(FORMAT,VALUE)) %>% 
+      vcf_body=sv$body %>% unnest_vcf_body() %>% 
       tidyr::pivot_wider(names_from=SAMPLE,values_from=VALUE) %>%
       dplyr::group_by(dplyr::across(-to_nest)) %>% 
       dplyr::summarise(dplyr::across(to_nest,list))
-      
 
       vcf_body=vcf_body%>% dplyr::rowwise() %>%
        dplyr::mutate(across(c("FORMAT",all_of(vcf_samples)),
