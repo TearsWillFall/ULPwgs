@@ -261,7 +261,7 @@ add_indel_af_strelka_vcf=function(
       as.numeric(UALT)/(as.numeric(UREF)+as.numeric(UALT)),VALUE))%>% dplyr::select(-c(UALT,UREF))
     vcf_dat$body=vcf_dat$body %>% 
     dplyr::mutate(VALUE=ifelse(is.na(VALUE),"",VALUE))%>%
-    nest_vcf_body()
+    tidyr::nest(SAMPLE=SAMPLE,VALUE=VALUE,FORMAT=FORMAT)
     
     add_af_descriptor<-function(){
         list(Number="1",Type="Float",Description="\"Variant allelic frequency for tier 1 reads\"")
@@ -311,7 +311,7 @@ unnest_vcf_body=function(vcf_body,full=FALSE){
     tidyr::unnest(c(SAMPLE,FORMAT,VALUE)) %>%
     tidyr::unnest(c(FORMAT,VALUE))
   if(full){
-   vcf_body=vcf_body %>% tidyr::unnest(INFO)
+   vcf_body=vcf_body %>% tidyr::unnest(FILTER)
   }
   return(vcf_body)
 }
@@ -336,7 +336,7 @@ nest_vcf_body=function(vcf_body,full=FALSE){
     tidyr::nest(FORMAT=FORMAT,VALUE=VALUE) %>% 
     tidyr::nest(SAMPLE=SAMPLE,FORMAT=FORMAT,VALUE=VALUE) 
   if(full){
-   vcf_body=vcf_body %>% tidyr::nest(INFO=INFO)
+   vcf_body=vcf_body %>% tidyr::nest(FILTER=FILTER)
   }
   return(vcf_body)
 }
