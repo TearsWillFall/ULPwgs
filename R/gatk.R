@@ -2673,7 +2673,7 @@ create_pon_gatk=function(
        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
 
-  job_report$exec_code=exec_code
+  jobs_report$exec_code=exec_code
 
   error=execute_job(exec_code=exec_code)
   
@@ -2683,7 +2683,7 @@ create_pon_gatk=function(
   }
 
   if(wait&&mode=="batch"){
-    job_validator(job=job_report$job_id,time=update_time,
+    job_validator(job=jobs_report$job_id,time=update_time,
     verbose=verbose,threads=threads)
   }
 
