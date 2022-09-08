@@ -2734,6 +2734,7 @@ create_pon_gatk=function(
 #' @param threads [OPTIONAL] Number of threads to split the work. Default 4
 #' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param size [OPTIONAL] Number of VCF per thread. Default 10.
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
 #' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
 #' @param task_name Task name. Default "recalCovariates"
@@ -2750,7 +2751,7 @@ create_genomic_db_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
   vcfs="",output_dir=".",
   ref_genome=build_default_reference_list()$HG19$reference,
-  verbose=FALSE,
+  verbose=FALSE,size=10,
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("createGenomicDB"),
@@ -2774,6 +2775,7 @@ create_genomic_db_gatk=function(
   exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
   " /gatk/gatk --java-options \"-Xmx",ram,"G\" GenomicsDBImport -R ",ref_genome,
   " --genomicsdb-workspace-path ",out_file_dir,
+  " --batch-size ",size,
   " --tmp-dir ",tmp_dir," --reader-threads ",threads,
   " --sample-name-map ",map_file, " -L ",paste0(ref_genome,".fai"))
 
