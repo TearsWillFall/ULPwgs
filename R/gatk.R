@@ -2678,6 +2678,11 @@ create_pon_gatk=function(
        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
 
+
+   if(verbose){
+       print_verbose(job=job,arg=argg,exec_code=exec_code)
+  }
+
   jobs_report$exec_code=exec_code
 
   error=execute_job(exec_code=exec_code)
