@@ -1748,6 +1748,7 @@ bed_coverage=function(
 #'
 #' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
 #' @param bam Path to directory with BAM files to merge.
+#' @param header Create column header. Default TRUE
 #' @param verbose Enables progress messages. Default False.
 #' @param threads Number of threads . Default 4
 #' @param ram RAM memory. Default 4
@@ -1763,7 +1764,7 @@ bed_coverage=function(
 
 get_bam_reference_chr=function(
     bin_samtools=build_default_tool_binary_list()$bin_samtools,
-    bam="",output_name="chrReference",
+    bam="",output_name="chrReference",header=TRUE,
     output_dir=".",verbose=FALSE,batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("getBAMchr"),task_name="getBAMchr",
     mode="local",time="48:0:0",
@@ -1781,7 +1782,8 @@ get_bam_reference_chr=function(
     
     out_file=paste0(out_file_dir,output_name,".bed")
     exec_code=paste0(bin_samtools," view -H ",bam,
-    " | grep @SQ| awk -F  \"\\t|:\" \'{print $3\"\\t\"0\"\\t\"$5}\' |  awk \'BEGIN{print \"chr\\tstart\\tend\"}1\' >",out_file)
+    " | grep @SQ| awk -F  \"\\t|:\" \'{print $3\"\\t\"0\"\\t\"$5}\'",
+    ifelse(header," |  awk \'BEGIN{print \"chr\\tstart\\tend\"}1\'","",)," >",out_file)
     
     job=build_job(executor_id = executor_id,task_id=task_id)
     
@@ -1835,6 +1837,7 @@ get_bam_reference_chr=function(
 #' file.
 #'
 #' @param fasta Path to directory with fasta file.
+#' @param header Create column header. Default TRUE
 #' @param output_name Output name
 #' @param verbose Enables progress messages. Default False.
 #' @param threads Number of threads . Default 4
@@ -1850,7 +1853,7 @@ get_bam_reference_chr=function(
 #' @export
 
 get_fai_reference_chr=function(
-    fasta="",output_name="chrRef",output_dir=".",
+    fasta="",output_name="chrRef",output_dir=".",header=TRUE,
     verbose=FALSE,batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("getFAIchr"),
     task_name="getFAIrchr",
@@ -1869,7 +1872,9 @@ get_fai_reference_chr=function(
     
     out_file=paste0(out_file_dir,output_name,".bed")
     exec_code=paste("cat",paste0(fasta,".fai"),
-    " | awk \'{print $1\"\\t\"0\"\\t\"$2}\' |  awk \'BEGIN{print \"chr\\tstart\\tend\"}1\' >",out_file)
+    " | awk \'{print $1\"\\t\"0\"\\t\"$2}\'",
+    ifelse(header," |  awk \'BEGIN{print \"chr\\tstart\\tend\"}1\' ",""),
+    ">",out_file)
     
     job=build_job(executor_id = executor_id,task_id=task_id)
     
