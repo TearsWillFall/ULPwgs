@@ -2761,15 +2761,21 @@ create_genomic_db_gatk=function(
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="db")
+  tmp_dir=set_dir(dir=out_file_dir,name="tmp")
   job=build_job(executor_id=executor_id,task_id=task_id)
 
-
-
-  vcfs=paste0(" -V ",paste0(vcfs,collapse=" -V "))
+  
+  
+  map_file=paste0(tmp_dir,"/vcfs.map")
+  map=data.frame(id=Vectorize(get_file_name)(vcfs),file=vcfs)
+  write.table(x=map,file=sample_list,quote=FALSE,sep="\t",
+  row.names=FALSE,col.names=TRUE)
 
   exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
-  " /gatk/gatk  GenomicsDBImport -R ",ref_genom,
-  " --genomicsdb-workspace-path ",out_file_dir,vcfs)
+  " /gatk/gatk --java-options \"-Xmx",ram,"G\" GenomicsDBImport -R ",ref_genome,
+  " --genomicsdb-workspace-path ",out_file_dir,
+  " --tmp-dir ",tmp_dir," --reader-threads ",threads,
+  " --sample-name-map ",map_file, " -L ",paste0(ref_genome,".fai"))
 
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
@@ -2790,7 +2796,9 @@ create_genomic_db_gatk=function(
       task_id=task_id,
       input_args = argg,
       out_file_dir=out_file_dir,
-      out_files=list()
+      out_files=list(
+        map_file=map_file
+      )
   )
 
 
