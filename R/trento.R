@@ -354,7 +354,8 @@ clonet_view_trento=function(method="log2_beta", clonet_dir="",threads=3,
     executor_id=make_unique_id("clonet_view"),
     task_name="clonet_view",mode="local",time="48:0:0",
     update_time=60,wait=FALSE,hold="",cn_list=build_default_cn_list(),
-    clonet_dirs=build_default_clonet_dir_list()){
+    clonet_dirs=build_default_clonet_dir_list()
+){
 
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
@@ -374,7 +375,6 @@ clonet_view_trento=function(method="log2_beta", clonet_dir="",threads=3,
         })
     })
 
-    
 
     ### Read TC data
     tc_input_files=paste0(clonet_dir,"/",clonet_dirs$tcEstimation$tc_estimations_CLONETv2.tsv)

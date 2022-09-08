@@ -2573,6 +2573,7 @@ merge_mutect_stats_gatk=function(
 #' @param bin_tabix [REQUIRED] Path to tabix binary file.
 #' @param bin_samtools [REQUIRED] Path to samtools binary file.
 #' @param normals [OPTIONAL] Path to normal BAM file.
+#' @param vcfs [OPTIONAL] Path to VCFs files. Only required if BAM files are not given.
 #' @param ref_genome [REQUIRED] Path to reference genome fasta file.
 #' @param germ_resource [REQUIRED]Path to germline resources vcf file.
 #' @param regions [OPTIONAL] Regions to analyze. If regions for parallelization are not provided then these will be infered from BAM file.
@@ -2605,13 +2606,14 @@ create_pon_gatk=function(
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
   normals="",output_name="PoN",
+  vcfs="",
   regions="",output_dir=".",
   ref_genome=build_default_reference_list()$HG19$reference,
   germ_resource=build_default_reference_list()$HG19$variant$germ_reference,
   verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
-  executor_id=make_unique_id("createPoNGATK"),
+  executor_id=make_unique_id("createPoNGatk"),
   task_name="createPoNGATK",time="48:0:0",
   update_time=60,wait=FALSE,hold=""
 ){
@@ -2635,33 +2637,36 @@ create_pon_gatk=function(
     )
   )
 
+  ### Process NORMAL BAMS if vcfs are not given otherwise use vcfs
+  if(normals!=""){
 
-  jobs_report[["steps"]][["par_samples_mutect2"]]<-parallel_samples_mutect2_gatk(
-    sif_gatk=sif_gatk,
-    bin_bcftools=bin_bcftools,
-    bin_samtools=bin_samtools,
-    bin_bgzip=bin_bgzip,
-    bin_tabix=bin_tabix,
-    tumours=normals,
-    ref_genome=ref_genome,
-    germ_resource=germ_resource,
-    biallelic_db="",
-    db_interval="",
-    output_dir=out_file_dir,
-    verbose=verbose,filter=FALSE,
-    orientation=FALSE,mnps=FALSE,
-    contamination=FALSE,clean=FALSE,
-    batch_config=batch_config,
-    threads=threads,ram=ram,mode=mode,
-    executor_id=task_id,
-    time=time,
-    hold=hold
-  )
+    jobs_report[["steps"]][["par_samples_mutect2"]]<-parallel_samples_mutect2_gatk(
+      sif_gatk=sif_gatk,
+      bin_bcftools=bin_bcftools,
+      bin_samtools=bin_samtools,
+      bin_bgzip=bin_bgzip,
+      bin_tabix=bin_tabix,
+      tumours=normals,
+      ref_genome=ref_genome,
+      germ_resource=germ_resource,
+      biallelic_db="",
+      db_interval="",
+      output_dir=out_file_dir,
+      verbose=verbose,filter=FALSE,
+      orientation=FALSE,mnps=FALSE,
+      contamination=FALSE,clean=FALSE,
+      batch_config=batch_config,
+      threads=threads,ram=ram,mode=mode,
+      executor_id=task_id,
+      time=time,
+      hold=hold
+    )
 
-  vcfs=unlist_lvl(jobs_report[["steps"]][["par_samples_mutect2"]],var="concat_vcf")
-  hold=unlist_lvl(jobs_report[["steps"]][["par_samples_mutect2"]],var="job_id")
+    vcfs=unlist_lvl(jobs_report[["steps"]][["par_samples_mutect2"]],var="concat_vcf")
+    hold=unlist_lvl(jobs_report[["steps"]][["par_samples_mutect2"]],var="job_id")
+  }
 
-  vcfs=paste0(" -vcfs ",paste0(vcfs,collapse=" -vcfs "))
+  vcfs=paste0(" -V ",paste0(vcfs,collapse=" -V "))
 
   exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
   " /gatk/gatk  CreateSomaticPanelOfNormals  ",vcfs," -O ",out_file)

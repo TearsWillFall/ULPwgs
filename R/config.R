@@ -509,7 +509,8 @@ build_default_sif_list=function(
                 V3="/lustre/scratch/scratch/regmova/Singularity_Images/pcf_select_v3_12_08_2022.sif"
             ),
             sif_preprocess="/lustre/scratch/scratch/regmova/Singularity_Images/preProcess_latest.sif",
-            sif_gatk="/lustre/scratch/scratch/regmova/Singularity_Images/gatk_latest.sif"
+            sif_gatk="/lustre/scratch/scratch/regmova/Singularity_Images/gatk_latest.sif",
+            sif_cnvkit="/lustre/scratch/scratch/regmova/Singularity_Images/cnvkit_latest.sif"
         )
     ){
          return(sifs)
@@ -635,7 +636,9 @@ build_default_reference_list=function(
     references=list(
             HG19=list(
                 reference=list(
-                    genome="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.fa"
+                    genome="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.fa",
+                    access_5k="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/access-5k-mappable.grch37.bed",
+                    access_10k="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/access-10kb.grch37.bed"
                 ),
                 database=list(
                     all_snps="/lustre/scratch/scratch/regmova/PCF/references/hg19/database/00-All.vcf.gz",
