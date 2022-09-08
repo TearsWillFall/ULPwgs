@@ -2764,7 +2764,6 @@ create_genomic_db_gatk=function(
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir,name="db")
   tmp_dir=set_dir(dir=output_dir,name="tmp")
   job=build_job(executor_id=executor_id,task_id=task_id)
 
@@ -2806,7 +2805,7 @@ create_genomic_db_gatk=function(
 
   exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
   " /gatk/gatk GenomicsDBImport -R ",ref_genome,
-  " --genomicsdb-workspace-path ",out_file_dir,
+  " --genomicsdb-workspace-path ",paste0(output_dir,"/db"),
   " --batch-size ",size,
   " --tmp-dir ",tmp_dir," --reader-threads ",threads,
   " --sample-name-map ",map_file, " -L ",regions)
