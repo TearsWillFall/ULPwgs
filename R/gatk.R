@@ -1405,7 +1405,9 @@ parallel_regions_mutect2_gatk=function(
       hold=hold
   )
 
-  vcf=unlist_lvl(jobs_report[["steps"]][["gatherFilesGatk"]],var="concat_vcf")
+
+
+  vcf=unlist_lvl(jobs_report[["steps"]][["gatherFilesGatk"]],var="sorted_vcf")
   stats=unlist_lvl(jobs_report[["steps"]][["gatherFilesGatk"]],var="merged_stats")
   if(orientation){
     orientation_model=unlist_lvl(jobs_report[["steps"]][["gatherFilesGatk"]],var="orientation_model")
@@ -1621,8 +1623,19 @@ parallel_samples_mutect2_gatk=function(
               input_args=argg,
               out_file_dir=out_file_dir,
               out_files=list(
-                )
+                filtered_vcf=ifelse(filter,paste0(out_file_dir,"/",
+                names(tumours_list),"/mutect2_reports/",
+                names(tumours_list),".filtered.vcf"),""),
+                sorted_vcf=paste0(out_file_dir,"/",
+                names(tumours_list),"/mutect2_reports/",
+                names(tumours_list),".sorted.vcf"),
+                compressed_vcf=paste0(out_file_dir,"/",
+                names(tumours_list),"/mutect2_reports/",
+                names(tumours_list),".sorted.vcf.gz")
               )
+                )
+
+              
 
   }
 
@@ -1824,6 +1837,21 @@ gather_mutect2_gatk=function(
     executor_id=task_id,
     time=time,hold=hold
   )
+
+  jobs_report[["steps"]][["compressAndIndex"]]<-compress_and_index_vcf_htslib(
+    bin_bgzip=bin_bgzip,
+    bin_tabix=bin_tabix,
+    vcf=unlist_lvl(jobs_report[["steps"]][["concatVCF"]],var="sorted_vcf"),
+    output_dir=out_file_dir,output_name=output_name,
+    clean=clean,verbose=verbose,
+    batch_config=batch_config,
+    threads=1,ram=ram,mode=mode,
+    executor_id=task_id,
+    time=time,
+    hold=unlist_lvl(jobs_report[["steps"]][["concatVCF"]],var="hold")
+  )
+
+
 
   jobs_report[["steps"]][["mergeStatMutect"]] <- merge_mutect_stats_gatk(
     sif_gatk=sif_gatk,
@@ -2662,7 +2690,7 @@ create_pon_gatk=function(
       hold=hold
     )
 
-    vcfs=unlist_lvl(jobs_report[["steps"]][["par_samples_mutect2"]],var="concat_vcf")
+    vcfs=unlist_lvl(jobs_report[["steps"]][["par_samples_mutect2"]],var="compressed_vcf")
     hold=unlist_lvl(jobs_report[["steps"]][["par_samples_mutect2"]],var="job_id")
   }
 
