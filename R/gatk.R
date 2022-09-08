@@ -2782,7 +2782,7 @@ create_genomic_db_gatk=function(
       exec_code=list(), 
       task_id=task_id,
       input_args = argg,
-      out_file_dir=out_file_dir,
+      out_file_dir=paste0(output_dir,"/db"),
       out_files=list(
         map_file=map_file
       )
