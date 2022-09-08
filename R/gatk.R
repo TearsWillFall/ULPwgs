@@ -2780,7 +2780,7 @@ create_genomic_db_gatk=function(
   jobs_report=build_job_report(
       job_id=job,
       executor_id=executor_id,
-      exec_code=exec_code, 
+      exec_code=list(), 
       task_id=task_id,
       input_args = argg,
       out_file_dir=out_file_dir,
@@ -2818,11 +2818,13 @@ create_genomic_db_gatk=function(
        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
 
+
+
    if(verbose){
        print_verbose(job=job,arg=argg,exec_code=exec_code)
   }
 
- 
+   jobs_report$exec_code=exec_code
 
 
 
