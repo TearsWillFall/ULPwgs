@@ -12,6 +12,7 @@ create_pon_gatk(
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
   normals = "",
   output_name = "PoN",
+  vcfs = "",
   regions = "",
   output_dir = ".",
   ref_genome = build_default_reference_list()$HG19$reference,
@@ -21,7 +22,7 @@ create_pon_gatk(
   threads = 4,
   ram = 4,
   mode = "local",
-  executor_id = make_unique_id("createPoNGATK"),
+  executor_id = make_unique_id("createPoNGatk"),
   task_name = "createPoNGATK",
   time = "48:0:0",
   update_time = 60,
@@ -43,6 +44,8 @@ create_pon_gatk(
 \item{normals}{\link{OPTIONAL} Path to normal BAM file.}
 
 \item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of one of the samples will be used.}
+
+\item{vcfs}{\link{OPTIONAL} Path to VCFs files. Only required if BAM files are not given.}
 
 \item{regions}{\link{OPTIONAL} Regions to analyze. If regions for parallelization are not provided then these will be infered from BAM file.}
 

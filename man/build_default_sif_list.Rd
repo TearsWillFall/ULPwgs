@@ -10,7 +10,8 @@ build_default_sif_list(
     = "/lustre/scratch/scratch/regmova/Singularity_Images/pcf_select_v3_12_08_2022.sif"),
     sif_preprocess =
     "/lustre/scratch/scratch/regmova/Singularity_Images/preProcess_latest.sif", sif_gatk
-    = "/lustre/scratch/scratch/regmova/Singularity_Images/gatk_latest.sif")
+    = "/lustre/scratch/scratch/regmova/Singularity_Images/gatk_latest.sif", sif_cnvkit =
+    "/lustre/scratch/scratch/regmova/Singularity_Images/cnvkit_latest.sif")
 )
 }
 \arguments{

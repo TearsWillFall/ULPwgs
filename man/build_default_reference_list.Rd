@@ -6,39 +6,43 @@
 \usage{
 build_default_reference_list(
   references = list(HG19 = list(reference = list(genome =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.fa"), database
-    = list(all_snps =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.fa", access_5k
+    =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/access-5k-mappable.grch37.bed",
+    access_10k =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/access-10kb.grch37.bed"),
+    database = list(all_snps =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/database/00-All.vcf.gz",
     all_common =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/database/00-common_all.vcf.gz"),
-    panel = list(PCF_V2 = list(intervals = list(bi =
+    
+     panel = list(PCF_V2 = list(intervals = list(bi =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/cap_tg.interval_list",
     ti =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/prim_tg.interval_list"),
-    
-     bed = list(bait =
+    bed = list(bait =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/cap_tg.bed", target =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/prim_tg.bed",
     antitarget =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/off_tg.bed")), PCF_V3 =
     list(intervals = list(bi =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/cap_tg.interval_list",
-    ti =
+    
+         ti =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/prim_tg.interval_list"),
     bed = list(bait =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/cap_tg.bed", 
-    
-    target = "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/prim_tg.bed",
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/cap_tg.bed", target =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/prim_tg.bed",
     antitarget =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/off_tg.bed"))), rnaseq
     = list(intervals = list(ri =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/rnaseq//intervals/rRNA.interval_list"),
     reference = list(ref_flat =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/rnaseq/reference/refFlat.txt")),
-    variant = list(germ_reference =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/af-only-gnomad.raw.sites.vcf",
     
-     biallelic_reference =
+     variant = list(germ_reference =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/af-only-gnomad.raw.sites.vcf",
+    biallelic_reference =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/small_exac_common_3.vcf",
     hapmap_reference =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/hapmap_3.3.b37.vcf",
@@ -46,10 +50,10 @@ build_default_reference_list(
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/Mills_and_1000G_gold_standard.indels.b37.vcf",
     panel = list(PCF_V2 = list(pon = list(vcf =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon/40_Pooled_PoN.vcf",
-    vcf_gz =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon/40_Pooled_PoN.vcf.gz",
     
-         tbi =
+         vcf_gz =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon/40_Pooled_PoN.vcf.gz",
+    tbi =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon/40_Pooled_PoN.vcf.gz.tbi")),
     PCF_V3 = list(pon = list(vcf =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/pon/40_Pooled_PoN.vcf",
@@ -57,9 +61,9 @@ build_default_reference_list(
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/pon/40_Pooled_PoN.vcf.gz",
     tbi =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/pon/40_Pooled_PoN.vcf.gz.tbi"))))),
-    HG38 = list(reference = list(genome =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg38/reference/ucsc.hg38.fa"), 
     
+     HG38 = list(reference = list(genome =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg38/reference/ucsc.hg38.fa"),
     database = list(all_snps =
     "/lustre/scratch/scratch/regmova/PCF/references/hg38/database/00-All.vcf.gz",
     all_common =
