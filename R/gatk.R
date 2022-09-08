@@ -2769,7 +2769,7 @@ create_genomic_db_gatk=function(
   
   map_file=paste0(tmp_dir,"/vcfs.map")
   map=data.frame(id=Vectorize(get_file_name)(vcfs),file=vcfs)
-  write.table(x=map,file=sample_list,quote=FALSE,sep="\t",
+  write.table(x=map,file=map_file,quote=FALSE,sep="\t",
   row.names=FALSE,col.names=TRUE)
 
   exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
