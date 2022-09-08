@@ -2623,7 +2623,7 @@ create_pon_gatk=function(
 
 
   out_file=paste0(out_file_dir,output_name,".vcf.gz")
-  job_report=build_job_report(
+  jobs_report=build_job_report(
     job_id=job,
     executor_id=executor_id,
     exec_code="", 
@@ -2636,7 +2636,7 @@ create_pon_gatk=function(
   )
 
 
-  job_report[["steps"]][["par_samples_mutect2"]]<-parallel_samples_mutect2_gatk(
+  jobs_report[["steps"]][["par_samples_mutect2"]]<-parallel_samples_mutect2_gatk(
     sif_gatk=sif_gatk,
     bin_bcftools=bin_bcftools,
     bin_samtools=bin_samtools,
@@ -2658,8 +2658,8 @@ create_pon_gatk=function(
     hold=hold
   )
 
-  vcfs=unlist_lvl(job_report[["steps"]][["par_samples_mutect2"]],var="concat_vcf")
-  hold=unlist_lvl(job_report[["steps"]][["par_samples_mutect2"]],var="job_id")
+  vcfs=unlist_lvl(jobs_report[["steps"]][["par_samples_mutect2"]],var="concat_vcf")
+  hold=unlist_lvl(jobs_report[["steps"]][["par_samples_mutect2"]],var="job_id")
 
   vcfs=paste0(" -vcfs ",paste0(vcfs,collapse=" -vcfs "))
 
@@ -2687,7 +2687,7 @@ create_pon_gatk=function(
     verbose=verbose,threads=threads)
   }
 
-  return(job_report)
+  return(jobs_report)
 
 }
 
