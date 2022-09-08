@@ -2653,7 +2653,7 @@ create_pon_gatk=function(
       db_interval="",
       output_dir=out_file_dir,
       verbose=verbose,filter=FALSE,
-      orientation=FALSE,mnps=FALSE,
+      orientation=FALSE,mnps=TRUE,
       contamination=FALSE,clean=FALSE,
       batch_config=batch_config,
       threads=threads,ram=ram,mode=mode,
@@ -2666,10 +2666,26 @@ create_pon_gatk=function(
     hold=unlist_lvl(jobs_report[["steps"]][["par_samples_mutect2"]],var="job_id")
   }
 
-  vcfs=paste0(" --vcfs ",paste0(vcfs,collapse=" --vcfs "))
+
+  jobs_report[["steps"]][["createGenomicDbGatk"]]<-create_genomic_db_gatk(
+      sif_gatk=sif_gatk,
+      vcfs=vcfs,output_dir=out_file_dir,
+      ref_genome=build_default_reference_list()$HG19$reference,
+      verbose=verbose,
+      batch_config=batch_config,
+      threads=threads,ram=ram,mode=mode,
+      executor_id=task_id,
+      time=time,
+      hold=hold
+  )
+  
+  hold=unlist_lvl(jobs_report[["steps"]][["createGenomicDbGatk"]],var="job_id")
+
+
 
   exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
-  " /gatk/gatk  CreateSomaticPanelOfNormals  ",vcfs," -O ",out_file)
+  " /gatk/gatk  CreateSomaticPanelOfNormals  -R ",ref_genome,paste0(" -V gendb://",
+  jobs_report[["steps"]][["createGenomicDbGatk"]]$out_file_dir)," -O ",out_file)
 
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
@@ -2695,6 +2711,113 @@ create_pon_gatk=function(
   if(wait&&mode=="batch"){
     job_validator(job=jobs_report$job_id,time=update_time,
     verbose=verbose,threads=threads)
+  }
+
+  return(jobs_report)
+
+}
+
+
+
+
+
+#' Wrapper around CreateSomaticPanelOfNormals from GATK package 
+#'
+#' This function creates a somatic panel of normals from normal samples bam files.
+#' Recommended minimum number of normal samples is around 40.
+#' 
+#' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360037058172-CreateSomaticPanelOfNormals-BETA-
+#'
+#' @param sif_gatk [REQUIRED] Path to gatk sif file.
+#' @param bin_bcftools [REQUIRED] Path to bcftools binary file.
+#' @param bin_bgzip [REQUIRED] Path to bgzip binary file.
+#' @param bin_tabix [REQUIRED] Path to tabix binary file.
+#' @param bin_samtools [REQUIRED] Path to samtools binary file.
+#' @param normals [OPTIONAL] Path to normal BAM file.
+#' @param vcfs [OPTIONAL] Path to VCFs files. Only required if BAM files are not given.
+#' @param ref_genome [REQUIRED] Path to reference genome fasta file.
+#' @param germ_resource [REQUIRED]Path to germline resources vcf file.
+#' @param regions [OPTIONAL] Regions to analyze. If regions for parallelization are not provided then these will be infered from BAM file.
+#' @param output_name [OPTIONAL] Name for the output. If not given the name of one of the samples will be used.
+#' @param pon [OPTIONAL] Path to panel of normal.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param mnps [OPTIONAL] Report MNPs in vcf file.
+#' @param contamination [OPTIONAL] Produce sample cross-contamination reports. Default TRUE.
+#' @param orientation [OPTIONAL] Produce read orientation inforamtion. Default FALSE
+#' @param filter [OPTIONAL] Filter Mutect2. Default TRUE.
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+
+
+create_genomic_db_gatk=function(
+  sif_gatk=build_default_sif_list()$sif_gatk,
+  vcfs="",output_dir=".",
+  ref_genome=build_default_reference_list()$HG19$reference,
+  verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  threads=4,ram=4,mode="local",
+  executor_id=make_unique_id("createGenomicDB"),
+  task_name="createGenomicDB",time="48:0:0",
+  update_time=60,wait=FALSE,hold=""
+){
+
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
+  out_file_dir=set_dir(dir=output_dir,name="db")
+  job=build_job(executor_id=executor_id,task_id=task_id)
+
+
+
+  vcfs=paste0(" -V ",paste0(vcfs,collapse=" -V "))
+
+  exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
+  " /gatk/gatk  GenomicsDBImport -R ",ref_genom,
+  " --genomicsdb-workspace-path ",out_file_dir,vcfs)
+
+  if(mode=="batch"){
+       out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+       batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+       threads=threads,output_dir=out_file_dir2)
+       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+  }
+
+   if(verbose){
+       print_verbose(job=job,arg=argg,exec_code=exec_code)
+  }
+
+ 
+    job_report=build_job_report(
+      job_id=job,
+      executor_id=executor_id,
+      exec_code=exec_code, 
+      task_id=task_id,
+      input_args = argg,
+      out_file_dir=out_file_dir,
+      out_files=list()
+  )
+
+
+  error=execute_job(exec_code=exec_code)
+  
+  if(error!=0){
+    stop("gatk failed to run due to unknown error.
+    Check std error for more information.")
+  }
+
+  if(wait&&mode=="batch"){
+    job_validator(job=jobs_report$job_id,
+    time=update_time,verbose=verbose,threads=threads)
   }
 
   return(jobs_report)
