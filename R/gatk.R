@@ -2666,7 +2666,7 @@ create_pon_gatk=function(
     hold=unlist_lvl(jobs_report[["steps"]][["par_samples_mutect2"]],var="job_id")
   }
 
-  vcfs=paste0(" -V ",paste0(vcfs,collapse=" -V "))
+  vcfs=paste0(" -vcfs ",paste0(vcfs,collapse=" -vcfs "))
 
   exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
   " /gatk/gatk  CreateSomaticPanelOfNormals  ",vcfs," -O ",out_file)
