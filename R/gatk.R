@@ -2678,7 +2678,7 @@ create_pon_gatk=function(
       time=time,
       hold=hold
   )
-  
+
   hold=unlist_lvl(jobs_report[["steps"]][["createGenomicDbGatk"]],var="job_id")
 
 
@@ -2721,30 +2721,16 @@ create_pon_gatk=function(
 
 
 
-#' Wrapper around CreateSomaticPanelOfNormals from GATK package 
+#' Wrapper around CreateDBImport from GATK package 
 #'
-#' This function creates a somatic panel of normals from normal samples bam files.
-#' Recommended minimum number of normal samples is around 40.
+#' This function creates a genomic database
 #' 
 #' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360037058172-CreateSomaticPanelOfNormals-BETA-
 #'
 #' @param sif_gatk [REQUIRED] Path to gatk sif file.
-#' @param bin_bcftools [REQUIRED] Path to bcftools binary file.
-#' @param bin_bgzip [REQUIRED] Path to bgzip binary file.
-#' @param bin_tabix [REQUIRED] Path to tabix binary file.
-#' @param bin_samtools [REQUIRED] Path to samtools binary file.
-#' @param normals [OPTIONAL] Path to normal BAM file.
 #' @param vcfs [OPTIONAL] Path to VCFs files. Only required if BAM files are not given.
 #' @param ref_genome [REQUIRED] Path to reference genome fasta file.
-#' @param germ_resource [REQUIRED]Path to germline resources vcf file.
-#' @param regions [OPTIONAL] Regions to analyze. If regions for parallelization are not provided then these will be infered from BAM file.
-#' @param output_name [OPTIONAL] Name for the output. If not given the name of one of the samples will be used.
-#' @param pon [OPTIONAL] Path to panel of normal.
 #' @param output_dir [OPTIONAL] Path to the output directory.
-#' @param mnps [OPTIONAL] Report MNPs in vcf file.
-#' @param contamination [OPTIONAL] Produce sample cross-contamination reports. Default TRUE.
-#' @param orientation [OPTIONAL] Produce read orientation inforamtion. Default FALSE
-#' @param filter [OPTIONAL] Filter Mutect2. Default TRUE.
 #' @param threads [OPTIONAL] Number of threads to split the work. Default 4
 #' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
