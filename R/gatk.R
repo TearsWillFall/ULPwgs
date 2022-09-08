@@ -2794,7 +2794,7 @@ create_genomic_db_gatk=function(
 
     jobs_report[["steps"]][["getChr"]] <- get_fai_reference_chr(
       fasta=ref_genome,verbose=verbose,output_dir=tmp_dir,
-      output_name="refChr",
+      output_name="refChr",header=FALSE,
       executor_id=task_id,mode="local",threads=threads,ram=ram,
       time=time,update_time=update_time,wait=FALSE,hold=hold)
 
