@@ -2765,7 +2765,7 @@ create_genomic_db_gatk=function(
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="db")
-  tmp_dir=set_dir(dir=out_file_dir,name="tmp")
+  tmp_dir=set_dir(dir=output_dir,name="tmp")
   job=build_job(executor_id=executor_id,task_id=task_id)
 
 
