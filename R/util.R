@@ -1779,7 +1779,7 @@ get_bam_reference_chr=function(
     job=build_job(executor_id=executor_id,task_id=task_id)
 
     
-    out_file=paste0(out_file_dir,output_name,".txt")
+    out_file=paste0(out_file_dir,output_name,".bed")
     exec_code=paste0(bin_samtools," view -H ",bam,
     " | grep @SQ| awk -F  \"\\t|:\" \'{print $3\"\\t\"0\"\\t\"$5}\' |  awk \'BEGIN{print \"chr\\tstart\\tend\"}1\' >",out_file)
     
@@ -1867,7 +1867,7 @@ get_fai_reference_chr=function(
     job=build_job(executor_id=executor_id,task_id=task_id)
 
     
-    out_file=paste0(out_file_dir,output_name,".txt")
+    out_file=paste0(out_file_dir,output_name,".bed")
     exec_code=paste("cat",paste0(fasta,".fai"),
     " | awk \'{print $1\"\\t\"0\"\\t\"$2}\' |  awk \'BEGIN{print \"chr\\tstart\\tend\"}1\' >",out_file)
     

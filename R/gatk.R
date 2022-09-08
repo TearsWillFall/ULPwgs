@@ -2749,7 +2749,10 @@ create_pon_gatk=function(
 
 create_genomic_db_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
-  vcfs="",output_dir=".",
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+  bin_tabix=build_default_tool_binary_list()$bin_tabix,
+  vcfs="",regions="",output_dir=".",
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   verbose=FALSE,size=10,
   batch_config=build_default_preprocess_config(),
@@ -2765,19 +2768,48 @@ create_genomic_db_gatk=function(
   tmp_dir=set_dir(dir=out_file_dir,name="tmp")
   job=build_job(executor_id=executor_id,task_id=task_id)
 
-  
-  
+
   map_file=paste0(tmp_dir,"/vcfs.map")
   map=data.frame(id=Vectorize(get_file_name)(vcfs),file=vcfs)
   write.table(x=map,file=map_file,quote=FALSE,sep="\t",
   row.names=FALSE,col.names=TRUE)
+
+
+
+
+  jobs_report=build_job_report(
+      job_id=job,
+      executor_id=executor_id,
+      exec_code=exec_code, 
+      task_id=task_id,
+      input_args = argg,
+      out_file_dir=out_file_dir,
+      out_files=list(
+        map_file=map_file
+      )
+  )
+
+
+  if(regions==""){
+
+    jobs_report[["steps"]][["getChr"]] <- get_fai_reference_chr(
+      fasta=ref_genome,verbose=verbose,output_dir=tmp_dir,
+      output_name="refChr",
+      executor_id=task_id,mode="local",threads=threads,ram=ram,
+      time=time,update_time=update_time,wait=FALSE,hold=hold)
+
+    regions=jobs_report[["steps"]][["getChr"]]$out_files$ref
+  
+  }
+
+  
 
   exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
   " /gatk/gatk GenomicsDBImport -R ",ref_genome,
   " --genomicsdb-workspace-path ",out_file_dir,
   " --batch-size ",size,
   " --tmp-dir ",tmp_dir," --reader-threads ",threads,
-  " --sample-name-map ",map_file, " -L ",paste0(ref_genome,".fai"))
+  " --sample-name-map ",map_file, " -L ",regions)
 
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
@@ -2791,17 +2823,7 @@ create_genomic_db_gatk=function(
   }
 
  
-    job_report=build_job_report(
-      job_id=job,
-      executor_id=executor_id,
-      exec_code=exec_code, 
-      task_id=task_id,
-      input_args = argg,
-      out_file_dir=out_file_dir,
-      out_files=list(
-        map_file=map_file
-      )
-  )
+
 
 
   error=execute_job(exec_code=exec_code)
