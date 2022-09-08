@@ -2773,7 +2773,7 @@ create_genomic_db_gatk=function(
   row.names=FALSE,col.names=TRUE)
 
   exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
-  " /gatk/gatk --java-options \"-Xmx",ram,"G\" GenomicsDBImport -R ",ref_genome,
+  " /gatk/gatk GenomicsDBImport -R ",ref_genome,
   " --genomicsdb-workspace-path ",out_file_dir,
   " --batch-size ",size,
   " --tmp-dir ",tmp_dir," --reader-threads ",threads,
