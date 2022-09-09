@@ -2807,6 +2807,7 @@ create_genomic_db_gatk=function(
   " --batch-size ",size,
   " --max-num-intervals-to-import-in-parallel ",threads,
   " --tmp-dir ",tmp_dir," --reader-threads ",threads,
+  " --overwrite-existing-genomicsdb-workspace TRUE",
   " --sample-name-map ",map_file, " -L ",regions)
 
   if(mode=="batch"){
