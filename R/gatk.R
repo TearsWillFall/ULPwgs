@@ -1848,7 +1848,7 @@ gather_mutect2_gatk=function(
     threads=1,ram=ram,mode=mode,
     executor_id=task_id,
     time=time,
-    hold=unlist_lvl(jobs_report[["steps"]][["concatVCF"]],var="hold")
+    hold=unlist_lvl(jobs_report[["steps"]][["concatVCF"]],var="job_id")
   )
 
 
@@ -2601,7 +2601,6 @@ merge_mutect_stats_gatk=function(
 #' @param bin_tabix [REQUIRED] Path to tabix binary file.
 #' @param bin_samtools [REQUIRED] Path to samtools binary file.
 #' @param normals [OPTIONAL] Path to normal BAM file.
-#' @param vcfs [OPTIONAL] Path to VCFs files. Only required if BAM files are not given.
 #' @param ref_genome [REQUIRED] Path to reference genome fasta file.
 #' @param germ_resource [REQUIRED]Path to germline resources vcf file.
 #' @param regions [OPTIONAL] Regions to analyze. If regions for parallelization are not provided then these will be infered from BAM file.
@@ -2633,7 +2632,7 @@ create_pon_gatk=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  normals="",output_name="PoN",
+  output_name="PoN",
   vcfs="",
   regions="",output_dir=".",
   ref_genome=build_default_reference_list()$HG19$reference$genome,
@@ -2664,35 +2663,6 @@ create_pon_gatk=function(
       pon=out_file
     )
   )
-
-  ### Process NORMAL BAMS if vcfs are not given otherwise use vcfs
-  if(normals!=""){
-
-    jobs_report[["steps"]][["par_samples_mutect2"]]<-parallel_samples_mutect2_gatk(
-      sif_gatk=sif_gatk,
-      bin_bcftools=bin_bcftools,
-      bin_samtools=bin_samtools,
-      bin_bgzip=bin_bgzip,
-      bin_tabix=bin_tabix,
-      tumours=normals,
-      ref_genome=ref_genome,
-      germ_resource=germ_resource,
-      biallelic_db="",
-      db_interval="",
-      output_dir=out_file_dir,
-      verbose=verbose,filter=FALSE,
-      orientation=FALSE,mnps=TRUE,
-      contamination=FALSE,clean=FALSE,
-      batch_config=batch_config,
-      threads=threads,ram=ram,mode=mode,
-      executor_id=task_id,
-      time=time,
-      hold=hold
-    )
-
-    vcfs=unlist_lvl(jobs_report[["steps"]][["par_samples_mutect2"]],var="compressed_vcf")
-    hold=unlist_lvl(jobs_report[["steps"]][["par_samples_mutect2"]],var="job_id")
-  }
 
 
   jobs_report[["steps"]][["createGenomicDbGatk"]]<-create_genomic_db_gatk(
