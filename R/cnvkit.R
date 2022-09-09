@@ -1,12 +1,4 @@
 
-
-
-
-
-
-
-
-
 #' Variant Calling using Mutect2
 #'
 #' This function functions calls Mutect2 for variant calling.
@@ -61,59 +53,64 @@ segmentation_cnvkit=function(
     diagram=TRUE,
     scatter=TRUE,
     male=TRUE,
-    threads=3,
-    verbose=FALSE
-){
+    verbose=FALSE,
+    batch_config=build_default_preprocess_config(),
+    threads=4,ram=4,mode="local",
+    executor_id=make_unique_id("segmentationCNVkit"),
+    task_name="segmentationCNVkit",time="48:0:0",
+    update_time=60,
+    wait=FALSE,hold=""
+  ){
 
 
-if(!is.null(rdata)){
-    load(rdata)
-    if(!is.null(selected)){
-        region=region_list[selected]
+  if(!is.null(rdata)){
+      load(rdata)
+      if(!is.null(selected)){
+          region=region_list[selected]
+      }
+  }
+
+    argg <- as.list(environment())
+    task_id=make_unique_id(task_name)
+    out_file_dir=set_dir(dir=output_dir,name="segmentation")
+    job=build_job(executor_id=executor_id,task=task_id)
+    
+
+    gender=""
+    if(male){
+      gender=" -y "
     }
-}
-
-  argg <- as.list(environment())
-  task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir,name="segmentation")
-  job=build_job(executor_id=executor_id,task=task_id)
-  
-
-  gender=""
-  if(male){
-    gender=" -y "
-  }
 
 
 
-  seg_method=paste0("--segment-method ",seg_method)
+    seg_method=paste0("--segment-method ",seg_method)
 
-  add=""
-  if(scatter){
-    add=paste(add," --scatter ")
-  }
+    add=""
+    if(scatter){
+      add=paste(add," --scatter ")
+    }
 
-  if(diagram){
-    add=paste(add," --diagram ")
-  }
-
-
-  if (pon_name!=""){
-    pon_name=paste(" --output-reference ",pon_name)
-  }
-
-  if (access!=""){
-    access=paste(" --access ",access)
-  }
+    if(diagram){
+      add=paste(add," --diagram ")
+    }
 
 
-  if (fasta!=""){
-    fasta=paste(" --fasta ",fasta)
-  }
+    if (pon_name!=""){
+      pon_name=paste(" --output-reference ",pon_name)
+    }
 
-  if (baits!=""){
-    baits=paste(  " --targets ",baits)
-  }
+    if (access!=""){
+      access=paste(" --access ",access)
+    }
+
+
+    if (fasta!=""){
+      fasta=paste(" --fasta ",fasta)
+    }
+
+    if (baits!=""){
+      baits=paste(  " --targets ",baits)
+    }
 
 
   if (pool_ref==""){

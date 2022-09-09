@@ -2683,7 +2683,7 @@ create_pon_gatk=function(
 
   exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
   " /gatk/gatk  CreateSomaticPanelOfNormals  -R ",ref_genome,paste0(" -V gendb://",
-  jobs_report[["steps"]][["createGenomicDbGatk"]]$out_file_dir)," -O ",out_file)
+  normalizePath(jobs_report[["steps"]][["createGenomicDbGatk"]]$out_file_dir))," -O ",out_file)
 
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
