@@ -2769,7 +2769,7 @@ create_genomic_db_gatk=function(
   map_file=paste0(tmp_dir,"/vcfs.map")
   map=data.frame(id=Vectorize(get_file_name)(vcfs),file=vcfs)
   write.table(x=map,file=map_file,quote=FALSE,sep="\t",
-  row.names=FALSE,col.names=TRUE)
+  row.names=FALSE,col.names=FALSE)
 
 
 
@@ -2816,7 +2816,6 @@ create_genomic_db_gatk=function(
        threads=threads,output_dir=out_file_dir2)
        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
-
 
 
    if(verbose){
