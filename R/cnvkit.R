@@ -425,7 +425,7 @@ access_cnvkit=function(
     out_file=paste0(out_file_dir,"/",id,".targets.bed")
 
     exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
-    " cnvkit.py target -a ",bin_size," -o ",out_file, add, bed)
+    " cnvkit.py target --split -a ",bin_size," -o ",out_file, add, bed)
 
 
     if(mode=="batch"){
