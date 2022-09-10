@@ -115,7 +115,7 @@ segmentation_cnvkit=function(
     }
 
 
-    exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk,
+    exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_cnvkit,
   " /gatk/gatk  ",f1r2_list," -O ",out_file)
 
 
@@ -179,7 +179,7 @@ access_cnvkit=function(
       exclude_regions=paste0(" -x ",exclude_regions)
     }
       
-    exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
+    exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
     " cnvkit.py access -o ",out_file,exclude_regions," -s ",gap_size, ref_genome)
 
 
@@ -300,7 +300,7 @@ access_cnvkit=function(
       paste0(" -g ",acceess)
     }
 
-    exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
+    exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
     " cnvkit.py batch -n ",paste0(normals,collapse=" "), " --output-reference ",
     out_file," -f ", ref_genome,access,target,antitarget)
 
@@ -424,7 +424,7 @@ access_cnvkit=function(
 
     out_file=paste0(out_file_dir,"/",id,".targets.bed")
 
-    exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
+    exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
     " cnvkit.py target -a ",bin_size," -o ",out_file, add, bed)
 
 
@@ -541,7 +541,7 @@ access_cnvkit=function(
       access=paste0(" -g ",access)
     }
 
-    exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
+    exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
     " cnvkit.py antitarget -a ",bin_size,access," -o ",out_file, add, bed)
 
     if(mode=="batch"){

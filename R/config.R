@@ -654,6 +654,9 @@ build_default_reference_list=function(
                             bait="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/cap_tg.bed",
                             target="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/prim_tg.bed",
                             antitarget="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/off_tg.bed"
+                        ),
+                        variant=list(
+
                         )
                     ),
                     PCF_V3=list(
@@ -682,23 +685,7 @@ build_default_reference_list=function(
                     germ_reference="/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/af-only-gnomad.raw.sites.vcf",
                     biallelic_reference="/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/small_exac_common_3.vcf",
                     hapmap_reference="/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/hapmap_3.3.b37.vcf",
-                    mills_reference="/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/Mills_and_1000G_gold_standard.indels.b37.vcf",
-                    panel=list(
-                        PCF_V2=list(
-                            pon=list(
-                                vcf="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon/40_Pooled_PoN.vcf",
-                                vcf_gz="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon/40_Pooled_PoN.vcf.gz",
-                                tbi="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon/40_Pooled_PoN.vcf.gz.tbi"
-                            )
-                        ),
-                        PCF_V3=list(
-                            pon=list(
-                                vcf="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/pon/40_Pooled_PoN.vcf",
-                                vcf_gz="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/pon/40_Pooled_PoN.vcf.gz",
-                                tbi="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/pon/40_Pooled_PoN.vcf.gz.tbi"
-                            )
-                        )
-                    )
+                    mills_reference="/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/Mills_and_1000G_gold_standard.indels.b37.vcf"
                 )
             ),
             HG38=list(
