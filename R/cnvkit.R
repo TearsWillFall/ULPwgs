@@ -267,7 +267,9 @@ access_cnvkit=function(
     output_dir=".",
     target="",
     access="",
-    antitarget="",
+    bin_size_target=75,
+    bin_size_antitarget=500000,
+    min_bin_size_antitarget=NULL,
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     threads=1,ram=1,mode="local",
@@ -297,10 +299,16 @@ access_cnvkit=function(
     if(access!=""){
       paste0(" -g ",access)
     }
+    if(!is.null(min_bin_size_antitarget)){
+      min_bin_size_antitarget=paste0(" --antitarget-min-size ",min_bin_size_antitarget)
+    }
 
     exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
     " cnvkit.py batch -p ",threads, " -n ",paste0(normals,collapse=" "), " --output-reference ",
-    out_file," -f ", ref_genome,access,target,antitarget)
+    out_file," -f ", ref_genome,access,target,
+     " --target-avg-size ",bin_size_target,
+     " --antitarget-avg-size ",bin_size_antitarget,min_bin_size_antitarget
+     )
 
 
     if(mode=="batch"){
