@@ -266,6 +266,7 @@ access_cnvkit=function(
     normals="",
     output_dir=".",
     target="",
+    access="",
     antitarget="",
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
