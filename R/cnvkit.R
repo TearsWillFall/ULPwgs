@@ -114,9 +114,9 @@ segmentation_cnvkit=function(
       baits=paste(  " --targets ",baits)
     }
 
+    exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
+    " cnvkit.py access -o ",out_file,exclude_regions," -s ",gap_size, ref_genome)
 
-    exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_cnvkit,
-  " /gatk/gatk  ",f1r2_list," -O ",out_file)
 
 
 }
@@ -228,22 +228,21 @@ access_cnvkit=function(
 
 
 
-#' Variant Calling using Mutect2
+#' Wrapper around target function from CNVkit
 #'
-#' This function functions calls Mutect2 for variant calling.
-#' If a vector of tumour samples are provided these will be processed in multi-sample mode.
-#' To run in tumour-normal mode suppply a single tumour and normal sample.
-#' If no normal is supplied this will run in tumour only.
-#' TO DO// Implement mitochondrial mode feature
+#' This function wraps around target function for CNVkit
+#' This function generates an target BED file from an input target file. 
+#' Additional parameters can be used to exclude regions and modify the average bin size
+#' 
 #' 
 #' For more information read:
 #' https://cnvkit.readthedocs.io/en/stable/pipeline.html
-#'
+#' 
+#' 
 #' @param sif_cnvkit [REQUIRED] Path to cnvkit sif file.
-#' @param ref_genome [REQUIRED] Path to reference genome fasta file.
-#' @param rdata [OPTIONAL] Import R data information with list of BAM.
-#' @param selected [OPTIONAL] Select BAM from list.
-#' @param pon [OPTIONAL] Path to Panel of Normals. Default none
+#' @param ref_genome=build_default_reference_list()$HG19$reference$genome,
+#' @param target [OPTIONAL] Path to target BED file.
+#' @param antitarget [OPTIONAL] Path to antitarget BED file.
 #' @param access [OPTIONAL] Path to reference genome accessibility. Default none
 #' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
 #' @param output_dir [OPTIONAL] Path to the output directory.
@@ -266,15 +265,13 @@ access_cnvkit=function(
     output_name="reference",
     normals="",
     output_dir=".",
-    exclude_regions="",
     target="",
     antitarget="",
-    gap_size=5000,
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     threads=1,ram=1,mode="local",
-    executor_id=make_unique_id("referenceCNVkit"),
-    task_name="referenceCNVkit",time="48:0:0",
+    executor_id=make_unique_id("createPonCNVkit"),
+    task_name="createPonCNVkit",time="48:0:0",
     update_time=60,
     wait=FALSE,hold=""
   ){
@@ -350,13 +347,12 @@ access_cnvkit=function(
 
 
 
-  #' Variant Calling using Mutect2
+#' Wrapper around target function from CNVkit
 #'
-#' This function functions calls Mutect2 for variant calling.
-#' If a vector of tumour samples are provided these will be processed in multi-sample mode.
-#' To run in tumour-normal mode suppply a single tumour and normal sample.
-#' If no normal is supplied this will run in tumour only.
-#' TO DO// Implement mitochondrial mode feature
+#' This function wraps around target function for CNVkit
+#' This function generates an target BED file from an input target file. 
+#' Additional parameters can be used to exclude regions and modify the average bin size
+#' 
 #' 
 #' For more information read:
 #' https://cnvkit.readthedocs.io/en/stable/pipeline.html

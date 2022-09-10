@@ -2,7 +2,7 @@
 % Please edit documentation in R/cnvkit.R
 \name{create_target_cnvkit}
 \alias{create_target_cnvkit}
-\title{Variant Calling using Mutect2}
+\title{Wrapper around target function from CNVkit}
 \usage{
 create_target_cnvkit(
   sif_cnvkit = build_default_sif_list()$sif_cnvkit,
@@ -62,11 +62,9 @@ create_target_cnvkit(
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
 }
 \description{
-This function functions calls Mutect2 for variant calling.
-If a vector of tumour samples are provided these will be processed in multi-sample mode.
-To run in tumour-normal mode suppply a single tumour and normal sample.
-If no normal is supplied this will run in tumour only.
-TO DO// Implement mitochondrial mode feature
+This function wraps around target function for CNVkit
+This function generates an target BED file from an input target file.
+Additional parameters can be used to exclude regions and modify the average bin size
 }
 \details{
 For more information read:

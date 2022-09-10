@@ -2,25 +2,22 @@
 % Please edit documentation in R/cnvkit.R
 \name{create_pon_cnvkit}
 \alias{create_pon_cnvkit}
-\title{Variant Calling using Mutect2}
+\title{Wrapper around target function from CNVkit}
 \usage{
 create_pon_cnvkit(
   sif_cnvkit = build_default_sif_list()$sif_cnvkit,
-  ref_genome = build_default_reference_list()$HG19$reference$genome,
   output_name = "reference",
   normals = "",
   output_dir = ".",
-  exclude_regions = "",
   target = "",
   antitarget = "",
-  gap_size = 5000,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 1,
   ram = 1,
   mode = "local",
-  executor_id = make_unique_id("referenceCNVkit"),
-  task_name = "referenceCNVkit",
+  executor_id = make_unique_id("createPonCNVkit"),
+  task_name = "createPonCNVkit",
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
@@ -30,11 +27,13 @@ create_pon_cnvkit(
 \arguments{
 \item{sif_cnvkit}{\link{REQUIRED} Path to cnvkit sif file.}
 
-\item{ref_genome}{\link{REQUIRED} Path to reference genome fasta file.}
-
 \item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
 
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
+
+\item{target}{\link{OPTIONAL} Path to target BED file.}
+
+\item{antitarget}{\link{OPTIONAL} Path to antitarget BED file.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
@@ -56,20 +55,12 @@ create_pon_cnvkit(
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
 
-\item{rdata}{\link{OPTIONAL} Import R data information with list of BAM.}
-
-\item{selected}{\link{OPTIONAL} Select BAM from list.}
-
-\item{pon}{\link{OPTIONAL} Path to Panel of Normals. Default none}
-
 \item{access}{\link{OPTIONAL} Path to reference genome accessibility. Default none}
 }
 \description{
-This function functions calls Mutect2 for variant calling.
-If a vector of tumour samples are provided these will be processed in multi-sample mode.
-To run in tumour-normal mode suppply a single tumour and normal sample.
-If no normal is supplied this will run in tumour only.
-TO DO// Implement mitochondrial mode feature
+This function wraps around target function for CNVkit
+This function generates an target BED file from an input target file.
+Additional parameters can be used to exclude regions and modify the average bin size
 }
 \details{
 For more information read:
