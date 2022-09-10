@@ -241,8 +241,9 @@ access_cnvkit=function(
 #' 
 #' @param sif_cnvkit [REQUIRED] Path to cnvkit sif file.
 #' @param ref_genome=build_default_reference_list()$HG19$reference$genome,
-#' @param target [OPTIONAL] Path to target BED file.
-#' @param antitarget [OPTIONAL] Path to antitarget BED file.
+#' @param bin_size_target [OPTIONAL] Size of bins for targets. Default 75
+#' @param bin_size_antitarget [OPTIONAL] Size of bins for antitargets. Default 500000
+#' @param min_bin_size_antitarget [OPTIONAL] Size of bins for antitargets. Default NULL
 #' @param access [OPTIONAL] Path to reference genome accessibility. Default none
 #' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
 #' @param output_dir [OPTIONAL] Path to the output directory.
@@ -304,8 +305,8 @@ access_cnvkit=function(
     }
 
     exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
-    " cnvkit.py batch -p ",threads, " -n ",paste0(normals,collapse=" "), " --output-reference ",
-    out_file," -f ", ref_genome,access,target,
+    " cnvkit.py batch -p ",threads, " -n ",paste0(normals,collapse=" "),
+     " --output-reference ",out_file," -f ", ref_genome,access,target,
      " --target-avg-size ",bin_size_target,
      " --antitarget-avg-size ",bin_size_antitarget,min_bin_size_antitarget
      )
