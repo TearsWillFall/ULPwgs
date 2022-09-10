@@ -299,7 +299,7 @@ access_cnvkit=function(
     }
 
     exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
-    " cnvkit.py batch -n ",paste0(normals,collapse=" "), " --output-reference ",
+    " cnvkit.py batch -p ",threads, " -n ",paste0(normals,collapse=" "), " --output-reference ",
     out_file," -f ", ref_genome,access,target,antitarget)
 
 
