@@ -8,6 +8,7 @@ get_fai_reference_chr(
   fasta = "",
   output_name = "chrRef",
   output_dir = ".",
+  header = TRUE,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   executor_id = make_unique_id("getFAIchr"),
@@ -25,6 +26,8 @@ get_fai_reference_chr(
 \item{fasta}{Path to directory with fasta file.}
 
 \item{output_name}{Output name}
+
+\item{header}{Create column header. Default TRUE}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.#}
 

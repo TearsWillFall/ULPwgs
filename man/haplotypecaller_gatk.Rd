@@ -10,7 +10,7 @@ haplotypecaller_gatk(
   sif_gatk = build_default_sif_list()$sif_gatk,
   normal = "",
   region = "",
-  ref_genome = build_default_reference_list()$HG19$reference,
+  ref_genome = build_default_reference_list()$HG19$reference$genome,
   output_dir = ".",
   tmp_dir = ".",
   output_name = "",

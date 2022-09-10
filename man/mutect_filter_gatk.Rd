@@ -15,7 +15,7 @@ mutect_filter_gatk(
   segmentation_table = "",
   orientation_model = "",
   output_name = "",
-  ref_genome = build_default_reference_list()$HG19$reference,
+  ref_genome = build_default_reference_list()$HG19$reference$genome,
   output_dir = ".",
   verbose = FALSE,
   clean = FALSE,

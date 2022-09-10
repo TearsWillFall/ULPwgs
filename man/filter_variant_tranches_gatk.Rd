@@ -7,7 +7,7 @@
 filter_variant_tranches_gatk(
   sif_gatk = build_default_sif_list()$sif_gatk,
   vcf = "",
-  ref_genome = build_default_reference_list()$HG19$reference,
+  ref_genome = build_default_reference_list()$HG19$reference$genome,
   indel_db = build_default_reference_list()$HG19$variant$mills_reference,
   haplotype_db = build_default_reference_list()$HG19$variant$hapmap_reference,
   output_dir = ".",

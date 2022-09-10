@@ -8,7 +8,7 @@ cnn_score_variants_gatk(
   sif_gatk = build_default_sif_list()$sif_gatk,
   vcf = "",
   bam = "",
-  ref_genome = build_default_reference_list()$HG19$reference,
+  ref_genome = build_default_reference_list()$HG19$reference$genome,
   output_dir = ".",
   output_name = "",
   verbose = FALSE,

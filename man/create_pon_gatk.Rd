@@ -10,12 +10,11 @@ create_pon_gatk(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
-  normals = "",
   output_name = "PoN",
   vcfs = "",
   regions = "",
   output_dir = ".",
-  ref_genome = build_default_reference_list()$HG19$reference,
+  ref_genome = build_default_reference_list()$HG19$reference$genome,
   germ_resource = build_default_reference_list()$HG19$variant$germ_reference,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
@@ -41,11 +40,7 @@ create_pon_gatk(
 
 \item{bin_tabix}{\link{REQUIRED} Path to tabix binary file.}
 
-\item{normals}{\link{OPTIONAL} Path to normal BAM file.}
-
 \item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of one of the samples will be used.}
-
-\item{vcfs}{\link{OPTIONAL} Path to VCFs files. Only required if BAM files are not given.}
 
 \item{regions}{\link{OPTIONAL} Regions to analyze. If regions for parallelization are not provided then these will be infered from BAM file.}
 
@@ -74,6 +69,8 @@ create_pon_gatk(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
+
+\item{normals}{\link{OPTIONAL} Path to normal BAM file.}
 
 \item{pon}{\link{OPTIONAL} Path to panel of normal.}
 

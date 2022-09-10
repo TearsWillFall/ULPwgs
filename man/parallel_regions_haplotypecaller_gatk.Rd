@@ -13,7 +13,7 @@ parallel_regions_haplotypecaller_gatk(
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
   normal = "",
-  ref_genome = build_default_reference_list()$HG19$reference,
+  ref_genome = build_default_reference_list()$HG19$reference$genome,
   regions = "",
   output_dir = ".",
   indel_db = build_default_reference_list()$HG19$variant$mills_reference,

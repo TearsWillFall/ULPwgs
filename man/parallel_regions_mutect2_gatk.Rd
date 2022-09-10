@@ -15,7 +15,7 @@ parallel_regions_mutect2_gatk(
   tumour = "",
   normal = "",
   output_name = "",
-  ref_genome = build_default_reference_list()$HG19$reference,
+  ref_genome = build_default_reference_list()$HG19$reference$genome,
   germ_resource = build_default_reference_list()$HG19$variant$germ_reference,
   biallelic_db = build_default_reference_list()$HG19$variant$biallelic_reference,
   db_interval = build_default_reference_list()$HG19$variant$biallelic_reference,

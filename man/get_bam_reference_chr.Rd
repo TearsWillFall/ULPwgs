@@ -8,6 +8,7 @@ get_bam_reference_chr(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = "",
   output_name = "chrReference",
+  header = TRUE,
   output_dir = ".",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
@@ -26,6 +27,8 @@ get_bam_reference_chr(
 \item{bin_samtools}{Path to samtools executable. Default path tools/samtools/samtools.}
 
 \item{bam}{Path to directory with BAM files to merge.}
+
+\item{header}{Create column header. Default TRUE}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.#}
 
