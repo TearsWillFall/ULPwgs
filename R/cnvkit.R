@@ -530,8 +530,8 @@ access_cnvkit=function(
     }
 
     add=""
-    if(!is.null(min_avg_size)){
-      add=paste0(" -m ",min_avg_size)
+    if(!is.null(min_bin_size)){
+      add=paste0(" -m ",min_bin_size)
     }
 
     out_file=paste0(out_file_dir,"/",id,".antitargets.bed")
