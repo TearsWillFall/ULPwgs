@@ -295,7 +295,7 @@ access_cnvkit=function(
     }
 
     if(access!=""){
-      paste0(" -g ",acceess)
+      paste0(" -g ",access)
     }
 
     exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
