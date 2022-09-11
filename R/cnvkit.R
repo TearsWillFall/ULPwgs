@@ -1037,7 +1037,7 @@ de
     jobs_report[["steps"]][["par_sample_coverage_cnvkit"]]<-
     parallel::mclapply(bam_list,FUN=function(bam){
       job_report <- coverage_cnvkit(
-                sif_cnvkit=if_cnvkit,
+                sif_cnvkit=sif_cnvkit,
                 ref_genome=ref_genome,
                 bed=bed,
                 bam=bam,
