@@ -664,6 +664,10 @@ access_cnvkit=function(
       annotation=paste0(" --annotate ",annotation)
     }
 
+    if(access!=""){
+      access=paste0(" -g ",access)
+    }
+
     add=""
     if(short_names){
       add=paste(add," --short-names ")
@@ -671,7 +675,7 @@ access_cnvkit=function(
 
     exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
     " cnvkit.py autobin -t ",bed," -f ",ref_genome,
-    " -b ",bp_per_bin, " -m ",seq_type,
+    " -b ",bp_per_bin, " -m ",seq_type,access,
     "  --target-max-size ",max_bin_size_target,
     "  --target-min-size ",min_bin_size_target,
     "  --antitarget-min-size ",min_bin_size_antitarget,
