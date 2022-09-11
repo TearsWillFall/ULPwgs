@@ -908,11 +908,6 @@ de
       id=get_file_name(bam)
     }
   
-
-    if(access!=""){
-      access=paste0(" -g ",access)
-    }
-
     add=""
     if(read_count){
       add=paste(add," -c ")
