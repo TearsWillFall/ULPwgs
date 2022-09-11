@@ -637,8 +637,8 @@ build_default_reference_list=function(
             HG19=list(
                 reference=list(
                     genome="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.fa",
-                    access_5k="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/access-5k-mappable.grch37.bed",
-                    access_10k="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/access-10kb.grch37.bed"
+                    access_5k="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.access-5k-mappable.bed",
+                    access_10k="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.access-10k-mappable.bed"
                 ),
                 database=list(
                     all_snps="/lustre/scratch/scratch/regmova/PCF/references/hg19/database/00-All.vcf.gz",
