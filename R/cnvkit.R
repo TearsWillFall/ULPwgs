@@ -544,6 +544,7 @@ access_cnvkit=function(
       access=paste0(" -g ",access)
     }
 
+
     exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
     " cnvkit.py antitarget -a ",bin_size,access," -o ",out_file, add, bed)
 
@@ -574,6 +575,136 @@ access_cnvkit=function(
       out_file_dir=out_file_dir,
       out_files=list(
         antitarget=out_file)
+    )
+
+
+    if(wait&&mode=="batch"){
+      job_validator(job=job_report$job_id,time=update_time,
+      verbose=verbose,threads=threads)
+    }
+
+    return(job_report)
+
+  }
+
+
+
+
+
+#' Wrapper around autobin function from CNVkit
+#'
+#' This function wraps around target function for CNVkit
+#' This function generates an target BED file from an input target file. 
+#' Additional parameters can be used to exclude regions and modify the average bin size
+#' 
+#' 
+#' For more information read:
+#' https://cnvkit.readthedocs.io/en/stable/pipeline.html
+#'
+#' @param sif_cnvkit [REQUIRED] Path to cnvkit sif file.
+#' @param ref_genoma [REQUIRED] Path to reference genoms.
+#' @param bed [REQUIRED] Path to input BED file with target regions. Default none
+#' @param bams [REQUIRED] Path to BAM files. Default none
+#' @param annotation [OPTIONAL] BED file with region annotation information. Default none
+#' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param short_names [OPTIONAL] Use short annotation names. Default FALSE
+#' @param seq_type [OPTIONAL] Use short annotation names. Default FALSE
+#' @param min_bin_size_target [OPTIONAL] Mininimum target bin size. Default 20.
+#' @param max_bin_size_target [OPTIONAL] Mininimum target bin size. Default 20000.
+#' @param max_bin_size_antitarget [OPTIONAL] Mininimum target bin size. Default 500000.
+#' @param min_bin_size_antitarget [OPTIONAL] Mininimum target bin size. Default 500.
+#' @param bp_per_bin [OPTIONAL] Bases per bin. Default 100000.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+  autobin_cnvkit=function(
+    sif_cnvkit=build_default_sif_list()$sif_cnvkit,
+    ref_genome=build_default_reference_list()$HG19$reference$genome,
+    bed="",
+    bams="",
+    annotation="",
+    output_name="",
+    output_dir=".",
+    seq_method="hybrid",
+    split=FALSE,
+    short_names=FALSE,
+    bp_per_bin=100000,
+    min_bin_size_target=20,
+    max_bin_size_target=20000,
+    min_bin_size_antitarget=500,
+    max_bin_size_target=500000,
+    verbose=FALSE,
+    batch_config=build_default_preprocess_config(),
+    threads=1,ram=1,mode="local",
+    executor_id=make_unique_id("autobinCNVkit"),
+    task_name="autobinCNVkit",time="48:0:0",
+    update_time=60,
+    wait=FALSE,hold=""
+  ){
+
+    argg <- as.list(environment())
+    task_id=make_unique_id(task_name)
+    out_file_dir=set_dir(dir=output_dir)
+    job=build_job(executor_id=executor_id,task_id=task_id)
+
+
+    if(annotation!=""){
+      annotation=paste0(" --annotate ",annotation)
+    }
+
+    add=""
+    if(short_names){
+      add=paste(add," --short-names ")
+    }
+
+    exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
+    " cnvkit.py autobin -t ",bed," -f ",ref_genome,
+    " -b ",bp_per_bin, " -m ",seq_type,
+    "  --target-max-size ",max_bin_size_target,
+    "  --target-min-size ",min_bin_size_target,
+    "  --antitarget-min-size ",min_bin_size_antitarget,
+    "  --antitarget-max-size ",max_bin_size_antitarget,add,annotation,
+     paste0(bams,collapse=" "))
+
+    if(mode=="batch"){
+        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+        threads=threads,output_dir=out_file_dir2)
+        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+    }
+
+    if(verbose){
+        print_verbose(job=job,arg=argg,exec_code=exec_code)
+    }
+
+    error=execute_job(exec_code=exec_code)
+    
+    if(error!=0){
+      stop("cnvkit failed to run due to unknown error.
+      Check std error for more information.")
+    }
+
+    job_report=build_job_report(
+      job_id=job,
+      executor_id=executor_id,
+      exec_code=exec_code, 
+      task_id=task_id,
+      input_args = argg,
+      out_file_dir=out_file_dir,
+      out_files=list(
+        target=out_file)
     )
 
 
