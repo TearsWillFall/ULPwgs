@@ -609,6 +609,7 @@ access_cnvkit=function(
 #' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param short_names [OPTIONAL] Use short annotation names. Default FALSE
+#' @param seq_method [OPTIONAL] Sequenced methods used. Default hybrid. Options ["hybrid","amplicon","wgs"]
 #' @param seq_type [OPTIONAL] Use short annotation names. Default FALSE
 #' @param min_bin_size_target [OPTIONAL] Mininimum target bin size. Default 20.
 #' @param max_bin_size_target [OPTIONAL] Mininimum target bin size. Default 20000.
@@ -676,7 +677,7 @@ access_cnvkit=function(
 
     exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
     " cnvkit.py autobin -t ",bed," -f ",ref_genome,
-    " -b ",bp_per_bin, " -m ",seq_type,access,
+    " -b ",bp_per_bin, " -m ",seq_method,access,
     "  --target-max-size ",max_bin_size_target,
     "  --target-min-size ",min_bin_size_target,
     "  --antitarget-min-size ",min_bin_size_antitarget,
