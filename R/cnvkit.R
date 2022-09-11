@@ -1051,7 +1051,7 @@ de
 
           rdata_file=paste0(tmp_dir,"/",job,".samples.RData")
           output_dir=out_file_dir
-          save(bam_list,bed,sif_gatk,ref_genome,
+          save(bam_list,bed,sif_cnvkit,ref_genome,
           output_dir,read_count,min_mapq,output_dir,verbose,file = rdata_file)
           exec_code=paste0("Rscript -e \"ULPwgs::coverage_cnvkit(rdata=\\\"",
           rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
