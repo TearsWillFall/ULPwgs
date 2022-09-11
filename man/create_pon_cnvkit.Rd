@@ -7,11 +7,11 @@
 create_pon_cnvkit(
   sif_cnvkit = build_default_sif_list()$sif_cnvkit,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
+  access = build_default_reference_list()$HG19$reference$access_5k,
   output_name = "reference",
   normals = "",
   output_dir = ".",
   target = "",
-  access = "",
   bin_size_target = 75,
   bin_size_antitarget = 5e+05,
   min_bin_size_antitarget = NULL,
@@ -33,11 +33,11 @@ create_pon_cnvkit(
 
 \item{ref_genome}{\link{REQUIRED} Path to reference genome.}
 
+\item{access}{\link{OPTIONAL} Path to reference genome accessibility. Default none}
+
 \item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
 
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
-
-\item{access}{\link{OPTIONAL} Path to reference genome accessibility. Default none}
 
 \item{bin_size_target}{\link{OPTIONAL} Size of bins for targets. Default 75}
 

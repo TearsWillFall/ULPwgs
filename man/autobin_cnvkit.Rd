@@ -7,6 +7,7 @@
 autobin_cnvkit(
   sif_cnvkit = build_default_sif_list()$sif_cnvkit,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
+  access = build_default_reference_list()$HG19$reference$access_5k,
   bed = "",
   bams = "",
   annotation = "",
@@ -45,6 +46,8 @@ autobin_cnvkit(
 \item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
 
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
+
+\item{seq_method}{\link{OPTIONAL} Sequenced methods used. Default hybrid. Options \link{"hybrid","amplicon","wgs"}}
 
 \item{short_names}{\link{OPTIONAL} Use short annotation names. Default FALSE}
 
