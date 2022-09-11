@@ -1075,7 +1075,7 @@ de
               exec_code=exec_code, 
               task_id=task_id,
               input_args=argg,
-              out_file_dir=tmp_dir,
+              out_file_dir=out_file_dir,
               out_files=list(
                   cnn=paste0(out_file_dir,"/",names(bam_list),".cnn")
               )
