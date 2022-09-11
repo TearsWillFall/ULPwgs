@@ -293,9 +293,6 @@ access_cnvkit=function(
       target=paste0(" -t ",target)
     }
 
-    if(antitarget!=""){
-      antitarget=paste0(" -a ", antitarget)
-    }
 
     if(access!=""){
       paste0(" -g ",access)
