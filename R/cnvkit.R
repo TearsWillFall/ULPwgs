@@ -681,7 +681,7 @@ bin_targets_cnvkit=function(
   )
 
 
-   jobs_report[["steps"]][["AntitargetsCNVkit"]]<-create_anititarget_cnvkit(
+   jobs_report[["steps"]][["AntitargetsCNVkit"]]<-create_antitarget_cnvkit(
       sif_cnvkit=sif_cnvkit,
       access=access,
       bed=jobs_report[["steps"]][["TargetsCNVkit"]]$out_files$target,
