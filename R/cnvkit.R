@@ -1052,12 +1052,12 @@ de
           output_dir=out_file_dir
           save(bam_list,bed,sif_gatk,ref_genome,
           output_dir,read_count,min_mapq,output_dir,verbose,file = rdata_file)
-          exec_code=paste0("Rscript -e \"ULPwgs::coverage_gatk(rdata=\\\"",
+          exec_code=paste0("Rscript -e \"ULPwgs::coverage_cnvkit(rdata=\\\"",
           rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
           out_file_dir2=set_dir(dir=out_file_dir,name="batch")
           batch_code=build_job_exec(job=job,time=time,ram=ram,
           threads=1,output_dir=out_file_dir2,
-          hold=hold,array=length(region_list))
+          hold=hold,array=length(bam_list))
           exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
 
           if(verbose){
