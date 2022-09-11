@@ -240,7 +240,7 @@ access_cnvkit=function(
 #' 
 #' 
 #' @param sif_cnvkit [REQUIRED] Path to cnvkit sif file.
-#' @param ref_genome=build_default_reference_list()$HG19$reference$genome,
+#' @param ref_genome [REQUIRED] Path to reference genome.
 #' @param bin_size_target [OPTIONAL] Size of bins for targets. Default 75
 #' @param bin_size_antitarget [OPTIONAL] Size of bins for antitargets. Default 500000
 #' @param min_bin_size_antitarget [OPTIONAL] Size of bins for antitargets. Default NULL
@@ -644,7 +644,7 @@ access_cnvkit=function(
     min_bin_size_target=20,
     max_bin_size_target=20000,
     min_bin_size_antitarget=500,
-    max_bin_size_target=500000,
+    max_bin_size_antitarget=500000,
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     threads=1,ram=1,mode="local",
@@ -677,7 +677,7 @@ access_cnvkit=function(
     "  --antitarget-min-size ",min_bin_size_antitarget,
     "  --antitarget-max-size ",max_bin_size_antitarget,add,annotation,
      paste0(bams,collapse=" "))
-
+de
     if(mode=="batch"){
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
