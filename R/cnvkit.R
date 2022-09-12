@@ -1181,14 +1181,10 @@ de
       add=paste(add," --no-edge ")
     }
 
-    if(!mask){
+    if(!rmask){
       add=paste(add," --no-rmask ")
     }
 
-
-    if(!mask){
-      add=paste(add," --no-rmask ")
-    }
 
     if(male_reference){
       add=paste(add," -y ")
