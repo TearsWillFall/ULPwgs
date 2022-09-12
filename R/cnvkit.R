@@ -1459,17 +1459,17 @@ de
     names=Vectorize(get_file_name)(targets))
     row.names(sample_list)= sample_list$names
     
-
+    
     if(mode=="local"){
     jobs_report[["steps"]][["par_sample_fix_cnvkit"]]<-
-    parallel::mclapply(sample_list,FUN=function(smpl){
+    parallel::mclapply(seq(1,nrow(sample_list)),FUN=function(row){
       job_report <- fix_cnvkit(
                 sif_cnvkit=sif_cnvkit,
                 ref_genome=ref_genome,
                 pon=pon,
-                target=smpl[1],
-                antitarget=smpl[2],
-                output_name=smpl[3],
+                target=sample_list[row,]$targets,
+                antitarget=sample_list[row,]$antitargets,
+                output_name=sample_list[row,]$names,
                 output_dir=out_file_dir,
                 gc=gc,
                 edge=edge,
