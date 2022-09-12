@@ -1799,7 +1799,7 @@ de
     parallel::mclapply(sample_list,FUN=function(sample){
       job_report <-segment_cnvkit(
                 sif_cnvkit=sif_cnvkit,
-                cnrs=sample,
+                cnr=sample,
                 seg_method=seg_method,
                 smooth=smooth,
                 drop_low_coverage=drop_low_coverage,
