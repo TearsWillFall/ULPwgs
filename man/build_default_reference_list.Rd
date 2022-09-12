@@ -8,9 +8,9 @@ build_default_reference_list(
   references = list(HG19 = list(reference = list(genome =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.fa", access_5k
     =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/access-5k-mappable.grch37.bed",
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.access-5k-mappable.bed",
     access_10k =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/access-10kb.grch37.bed"),
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.access-10k-mappable.bed"),
     database = list(all_snps =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/database/00-All.vcf.gz",
     all_common =
@@ -22,34 +22,47 @@ build_default_reference_list(
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/prim_tg.interval_list"),
     bed = list(bait =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/cap_tg.bed", target =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/prim_tg.bed",
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/prim_tg.bed"), variant
+    = list(pon_cn =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon_seg/pon_seg.cnn", 
+
+            pon_muts =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon_var/pon_gatkPoN.vcf.gz"),
+    binned = list(target =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/cap_tg.binned.targets.bed",
     antitarget =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/off_tg.bed"), variant =
-    list()), 
-         PCF_V3 = list(intervals = list(bi =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/cap_tg.binned.antitargets.bed")),
+    PCF_V3 = list(intervals = list(bi =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/cap_tg.interval_list",
     ti =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/prim_tg.interval_list"),
-    bed = list(bait =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/cap_tg.bed", target =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/prim_tg.bed",
-    antitarget =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/off_tg.bed"))), rnaseq
-    = list(intervals = list(ri =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg19/rnaseq//intervals/rRNA.interval_list"),
     
-         reference = list(ref_flat =
+         bed = list(bait =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/cap_tg.bed", target =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/prim_tg.bed"), variant
+    = list(pon_cn =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon_seg/pon_seg.cnn",
+    pon_muts =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon_var/pon_gatkPoN.vcf.gz"),
+    binned = list(target =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/cap_tg.binned.targets.bed",
+    
+             antitarget =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/cap_tg.binned.antitargets.bed"))),
+    rnaseq = list(intervals = list(ri =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/rnaseq//intervals/rRNA.interval_list"),
+    reference = list(ref_flat =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/rnaseq/reference/refFlat.txt")),
     variant = list(germ_reference =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/af-only-gnomad.raw.sites.vcf",
     biallelic_reference =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/small_exac_common_3.vcf",
-    hapmap_reference =
+    
+         hapmap_reference =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/hapmap_3.3.b37.vcf",
     mills_reference =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/Mills_and_1000G_gold_standard.indels.b37.vcf")),
-    
-     HG38 = list(reference = list(genome =
+    HG38 = list(reference = list(genome =
     "/lustre/scratch/scratch/regmova/PCF/references/hg38/reference/ucsc.hg38.fa"),
     database = list(all_snps =
     "/lustre/scratch/scratch/regmova/PCF/references/hg38/database/00-All.vcf.gz",

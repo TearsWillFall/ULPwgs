@@ -88,5 +88,5 @@ TO DO// Implement mitochondrial mode feature
 }
 \details{
 For more information read:
-https://gatk.broadinstitute.org/hc/en-us/articles/360037593851-Mutect2
+https://cnvkit.readthedocs.io/en/stable/pipeline.html
 }

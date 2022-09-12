@@ -1259,18 +1259,12 @@ de
 #' For more information read:
 #' https://cnvkit.readthedocs.io/en/stable/pipeline.html
 #'
-#' @param sif_cnvkit [REQUIRED] Path to cnvkit sif file.
-#' @param ref_genoma [REQUIRED] Path to reference genoms.
-#' @param cnn [REQUIRED] Path to normal coverage profiles. Default none
-#' @param gender [OPTIONAL] Sample gender. Default male.
-#' @param target [OPTIONAL] Path to BED file with target regions. Default none.
-#' @param antitarget [OPTIONAL] Path to BED file with target regions. Default none.
-#' @param cluster [OPTIONAL] Calculate and store summary stats for clustered subsets of the normal samples with similar coverage profiles. Default FALSE
-#' @param min_cluster_size [OPTIONAL] Minimum size to keep in reference profiles.
+#' @param sif_cnvkit [REQUIRED] Path to cnvkit sif file.oms.
+#' @param target [REQUIRED] Path to CNN file for target regions. Default none.
+#' @param antitarget [REQUIRED] Path to BED file with target regions. Default none.
 #' @param gc [OPTIONAL] Disble GC bias correction. Default FALSE.
 #' @param edge [OPTIONAL] Disble edge correction. Default FALSE.
 #' @param rmask [OPTIONAL] Disble repeat mask correction. Default FALSE.
-#' @param male_reference [OPTIONAL] Adjust X chromosome to log2 0. Default FALSE.
 #' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param threads [OPTIONAL] Number of threads to split the work. Default 4
@@ -1390,22 +1384,24 @@ de
 
 
 
-#' Wrapper around fix function from CNVkit
+#' Wrapper around parallel intergration for fix function from CNVkit
 #'
-#' This function wraps around target function for CNVkit
-#' This function generates an target BED file from an input target file. 
-#' Additional parameters can be used to exclude regions and modify the average bin size
+#' This function wraps around fix function for CNVkit
+#' This function correct sample coverage using a reference panel of normals files.
+#' Additional parameters can be used to exclude regions and modify the average bin size.
 #' 
 #' 
 #' For more information read:
 #' https://cnvkit.readthedocs.io/en/stable/pipeline.html
 #'
 #' @param sif_cnvkit [REQUIRED] Path to cnvkit sif file.
-#' @param ref_genoma [REQUIRED] Path to reference genoms.
-#' @param bed [REQUIRED] Path to input BED file with target regions. Default none
-#' @param bam [REQUIRED] Path to BAM files. Default none
-#' @param read_count [OPTIONAL] Alternative method for coverage. Default FALSE
-#' @param min_mapq [OPTIONAL] Minimum mapping quality to count a read for coverage. Default 0.
+#' @param ref_genoma [REQUIRED] Path to reference genome.
+#' @param pon [REQUIRED] Path to panel of normals location.
+#' @param targets [REQUIRED] Path to target CNN files.
+#' @param antitargets [REQUIRED] Path to antitarget CNN files.
+#' @param gc [OPTIONAL] Disble GC bias correction. Default FALSE.
+#' @param edge [OPTIONAL] Disble edge correction. Default FALSE.
+#' @param rmask [OPTIONAL] Disble repeat mask correction. Default FALSE.
 #' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param output_dir [OPTIONAL] Path to the output directory.
@@ -1420,7 +1416,6 @@ de
 #' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
 #' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
-
 
   parallel_sample_fix_cnvkit=function(
     sif_cnvkit=build_default_sif_list()$sif_cnvkit,
