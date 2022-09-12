@@ -37,27 +37,34 @@
 #' @export
 
 
-segmentation_cnvkit=function(
+process_cnvkit=function(
     rdata=NULL,selected=FALSE,
-    sif_cnvkit=build_default_sif_list()$sif_cnvkit,
-    tumor="",
-    normal="",
-    pon="",
-    seg_method="cbs",
-    seq_method="hybrid",
-    baits=build_default_reference_list()$HG19$panel$PCF_V2$bed$bait,
+    target=build_default_reference_list()$HG19$panel$PCF_V3$binned$target,
+    antitarget=build_default_reference_list()$HG19$panel$PCF_V3$binned$antitarget,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     access=build_default_reference_list()$HG19$reference$access_5k,
-    pon_name="",
+    sif_cnvkit=build_default_sif_list()$sif_cnvkit,
+    pon=build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn,
+    tumor="",
+    seg_method="cbs",
+    seq_method="hybrid",
+    output_name="",
     output_dir=".",
     diagram=TRUE,
     scatter=TRUE,
-    male=TRUE,
     verbose=FALSE,
+    read_count=FALSE,
+    min_mapq=0,
+    gc=TRUE,
+    edge=TRUE,
+    rmask=TRUE,
+    smooth=TRUE,
+    drop_low_coverage=TRUE,
+    drop_outliers=TRUE,
     batch_config=build_default_preprocess_config(),
     threads=4,ram=4,mode="local",
-    executor_id=make_unique_id("segmentationCNVkit"),
-    task_name="segmentationCNVkit",time="48:0:0",
+    executor_id=make_unique_id("processCNVkit"),
+    task_name="processCNVkit",time="48:0:0",
     update_time=60,
     wait=FALSE,hold=""
   ){
@@ -70,56 +77,120 @@ segmentation_cnvkit=function(
       }
   }
 
+      
+  id=""
+    if(output_name!=""){
+      id=output_name
+    }else{
+      id=get_file_name(tumor)
+    }
+
+
+
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir,name="segmentation")
+    out_file_dir=set_dir(dir=output_dir,name=id)
     job=build_job(executor_id=executor_id,task=task_id)
-    
+ 
+  jobs_report[["steps"]][["targetCoverageCNVkit"]]<-coverage_cnvkit(
+        sif_cnvkit=if_cnvkit,
+        ref_genome=ref_genome,
+        bed=target,
+        bam=tumor,
+        output_name=id,
+        output_dir=out_file_dir,
+        read_count=read_count,
+        min_mapq=min_mapq,
+        verbose=verbose,
+        batch_config=batch_config,
+        threads=1,ram=1,mode=mode,
+        executor_id=task_id,
+        time=time,
+        hold=hold
+  )
 
-    gender=""
-    if(male){
-      gender=" -y "
-    }
+  jobs_report[["steps"]][["antitargetCoverageCNVkit"]]<-coverage_cnvkit(
+        sif_cnvkit=if_cnvkit,
+        ref_genome=ref_genome,
+        bed=target,
+        bam=tumor,
+        output_name=id,
+        output_dir=out_file_dir,
+        read_count=read_count,
+        min_mapq=min_mapq,
+        verbose=verbose,
+        batch_config=batch_config,
+        threads=1,ram=1,mode=mode,
+        executor_id=task_id,
+        time=time,
+        hold=hold
+  )
+
+  jobs_report[["steps"]][["fixCNVkit"]]<-fix_cnvkit(
+        sif_cnvkit=sif_cnvkit,
+        pon=pon,
+        target=jobs_report[["steps"]][["targetCoverageCNVkit"]]$out_files$cnn,
+        antitarget=jobs_report[["steps"]][["antitargetCoverageCNVkit"]]$out_files$cnn,
+        output_name=id,
+        output_dir=out_file_dir,
+        gc=gc,
+        edge=edge,
+        rmask=rmask,
+        verbose=verbose,
+        batch_config=batch_config,
+        threads=1,ram=1,mode=mode,
+        executor_id=task_id,
+        time=time,
+        hold=c(jobs_report[["steps"]][["targetCoverageCNVkit"]]$job_id,
+        jobs_report[["steps"]][["antitargetCoverageCNVkit"]]$job_id)
+  )
+
+  jobs_report[["steps"]][["segmentCNVkit"]]<-segment_cnvkit(
+        sif_cnvkit=sif_cnvkit,
+        cnr=jobs_report[["steps"]][["fixCNVkit"]]$out_files$cnr,
+        seg_method=seg_method,
+        output_name=id,
+        output_dir=out_file_dir,
+        smooth=smooth,
+        drop_low_coverage=drop_low_coverage,
+        drop_outliers=drop_outliers,
+        verbose=verbose,
+        batch_config=batch_config,
+        threads=1,ram=1,mode=mode,
+        executor_id=task_id,
+        time=time,
+        hold=jobs_report[["steps"]][["fixCNVkit"]]$job_id
+  )
+
+
+  if(scatter){
+      scatter_cnvkit(
+      sif_cnvkit=sif_cnvkit,
+      cnr=jobs_report[["steps"]][["segmentCNVkit"]]$out_files$cnr,
+      cns=jobs_report[["steps"]][["segmentCNVkit"]]$out_files$cns,
+      output_name=id,
+      output_dir=out_file_dir,
+      verbose=verbose,
+      batch_config=batch_config,
+      threads=1,ram=1,mode=mode,
+      executor_id=task_id,
+      time=time,
+      hold=jobs_report[["steps"]][["segmentCNVkit"]]$job_id
+    )
+  }
+
+
+  if(diagram){
 
 
 
-    seg_method=paste0("--segment-method ",seg_method)
-    seq_method=paste0("--method ",seq_method)
 
 
-    add=""
-    if(scatter){
-      add=paste(add," --scatter ")
-    }
-
-    if(diagram){
-      add=paste(add," --diagram ")
-    }
-
-
-    if (pon_name!=""){
-      pon_name=paste(" --output-reference ",pon_name)
-    }
-
-    if (access!=""){
-      access=paste(" --access ",access)
-    }
+  }
 
 
 
-    if (fasta!=""){
-      fasta=paste(" --fasta ",fasta)
-    }
-
-    if (baits!=""){
-      baits=paste(  " --targets ",baits)
-    }
-
-    exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
-    " cnvkit.py access -o ",out_file,exclude_regions," -s ",gap_size, ref_genome)
-
-
-
+ 
 }
 
 
@@ -1284,7 +1355,6 @@ de
     rdata=NULL,
     selected=NULL,
     sif_cnvkit=build_default_sif_list()$sif_cnvkit,
-    ref_genome=build_default_reference_list()$HG19$reference$genome,
     pon=build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn,
     target="",
     antitarget="",
@@ -1419,7 +1489,6 @@ de
 
   parallel_sample_fix_cnvkit=function(
     sif_cnvkit=build_default_sif_list()$sif_cnvkit,
-    ref_genome=build_default_reference_list()$HG19$reference$genome,
     pon=build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn,
     targets="",
     antitargets="",
@@ -1465,7 +1534,6 @@ de
     parallel::mclapply(seq(1,nrow(sample_list)),FUN=function(row){
       job_report <- fix_cnvkit(
                 sif_cnvkit=sif_cnvkit,
-                ref_genome=ref_genome,
                 pon=pon,
                 target=sample_list[row,]$targets,
                 antitarget=sample_list[row,]$antitargets,
@@ -1484,7 +1552,7 @@ de
 
           rdata_file=paste0(tmp_dir,"/",job,".samples.RData")
           output_dir=out_file_dir
-          save(sample_list,bed,sif_cnvkit,ref_genome,
+          save(sample_list,bed,sif_cnvkit,
           gc,edge,rmask,output_dir,verbose,file = rdata_file)
           exec_code=paste0("Rscript -e \"ULPwgs::fix_cnvkit(rdata=\\\"",
           rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
@@ -1523,4 +1591,421 @@ de
 
 
 
+
+
+
+#' Wrapper around reference function from CNVkit
+#'
+#' This function wraps around target function for CNVkit
+#' This function generates an target BED file from an input target file. 
+#' Additional parameters can be used to exclude regions and modify the average bin size
+#' 
+#' 
+#' For more information read:
+#' https://cnvkit.readthedocs.io/en/stable/pipeline.html
+#'
+#' @param sif_cnvkit [REQUIRED] Path to cnvkit sif file.oms.
+#' @param seg_method [OPTIONAL] Method to use for segmentation. Default cbs. Options ["cbs","flasso","haar","none","hmm","hmm-tumor","hmm-germline"]
+#' @param smooth [OPTIONAL] Smooth before CBS. Default TRUE
+#' @param drop_low_coverage [OPTIONAL] Drop low coverage bins before segmentation. Default TRUE
+#' @param drop_outliers [OPTIONAL] Drop outlier bins before segmentation. Default TRUE
+#' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+ segment_cnvkit=function(
+    rdata=NULL,
+    selected=NULL,
+    sif_cnvkit=build_default_sif_list()$sif_cnvkit,
+    cnr="",
+    seg_method="cbs",
+    output_name="",
+    output_dir=".",
+    smooth=TRUE,
+    drop_low_coverage=TRUE,
+    drop_outliers=10,
+    verbose=FALSE,
+    batch_config=build_default_preprocess_config(),
+    threads=1,ram=1,mode="local",
+    executor_id=make_unique_id("segmentCNVkit"),
+    task_name="segmentCNVkit",time="48:0:0",
+    update_time=60,
+    wait=FALSE,hold=""
+  ){
+
+    argg <- as.list(environment())
+    task_id=make_unique_id(task_name)
+    out_file_dir=set_dir(dir=output_dir)
+    job=build_job(executor_id=executor_id,task_id=task_id)
+
+    if(!is.null(rdata)){
+      load(rdata)
+      if(!is.null(selected)){
+        cnr=sample_list[selected]
+      }
+    }
+
+    id=""
+    if(output_name!=""){
+      id=output_name
+    }else{
+      id=get_file_name(cnr)
+    }
+
+    add=""
+
+    if(smooth){
+      add=paste(add," --smooth-cbs ")
+    }
+
+
+     if(drop_low_coverage){
+      add=paste(add," --drop-low-coverage ")
+    }
+
+
+    if(drop_outliers){
+        drop_outliers=paste0("  --drop-outliers ",drop_outliers)
+    }
+  
+    out_file=paste0(out_file_dir,"/",id,".cns")
+
+    exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
+    " cnvkit.py segment -p ",threads,drop_outliers, out_file,add, cnr)
+
+    if(mode=="batch"){
+        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+        threads=threads,output_dir=out_file_dir2)
+        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+    }
+
+    if(verbose){
+        print_verbose(job=job,arg=argg,exec_code=exec_code)
+    }
+
+    error=execute_job(exec_code=exec_code)
+    
+    if(error!=0){
+      stop("cnvkit failed to run due to unknown error.
+      Check std error for more information.")
+    }
+
+    job_report=build_job_report(
+      job_id=job,
+      executor_id=executor_id,
+      exec_code=exec_code, 
+      task_id=task_id,
+      input_args = argg,
+      out_file_dir=out_file_dir,
+      out_files=list(
+        cns=out_file)
+    )
+
+
+    if(wait&&mode=="batch"){
+      job_validator(job=job_report$job_id,time=update_time,
+      verbose=verbose,threads=threads)
+    }
+
+    return(job_report)
+
+  }
+
+
+
+
+#' Wrapper around reference function from CNVkit
+#'
+#' This function wraps around target function for CNVkit
+#' This function generates an target BED file from an input target file. 
+#' Additional parameters can be used to exclude regions and modify the average bin size
+#' 
+#' 
+#' For more information read:
+#' https://cnvkit.readthedocs.io/en/stable/pipeline.html
+#'
+#' @param sif_cnvkit [REQUIRED] Path to cnvkit sif file.oms.
+#' @param ref_genome [REQUIRED] Path to CNN file for target regions. Default none.
+#' @param seg_method [OPTIONAL] Method to use for segmentation. Default cbs. Options ["cbs","flasso","haar","none","hmm","hmm-tumor","hmm-germline"]
+#' @param smooth [OPTIONAL] Smooth before CBS. Default TRUE
+#' @param drop_low_coverage [OPTIONAL] Drop low coverage bins before segmentation. Default TRUE
+#' @param drop_low_coverage [OPTIONAL] Drop low coverage bins before segmentation. Default TRUE
+#' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+ parallel_sample_segment_cnvkit=function(
+    sif_cnvkit=build_default_sif_list()$sif_cnvkit,
+    cnrs="",
+    seg_method="cbs",
+    output_name="",
+    output_dir=".",
+    smooth=TRUE,
+    drop_low_coverage=TRUE,
+    drop_outliers=10,
+    verbose=FALSE,
+    batch_config=build_default_preprocess_config(),
+    threads=1,ram=1,mode="local",
+    executor_id=make_unique_id("segmentCNVkit"),
+    task_name="segmentCNVkit",time="48:0:0",
+    update_time=60,
+    wait=FALSE,hold=""
+  ){
+
+    argg <- as.list(environment())
+    task_id=make_unique_id(task_name)
+    out_file_dir=set_dir(dir=output_dir,name="cns")
+    tmp_dir=set_dir(dir=output_dir,name="tmp")
+    job=build_job(executor_id=executor_id,task_id=task_id)
+
+      jobs_report=build_job_report(
+          job_id=job,
+          executor_id=executor_id,
+          exec_code=list(), 
+          task_id=task_id,
+          input_args=argg,
+          out_file_dir=out_file_dir,
+          out_files=list(
+            )
+      ) 
+
+    sample_list=cnrs
+    names(sample_list)=Vectorize(get_file_name)(sample_list)
+    
+    
+    if(mode=="local"){
+    jobs_report[["steps"]][["par_sample_segment_cnvkit"]]<-
+    parallel::mclapply(sample_list,FUN=function(sample){
+      job_report <-segment_cnvkit(
+                sif_cnvkit=sif_cnvkit,
+                cnrs=sample,
+                seg_method=seg_method,
+                smooth=smooth,
+                drop_low_coverage=drop_low_coverage,
+                drop_outliers=drop_outliers,
+                output_name=get_file_name(sample),
+                output_dir=out_file_dir,
+                verbose=verbose,
+                batch_config=batch_config,
+                executor_id=task_id
+              )
+    },mc.cores=threads)
+    
+    }else if(mode=="batch"){
+          rdata_file=paste0(tmp_dir,"/",job,".samples.RData")
+          output_dir=out_file_dir
+          save(sample_list,seg_method,sif_cnvkit,smooth,
+          drop_low_coverage,drop_outliers,output_dir,verbose,file = rdata_file)
+          exec_code=paste0("Rscript -e \"ULPwgs::segment_cnvkit(rdata=\\\"",
+          rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
+          out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+          batch_code=build_job_exec(job=job,time=time,ram=ram,
+          threads=1,output_dir=out_file_dir2,
+          hold=hold,array=length(sample_list))
+          exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+
+          if(verbose){
+              print_verbose(job=job,arg=argg,exec_code=exec_code)
+          }
+          error=execute_job(exec_code=exec_code)
+          if(error!=0){
+              stop("gatk failed to run due to unknown error.
+              Check std error for more information.")
+          }
+         
+         jobs_report[["steps"]][["par_sample_segment_cnvkit"]]<- build_job_report(
+              job_id=job,
+              executor_id=executor_id,
+              exec_code=exec_code, 
+              task_id=task_id,
+              input_args=argg,
+              out_file_dir=out_file_dir,
+              out_files=list(
+                  cnn=paste0(out_file_dir,"/",sample_list$names,".cnr")
+              )
+        )
+    }
+      return(jobs_report)
+  }
+
+
+
+
+
+
+
+#' Wrapper around reference scatter from CNVkit
+#'
+#' This function wraps around target function for CNVkit
+#' This function generates an target BED file from an input target file. 
+#' Additional parameters can be used to exclude regions and modify the average bin size
+#' 
+#' 
+#' For more information read:
+#' https://cnvkit.readthedocs.io/en/stable/pipeline.html
+#'
+#' @param sif_cnvkit [REQUIRED] Path to cnvkit sif file.oms.
+#' @param seg_method [OPTIONAL] Method to use for segmentation. Default cbs. Options ["cbs","flasso","haar","none","hmm","hmm-tumor","hmm-germline"]
+#' @param smooth [OPTIONAL] Smooth before CBS. Default TRUE
+#' @param drop_low_coverage [OPTIONAL] Drop low coverage bins before segmentation. Default TRUE
+#' @param drop_outliers [OPTIONAL] Drop outlier bins before segmentation. Default TRUE
+#' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+  scatter_cnvkit=function(
+    rdata=NULL,
+    selected=NULL,
+    sif_cnvkit=build_default_sif_list()$sif_cnvkit,
+    cnr="",
+    cns="",
+    output_name="",
+    output_dir=".",
+    range="",
+    range_list="",
+    genes="",
+    margin_width=1000000,
+    plot_by_bin=FALSE,
+    trend=TRUE,
+    antitarget_symbol="@",
+    segment_color="red",
+    title,
+    y_max,
+    y_min,
+    verbose=FALSE,
+    batch_config=build_default_preprocess_config(),
+    threads=1,ram=1,mode="local",
+    executor_id=make_unique_id("segmentCNVkit"),
+    task_name="segmentCNVkit",time="48:0:0",
+    update_time=60,
+    wait=FALSE,hold=""
+  ){
+
+    argg <- as.list(environment())
+    task_id=make_unique_id(task_name)
+    out_file_dir=set_dir(dir=output_dir)
+    job=build_job(executor_id=executor_id,task_id=task_id)
+
+    if(!is.null(rdata)){
+      load(rdata)
+      if(!is.null(selected)){
+        cnr=sample_list[selected]
+      }
+    }
+
+    id=""
+    if(output_name!=""){
+      id=output_name
+    }else{
+      id=get_file_name(cnr)
+    }
+
+    if(cns!=""){
+      cns=paste0(" -s ",cns)
+    }
+
+    if(range!=""){
+      range=paste0(" -c ",range)
+    }
+
+    
+    if(genes!=""){
+      genes=paste0(" --gene ",genes)
+    }
+
+    if(range_list!=""){
+      range_list=paste0(" -l ",range_list)
+    }
+
+    add=""
+
+    if(trend){
+      add=paste(add," --trend ")
+    }
+
+
+     if(plot_by_bin){
+      add=paste(add," --by-bin ")
+    }
+
+
+    if(width!=""){
+      width=paste0(" --width ",width)
+    }
+
+
+    out_file=paste0(out_file_dir,"/",id,".scatter.pdf")
+
+    exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
+    " cnvkit.py scatter -o ",out_file,cns,add,range,width,range_list,cnr)
+
+    if(mode=="batch"){
+        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+        threads=threads,output_dir=out_file_dir2)
+        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+    }
+
+    if(verbose){
+        print_verbose(job=job,arg=argg,exec_code=exec_code)
+    }
+
+    error=execute_job(exec_code=exec_code)
+    
+    if(error!=0){
+      stop("cnvkit failed to run due to unknown error.
+      Check std error for more information.")
+    }
+
+    job_report=build_job_report(
+      job_id=job,
+      executor_id=executor_id,
+      exec_code=exec_code, 
+      task_id=task_id,
+      input_args = argg,
+      out_file_dir=out_file_dir,
+      out_files=list(
+        cns=out_file)
+    )
+
+
+    if(wait&&mode=="batch"){
+      job_validator(job=job_report$job_id,time=update_time,
+      verbose=verbose,threads=threads)
+    }
+
+    return(job_report)
+
+  }
 
