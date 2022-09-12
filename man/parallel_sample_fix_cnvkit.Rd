@@ -6,7 +6,6 @@
 \usage{
 parallel_sample_fix_cnvkit(
   sif_cnvkit = build_default_sif_list()$sif_cnvkit,
-  ref_genome = build_default_reference_list()$HG19$reference$genome,
   pon = build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn,
   targets = "",
   antitargets = "",
