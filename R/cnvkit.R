@@ -1681,7 +1681,7 @@ de
     out_file=paste0(out_file_dir,"/",id,".cns")
 
     exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
-    " cnvkit.py segment -p ",threads,drop_outliers, out_file,add, cnr)
+    " cnvkit.py segment -p ",threads,drop_outliers,paste0(" -o ",out_file),add, cnr)
 
     if(mode=="batch"){
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
