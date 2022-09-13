@@ -2147,6 +2147,7 @@ de
   diagram_cnvkit=function(
     rdata=NULL,
     selected=NULL,
+    chrs=build_default_chr_list()$canonical,
     sif_cnvkit=build_default_sif_list()$sif_cnvkit,
     cnr="",
     cns="",
@@ -2222,12 +2223,19 @@ de
     if(male_reference){
       add=paste(add," -y ")
     }
-
+    tmp_cns=paste0(cns,".tmp")
+    tmp_cnr=paste0(cnr,".tmp")
+    system()
+    
 
     out_file=paste0(out_file_dir,"/",id,".diagram.pdf")
 
-    exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
-    " cnvkit.py diagram -o ",out_file,cns,add,title,min_probes,cn_thr,cnr)
+    exec_code=paste(
+    paste0("cat ",cns,"|grep ", paste0(paste0("^",chrs),collapse="\t")." > ",paste0(cns,",tmp")),"&&",
+    paste0("cat ",cnr,"|grep ", paste0(paste0("^",chrs),collapse="\t")." > ",paste0(cnr,",tmp")),"
+    ; singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
+    " cnvkit.py diagram -o ",out_file,paste0(cnr,".tmp"),add,title,min_probes,cn_thr,
+    paste0(cnr,".tmp"),"&& rm ",paste0(cnr,".tmp"),paste0(cnr,".tmp"))
 
     if(mode=="batch"){
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")

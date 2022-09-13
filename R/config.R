@@ -494,6 +494,27 @@ build_default_tool_binary_list=function(
 
 
 
+#' Build chromosome list
+#' 
+#'
+#' @param chromosomes List with tool_names and paths 
+#' @export
+
+
+build_default_chr_list=function(
+    chromosomes=list(
+        canonical=list(c(seq(1,22),"X","Y"))
+    )
+){
+ return(chromosomes)
+}
+build_default_chr_list()
+
+
+
+
+
+
 #' Build default sif list
 #' 
 #'
