@@ -2227,7 +2227,7 @@ de
     out_file=paste0(out_file_dir,"/",id,".diagram.pdf")
 
     exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
-    " cnvkit.py scatter -o ",out_file,cns,add,title,min_probes,cn_thr,cnr)
+    " cnvkit.py diagram -o ",out_file,cns,add,title,min_probes,cn_thr,cnr)
 
     if(mode=="batch"){
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
