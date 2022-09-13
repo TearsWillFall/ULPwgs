@@ -2228,7 +2228,8 @@ de
     out_file=paste0(out_file_dir,"/",id,".diagram.pdf")
     cnr_tmp=paste0(cnr,".tmp")
     cns_tmp=""
-    exec_code=paste0("cat ",cnr," | head -n 1 > ",cnr_tmp," && cat ",cnr," | grep \"", paste0(paste0("^",chrs),collapse="\\|"),"\" >> ",cnr_tmp)
+    exec_code=paste0("cat ",cnr," | head -n 1 > ",cnr_tmp," && cat ",cnr," | grep \"",
+    paste0(paste0("^",chrs),collapse="\\|"),"\" >> ",cnr_tmp)
     if(cns!=""){
       cns_tmp=paste0(cns,".tmp")
       cns_code=paste(" -s ",cns_tmp)
