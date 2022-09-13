@@ -2233,7 +2233,7 @@ de
       cns_tmp=paste0(cns,".tmp")
       cns_code=paste(" -s ",cns_tmp)
       exec_code=paste0(exec_code," && cat ",cns," |  head -n 1 > ",cns_tmp," && ",paste0("cat ",cnr," | grep \" ",
-      paste0(paste0("^",unlist(chrs),collapse="\\|")," \" > ",cns_tmp)))
+      paste0(paste0("^",unlist(chrs),collapse="\\|")," \" >> ",cns_tmp)))
     }
     exec_code=paste(exec_code,
     "; singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
