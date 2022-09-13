@@ -82,7 +82,7 @@ process_cnvkit=function(
     genes_scatter="",
     margin_width_scatter=1000000,
     plot_by_bin_scatter=FALSE,
-    trend_scatter=TRUE,
+    trend_scatter=FALSE,
     antitarget_symbol_scatter="@",
     segment_colour_scatter="red",
     y_max_scatter=NULL,
@@ -2198,7 +2198,7 @@ de
 
     if(cn_thr!=""){
 
-      cn_thr=paste0(" -t ",ch_thr)
+      cn_thr=paste0(" -t ",cn_thr)
 
     }
 
