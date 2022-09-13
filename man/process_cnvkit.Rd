@@ -29,6 +29,21 @@ process_cnvkit(
   smooth = TRUE,
   drop_low_coverage = TRUE,
   drop_outliers = TRUE,
+  range_scatter = "",
+  range_list_scatter = "",
+  genes_scatter = "",
+  margin_width_scatter = 1e+06,
+  plot_by_bin_scatter = FALSE,
+  trend_scatter = TRUE,
+  antitarget_symbol_scatter = "@",
+  segment_colour_scatter = "red",
+  y_max_scatter = NULL,
+  y_min_scatter = NULL,
+  cn_thr_diagram = 0.5,
+  min_probes_diagram = 3,
+  male_reference_diagram = FALSE,
+  gender_diagram = "male",
+  shift_diagram = TRUE,
   batch_config = build_default_preprocess_config(),
   threads = 4,
   ram = 4,
@@ -63,6 +78,36 @@ process_cnvkit(
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
+
+\item{range_scatter}{\link{OPTIONAL} Range to show in chr:start-end format. Default none}
+
+\item{range_list_scatter}{\link{OPTIONAL} Path to BED file with range list. Default none}
+
+\item{genes_scatter}{\link{OPTIONAL} List of genes to focus on. Default none.}
+
+\item{margin_width_scatter}{\link{OPTIONAL} Default gene margin width. Default 1000000}
+
+\item{plot_by_bin_scatter}{\link{OPTIONAL} Assume all bins are the same size. Default FALSE}
+
+\item{trend_scatter}{\link{OPTIONAL} Show trendline. Default TRUE.}
+
+\item{antitarget_symbol_scatter}{\link{OPTIONAL} Show antitarget probes with this symbol. Default "@"}
+
+\item{segment_colour_scatter}{\link{OPTIONAL} Show antitarget probes with this symbol. Default "@"}
+
+\item{y_max_scatter}{\link{OPTIONAL} Y max range. Default NULL.}
+
+\item{y_min_scatter}{\link{OPTIONAL} Y min range. Default NULL.}
+
+\item{cn_thr_diagram}{\link{OPTIONAL} Copy number threshold. Default 0.5}
+
+\item{min_probes_diagram}{\link{OPTIONAL} Minimum number of probes to show a gene. Default 3}
+
+\item{male_reference_diagram}{\link{OPTIONAL}  Assume inputs were normalized to a male reference. Default FALSE}
+
+\item{gender_diagram}{\link{OPTIONAL} Assume sample gender. Default male}
+
+\item{shift_diagram}{\link{OPTIONAL} Adjust the X and Y chromosomes according to sample sex. Default TRUE}
 
 \item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
 

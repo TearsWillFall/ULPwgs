@@ -122,7 +122,19 @@ process_cnvkit=function(
     task_id=make_unique_id(task_name)
     out_file_dir=set_dir(dir=output_dir,name=id)
     job=build_job(executor_id=executor_id,task=task_id)
-  
+
+
+
+    job_report=build_job_report(
+      job_id=job,
+      executor_id=executor_id,
+      exec_code=list(), 
+      task_id=task_id,
+      input_args = argg,
+      out_file_dir=out_file_dir,
+      out_files=list()
+    )
+
 
  
   jobs_report[["steps"]][["targetCoverageCNVkit"]]<-coverage_cnvkit(
@@ -197,7 +209,7 @@ process_cnvkit=function(
 
 
   if(scatter){
-      scatter_cnvkit(
+    jobs_report[["steps"]][["scatterCNVkit"]]<-scatter_cnvkit(
       sif_cnvkit=sif_cnvkit,
       cnr=jobs_report[["steps"]][["segmentCNVkit"]]$out_files$cnr,
       cns=jobs_report[["steps"]][["segmentCNVkit"]]$out_files$cns,
@@ -225,7 +237,7 @@ process_cnvkit=function(
 
 
   if(diagram){
-      diagram_cnvkit(
+      jobs_report[["steps"]][["diagramCNVkit"]]<-diagram_cnvkit(
         sif_cnvkit=sif_cnvkit,
         cnr=jobs_report[["steps"]][["segmentCNVkit"]]$out_files$cnr,
         cns=jobs_report[["steps"]][["segmentCNVkit"]]$out_files$cns,
@@ -247,6 +259,7 @@ process_cnvkit=function(
   }
 
 
+  return(jobs_report)
 
  
 }
@@ -2080,7 +2093,7 @@ de
       input_args = argg,
       out_file_dir=out_file_dir,
       out_files=list(
-        cns=out_file)
+        scatter=out_file)
     )
 
 
@@ -2242,7 +2255,7 @@ de
       input_args = argg,
       out_file_dir=out_file_dir,
       out_files=list(
-        cns=out_file)
+        diagram=out_file)
     )
 
 
