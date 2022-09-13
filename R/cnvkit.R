@@ -2229,7 +2229,7 @@ de
     cnr_tmp=paste0(cnr,".tmp")
     cns_tmp=""
     exec_code=paste0("cat ",cns,"|grep ", paste0(paste0("^",chrs),collapse="\t")," > ",cnr_tmp)
-    if(cns){
+    if(cns!=""){
       cns_tmp=paste0(cns,".tmp")
       cns_code=paste(" -s ",cns_tmp)
       exec_code=paste0(exec_code,"&&",paste0("cat ",cnr,"|grep ",
