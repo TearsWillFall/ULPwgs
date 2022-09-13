@@ -2225,8 +2225,7 @@ de
     }
     tmp_cns=paste0(cns,".tmp")
     tmp_cnr=paste0(cnr,".tmp")
-    system()
-    
+ 
 
     out_file=paste0(out_file_dir,"/",id,".diagram.pdf")
 
