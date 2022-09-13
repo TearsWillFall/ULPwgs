@@ -24,6 +24,22 @@
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param seg_method [OPTIONAL] Method to use to generate segmentation calls.Default  cbs. Options ["cbs","flasso","haar","none","hmm","hmm-tumor","hmm-germline"]
 #' @param seq_method [OPTIONAL] Sequenced methods used. Default hybrid. Options ["hybrid","amplicon","wgs"]
+#' @param trend_scatter [OPTIONAL] Show trendline. Default TRUE
+#' @param range_scatter [OPTIONAL] Range to show in chr:start-end format. Default none
+#' @param range_list_scatter [OPTIONAL] Path to BED file with range list. Default none
+#' @param genes_scatter [OPTIONAL] List of genes to focus on. Default none.
+#' @param margin_width_scatter [OPTIONAL] Default gene margin width. Default 1000000
+#' @param plot_by_bin_scatter [OPTIONAL] Assume all bins are the same size. Default FALSE
+#' @param trend_scatter [OPTIONAL] Show trendline. Default TRUE.
+#' @param antitarget_symbol_scatter [OPTIONAL] Show antitarget probes with this symbol. Default "@"
+#' @param segment_colour_scatter [OPTIONAL] Show antitarget probes with this symbol. Default "@"
+#' @param y_max_scatter [OPTIONAL] Y max range. Default NULL.
+#' @param y_min_scatter [OPTIONAL] Y min range. Default NULL.
+#' @param cn_thr_diagram [OPTIONAL] Copy number threshold. Default 0.5
+#' @param min_probes_diagram [OPTIONAL] Minimum number of probes to show a gene. Default 3
+#' @param male_reference_diagram [OPTIONAL]  Assume inputs were normalized to a male reference. Default FALSE
+#' @param gender_diagram [OPTIONAL] Assume sample gender. Default male
+#' @param shift_diagram [OPTIONAL] Adjust the X and Y chromosomes according to sample sex. Default TRUE
 #' @param threads [OPTIONAL] Number of threads to split the work. Default 4
 #' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
@@ -61,6 +77,21 @@ process_cnvkit=function(
     smooth=TRUE,
     drop_low_coverage=TRUE,
     drop_outliers=TRUE,
+    range_scatter="",
+    range_list_scatter="",
+    genes_scatter="",
+    margin_width_scatter=1000000,
+    plot_by_bin_scatter=FALSE,
+    trend_scatter=TRUE,
+    antitarget_symbol_scatter="@",
+    segment_colour_scatter="red",
+    y_max_scatter=NULL,
+    y_min_scatter=NULL,
+    cn_thr_diagram=0.5,
+    min_probes_diagram=3,
+    male_reference_diagram=FALSE,
+    gender_diagram="male",
+    shift_diagram=TRUE,
     batch_config=build_default_preprocess_config(),
     threads=4,ram=4,mode="local",
     executor_id=make_unique_id("processCNVkit"),
@@ -91,6 +122,8 @@ process_cnvkit=function(
     task_id=make_unique_id(task_name)
     out_file_dir=set_dir(dir=output_dir,name=id)
     job=build_job(executor_id=executor_id,task=task_id)
+  
+
  
   jobs_report[["steps"]][["targetCoverageCNVkit"]]<-coverage_cnvkit(
         sif_cnvkit=if_cnvkit,
@@ -170,6 +203,17 @@ process_cnvkit=function(
       cns=jobs_report[["steps"]][["segmentCNVkit"]]$out_files$cns,
       output_name=id,
       output_dir=out_file_dir,
+      range=range_scatter,
+      range_list=range_list_scatter,
+      genes=genes_scatter,
+      margin_width=margin_width_scatter,
+      plot_by_bin=plot_by_bin_scatter,
+      trend=trend_scatter,
+      antitarget_symbol=antitarget_symbol_scatter,
+      segment_colour=segment_colour_scatter,
+      title=id,
+      y_max=y_max_scatter,
+      y_min=y_max_scatter,
       verbose=verbose,
       batch_config=batch_config,
       threads=1,ram=1,mode=mode,
@@ -181,11 +225,25 @@ process_cnvkit=function(
 
 
   if(diagram){
-
-
-
-
-
+      diagram_cnvkit(
+        sif_cnvkit=sif_cnvkit,
+        cnr=jobs_report[["steps"]][["segmentCNVkit"]]$out_files$cnr,
+        cns=jobs_report[["steps"]][["segmentCNVkit"]]$out_files$cns,
+        output_name=id,
+        output_dir=out_file_dir,
+        cn_thr=cn_thr_diagram,
+        min_probes=min_probes_diagram,
+        male_reference=male_reference_diagram,
+        gender=gender_diagram,
+        shift=shift_diagram,
+        title=id,
+        verbose=verbose,
+        batch_config=batch_config,
+        threads=1,ram=1,mode=mode,
+        executor_id=task_id,
+        time=time,
+        hold=jobs_report[["steps"]][["segmentCNVkit"]]$job_id
+      )
   }
 
 
@@ -1866,10 +1924,18 @@ de
 #' https://cnvkit.readthedocs.io/en/stable/pipeline.html
 #'
 #' @param sif_cnvkit [REQUIRED] Path to cnvkit sif file.oms.
-#' @param seg_method [OPTIONAL] Method to use for segmentation. Default cbs. Options ["cbs","flasso","haar","none","hmm","hmm-tumor","hmm-germline"]
-#' @param smooth [OPTIONAL] Smooth before CBS. Default TRUE
-#' @param drop_low_coverage [OPTIONAL] Drop low coverage bins before segmentation. Default TRUE
-#' @param drop_outliers [OPTIONAL] Drop outlier bins before segmentation. Default TRUE
+#' @param trend [OPTIONAL] Smooth before CBS. Default TRUE
+#' @param range [OPTIONAL] Range to show in chr:start-end format. Default none
+#' @param range_list [OPTIONAL] Path to BED file with range list. Default none
+#' @param genes [OPTIONAL] List of genes to focus on. Default none.
+#' @param margin_width [OPTIONAL] Default gene margin width. Default 1000000
+#' @param plot_by_bin [OPTIONAL] Assume all bins are the same size. Default FALSE
+#' @param trend [OPTIONAL] Show trendline. Default TRUE.
+#' @param antitarget_symbol [OPTIONAL] Show antitarget probes with this symbol. Default "@"
+#' @param segment_colour [OPTIONAL] Show antitarget probes with this symbol. Default "@"
+#' @param title [OPTIONAL] Sample title. Default NULL.
+#' @param y_max [OPTIONAL] Y max range. Default NULL.
+#' @param y_min[OPTIONAL] Y min range. Default NULL.
 #' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param threads [OPTIONAL] Number of threads to split the work. Default 4
@@ -1899,7 +1965,7 @@ de
     plot_by_bin=FALSE,
     trend=TRUE,
     antitarget_symbol="@",
-    segment_color="red",
+    segment_colour="red",
     title=NULL,
     y_max=NULL,
     y_min=NULL,
@@ -1937,6 +2003,10 @@ de
 
     if(range!=""){
       range=paste0(" -c ",range)
+    }
+
+     if(segment_colour!=""){
+     segment_colour=paste0(" --segment-color ",segment_colour)
     }
 
     
@@ -1981,7 +2051,7 @@ de
     out_file=paste0(out_file_dir,"/",id,".scatter.pdf")
 
     exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
-    " cnvkit.py scatter -o ",out_file,cns,add,title,
+    " cnvkit.py scatter -o ",out_file,cns,add,title,segment_colour,
     y_max,y_min,range,width,range_list,cnr)
 
     if(mode=="batch"){
@@ -2039,7 +2109,8 @@ de
 #' https://cnvkit.readthedocs.io/en/stable/pipeline.html
 #'
 #' @param sif_cnvkit [REQUIRED] Path to cnvkit sif file.oms.
-#' @param smooth [OPTIONAL] Smooth before CBS. Default TRUE
+#' @param cnr [REQUIRED] Path to CNR as produced by fix_cnvkit command.
+#' @param cns [OPTIONAL] Path to CNS as produced by segment_cnvkit command.
 #' @param cn_thr [OPTIONAL] Copy number threshold. Default 0.5
 #' @param min_probes [OPTIONAL] Minimum number of probes to show a gene. Default 3
 #' @param male_reference [OPTIONAL]  Assume inputs were normalized to a male reference. Default FALSE

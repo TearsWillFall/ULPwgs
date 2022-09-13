@@ -19,10 +19,10 @@ scatter_cnvkit(
   plot_by_bin = FALSE,
   trend = TRUE,
   antitarget_symbol = "@",
-  segment_color = "red",
-  title,
-  y_max,
-  y_min,
+  segment_colour = "red",
+  title = NULL,
+  y_max = NULL,
+  y_min = NULL,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 1,
@@ -42,6 +42,26 @@ scatter_cnvkit(
 \item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
 
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
+
+\item{range}{\link{OPTIONAL} Range to show in chr:start-end format. Default none}
+
+\item{range_list}{\link{OPTIONAL} Path to BED file with range list. Default none}
+
+\item{genes}{\link{OPTIONAL} List of genes to focus on. Default none.}
+
+\item{margin_width}{\link{OPTIONAL} Default gene margin width. Default 1000000}
+
+\item{plot_by_bin}{\link{OPTIONAL} Assume all bins are the same size. Default FALSE}
+
+\item{trend}{\link{OPTIONAL} Show trendline. Default TRUE.}
+
+\item{antitarget_symbol}{\link{OPTIONAL} Show antitarget probes with this symbol. Default "@"}
+
+\item{segment_colour}{\link{OPTIONAL} Show antitarget probes with this symbol. Default "@"}
+
+\item{title}{\link{OPTIONAL} Sample title. Default NULL.}
+
+\item{y_max}{\link{OPTIONAL} Y max range. Default NULL.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
@@ -63,13 +83,7 @@ scatter_cnvkit(
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
 
-\item{seg_method}{\link{OPTIONAL} Method to use for segmentation. Default cbs. Options \link{"cbs","flasso","haar","none","hmm","hmm-tumor","hmm-germline"}}
-
-\item{smooth}{\link{OPTIONAL} Smooth before CBS. Default TRUE}
-
-\item{drop_low_coverage}{\link{OPTIONAL} Drop low coverage bins before segmentation. Default TRUE}
-
-\item{drop_outliers}{\link{OPTIONAL} Drop outlier bins before segmentation. Default TRUE}
+\item{y_min[OPTIONAL]}{Y min range. Default NULL.}
 }
 \description{
 This function wraps around target function for CNVkit
