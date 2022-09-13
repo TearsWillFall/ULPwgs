@@ -1631,8 +1631,8 @@ de
     seg_method="cbs",
     output_name="",
     output_dir=".",
-    smooth=TRUE,
-    drop_low_coverage=TRUE,
+    smooth=FALSE,
+    drop_low_coverage=FALSE,
     drop_outliers=10,
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
@@ -1761,8 +1761,8 @@ de
     seg_method="cbs",
     output_name="",
     output_dir=".",
-    smooth=TRUE,
-    drop_low_coverage=TRUE,
+    smooth=FALSE,
+    drop_low_coverage=FALSE,
     drop_outliers=10,
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
@@ -1900,9 +1900,9 @@ de
     trend=TRUE,
     antitarget_symbol="@",
     segment_color="red",
-    title,
-    y_max,
-    y_min,
+    title=NULL,
+    y_max=NULL,
+    y_min=NULL,
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     threads=1,ram=1,mode="local",
@@ -1950,6 +1950,19 @@ de
 
     add=""
 
+     if(!is.null(title)){
+      title=paste0(" --title ",title)
+    }
+     if(!is.null(y_max)){
+      y_max=paste0(" --y-max ",y_max)
+    }
+
+
+    if(!is.null(y_min)){
+      y_min=paste0(" --y-min ",y_min)
+    }
+    
+
     if(trend){
       add=paste(add," --trend ")
     }
@@ -1968,7 +1981,169 @@ de
     out_file=paste0(out_file_dir,"/",id,".scatter.pdf")
 
     exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
-    " cnvkit.py scatter -o ",out_file,cns,add,range,width,range_list,cnr)
+    " cnvkit.py scatter -o ",out_file,cns,add,title,
+    y_max,y_min,range,width,range_list,cnr)
+
+    if(mode=="batch"){
+        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+        threads=threads,output_dir=out_file_dir2)
+        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+    }
+
+    if(verbose){
+        print_verbose(job=job,arg=argg,exec_code=exec_code)
+    }
+
+    error=execute_job(exec_code=exec_code)
+    
+    if(error!=0){
+      stop("cnvkit failed to run due to unknown error.
+      Check std error for more information.")
+    }
+
+    job_report=build_job_report(
+      job_id=job,
+      executor_id=executor_id,
+      exec_code=exec_code, 
+      task_id=task_id,
+      input_args = argg,
+      out_file_dir=out_file_dir,
+      out_files=list(
+        cns=out_file)
+    )
+
+
+    if(wait&&mode=="batch"){
+      job_validator(job=job_report$job_id,time=update_time,
+      verbose=verbose,threads=threads)
+    }
+
+    return(job_report)
+
+  }
+
+
+
+
+
+
+#' Wrapper around reference scatter from CNVkit
+#'
+#' This function wraps around target function for CNVkit
+#' This function generates an target BED file from an input target file. 
+#' Additional parameters can be used to exclude regions and modify the average bin size
+#' 
+#' 
+#' For more information read:
+#' https://cnvkit.readthedocs.io/en/stable/pipeline.html
+#'
+#' @param sif_cnvkit [REQUIRED] Path to cnvkit sif file.oms.
+#' @param smooth [OPTIONAL] Smooth before CBS. Default TRUE
+#' @param cn_thr [OPTIONAL] Copy number threshold. Default 0.5
+#' @param min_probes [OPTIONAL] Minimum number of probes to show a gene. Default 3
+#' @param male_reference [OPTIONAL]  Assume inputs were normalized to a male reference. Default FALSE
+#' @param gender [OPTIONAL] Assume sample gender. Default male
+#' @param shift [OPTIONAL] Adjust the X and Y chromosomes according to sample sex. Default TRUE
+#' @param title [OPTIONAL] Sample ID. Default NULL.
+#' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+  diagram_cnvkit=function(
+    rdata=NULL,
+    selected=NULL,
+    sif_cnvkit=build_default_sif_list()$sif_cnvkit,
+    cnr="",
+    cns="",
+    output_name="",
+    output_dir=".",
+    cn_thr=0.5,
+    min_probes=3,
+    male_reference=FALSE,
+    gender="male",
+    shift=TRUE,
+    title=NULL,
+    verbose=FALSE,
+    batch_config=build_default_preprocess_config(),
+    threads=1,ram=1,mode="local",
+    executor_id=make_unique_id("diagramCNVkit"),
+    task_name="diagramCNVkit",time="48:0:0",
+    update_time=60,
+    wait=FALSE,hold=""
+  ){
+
+    argg <- as.list(environment())
+    task_id=make_unique_id(task_name)
+    out_file_dir=set_dir(dir=output_dir)
+    job=build_job(executor_id=executor_id,task_id=task_id)
+
+    if(!is.null(rdata)){
+      load(rdata)
+      if(!is.null(selected)){
+        cnr=sample_list[selected]
+      }
+    }
+
+    id=""
+    if(output_name!=""){
+      id=output_name
+    }else{
+      id=get_file_name(cnr)
+    }
+
+    if(cns!=""){
+      cns=paste0(" -s ",cns)
+    }
+
+    if(!is.null(gender)){
+      gender=paste0(" -x ",gender)
+    }
+
+   
+
+    if(cn_thr!=""){
+
+      cn_thr=paste0(" -t ",ch_thr)
+
+    }
+
+    if(min_probes!=""){
+
+      min_probes=paste0(" -m ",min_probes)
+
+    }
+
+    if(!is.null(title)){
+      title=paste0(" --title ",title)
+    }
+
+
+    add=""
+
+    if(!shift){
+      add=paste(add," --no-shift-xy ")
+    }
+
+    if(male_reference){
+      add=paste(add," -y ")
+    }
+
+
+    out_file=paste0(out_file_dir,"/",id,".diagram.pdf")
+
+    exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
+    " cnvkit.py scatter -o ",out_file,cns,add,title,min_probes,cn_thr,cnr)
 
     if(mode=="batch"){
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
