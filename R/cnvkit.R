@@ -2056,8 +2056,8 @@ de
     }
 
 
-    if(width!=""){
-      width=paste0(" --width ",width)
+    if(margin_width!=""){
+      margin_width=paste0(" --width ",margin_width)
     }
 
 
@@ -2065,7 +2065,7 @@ de
 
     exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
     " cnvkit.py scatter -o ",out_file,cns,add,title,segment_colour,
-    y_max,y_min,range,width,range_list,cnr)
+    y_max,y_min,range,margin_width,range_list,cnr)
 
     if(mode=="batch"){
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
