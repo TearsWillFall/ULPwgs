@@ -2187,15 +2187,13 @@ de
       id=get_file_name(cnr)
     }
 
-    if(cns!=""){
-      cns=paste0(" -s ",cns)
-    }
-
     if(!is.null(gender)){
       gender=paste0(" -x ",gender)
     }
 
-   
+
+
+
 
     if(cn_thr!=""){
 
@@ -2228,13 +2226,19 @@ de
  
 
     out_file=paste0(out_file_dir,"/",id,".diagram.pdf")
-
-    exec_code=paste(
-    paste0("cat ",cns,"|grep ", paste0(paste0("^",chrs),collapse="\t")," > ",paste0(cns,",tmp")),"&&",
-    paste0("cat ",cnr,"|grep ", paste0(paste0("^",chrs),collapse="\t")," > ",paste0(cnr,",tmp")),"
-    ; singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
-    " cnvkit.py diagram -o ",out_file,paste0(cnr,".tmp"),add,title,min_probes,cn_thr,
-    paste0(cnr,".tmp"),"&& rm ",paste0(cnr,".tmp"),paste0(cnr,".tmp"))
+    cnr_tmp=paste0(cnr,".tmp")
+    cns_tmp=""
+    exec_code=paste0("cat ",cns,"|grep ", paste0(paste0("^",chrs),collapse="\t")," > ",cnr_tmp)
+    if(cns){
+      cns_tmp=paste0(cns,".tmp")
+      cns_code=paste(" -s ",cns_tmp)
+      exec_code=paste0(exec_code,"&&",paste0("cat ",cnr,"|grep ",
+      paste0(paste0("^",unlist(chrs),collapse="\t")," > ",cns_tmp)))
+    }
+    exec_code=paste(exec_code,
+    "; singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
+    " cnvkit.py diagram -o ",out_file,cns_code,add,title,min_probes,cn_thr,
+    cnr_tmp,"&& rm ",cnr_tmp,cns_tmp)
 
     if(mode=="batch"){
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")

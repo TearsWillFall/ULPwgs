@@ -670,6 +670,45 @@ write_vcf=function(
 
 
 
+#' Filter BED file by chromosome
+#' This function sets and/or creates the directory
+#' for a function
+#'
+#' @param file Path to the set the directory
+#' @param output_name Path to the set the directory
+#' @param sep Path to the set the directory
+#' @param chrs Name of the directory
+#' @return A path to the new directory
+#' @export
+
+
+filter_chr=function(
+  file="",
+  sep="\t",
+  header=FALSE,
+  output_name="",
+  chrs=build_default_chr_list()$canonical
+){
+
+  id=""
+  if(output_name!=""){
+    id=output_name
+  }else{
+    id=get_file_name(file)
+  }
+
+  out_file=paste0(out_file_dir,"/",output_name,".",get_file_ext(file))
+  dat=read.table(file,sep=sep,header=header)
+  dat=dat[dat[1,] %in%chrs,]
+  write.table(dat,file=out_file,quote=FALSE,row.names=FALSE,col.names=header,sep=sep)
+
+}
+
+
+
+
+
+
 
 
 #' Set the current dir

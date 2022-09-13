@@ -503,7 +503,7 @@ build_default_tool_binary_list=function(
 
 build_default_chr_list=function(
     chromosomes=list(
-        canonical=list(c(seq(1,22),"X","Y"))
+        canonical=c(seq(1,22),"X","Y")
     )
 ){
  return(chromosomes)
