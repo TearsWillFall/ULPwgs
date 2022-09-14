@@ -2010,9 +2010,6 @@ de
       id=get_file_name(cnr)
     }
 
-    if(cns!=""){
-      cns=paste0(" -s ",cns)
-    }
 
     if(range!=""){
       range=paste0(" -c ",range)
@@ -2063,9 +2060,20 @@ de
 
     out_file=paste0(out_file_dir,"/",id,".scatter.pdf")
 
-    exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
-    " cnvkit.py scatter -o ",out_file,cns,add,title,segment_colour,
-    y_max,y_min,range,margin_width,range_list,cnr)
+
+    exec_code=paste0("cat ",cnr," | head -n 1 > ",cnr_tmp," && cat ",cnr," | grep \"",
+    paste0(paste0("^",chrs),collapse="\\|"),"\" >> ",cnr_tmp)
+    if(cns!=""){
+      cns_tmp=paste0(cns,".tmp")
+      cns_code=paste(" -s ",cns_tmp)
+      exec_code=paste0(exec_code," && cat ",cns," |  head -n 1 > ",cns_tmp," && ",paste0("cat ",cns," | grep \" ",
+      paste0(paste0("^",unlist(chrs),collapse="\\|")," \" >> ",cns_tmp)))
+    }
+
+    exec_code=paste(exec_code,";singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
+    " cnvkit.py scatter -o ",out_file,cns_code,add,title,segment_colour,
+    y_max,y_min,range,margin_width,range_list,cnr_tmp,
+    "&& rm ",cnr_tmp,cns_tmp)
 
     if(mode=="batch"){
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
@@ -2236,8 +2244,7 @@ de
       exec_code=paste0(exec_code," && cat ",cns," |  head -n 1 > ",cns_tmp," && ",paste0("cat ",cns," | grep \" ",
       paste0(paste0("^",unlist(chrs),collapse="\\|")," \" >> ",cns_tmp)))
     }
-    exec_code=paste(exec_code,
-    "; singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
+    exec_code=paste(exec_code,"; singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
     " cnvkit.py diagram -o ",out_file,cns_code,add,title,min_probes,cn_thr,
     cnr_tmp,"&& rm ",cnr_tmp,cns_tmp)
 
