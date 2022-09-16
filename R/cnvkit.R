@@ -190,6 +190,25 @@ process_cnvkit=function(
         jobs_report[["steps"]][["antitargetCoverageCNVkit"]]$job_id)
   )
 
+  jobs_report[["steps"]][["hybridIchorCNA"]]<-hybrid_ichorcna(
+        file=jobs_report[["steps"]][["fixCNVkit"]]$out_files$cnr,
+        output_dir=out_file_dir,
+        gc=gc,
+        edge=edge,
+        rmask=rmask,
+        verbose=verbose,
+        batch_config=batch_config,
+        threads=1,ram=1,mode=mode,
+        executor_id=task_id,
+        time=time,
+        hold=c(jobs_report[["steps"]][["targetCoverageCNVkit"]]$job_id,
+        jobs_report[["steps"]][["antitargetCoverageCNVkit"]]$job_id)
+  )
+
+
+
+
+
   jobs_report[["steps"]][["segmentCNVkit"]]<-segment_cnvkit(
         sif_cnvkit=sif_cnvkit,
         cnr=jobs_report[["steps"]][["fixCNVkit"]]$out_files$cnr,
