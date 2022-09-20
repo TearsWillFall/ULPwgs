@@ -645,7 +645,7 @@ build_default_option_list=function(
     return(options)
 }
 
-
+build_default_config()
 
 #' Build default references
 #' 
@@ -937,11 +937,10 @@ build_default_myriad_module_list=function(
 build_default_preprocess_config=function(
    modules=list(
     gcc=unlist(build_default_myriad_module_list()$compilers$gcc),
-    core=unlist(build_default_myriad_module_list()$core),
     r=unlist(build_default_myriad_module_list()$r))
 ){
     return(paste0(c(myriad_module(
         mode="unload",module=modules$gcc,force=TRUE),
-        lapply(modules[c("core","r")],FUN=myriad_module,mode="load")),collapse=";"))
+        myriad_module(mode="load",module=modules$r)),collapse=";"))
 }
 
