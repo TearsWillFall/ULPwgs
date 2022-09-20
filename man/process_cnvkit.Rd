@@ -27,6 +27,7 @@ process_cnvkit(
   edge = TRUE,
   rmask = TRUE,
   smooth = TRUE,
+  low_tc = FALSE,
   drop_low_coverage = TRUE,
   drop_outliers = TRUE,
   range_scatter = "",

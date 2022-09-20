@@ -5,8 +5,9 @@
 \title{Build default myriad module list}
 \usage{
 build_default_preprocess_config(
-  modules = c(build_default_myriad_module_list()$r,
-    build_default_myriad_module_list()$core)
+  modules = list(gcc = unlist(build_default_myriad_module_list()$compilers$gcc), core =
+    unlist(build_default_myriad_module_list()$core), r =
+    unlist(build_default_myriad_module_list()$r))
 )
 }
 \arguments{
