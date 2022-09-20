@@ -486,9 +486,9 @@ parallel_sample_ichor_capture=function(
             altFracThreshold,
             estimateNormal,
             estimatePloidy,
-            estimateScPrevalence
-            plotYLim=plotYLim_ichor,
-            plotFileType=plotFileType_ichoroutput_dir,verbose,file = rdata_file)
+            estimateScPrevalence,
+            plotYLim,
+            plotFileType,verbose,file = rdata_file)
           exec_code=paste0("Rscript -e \"ULPwgs::coverage_cnvkit(rdata=\\\"",
           rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
           out_file_dir2=set_dir(dir=out_file_dir,name="batch")
