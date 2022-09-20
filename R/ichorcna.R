@@ -3,36 +3,27 @@
 #' IchorCNA implementation for Capture Panel Data
 #' 
 #'
-#'
-#'
-#' @param cnr [REQUIRED] Path to tumour BAM file.
-#' @param normal [OPTIONAL] Path to normal BAM file.
-#' @param ref_genome [REQUIRED] Path to reference genome fasta file.
-#' @param rdata [OPTIONAL] Import R data information with list of BAM.
-#' @param selected [OPTIONAL] Select BAM from list.
-#' @param pon [OPTIONAL] Path to Panel of Normals. Default none
-#' @param access [OPTIONAL] Path to reference genome accessibility. Default none
+#' @param cnr [REQUIRED] Path to tumour CNR file.
+#' @param normal [OPTIONAL] Path to normal samples. Default c(0.5,0.6,0.7,0.8,0.9)
+#' @param ploidy [OPTIONAL] Initial tumour ploidy; can be more than one value if additional ploidy initializations are desired. Default: 2
+#' @param lambda [OPTIONAL] Initial Student's t precision; must contain 4 values (e.g. c(1500,1500,1500,1500)); if not provided then will automatically use based on variance of data
+#' @param scStates [OPTIONAL]  Subclonal states to consider. Default NULL
 #' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
-#' @param pon [OPTIONAL] Path to panel of normal.
+#' @param lambdaScaleHyperParam [OPTIONAL] Hyperparameter (scale) for Gamma prior on Student's-t precision. Default 3
+#' @param maxCN [OPTIONAL] Total clonal states. Default 7.
+#' @param estimateNormal [OPTIONAL] Estimate normal. Default TRUE.
+#' @param estimateScPrevalence [OPTIONAL] Estimate subclonal prevalence. Default TRUE.
+#' @param estimatePloidy [OPTIONAL] Estimate tumour ploidy. Default TRUE.
+#' @param maxFracGenomeSubclone [OPTIONAL] Exclude solutions with subclonal genome fraction greater than this value. Default 0.5
+#' @param maxFracCNASubclone  [OPTIONAL] Exclude solutions with fraction of subclonal events greater than this value. Default 0.7
+#' @param minSegmentBins [OPTIONAL]  Minimum number of bins for largest segment threshold required to estimate tumor fraction; if below this threshold, then will be assigned zero tumor fraction
+#' @param altFracThreshold [OPTIONAL] Minimum proportion of bins altered required to estimate tumor fraction; if below this threshold, then will be assigned zero tumor fraction. Default: [0.05]
+#' @param includeHOMD [OPTIONAL] If FALSE, then exclude HOMD state. Useful when using large bins (e.g. 1Mb). Default FALSE.
+#' @param txnE [OPTIONAL] Self-transition probability. Increase to decrease number of segments. Default: [0.9999999]
+#' @param txnStrength [OPTIONAL] Transition pseudo-counts. Exponent should be the same as the number of decimal places of --txnE. Default: [1e+07]
+#' @param plotFileType [OPTIONAL] File format for output plots. Default pdf
+#' @param plotYLim [OPTIONAL] ylim to use for chromosome plots. Default: [c(-2,2)]
 #' @param output_dir [OPTIONAL] Path to the output directory.
-#' @param seg_method [OPTIONAL] Method to use to generate segmentation calls.Default  cbs. Options ["cbs","flasso","haar","none","hmm","hmm-tumor","hmm-germline"]
-#' @param seq_method [OPTIONAL] Sequenced methods used. Default hybrid. Options ["hybrid","amplicon","wgs"]
-#' @param trend_scatter [OPTIONAL] Show trendline. Default TRUE
-#' @param range_scatter [OPTIONAL] Range to show in chr:start-end format. Default none
-#' @param range_list_scatter [OPTIONAL] Path to BED file with range list. Default none
-#' @param genes_scatter [OPTIONAL] List of genes to focus on. Default none.
-#' @param margin_width_scatter [OPTIONAL] Default gene margin width. Default 1000000
-#' @param plot_by_bin_scatter [OPTIONAL] Assume all bins are the same size. Default FALSE
-#' @param trend_scatter [OPTIONAL] Show trendline. Default TRUE.
-#' @param antitarget_symbol_scatter [OPTIONAL] Show antitarget probes with this symbol. Default "@"
-#' @param segment_colour_scatter [OPTIONAL] Show antitarget probes with this symbol. Default "@"
-#' @param y_max_scatter [OPTIONAL] Y max range. Default NULL.
-#' @param y_min_scatter [OPTIONAL] Y min range. Default NULL.
-#' @param cn_thr_diagram [OPTIONAL] Copy number threshold. Default 0.5
-#' @param min_probes_diagram [OPTIONAL] Minimum number of probes to show a gene. Default 3
-#' @param male_reference_diagram [OPTIONAL]  Assume inputs were normalized to a male reference. Default FALSE
-#' @param gender_diagram [OPTIONAL] Assume sample gender. Default male
-#' @param shift_diagram [OPTIONAL] Adjust the X and Y chromosomes according to sample sex. Default TRUE
 #' @param threads [OPTIONAL] Number of threads to split the work. Default 4
 #' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
@@ -47,19 +38,17 @@
 
 
 
-hybrid_ichorCNA=function(
-    file="R/TRAILS_TR067_I260038_BULK_CAPTURE_PCF_V2_HG19_LB1_411_HW57JDMXX_1.cnr",
-    normal=c(0.5,0.6,0.7,0.8,0.9),
-    ploidy=c(2,3),
+ichor_capture=function(
+    cnr="R/TRAILS_TR067_I260038_BULK_CAPTURE_PCF_V2_HG19_LB1_411_HW57JDMXX_1.cnr",
+    normal=0.5,
+    ploidy=2,
     maxCN=7,
     includeHOMD=FALSE,
     scStates=c(1,3),
-    txnE=0.9999,
-    txnStrength=10000,
+    txnE=0.9999999,
+    txnStrength=1e7,
     output_name="",
     output_dir=".",
-    p=2,
-    n=0.5,
     min_cov=-15,
     lambda=NULL,
     coverage=NULL,
@@ -76,7 +65,14 @@ hybrid_ichorCNA=function(
     estimatePloidy=TRUE,
     estimateScPrevalence=TRUE,
     plotYLim=c(-2,2),
-    plotFileType="pdf"
+    plotFileType="pdf",
+    verbose=FALSE,
+    batch_config=build_default_preprocess_config(),
+    threads=4,ram=4,mode="local",
+    executor_id=make_unique_id("hybridIchorCNA"),
+    task_name="hybridIchorCNA",time="48:0:0",
+    update_time=60,
+    wait=FALSE,hold=""
 ){  
 
     options(scipen=0, stringsAsFactors=F)
@@ -84,12 +80,11 @@ hybrid_ichorCNA=function(
     options(bitmapType='cairo')
     argg <- as.list(environment())
     
-
     id=""
     if(output_name!=""){
       id=output_name
     }else{
-      id=get_file_name(file)
+      id=get_file_name(cnr)
     }
 
     out_file_dir=set_dir(dir=output_dir,name=paste0(id,"/hybrid_ichor"))
@@ -98,8 +93,8 @@ hybrid_ichorCNA=function(
 
     
     outImage <- paste0(out_file_dir,"/",id,".RData")
-    names(file)=Vectorize(get_file_name)(file)
-    numSamples <- length(file)
+    names(cnr)=Vectorize(get_file_name)(cnr)
+    numSamples <- length(cnr)
     read_tumour_copy=function(file="R/TRAILS_TR067_I260038_BULK_CAPTURE_PCF_V2_HG19_LB1_411_HW57JDMXX_1.cnr",
         header=TRUE,sep="\t"){
         tumour_copy=read.table(file=file,header=header,sep=sep)
@@ -133,13 +128,13 @@ hybrid_ichorCNA=function(
         ifelse(width%%2==0,width+1,width)))) %>% 
         dplyr::mutate(quant=as.vector(zoo::rollapply(smooth_log2, width = width,
          FUN = "quantile", p = .95,fill=FALSE,partial=partial))) %>% 
-         mutate(filter=abs(smooth_log2)>(quant*factor))
+         dplyr::mutate(filter=abs(smooth_log2)>(quant*factor))
        
         message(paste0("Dropped ",sum(out$filter)," outlier bins."))
         return(!out$filter)
     }
 
-    tumour_copy<-lapply(file,FUN=read_tumour_copy)
+    tumour_copy<-lapply(cnr,FUN=read_tumour_copy)
     low_coverage=drop_low_coverage(tumour_copy)
     weight=drop_weight(tumour_copy)
     outliers=drop_outliers(tumour_copy)
@@ -304,14 +299,14 @@ for (n in normal){
     #new loop by order of solutions (ind)
     outPlotFile <- paste0(out_file_dir,  "/", id, "_genomeWide_all_sols")
     for(i in 1:length(ind)) {
-    hmmResults.cor <- results[[ind[i]]]
-    turnDevOff <- FALSE
-    turnDevOn <- FALSE
-    if (i == 1){
-        turnDevOn <- TRUE
-    }
-    if (i == length(ind)){
-        turnDevOff <- TRUE
+        hmmResults.cor <- results[[ind[i]]]
+        turnDevOff <- FALSE
+        turnDevOn <- FALSE
+        if (i == 1){
+            turnDevOn <- TRUE
+        }
+        if (i == length(ind)){
+            turnDevOff <- TRUE
     }
     plotGWSolution(hmmResults.cor, s=s, outPlotFile=outPlotFile, plotFileType="pdf", 
                         logR.column = "logR", call.column = "Corrected_Call",
@@ -328,6 +323,204 @@ for (n in normal){
     outputHMM(cna = hmmResults.cor$cna, segs = hmmResults.cor$results$segs, 
                         results = hmmResults.cor$results, patientID = id, outDir=out_file_dir)
     outFile <- paste0(out_file_dir, "/",id, ".params.txt")
-    outputParametersToFile(hmmResults.cor, file = outFile)
+    outputParametersToFile(hmmResults=hmmResults.cor, file = outFile)
+
+}
+
+
+
+#' IchorCNA implementation for Capture Panel Data
+#' 
+#'
+#' @param cnr [REQUIRED] Path to tumour CNR file.
+#' @param normal [OPTIONAL] Path to normal samples. Default c(0.5,0.6,0.7,0.8,0.9)
+#' @param ploidy [OPTIONAL] Initial tumour ploidy; can be more than one value if additional ploidy initializations are desired. Default: 2
+#' @param lambda [OPTIONAL] Initial Student's t precision; must contain 4 values (e.g. c(1500,1500,1500,1500)); if not provided then will automatically use based on variance of data
+#' @param scStates [OPTIONAL]  Subclonal states to consider. Default NULL
+#' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
+#' @param lambdaScaleHyperParam [OPTIONAL] Hyperparameter (scale) for Gamma prior on Student's-t precision. Default 3
+#' @param maxCN [OPTIONAL] Total clonal states. Default 7.
+#' @param estimateNormal [OPTIONAL] Estimate normal. Default TRUE.
+#' @param estimateScPrevalence [OPTIONAL] Estimate subclonal prevalence. Default TRUE.
+#' @param estimatePloidy [OPTIONAL] Estimate tumour ploidy. Default TRUE.
+#' @param maxFracGenomeSubclone [OPTIONAL] Exclude solutions with subclonal genome fraction greater than this value. Default 0.5
+#' @param maxFracCNASubclone  [OPTIONAL] Exclude solutions with fraction of subclonal events greater than this value. Default 0.7
+#' @param minSegmentBins [OPTIONAL]  Minimum number of bins for largest segment threshold required to estimate tumor fraction; if below this threshold, then will be assigned zero tumor fraction
+#' @param altFracThreshold [OPTIONAL] Minimum proportion of bins altered required to estimate tumor fraction; if below this threshold, then will be assigned zero tumor fraction. Default: [0.05]
+#' @param includeHOMD [OPTIONAL] If FALSE, then exclude HOMD state. Useful when using large bins (e.g. 1Mb). Default FALSE.
+#' @param txnE [OPTIONAL] Self-transition probability. Increase to decrease number of segments. Default: [0.9999999]
+#' @param txnStrength [OPTIONAL] Transition pseudo-counts. Exponent should be the same as the number of decimal places of --txnE. Default: [1e+07]
+#' @param plotFileType [OPTIONAL] File format for output plots. Default pdf
+#' @param plotYLim [OPTIONAL] ylim to use for chromosome plots. Default: [c(-2,2)]
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+
+parallel_sample_ichor_capture=function(
+    cnrs="",
+    normal=0.5,
+    ploidy=2,
+    maxCN=7,
+    includeHOMD=FALSE,
+    scStates=c(1,3),
+    txnE=0.9999999,
+    txnStrength=1e7,
+    output_dir=".",
+    min_cov=-15,
+    lambda=NULL,
+    coverage=NULL,
+    minSegmentBins=50,
+    minTumFracToCorrect=0.01,
+    chrs=c(1:22,"X"),
+    chrTrain=seq(1:22),
+    gender="male",
+    maxFracCNASubclone=0.7,
+    maxFracGenomeSubclone=0.5,
+    lambdaScaleHyperParam=3,
+    altFracThreshold=0.05,
+    estimateNormal=TRUE,
+    estimatePloidy=TRUE,
+    estimateScPrevalence=TRUE,
+    plotYLim=c(-2,2),
+    plotFileType="pdf",
+    verbose=FALSE,
+    batch_config=build_default_preprocess_config(),
+    threads=4,ram=4,mode="local",
+    executor_id=make_unique_id("hybridIchorCNA"),
+    task_name="hybridIchorCNA",time="48:0:0",
+    update_time=60,
+    wait=FALSE,hold=""
+){  
+
+    argg <- as.list(environment())
+    task_id=make_unique_id(task_name)
+    out_file_dir=set_dir(dir=output_dir,name="hybrid_ichorcna")
+
+    jobs_report=build_job_report(
+          job_id=job,
+          executor_id=executor_id,
+          exec_code=list(), 
+          task_id=task_id,
+          input_args=argg,
+          out_file_dir=out_file_dir,
+          out_files=list(
+            )
+      )
+    
+    cnr_list=cnr
+    names(cnr_list)=Vectorize(get_file_name)(cnrs)
+
+    
+    if(mode=="local"){
+        jobs_report[["steps"]][["par_sample_ichor_capture"]]<-
+        parallel::mclapply(cnr_list,FUN=function(cnr){
+        job_report <ichor_capture(
+            cnr=cnr,
+            normal=normal_ichor,
+            ploidy=ploidy_ichor,
+            maxCN=maxCN_ichor,
+            includeHOMD=includeHOMD_ichor,
+            scStates=scStates_ichor,
+            txnE=txnE_ichor,
+            txnStrength=txnStrength_ichor,
+            output_name=id,
+            output_dir=out_file_dir,
+            min_cov=min_cov_ichor,
+            lambda=lambda_ichor,
+            coverage=coverage_ichor,
+            minSegmentBins=minSegmentBins_ichor,
+            minTumFracToCorrect=minTumFracToCorrect_ichor,
+            chrs=chrs_ichor,
+            chrTrain=chrTrain_ichor,
+            gender=gender_ichor,
+            maxFracCNASubclone=maxFracCNASubclone_ichor,
+            maxFracGenomeSubclone= maxFracGenomeSubclone_ichor,
+            lambdaScaleHyperParam=lambdaScaleHyperParam_ichor,
+            altFracThreshold=altFracThreshold_ichor,
+            estimateNormal=estimateNormal_ichor,
+            estimatePloidy=estimatePloidy_ichor,
+            estimateScPrevalence=estimateScPrevalence_ichor,
+            plotYLim=plotYLim_ichor,
+            plotFileType=plotFileType_ichor,
+            verbose=verbose,
+            batch_config=batch_config,
+            threads=threads,ram=ram,mode=mode,
+            executor_id=task_id,
+            time=time,
+            hold=hold
+    )
+    },mc.cores=threads)
+    
+    }else if(mode=="batch"){
+          rdata_file=paste0(tmp_dir,"/",job,".samples.RData")
+          output_dir=out_file_dir
+          save(cnr_list,normal,
+            ploidy,
+            maxCN,
+            includeHOMD,
+            scStates,
+            txnE,
+            txnStrength,
+            min_cov,
+            lambda,
+            coverage,
+            minSegmentBins,
+            minTumFracToCorrect,
+            chrs,
+            chrTrain,
+            gender,
+            maxFracCNASubclone,
+            maxFracGenomeSubclone,
+            lambdaScaleHyperParam,
+            altFracThreshold,
+            estimateNormal,
+            estimatePloidy,
+            estimateScPrevalence
+            plotYLim=plotYLim_ichor,
+            plotFileType=plotFileType_ichoroutput_dir,verbose,file = rdata_file)
+          exec_code=paste0("Rscript -e \"ULPwgs::coverage_cnvkit(rdata=\\\"",
+          rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
+          out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+          batch_code=build_job_exec(job=job,time=time,ram=ram,
+          threads=1,output_dir=out_file_dir2,
+          hold=hold,array=length(bam_list))
+          exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+
+          if(verbose){
+              print_verbose(job=job,arg=argg,exec_code=exec_code)
+          }
+          error=execute_job(exec_code=exec_code)
+          if(error!=0){
+              stop("cnvkit failed to run due to unknown error.
+              Check std error for more information.")
+          }
+         
+         jobs_report[["steps"]][["par_sample_coverage_cnvkit"]]<- build_job_report(
+              job_id=job,
+              executor_id=executor_id,
+              exec_code=exec_code, 
+              task_id=task_id,
+              input_args=argg,
+              out_file_dir=out_file_dir,
+              out_files=list(
+                  cnn=paste0(out_file_dir,"/",names(bam_list),".cnn")
+              )
+        )
+    }
+
+      return(jobs_report)
+
+
 
 }

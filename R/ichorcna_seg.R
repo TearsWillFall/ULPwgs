@@ -365,7 +365,7 @@ runEM <- function(copy, chr, chrTrain, param, maxiter, verbose = TRUE,
 									estimateNormal = TRUE, estimatePloidy = TRUE, estimatePrecision = TRUE,
                   estimateTransition = TRUE, estimateInitDist = TRUE, estimateSubclone = TRUE,
                   likChangeConvergence = 1e-3) {
-  library(HMMcopy)
+
   if (nrow(copy) != length(chr) || nrow(copy) != length(chrTrain)) {
     stop("runEM: Length of inputs do not match for one of: copy, chr, chrTrain")
   }

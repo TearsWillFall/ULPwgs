@@ -7,6 +7,7 @@
 diagram_cnvkit(
   rdata = NULL,
   selected = NULL,
+  chrs = build_default_chr_list()$canonical,
   sif_cnvkit = build_default_sif_list()$sif_cnvkit,
   cnr = "",
   cns = "",

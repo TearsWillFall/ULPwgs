@@ -75,6 +75,7 @@ process_cnvkit=function(
     edge=TRUE,
     rmask=TRUE,
     smooth=TRUE,
+    low_tc=FALSE,
     drop_low_coverage=TRUE,
     drop_outliers=TRUE,
     range_scatter="",
@@ -190,22 +191,41 @@ process_cnvkit=function(
         jobs_report[["steps"]][["antitargetCoverageCNVkit"]]$job_id)
   )
 
-  jobs_report[["steps"]][["hybridIchorCNA"]]<-hybrid_ichorcna(
-        file=jobs_report[["steps"]][["fixCNVkit"]]$out_files$cnr,
-        output_dir=out_file_dir,
-        gc=gc,
-        edge=edge,
-        rmask=rmask,
-        verbose=verbose,
-        batch_config=batch_config,
-        threads=1,ram=1,mode=mode,
-        executor_id=task_id,
-        time=time,
-        hold=c(jobs_report[["steps"]][["targetCoverageCNVkit"]]$job_id,
-        jobs_report[["steps"]][["antitargetCoverageCNVkit"]]$job_id)
-  )
-
-
+  jobs_report[["steps"]][["hybridIchorCNA"]]<-ichor_capture(
+    cnr=jobs_report[["steps"]][["fixCNVkit"]]$out_files$cnr,
+    normal=normal_ichor,
+    ploidy=ploidy_ichor,
+    maxCN=maxCN_ichor,
+    includeHOMD=includeHOMD_ichor,
+    scStates=scStates_ichor,
+    txnE=txnE_ichor,
+    txnStrength=txnStrength_ichor,
+    output_name=id,
+    output_dir=out_file_dir,
+    min_cov=min_cov_ichor,
+    lambda=lambda_ichor,
+    coverage=coverage_ichor,
+    minSegmentBins=minSegmentBins_ichor,
+    minTumFracToCorrect=minTumFracToCorrect_ichor,
+    chrs=chrs_ichor,
+    chrTrain=chrTrain_ichor,
+    gender=gender_ichor,
+    maxFracCNASubclone=maxFracCNASubclone_ichor,
+    maxFracGenomeSubclone= maxFracGenomeSubclone_ichor,
+    lambdaScaleHyperParam=lambdaScaleHyperParam_ichor,
+    altFracThreshold=altFracThreshold_ichor,
+    estimateNormal=estimateNormal_ichor,
+    estimatePloidy=estimatePloidy_ichor,
+    estimateScPrevalence=estimateScPrevalence_ichor,
+    plotYLim=plotYLim_ichor,
+    plotFileType=plotFileType_ichor,
+    verbose=verbose,
+    batch_config=batch_config,
+    threads=threads,ram=ram,mode=mode,
+    executor_id=task_id,
+    time=time,
+    hold=jobs_report[["steps"]][["fixCNVkit"]]$job_id
+)
 
 
 

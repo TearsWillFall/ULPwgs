@@ -907,6 +907,7 @@ build_default_myriad_module_list=function(
         ),
         compilers=list(
             mpi="compilers mpi",
+            gcc="compilers mpi gcc-libs",
             intel="compilers/intel/2018/update3",
             openblas=list(
                 v0214="openblas/0.2.14/gnu-4.9.2",
@@ -936,10 +937,13 @@ build_default_myriad_module_list=function(
 #' @export
 
 build_default_preprocess_config=function(
-   modules=c(
-    build_default_myriad_module_list()$r,
-    build_default_myriad_module_list()$core)
+   modules=list(
+    gcc=unlist(build_default_myriad_module_list()$compilers$gcc),
+    core=unlist(build_default_myriad_module_list()$core),
+    r=unlist(build_default_myriad_module_list()$r))
 ){
-    return(paste0(lapply(modules,FUN=myriad_module,mode="load"),collapse=";"))
+    return(paste0(c(myriad_module(
+        mode="unload",module=modules$gcc,force=TRUE),
+        lapply(modules[c("core","r")],FUN=myriad_module,mode="load")),collapse=";"))
 }
-
+build_default_preprocess_config()

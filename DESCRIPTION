@@ -21,10 +21,12 @@ Imports:
     magrittr,
     pbapply,
     naturalsort,
+    parallel,
     stringr,
     snow,
     tidyr,
     dplyr,
+    lubridate,
     tidyverse,
     kutils,
     shiny,
@@ -34,6 +36,7 @@ Imports:
     htmlwidgets,
     ggnewscale,
     patchwork,
+    ggh4x,
     DT
 biocViews:
 Remotes:
