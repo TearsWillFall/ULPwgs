@@ -934,8 +934,6 @@ build_default_myriad_module_list=function(
 #' @param modules List of modules
 #' @export
 
-#' @export
-
 build_default_preprocess_config=function(
    modules=list(
     gcc=unlist(build_default_myriad_module_list()$compilers$gcc),
