@@ -2010,6 +2010,7 @@ bam="",verbose=FALSE,batch_config=build_default_preprocess_config(),bin_size=400
 
 
 #' @export
+
 myriad_module=function(mode="load",module="",force=FALSE){
     tag=""
     if(force){
