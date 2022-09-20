@@ -944,4 +944,4 @@ build_default_preprocess_config=function(
         mode="unload",module=modules$gcc,force=TRUE),
         lapply(modules[c("core","r")],FUN=myriad_module,mode="load")),collapse=";"))
 }
-build_default_preprocess_config()
+
