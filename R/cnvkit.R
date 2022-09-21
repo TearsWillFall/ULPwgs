@@ -182,7 +182,7 @@ process_cnvkit=function(
 
  
   jobs_report[["steps"]][["targetCoverageCNVkit"]]<-coverage_cnvkit(
-        sif_cnvkit=if_cnvkit,
+        sif_cnvkit=sif_cnvkit,
         ref_genome=ref_genome,
         bed=target,
         bam=tumor,
@@ -199,7 +199,7 @@ process_cnvkit=function(
   )
 
   jobs_report[["steps"]][["antitargetCoverageCNVkit"]]<-coverage_cnvkit(
-        sif_cnvkit=if_cnvkit,
+        sif_cnvkit=sif_cnvkit,
         ref_genome=ref_genome,
         bed=target,
         bam=tumor,
