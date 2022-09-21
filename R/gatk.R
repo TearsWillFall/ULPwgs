@@ -370,7 +370,7 @@ generate_BQSR_gatk=function(
 parallel_generate_BQSR_gatk=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   sif_gatk=build_default_sif_list()$sif_gatk,bam="",
-  regions="",ref_genome="", clean=TRUE, dbsnp="",
+  regions=NULL,ref_genome="", clean=TRUE, dbsnp="",
   tmp_dir=".",threads=3,ram=4,
   executor_id=make_unique_id("par_generateBQSR"),
   task_name="par_generateBQSR",output_dir=".",
@@ -396,7 +396,7 @@ parallel_generate_BQSR_gatk=function(
       )
     )
 
-  if(regions==""){
+  if(is.null(regions)){
 
     job_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
       bin_samtools=bin_samtools,
@@ -710,7 +710,7 @@ parallel_apply_BQSR_gatk=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   sif_gatk=build_default_sif_list()$sif_gatk,
   bin_picard=build_default_tool_binary_list()$bin_picard,
-  bam="",regions="",ref_genome="",rec_table="",clean=TRUE,
+  bam="",regions=NULL,ref_genome="",rec_table="",clean=TRUE,
   output_dir=".",verbose=FALSE,tmp_dir=".",
   batch_config=build_default_preprocess_config(),mode="local",
   executor_id=make_unique("par_applyBQSR"),
@@ -725,7 +725,7 @@ parallel_apply_BQSR_gatk=function(
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
 
-   if(regions==""){
+   if(is.null(regions)){
       job_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
       bin_samtools=bin_samtools,
       bam=bam,verbose=verbose,output_dir=tmp_dir,
@@ -1260,7 +1260,7 @@ parallel_regions_mutect2_gatk=function(
   germ_resource=build_default_reference_list()$HG19$variant$germ_reference,
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
   db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
-  regions="",pon="",output_dir=".",
+  regions=NULL,pon="",output_dir=".",
   verbose=FALSE,filter=TRUE,
   orientation=TRUE,mnps=FALSE,
   contamination=TRUE,clean=FALSE,
@@ -1299,7 +1299,7 @@ parallel_regions_mutect2_gatk=function(
       )
     )
 
-  if(regions==""){
+  if(is.null(regions)){
 
     jobs_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
       bin_samtools=bin_samtools,
@@ -1521,7 +1521,7 @@ parallel_samples_mutect2_gatk=function(
   germ_resource=build_default_reference_list()$HG19$variant$germ_reference,
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
   db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
-  regions="",pon="",output_dir=".",
+  regions=NULL,pon="",output_dir=".",
   verbose=FALSE,filter=TRUE,
   orientation=TRUE,mnps=FALSE,
   contamination=TRUE,clean=FALSE,
@@ -2634,7 +2634,7 @@ create_pon_gatk=function(
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
   output_name="PoN",
   vcfs="",
-  regions="",output_dir=".",
+  regions=NULL,output_dir=".",
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   germ_resource=build_default_reference_list()$HG19$variant$germ_reference,
   verbose=FALSE,
@@ -2750,7 +2750,7 @@ create_genomic_db_gatk=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  vcfs="",regions="",output_dir=".",
+  vcfs="",regions=NULL,output_dir=".",
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   verbose=FALSE,size=10,
   batch_config=build_default_preprocess_config(),
@@ -2787,7 +2787,7 @@ create_genomic_db_gatk=function(
   )
 
 
-  if(regions==""){
+  if(is.null(regions)){
 
     jobs_report[["steps"]][["getChr"]] <- get_fai_reference_chr(
       fasta=ref_genome,verbose=verbose,output_dir=tmp_dir,
@@ -3033,7 +3033,7 @@ parallel_regions_haplotypecaller_gatk=function(
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
   normal="",
   ref_genome=build_default_reference_list()$HG19$reference$genome,
-  regions="",
+  regions=NULL,
   output_dir=".",
   indel_db=build_default_reference_list()$HG19$variant$mills_reference,
   haplotype_db=build_default_reference_list()$HG19$variant$hapmap_reference,
@@ -3078,7 +3078,7 @@ parallel_regions_haplotypecaller_gatk=function(
       )
     )
 
-  if(regions==""){
+  if(is.null(regions)){
 
     jobs_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
       bin_samtools=bin_samtools,

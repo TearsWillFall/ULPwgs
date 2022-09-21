@@ -87,7 +87,7 @@ ichor_capture=function(
       id=get_file_name(cnr)
     }
 
-    out_file_dir=set_dir(dir=output_dir,name=paste0(id,"/hybrid_ichor"))
+    out_file_dir=set_dir(dir=output_dir,name=paste0(id,"/ichor_capture"))
     tmp_dir=set_dir(dir=out_file_dir,name="tmp")
 
 
@@ -325,6 +325,22 @@ for (n in normal){
     outFile <- paste0(out_file_dir, "/",id, ".params.txt")
     outputParametersToFile(hmmResults=hmmResults.cor, file = outFile)
 
+
+    job_report=build_job_report(
+        job_id=job,
+        executor_id=executor_id,
+        exec_code=exec_code,
+        task_id=task_id,
+        input_args = argg,
+        out_file_dir=out_file_dir,
+        out_files=list(
+            param=outFile,
+            plot_solutions=outPlotFile,
+
+        )
+    )
+
+
 }
 
 
@@ -405,7 +421,7 @@ parallel_sample_ichor_capture=function(
 
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir,name="hybrid_ichorcna")
+    out_file_dir=set_dir(dir=output_dir,name="ichor_capture")
 
     jobs_report=build_job_report(
           job_id=job,
@@ -421,11 +437,10 @@ parallel_sample_ichor_capture=function(
     cnr_list=cnr
     names(cnr_list)=Vectorize(get_file_name)(cnrs)
 
-    
     if(mode=="local"){
         jobs_report[["steps"]][["par_sample_ichor_capture"]]<-
         parallel::mclapply(cnr_list,FUN=function(cnr){
-        job_report <ichor_capture(
+        job_report <-ichor_capture(
             cnr=cnr,
             normal=normal_ichor,
             ploidy=ploidy_ichor,
@@ -455,7 +470,8 @@ parallel_sample_ichor_capture=function(
             plotFileType=plotFileType_ichor,
             verbose=verbose,
             batch_config=batch_config,
-            threads=threads,ram=ram,mode=mode,
+            threads=threads,
+            ram=ram,mode=mode,
             executor_id=task_id,
             time=time,
             hold=hold
@@ -489,12 +505,12 @@ parallel_sample_ichor_capture=function(
             estimateScPrevalence,
             plotYLim,
             plotFileType,verbose,file = rdata_file)
-          exec_code=paste0("Rscript -e \"ULPwgs::coverage_cnvkit(rdata=\\\"",
+          exec_code=paste0("Rscript -e \"ULPwgs::ichor_capture(rdata=\\\"",
           rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
           out_file_dir2=set_dir(dir=out_file_dir,name="batch")
           batch_code=build_job_exec(job=job,time=time,ram=ram,
           threads=1,output_dir=out_file_dir2,
-          hold=hold,array=length(bam_list))
+          hold=hold,array=length(cnrs_list))
           exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
 
           if(verbose){
@@ -506,7 +522,7 @@ parallel_sample_ichor_capture=function(
               Check std error for more information.")
           }
          
-         jobs_report[["steps"]][["par_sample_coverage_cnvkit"]]<- build_job_report(
+         jobs_report[["steps"]][["par_sample_ichor_capture"]]<- build_job_report(
               job_id=job,
               executor_id=executor_id,
               exec_code=exec_code, 
@@ -514,7 +530,7 @@ parallel_sample_ichor_capture=function(
               input_args=argg,
               out_file_dir=out_file_dir,
               out_files=list(
-                  cnn=paste0(out_file_dir,"/",names(bam_list),".cnn")
+                  param=paste0(out_file_dir,"/",names(cnrs_list),"/ichor_capture/",names(cnrs_list),".params.txt")
               )
         )
     }

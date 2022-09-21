@@ -1858,6 +1858,9 @@ get_bam_reference_chr=function(
         ref=out_file)
   )
 
+
+
+
     if(wait&&mode=="batch"){
     batch_validator(job=job_report$job_id,
     time=update_time,verbose=verbose,threads=threads)
