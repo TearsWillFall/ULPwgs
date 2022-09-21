@@ -12,7 +12,7 @@ create_pon_gatk(
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
   output_name = "PoN",
   vcfs = "",
-  regions = "",
+  regions = NULL,
   output_dir = ".",
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   germ_resource = build_default_reference_list()$HG19$variant$germ_reference,

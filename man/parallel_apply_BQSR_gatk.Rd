@@ -9,7 +9,7 @@ parallel_apply_BQSR_gatk(
   sif_gatk = build_default_sif_list()$sif_gatk,
   bin_picard = build_default_tool_binary_list()$bin_picard,
   bam = "",
-  regions = "",
+  regions = NULL,
   ref_genome = "",
   rec_table = "",
   clean = TRUE,

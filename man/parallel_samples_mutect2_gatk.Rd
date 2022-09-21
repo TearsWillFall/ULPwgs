@@ -16,7 +16,7 @@ parallel_samples_mutect2_gatk(
   germ_resource = build_default_reference_list()$HG19$variant$germ_reference,
   biallelic_db = build_default_reference_list()$HG19$variant$biallelic_reference,
   db_interval = build_default_reference_list()$HG19$variant$biallelic_reference,
-  regions = "",
+  regions = NULL,
   pon = "",
   output_dir = ".",
   verbose = FALSE,
