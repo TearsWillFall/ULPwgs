@@ -201,7 +201,7 @@ process_cnvkit=function(
   jobs_report[["steps"]][["antitargetCoverageCNVkit"]]<-coverage_cnvkit(
         sif_cnvkit=sif_cnvkit,
         ref_genome=ref_genome,
-        bed=target,
+        bed=antitarget,
         bam=tumor,
         output_name=id,
         output_dir=out_file_dir,
