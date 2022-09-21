@@ -2011,33 +2011,6 @@ bam="",verbose=FALSE,batch_config=build_default_preprocess_config(),bin_size=400
 
 
 
-#' Load/Unload modules in myriad
-#'
-#' This functions creates a constructor for loading/unloading modules in myriad cluster
-#'
-#'
-#' @param mode Path to samtools executable. Default path tools/samtools/samtools.
-#' @param module Module to load.
-#' @param force Force unload module. Default FALSE
-#' @export
-
-myriad_module=function(mode="load",module="",force=FALSE){
-    
-    tag=""
-    if(force){
-      tag=" -f "
-    }
-    if(mode=="load"){
-      mdl=paste0("module load ",tag,module)
-    }else if (mode=="unload"){
-      mdl=paste0("module unload ",tag,module)
-    }
-    
-    return(mdl)
-}
-
-
-
 
 
 

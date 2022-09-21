@@ -2,11 +2,10 @@
 % Please edit documentation in R/config.R
 \name{build_default_preprocess_config}
 \alias{build_default_preprocess_config}
-\title{Build default myriad module list}
+\title{Build default config for preprocessing step}
 \usage{
 build_default_preprocess_config(
-  modules = list(gcc = unlist(build_default_myriad_module_list()$compilers$gcc), core =
-    unlist(build_default_myriad_module_list()$core), r =
+  modules = list(gcc = unlist(build_default_myriad_module_list()$compilers$gcc), r =
     unlist(build_default_myriad_module_list()$r))
 )
 }
@@ -14,5 +13,5 @@ build_default_preprocess_config(
 \item{modules}{List of modules}
 }
 \description{
-Build default myriad module list
+Build default config for preprocessing step
 }

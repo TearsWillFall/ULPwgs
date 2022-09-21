@@ -1,3 +1,83 @@
+#' Build default myriad module list
+#' 
+#'
+#' @param modules List modules
+#' @export
+
+build_default_myriad_module_list=function(
+    modules=list(
+        core=list(
+            "rcps-core/1.0.0"
+        ),
+        compilers=list(
+            mpi="compilers mpi",
+            gcc="compilers mpi gcc-libs",
+            intel="compilers/intel/2018/update3",
+            openblas=list(
+                v0214="openblas/0.2.14/gnu-4.9.2",
+                v0370="openblas/0.3.7-serial/gnu-4.9.2"
+            )
+        ),
+        python3=list(
+            v3910="python/3.9.10",
+            recommended="python3/recommended"
+        ),
+        r=list(
+            recommended="r/recommended"
+        )
+    )
+){
+    return(modules)
+}
+
+
+#' Load/Unload modules in myriad
+#'
+#' This functions creates a constructor for loading/unloading modules in myriad cluster
+#'
+#'
+#' @param mode Path to samtools executable. Default path tools/samtools/samtools.
+#' @param module Module to load.
+#' @param force Force unload module. Default FALSE
+#' @export
+
+myriad_module=function(mode="load",module="",force=FALSE){
+    
+    tag=""
+    if(force){
+      tag=" -f "
+    }
+    if(mode=="load"){
+      mdl=paste0("module load ",tag,module)
+    }else if (mode=="unload"){
+      mdl=paste0("module unload ",tag,module)
+    }
+    
+    return(mdl)
+}
+
+
+
+#' Build default config for preprocessing step
+#' 
+#'
+#' @param modules List of modules
+#' @export
+
+build_default_preprocess_config=function(
+   modules=list(
+    gcc=unlist(build_default_myriad_module_list()$compilers$gcc),
+    r=unlist(build_default_myriad_module_list()$r))
+){
+    return(paste0(c(myriad_module(
+        mode="unload",module=modules$gcc,force=TRUE),
+        myriad_module(mode="load",module=modules$r)),collapse=";"))
+}
+
+
+
+
+
 #' Build default tool configuration
 #' 
 #' @param steps Build configuration for steps
@@ -892,55 +972,7 @@ build_default_cn_list=function(
 
 
 
-#' Build default myriad module list
-#' 
-#'
-#' @param modules List modules
-#' @export
-
-#' @export
-
-build_default_myriad_module_list=function(
-    modules=list(
-        core=list(
-            "rcps-core/1.0.0"
-        ),
-        compilers=list(
-            mpi="compilers mpi",
-            gcc="compilers mpi gcc-libs",
-            intel="compilers/intel/2018/update3",
-            openblas=list(
-                v0214="openblas/0.2.14/gnu-4.9.2",
-                v0370="openblas/0.3.7-serial/gnu-4.9.2"
-            )
-        ),
-        python3=list(
-            v3910="python/3.9.10",
-            recommended="python3/recommended"
-        ),
-        r=list(
-            recommended="r/recommended"
-        )
-    )
-){
-    return(modules)
-}
 
 
 
-#' Build default myriad module list
-#' 
-#'
-#' @param modules List of modules
-#' @export
-
-build_default_preprocess_config=function(
-   modules=list(
-    gcc=unlist(build_default_myriad_module_list()$compilers$gcc),
-    r=unlist(build_default_myriad_module_list()$r))
-){
-    return(paste0(c(myriad_module(
-        mode="unload",module=modules$gcc,force=TRUE),
-        myriad_module(mode="load",module=modules$r)),collapse=";"))
-}
 

@@ -12,7 +12,7 @@ ichor_capture(
   includeHOMD = FALSE,
   scStates = c(1, 3),
   txnE = 0.9999999,
-  txnStrength = 10000000,
+  txnStrength = 1e+07,
   output_name = "",
   output_dir = ".",
   min_cov = -15,
