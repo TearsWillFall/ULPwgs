@@ -340,6 +340,8 @@ for (n in normal){
         )
     )
 
+    return(job_report)
+
 
 }
 
@@ -442,32 +444,32 @@ parallel_sample_ichor_capture=function(
         parallel::mclapply(cnr_list,FUN=function(cnr){
         job_report <-ichor_capture(
             cnr=cnr,
-            normal=normal_ichor,
-            ploidy=ploidy_ichor,
-            maxCN=maxCN_ichor,
-            includeHOMD=includeHOMD_ichor,
-            scStates=scStates_ichor,
-            txnE=txnE_ichor,
-            txnStrength=txnStrength_ichor,
-            output_name=id,
+            normal=normal,
+            ploidy=ploidy,
+            maxCN=maxCN,
+            includeHOMD=includeHOMD,
+            scStates=scStates,
+            txnE=txnE,
+            txnStrength=txnStrength,
+            output_name=get_file_name(cnr),
             output_dir=out_file_dir,
-            min_cov=min_cov_ichor,
-            lambda=lambda_ichor,
-            coverage=coverage_ichor,
-            minSegmentBins=minSegmentBins_ichor,
-            minTumFracToCorrect=minTumFracToCorrect_ichor,
-            chrs=chrs_ichor,
-            chrTrain=chrTrain_ichor,
-            gender=gender_ichor,
-            maxFracCNASubclone=maxFracCNASubclone_ichor,
-            maxFracGenomeSubclone= maxFracGenomeSubclone_ichor,
-            lambdaScaleHyperParam=lambdaScaleHyperParam_ichor,
-            altFracThreshold=altFracThreshold_ichor,
-            estimateNormal=estimateNormal_ichor,
-            estimatePloidy=estimatePloidy_ichor,
-            estimateScPrevalence=estimateScPrevalence_ichor,
-            plotYLim=plotYLim_ichor,
-            plotFileType=plotFileType_ichor,
+            min_cov=min_cov,
+            lambda=lambda,
+            coverage=coverage,
+            minSegmentBins=minSegmentBins,
+            minTumFracToCorrect=minTumFracToCorrect,
+            chrs=chrs,
+            chrTrain=chrTrain,
+            gender=gender,
+            maxFracCNASubclone=maxFracCNASubclone,
+            maxFracGenomeSubclone= maxFracGenomeSubclone,
+            lambdaScaleHyperParam=lambdaScaleHyperParam,
+            altFracThreshold=altFracThreshold,
+            estimateNormal=estimateNormal,
+            estimatePloidy=estimatePloidy,
+            estimateScPrevalence=estimateScPrevalence,
+            plotYLim=plotYLim,
+            plotFileType=plotFileType,
             verbose=verbose,
             batch_config=batch_config,
             threads=threads,
@@ -530,7 +532,8 @@ parallel_sample_ichor_capture=function(
               input_args=argg,
               out_file_dir=out_file_dir,
               out_files=list(
-                  param=paste0(out_file_dir,"/",names(cnrs_list),"/ichor_capture/",names(cnrs_list),".params.txt")
+                  param=paste0(out_file_dir,"/",names(cnrs_list),"/ichor_capture/",names(cnrs_list),".params.txt"),
+                  plot=paste0(out_file_dir,"/",names(cnrs_list),"/ichor_capture/",names(cnrs_list),"_genomeWide_all_sols.",plotFileType)
               )
         )
     }

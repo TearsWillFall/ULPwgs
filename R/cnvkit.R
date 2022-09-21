@@ -40,6 +40,25 @@
 #' @param male_reference_diagram [OPTIONAL]  Assume inputs were normalized to a male reference. Default FALSE
 #' @param gender_diagram [OPTIONAL] Assume sample gender. Default male
 #' @param shift_diagram [OPTIONAL] Adjust the X and Y chromosomes according to sample sex. Default TRUE
+#' @param normal_ichor [OPTIONAL] Path to normal samples. Default c(0.5,0.6,0.7,0.8,0.9)
+#' @param ploidy_ichor [OPTIONAL] Initial tumour ploidy; can be more than one value if additional ploidy initializations are desired. Default: 2
+#' @param lambda_ichor [OPTIONAL] Initial Student's t precision; must contain 4 values (e.g. c(1500,1500,1500,1500)); if not provided then will automatically use based on variance of data
+#' @param scStates_ichor [OPTIONAL]  Subclonal states to consider. Default NULL
+#' @param output_name_ichor [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
+#' @param lambdaScaleHyperParam_ichor [OPTIONAL] Hyperparameter (scale) for Gamma prior on Student's-t precision. Default 3
+#' @param maxCN_ichor [OPTIONAL] Total clonal states. Default 7.
+#' @param estimateNormal_ichor [OPTIONAL] Estimate normal. Default TRUE.
+#' @param estimateScPrevalence_ichor [OPTIONAL] Estimate subclonal prevalence. Default TRUE.
+#' @param estimatePloidy_ichor [OPTIONAL] Estimate tumour ploidy. Default TRUE.
+#' @param maxFracGenomeSubclone_ichor [OPTIONAL] Exclude solutions with subclonal genome fraction greater than this value. Default 0.5
+#' @param maxFracCNASubclone_ichor  [OPTIONAL] Exclude solutions with fraction of subclonal events greater than this value. Default 0.7
+#' @param minSegmentBins_ichor [OPTIONAL]  Minimum number of bins for largest segment threshold required to estimate tumor fraction; if below this threshold, then will be assigned zero tumor fraction
+#' @param altFracThreshold_ichor [OPTIONAL] Minimum proportion of bins altered required to estimate tumor fraction; if below this threshold, then will be assigned zero tumor fraction. Default: [0.05]
+#' @param includeHOMD_ichor [OPTIONAL] If FALSE, then exclude HOMD state. Useful when using large bins (e.g. 1Mb). Default FALSE.
+#' @param txnE_ichor [OPTIONAL] Self-transition probability. Increase to decrease number of segments. Default: [0.9999999]
+#' @param txnStrength_ichor [OPTIONAL] Transition pseudo-counts. Exponent should be the same as the number of decimal places of --txnE. Default: [1e+07]
+#' @param plotFileType_ichor [OPTIONAL] File format for output plots. Default pdf
+#' @param plotYLim_ichor [OPTIONAL] ylim to use for chromosome plots. Default: [c(-2,2)]
 #' @param threads [OPTIONAL] Number of threads to split the work. Default 4
 #' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
@@ -93,6 +112,30 @@ process_cnvkit=function(
     male_reference_diagram=FALSE,
     gender_diagram="male",
     shift_diagram=TRUE,
+    normal_ichor=0.5,
+    ploidy_ichor=2,
+    maxCN_ichor=7,
+    includeHOMD_ichor=FALSE,
+    scStates_ichor=c(1,3),
+    txnE_ichor=0.9999999,
+    txnStrength_ichor=1e7,
+    min_cov_ichor=-15,
+    lambda_ichor=NULL,
+    coverage_ichor=NULL,
+    minSegmentBins_ichor=50,
+    minTumFracToCorrect_ichor=0.01,
+    chrs_ichor=c(1:22,"X"),
+    chrTrain_ichor=seq(1:22),
+    gender_ichor="male",
+    maxFracCNASubclone_ichor=0.7,
+    maxFracGenomeSubclone_ichor=0.5,
+    lambdaScaleHyperParam_ichor=3,
+    altFracThreshold_ichor=0.05,
+    estimateNormal_ichor=TRUE,
+    estimatePloidy_ichor=TRUE,
+    estimateScPrevalence_ichor=TRUE,
+    plotYLim_ichor=c(-2,2),
+    plotFileType_ichor="pdf",
     batch_config=build_default_preprocess_config(),
     threads=4,ram=4,mode="local",
     executor_id=make_unique_id("processCNVkit"),
@@ -191,8 +234,8 @@ process_cnvkit=function(
         jobs_report[["steps"]][["antitargetCoverageCNVkit"]]$job_id)
   )
 
-  jobs_report[["steps"]][["hybridIchorCNA"]]<-ichor_capture(
-    cnr=jobs_report[["steps"]][["fixCNVkit"]]$out_files$cnr,
+  jobs_report[["steps"]][["hybridIchorCNA"]]<-parallel_sample_ichor_capture(
+    cnrs=jobs_report[["steps"]][["fixCNVkit"]]$out_files$cnr,
     normal=normal_ichor,
     ploidy=ploidy_ichor,
     maxCN=maxCN_ichor,
@@ -200,7 +243,6 @@ process_cnvkit=function(
     scStates=scStates_ichor,
     txnE=txnE_ichor,
     txnStrength=txnStrength_ichor,
-    output_name=id,
     output_dir=out_file_dir,
     min_cov=min_cov_ichor,
     lambda=lambda_ichor,
@@ -221,7 +263,8 @@ process_cnvkit=function(
     plotFileType=plotFileType_ichor,
     verbose=verbose,
     batch_config=batch_config,
-    threads=threads,ram=ram,mode=mode,
+    threads=threads,ram=ram,
+    mode=mode,
     executor_id=task_id,
     time=time,
     hold=jobs_report[["steps"]][["fixCNVkit"]]$job_id
