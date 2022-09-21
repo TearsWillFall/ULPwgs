@@ -169,7 +169,7 @@ process_cnvkit=function(
 
 
 
-    job_report=build_job_report(
+    jobs_report=build_job_report(
       job_id=job,
       executor_id=executor_id,
       exec_code=list(), 
