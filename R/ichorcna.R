@@ -518,7 +518,7 @@ parallel_sample_ichor_capture=function(
           out_file_dir2=set_dir(dir=out_file_dir,name="batch")
           batch_code=build_job_exec(job=job,time=time,ram=ram,
           threads=1,output_dir=out_file_dir2,
-          hold=hold,array=length(cnrs_list))
+          hold=hold,array=length(cnr_list))
           exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
 
           if(verbose){
@@ -538,8 +538,8 @@ parallel_sample_ichor_capture=function(
               input_args=argg,
               out_file_dir=out_file_dir,
               out_files=list(
-                  param=paste0(out_file_dir,"/",names(cnrs_list),"/ichor_capture/",names(cnrs_list),".params.txt"),
-                  plot=paste0(out_file_dir,"/",names(cnrs_list),"/ichor_capture/",names(cnrs_list),"_genomeWide_all_sols.",plotFileType)
+                  param=paste0(out_file_dir,"/",names(cnr_list),"/ichor_capture/",names(cnr_list),".params.txt"),
+                  plot=paste0(out_file_dir,"/",names(cnr_list),"/ichor_capture/",names(cnr_list),"_genomeWide_all_sols.",plotFileType)
               )
         )
     }
