@@ -129,7 +129,7 @@ add_snv_af_strelka_vcf=function(
   batch_config=build_default_preprocess_config(),
   mode="local",time="48:0:0",
   threads=1,ram=4,update_time=60,
-  wait=FALSE,hold=""){
+  wait=FALSE,hold=NULL){
     
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
@@ -230,7 +230,7 @@ add_indel_af_strelka_vcf=function(
   batch_config=build_default_preprocess_config(),
   mode="local",time="48:0:0",
   threads=1,ram=4,update_time=60,
-  wait=FALSE,hold=""){
+  wait=FALSE,hold=NULL){
     
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
@@ -383,7 +383,7 @@ add_sv_af_strelka_vcf=function(
   batch_config=build_default_preprocess_config(),
   mode="local",time="48:0:0",
   threads=1,ram=4,update_time=60,
-  wait=FALSE,hold=""){
+  wait=FALSE,hold=NULL){
     
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
@@ -553,7 +553,7 @@ write_vcf=function(
   batch_config=build_default_preprocess_config(),
   mode="local",time="48:0:0",
   threads=1,ram=4,update_time=60,
-  wait=FALSE,hold=""
+  wait=FALSE,hold=NULL
 ){  
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
@@ -1308,7 +1308,7 @@ parse_picard_metrics=function(summary="",output_dir=".",output_name="",
 verbose=FALSE,batch_config=build_default_preprocess_config(),threads=1,ram=4,
 mode="local",executor_id=make_unique_id("parsePicardMetrics"),
 task_name="parsePicardMetrics",time="48:0:0",
-update_time=60,wait=FALSE,hold=""){
+update_time=60,wait=FALSE,hold=NULL){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -1425,7 +1425,7 @@ complement_bed=function(
   bed="",pad=10,output_name="Complement",genome="",verbose=FALSE,batch_config=build_default_preprocess_config(),
   threads=3,ram=1,coord_sort=TRUE,mode="local",
   executor_id=make_unique_id("complementBED"),clean=TRUE,
-  task_name="complementBED",time="48:0:0",update_time=60,wait=FALSE,hold=""
+  task_name="complementBED",time="48:0:0",update_time=60,wait=FALSE,hold=NULL
   ){
 
 
@@ -1516,7 +1516,7 @@ complement_bed=function(
 pad_bed=function(bin_bedtools=build_default_tool_binary_list()$bin_bedtools,bed="",pad=10,
   output_name="Padded",output_dir=".",genome="",verbose=FALSE,batch_config=build_default_preprocess_config(),
   threads=3,ram=1,coord_sort=TRUE,mode="local",executor_id=make_unique_id("padBED"),task_name="padBED",
-  time="48:0:0",update_time=60,wait=FALSE,hold=""
+  time="48:0:0",update_time=60,wait=FALSE,hold=NULL
 ){
 
 
@@ -1807,7 +1807,7 @@ get_bam_reference_chr=function(
     output_dir=".",verbose=FALSE,batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("getBAMchr"),task_name="getBAMchr",
     mode="local",time="48:0:0",
-    threads=4,ram=4,update_time=60,wait=FALSE,hold=""
+    threads=4,ram=4,update_time=60,wait=FALSE,hold=NULL
   ){
  
     options(scipen = 999)
@@ -1900,7 +1900,7 @@ get_fai_reference_chr=function(
     executor_id=make_unique_id("getFAIchr"),
     task_name="getFAIrchr",
     mode="local",time="48:0:0",
-    threads=4,ram=4,update_time=60,wait=FALSE,hold=""
+    threads=4,ram=4,update_time=60,wait=FALSE,hold=NULL
   ){
  
     options(scipen = 999)

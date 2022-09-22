@@ -41,7 +41,7 @@ call_variants_strelka=function(
     threads=1,ram=4,mode="local",
     executor_id=make_unique_id("callSVManta"),
     task_name="callSVManta",time="48:0:0",
-    update_time=60,wait=FALSE,hold=""
+    update_time=60,wait=FALSE,hold=NULL
 ){
 
     argg <- as.list(environment())
@@ -129,7 +129,7 @@ call_sv_manta=function(
     threads=1,ram=4,mode="local",
     executor_id=make_unique_id("callSVManta"),
     task_name="callSVManta",time="48:0:0",
-    update_time=60,wait=FALSE,hold=""
+    update_time=60,wait=FALSE,hold=NULL
 ){
   
     argg <- as.list(environment())
@@ -257,7 +257,7 @@ call_snvs_strelka=function(
     threads=1,ram=4,mode="local",
     executor_id=make_unique_id("callSNVStrelka"),
     task_name="callSNVStrelka",time="48:0:0",
-    update_time=60,wait=FALSE,hold=""
+    update_time=60,wait=FALSE,hold=NULL
 ){
   
     argg <- as.list(environment())
@@ -346,7 +346,7 @@ call_somatic_snvs_strelka=function(
     threads=1,ram=4,mode="local",
     executor_id=make_unique_id("callSomaticSNVStrelka"),
     task_name="callSomaticSNVStrelka",time="48:0:0",
-    update_time=60,wait=FALSE,hold=""
+    update_time=60,wait=FALSE,hold=NULL
 ){
 
     argg <- as.list(environment())
@@ -462,7 +462,7 @@ call_germline_snvs_strelka=function(
     threads=1,ram=4,mode="local",
     executor_id=make_unique_id("callGermlineSNVStrelka"),
     task_name="callGermlineSNVStrelka",time="48:0:0",
-    update_time=60,wait=FALSE,hold=""
+    update_time=60,wait=FALSE,hold=NULL
 ){
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
