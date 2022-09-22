@@ -39,6 +39,8 @@
 
 
 ichor_capture=function(
+    rdata=NULL,
+    selected=NULL,
     cnr="R/TRAILS_TR067_I260038_BULK_CAPTURE_PCF_V2_HG19_LB1_411_HW57JDMXX_1.cnr",
     normal=0.5,
     ploidy=2,
@@ -79,6 +81,14 @@ ichor_capture=function(
     options(stringsAsFactors=FALSE)
     options(bitmapType='cairo')
     argg <- as.list(environment())
+
+    if(!is.null(rdata)){
+    load(rdata)
+    if(!is.null(selected)){
+      cnr=cnr_list[selected]
+    }
+  }
+    
     
     id=""
     if(output_name!=""){
