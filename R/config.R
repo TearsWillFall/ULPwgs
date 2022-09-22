@@ -774,8 +774,8 @@ build_default_reference_list=function(
                             target="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/prim_tg.bed"
                         ),
                         variant=list(
-                            pon_cn="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon_seg/pon_seg.cnn",
-                            pon_muts="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon_var/pon_gatkPoN.vcf.gz"
+                            pon_cn="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/pon_seg/pon_seg.cnn",
+                            pon_muts="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/pon_var/pon_gatkPoN.vcf.gz"
                         ),
                         binned=list(
                             target="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/cap_tg.binned.targets.bed",
