@@ -353,7 +353,7 @@ for (n in normal){
 #' IchorCNA implementation for Capture Panel Data
 #' 
 #'
-#' @param cnr [REQUIRED] Path to tumour CNR file.
+#' @param cnrs [REQUIRED] Path to tumour CNR file.
 #' @param normal [OPTIONAL] Path to normal samples. Default c(0.5,0.6,0.7,0.8,0.9)
 #' @param ploidy [OPTIONAL] Initial tumour ploidy; can be more than one value if additional ploidy initializations are desired. Default: 2
 #' @param lambda [OPTIONAL] Initial Student's t precision; must contain 4 values (e.g. c(1500,1500,1500,1500)); if not provided then will automatically use based on variance of data
@@ -441,7 +441,7 @@ parallel_sample_ichor_capture=function(
             )
       )
     
-    cnr_list=cnr
+    cnr_list=cnrs
     names(cnr_list)=Vectorize(get_file_name)(cnrs)
 
     if(mode=="local"){
