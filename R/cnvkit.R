@@ -1591,7 +1591,7 @@ de
       input_args = argg,
       out_file_dir=out_file_dir,
       out_files=list(
-        cnn=out_file)
+        cnr=out_file)
     )
 
 
@@ -1732,7 +1732,7 @@ de
               input_args=argg,
               out_file_dir=out_file_dir,
               out_files=list(
-                  cnn=paste0(out_file_dir,"/",sample_list$names,".cnr")
+                  cnr=paste0(out_file_dir,"/",sample_list$names,".cnr")
               )
         )
     }
