@@ -42,7 +42,7 @@ alignment_bwa=function(
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   executor_id=make_unique_id("alignment"),
   task_name="alignment",mode="local",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""
+  update_time=60,wait=FALSE,hold=NULL
 ){
     
     argg <- as.list(environment())
@@ -139,7 +139,7 @@ index_ref_bwa=function(
   batch_config=build_default_preprocess_config(),
   executor_id=make_unique_id("refIndex"),
   task_name="refIndex",mode="local",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""
+  update_time=60,wait=FALSE,hold=NULL
  ){
 
   argg <- as.list(environment())

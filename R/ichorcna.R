@@ -72,7 +72,7 @@ ichor_capture=function(
     executor_id=make_unique_id("hybridIchorCNA"),
     task_name="hybridIchorCNA",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=""
+    wait=FALSE,hold=NULL
 ){  
 
     options(scipen=0, stringsAsFactors=F)
@@ -418,7 +418,7 @@ parallel_sample_ichor_capture=function(
     executor_id=make_unique_id("hybridIchorCNA"),
     task_name="hybridIchorCNA",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=""
+    wait=FALSE,hold=NULL
 ){  
 
     argg <- as.list(environment())

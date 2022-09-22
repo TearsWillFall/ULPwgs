@@ -26,7 +26,7 @@ markdups_picard=function(
   hnd=1000,threads,ram=4,tmp_dir=".",
   remove_duplicates=TRUE,mode="local",executor_id=make_unique_id("markDups"),
   task_name="markDups",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""
+  update_time=60,wait=FALSE,hold=NULL
 ){
 
     argg <- as.list(environment())
@@ -119,7 +119,7 @@ summary_metrics_bam_picard=function(
   batch_config=build_default_preprocess_config(),tmp_dir=".",
   threads=3,ram=4,mode="local",executor_id=make_unique_id("summaryMetrics"),
   task_name="summaryMetrics",
-  time="48:0:0",update_time=60,wait=FALSE,hold=""
+  time="48:0:0",update_time=60,wait=FALSE,hold=NULL
 ){
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -199,7 +199,7 @@ insertsize_metrics_bam_picard=function(
   batch_config=build_default_preprocess_config(),tmp_dir=".",threads=1,ram=4,
   mode="local",executor_id=make_unique_id("insertsizeMetrics"),
   task_name="insertsizeMetrics",
-  time="48:0:0",update_time=60,wait=FALSE,hold=""){
+  time="48:0:0",update_time=60,wait=FALSE,hold=NULL){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -280,7 +280,7 @@ tg_summary_metrics_bam_picard=function(
   tmp_dir=".",ref_genome="",threads=1,ram=4,bi="",ti="",
   mode="local",executor_id=make_unique_id("TGsummaryMetrics"),
   task_name="TGsummaryMetrics",time="48:0:0",update_time=60,
-  wait=FALSE,hold=""){
+  wait=FALSE,hold=NULL){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -386,7 +386,7 @@ rnaseq_summary_metrics_bam_picard=function(
   batch_config=build_default_preprocess_config(),tmp_dir=".",threads=1,ram=4,
   ri="",ref_flat="",mode="local",executor_id=make_unique_id("RNAsummaryMetrics"),
   task_name="RNAsummaryMetrics",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""){
+  update_time=60,wait=FALSE,hold=NULL){
 
 
   argg <- as.list(environment())
@@ -471,7 +471,7 @@ wgs_summary_metrics_bam_picard=function(
   tmp_dir=".",threads=1,ram=4,mode="local",
   executor_id=make_unique_id("WGSsummaryMetrics"),
   task_name="WGSsummaryMetrics",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""){
+  update_time=60,wait=FALSE,hold=NULL){
 
 
   argg <- as.list(environment())

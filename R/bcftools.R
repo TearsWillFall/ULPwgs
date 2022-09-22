@@ -33,7 +33,7 @@ concat_vcf=function(
     threads=1,ram=4,mode="local",
     executor_id=make_unique_id("concatVCF"),
     task_name="concatVCF",time="48:0:0",
-    update_time=60,wait=FALSE,hold=""
+    update_time=60,wait=FALSE,hold=NULL
 ){
 
   argg <- as.list(environment())
@@ -170,7 +170,7 @@ sort_vcf=function(
   threads=1,ram=4,mode="local",
   executor_id=make_unique_id("sortVCF"),
   task_name="sortVCF",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""
+  update_time=60,wait=FALSE,hold=NULL
 ){
 
   argg <- as.list(environment())

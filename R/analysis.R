@@ -19,7 +19,7 @@ bams="",output_name="",
 verbose=TRUE,threads=3,ram=4,
 executor=make_unique_id("mergeBAMs"),
 task="mergeBAMs",mode="local",
-time="48:0:0",update_time=60,wait=FALSE,hold=""){
+time="48:0:0",update_time=60,wait=FALSE,hold=NULL){
 
     out_file_dir=set_dir(dir=output_dir,name="merged")
     exec_code=paste(bin_samtools,"merge ",paste0(out_file_dir,"/",output_name,".bam"), " --threads",
@@ -111,7 +111,7 @@ metrics_alignqc=function(
   ti="",ri="",ref_flat="",method="tg",
   mode="local",executor_id=make_unique_id("alignQC"),
   task_name="alignQC",time="48:0:0",
-  threads=3,ram=4,update_time=60,wait=FALSE, hold=""){
+  threads=3,ram=4,update_time=60,wait=FALSE, hold=NULL){
     
 
     argg <- as.list(environment())

@@ -32,7 +32,7 @@ db_annot="database/human_gencode_vch38.gtf",output_name="",
 verbose=FALSE,batch_config=build_default_preprocess_config(),
 executor_id=make_unique_id("circRNA"),
 task_name="circRNA",mode="local",threads=3,ram=4,time="48:0:0",
-update_time=60,wait=FALSE,hold=""){
+update_time=60,wait=FALSE,hold=NULL){
 
   
   argg <- as.list(environment())
@@ -120,7 +120,7 @@ config="database/yaml/config/yaml",output_name="",
 verbose=FALSE,batch_config=build_default_preprocess_config(),
 executor_id=make_unique_id("circRNAquant"),
 task_name="circRNAquant",mode="local",threads=3,
-ram=4,time="48:0:0",update_time=60,wait=FALSE,hold=""){
+ram=4,time="48:0:0",update_time=60,wait=FALSE,hold=NULL){
 
   
   argg <- as.list(environment())

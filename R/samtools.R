@@ -31,7 +31,7 @@ sort_and_index_bam_samtools=function(
   coord_sort=TRUE,index=TRUE,stats="all", clean=FALSE,
   mode="local",executor_id=make_unique_id("sortANDindex"),
   task_name="sortANDindex",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""
+  update_time=60,wait=FALSE,hold=NULL
 ){
 
   argg <- as.list(environment())
@@ -131,7 +131,7 @@ sort_bam_samtools=function(
   batch_config=build_default_preprocess_config(),
   threads=3,ram=1,coord_sort=TRUE,mode="local",
   executor_id=make_unique_id("sortBAM"),clean=FALSE,task_name="sortBAM",
-  time="48:0:0",update_time=60,wait=FALSE,hold=""){
+  time="48:0:0",update_time=60,wait=FALSE,hold=NULL){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -194,7 +194,7 @@ index_bam_samtools=function(
   bam="",verbose=FALSE,batch_config=build_default_preprocess_config(),
   threads=3,ram=4,mode="local",executor_id=make_unique_id("indexBAM"),
   task_name="indexBAM",time="48:0:0",update_time=60, output_dir=".",
-  wait=FALSE,hold=""
+  wait=FALSE,hold=NULL
 ){
 
   argg <- as.list(environment())
@@ -272,7 +272,7 @@ stats_bam_samtools=function(
   bam="",output_dir=".",verbose=FALSE,
   batch_config=build_default_preprocess_config(),threads=3,ram=4,stats="all",
   mode="local",executor_id=make_unique_id("statsBAM"),
-  task_name="statsBAM",time="48:0:0",update_time=60,wait=FALSE,hold=""
+  task_name="statsBAM",time="48:0:0",update_time=60,wait=FALSE,hold=NULL
 ){
 
   argg <- as.list(environment())
@@ -345,7 +345,7 @@ stats_flag_samtools=function(
   batch_config=build_default_preprocess_config(),
   threads=3,ram=4,mode="local",executor_id=make_unique_id("statsFlag"),
   task_name="statsFlag",time="48:0:0",update_time=60,
-  wait=FALSE,hold=""
+  wait=FALSE,hold=NULL
 ){
 
   argg <- as.list(environment())
@@ -421,7 +421,7 @@ stats_index_samtools=function(
   bam="",output_dir=".",verbose=FALSE,
   batch_config=build_default_preprocess_config(),threads=3,ram=4,mode="local",
   executor_id=make_unique_id("statsINDEX"),task_name="statsINDEX",
-  time="48:0:0",update_time=60,wait=FALSE,hold=""
+  time="48:0:0",update_time=60,wait=FALSE,hold=NULL
 ){
 
   argg <- as.list(environment())
@@ -496,7 +496,7 @@ mapq_metrics_bam_samtools=function(
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   threads=3,ram=4,mode="local",
   executor_id=make_unique_id("metricsMAPQ"),
-  task_name="metricsMAPQ",time="48:0:0",update_time=60,wait=FALSE,hold=""
+  task_name="metricsMAPQ",time="48:0:0",update_time=60,wait=FALSE,hold=NULL
 ){
 
   argg <- as.list(environment())

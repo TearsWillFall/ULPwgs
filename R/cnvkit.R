@@ -141,7 +141,7 @@ process_cnvkit=function(
     executor_id=make_unique_id("processCNVkit"),
     task_name="processCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=""
+    wait=FALSE,hold=NULL
   ){
 
 
@@ -388,7 +388,7 @@ access_cnvkit=function(
     executor_id=make_unique_id("accessCNVkit"),
     task_name="accessCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=""
+    wait=FALSE,hold=NULL
   ){
 
 
@@ -502,7 +502,7 @@ access_cnvkit=function(
     executor_id=make_unique_id("createPonCNVkit"),
     task_name="createPonCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=""
+    wait=FALSE,hold=NULL
   ){
 
     argg <- as.list(environment())
@@ -625,7 +625,7 @@ access_cnvkit=function(
     executor_id=make_unique_id("targetCNVkit"),
     task_name="targetCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=""
+    wait=FALSE,hold=NULL
   ){
 
     argg <- as.list(environment())
@@ -741,7 +741,7 @@ access_cnvkit=function(
     executor_id=make_unique_id("antitargetCNVkit"),
     task_name="antitargetCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=""
+    wait=FALSE,hold=NULL
   ){
 
     argg <- as.list(environment())
@@ -868,7 +868,7 @@ bin_targets_cnvkit=function(
     executor_id=make_unique_id("bintargetCNVkit"),
     task_name="bintargetCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=""
+    wait=FALSE,hold=NULL
 ){
 
     argg <- as.list(environment())
@@ -989,7 +989,7 @@ bin_targets_cnvkit=function(
     executor_id=make_unique_id("autobinCNVkit"),
     task_name="autobinCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=""
+    wait=FALSE,hold=NULL
   ){
 
     argg <- as.list(environment())
@@ -1110,7 +1110,7 @@ de
     executor_id=make_unique_id("coverageCNVkit"),
     task_name="coverageCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=""
+    wait=FALSE,hold=NULL
   ){
 
     if(!is.null(rdata)){
@@ -1230,7 +1230,7 @@ de
     executor_id=make_unique_id("coverageCNVkit"),
     task_name="coverageCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=""
+    wait=FALSE,hold=NULL
   ){
 
     argg <- as.list(environment())
@@ -1384,7 +1384,7 @@ de
     executor_id=make_unique_id("referenceCNVkit"),
     task_name="referenceCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=""
+    wait=FALSE,hold=NULL
   ){
 
     argg <- as.list(environment())
@@ -1522,7 +1522,7 @@ de
     executor_id=make_unique_id("fixCNVkit"),
     task_name="fixCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=""
+    wait=FALSE,hold=NULL
   ){
 
     argg <- as.list(environment())
@@ -1656,7 +1656,7 @@ de
     executor_id=make_unique_id("parFixCNVkit"),
     task_name="parFixCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=""
+    wait=FALSE,hold=NULL
   ){
 
     argg <- as.list(environment())
@@ -1793,7 +1793,7 @@ de
     executor_id=make_unique_id("segmentCNVkit"),
     task_name="segmentCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=""
+    wait=FALSE,hold=NULL
   ){
 
     argg <- as.list(environment())
@@ -1923,7 +1923,7 @@ de
     executor_id=make_unique_id("segmentCNVkit"),
     task_name="segmentCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=""
+    wait=FALSE,hold=NULL
   ){
 
     argg <- as.list(environment())
@@ -2070,7 +2070,7 @@ de
     executor_id=make_unique_id("segmentCNVkit"),
     task_name="segmentCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=""
+    wait=FALSE,hold=NULL
   ){
 
     argg <- as.list(environment())
@@ -2255,7 +2255,7 @@ de
     executor_id=make_unique_id("diagramCNVkit"),
     task_name="diagramCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=""
+    wait=FALSE,hold=NULL
   ){
 
     argg <- as.list(environment())

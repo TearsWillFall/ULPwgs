@@ -27,7 +27,7 @@ markdups_gatk=function(
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   tmp_dir=".",threads=3,ram=4,remove_duplicates=TRUE,
   executor_id=make_unique_id("markdupsGATK"),task_name="markdupsGATK",
-  mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=""){
+  mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=NULL){
 
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
@@ -129,7 +129,7 @@ recal_gatk=function(
   tmp_dir=".",verbose=FALSE,batch_config=build_default_preprocess_config(),
   executor_id=make_unique_id("recalGATK"),
   task_name="recalGATK",clean=TRUE,mode="local",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""
+  update_time=60,wait=FALSE,hold=NULL
   ){
 
 
@@ -261,7 +261,7 @@ generate_BQSR_gatk=function(
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("generateBQSR"),task_name="generateBQSR",
-  time="48:0:0",update_time=60,wait=FALSE,hold=""
+  time="48:0:0",update_time=60,wait=FALSE,hold=NULL
 ){  
 
   if(!is.null(rdata)){
@@ -376,7 +376,7 @@ parallel_generate_BQSR_gatk=function(
   task_name="par_generateBQSR",output_dir=".",
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   mode="local",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""){
+  update_time=60,wait=FALSE,hold=NULL){
 
   options(scipen = 999)
  
@@ -515,7 +515,7 @@ gather_BQSR_reports_gatk=function(
   task_name="gatherBQSR",
   batch_config=build_default_preprocess_config(),
   mode="local",time="48:0:0",
-  threads=4,ram=4,update_time=60,wait=FALSE,hold=""){
+  threads=4,ram=4,update_time=60,wait=FALSE,hold=NULL){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -608,7 +608,7 @@ apply_BQSR_gatk=function(
   rec_table="",output_dir=".",verbose=FALSE,tmp_dir=".",
   batch_config=build_default_preprocess_config(),mode="local", threads=4,ram=4,
   executor_id=make_unique_id("applyBQSR"),task_name="applyBQSR",time="48:0:0",
-  update_time=60,wait=TRUE,hold=""){
+  update_time=60,wait=TRUE,hold=NULL){
 
 
   if(!is.null(rdata)){
@@ -716,7 +716,7 @@ parallel_apply_BQSR_gatk=function(
   executor_id=make_unique("par_applyBQSR"),
   task_name="par_applyBQSR",
   time="48:0:0",threads=4,ram=4,
-  update_time=60,wait=FALSE, hold=""){
+  update_time=60,wait=FALSE, hold=NULL){
 
   options(scipen = 999)
  
@@ -857,7 +857,7 @@ gather_bam_files=function(
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   threads=4, ram=4, mode="local",clean=FALSE,
   executor_id=make_unique_id("gatherBAM"),task_name="gatherBAM",
-  time="48:0:0",update_time=60,wait=FALSE,hold=""
+  time="48:0:0",update_time=60,wait=FALSE,hold=NULL
 ){
 
   argg <- as.list(environment())
@@ -950,7 +950,7 @@ analyze_covariates_gatk=function(
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("recalCovariates"),
   task_name="recalCovariates",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""
+  update_time=60,wait=FALSE,hold=NULL
 ){
 
   argg <- as.list(environment())
@@ -1084,7 +1084,7 @@ mutect2_gatk=function(region="",
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("Mutect2"),
   task_name="Mutect2",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""
+  update_time=60,wait=FALSE,hold=NULL
 ){
 
   if(!is.null(rdata)){
@@ -1268,7 +1268,7 @@ parallel_regions_mutect2_gatk=function(
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("parRegionMutect2"),
   task_name="parRegionMutect2",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""
+  update_time=60,wait=FALSE,hold=NULL
 ){
 
 
@@ -1529,7 +1529,7 @@ parallel_samples_mutect2_gatk=function(
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("parRegionMutect2"),
   task_name="parRegionMutect2",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""
+  update_time=60,wait=FALSE,hold=NULL
 ){
 
   argg <- as.list(environment())
@@ -1701,7 +1701,7 @@ mutect_filter_gatk=function(
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("filterMutect2Gatk"),
   task_name="filterMutect2Gatk",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""
+  update_time=60,wait=FALSE,hold=NULL
 ){
 
   argg <- as.list(environment())
@@ -1805,7 +1805,7 @@ gather_mutect2_gatk=function(
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("gatherMutect"),
   task_name="gatherMutect",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""
+  update_time=60,wait=FALSE,hold=NULL
 ){
 
   argg <- as.list(environment())
@@ -1913,7 +1913,7 @@ learn_orientation_gatk=function(
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("learnOrientationMutect2"),
   task_name="learnOrientationMutect2",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""
+  update_time=60,wait=FALSE,hold=NULL
 ){
 
   argg <- as.list(environment())
@@ -2020,7 +2020,7 @@ estimate_contamination_gatk=function(
   threads=1,ram=4,mode="local",
   executor_id=make_unique_id("estimateContaminationGatk"),
   task_name="estimateContaminationGatk",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""){
+  update_time=60,wait=FALSE,hold=NULL){
 
   if(!is.null(rdata)){
     load(rdata)
@@ -2172,7 +2172,7 @@ parallel_estimate_contamination_gatk=function(
   threads=1,ram=4,mode="local",
   executor_id=make_unique_id("parEstimateContaminationGatk"),
   task_name="parEstimateContaminationGatk",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""
+  update_time=60,wait=FALSE,hold=NULL
 ){
 
     argg <- as.list(environment())
@@ -2307,7 +2307,7 @@ pileup_summary_gatk=function(
   threads=1,ram=4,mode="local",
   executor_id=make_unique_id("pileupSummaryGatk"),
   task_name="pileupSummaryGatk",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""
+  update_time=60,wait=FALSE,hold=NULL
 ){
   
   if(!is.null(rdata)){
@@ -2409,7 +2409,7 @@ parallel_pileup_summary_gatk=function(
   threads=1,ram=4,mode="local",
   executor_id=make_unique_id("parPileupSummaryGatk"),
   task_name="parPileupSummaryGatk",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""){
+  update_time=60,wait=FALSE,hold=NULL){
 
 
   argg <- as.list(environment())
@@ -2520,7 +2520,7 @@ merge_mutect_stats_gatk=function(
   threads=1,ram=4,mode="local",
   executor_id=make_unique_id("mergeMutectStats"),
   task_name="mergeMutectStats",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""){
+  update_time=60,wait=FALSE,hold=NULL){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -2642,7 +2642,7 @@ create_pon_gatk=function(
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("createPoNGatk"),
   task_name="createPoNGATK",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""
+  update_time=60,wait=FALSE,hold=NULL
 ){
 
   argg <- as.list(environment())
@@ -2757,7 +2757,7 @@ create_genomic_db_gatk=function(
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("createGenomicDB"),
   task_name="createGenomicDB",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""
+  update_time=60,wait=FALSE,hold=NULL
 ){
 
   argg <- as.list(environment())
@@ -2891,7 +2891,7 @@ haplotypecaller_gatk=function(
     threads=4,ram=4,mode="local",
     executor_id=make_unique_id("parallelCallHaplotypecallerGatk"),
     task_name="parallelCallHaplotypecallerGatk",time="48:0:0",
-    update_time=60,wait=FALSE,hold=""
+    update_time=60,wait=FALSE,hold=NULL
 ){
 
   if(!is.null(rdata)){
@@ -3049,7 +3049,7 @@ parallel_regions_haplotypecaller_gatk=function(
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("parallelCallHaplotypecallerGatk"),
   task_name="parallelCallHaplotypecallerGatk",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""
+  update_time=60,wait=FALSE,hold=NULL
 ){
   
   if(!is.null(rdata)){
@@ -3260,7 +3260,7 @@ cnn_score_variants_gatk=function(
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("CNNScoreVariantsGatk"),
   task_name="CNNScoreVariantsGatk",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""
+  update_time=60,wait=FALSE,hold=NULL
 ){
 
   argg <- as.list(environment())
@@ -3385,7 +3385,7 @@ filter_variant_tranches_gatk=function(
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("FilterVariantTranchesGatk"),
   task_name="FilterVariantTranchesGatk",time="48:0:0",
-  update_time=60,wait=FALSE,hold=""
+  update_time=60,wait=FALSE,hold=NULL
 ){
 
 
