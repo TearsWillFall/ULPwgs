@@ -89,7 +89,10 @@ ichor_capture=function(
 
     out_file_dir=set_dir(dir=output_dir,name=paste0(id,"/ichor_capture"))
     tmp_dir=set_dir(dir=out_file_dir,name="tmp")
+    task_id=make_unique_id(task_name)
+    job=build_job(executor_id=executor_id,task_id=task_id)
 
+    
 
     
     outImage <- paste0(out_file_dir,"/",id,".RData")
@@ -415,8 +418,8 @@ parallel_sample_ichor_capture=function(
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     threads=4,ram=4,mode="local",
-    executor_id=make_unique_id("hybridIchorCNA"),
-    task_name="hybridIchorCNA",time="48:0:0",
+    executor_id=make_unique_id("parSamplehybridIchorCNA"),
+    task_name="parSamplehybridIchorCNA",time="48:0:0",
     update_time=60,
     wait=FALSE,hold=NULL
 ){  
@@ -424,7 +427,9 @@ parallel_sample_ichor_capture=function(
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
     out_file_dir=set_dir(dir=output_dir,name="ichor_capture")
+    job=build_job(executor_id=executor_id,task_id=task_id)
 
+    
     jobs_report=build_job_report(
           job_id=job,
           executor_id=executor_id,

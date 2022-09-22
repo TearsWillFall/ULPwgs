@@ -1227,8 +1227,8 @@ de
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     threads=1,ram=1,mode="local",
-    executor_id=make_unique_id("coverageCNVkit"),
-    task_name="coverageCNVkit",time="48:0:0",
+    executor_id=make_unique_id("parSamplecoverageCNVkit"),
+    task_name="parSamplecoverageCNVkit",time="48:0:0",
     update_time=60,
     wait=FALSE,hold=NULL
   ){
