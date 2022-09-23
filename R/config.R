@@ -757,6 +757,7 @@ build_default_reference_list=function(
                         ),
                         variant=list(
                             pon_cn="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon_seg/pon_seg.cnn",
+                            pon_cn_male="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon_seg/pon_seg_male.cnn",
                             pon_muts="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon_var/pon_gatkPoN.vcf.gz"
                         ),
                         binned=list(
@@ -775,6 +776,7 @@ build_default_reference_list=function(
                         ),
                         variant=list(
                             pon_cn="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/pon_seg/pon_seg.cnn",
+                            pon_cn_male="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/pon_seg/pon_seg_male.cnn",
                             pon_muts="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/pon_var/pon_gatkPoN.vcf.gz"
                         ),
                         binned=list(

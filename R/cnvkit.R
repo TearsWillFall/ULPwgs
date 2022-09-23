@@ -96,7 +96,7 @@ process_cnvkit=function(
     smooth=TRUE,
     low_tc=FALSE,
     drop_low_coverage=TRUE,
-    drop_outliers=TRUE,
+    drop_outliers=10,
     range_scatter="",
     range_list_scatter="",
     genes_scatter="",
@@ -2142,7 +2142,8 @@ de
 
     out_file=paste0(out_file_dir,"/",id,".scatter.pdf")
 
-
+    cnr_tmp=paste0(cnr,".tmp")
+    cns_tmp=""
     exec_code=paste0("cat ",cnr," | head -n 1 > ",cnr_tmp," && cat ",cnr," | grep \"",
     paste0(paste0("^",chrs),collapse="\\|"),"\" >> ",cnr_tmp)
     if(cns!=""){
