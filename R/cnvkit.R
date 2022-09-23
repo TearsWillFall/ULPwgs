@@ -79,7 +79,7 @@ process_cnvkit=function(
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     access=build_default_reference_list()$HG19$reference$access_5k,
     sif_cnvkit=build_default_sif_list()$sif_cnvkit,
-    pon=build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn,
+    pon=build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn_male,
     tumor="",
     seg_method="cbs",
     seq_method="hybrid",
@@ -1508,7 +1508,7 @@ de
     rdata=NULL,
     selected=NULL,
     sif_cnvkit=build_default_sif_list()$sif_cnvkit,
-    pon=build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn,
+    pon=build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn_male,
     target="",
     antitarget="",
     output_name="",
@@ -1642,7 +1642,7 @@ de
 
   parallel_sample_fix_cnvkit=function(
     sif_cnvkit=build_default_sif_list()$sif_cnvkit,
-    pon=build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn,
+    pon=build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn_male,
     targets="",
     antitargets="",
     output_name="",
