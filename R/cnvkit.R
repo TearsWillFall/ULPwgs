@@ -2049,6 +2049,7 @@ de
     rdata=NULL,
     selected=NULL,
     sif_cnvkit=build_default_sif_list()$sif_cnvkit,
+    chrs=build_default_chr_list()$canonical,
     cnr="",
     cns="",
     output_name="",
@@ -2067,8 +2068,8 @@ de
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     threads=1,ram=1,mode="local",
-    executor_id=make_unique_id("segmentCNVkit"),
-    task_name="segmentCNVkit",time="48:0:0",
+    executor_id=make_unique_id("scatterCNVkit"),
+    task_name="scatterCNVkit",time="48:0:0",
     update_time=60,
     wait=FALSE,hold=NULL
   ){
