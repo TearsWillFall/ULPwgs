@@ -20,6 +20,8 @@
 #' @export
 
 bigBedToBed_ucsc=function(
+    rdata=NULL,
+    selected=NULL,
     bin_ucsc=build_default_tool_binary_list()$bin_ucsc$bigBedToBed,
     bigBed="",output_name="",
     output_dir=".",verbose=FALSE,batch_config=build_default_preprocess_config(),
@@ -94,7 +96,7 @@ bigBedToBed_ucsc=function(
 
 
 
-    if(wait&&mode=="batch"){
+if(wait&&mode=="batch"){
     batch_validator(job=job_report$job_id,
     time=update_time,verbose=verbose,threads=threads)
   }
