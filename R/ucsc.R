@@ -152,7 +152,7 @@ parallel_sample_bigBedToBed_ucsc=function(
 
     if(mode=="local"){
             job_report[["steps"]][["parSampleBigBedToBed"]]<-parallel::mclapply(
-                region_list,FUN=function(bed){
+                bigBed_list,FUN=function(bed){
                 job_report <- bigBedToBed_ucsc(
                     bigBed=bed,batch_config=batch_config,
                     bin_ucsc=bin_ucsc,
@@ -196,8 +196,9 @@ parallel_sample_bigBedToBed_ucsc=function(
                     bed=paste0(out_file_dir,names(bigBed_list),".bed")
                     )
             )
-
     }
 
   return(job_report)
 }
+
+
