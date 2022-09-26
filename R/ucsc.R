@@ -57,7 +57,7 @@ bigBedToBed_ucsc=function(
 
     
     out_file=paste0(out_file_dir,output_name,".bed")
-    exec_code=paste0(bin_ucsc, bigBed," -o ",out_file)
+    exec_code=paste(bin_ucsc, bigBed," -o ",out_file)
     
     
     
