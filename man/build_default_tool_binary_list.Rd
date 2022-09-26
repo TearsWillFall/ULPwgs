@@ -18,22 +18,25 @@ build_default_tool_binary_list(
     "/lustre/scratch/scratch/regmova/tools/strelka-2.9.10/build/bin/configureStrelkaSomaticWorkflow.py",
     germline =
     "/lustre/scratch/scratch/regmova/tools/strelka-2.9.10/build/bin/configureStrelkaGermlineWorkflow.py"),
-    bin_manta =
+    bin_ucsc = list(bigBedToBed =
+    "/lustre/scratch/scratch/regmova/tools/OtherTools/bigBedToBed", bedToBigBed =
+    "/lustre/scratch/scratch/regmova/tools/OtherTools/bedToBigBed", liftOver =
+    "/lustre/scratch/scratch/regmova/tools/OtherTools/liftOver"), 
+     bin_manta =
     "/lustre/scratch/scratch/regmova/tools/manta-1.6.0/build/bin/configManta.py",
     bin_ichor_pon =
     "/lustre/scratch/scratch/regmova/tools/ichorCNA/scripts/createPanelOfNormals.R",
-    bin_ichor = "/lustre/scratch/scratch/regmova/tools/ichorCNA/scripts/runIchorCNA.R", 
-
-        bin_samtools = "/lustre/scratch/scratch/regmova/tools/samtools/samtools",
-    bin_gatk = "/lustre/scratch/scratch/regmova/tools/gatk/gatk", bin_readcount =
+    bin_ichor = "/lustre/scratch/scratch/regmova/tools/ichorCNA/scripts/runIchorCNA.R",
+    bin_samtools = "/lustre/scratch/scratch/regmova/tools/samtools/samtools", bin_gatk =
+    "/lustre/scratch/scratch/regmova/tools/gatk/gatk", bin_readcount =
     "/lustre/scratch/scratch/regmova/tools/hmmcopy_utils/bin/readCounter", bin_ciri =
-    "/lustre/scratch/scratch/regmova/tools/CIRI/CIRI_Full_v2.1.1.jar", bin_picard =
+    "/lustre/scratch/scratch/regmova/tools/CIRI/CIRI_Full_v2.1.1.jar", 
+     bin_picard =
     "/lustre/scratch/scratch/regmova/tools/picard/build/libs/picard.jar", bin_samtools =
     "/lustre/scratch/scratch/regmova/tools/samtools/samtools", bin_picard =
-    "/lustre/scratch/scratch/regmova/tools/picard/build/libs/picard.jar", 
-    
-    bin_bedtools = "/lustre/scratch/scratch/regmova/tools/bedtools2/bin/bedtools",
-    bin_ciri_quant = "/lustre/scratch/scratch/regmova/tools/CIRIquant/bin/CIRIquant")
+    "/lustre/scratch/scratch/regmova/tools/picard/build/libs/picard.jar", bin_bedtools =
+    "/lustre/scratch/scratch/regmova/tools/bedtools2/bin/bedtools", bin_ciri_quant =
+    "/lustre/scratch/scratch/regmova/tools/CIRIquant/bin/CIRIquant")
 )
 }
 \arguments{

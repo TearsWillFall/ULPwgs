@@ -46,7 +46,7 @@ ichor_capture=function(
     ploidy=2,
     maxCN=7,
     includeHOMD=FALSE,
-    scStates=c(1,3),
+    scStates=NULL,
     txnE=0.9999999,
     txnStrength=1e7,
     output_name="",
@@ -65,7 +65,7 @@ ichor_capture=function(
     altFracThreshold=0.05,
     estimateNormal=TRUE,
     estimatePloidy=TRUE,
-    estimateScPrevalence=TRUE,
+    estimateScPrevalence=FALSE,
     plotYLim=c(-2,2),
     plotFileType="pdf",
     verbose=FALSE,
@@ -125,13 +125,14 @@ ichor_capture=function(
 
 
     drop_low_coverage=function(tumour_copy,min_cov=-15){
-       message(paste0(sum( tumour_copy[[1]]$log2<min_cov | tumour_copy[[1]]$depth==0)," bins excluded from analysis due to low coverage."))
+       message(paste0(sum( tumour_copy[[1]]$log2<min_cov | tumour_copy[[1]]$depth==0),
+       " bins excluded from analysis due to low coverage"))
         return(!tumour_copy[[1]]$log2<min_cov | tumour_copy[[1]]$depth==0)
     }
 
     drop_weight=function(tumour_copy,min_weight=0){
        message(paste0(sum(tumour_copy[[1]]$weight<min_weight),
-       " bins excluded from analysis due to low weight."))
+       " bins excluded from analysis due to low weight"))
         return(!tumour_copy[[1]]$weight<min_weight)
     }
 
@@ -143,7 +144,7 @@ ichor_capture=function(
          FUN = "quantile", p = .95,fill=FALSE,partial=partial))) %>% 
          dplyr::mutate(filter=abs(smooth_log2)>(quant*factor))
        
-        message(paste0("Dropped ",sum(out$filter)," outlier bins."))
+        message(paste0("Dropped ",sum(out$filter)," outlier bins"))
         return(!out$filter)
     }
 
@@ -321,24 +322,24 @@ for (n in normal){
         if (i == length(ind)){
             turnDevOff <- TRUE
     }
-    plotGWSolution(hmmResults.cor, s=s, outPlotFile=outPlotFile, plotFileType="pdf", 
-                        logR.column = "logR", call.column = "Corrected_Call",
-                        plotYLim=plotYLim, estimateScPrevalence=estimateScPrevalence, 
-                        seqinfo = NULL,
-                        turnDevOn = turnDevOn, turnDevOff = turnDevOff, main=mainName[ind[i]])
+        plotGWSolution(hmmResults.cor, s=s, outPlotFile=outPlotFile, plotFileType="pdf", 
+                            logR.column = "logR", call.column = "Corrected_Call",
+                            plotYLim=plotYLim, estimateScPrevalence=estimateScPrevalence, 
+                            seqinfo = NULL,
+                            turnDevOn = turnDevOn, turnDevOff = turnDevOff, main=mainName[ind[i]])
+        
+
+        hmmResults.cor <- results[[ind[1]]]
+        hmmResults.cor$results$loglik <- as.data.frame(loglik)
+        hmmResults.cor$results$gender <- gender
+        hmmResults.cor$results$coverage <- coverage
+
+        outputHMM(cna = hmmResults.cor$cna, segs = hmmResults.cor$results$segs, 
+                            results = hmmResults.cor$results, patientID = id, outDir=out_file_dir)
+        outFile <- paste0(out_file_dir, "/",id, ".params.txt")
+        outputParametersToFile(hmmResults=hmmResults.cor, file = outFile)
+
     }
-
-    hmmResults.cor <- results[[ind[1]]]
-    hmmResults.cor$results$loglik <- as.data.frame(loglik)
-    hmmResults.cor$results$gender <- gender
-    hmmResults.cor$results$coverage <- coverage
-
-    outputHMM(cna = hmmResults.cor$cna, segs = hmmResults.cor$results$segs, 
-                        results = hmmResults.cor$results, patientID = id, outDir=out_file_dir)
-    outFile <- paste0(out_file_dir, "/",id, ".params.txt")
-    outputParametersToFile(hmmResults=hmmResults.cor, file = outFile)
-
-
     job_report=build_job_report(
         job_id=job,
         executor_id=executor_id,

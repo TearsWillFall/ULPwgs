@@ -8,7 +8,7 @@ read_counter(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bin_readcount = build_default_tool_binary_list()$bin_readcount,
   chrs = c(1:22, "X", "Y"),
-  win = 5e+05,
+  win = 500000,
   format = "wig",
   bam = "",
   output_dir = ".",

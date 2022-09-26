@@ -6,7 +6,7 @@
 \usage{
 parallel_sample_fix_cnvkit(
   sif_cnvkit = build_default_sif_list()$sif_cnvkit,
-  pon = build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn,
+  pon = build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn_male,
   targets = "",
   antitargets = "",
   output_name = "",
@@ -24,7 +24,7 @@ parallel_sample_fix_cnvkit(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = ""
+  hold = NULL
 )
 }
 \arguments{

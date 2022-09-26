@@ -11,7 +11,7 @@ bin_targets_cnvkit(
   output_name = "",
   annotation = "",
   output_dir = ".",
-  bin_size_antitarget = 1e+05,
+  bin_size_antitarget = 100000,
   bin_size_target = 100,
   min_bin_size_antitarget = NULL,
   split = FALSE,
@@ -26,7 +26,7 @@ bin_targets_cnvkit(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = ""
+  hold = NULL
 )
 }
 \arguments{

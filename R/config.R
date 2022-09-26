@@ -554,6 +554,11 @@ build_default_tool_binary_list=function(
                 bin_strelka=list(
                     somatic="/lustre/scratch/scratch/regmova/tools/strelka-2.9.10/build/bin/configureStrelkaSomaticWorkflow.py",
                     germline="/lustre/scratch/scratch/regmova/tools/strelka-2.9.10/build/bin/configureStrelkaGermlineWorkflow.py"
+                ),
+                bin_ucsc=list(
+                    bigBedToBed="/lustre/scratch/scratch/regmova/tools/OtherTools/bigBedToBed",
+                    bedToBigBed="/lustre/scratch/scratch/regmova/tools/OtherTools/bedToBigBed",
+                    liftOver="/lustre/scratch/scratch/regmova/tools/OtherTools/liftOver"
                 ),    
                 bin_manta="/lustre/scratch/scratch/regmova/tools/manta-1.6.0/build/bin/configManta.py",
                 bin_ichor_pon="/lustre/scratch/scratch/regmova/tools/ichorCNA/scripts/createPanelOfNormals.R",

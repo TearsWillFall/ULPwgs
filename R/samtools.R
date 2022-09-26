@@ -61,21 +61,23 @@ sort_and_index_bam_samtools=function(
 
       out_file_dir=set_dir(dir=output_dir,name="sorted")
       bam=job_report[["steps"]][["sort"]]$out_files$bam
-      
+      hold=job_report[["steps"]][["sort"]]$job_id
+
       if (coord_sort){
         if(index){
             job_report[["steps"]][["index"]] <-index_bam_samtools(
               bin_samtools=bin_samtools,
               bam=bam,verbose=verbose,threads=threads,ram=ram,
               executor_id=task_id,mode=mode,time=time,batch_config = batch_config,
-              update_time=update_time,wait=FALSE,hold=job_report[["steps"]][["sort"]]$job_id,
+              update_time=update_time,wait=FALSE,hold=hold,
               output_dir = out_file_dir)
 
           if(stats=="index"|stats=="all"){
               job_report[["steps"]][["index_stats"]]<- stats_bam_samtools(
-                bin_samtools=bin_samtools,bam=bam,output_dir=out_file_dir,batch_config = batch_config,
+                bin_samtools=bin_samtools,bam=bam,
+                output_dir=out_file_dir,batch_config = batch_config,
                 verbose=verbose,threads=threads,stats="index",executor_id=task_id,
-                mode=mode,time=time,update_time=update_time,wait=FALSE,hold=job_report[["steps"]][["index"]]$job_id)
+                mode=mode,time=time,update_time=update_time,wait=FALSE,hold=hold)
           }
         }
       }
@@ -270,9 +272,11 @@ index_bam_samtools=function(
 stats_bam_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam="",output_dir=".",verbose=FALSE,
-  batch_config=build_default_preprocess_config(),threads=3,ram=4,stats="all",
+  batch_config=build_default_preprocess_config(),
+  threads=3,ram=4,stats="all",
   mode="local",executor_id=make_unique_id("statsBAM"),
-  task_name="statsBAM",time="48:0:0",update_time=60,wait=FALSE,hold=NULL
+  task_name="statsBAM",time="48:0:0",
+  update_time=60,wait=FALSE,hold=NULL
 ){
 
   argg <- as.list(environment())

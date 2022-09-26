@@ -12,7 +12,7 @@ parallel_sample_ichor_capture(
   includeHOMD = FALSE,
   scStates = c(1, 3),
   txnE = 0.9999999,
-  txnStrength = 1e+07,
+  txnStrength = 10000000,
   output_dir = ".",
   min_cov = -15,
   lambda = NULL,
@@ -36,15 +36,17 @@ parallel_sample_ichor_capture(
   threads = 4,
   ram = 4,
   mode = "local",
-  executor_id = make_unique_id("hybridIchorCNA"),
-  task_name = "hybridIchorCNA",
+  executor_id = make_unique_id("parSamplehybridIchorCNA"),
+  task_name = "parSamplehybridIchorCNA",
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = ""
+  hold = NULL
 )
 }
 \arguments{
+\item{cnrs}{\link{REQUIRED} Path to tumour CNR file.}
+
 \item{normal}{\link{OPTIONAL} Path to normal samples. Default c(0.5,0.6,0.7,0.8,0.9)}
 
 \item{ploidy}{\link{OPTIONAL} Initial tumour ploidy; can be more than one value if additional ploidy initializations are desired. Default: 2}
@@ -102,8 +104,6 @@ parallel_sample_ichor_capture(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
-
-\item{cnr}{\link{REQUIRED} Path to tumour CNR file.}
 
 \item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
 }

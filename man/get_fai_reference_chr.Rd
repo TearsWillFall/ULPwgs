@@ -19,7 +19,7 @@ get_fai_reference_chr(
   ram = 4,
   update_time = 60,
   wait = FALSE,
-  hold = ""
+  hold = NULL
 )
 }
 \arguments{

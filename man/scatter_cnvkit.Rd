@@ -8,6 +8,7 @@ scatter_cnvkit(
   rdata = NULL,
   selected = NULL,
   sif_cnvkit = build_default_sif_list()$sif_cnvkit,
+  chrs = build_default_chr_list()$canonical,
   cnr = "",
   cns = "",
   output_name = "",
@@ -15,7 +16,7 @@ scatter_cnvkit(
   range = "",
   range_list = "",
   genes = "",
-  margin_width = 1e+06,
+  margin_width = 1000000,
   plot_by_bin = FALSE,
   trend = TRUE,
   antitarget_symbol = "@",
@@ -28,12 +29,12 @@ scatter_cnvkit(
   threads = 1,
   ram = 1,
   mode = "local",
-  executor_id = make_unique_id("segmentCNVkit"),
-  task_name = "segmentCNVkit",
+  executor_id = make_unique_id("scatterCNVkit"),
+  task_name = "scatterCNVkit",
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = ""
+  hold = NULL
 )
 }
 \arguments{

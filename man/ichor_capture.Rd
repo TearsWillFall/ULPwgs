@@ -5,14 +5,16 @@
 \title{IchorCNA implementation for Capture Panel Data}
 \usage{
 ichor_capture(
+  rdata = NULL,
+  selected = NULL,
   cnr = "R/TRAILS_TR067_I260038_BULK_CAPTURE_PCF_V2_HG19_LB1_411_HW57JDMXX_1.cnr",
   normal = 0.5,
   ploidy = 2,
   maxCN = 7,
   includeHOMD = FALSE,
-  scStates = c(1, 3),
+  scStates = NULL,
   txnE = 0.9999999,
-  txnStrength = 1e+07,
+  txnStrength = 10000000,
   output_name = "",
   output_dir = ".",
   min_cov = -15,
@@ -29,7 +31,7 @@ ichor_capture(
   altFracThreshold = 0.05,
   estimateNormal = TRUE,
   estimatePloidy = TRUE,
-  estimateScPrevalence = TRUE,
+  estimateScPrevalence = FALSE,
   plotYLim = c(-2, 2),
   plotFileType = "pdf",
   verbose = FALSE,
@@ -42,7 +44,7 @@ ichor_capture(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = ""
+  hold = NULL
 )
 }
 \arguments{

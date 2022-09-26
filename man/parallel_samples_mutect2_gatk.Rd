@@ -34,7 +34,7 @@ parallel_samples_mutect2_gatk(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = ""
+  hold = NULL
 )
 }
 \arguments{

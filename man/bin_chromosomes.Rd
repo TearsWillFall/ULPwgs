@@ -9,7 +9,7 @@ bin_chromosomes(
   bam = "",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
-  bin_size = 4e+07
+  bin_size = 40000000
 )
 }
 \arguments{

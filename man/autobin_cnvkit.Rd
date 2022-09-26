@@ -16,11 +16,11 @@ autobin_cnvkit(
   seq_method = "hybrid",
   split = FALSE,
   short_names = FALSE,
-  bp_per_bin = 1e+05,
+  bp_per_bin = 100000,
   min_bin_size_target = 20,
   max_bin_size_target = 20000,
   min_bin_size_antitarget = 500,
-  max_bin_size_antitarget = 5e+05,
+  max_bin_size_antitarget = 500000,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 1,
@@ -31,7 +31,7 @@ autobin_cnvkit(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = ""
+  hold = NULL
 )
 }
 \arguments{

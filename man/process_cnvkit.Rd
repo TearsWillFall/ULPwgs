@@ -12,7 +12,7 @@ process_cnvkit(
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   access = build_default_reference_list()$HG19$reference$access_5k,
   sif_cnvkit = build_default_sif_list()$sif_cnvkit,
-  pon = build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn,
+  pon = build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn_male,
   tumor = "",
   seg_method = "cbs",
   seq_method = "hybrid",
@@ -29,11 +29,11 @@ process_cnvkit(
   smooth = TRUE,
   low_tc = FALSE,
   drop_low_coverage = TRUE,
-  drop_outliers = TRUE,
+  drop_outliers = 10,
   range_scatter = "",
   range_list_scatter = "",
   genes_scatter = "",
-  margin_width_scatter = 1e+06,
+  margin_width_scatter = 1000000,
   plot_by_bin_scatter = FALSE,
   trend_scatter = FALSE,
   antitarget_symbol_scatter = "@",
@@ -51,7 +51,7 @@ process_cnvkit(
   includeHOMD_ichor = FALSE,
   scStates_ichor = c(1, 3),
   txnE_ichor = 0.9999999,
-  txnStrength_ichor = 1e+07,
+  txnStrength_ichor = 10000000,
   min_cov_ichor = -15,
   lambda_ichor = NULL,
   coverage_ichor = NULL,
@@ -78,7 +78,7 @@ process_cnvkit(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = ""
+  hold = NULL
 )
 }
 \arguments{

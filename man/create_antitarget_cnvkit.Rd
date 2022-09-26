@@ -10,7 +10,7 @@ create_antitarget_cnvkit(
   bed = "",
   output_name = "",
   output_dir = ".",
-  bin_size = 5e+05,
+  bin_size = 500000,
   min_bin_size = NULL,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
@@ -22,7 +22,7 @@ create_antitarget_cnvkit(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = ""
+  hold = NULL
 )
 }
 \arguments{

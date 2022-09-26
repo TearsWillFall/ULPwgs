@@ -1824,7 +1824,6 @@ get_bam_reference_chr=function(
     " | grep @SQ| awk -F  \"\\t|:\" \'{print $3\"\\t\"0\"\\t\"$5}\'",
     ifelse(header," |  awk \'BEGIN{print \"chr\\tstart\\tend\"}1\'","")," >",out_file)
     
-    job=build_job(executor_id = executor_id,task_id=task_id)
     
     if(mode=="batch"){
     
@@ -1869,6 +1868,10 @@ get_bam_reference_chr=function(
 
   return(job_report)
 }
+
+
+
+
 
 
 

@@ -25,7 +25,7 @@ parallel_apply_BQSR_gatk(
   ram = 4,
   update_time = 60,
   wait = FALSE,
-  hold = ""
+  hold = NULL
 )
 }
 \arguments{

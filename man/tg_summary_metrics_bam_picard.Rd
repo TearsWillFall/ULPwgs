@@ -22,7 +22,7 @@ tg_summary_metrics_bam_picard(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = ""
+  hold = NULL
 )
 }
 \arguments{
