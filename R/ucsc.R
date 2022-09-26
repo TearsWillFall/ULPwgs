@@ -56,13 +56,12 @@ bigBedToBed_ucsc=function(
     job=build_job(executor_id=executor_id,task_id=task_id)
 
     
-    out_file=paste0(out_file_dir,output_name,".bed")
+    out_file=paste0(out_file_dir,id,".bed")
     exec_code=paste(bin_ucsc, bigBed," -o ",out_file)
     
     
     
     if(mode=="batch"){
-    
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         batch_code=build_job_exec(job=job,
         time=time,ram=ram,threads=threads,
