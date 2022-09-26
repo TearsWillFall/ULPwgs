@@ -155,7 +155,7 @@ parallel_sample_bigBedToBed_ucsc=function(
                 region_list,FUN=function(bed){
                 job_report <- bigBedToBed_ucsc(
                     bigBed=bed,batch_config=batch_config,
-                    sif_ucsc=sif_ucsc,
+                    bin_ucsc=bin_ucsc,
                     output_name=get_file_name(bed),
                     output_dir=out_file_dir,
                     verbose=verbose,
