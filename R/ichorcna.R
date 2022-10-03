@@ -41,7 +41,7 @@
 ichor_capture=function(
     rdata=NULL,
     selected=NULL,
-    cnr="R/TRAILS_TR067_I260038_BULK_CAPTURE_PCF_V2_HG19_LB1_411_HW57JDMXX_1.cnr",
+    cnr="TRAILS_TR033_K180006_BULK_CAPTURE_PCF_V3_HG19_LB1_650_HCGJ3DMXY_1.cnr",
     normal=0.5,
     ploidy=2,
     maxCN=7,
@@ -57,7 +57,7 @@ ichor_capture=function(
     minSegmentBins=50,
     minTumFracToCorrect=0.01,
     chrs=c(1:22,"X"),
-    chrTrain=seq(1:22),
+    chrTrain=c(1:22),
     gender="male",
     maxFracCNASubclone=0.7,
     maxFracGenomeSubclone=0.5,
@@ -223,7 +223,7 @@ for (n in normal){
             #############################################
             ################ RUN HMM ####################
             #############################################
-        hmmResults.cor <- HMMsegment(x=tumour_copy, validInd=valid, dataType = "log2", 
+        hmmResults.cor <- runHMMsegment(x=tumour_copy, validInd=valid, dataType = "log2", 
                                     param = param, chrTrain = chrTrain, maxiter = 50,
                                     estimateNormal = estimateNormal, estimatePloidy = estimatePloidy,
                                     estimateSubclone = estimateScPrevalence, verbose = TRUE)
@@ -289,9 +289,9 @@ for (n in normal){
     }
     }
     ## get total time for all solutions ##
-    elapsedTimeSolutions <- proc.time() - ptmTotalSolutions
+   elapsedTimeSolutions <- proc.time() - ptmTotalSolutions
     message("Total ULP-WGS HMM Runtime: ", format(elapsedTimeSolutions[3] / 60, digits = 2), " min.")
-
+ 
     ### SAVE R IMAGE ###
     save.image(outImage)
     #save(tumour_copy, results, loglik, file=paste0(outDir,"/",id,".RData"))
@@ -328,7 +328,6 @@ for (n in normal){
                             seqinfo = NULL,
                             turnDevOn = turnDevOn, turnDevOff = turnDevOff, main=mainName[ind[i]])
         
-
         hmmResults.cor <- results[[ind[1]]]
         hmmResults.cor$results$loglik <- as.data.frame(loglik)
         hmmResults.cor$results$gender <- gender

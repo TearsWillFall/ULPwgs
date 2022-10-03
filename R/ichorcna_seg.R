@@ -10,7 +10,7 @@
 # description: Hidden Markov model (HMM) to analyze Ultra-low pass whole genome sequencing (ULP-WGS) data.
 # This script is the main script to run the HMM.
 
-HMMsegment <- function(x,
+runHMMsegment <- function(x,
     validInd = NULL, dataType = "log2", param = NULL, 
     chrTrain = c(1:22), maxiter = 50, estimateNormal = TRUE, estimatePloidy = TRUE, 
     estimatePrecision = TRUE, estimateSubclone = FALSE, estimateTransition = TRUE,
@@ -46,7 +46,7 @@ HMMsegment <- function(x,
 	#	param$n_0 <- .Machine$double.eps
 	#}
 	####### RUN EM ##########
-  convergedParams <- runEM(dataMat, chr, chrInd, param, maxiter, 
+  convergedParams <- runEMs(dataMat, chr, chrInd, param, maxiter, 
       verbose, estimateNormal = estimateNormal, estimatePloidy = estimatePloidy, 
       estimateSubclone = estimateSubclone, estimatePrecision = estimatePrecision, 
       estimateTransition = estimateTransition, estimateInitDist = estimateInitDist)
@@ -62,7 +62,7 @@ HMMsegment <- function(x,
   #   py[ks, ] <- apply(probs, 1, prod) # multiply across samples for each data point to get joint likelihood.
   # }
   # 
-  viterbiResults <- runViterbi(convergedParams, chr,chrInd)
+  viterbiResults <- runViterbis(convergedParams, chr,chrInd)
 
   # setup columns for multiple samples #
   segs <- segmentData(dataGR=x, validInd=validInd, 
@@ -283,7 +283,7 @@ segmentData <- function(dataGR, validInd, states, convergedParams, dataType="log
 }
     
 
-runViterbi <- function(convergedParams, chr,chrTrain){
+runViterbis <- function(convergedParams, chr,chrTrain){
   message("runViterbi: Segmenting and classifying")
   chrs <- levels(chr)
   chrsI <- vector('list', length(chrs))
@@ -361,7 +361,7 @@ normalize <- function(A) {
 # description: Hidden Markov model (HMM) to analyze Ultra-low pass whole genome sequencing (ULP-WGS) data.
 # This script is the main script to run the HMM.
 
-runEM <- function(copy, chr, chrTrain, param, maxiter, verbose = TRUE, 
+runEMs <- function(copy, chr, chrTrain, param, maxiter, verbose = TRUE, 
 									estimateNormal = TRUE, estimatePloidy = TRUE, estimatePrecision = TRUE,
                   estimateTransition = TRUE, estimateInitDist = TRUE, estimateSubclone = TRUE,
                   likChangeConvergence = 1e-3) {

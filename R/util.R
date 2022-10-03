@@ -1872,10 +1872,6 @@ get_bam_reference_chr=function(
 
 
 
-
-
-
-
 #' Function to collect chromosome data in fasta fai
 #'
 #' This function takes a FAI file and collects the chr names from the fai
