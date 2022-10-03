@@ -356,8 +356,7 @@ for (n in normal){
         out_file_dir=out_file_dir,
         out_files=list(
             param=outFile,
-            plot_solutions=outPlotFile,
-
+            plot_solutions=outPlotFile
         )
     )
 

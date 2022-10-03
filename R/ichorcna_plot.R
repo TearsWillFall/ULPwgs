@@ -77,7 +77,7 @@ plotSolutions <- function(hmmResults.cor, tumour_copy, logR.column = "logR", cal
     ### PLOT TPDF ##
     outPlotFile <- paste0(outDir,"/",id,"_tpdf.pdf")
     pdf(outPlotFile)
-    try(plotParam(mus = unique(hmmResults.cor$results$mus[, s, iter]), 
+    try(plotParams(mus = unique(hmmResults.cor$results$mus[, s, iter]), 
               lambdas = hmmResults.cor$results$lambdas[, s, iter], 
               subclone = hmmResults.cor$results$param$ct.sc.status,
               nu = hmmResults.cor$results$param$nu, copy.states = 1:maxCN),silent=TRUE)
@@ -405,7 +405,7 @@ getGenomeWidePositions <- function(chrs, posns, seqinfo = NULL) {
 # }
 
 ####  TODO: SUBCLONAL STATES #####
-plotParam <- function(mus, lambdas, nu, subclone = NULL, copy.states = 0:6, ...) {
+plotParams<- function(mus, lambdas, nu, subclone = NULL, copy.states = 0:6, ...) {
   #cols <- stateCols()
   cols <- c("#00FF00","#006400","#0000FF","#8B0000",rep("#FF0000", 10))
   cols <- cols[copy.states + 1]
