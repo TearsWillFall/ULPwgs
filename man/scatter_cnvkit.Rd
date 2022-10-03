@@ -16,7 +16,7 @@ scatter_cnvkit(
   range = "",
   range_list = "",
   genes = "",
-  margin_width = 1000000,
+  margin_width = 1e+06,
   plot_by_bin = FALSE,
   trend = TRUE,
   antitarget_symbol = "@",
