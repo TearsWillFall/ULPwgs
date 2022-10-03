@@ -283,7 +283,7 @@ segmentData <- function(dataGR, validInd, states, convergedParams, dataType="log
 }
     
 
-runViterbis <- function(convergedParams, chr,chrTrain){
+runViterbis <- function(convergedParams, chr){
   message("runViterbi: Segmenting and classifying")
   chrs <- levels(chr)
   chrsI <- vector('list', length(chrs))
@@ -301,15 +301,14 @@ runViterbis <- function(convergedParams, chr,chrTrain){
 
 
   for(c in 1:length(chrsI)) {
-    I <- intersect(chrsI[[c]], chrTrain)
-    if (length(I) > 0){   
-        output <- .Call("viterbi", log(piG), log(A), log(py[, I]), PACKAGE = "HMMcopy")
-        Z[I] <- output$path
-        segs[[c]] <- output$seg
-   }
+    I <- chrsI[[c]]
+    output <- .Call("viterbi", log(piG), log(A), log(py[, I]), PACKAGE = "HMMcopy")
+    Z[I] <- output$path
+    segs[[c]] <- output$seg
   }
   return(list(segs=segs, states=Z))
 }
+
 
 # Normalize a given array to sum to 1
 normalize <- function(A) {

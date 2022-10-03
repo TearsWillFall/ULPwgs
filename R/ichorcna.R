@@ -341,7 +341,7 @@ for (n in normal){
         outFile <- paste0(out_file_dir, "/",id, ".params.txt")
         outputParametersToFile(hmmResults=hmmResults.cor, file = outFile)
 
-        plotSolutions(hmmResults.cor, tumour_copy, chrs, outDir, numSamples=numSamples,
+        plotSolutions(hmmResults.cor, tumour_copy, chrs, outDir=out_file_dir, numSamples=numSamples,
               logR.column = "logR", call.column = "Corrected_Call",
               plotFileType=plotFileType, plotYLim=plotYLim, seqinfo = NULL,
               estimateScPrevalence=estimateScPrevalence, maxCN=maxCN)

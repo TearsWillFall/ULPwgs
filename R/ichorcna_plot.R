@@ -24,7 +24,7 @@ plotSolutions <- function(hmmResults.cor, tumour_copy, logR.column = "logR", cal
     purityEst <- 1 - normEst
     ploidyAll <- (1 - normEst) * ploidyEst + normEst * 2
 
-    outPlotFile <- paste0(outDir, "/", id, "/", id, "_genomeWide")
+    outPlotFile <- paste0(outDir, "/", id, "_genomeWide")
     plotGWSolution(hmmResults.cor, s, outPlotFile, seqinfo, 
     			   logR.column = logR.column, call.column = call.column, 
     			   plotFileType=plotFileType, plotYLim=plotYLim,
@@ -33,7 +33,7 @@ plotSolutions <- function(hmmResults.cor, tumour_copy, logR.column = "logR", cal
     ### PLOT THE LOG RATIO DATA ALONG WITH COLOUR-CODING FOR PREDICTED CALLS ###
     for (i in chrs){
       ## PLOT CNA BY CHROMOSOME ##
-      outPlot <- paste0(outDir,"/",id,"/",id,"_CNA_chr",i)
+      outPlot <- paste0(outDir,"/",id,"_CNA_chr",i)
       if (plotFileType == "png"){ 
         outPlot <- paste0(outPlot, ".png")
         png(outPlot,width=15,height=5,units="in",res=300)
@@ -50,7 +50,7 @@ plotSolutions <- function(hmmResults.cor, tumour_copy, logR.column = "logR", cal
     }
 
     ### PLOT THE CORRECTION COMPARISONS ###
-    outPlotFile <- paste0(outDir,"/",id,"/",id,"_correct")
+    outPlotFile <- paste0(outDir,"/",id,"_correct")
     if (plotFileType == "png"){ 
       outPlotFile <- paste0(outPlotFile, ".png")
       png(outPlotFile,width=10,height=12,units="in",res=300)
@@ -62,7 +62,7 @@ plotSolutions <- function(hmmResults.cor, tumour_copy, logR.column = "logR", cal
     dev.off()
 
     ### PLOT THE BIAS ###
-    outPlotFile <- paste0(outDir,"/",id,"/",id,"_bias")
+    outPlotFile <- paste0(outDir,"/",id,"_bias")
     if (plotFileType == "png"){ 
       outPlotFile <- paste0(outPlotFile, ".png")
       png(outPlotFile,width=7,height=7,units="in",res=300)
@@ -74,7 +74,7 @@ plotSolutions <- function(hmmResults.cor, tumour_copy, logR.column = "logR", cal
     dev.off()
 
     ### PLOT TPDF ##
-    outPlotFile <- paste0(outDir,"/",id,"/",id,"_tpdf.pdf")
+    outPlotFile <- paste0(outDir,"/",id,"_tpdf.pdf")
     pdf(outPlotFile)
     plotParam(mus = unique(hmmResults.cor$results$mus[, s, iter]), 
               lambdas = hmmResults.cor$results$lambdas[, s, iter], 
