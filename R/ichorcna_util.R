@@ -451,6 +451,12 @@ computeBIC <- function(params){
 ##################################################
 ###### FUNCTION TO GET OUTPUT HMM RESULTS ########
 ##################################################
+
+
+
+
+
+
 outputHMM <- function(cna, segs, results, patientID = NULL, outDir = "."){
   names <- c("HOMD","HETD","NEUT","GAIN","AMP","HLAMP",paste0(rep("HLAMP", 8), 2:25))
 
@@ -523,8 +529,8 @@ outputParametersToFile <- function(hmmResults, file){
     ploidy <- (1 - x$n[i]) * x$phi[i] + x$n[i] * 2
     write.table(paste0("Ploidy:\t", signif(x$phi[s, i], digits = 4)), file = fc, col.names = FALSE, 
                 row.names = FALSE, quote = FALSE, sep = "\t")
-   	subcloneGenomeFrac <- sum(hmmResults.cor$cna[[s]]$subclone.status) / nrow(hmmResults.cor$cna[[s]])
-   	subcloneCNAFrac <- sum(hmmResults.cor$cna[[s]]$subclone.status) / sum(hmmResults.cor$cna[[s]]$copy.num != 2)
+   	subcloneGenomeFrac <- sum(hmmResults$cna[[s]]$subclone.status) / nrow(hmmResults$cna[[s]])
+   	subcloneCNAFrac <- sum(hmmResults$cna[[s]]$subclone.status) / sum(hmmResults$cna[[s]]$copy.num != 2)
    	scFrac <- 1 - x$sp[s, i]
    	if (subcloneGenomeFrac == 0){
    		scFrac <- NA
@@ -556,7 +562,7 @@ outputParametersToFile <- function(hmmResults, file){
     write.table(paste0("Student's t mean: ", paste0(signif(x$mus[,s,i], digits = 2), collapse = ", ")), 
                 file = fc, col.names = FALSE, row.names = FALSE, quote = FALSE, sep = "\t")
     write.table(paste0("Student's t precision: ", paste0(signif(x$lambdas[,s,i], digits = 2), collapse = ", ")), file = fc, col.names = FALSE, row.names = FALSE, quote = FALSE, sep = "\t")
-    write.table(paste0("Gamma Rate Init:\t", signif(hmmResults.cor$results$param$betaLambda[1], digits=2)), file=fc, col.names=FALSE, row.names=FALSE, quote=FALSE, sep="\t")
+    write.table(paste0("Gamma Rate Init:\t", signif(hmmResults$results$param$betaLambda[1], digits=2)), file=fc, col.names=FALSE, row.names=FALSE, quote=FALSE, sep="\t")
     write.table(paste0("GC-Map correction MAD:\t", format(mad(diff(2^as.numeric(hmmResults$cna[[s]][,"logR"])), na.rm=T), digits=4)), file = fc, col.names = FALSE, row.names = FALSE, quote = FALSE, sep = "\t")
     write.table("\n", file = fc, col.names = FALSE, row.names = FALSE, quote = FALSE, sep = "\t")
   }

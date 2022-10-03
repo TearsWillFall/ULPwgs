@@ -328,6 +328,9 @@ for (n in normal){
                             seqinfo = NULL,
                             turnDevOn = turnDevOn, turnDevOff = turnDevOff, main=mainName[ind[i]])
         
+        }
+
+
         hmmResults.cor <- results[[ind[1]]]
         hmmResults.cor$results$loglik <- as.data.frame(loglik)
         hmmResults.cor$results$gender <- gender
@@ -338,11 +341,16 @@ for (n in normal){
         outFile <- paste0(out_file_dir, "/",id, ".params.txt")
         outputParametersToFile(hmmResults=hmmResults.cor, file = outFile)
 
-    }
+        plotSolutions(hmmResults.cor, tumour_copy, chrs, outDir, numSamples=numSamples,
+              logR.column = "logR", call.column = "Corrected_Call",
+              plotFileType=plotFileType, plotYLim=plotYLim, seqinfo = NULL,
+              estimateScPrevalence=estimateScPrevalence, maxCN=maxCN)
+
+
     job_report=build_job_report(
         job_id=job,
         executor_id=executor_id,
-        exec_code=exec_code,
+        exec_code=list(),
         task_id=task_id,
         input_args = argg,
         out_file_dir=out_file_dir,
