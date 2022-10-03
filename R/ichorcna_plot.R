@@ -58,7 +58,8 @@ plotSolutions <- function(hmmResults.cor, tumour_copy, logR.column = "logR", cal
       outPlotFile <- paste0(outPlotFile, ".pdf")
       pdf(outPlotFile,width=10,height=12)
     }
-    plotCorrectionGenomeWide(tumour_copy[[s]], seqinfo = seqinfo, pch = ".")
+    try(plotCorrectionGenomeWide(tumour_copy[[s]], seqinfo = seqinfo, pch = "."),silent=TRUE)
+ 
     dev.off()
 
     ### PLOT THE BIAS ###
@@ -76,10 +77,10 @@ plotSolutions <- function(hmmResults.cor, tumour_copy, logR.column = "logR", cal
     ### PLOT TPDF ##
     outPlotFile <- paste0(outDir,"/",id,"_tpdf.pdf")
     pdf(outPlotFile)
-    plotParam(mus = unique(hmmResults.cor$results$mus[, s, iter]), 
+    try(plotParam(mus = unique(hmmResults.cor$results$mus[, s, iter]), 
               lambdas = hmmResults.cor$results$lambdas[, s, iter], 
               subclone = hmmResults.cor$results$param$ct.sc.status,
-              nu = hmmResults.cor$results$param$nu, copy.states = 1:maxCN)
+              nu = hmmResults.cor$results$param$nu, copy.states = 1:maxCN),silent=TRUE)
     dev.off()
 
   }

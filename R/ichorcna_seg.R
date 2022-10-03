@@ -62,7 +62,7 @@ runHMMsegment <- function(x,
   #   py[ks, ] <- apply(probs, 1, prod) # multiply across samples for each data point to get joint likelihood.
   # }
   # 
-  viterbiResults <- runViterbis(convergedParams, chr,chrInd)
+  viterbiResults <- runViterbis(convergedParams, chr)
 
   # setup columns for multiple samples #
   segs <- segmentData(dataGR=x, validInd=validInd, 

@@ -42,8 +42,11 @@ update_time=60,wait=FALSE,hold=NULL){
   out_file_dir=set_dir(dir=output_dir,name="ciri_reports")
 
 
-  exec_code=paste("java -jar ",bin_ciri,"Pipeline -1",file_R1, " -2",file_R2, " -d ",
-  paste0(out_file_dir,"/",output_name),"-t ",threads,"-a ",db_annot,"-r",ref_genome,"-o",output_name)
+  exec_code=paste("java -jar ",bin_ciri,
+  "Pipeline -1",file_R1, " -2",file_R2, " -d ",
+  paste0(out_file_dir,"/",output_name),
+  "-t ",threads,"-a ",db_annot,
+  "-r",ref_genome,"-o",output_name)
 
 
   job=build_job(executor_id=executor_id,task_id=task_id)
