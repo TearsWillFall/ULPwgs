@@ -700,6 +700,7 @@ parallel_region_filter_bam_by_size_samtools=function(
   header=FALSE,
   verbose=FALSE,
   output_dir=".",
+  include=TRUE,
   index=TRUE,
   clean=TRUE,
   batch_config=build_default_preprocess_config(),
@@ -770,7 +771,8 @@ parallel_region_filter_bam_by_size_samtools=function(
           bam=bam,
           region=region,
           min_frag_size=min_frag_size,
-          max_frag_size=max_frag_size, 
+          max_frag_size=max_frag_size,
+          include=include, 
           verbose=verbose,
           output_dir=out_file_dir_tmp,
           batch_config=batch_config,
@@ -788,6 +790,7 @@ parallel_region_filter_bam_by_size_samtools=function(
             max_frag_size,
             output_dir,
             verbose,
+            exclude,
             file = rdata_file)
           exec_code=paste0("Rscript -e \"ULPwgs::filter_bam_by_size_samtools(rdata=\\\"",
           rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
