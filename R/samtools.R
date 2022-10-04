@@ -968,7 +968,7 @@ get_insert_size_samtools=function(
     mot = substr($10, 1, 4);
     fl_count[NR] = ($9^2)^(1/2);
     fl_dist[$9\":\"] = fl_dist[$9\":\"]+1;
-    motif_dist[mot\":\"] = motif_dist[mot\":\"]+1;
+    motif_dist[mot\":\"] = motif_dist[mot]+1;
     }END{
         fl_str_dist=\"\";
         fl_median = 0;
@@ -977,7 +977,7 @@ get_insert_size_samtools=function(
         fl_mode= 0;
         fl_max= 0;
         for( fl in fl_dist ) {
-            fl_str_dist = fl_str_dist\"|\"fl fl_dist[fl];
+            fl_str_dist = fl_str_dist\"|\"fl\":\"fl_dist[fl];
             if(motif_max<=motif_dist[motif]){
               fl_max=motif_dist[motif];
               fl_mode=motif;

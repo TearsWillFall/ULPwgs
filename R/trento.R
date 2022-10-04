@@ -273,7 +273,7 @@ clonet_trento=function(
     
     
     
-    file_info=data.frame(Patient=patient_id,Tumour=tumour,Normal=normal)
+    file_info=data.frame(Patient=patient_id,Tumour=normalizePath(tumour),Normal=normalizePath(normal))
 
     sample_sheet=paste0(getwd(),"/",out_file_dir_tmp,"/",patient_id,"_",get_file_name(tumour),"_tmp.txt")
     write.table(file_info,file=sample_sheet,quote=FALSE,row.names=FALSE,col.names=TRUE,sep="\t")
