@@ -583,7 +583,9 @@ filter_bam_by_size_samtools=function(
   region=NULL,
   output_name="",
   min_frag_size=0,
-  max_frag_size=180, 
+  max_frag_size=180,
+  output_dir=".",
+  include=TRUE, 
   verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=1,ram=4,mode="local",
@@ -613,10 +615,17 @@ filter_bam_by_size_samtools=function(
   }
 
 
-
-  exec_code=paste(bin_path,"view -h ",bam,," | \ awk 'substr($0,1,1)==\"@\""," || ($9>=",
+  if(include){
+    exec_code=paste(bin_path,"view -h ",bam,," | \ awk 'substr($0,1,1)==\"@\""," || ($9>=",
     min_frag_size,"&& $9<=",max_frag_size,") ||", "($9<=-",min_frag_size,"&& $9>=-",max_frag_size,
     ")'|",bin_path, "view -b >",out_file)
+  }else{
+    exec_code=paste(bin_path,"view -h ",bam,," | \ awk 'substr($0,1,1)==\"@\""," || ($9=<",
+    min_frag_size,"&& $9>=",max_frag_size,") ||", "($9>=-",min_frag_size,"&& $9<=-",max_frag_size,
+    ")'|",bin_path, "view -b >",out_file)
+
+  }
+
 
 
 
@@ -690,6 +699,7 @@ parallel_region_filter_bam_by_size_samtools=function(
   sep="\t",
   header=FALSE,
   verbose=FALSE,
+  output_dir=".",
   index=TRUE,
   clean=TRUE,
   batch_config=build_default_preprocess_config(),
