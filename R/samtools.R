@@ -966,7 +966,7 @@ get_insert_size_samtools=function(
   exec_code=paste(bin_samtools,"view -h ",fg,bam,position,
    " | awk '{
     mot = substr($10, 1, 4);
-    fl_count[NR] = ($9^2)^0.5;
+    fl_count[NR] = ($9^2)^(1/2);
     fl_dist[$9\":\"] = fl_dist[$9\":\"]+1;
     motif_dist[mot\":\"] = motif_dist[mot\":\"]+1;
     }END{
