@@ -851,7 +851,7 @@ parallel_apply_BQSR_gatk=function(
 #' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 
-gather_bam_files=function(
+gather_bam_files_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bam="",output_name="File",output_dir=".",
   verbose=FALSE,batch_config=build_default_preprocess_config(),
@@ -875,8 +875,7 @@ gather_bam_files=function(
     paste0(" I=",bam,collapse=" ")," O=",out_file)
 
   if(clean){
-    exec_code=paste(exec_code," && rm",paste(bam,collapse=" "),
-    " && rm ",paste0(gsub(".bam",".bai",bam),collapse=" "))
+    exec_code=paste(exec_code," && rm",paste(paste0(bam,"*"),collapse=" "))
   }
 
  

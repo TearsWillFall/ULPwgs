@@ -850,7 +850,7 @@ parallel_region_filter_bam_by_size_samtools=function(
       bam=unlist_lvl(jobs_report[["steps"]][["par_region_fragment_length"]],var="frag_bam"),
       output_dir=out_file_dir,
       output_name=paste0(id,".",ifelse(include,"include_","exclude_"),
-      min_frag_size,"_",max_frag_size,".bam"),
+      min_frag_size,"_",max_frag_size),
       executor_id=task_id,mode=mode,time=time,threads=threads,ram=ram,
       update_time=update_time,wait=FALSE,
       clean=clean,
