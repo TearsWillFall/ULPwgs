@@ -760,7 +760,7 @@ parallel_region_filter_bam_by_size_samtools=function(
   regions$pos=1:nrow(regions)
   regions=regions %>% dplyr::mutate(region=paste0(pos,"__",chr,":",start,"-",end))
     
-  region_list=regions
+  region_list=region_list$region
   names(region_list)=region_list$region
   if(mode=="local"){
         jobs_report[["steps"]][["par_sample_fragment_length"]]<-
