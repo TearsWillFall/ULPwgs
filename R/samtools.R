@@ -618,9 +618,11 @@ filter_bam_by_size_samtools=function(
   position=""
   if(!is.null(region)){
     position=strsplit(region,split="__")[[1]][2]
-    out_file=paste0(out_file_dir,"/",id,".",min_frag_size,"_",max_frag_size,".",region,ifelse(include,"include","exclude"),".bam")
+    out_file=paste0(out_file_dir,"/",id,".",ifelse(include,"include_","exclude_"),".",
+    min_frag_size,"_",max_frag_size,".",region,".bam")
   }else{
-    out_file=paste0(out_file_dir,"/",id,".",min_frag_size,"_",max_frag_size,".",ifelse(include,"include","exclude"),".bam")
+    out_file=paste0(out_file_dir,"/",id,".",ifelse(include,"include_","exclude_"),
+    ".",min_frag_size,"_",max_frag_size,".bam")
   }
 
 
@@ -837,7 +839,8 @@ parallel_region_filter_bam_by_size_samtools=function(
               out_file_dir=out_file_dir,
               out_files=list(
                   frag_bam=paste0(out_file_dir,"/",get_file_name(bam),".",
-                  min_frag_size,"_",max_frag_size,".",names(region_list),ifelse(include,"include","exclude"),".bam")
+                  min_frag_size,"_",max_frag_size,".",names(region_list),".",
+                  ifelse(include,"include","exclude"),".bam")
               )
         )
     }
