@@ -618,11 +618,11 @@ filter_bam_by_size_samtools=function(
   position=""
   if(!is.null(region)){
     position=strsplit(region,split="__")[[1]][2]
-    out_file=paste0(out_file_dir,"/",id,".",ifelse(include,"include_","exclude_"),".",
+    out_file=paste0(out_file_dir,"/",id,".",ifelse(include,"include_","exclude_"),
     min_frag_size,"_",max_frag_size,".",region,".bam")
   }else{
     out_file=paste0(out_file_dir,"/",id,".",ifelse(include,"include_","exclude_"),
-    ".",min_frag_size,"_",max_frag_size,".bam")
+    min_frag_size,"_",max_frag_size,".bam")
   }
 
 
@@ -781,7 +781,7 @@ parallel_region_filter_bam_by_size_samtools=function(
   names(region_list)=regions$region
 
   if(mode=="local"){
-        jobs_report[["steps"]][["par_sample_fragment_length"]]<-
+        jobs_report[["steps"]][["par_region_fragment_length"]]<-
         parallel::mclapply(region_list,FUN=function(region){
         job_report <- filter_bam_by_size_samtools(
           bin_samtools=bin_samtools,
@@ -849,11 +849,13 @@ parallel_region_filter_bam_by_size_samtools=function(
       bin_picard=bin_picard,
       bam=unlist_lvl(jobs_report[["steps"]][["par_region_fragment_length"]],var="frag_bam"),
       output_dir=out_file_dir,
-      output_name=paste0(get_file_name(bam),".",ifelse(include,"include_","exclude_"),min_frag_size,"_",max_frag_size,".bam"),
+      output_name=paste0(id,".",ifelse(include,"include_","exclude_"),
+      min_frag_size,"_",max_frag_size,".bam"),
       executor_id=task_id,mode=mode,time=time,threads=threads,ram=ram,
       update_time=update_time,wait=FALSE,
       clean=clean,
-      hold=unlist_lvl(jobs_report[["steps"]][["par_region_fragment_length"]],var="job_id",recursive=TRUE)
+      hold=unlist_lvl(jobs_report[["steps"]][["par_region_fragment_length"]],
+      var="job_id",recursive=TRUE)
     )
 
     if(index){
