@@ -625,13 +625,13 @@ filter_bam_by_size_samtools=function(
 
 
   if(include){
-    exec_code=paste(bin_path,"view -h ",bam,position," | \ awk 'substr($0,1,1)==\"@\""," || ($9>=",
+    exec_code=paste(bin_samtools,"view -h ",bam,position," | \ awk 'substr($0,1,1)==\"@\""," || ($9>=",
     min_frag_size,"&& $9<=",max_frag_size,") ||", "($9<=-",min_frag_size,"&& $9>=-",max_frag_size,
-    ")'|",bin_path, "view -b >",out_file)
+    ")'|",bin_samtools, "view -b >",out_file)
   }else{
-    exec_code=paste(bin_path,"view -h ",bam,position," | \ awk 'substr($0,1,1)==\"@\""," || ($9=<",
+    exec_code=paste(bin_samtools,"view -h ",bam,position," | \ awk 'substr($0,1,1)==\"@\""," || ($9=<",
     min_frag_size,"&& $9>=",max_frag_size,") ||", "($9>=-",min_frag_size,"&& $9<=-",max_frag_size,
-    ")'|",bin_path, "view -b >",out_file)
+    ")'|",bin_samtools, "view -b >",out_file)
 
   }
 
