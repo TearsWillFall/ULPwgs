@@ -690,6 +690,8 @@ parallel_region_filter_bam_by_size_samtools=function(
   sep="\t",
   header=FALSE,
   verbose=FALSE,
+  index=TRUE,
+  clean=TRUE,
   batch_config=build_default_preprocess_config(),
   threads=3,ram=4,mode="local",
   executor_id=make_unique_id("parRegionfilterBAMbyInsertSize"),
@@ -818,21 +820,17 @@ parallel_region_filter_bam_by_size_samtools=function(
 
     if(index){
         job_report[["steps"]][["sort_and_index"]] <- sort_and_index_bam_samtools(
-      bin_samtools=bin_samtools,
-      bam=job_report[["steps"]][["steps"]][["gather_bam"]]$out_files$bam,
-      output_dir=out_file_dir_main,batch_config=batch_config,
-      ram=ram,verbose=verbose,threads=threads,sort=TRUE,
-      stats="",index=TRUE,clean=clean,
-      mode=mode,executor_id=task_id,time=time,
-      update_time=update_time,wait=FALSE,
-      hold=unlist_lvl(job_report[["steps"]][["gather_bam"]],var="job_id")
+        bin_samtools=bin_samtools,
+        bam=job_report[["steps"]][["gather_bam"]]$out_files$bam,
+        output_dir=out_file_dir,batch_config=batch_config,
+        ram=ram,verbose=verbose,threads=threads,sort=FALSE,
+        stats="",index=TRUE,clean=clean,
+        mode=mode,executor_id=task_id,time=time,
+        update_time=update_time,wait=FALSE,
+        hold=unlist_lvl(job_report[["steps"]][["gather_bam"]],var="job_id")
       )
   
     }
-    
-  
- 
-
     
     return(jobs_report)
 
