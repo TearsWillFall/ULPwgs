@@ -583,6 +583,7 @@ filter_bam_by_size_samtools=function(
   region=NULL,
   min_frag_size=0,
   max_frag_size=167,
+  flags=c(99, 147, 83, 163),
   output_name="",
   output_dir=".",
   include=TRUE, 
@@ -615,6 +616,12 @@ filter_bam_by_size_samtools=function(
   out_file_dir=set_dir(dir=output_dir)
   job=build_job(executor_id=executor_id,task_id=task_id)
 
+  fg=""
+  if(!is.null(flags)){
+    fg=paste0(flags,collapse=",")
+  }
+  
+
   position=""
   if(!is.null(region)){
     position=strsplit(region,split="__")[[1]][2]
@@ -627,11 +634,11 @@ filter_bam_by_size_samtools=function(
 
 
   if(include){
-    exec_code=paste(bin_samtools,"view -h ",bam,position," | \ awk 'substr($0,1,1)==\"@\""," || ($9>=",
+    exec_code=paste(bin_samtools,"view -h ",fg,bam,position," | \ awk 'substr($0,1,1)==\"@\""," || ($9>=",
     min_frag_size,"&& $9<=",max_frag_size,") ||", "($9<=-",min_frag_size,"&& $9>=-",max_frag_size,
     ")'|",bin_samtools, "view -b >",out_file)
   }else{
-    exec_code=paste(bin_samtools,"view -h ",bam,position," | \ awk 'substr($0,1,1)==\"@\""," || ($9=<",
+    exec_code=paste(bin_samtools,"view -h ",fg,bam,position," | \ awk 'substr($0,1,1)==\"@\""," || ($9=<",
     min_frag_size,"&& $9>=",max_frag_size,") ||", "($9>=-",min_frag_size,"&& $9<=-",max_frag_size,
     ")'|",bin_samtools, "view -b >",out_file)
 
@@ -684,6 +691,7 @@ filter_bam_by_size_samtools=function(
 #' @param region Genomic region to search
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
+#' @param flags Read flags to filter by. Default c(99, 147, 83, 163)
 #' @param threads Number of threads. Default 3
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
 #' @param executor_id Job EXECUTOR ID. Default "mardupsGATK"
@@ -703,6 +711,7 @@ parallel_region_filter_bam_by_size_samtools=function(
   bam="",bed=NULL,
   min_frag_size=1,
   max_frag_size=167,
+  flags=c(99, 147, 83, 163),
   sep="\t",
   header=FALSE,
   verbose=FALSE,
@@ -791,6 +800,7 @@ parallel_region_filter_bam_by_size_samtools=function(
           max_frag_size=max_frag_size,
           include=include, 
           verbose=verbose,
+          flags=flags,
           output_name=id,
           output_dir=out_file_dir_tmp,
           batch_config=batch_config,
@@ -810,6 +820,7 @@ parallel_region_filter_bam_by_size_samtools=function(
             max_frag_size,
             output_dir,
             verbose,
+            flags,
             include,
             file = rdata_file)
           exec_code=paste0("Rscript -e \"ULPwgs::filter_bam_by_size_samtools(rdata=\\\"",
