@@ -825,25 +825,25 @@ parallel_region_filter_bam_by_size_samtools=function(
 
     jobs_report[["steps"]][["gather_bam"]]<-gather_bam_files(
       bin_picard=bin_picard,
-      bam=unlist_lvl(job_report[["steps"]][["par_region_fragment_length"]],var="frag_bam"),
+      bam=unlist_lvl(jobs_report[["steps"]][["par_region_fragment_length"]],var="frag_bam"),
       output_dir=out_file_dir,
       output_name=paste0(get_file_name(bam),".",min_frag_size,"_",max_frag_size,".bam"),
       executor_id=task_id,mode=mode,time=time,threads=threads,ram=ram,
       update_time=update_time,wait=FALSE,
       clean=clean,
-      hold=unlist_lvl(job_report[["steps"]][["par_region_fragment_length"]],var="job_id",recursive=TRUE)
+      hold=unlist_lvl(jobs_report[["steps"]][["par_region_fragment_length"]],var="job_id",recursive=TRUE)
     )
 
     if(index){
         jobs_report[["steps"]][["sort_and_index"]] <- sort_and_index_bam_samtools(
         bin_samtools=bin_samtools,
-        bam=job_report[["steps"]][["gather_bam"]]$out_files$bam,
+        bam=jobs_report[["steps"]][["gather_bam"]]$out_files$bam,
         output_dir=out_file_dir,batch_config=batch_config,
         ram=ram,verbose=verbose,threads=threads,sort=FALSE,
         stats="",index=TRUE,clean=clean,
         mode=mode,executor_id=task_id,time=time,
         update_time=update_time,wait=FALSE,
-        hold=unlist_lvl(job_report[["steps"]][["gather_bam"]],var="job_id")
+        hold=unlist_lvl(jobs_report[["steps"]][["gather_bam"]],var="job_id")
       )
   
     }
