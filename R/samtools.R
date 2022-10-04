@@ -715,6 +715,7 @@ parallel_region_filter_bam_by_size_samtools=function(
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
+  out_file_dir_tmp=set_dir(dir=out_file_dir,name="tmp")
   job=build_job(executor_id=executor_id,task_id=task_id)
 
   job_report=build_job_report(
@@ -730,7 +731,7 @@ parallel_region_filter_bam_by_size_samtools=function(
 
   job_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
     bin_samtools=bin_samtools,
-    bam=bam,verbose=verbose,output_dir=tmp_dir,
+    bam=bam,verbose=verbose,output_dir=out_file_dir_tmp,
     executor_id=task_id,mode="local",threads=threads,ram=ram,
     time=time,update_time=update_time,wait=FALSE,hold=hold)
 
@@ -771,6 +772,7 @@ parallel_region_filter_bam_by_size_samtools=function(
           min_frag_size=min_frag_size,
           max_frag_size=max_frag_size, 
           verbose=verbose,
+          out_file_dir=out_file_dir_tmp,
           batch_config=batch_config,
           threads=1,ram=ram,mode="local",
           executor_id=task_id,
@@ -780,10 +782,11 @@ parallel_region_filter_bam_by_size_samtools=function(
     
   }else if(mode=="batch"){
           rdata_file=paste0(out_file_dir,"/",job,".regions.RData")
-          output_dir=out_file_dir
+          output_dir=out_file_dir_tmp
           save(region_list,bam,
             min_frag_size,
             max_frag_size,
+            output_dir,
             verbose,
             file = rdata_file)
           exec_code=paste0("Rscript -e \"ULPwgs::filter_bam_by_size_samtools(rdata=\\\"",
