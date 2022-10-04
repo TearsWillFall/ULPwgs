@@ -581,7 +581,6 @@ filter_bam_by_size_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam="",
   region=NULL,
-  output_name="",
   min_frag_size=0,
   max_frag_size=180,
   output_name="",
