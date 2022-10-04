@@ -719,7 +719,7 @@ parallel_region_filter_bam_by_size_samtools=function(
   out_file_dir_tmp=set_dir(dir=out_file_dir,name="tmp")
   job=build_job(executor_id=executor_id,task_id=task_id)
 
-  job_report=build_job_report(
+  jobs_report=build_job_report(
     job_id=job,
     executor_id=list(),
     exec_code=list(), 
@@ -730,7 +730,7 @@ parallel_region_filter_bam_by_size_samtools=function(
       )
     )
 
-  job_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
+  jobs_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
     bin_samtools=bin_samtools,
     bam=bam,verbose=verbose,output_dir=out_file_dir_tmp,
     executor_id=task_id,mode="local",threads=threads,ram=ram,
@@ -823,7 +823,7 @@ parallel_region_filter_bam_by_size_samtools=function(
         )
     }
 
-    job_report[["steps"]][["gather_bam"]]<-gather_bam_files(
+    jobs_report[["steps"]][["gather_bam"]]<-gather_bam_files(
       bin_picard=bin_picard,
       bam=unlist_lvl(job_report[["steps"]][["par_region_fragment_length"]],var="frag_bam"),
       output_dir=out_file_dir,
@@ -835,7 +835,7 @@ parallel_region_filter_bam_by_size_samtools=function(
     )
 
     if(index){
-        job_report[["steps"]][["sort_and_index"]] <- sort_and_index_bam_samtools(
+        jobs_report[["steps"]][["sort_and_index"]] <- sort_and_index_bam_samtools(
         bin_samtools=bin_samtools,
         bam=job_report[["steps"]][["gather_bam"]]$out_files$bam,
         output_dir=out_file_dir,batch_config=batch_config,
