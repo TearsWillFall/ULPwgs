@@ -618,7 +618,7 @@ filter_bam_by_size_samtools=function(
 
   fg=""
   if(!is.null(flags)){
-    fg=paste0(flags,collapse=",")
+    fg=paste0(" -f ",paste0(flags,collapse=","))
   }
   
 
@@ -948,9 +948,9 @@ get_insert_size_samtools=function(
   out_file_dir=set_dir(dir=output_dir)
   job=build_job(executor_id=executor_id,task_id=task_id)
 
-  fg=""
+ fg=""
   if(!is.null(flags)){
-    fg=paste0(flags,collapse=",")
+    fg=paste0(" -f ",paste0(flags,collapse=","))
   }
   
 
