@@ -602,12 +602,12 @@ filter_bam_by_size_samtools=function(
   }
 
       
-    id=""
-    if(output_name!=""){
-      id=output_name
-    }else{
-      id=get_file_name(bam)
-    }
+  id=""
+  if(output_name!=""){
+    id=output_name
+  }else{
+    id=get_file_name(bam)
+  }
 
 
   argg <- as.list(environment())
@@ -625,20 +625,16 @@ filter_bam_by_size_samtools=function(
 
 
   if(include){
-    exec_code=paste(bin_path,"view -h ",bam,," | \ awk 'substr($0,1,1)==\"@\""," || ($9>=",
+    exec_code=paste(bin_path,"view -h ",bam,position," | \ awk 'substr($0,1,1)==\"@\""," || ($9>=",
     min_frag_size,"&& $9<=",max_frag_size,") ||", "($9<=-",min_frag_size,"&& $9>=-",max_frag_size,
     ")'|",bin_path, "view -b >",out_file)
   }else{
-    exec_code=paste(bin_path,"view -h ",bam,," | \ awk 'substr($0,1,1)==\"@\""," || ($9=<",
+    exec_code=paste(bin_path,"view -h ",bam,position," | \ awk 'substr($0,1,1)==\"@\""," || ($9=<",
     min_frag_size,"&& $9>=",max_frag_size,") ||", "($9>=-",min_frag_size,"&& $9<=-",max_frag_size,
     ")'|",bin_path, "view -b >",out_file)
 
   }
 
-
-
-
-  job=build_job(executor_id=executor_id,task_id=task_id)
   if(mode=="batch"){
       out_file_dir2=set_dir(dir=out_file_dir,name="batch")
       batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
@@ -756,7 +752,7 @@ parallel_region_filter_bam_by_size_samtools=function(
     time=time,update_time=update_time,wait=FALSE,hold=hold)
 
   bam_chr=read.table(jobs_report[["steps"]][["getChr"]]$out_files$ref,
-  sep="\t",header=TRUE)
+  sep="\t",header=TRUE,stringsAsFactors = FALSE)
   bam_chr$start=bam_chr$start+1
   bam_chr$order=as.numeric(as.factor(bam_chr$chr))
 
@@ -782,10 +778,11 @@ parallel_region_filter_bam_by_size_samtools=function(
     
   region_list=regions$region
   names(region_list)=regions$region
+
   if(mode=="local"){
         jobs_report[["steps"]][["par_sample_fragment_length"]]<-
         parallel::mclapply(region_list,FUN=function(region){
-        job_report <-filter_bam_by_size_samtools(
+        job_report <- filter_bam_by_size_samtools(
           bin_samtools=bin_samtools,
           bam=bam,
           region=region,
@@ -812,7 +809,7 @@ parallel_region_filter_bam_by_size_samtools=function(
             max_frag_size,
             output_dir,
             verbose,
-            exclude,
+            include,
             file = rdata_file)
           exec_code=paste0("Rscript -e \"ULPwgs::filter_bam_by_size_samtools(rdata=\\\"",
           rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
@@ -831,7 +828,7 @@ parallel_region_filter_bam_by_size_samtools=function(
               Check std error for more information.")
           }
          
-         jobs_report[["steps"]][["par_region_ichor_capture"]]<- build_job_report(
+         jobs_report[["steps"]][["par_sample_fragment_length"]]<- build_job_report(
               job_id=job,
               executor_id=executor_id,
               exec_code=exec_code, 
