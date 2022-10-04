@@ -736,7 +736,7 @@ parallel_region_filter_bam_by_size_samtools=function(
     executor_id=task_id,mode="local",threads=threads,ram=ram,
     time=time,update_time=update_time,wait=FALSE,hold=hold)
 
-  bam_chr=read.table(job_report[["steps"]][["getChr"]]$out_files$ref,
+  bam_chr=read.table(jobs_report[["steps"]][["getChr"]]$out_files$ref,
   sep="\t",header=TRUE)
   bam_chr$start=bam_chr$start+1
   bam_chr$order=as.numeric(as.factor(bam_chr$chr))
