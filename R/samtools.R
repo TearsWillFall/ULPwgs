@@ -772,7 +772,7 @@ parallel_region_filter_bam_by_size_samtools=function(
           min_frag_size=min_frag_size,
           max_frag_size=max_frag_size, 
           verbose=verbose,
-          out_file_dir=out_file_dir_tmp,
+          output_dir=out_file_dir_tmp,
           batch_config=batch_config,
           threads=1,ram=ram,mode="local",
           executor_id=task_id,
