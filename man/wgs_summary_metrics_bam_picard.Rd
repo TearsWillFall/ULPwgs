@@ -8,6 +8,7 @@ wgs_summary_metrics_bam_picard(
   bin_picard = build_default_tool_binary_list()$bin_picard,
   bam = "",
   mapq = 0,
+  ref_genome = build_default_reference_list()$HG19$reference$genome,
   output_dir = ".",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
@@ -27,6 +28,8 @@ wgs_summary_metrics_bam_picard(
 \item{bin_picard}{Path to picard executable. Default path tools/samtools/samtools.}
 
 \item{bam}{Path to the input file with the sequence.}
+
+\item{ref_genome}{Path to reference genome.}
 
 \item{output_dir}{Path to the output directory.}
 

@@ -8,9 +8,9 @@ metrics_alignqc(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bin_picard = build_default_tool_binary_list()$bin_picard,
   bin_bedtools = build_default_tool_binary_list()$bin_bedtools,
+  ref_genome = build_default_reference_list()$HG19$reference$genome,
   bam = "",
   output_dir = ".",
-  ref_genome = "",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   tmp_dir = ".",
@@ -38,11 +38,11 @@ metrics_alignqc(
 
 \item{bin_bedtools}{Path to bedtools executable. Default path tools/bedtools2/bin/bedtools. Only required if analyzing panel data.}
 
+\item{ref_genome}{Path to input file with the reference genome sequence.}
+
 \item{bam}{Path to the BAM file.}
 
 \item{output_dir}{Path to the output directory.}
-
-\item{ref_genome}{Path to input file with the reference genome sequence.}
 
 \item{verbose}{Enables progress messages. Default False.}
 

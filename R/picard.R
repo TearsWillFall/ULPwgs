@@ -452,6 +452,7 @@ job=build_job(executor_id=executor_id,task_id=task_id)
 #'
 #' @param bam Path to the input file with the sequence.
 #' @param bin_picard Path to picard executable. Default path tools/samtools/samtools.
+#' @param ref_genome Path to reference genome.
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
 #' @param ram RAM memory to use in GB. Default 4.
@@ -466,7 +467,8 @@ job=build_job(executor_id=executor_id,task_id=task_id)
 
 wgs_summary_metrics_bam_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
-  bam="",mapq=0,output_dir=".",verbose=FALSE,
+  bam="",mapq=0,ref_genome=build_default_reference_list()$HG19$reference$genome,
+  output_dir=".",verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   tmp_dir=".",threads=1,ram=4,mode="local",
   executor_id=make_unique_id("WGSsummaryMetrics"),
@@ -487,7 +489,7 @@ wgs_summary_metrics_bam_picard=function(
   out_file=paste0(out_file_dir,"/",get_file_name(bam),".picard_wgs_q00.txt")
   exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",
             bin_picard," CollectWgsMetrics VALIDATION_STRINGENCY=SILENT MINIMUM_MAPPING_QUALITY=",
-            mapq," I=",bam," O=",out_file,tmp)
+            mapq," I=",bam," O=",out_file, " R=",ref_genome,tmp)
   
 job=build_job(executor_id=executor_id,task_id=task_id)
   if(mode=="batch"){
