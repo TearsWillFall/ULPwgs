@@ -1026,7 +1026,7 @@ get_insert_size_samtools=function(
                 fl_sd = 0;
             }
         };
-      printf(\"",id,"\\t",fg,"\\t",position,"\\t%d\\t%d\\t%d\\t%d\\t%d\\t%d\\t%s\\t%s\\t%s\\n\", NR , fl_median, fl_mode, fl_max, fl_average , fl_sd , fl_str_dist , motif_mode, motif_str_dist);}'> ",out_file
+      printf(\"",id,"\\t",paste0(flags,collapse=","),"\\t",position,"\\t%d\\t%d\\t%d\\t%d\\t%d\\t%d\\t%s\\t%s\\t%s\\n\", NR , fl_median, fl_mode, fl_max, fl_average , fl_sd , fl_str_dist , motif_mode, motif_str_dist);}'> ",out_file
   )
 
 
