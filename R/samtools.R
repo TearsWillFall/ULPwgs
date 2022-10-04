@@ -889,3 +889,349 @@ parallel_region_filter_bam_by_size_samtools=function(
 
 
 
+
+
+#' Filter BAM file by size using samtools
+#'
+#'
+#' @param bam Path to the input file with the sequence.
+#' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
+#' @param region Genomic region to search
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param threads Number of threads. Default 3
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Job EXECUTOR ID. Default "mardupsGATK"
+#' @param task_name Name of the task. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
+#' @export
+
+
+get_insert_size_samtools=function(
+  rdata=NULL,
+  selected=NULL,
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam="",
+  region=NULL,
+  flags=c(99, 147, 83, 163),
+  output_name="",
+  output_dir=".",
+  verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  threads=1,ram=4,mode="local",
+  executor_id=make_unique_id("getInsertSizeBAM"),
+  task_name="getInsertSizeBAM",time="48:0:0",
+  update_time=60,wait=FALSE,hold=NULL
+){
+
+  if(!is.null(rdata)){
+    load(rdata)
+    if(!is.null(selected)){
+      region=region_list[selected]
+    }
+  }
+
+      
+  id=""
+  if(output_name!=""){
+    id=output_name
+  }else{
+    id=get_file_name(bam)
+  }
+
+
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
+  out_file_dir=set_dir(dir=output_dir)
+  job=build_job(executor_id=executor_id,task_id=task_id)
+
+  fg=""
+  if(!is.null(flags)){
+    fg=paste0(flags,collapse=",")
+  }
+  
+
+  position=""
+  if(!is.null(region)){
+    position=strsplit(region,split="__")[[1]][2]
+    out_file=paste0(out_file_dir,"/",id,".",region,".fragments.txt")
+  }else{
+    out_file=paste0(out_file_dir,"/",id,".fragments.txt")
+  }
+
+
+  exec_code=paste(bin_samtools,"view -h ",fg,bam,position,
+   " | awk '{
+    mot = substr($10, 1, 4);
+    fl_count[NR] = $9;
+    fl_dist[$9\":\"] = fl_dist[$9\":\"]+1;
+    motif_dist[mot\":\"] = motif_dist[mot\":\"]+1;
+    }END{
+        fl_str_dist=\"\";
+        fl_median = 0;
+        fl_average = 0;
+        fl_sd = 0;
+        fl_mode= 0;
+        fl_max= 0;
+        for( fl in fl_dist ) {
+            fl_str_dist = fl_str_dist\"|\"fl fl_dist[fl];
+            if(motif_max<=motif_dist[motif]){
+              fl_max=motif_dist[motif];
+              fl_mode=motif;
+            }
+
+        }
+
+        motif_str_dist=\"\";
+        motif_max= 0;
+        motif_mode= 0;
+
+        for( motif in motif_dist ) {
+            motif_str_dist  = motif_str_dist\"|\"motif motif_dist[motif];
+            if(motif_max<=motif_dist[motif]){
+              motif_max=motif_dist[motif];
+              motif_mode=motif;
+            }
+        }
+
+        if (NR > 1) {
+            if ((NR % 2) == 1) {
+                fl_median = fl_count[(NR + 1) / 2];
+                motif_median=motif_count[(NR +1)/2];
+            } else {
+                fl_median = (fl_count[NR / 2] + fl_count[(NR / 2) + 1]) / 2.0;
+        
+            }
+            fl_sum = 0;
+            for( i = 1; i <= length( fl_count ); i++ ) {
+                fl_sum += fl_count[i];
+            }
+            fl_average = fl_sum / NR
+            fl_sumsd = 0;
+            for( i = 1; i <= length( fl_count ); i++ ) {
+                fl_sumsd += (fl_count[i] - fl_average)^2;
+            }
+            fl_sd = (fl_sumsd /(NR - 1))^(1/2);
+        } else {
+            if (NR == 1) {
+                fl_median = fl_count[1];
+                fl_average = fl_count[1];
+                fl_sd = 0;
+            } else {
+                fl_median = 0;
+                fl_average = 0;
+                fl_sd = 0;
+            }
+        };
+      printf(\"",id,"\\t",fg,"\\t",position,"\\t%d\\t%d\\t%d\\t%d\\t%s\\t%s\\n\", NR , fl_median, fl_average , fl_sd , fl_str_dist , motif_str_dist);}'> ",out_file
+  )
+
+
+  if(mode=="batch"){
+      out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+      batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
+      output_dir=out_file_dir2,hold=hold)
+      exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+  } 
+
+  if(verbose){
+    print_verbose(job=job,arg=argg,exec_code=exec_code)
+  }
+  error=execute_job(exec_code=exec_code)
+  if(error!=0){
+    stop("samtools failed to run due to unknown error.
+    Check std error for more information.")
+  }
+
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    exec_code=exec_code, 
+    task_id=task_id,
+    input_args = argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+        frag_bam=out_file
+    )
+  )
+
+
+  if(wait&&mode=="batch"){
+      job_validator(job=job_report$job_id,
+      time=update_time,verbose=verbose,threads=threads)
+  }
+
+  return(job_report)
+
+}
+
+
+#' Filter BAM file by size using samtools in parallel
+#'
+#'
+#' @param bam Path to the input file with the sequence.
+#' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
+#' @param region Genomic region to search
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param flags Read flags to filter by. Default c(99, 147, 83, 163)
+#' @param threads Number of threads. Default 3
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Job EXECUTOR ID. Default "mardupsGATK"
+#' @param task_name Name of the task. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
+#' @export
+
+
+
+
+parallel_region_get_insert_size_samtools=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bin_picard=build_default_tool_binary_list()$bin_picard,
+  bam="",bed=NULL,
+  flags=c(99, 147, 83, 163),
+  sep="\t",
+  header=FALSE,
+  verbose=FALSE,
+  output_dir=".",
+  output_name="",
+  include=TRUE,
+  index=TRUE,
+  clean=TRUE,
+  batch_config=build_default_preprocess_config(),
+  threads=3,ram=4,mode="local",
+  executor_id=make_unique_id("parRegionGetInsertSizeBAM"),
+  task_name="parRegionGetInsertSizeBAM",time="48:0:0",
+  update_time=60,wait=FALSE,hold=NULL
+){
+
+  options(scipen=999)
+
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
+  out_file_dir=set_dir(dir=output_dir)
+  out_file_dir_tmp=set_dir(dir=out_file_dir,name="tmp")
+  job=build_job(executor_id=executor_id,task_id=task_id)
+
+
+  id=""
+  if(output_name!=""){
+    id=output_name
+  }else{
+    id=get_file_name(bam)
+  }
+
+  
+  jobs_report=build_job_report(
+    job_id=job,
+    executor_id=list(),
+    exec_code=list(), 
+    task_id=task_id,
+    input_args=argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+      )
+    )
+
+  jobs_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
+    bin_samtools=bin_samtools,
+    bam=bam,verbose=verbose,output_dir=out_file_dir_tmp,
+    executor_id=task_id,mode="local",threads=threads,ram=ram,
+    time=time,update_time=update_time,wait=FALSE,hold=hold)
+
+  bam_chr=read.table(jobs_report[["steps"]][["getChr"]]$out_files$ref,
+  sep="\t",header=TRUE,stringsAsFactors = FALSE)
+  bam_chr$order=as.numeric(as.factor(bam_chr$chr))
+
+  if(!is.null(bed)){
+      regions=read.table(bed,sep=sep,header=header)
+      names(regions)[1:3]=c("chr","start","end")
+      miss_chr=setdiff(unique(regions[1,]), bam_chr)
+    
+      ### Validate chromosome format in BED file
+
+      if(length(miss_chr)>0){
+        stop(paste0(paste(miss_chr,collapse=",")," are not present in the BAM file."))
+      }
+
+      regions=dplyr::left_join(regions,bam_chr[,c("chr","order")])
+      regions=regions %>% arrange(order,start,end)
+  }else{
+      regions=bam_chr
+  }
+
+  regions$pos=1:nrow(regions)
+  regions=regions %>% dplyr::mutate(region=paste0(pos,"__",chr,":",start,"-",end))
+    
+  region_list=regions$region
+  names(region_list)=regions$region
+
+  if(mode=="local"){
+        jobs_report[["steps"]][["par_region_insert_size"]]<-
+        parallel::mclapply(region_list,FUN=function(region){
+        job_report <- get_insert_size_samtools(
+          bin_samtools=bin_samtools,
+          bam=bam,
+          region=region,
+          verbose=verbose,
+          flags=flags,
+          output_name=id,
+          output_dir=out_file_dir_tmp,
+          batch_config=batch_config,
+          threads=1,ram=ram,mode="local",
+          executor_id=task_id,
+          time=time,
+          hold=hold)
+    },mc.cores=threads)
+    
+  }else if(mode=="batch"){
+          rdata_file=paste0(out_file_dir,"/",job,".regions.RData")
+          output_dir=out_file_dir_tmp
+          save(
+            region_list,
+            bam,
+            output_dir,
+            verbose,
+            flags,
+            file = rdata_file)
+          exec_code=paste0("Rscript -e \"ULPwgs::get_insert_size_samtools(rdata=\\\"",
+          rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
+          out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+          batch_code=build_job_exec(job=job,time=time,ram=ram,
+          threads=1,output_dir=out_file_dir2,
+          hold=hold,array=length(region_list))
+          exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+
+          if(verbose){
+              print_verbose(job=job,arg=argg,exec_code=exec_code)
+          }
+          error=execute_job(exec_code=exec_code)
+          if(error!=0){
+              stop("samtools failed to run due to unknown error.
+              Check std error for more information.")
+          }
+         
+         jobs_report[["steps"]][["par_region_insert_size"]]<- build_job_report(
+              job_id=job,
+              executor_id=executor_id,
+              exec_code=exec_code, 
+              task_id=task_id,
+              input_args=argg,
+              out_file_dir=out_file_dir,
+              out_files=list(
+                  frag_bam=paste0(out_file_dir,"/",get_file_name(bam),".",names(region_list),".txt")
+              )
+        )
+    }
+
+    return(jobs_report)
+
+}
+
+
