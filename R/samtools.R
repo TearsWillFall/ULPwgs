@@ -755,7 +755,6 @@ parallel_region_filter_bam_by_size_samtools=function(
 
   bam_chr=read.table(jobs_report[["steps"]][["getChr"]]$out_files$ref,
   sep="\t",header=TRUE,stringsAsFactors = FALSE)
-  bam_chr$start=bam_chr$start+1
   bam_chr$order=as.numeric(as.factor(bam_chr$chr))
 
   if(!is.null(bed)){
@@ -839,8 +838,9 @@ parallel_region_filter_bam_by_size_samtools=function(
               out_file_dir=out_file_dir,
               out_files=list(
                   frag_bam=paste0(out_file_dir,"/",get_file_name(bam),".",
+                  ifelse(include,"include_","exclude_"),
                   min_frag_size,"_",max_frag_size,".",names(region_list),".",
-                  ifelse(include,"include","exclude"),".bam")
+                  ".bam")
               )
         )
     }
@@ -849,7 +849,7 @@ parallel_region_filter_bam_by_size_samtools=function(
       bin_picard=bin_picard,
       bam=unlist_lvl(jobs_report[["steps"]][["par_region_fragment_length"]],var="frag_bam"),
       output_dir=out_file_dir,
-      output_name=paste0(get_file_name(bam),".",min_frag_size,"_",max_frag_size,".bam"),
+      output_name=paste0(get_file_name(bam),".",ifelse(include,"include_","exclude_"),min_frag_size,"_",max_frag_size,".bam"),
       executor_id=task_id,mode=mode,time=time,threads=threads,ram=ram,
       update_time=update_time,wait=FALSE,
       clean=clean,
