@@ -12,6 +12,7 @@ filter_bam_by_size_samtools(
   region = NULL,
   min_frag_size = 0,
   max_frag_size = 167,
+  flags = c(99, 147, 83, 163),
   output_name = "",
   output_dir = ".",
   include = TRUE,
