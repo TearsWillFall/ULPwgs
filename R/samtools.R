@@ -710,6 +710,7 @@ parallel_region_filter_bam_by_size_samtools=function(
   header=FALSE,
   verbose=FALSE,
   output_dir=".",
+  output_name="",
   include=TRUE,
   index=TRUE,
   clean=TRUE,
@@ -728,6 +729,14 @@ parallel_region_filter_bam_by_size_samtools=function(
   out_file_dir=set_dir(dir=output_dir)
   out_file_dir_tmp=set_dir(dir=out_file_dir,name="tmp")
   job=build_job(executor_id=executor_id,task_id=task_id)
+
+
+  id=""
+  if(output_name!=""){
+    id=output_name
+  }else{
+    id=get_file_name(bam)
+  }
 
   
   jobs_report=build_job_report(
@@ -785,7 +794,7 @@ parallel_region_filter_bam_by_size_samtools=function(
           max_frag_size=max_frag_size,
           include=include, 
           verbose=verbose,
-          output_name=get_file_name(bam),
+          output_name=id,
           output_dir=out_file_dir_tmp,
           batch_config=batch_config,
           threads=1,ram=ram,mode="local",
