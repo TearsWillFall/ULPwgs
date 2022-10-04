@@ -584,6 +584,7 @@ filter_bam_by_size_samtools=function(
   output_name="",
   min_frag_size=0,
   max_frag_size=180,
+  output_name="",
   output_dir=".",
   include=TRUE, 
   verbose=FALSE,
@@ -600,6 +601,15 @@ filter_bam_by_size_samtools=function(
       region=region_list[selected]
     }
   }
+
+      
+    id=""
+    if(output_name!=""){
+      id=output_name
+    }else{
+      id=get_file_name(bam)
+    }
+
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -719,6 +729,7 @@ parallel_region_filter_bam_by_size_samtools=function(
   out_file_dir_tmp=set_dir(dir=out_file_dir,name="tmp")
   job=build_job(executor_id=executor_id,task_id=task_id)
 
+  
   jobs_report=build_job_report(
     job_id=job,
     executor_id=list(),
@@ -774,6 +785,7 @@ parallel_region_filter_bam_by_size_samtools=function(
           max_frag_size=max_frag_size,
           include=include, 
           verbose=verbose,
+          output_name=get_file_name(bam),
           output_dir=out_file_dir_tmp,
           batch_config=batch_config,
           threads=1,ram=ram,mode="local",
@@ -785,7 +797,9 @@ parallel_region_filter_bam_by_size_samtools=function(
   }else if(mode=="batch"){
           rdata_file=paste0(out_file_dir,"/",job,".regions.RData")
           output_dir=out_file_dir_tmp
-          save(region_list,bam,
+          save(
+            region_list,
+            bam,
             min_frag_size,
             max_frag_size,
             output_dir,
