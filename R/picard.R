@@ -1,4 +1,97 @@
 
+
+#' Wrapper around gatk GatherBamFiles function
+#'
+#' This functions collects the Recalibration reports generated from scattered parallel_apply_BQSR output
+#' This function wraps around gatk GatherBamFiles function.
+#' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360037055512-GatherBamFiles-Picard-
+#'
+#' @param bin_picard [REQUIRED] Path to picard executable. Default tools/picard/build/libs/picard.jar.
+#' @param bam [REQUIRED] Path to BAM file/s.
+#' @param output_name [OPTIONAL] Name for the output file name.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param clean Clean input files. Default TRUE.
+#' @param tmp_dir [OPTIONAL] Path to the temporary directory.
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "gatherBAM"
+#' @param task_name Task name. Default "gatherBAM"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Show job updates every update time. Default 60
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+gather_bam_files_picard=function(
+  bin_picard=build_default_tool_binary_list()$bin_picard,
+  bam="",output_name="File",output_dir=".",
+  verbose=FALSE,batch_config=build_default_preprocess_config(),
+  threads=4, ram=4, mode="local",clean=FALSE,
+  executor_id=make_unique_id("gatherBAM"),task_name="gatherBAM",
+  time="48:0:0",update_time=60,wait=FALSE,hold=NULL
+){
+
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
+  out_file_dir=set_dir(dir=output_dir)
+
+  
+  out_file=paste0(out_file_dir,"/",output_name,".bam")
+  bam=bam[order(as.numeric(lapply(lapply(lapply(lapply(lapply(lapply(basename(bam),
+    FUN=strsplit,split="\\."),FUN="[[",index=1),FUN="[",index=2),
+    FUN=strsplit,split="__"),FUN="[[",index=1),FUN="[",index=1)))]
+
+
+  exec_code=paste0("java -jar ",bin_picard," GatherBamFiles ",
+    paste0(" I=",bam,collapse=" ")," O=",out_file)
+
+  if(clean){
+    exec_code=paste(exec_code," && rm",paste(paste0(bam,"*"),collapse=" "))
+  }
+
+ 
+  job=build_job(executor_id=executor_id,task_id=task_id)
+
+  if(mode=="batch"){
+       out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+       batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+       threads=threads,output_dir=out_file_dir2)
+       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+  }
+
+  if(verbose){
+   print_verbose(job=job,arg=argg,exec_code=exec_code)
+  }
+
+  error=execute_job(exec_code=exec_code)
+
+  if(error!=0){
+    stop("picard failed to run due to unknown error.
+    Check std error for more information.")
+  }
+
+
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    exec_code=exec_code, 
+    task_id=task_id,
+    input_args = argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+      bam=out_file)
+    )
+
+  if(wait&&mode=="batch"){
+    job_validator(job=job_report$job_id,time=update_time,
+    verbose=verbose,threads=threads)
+  }
+  return(job_report)
+}
+
+
+
 #' Mark duplicated reads
 #'
 #' This function marks duplicated reads (artifacts) found in aligned sequences.

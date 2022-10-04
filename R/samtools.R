@@ -845,7 +845,7 @@ parallel_region_filter_bam_by_size_samtools=function(
         )
     }
 
-    jobs_report[["steps"]][["gather_bam"]]<-gather_bam_files(
+    jobs_report[["steps"]][["gather_bam"]]<-gather_bam_files_picard(
       bin_picard=bin_picard,
       bam=unlist_lvl(jobs_report[["steps"]][["par_region_fragment_length"]],var="frag_bam"),
       output_dir=out_file_dir,

@@ -10,7 +10,7 @@ create_antitarget_cnvkit(
   bed = "",
   output_name = "",
   output_dir = ".",
-  bin_size = 500000,
+  bin_size = 5e+05,
   min_bin_size = NULL,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),

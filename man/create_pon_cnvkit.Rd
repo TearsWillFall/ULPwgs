@@ -13,7 +13,7 @@ create_pon_cnvkit(
   output_dir = ".",
   target = "",
   bin_size_target = 75,
-  bin_size_antitarget = 500000,
+  bin_size_antitarget = 5e+05,
   min_bin_size_antitarget = NULL,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),

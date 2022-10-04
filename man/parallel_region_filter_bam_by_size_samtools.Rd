@@ -9,11 +9,16 @@ parallel_region_filter_bam_by_size_samtools(
   bin_picard = build_default_tool_binary_list()$bin_picard,
   bam = "",
   bed = NULL,
-  min_frag_size = 0,
-  max_frag_size = 180,
+  min_frag_size = 1,
+  max_frag_size = 167,
   sep = "\\t",
   header = FALSE,
   verbose = FALSE,
+  output_dir = ".",
+  output_name = "",
+  include = TRUE,
+  index = TRUE,
+  clean = TRUE,
   batch_config = build_default_preprocess_config(),
   threads = 3,
   ram = 4,
@@ -33,6 +38,8 @@ parallel_region_filter_bam_by_size_samtools(
 
 \item{verbose}{Enables progress messages. Default False.}
 
+\item{output_dir}{Path to the output directory.}
+
 \item{threads}{Number of threads. Default 3}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
@@ -50,8 +57,6 @@ parallel_region_filter_bam_by_size_samtools(
 \item{hold}{\link{OPTIONAL} Hold job until job is finished. Job ID.}
 
 \item{region}{Genomic region to search}
-
-\item{output_dir}{Path to the output directory.}
 }
 \description{
 Filter BAM file by size using samtools in parallel

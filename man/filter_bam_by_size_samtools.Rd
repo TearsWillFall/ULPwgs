@@ -10,9 +10,11 @@ filter_bam_by_size_samtools(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = "",
   region = NULL,
-  output_name = "",
   min_frag_size = 0,
-  max_frag_size = 180,
+  max_frag_size = 167,
+  output_name = "",
+  output_dir = ".",
+  include = TRUE,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 1,
@@ -33,6 +35,8 @@ filter_bam_by_size_samtools(
 
 \item{region}{Genomic region to search}
 
+\item{output_dir}{Path to the output directory.}
+
 \item{verbose}{Enables progress messages. Default False.}
 
 \item{threads}{Number of threads. Default 3}
@@ -50,8 +54,6 @@ filter_bam_by_size_samtools(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} Hold job until job is finished. Job ID.}
-
-\item{output_dir}{Path to the output directory.}
 }
 \description{
 Filter BAM file by size using samtools
