@@ -183,7 +183,7 @@ multisample_clonet_trento=function(
                 executor_id=task_id,
                 mode=file_info[x,]$mode,
                 time=file_info[x,]$time,
-                hold=file_info[x,]$hold)
+                hold=try(file_info[x,]$hold,silent=TRUE))
             },mc.cores=ifelse(mode=="local",1,3))
 
     }else{
