@@ -1657,6 +1657,8 @@ multisample_mutect2_gatk=function(
   verbose=FALSE,filter=TRUE,
   orientation=TRUE,mnps=FALSE,
   contamination=TRUE,clean=FALSE,
+  header=TRUE,
+  sep="\t",
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("multiSampleMutect2"),
