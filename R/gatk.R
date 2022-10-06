@@ -1692,7 +1692,6 @@ multisample_mutect2_gatk=function(
       "germ_resource",
       "biallelic_db",
       "db_interval",
-      "regions",
       "pon",
       "filter",
       "orientation",
