@@ -1185,7 +1185,7 @@ parallel_regions_mutect2_gatk=function(
   if(!is.null(rdata)){
     load(rdata)
     if(!is.null(selected)){
-      tumour=tumours_list[selected]
+      tumour=tumour_list[selected]
       output_name=get_file_name(tumour)
     }
   }
@@ -1471,7 +1471,7 @@ parallel_samples_mutect2_gatk=function(
 
     if(mode=="local"){
       jobs_report[["steps"]][["par_sample_call_variants"]]<-
-      parallel::mclapply(tumours_list,FUN=function(tumour){
+      parallel::mclapply(tumour_list,FUN=function(tumour){
         job_report <- parallel_regions_mutect2_gatk(
               sif_gatk=sif_gatk,
               bin_bcftools=bin_bcftools,
@@ -1517,7 +1517,7 @@ parallel_samples_mutect2_gatk=function(
             out_file_dir2=set_dir(dir=out_file_dir,name="batch")
             batch_code=build_job_exec(job=job,time=time,ram=ram,
             threads=1,output_dir=out_file_dir2,
-            hold=hold,array=length(tumours_list))
+            hold=hold,array=length(tumour_list))
             exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
 
             if(verbose){
