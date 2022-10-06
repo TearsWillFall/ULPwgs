@@ -1793,7 +1793,7 @@ multisample_mutect2_gatk=function(
                   contamination=contamination,
                   clean=clean,
                   batch_config=batch_config,
-                  threads=hreads,ram=ram,
+                  threads=threads,ram=ram,
                   mode=mode,
                   executor_id=task_id,
                   time=time,
