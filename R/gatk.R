@@ -2087,7 +2087,7 @@ learn_orientation_gatk=function(
      id=get_file_name(f1r2[1])
   }
  
-  if (is.null(f1r2)){
+  if (!is.null(f1r2)){
     f1r2_list=paste0(" -I ",paste0(f1r2,collapse=" -I "))
   }
   
