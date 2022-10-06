@@ -1208,14 +1208,20 @@ parallel_regions_mutect2_gatk=function(
     load(rdata)
     if(!is.null(selected)){
       tumour=tumour_list[selected]
-      output_name=get_file_name(tumour)
     }
+  }
+
+  id=""
+  if(output_name!=""){
+    id=output_name
+  }else{
+    id=get_file_name(tumour)
   }
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir,name=paste0(output_name,"/mutect2_reports"))
-  tmp_dir=set_dir(dir=out_file_dir,name="mutect2_tmp")
+  out_file_dir=set_dir(dir=output_dir,name=paste0(id,"/mutect2_reports"))
+  tmp_dir=set_dir(dir=out_file_dir,name="tmp")
 
   job=build_job(executor_id=executor_id,task_id=task_id)
 
@@ -1261,7 +1267,7 @@ parallel_regions_mutect2_gatk=function(
             region=region,
             tumour=tumour,
             normal=normal,
-            output_name=output_name,
+            output_name=id,
             ref_genome=ref_genome,
             germ_resource = germ_resource,
             pon=pon,output_dir=tmp_dir,tmp_dir=tmp_dir,
@@ -1273,6 +1279,7 @@ parallel_regions_mutect2_gatk=function(
           rdata_file=paste0(tmp_dir,"/",job,".regions.RData")
           output_dir=tmp_dir
           executor_id=task_id
+          output_name=id
           save(
             region_list,
             tumour,
@@ -1304,12 +1311,7 @@ parallel_regions_mutect2_gatk=function(
               stop("gatk failed to run due to unknown error.
               Check std error for more information.")
           }
-           if(output_name!=""&length(tumour)>1){
-              fname=output_name
-           }else{  
-              fname=get_file_name(tumour[1])
-           }
-  
+        
          jobs_report[["steps"]][["par_region_call_variants"]]<- build_job_report(
               job_id=job,
               executor_id=executor_id,
@@ -1318,10 +1320,10 @@ parallel_regions_mutect2_gatk=function(
               input_args=argg,
               out_file_dir=tmp_dir,
               out_files=list(
-                  vcf=paste0(tmp_dir,"/vcf/",fname,".",region_list,".unfilt.vcf"),
-                  stats=paste0(tmp_dir,"/vcf/",fname,".",region_list,".unfilt.vcf.stats"),
-                  idx=paste0(tmp_dir,"/vcf/",fname,".",region_list,".unfilt.vcf.idx"),
-                  f1r2=paste0(tmp_dir,"/orientation/",fname,".",region_list,".f1r2.tar.gz")
+                  vcf=paste0(tmp_dir,"/vcf/",id,".",region_list,".unfilt.vcf"),
+                  stats=paste0(tmp_dir,"/vcf/",id,".",region_list,".unfilt.vcf.stats"),
+                  idx=paste0(tmp_dir,"/vcf/",id,".",region_list,".unfilt.vcf.idx"),
+                  f1r2=paste0(tmp_dir,"/orientation/",id,".",region_list,".f1r2.tar.gz")
                 )
         )
 
@@ -1482,7 +1484,7 @@ parallel_samples_mutect2_gatk=function(
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir,name=paste0(patient_id))
+  out_file_dir=set_dir(dir=output_dir,name=patient_id)
   tmp_dir=set_dir(dir=out_file_dir,name="tmp")
  
 
@@ -3253,14 +3255,21 @@ parallel_regions_haplotypecaller_gatk=function(
     load(rdata)
     if(!is.null(selected)){
       tumour=tumours_list[selected]
-      output_name=get_file_name(tumour)
+
     }
+  }
+
+  id=""
+  if(output_name!=""){
+    id=output_name
+  }else{
+    id=get_file_name(normal[1])
   }
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir,name=paste0(output_name,"/haplotypecaller_reports"))
-  tmp_dir=set_dir(dir=out_file_dir,name="haplotypecaller_tmp")
+  out_file_dir=set_dir(dir=output_dir,name=paste0(id,"/haplotypecaller_reports")
+  tmp_dir=set_dir(dir=out_file_dir,name="tmp")
 
   job=build_job(executor_id=executor_id,task_id=task_id)
 
@@ -3303,7 +3312,7 @@ parallel_regions_haplotypecaller_gatk=function(
             sif_gatk=sif_gatk,
             region=region,
             normal=normal,
-            output_name=output_name,
+            output_name=id,
             ref_genome=ref_genome,
             output_dir=tmp_dir,
             tmp_dir=tmp_dir,
@@ -3315,8 +3324,19 @@ parallel_regions_haplotypecaller_gatk=function(
     }else if(mode=="batch"){
           rdata_file=paste0(tmp_dir,"/",job,".regions.RData")
           output_dir=tmp_dir
-          save(region_list,normal,sif_gatk,ref_genome,output_name,
-          output_dir,verbose,tmp_dir,file = rdata_file)
+          output_name=id
+          executor_id=task_id
+          save(
+            region_list,
+            normal,sif_gatk,
+            ref_genome,
+            output_name,
+            output_dir,
+            executor_id,
+            verbose,
+            tmp_dir,
+            file = rdata_file
+          )
           exec_code=paste0("Rscript -e \"ULPwgs::haplotypecaller_gatk(rdata=\\\"",
           rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
           out_file_dir2=set_dir(dir=out_file_dir,name="batch")
@@ -3333,11 +3353,7 @@ parallel_regions_haplotypecaller_gatk=function(
               stop("gatk failed to run due to unknown error.
               Check std error for more information.")
           }
-           if(output_name!=""&length(normal)>1){
-              fname=output_name
-           }else{  
-              fname=get_file_name(normal[1])
-           }
+
   
          jobs_report[["steps"]][["par_region_call_variants"]]<- build_job_report(
               job_id=job,
@@ -3347,8 +3363,8 @@ parallel_regions_haplotypecaller_gatk=function(
               input_args=argg,
               out_file_dir=tmp_dir,
               out_files=list(
-                  vcf=paste0(tmp_dir,"/vcf/",fname,".",region_list,".unfilt.vcf.gz"),
-                  idx=paste0(tmp_dir,"/vcf/",fname,".",region_list,".unfilt.vcf.idx")
+                  vcf=paste0(tmp_dir,"/vcf/",id,".",region_list,".unfilt.vcf.gz"),
+                  idx=paste0(tmp_dir,"/vcf/",id,".",region_list,".unfilt.vcf.idx")
                 )
         )
 
@@ -3363,7 +3379,7 @@ parallel_regions_haplotypecaller_gatk=function(
     bin_tabix=bin_tabix,
     vcfs=vcfs,clean=clean,sort=TRUE,
     compress=FALSE,format="vcf",
-    verbose=verbose,output_name=output_name,
+    verbose=verbose,output_name=id,
     output_dir=out_file_dir,
     tmp_dir=tmp_dir,batch_config=batch_config,
     threads=1,ram=ram,mode=mode,
@@ -3378,7 +3394,7 @@ parallel_regions_haplotypecaller_gatk=function(
         sif_gatk=sif_gatk,
         vcf=vcf,bam=ifelse(info_key=="CNN_1D","",bam),
         ref_genome=ref_genome,
-        output_dir=out_file_dir,output_name=output_name,
+        output_dir=out_file_dir,output_name=id,
         verbose=verbose,
         batch_config=batch_config,
         threads=threads,ram=ram,mode=mode,
@@ -3396,7 +3412,7 @@ parallel_regions_haplotypecaller_gatk=function(
         ref_genome=ref_genome,
         indel_db=indel_db,
         haplotype_db=haplotype_db,
-        output_dir=out_file_dir,output_name=output_name,
+        output_dir=out_file_dir,output_name=id,
         info_key=info_key,
         snp_tranche=snp_tranche,
         indel_tranche=indel_tranche,
@@ -3489,7 +3505,7 @@ parallel_samples_haplotypecaller_gatk=function(
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir,name=paste0(patient_id,"/haplotypeacaller_reports"))
+  out_file_dir=set_dir(dir=output_dir,name=patient_id)
   tmp_dir=set_dir(dir=out_file_dir,name="haplotypecaller_tmp")
  
 
@@ -3545,31 +3561,33 @@ parallel_samples_haplotypecaller_gatk=function(
             rdata_file=paste0(tmp_dir,"/",job,".samples.RData")
             output_dir=out_file_dir
             executor_id=task_id
-            save(normal_list,
-            sif_gatk,
-            bin_bcftools,
-            bin_samtools,
-            bin_bgzip,
-            bin_tabix,
-            ref_genome,
-            regions,
-            output_dir,
-            indel_db,
-            haplotype_db,
-            filter,
-            info_key,
-            snp_tranche,
-            indel_tranche,
-            executor_id,
-            keep_previous_filters,
-            clean,
-            verbose)
+            save(
+              normal_list,
+              sif_gatk,
+              bin_bcftools,
+              bin_samtools,
+              bin_bgzip,
+              bin_tabix,
+              ref_genome,
+              regions,
+              output_dir,
+              indel_db,
+              haplotype_db,
+              filter,
+              info_key,
+              snp_tranche,
+              indel_tranche,
+              executor_id,
+              keep_previous_filters,
+              clean,
+              verbose
+            )
             exec_code=paste0("Rscript -e \"ULPwgs::parallel_regions_haplotypecaller_gatk(rdata=\\\"",
             rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
             out_file_dir2=set_dir(dir=out_file_dir,name="batch")
             batch_code=build_job_exec(job=job,time=time,ram=ram,
             threads=1,output_dir=out_file_dir2,
-            hold=hold,array=length(tumour_list))
+            hold=hold,array=length(normal_list))
             exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
 
             if(verbose){
@@ -3590,44 +3608,38 @@ parallel_samples_haplotypecaller_gatk=function(
                 out_file_dir=out_file_dir,
                 out_files=list(
                   filtered_vcf=ifelse(filter,paste0(out_file_dir,"/",
-                  names(tumour_list),"/mutect2_reports/",
-                  names(tumour_list),".filtered.vcf"),""),
-                  sorted_vcf=paste0(out_file_dir,"/",
-                  names(tumour_list),"/mutect2_reports/",
-                  names(tumour_list),".sorted.vcf"),
-                  compressed_vcf=paste0(out_file_dir,"/",
-                  names(tumour_list),"/mutect2_reports/",
-                  names(tumour_list),".sorted.vcf.gz")
+                  names(normal_list),"/haplotypecaller_reports/",
+                  names(normal_list),".filteredTranches.vcf"),""),
                 )
                   )
              }
     }else if (method=="multi"){
         jobs_report[["steps"]][["par_sample_call_variants"]]<-
-              parallel_regions_mutect2_gatk(
-                sif_gatk=sif_gatk,
-                bin_bcftools=bin_bcftools,
-                bin_samtools=bin_samtools,
-                bin_bgzip=bin_bgzip,
-                bin_tabix=bin_tabix,
-                regions=regions,
-                output_name=patient_id,
-                ref_genome=ref_genome,
-                germ_resource=germ_resource,
-                biallelic_db=biallelic_db,
-                db_interval=db_interval,
-                pon=pon,
-                filter=filter,
-                orientation=orientation,
-                mnps=mnps,
-                contamination=contamination,
-                clean=clean,
-                tumour=tumour,
-                normal=normal,
-                output_dir=out_file_dir,
-                verbose=verbose,
-                threads=threads,
-                executor_id=task_id,
-                mode=mode
+              parallel_regions_haplotypecaller_gatk(
+                  sif_gatk=sif_gatk,
+                  bin_bcftools=bin_bcftools,
+                  bin_samtools=bin_samtools,
+                  bin_bgzip=bin_bgzip,
+                  bin_tabix=bin_tabix,
+                  normal=normal,
+                  ref_genome=ref_genome,
+                  regions=regions,
+                  output_dir=out_file_dir,
+                  indel_db=indel_db,
+                  haplotype_db=haplotype_db,
+                  filter=filter,
+                  output_name=patient_id,
+                  info_key=info_key,
+                  snp_tranche=snp_tranche,
+                  indel_tranche=indel_tranche,
+                  keep_previous_filters=keep_previous_filters,
+                  clean=clean,
+                  verbose=verbose,
+                  batch_config=batch_config,
+                  threads=threads,ram=ram,mode=local,
+                  executor_id=task_id,
+                  time=time,
+                  hold=hold
               )
 
     }else{

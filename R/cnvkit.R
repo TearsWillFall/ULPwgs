@@ -93,7 +93,7 @@ process_cnvkit=function(
     gc=TRUE,
     edge=TRUE,
     rmask=TRUE,
-    smooth=TRUE,
+    smooth=FALSE,
     low_tc=FALSE,
     drop_low_coverage=TRUE,
     drop_outliers=10,
@@ -1876,8 +1876,6 @@ de
   }
 
 
-
-
 #' Wrapper around reference function from CNVkit
 #'
 #' This function wraps around target function for CNVkit
@@ -1908,7 +1906,7 @@ de
 #' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 
- parallel_sample_segment_cnvkit=function(
+ parallel_samples_segment_cnvkit=function(
     sif_cnvkit=build_default_sif_list()$sif_cnvkit,
     cnrs="",
     seg_method="cbs",
