@@ -1646,7 +1646,10 @@ multisample_mutect2_gatk=function(
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
   sample_sheet="",
-  bam_dir="",normal_id="",patient_id="",
+  bam_dir="",
+  normal_id="",
+  patient_id="",
+  pattern="bam$",
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   germ_resource=build_default_reference_list()$HG19$variant$germ_reference,
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
@@ -1764,7 +1767,7 @@ multisample_mutect2_gatk=function(
 
     }else{
         bam_dir_path=system(paste("realpath",bam_dir),intern=TRUE)
-        bam_files=system(paste0("find ",bam_dir_path,"| grep bam$"),intern=TRUE)
+        bam_files=system(paste0("find ",bam_dir_path,"| grep ",pattern),intern=TRUE)
         tumour=bam_files[!grepl(normal_id,bam_files)]
         normal=bam_files[grepl(normal_id,bam_files)]
 
