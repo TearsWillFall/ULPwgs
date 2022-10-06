@@ -1548,6 +1548,7 @@ parallel_samples_mutect2_gatk=function(
                   names(tumour_list),".sorted.vcf.gz")
                 )
                   )
+             }
     }else if (method=="multi"){
         jobs_report[["steps"]][["par_sample_call_variants"]]<-
               parallel_regions_mutect2_gatk(
@@ -1573,14 +1574,13 @@ parallel_samples_mutect2_gatk=function(
                 output_dir=out_file_dir,
                 verbose=verbose,
                 threads=threads,
-                executor_id=task_id
+                executor_id=task_id,
+                mode=mode
               )
 
     }else{
       stop("Wrong method supplied. Only single or multi methods available.")
     }     
-
-  }
 
 
   if(wait&&mode=="batch"){
