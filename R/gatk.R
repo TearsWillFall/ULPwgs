@@ -1718,7 +1718,7 @@ multisample_mutect2_gatk=function(
                 file_info=sample_sheet
         }
         
-        file_info=file_info %>% dplyr::group_by(dplyr::across(-tumour)) %>% summarise(tumour=list(tumour))
+        file_info=file_info %>% dplyr::group_by(dplyr::across(-tumour)) %>% dplyr::summarise(tumour=list(tumour))
 
         job_report[["steps"]][["multisample_gatk"]]=parallel::mclapply(seq(1,nrow(file_info)),FUN=function(x){
             
