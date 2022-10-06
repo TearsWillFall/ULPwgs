@@ -985,7 +985,7 @@ analyze_covariates_gatk=function(
 mutect2_gatk=function(region="",
   rdata=NULL,selected=NULL,
   sif_gatk=build_default_sif_list()$sif_gatk,
-  tumour="",normal="",output_name="",
+  tumour="",normal=NULL,output_name="",
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   germ_resource=build_default_reference_list()$HG19$variant$germ_reference,
   pon="",output_dir=".",tmp_dir=".",
@@ -1036,7 +1036,7 @@ mutect2_gatk=function(region="",
     tumour=paste0(" -I ",tumour)
   }
   norm=" "
-  if (normal!=""){
+  if (!is.null(normal)){
     if (is.vector(normal)){
       norm=paste0(" -I ",paste(normal,collapse=" -I ")," -normal ",
       paste(Vectorize(get_file_name)(normal),collapse=" -normal "))
@@ -1851,8 +1851,8 @@ mutect_filter_gatk=function(
   bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  vcf="",stats="",contamination_table="",
-  segmentation_table="",orientation_model="",output_name="",
+  vcf="",stats=NULL,contamination_table=NULL,
+  segmentation_table=NULL,orientation_model=NULL,output_name="",
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   output_dir=".",verbose=FALSE,clean=FALSE,
   batch_config=build_default_preprocess_config(),
@@ -1875,21 +1875,21 @@ mutect_filter_gatk=function(
      id=get_file_name(vcf)
   }
 
-  if(stats!=""){
+  if(!is.null(stats)){
       stats=paste0(" -stats ",stats)
   }
 
-  if (contamination_table!=""){
+  if (!is.null(contamination_table)){
      contamination_table=paste0(" --contamination-table ", paste0(contamination_table,
      collapse=" --contamination-table "))
   }
   
-  if(segmentation_table!=""){
+  if(!is.null(segmentation_table)){
       segmentation_table=paste0(" --tumor-segmentation ",paste0(segmentation_table,
       collapse=" --tumor-segmentation "))
     }
 
-  if(orientation_model!=""){
+  if(!is.null(orientation_model)){
       orientation_model=paste0(" --ob-priors ",orientation_model)
   }
   
@@ -1957,7 +1957,7 @@ gather_mutect2_gatk=function(
   bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  vcfs="",stats="",f1r2="",output_dir=".",tmp_dir=".",
+  vcfs="",stats=NULL,f1r2=NULL,output_dir=".",tmp_dir=".",
   output_name="",verbose=FALSE,orientation=FALSE,clean=TRUE,
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
@@ -2087,7 +2087,7 @@ learn_orientation_gatk=function(
      id=get_file_name(f1r2[1])
   }
  
-  if (f1r2!=""){
+  if (is.null(f1r2)){
     f1r2_list=paste0(" -I ",paste0(f1r2,collapse=" -I "))
   }
   
@@ -2170,7 +2170,7 @@ learn_orientation_gatk=function(
 estimate_contamination_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
   rdata=NULL,selected=NULL,
-  tumour="",normal="",tumour_pileup="",
+  tumour="",normal=NULL,tumour_pileup="",
   normal_pileup="",output_name="",output_dir=".",tmp_dir=".",
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
   db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
@@ -2221,7 +2221,7 @@ estimate_contamination_gatk=function(
     )
   )
 
-  if(normal!=""){
+  if(!is.null(normal)){
       jobs_report[["steps"]][["nPileupGatk"]]<-pileup_summary_gatk(
         sif_gatk=sif_gatk,
         bam=normal,output_name=get_file_name(normal),
@@ -2236,7 +2236,7 @@ estimate_contamination_gatk=function(
 
   }
 
-  if(tumour!=""){
+  if(!is.null(tumour)){
         jobs_report[["steps"]][["tPileupGatk"]]<-pileup_summary_gatk(
           sif_gatk=sif_gatk,
           bam=tumour,output_name=get_file_name(tumour),
@@ -2673,7 +2673,7 @@ parallel_pileup_summary_gatk=function(
 
 merge_mutect_stats_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
-  stats="",output_name="",output_dir=".",clean=FALSE,
+  stats=NULL,output_name="",output_dir=".",clean=FALSE,
   verbose=TRUE, batch_config=build_default_preprocess_config(),
   threads=1,ram=4,mode="local",
   executor_id=make_unique_id("mergeMutectStats"),
@@ -2693,7 +2693,7 @@ merge_mutect_stats_gatk=function(
      id=get_file_name(stats[1])
   }
  
-  if (stats!=""){
+  if (!is.null(stats)){
     stat=paste0(" -stats ",paste0(stats,collapse=" -stats "))
   }
   
