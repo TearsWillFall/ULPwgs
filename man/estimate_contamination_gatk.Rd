@@ -9,7 +9,7 @@ estimate_contamination_gatk(
   rdata = NULL,
   selected = NULL,
   tumour = "",
-  normal = "",
+  normal = NULL,
   tumour_pileup = "",
   normal_pileup = "",
   output_name = "",

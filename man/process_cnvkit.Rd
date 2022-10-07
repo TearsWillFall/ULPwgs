@@ -13,7 +13,7 @@ process_cnvkit(
   access = build_default_reference_list()$HG19$reference$access_5k,
   sif_cnvkit = build_default_sif_list()$sif_cnvkit,
   pon = build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn_male,
-  tumor = "",
+  tumour = "",
   seg_method = "cbs",
   seq_method = "hybrid",
   output_name = "",
@@ -26,7 +26,7 @@ process_cnvkit(
   gc = TRUE,
   edge = TRUE,
   rmask = TRUE,
-  smooth = TRUE,
+  smooth = FALSE,
   low_tc = FALSE,
   drop_low_coverage = TRUE,
   drop_outliers = 10,
@@ -45,30 +45,6 @@ process_cnvkit(
   male_reference_diagram = FALSE,
   gender_diagram = "male",
   shift_diagram = TRUE,
-  normal_ichor = 0.5,
-  ploidy_ichor = 2,
-  maxCN_ichor = 7,
-  includeHOMD_ichor = FALSE,
-  scStates_ichor = c(1, 3),
-  txnE_ichor = 0.9999999,
-  txnStrength_ichor = 1e+07,
-  min_cov_ichor = -15,
-  lambda_ichor = NULL,
-  coverage_ichor = NULL,
-  minSegmentBins_ichor = 50,
-  minTumFracToCorrect_ichor = 0.01,
-  chrs_ichor = c(1:22, "X"),
-  chrTrain_ichor = seq(1:22),
-  gender_ichor = "male",
-  maxFracCNASubclone_ichor = 0.7,
-  maxFracGenomeSubclone_ichor = 0.5,
-  lambdaScaleHyperParam_ichor = 3,
-  altFracThreshold_ichor = 0.05,
-  estimateNormal_ichor = TRUE,
-  estimatePloidy_ichor = TRUE,
-  estimateScPrevalence_ichor = TRUE,
-  plotYLim_ichor = c(-2, 2),
-  plotFileType_ichor = "pdf",
   batch_config = build_default_preprocess_config(),
   threads = 4,
   ram = 4,
@@ -93,6 +69,8 @@ process_cnvkit(
 \item{sif_cnvkit}{\link{REQUIRED} Path to cnvkit sif file.}
 
 \item{pon}{\link{OPTIONAL} Path to panel of normal.}
+
+\item{tumour}{\link{REQUIRED} Path to tumour BAM file.}
 
 \item{seg_method}{\link{OPTIONAL} Method to use to generate segmentation calls.Default  cbs. Options \link{"cbs","flasso","haar","none","hmm","hmm-tumor","hmm-germline"}}
 
@@ -134,42 +112,6 @@ process_cnvkit(
 
 \item{shift_diagram}{\link{OPTIONAL} Adjust the X and Y chromosomes according to sample sex. Default TRUE}
 
-\item{normal_ichor}{\link{OPTIONAL} Path to normal samples. Default c(0.5,0.6,0.7,0.8,0.9)}
-
-\item{ploidy_ichor}{\link{OPTIONAL} Initial tumour ploidy; can be more than one value if additional ploidy initializations are desired. Default: 2}
-
-\item{maxCN_ichor}{\link{OPTIONAL} Total clonal states. Default 7.}
-
-\item{includeHOMD_ichor}{\link{OPTIONAL} If FALSE, then exclude HOMD state. Useful when using large bins (e.g. 1Mb). Default FALSE.}
-
-\item{scStates_ichor}{\link{OPTIONAL}  Subclonal states to consider. Default NULL}
-
-\item{txnE_ichor}{\link{OPTIONAL} Self-transition probability. Increase to decrease number of segments. Default: \link{0.9999999}}
-
-\item{txnStrength_ichor}{\link{OPTIONAL} Transition pseudo-counts. Exponent should be the same as the number of decimal places of --txnE. Default: \link{1e+07}}
-
-\item{lambda_ichor}{\link{OPTIONAL} Initial Student's t precision; must contain 4 values (e.g. c(1500,1500,1500,1500)); if not provided then will automatically use based on variance of data}
-
-\item{minSegmentBins_ichor}{\link{OPTIONAL}  Minimum number of bins for largest segment threshold required to estimate tumor fraction; if below this threshold, then will be assigned zero tumor fraction}
-
-\item{maxFracCNASubclone_ichor}{\link{OPTIONAL} Exclude solutions with fraction of subclonal events greater than this value. Default 0.7}
-
-\item{maxFracGenomeSubclone_ichor}{\link{OPTIONAL} Exclude solutions with subclonal genome fraction greater than this value. Default 0.5}
-
-\item{lambdaScaleHyperParam_ichor}{\link{OPTIONAL} Hyperparameter (scale) for Gamma prior on Student's-t precision. Default 3}
-
-\item{altFracThreshold_ichor}{\link{OPTIONAL} Minimum proportion of bins altered required to estimate tumor fraction; if below this threshold, then will be assigned zero tumor fraction. Default: \link{0.05}}
-
-\item{estimateNormal_ichor}{\link{OPTIONAL} Estimate normal. Default TRUE.}
-
-\item{estimatePloidy_ichor}{\link{OPTIONAL} Estimate tumour ploidy. Default TRUE.}
-
-\item{estimateScPrevalence_ichor}{\link{OPTIONAL} Estimate subclonal prevalence. Default TRUE.}
-
-\item{plotYLim_ichor}{\link{OPTIONAL} ylim to use for chromosome plots. Default: \link{c(-2,2)}}
-
-\item{plotFileType_ichor}{\link{OPTIONAL} File format for output plots. Default pdf}
-
 \item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
 
 \item{ram}{\link{OPTIONAL} RAM memory to asing to each thread. Default 4}
@@ -188,11 +130,45 @@ process_cnvkit(
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
 
-\item{tumour}{\link{REQUIRED} Path to tumour BAM file.}
-
 \item{normal}{\link{OPTIONAL} Path to normal BAM file.}
 
+\item{normal_ichor}{\link{OPTIONAL} Path to normal samples. Default c(0.5,0.6,0.7,0.8,0.9)}
+
+\item{ploidy_ichor}{\link{OPTIONAL} Initial tumour ploidy; can be more than one value if additional ploidy initializations are desired. Default: 2}
+
+\item{lambda_ichor}{\link{OPTIONAL} Initial Student's t precision; must contain 4 values (e.g. c(1500,1500,1500,1500)); if not provided then will automatically use based on variance of data}
+
+\item{scStates_ichor}{\link{OPTIONAL}  Subclonal states to consider. Default NULL}
+
 \item{output_name_ichor}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
+
+\item{lambdaScaleHyperParam_ichor}{\link{OPTIONAL} Hyperparameter (scale) for Gamma prior on Student's-t precision. Default 3}
+
+\item{maxCN_ichor}{\link{OPTIONAL} Total clonal states. Default 7.}
+
+\item{estimateNormal_ichor}{\link{OPTIONAL} Estimate normal. Default TRUE.}
+
+\item{estimateScPrevalence_ichor}{\link{OPTIONAL} Estimate subclonal prevalence. Default TRUE.}
+
+\item{estimatePloidy_ichor}{\link{OPTIONAL} Estimate tumour ploidy. Default TRUE.}
+
+\item{maxFracGenomeSubclone_ichor}{\link{OPTIONAL} Exclude solutions with subclonal genome fraction greater than this value. Default 0.5}
+
+\item{maxFracCNASubclone_ichor}{\link{OPTIONAL} Exclude solutions with fraction of subclonal events greater than this value. Default 0.7}
+
+\item{minSegmentBins_ichor}{\link{OPTIONAL}  Minimum number of bins for largest segment threshold required to estimate tumor fraction; if below this threshold, then will be assigned zero tumor fraction}
+
+\item{altFracThreshold_ichor}{\link{OPTIONAL} Minimum proportion of bins altered required to estimate tumor fraction; if below this threshold, then will be assigned zero tumor fraction. Default: \link{0.05}}
+
+\item{includeHOMD_ichor}{\link{OPTIONAL} If FALSE, then exclude HOMD state. Useful when using large bins (e.g. 1Mb). Default FALSE.}
+
+\item{txnE_ichor}{\link{OPTIONAL} Self-transition probability. Increase to decrease number of segments. Default: \link{0.9999999}}
+
+\item{txnStrength_ichor}{\link{OPTIONAL} Transition pseudo-counts. Exponent should be the same as the number of decimal places of --txnE. Default: \link{1e+07}}
+
+\item{plotFileType_ichor}{\link{OPTIONAL} File format for output plots. Default pdf}
+
+\item{plotYLim_ichor}{\link{OPTIONAL} ylim to use for chromosome plots. Default: \link{c(-2,2)}}
 }
 \description{
 This function functions calls Mutect2 for variant calling.

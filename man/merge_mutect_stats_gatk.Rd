@@ -6,7 +6,7 @@
 \usage{
 merge_mutect_stats_gatk(
   sif_gatk = build_default_sif_list()$sif_gatk,
-  stats = "",
+  stats = NULL,
   output_name = "",
   output_dir = ".",
   clean = FALSE,
