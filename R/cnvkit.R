@@ -80,7 +80,7 @@ process_cnvkit=function(
     access=build_default_reference_list()$HG19$reference$access_5k,
     sif_cnvkit=build_default_sif_list()$sif_cnvkit,
     pon=build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn_male,
-    tumor="",
+    tumour="",
     seg_method="cbs",
     seq_method="hybrid",
     output_name="",
@@ -112,30 +112,6 @@ process_cnvkit=function(
     male_reference_diagram=FALSE,
     gender_diagram="male",
     shift_diagram=TRUE,
-    normal_ichor=0.5,
-    ploidy_ichor=2,
-    maxCN_ichor=7,
-    includeHOMD_ichor=FALSE,
-    scStates_ichor=c(1,3),
-    txnE_ichor=0.9999999,
-    txnStrength_ichor=1e7,
-    min_cov_ichor=-15,
-    lambda_ichor=NULL,
-    coverage_ichor=NULL,
-    minSegmentBins_ichor=50,
-    minTumFracToCorrect_ichor=0.01,
-    chrs_ichor=c(1:22,"X"),
-    chrTrain_ichor=seq(1:22),
-    gender_ichor="male",
-    maxFracCNASubclone_ichor=0.7,
-    maxFracGenomeSubclone_ichor=0.5,
-    lambdaScaleHyperParam_ichor=3,
-    altFracThreshold_ichor=0.05,
-    estimateNormal_ichor=TRUE,
-    estimatePloidy_ichor=TRUE,
-    estimateScPrevalence_ichor=TRUE,
-    plotYLim_ichor=c(-2,2),
-    plotFileType_ichor="pdf",
     batch_config=build_default_preprocess_config(),
     threads=4,ram=4,mode="local",
     executor_id=make_unique_id("processCNVkit"),
@@ -144,20 +120,18 @@ process_cnvkit=function(
     wait=FALSE,hold=NULL
   ){
 
-
-  if(!is.null(rdata)){
-      load(rdata)
-      if(!is.null(selected)){
-          region=region_list[selected]
-      }
-  }
-
+    if(!is.null(rdata)){
+        load(rdata)
+        if(!is.null(selected)){
+            tumour=region_list[selected]
+        }
+    }
       
   id=""
     if(output_name!=""){
       id=output_name
     }else{
-      id=get_file_name(tumor)
+      id=get_file_name(tumour)
     }
 
 
@@ -185,7 +159,7 @@ process_cnvkit=function(
         sif_cnvkit=sif_cnvkit,
         ref_genome=ref_genome,
         bed=target,
-        bam=tumor,
+        bam=tumour,
         output_name=paste0(id,".targetcoverage"),
         output_dir=out_file_dir,
         read_count=read_count,
@@ -202,7 +176,7 @@ process_cnvkit=function(
         sif_cnvkit=sif_cnvkit,
         ref_genome=ref_genome,
         bed=antitarget,
-        bam=tumor,
+        bam=tumour,
         output_name=paste0(id,".antitargetcoverage"),
         output_dir=out_file_dir,
         read_count=read_count,
@@ -233,44 +207,6 @@ process_cnvkit=function(
         hold=c(jobs_report[["steps"]][["targetCoverageCNVkit"]]$job_id,
         jobs_report[["steps"]][["antitargetCoverageCNVkit"]]$job_id)
   )
-
-  jobs_report[["steps"]][["hybridIchorCNA"]]<-parallel_sample_ichor_capture(
-    cnrs=jobs_report[["steps"]][["fixCNVkit"]]$out_files$cnr,
-    normal=normal_ichor,
-    ploidy=ploidy_ichor,
-    maxCN=maxCN_ichor,
-    includeHOMD=includeHOMD_ichor,
-    scStates=scStates_ichor,
-    txnE=txnE_ichor,
-    txnStrength=txnStrength_ichor,
-    output_dir=out_file_dir,
-    min_cov=min_cov_ichor,
-    lambda=lambda_ichor,
-    coverage=coverage_ichor,
-    minSegmentBins=minSegmentBins_ichor,
-    minTumFracToCorrect=minTumFracToCorrect_ichor,
-    chrs=chrs_ichor,
-    chrTrain=chrTrain_ichor,
-    gender=gender_ichor,
-    maxFracCNASubclone=maxFracCNASubclone_ichor,
-    maxFracGenomeSubclone= maxFracGenomeSubclone_ichor,
-    lambdaScaleHyperParam=lambdaScaleHyperParam_ichor,
-    altFracThreshold=altFracThreshold_ichor,
-    estimateNormal=estimateNormal_ichor,
-    estimatePloidy=estimatePloidy_ichor,
-    estimateScPrevalence=estimateScPrevalence_ichor,
-    plotYLim=plotYLim_ichor,
-    plotFileType=plotFileType_ichor,
-    verbose=verbose,
-    batch_config=batch_config,
-    threads=threads,ram=ram,
-    mode=mode,
-    executor_id=task_id,
-    time=time,
-    hold=jobs_report[["steps"]][["fixCNVkit"]]$job_id
-)
-
-
 
   jobs_report[["steps"]][["segmentCNVkit"]]<-segment_cnvkit(
         sif_cnvkit=sif_cnvkit,
