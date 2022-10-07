@@ -2263,7 +2263,7 @@ de
       paste0(paste0("^",unlist(chrs),collapse="\\|")," \" >> ",cns_tmp)))
     }
     exec_code=paste(exec_code,"; singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
-    " cnvkit.py diagram -o ",out_file,cns_code,add,title,min_probes,cn_thr,
+    " cnvkit.py diagram -o ",out_file,cns_code,gender,add,title,min_probes,cn_thr,
     cnr_tmp,"&& rm ",cnr_tmp,cns_tmp)
 
     if(mode=="batch"){
