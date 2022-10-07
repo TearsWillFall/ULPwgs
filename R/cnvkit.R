@@ -166,7 +166,7 @@ process_cnvkit=function(
         min_mapq=min_mapq,
         verbose=verbose,
         batch_config=batch_config,
-        threads=1,ram=1,mode=mode,
+        threads=threads,ram=ram,mode=mode,
         executor_id=task_id,
         time=time,
         hold=hold
@@ -183,7 +183,7 @@ process_cnvkit=function(
         min_mapq=min_mapq,
         verbose=verbose,
         batch_config=batch_config,
-        threads=1,ram=1,mode=mode,
+        threads=threads,ram=ram,mode=mode,
         executor_id=task_id,
         time=time,
         hold=hold
@@ -219,7 +219,7 @@ process_cnvkit=function(
         drop_outliers=drop_outliers,
         verbose=verbose,
         batch_config=batch_config,
-        threads=1,ram=1,mode=mode,
+        threads=threads,ram=ram,mode=mode,
         executor_id=task_id,
         time=time,
         hold=jobs_report[["steps"]][["fixCNVkit"]]$job_id
