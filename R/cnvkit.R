@@ -253,7 +253,6 @@ process_cnvkit=function(
     )
   }
 
-
   if(diagram){
       jobs_report[["steps"]][["diagramCNVkit"]]<-diagram_cnvkit(
         sif_cnvkit=sif_cnvkit,
