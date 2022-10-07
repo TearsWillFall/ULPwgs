@@ -229,7 +229,7 @@ process_cnvkit=function(
   if(scatter){
     jobs_report[["steps"]][["scatterCNVkit"]]<-scatter_cnvkit(
       sif_cnvkit=sif_cnvkit,
-      cnr=jobs_report[["steps"]][["segmentCNVkit"]]$out_files$cnr,
+      cnr=jobs_report[["steps"]][["fixCNVkit"]]$out_files$cnr,
       cns=jobs_report[["steps"]][["segmentCNVkit"]]$out_files$cns,
       output_name=id,
       output_dir=out_file_dir,
@@ -257,7 +257,7 @@ process_cnvkit=function(
   if(diagram){
       jobs_report[["steps"]][["diagramCNVkit"]]<-diagram_cnvkit(
         sif_cnvkit=sif_cnvkit,
-        cnr=jobs_report[["steps"]][["segmentCNVkit"]]$out_files$cnr,
+        cnr=jobs_report[["steps"]][["fixCNVkit"]]$out_files$cnr,
         cns=jobs_report[["steps"]][["segmentCNVkit"]]$out_files$cns,
         output_name=id,
         output_dir=out_file_dir,
