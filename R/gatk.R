@@ -3829,7 +3829,7 @@ multisample_haplotypecaller_gatk=function(
             
             })
         
-            job_report<-parallel_regions_haplotypecaller_gatk(
+            job_report<-parallel_samples_haplotypecaller_gatk(
                   sif_gatk=file_info[x,]$sif_gatk,
                   bin_bcftools=file_info[x,]$sif_bcftools,
                   bin_samtools=file_info[x,]$bin_samtools,
@@ -3865,7 +3865,7 @@ multisample_haplotypecaller_gatk=function(
         normal=system(paste0("find ",bam_dir_path,"| grep ",pattern),intern=TRUE)
       
 
-          job_report<-parallel_regions_haplotypecaller_gatk(
+          job_report<-parallel_samples_haplotypecaller_gatk(
                   sif_gatk=sif_gatk,
                   bin_bcftools=sif_bcftools,
                   bin_samtools=bin_samtools,
