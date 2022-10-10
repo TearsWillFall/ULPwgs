@@ -2,13 +2,14 @@
 #'
 #' This function creates read orientation model for mutect2 filtering
 #'
-#' @param bin_vep Path to VEP binary.
-#' @param bin_bgzip Path to bgzip binary.
-#' @param bin_tabix Path to tabix binary.
-#' @param vcf Path to VCF file.
-#' @param compress Generate a compressed VCF
-#' @param clean Remove extra files.
-#' @param output_dir Path to the output directory.
+#' @param bin_vep [REQUIRED] Path to VEP binary.
+#' @param bin_bgzip [REQUIRED] Path to bgzip binary.
+#' @param bin_tabix [REQUIRED] Path to tabix binary.
+#' @param vcf [REQUIRED] Path to VCF file.
+#' @param compress [OPTIONAL] Generate a compressed VCF
+#' @param output_name [OPTIONAL] Name of output file
+#' @param clean [OPTIONAL]Remove extra files.
+#' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param threads [OPTIONAL] Number of threads to split the work. Default 4
 #' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
@@ -29,6 +30,7 @@ annotate_vep=function(
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
     bin_tabix=build_default_tool_binary_list()$bin_tabix,
     vcf="",
+    output_name="",
     compress=TRUE,
     clean=FALSE,
     output_dir=".",
