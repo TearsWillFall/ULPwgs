@@ -1578,7 +1578,7 @@ parallel_samples_mutect2_gatk=function(
                 input_args=argg,
                 out_file_dir=out_file_dir,
                 out_files=list(
-                  filtered_vcf=ifelse(filter,paste0(out_file_dir,,"/mutect2_reports/",names(tumour_list),"/",
+                  filtered_vcf=ifelse(filter,paste0(out_file_dir,"/mutect2_reports/",names(tumour_list),"/",
                   names(tumour_list),".filtered.vcf"),""),
                   sorted_vcf=paste0(out_file_dir,"/mutect2_reports/",names(tumour_list),"/",
                   names(tumour_list),".sorted.vcf"),
