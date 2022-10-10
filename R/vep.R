@@ -22,7 +22,9 @@
 #' @export
 
 
-call_vep=function(
+annotate_vep=function(
+    rdata=NULL,
+    selected=NULL,
     bin_vep=build_default_tool_binary_list()$bin_vep,
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
     bin_tabix=build_default_tool_binary_list()$bin_tabix,
