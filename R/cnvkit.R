@@ -126,7 +126,7 @@ process_cnvkit=function(
         }
     }
       
-  id=""
+    id=""
     if(output_name!=""){
       id=output_name
     }else{
@@ -137,7 +137,7 @@ process_cnvkit=function(
 
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir,name=paste0(id,"/cnvkit_reports"))
+    out_file_dir=set_dir(dir=output_dir,name=paste0("cnvkit_reports/",id))
     job=build_job(executor_id=executor_id,task=task_id)
 
 
@@ -164,6 +164,7 @@ process_cnvkit=function(
         read_count=read_count,
         min_mapq=min_mapq,
         verbose=verbose,
+        output_dir=out_file_dir,
         batch_config=batch_config,
         threads=threads,ram=ram,mode=mode,
         executor_id=task_id,
@@ -512,23 +513,17 @@ parallel_samples_process_cnvkit=function(
                 input_args=argg,
                 out_file_dir=out_file_dir,
                 out_files=list(
-                  diagram=ifelse(diagram,paste0(out_file_dir,"/",
-                  names(tumour_list),"/cnvkit_reports/",
-                  names(tumour_list),".diagram.pdf"),""),
-                  scatter=ifelse(diagram,paste0(out_file_dir,"/",
-                  names(tumour_list),"/cnvkit_reports/",
-                  names(tumour_list),".scatter.pdf"),""),
-                  target_cnn=paste0(out_file_dir,"/",
-                  names(tumour_list),"/cnvkit_reports/",
+                  diagram=ifelse(diagram,paste0(out_file_dir,"/cnvkit_reports/",
+                  names(tumour_list),"/",names(tumour_list),".diagram.pdf"),""),
+                  scatter=ifelse(scatter,paste0(out_file_dir,"/cnvkit_reports/",
+                  names(tumour_list),"/",names(tumour_list),".scatter.pdf"),""),
+                  target_cnn=paste0(out_file_dir,"/cnvkit_reports/",names(tumour_list),"/",
                   names(tumour_list),".target.cnn"),
-                  antitarget_cnn=paste0(out_file_dir,"/",
-                  names(tumour_list),"/cnvkit_reports/",
+                  antitarget_cnn=paste0(out_file_dir,"/cnvkit_reports/",names(tumour_list),"/",
                   names(tumour_list),".antitarget.cnn"),
-                  corrected_cnr=paste0(out_file_dir,"/",
-                  names(tumour_list),"/cnvkit_reports/",
+                  corrected_cnr=paste0(out_file_dir,"/cnvkit_reports/",names(tumour_list),"/",
                   names(tumour_list),".cnr"),
-                  segments_cns=paste0(out_file_dir,"/",
-                  names(tumour_list),"/cnvkit_reports/",
+                  segments_cns=paste0(out_file_dir,"/cnvkit_reports/",names(tumour_list),"/",
                   names(tumour_list),".cns"),
                 )
             )

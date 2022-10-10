@@ -66,7 +66,7 @@ call_variants_strelka=function(
 
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir,name=paste0(id,"/strelka_reports"))
+    out_file_dir=set_dir(dir=output_dir,name=paste0("strelka_reports/",id))
     job=build_job(executor_id=executor_id,task_id=task_id)
 
 
@@ -172,10 +172,7 @@ parallel_samples_call_variants_strelka=function(
 
     tumour_list=tumour
     names(tumour_list)=Vectorize(get_file_name)(tumour_list)
-    if(is.null(tumour)){
-        normal_list=normal
-        names(normal_list)=Vectorize(get_file_name)(normal)
-     }
+ 
     
     if(mode=="local"){
       jobs_report[["steps"]][["par_sample_call_variants"]]<-
@@ -238,55 +235,69 @@ parallel_samples_call_variants_strelka=function(
                 out_files=list(
                     somatic=list(
                       snvs=list(
-                             workflow=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
-                          "/strelka_reports/somatic_snvs/runWorkflow.py"),
+                             workflow=paste0(out_file_dir,"/",patient_id,
+                          "/strelka_reports/",names(tumour_list),"/somatic_snvs/runWorkflow.py"),
                               stats=list(
-                                tsv=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
-                          "/strelka_reports/somatic_snvs/results/stats/runStats.tsv"),
-                                xml=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
-                          "/strelka_reports/somatic_snvs/results/stats/runStats.tsv")
+                                tsv=paste0(out_file_dir,"/",patient_id,
+                          "/strelka_reports/",names(tumour_list),"/somatic_snvs/results/stats/runStats.tsv"),
+                                xml=paste0(out_file_dir,"/",patient_id,
+                          "/strelka_reports/",names(tumour_list),"/somatic_snvs/results/stats/runStats.tsv")
                             ),
                             variants=list(
-                                indel=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
-                          "/strelka_reports/somatic_snvs/results/variants/somatic.indels.vcf.gz"),
-                                indel_index=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
-                          "/strelka_reports/somatic_snvs/results/variants/somatic.indels.vcf.gz.tbi"),
-                                snvs=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
-                          "/strelka_reports/somatic_snvs/results/variants/somatic.snvs.vcf.gz"),
-                                snvs_index=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
-                          "/strelka_reports/somatic_snvs/results/variants/somatic.snvs.vcf.gz.tbi")
+                                indel=paste0(out_file_dir,"/",patient_id,
+                          "/strelka_reports/",names(tumour_list),"/somatic_snvs/results/variants/somatic.indels.vcf.gz"),
+                                indel_index=paste0(out_file_dir,"/",patient_id,
+                          "/strelka_reports/",names(tumour_list),"/somatic_snvs/results/variants/somatic.indels.vcf.gz.tbi"),
+                                snvs=paste0(out_file_dir,"/",patient_id,
+                          "/strelka_reports/",names(tumour_list),"/somatic_snvs/results/variants/somatic.snvs.vcf.gz"),
+                                snvs_index=paste0(out_file_dir,"/",patient_id,
+                          "/strelka_reports/",,names(tumour_list),,"/somatic_snvs/results/variants/somatic.snvs.vcf.gz.tbi")
                             )
                     ),
                     svs=list(
-                        workflow=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
-                          "/strelka_reports/somatic_sv/runWorkflow.py"),
+                        workflow=paste0(out_file_dir,"/",patient_id,
+                          "/strelka_reports/",names(tumour_list),
+                          "/somatic_sv/runWorkflow.py"),
                         stats=list(
-                          aligment=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
-                          "/strelka_reports/somatic_sv/results/stats/alignmentStatsSummary.txt"),
-                          tsv=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
-                          "/strelka_reports/somatic_sv/results/stats/svCandidateGenerationStats.tsv"),
-                          xml=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
-                          "/strelka_reports/somatic_sv/results/stats/svCandidateGenerationStats.xml"),
-                          graph=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
-                          "/strelka_reports/somatic_sv/results/stats/svLocusGraphStats.tsv")
+                          aligment=paste0(out_file_dir,"/",patient_id,
+                          "/strelka_reports/",names(tumour_list),
+                          "/somatic_sv/results/stats/alignmentStatsSummary.txt"),
+                          tsv=paste0(out_file_dir,"/",patient_id,
+                          "/strelka_reports/",names(tumour_list),
+                          "/somatic_sv/results/stats/svCandidateGenerationStats.tsv"),
+                          xml=paste0(out_file_dir,"/",patient_id,
+                          "/strelka_reports/",names(tumour_list),
+                          "/somatic_sv/results/stats/svCandidateGenerationStats.xml"),
+                          graph=paste0(out_file_dir,"/",patient_id,
+                          "/strelka_reports/",names(tumour_list),
+                          "/somatic_sv/results/stats/svLocusGraphStats.tsv")
                         ),
                         variants=list(
-                          small_indel_candidate=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
-                          "/strelka_reports/somatic_sv/results/variants/candidateSmallIndels.vcf.gz"),
-                          small_indel_candidate_index=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
-                          "/strelka_reports/somatic_sv/results/variants/candidateSmallIndels.vcf.gz.tbi"),
-                          sv_candidate=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
-                          "/strelka_reports/somatic_sv/results/variants/candidateSV.vcf.gz"),
-                          sv_candidate_index=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
-                          "/strelka_reports/somatic_sv/results/variants/candidateSV.vcf.gz.tbi"),
-                          diploid_sv=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
-                          "/strelka_reports/somatic_sv/results/variants/diploidSV.vcf.gz"),
-                          diploid_sv_index=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
-                          "/strelka_reports/somatic_sv/results/variants/diploidSV.vcf.gz.tbi"),
-                          somatic_sv=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
-                          "/strelka_reports/somatic_svs/results/variants/somaticSV.vcf.gz"),
-                          somatic_sv_index=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
-                          "/strelka_reports/somatic_svs/results/variants/somaticSV.vcf.gz.tbi")
+                          small_indel_candidate=paste0(out_file_dir,"/",patient_id,
+                          "/strelka_reports/",names(tumour_list),
+                          "/somatic_sv/results/variants/candidateSmallIndels.vcf.gz"),
+                          small_indel_candidate_index=paste0(out_file_dir,"/",patient_id,
+                          "/strelka_reports/",names(tumour_list),
+                          "/somatic_sv/results/variants/candidateSmallIndels.vcf.gz.tbi"),
+                          sv_candidate=paste0(out_file_dir,"/",patient_id,
+                          "/strelka_reports/",names(tumour_list),
+                          "/somatic_sv/results/variants/candidateSV.vcf.gz"),
+                          sv_candidate_index=paste0(out_file_dir,"/",
+                          patient_id,"/",names(tumour_list),
+                          "/strelka_reports/",names(tumour_list),
+                          "/somatic_sv/results/variants/candidateSV.vcf.gz.tbi"),
+                          diploid_sv=paste0(out_file_dir,"/",patient_id,
+                          "/strelka_reports/",names(tumour_list),
+                          "/somatic_sv/results/variants/diploidSV.vcf.gz"),
+                          diploid_sv_index=paste0(out_file_dir,"/",patient_id,
+                          "/strelka_reports/",names(tumour_list),
+                          "/somatic_sv/results/variants/diploidSV.vcf.gz.tbi"),
+                          somatic_sv=paste0(out_file_dir,"/",patient_id,
+                          "/strelka_reports/",names(tumour_list),
+                          "/somatic_svs/results/variants/somaticSV.vcf.gz"),
+                          somatic_sv_index=paste0(out_file_dir,"/",patient_id,
+                          "/strelka_reports/",names(tumour_list)
+                          "/somatic_svs/results/variants/somaticSV.vcf.gz.tbi")
                     )
                  )
               )

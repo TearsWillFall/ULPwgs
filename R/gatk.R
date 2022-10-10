@@ -1220,7 +1220,7 @@ parallel_regions_mutect2_gatk=function(
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir,name=paste0(id,"/mutect2_reports"))
+  out_file_dir=set_dir(dir=output_dir,name=paste0("mutect2_reports/",id))
   tmp_dir=set_dir(dir=out_file_dir,name="tmp")
 
   job=build_job(executor_id=executor_id,task_id=task_id)
@@ -1578,14 +1578,11 @@ parallel_samples_mutect2_gatk=function(
                 input_args=argg,
                 out_file_dir=out_file_dir,
                 out_files=list(
-                  filtered_vcf=ifelse(filter,paste0(out_file_dir,"/",
-                  names(tumour_list),"/mutect2_reports/",
+                  filtered_vcf=ifelse(filter,paste0(out_file_dir,,"/mutect2_reports/",names(tumour_list),"/",
                   names(tumour_list),".filtered.vcf"),""),
-                  sorted_vcf=paste0(out_file_dir,"/",
-                  names(tumour_list),"/mutect2_reports/",
+                  sorted_vcf=paste0(out_file_dir,"/mutect2_reports/",names(tumour_list),"/",
                   names(tumour_list),".sorted.vcf"),
-                  compressed_vcf=paste0(out_file_dir,"/",
-                  names(tumour_list),"/mutect2_reports/",
+                  compressed_vcf=paste0(out_file_dir,"/mutect2_reports/",names(tumour_list),"/",
                   names(tumour_list),".sorted.vcf.gz")
                 )
                   )
@@ -3280,7 +3277,7 @@ parallel_regions_haplotypecaller_gatk=function(
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir,name=paste0(id,"/haplotypecaller_reports"))
+  out_file_dir=set_dir(dir=output_dir,name=paste0("haplotypecaller_reports/",id))
   tmp_dir=set_dir(dir=out_file_dir,name="tmp")
 
   job=build_job(executor_id=executor_id,task_id=task_id)
@@ -3621,9 +3618,8 @@ parallel_samples_haplotypecaller_gatk=function(
                 input_args=argg,
                 out_file_dir=out_file_dir,
                 out_files=list(
-                  filtered_vcf=ifelse(filter,paste0(out_file_dir,"/",
-                  names(normal_list),"/haplotypecaller_reports/",
-                  names(normal_list),".filteredTranches.vcf"),""),
+                  filtered_vcf=ifelse(filter,paste0(out_file_dir,"/haplotypecaller_reports/",
+                  names(normal_list),"/",names(normal_list),".filteredTranches.vcf"),""),
                 )
                   )
              }
