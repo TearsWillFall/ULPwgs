@@ -424,7 +424,7 @@ multisample_call_variants_strelka=function(
             })
             
         
-            job_report<-parallel_samples_process_cnvkit(     
+            job_report<-parallel_samples_call_variants_strelka(     
                 bin_strelka_somatic=file_info[x,]$bin_strelka_somatic,
                 bin_strelka_germline=file_info[x,]$bin_strelka_germline,
                 bin_manta=file_info[x,]$bin_manta,
@@ -453,7 +453,7 @@ multisample_call_variants_strelka=function(
         normal=bam_files[grepl(normal_id,bam_files)]
 
 
-              job_report<-parallel_samples_process_cnvkit(     
+              job_report<-parallel_samples_call_variants_strelka(     
                 bin_strelka_somatic=bin_strelka_somatic,
                 bin_strelka_germline=bin_strelka_germline,
                 bin_manta=bin_manta,
