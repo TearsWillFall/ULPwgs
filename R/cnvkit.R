@@ -486,7 +486,8 @@ parallel_samples_process_cnvkit=function(
               min_probes_diagram,
               male_reference_diagram,
               gender_diagram,
-              shift_diagram
+              shift_diagram,
+              file = rdata_file
             )
             exec_code=paste0("Rscript -e \"ULPwgs::process_cnvkit(rdata=\\\"",
             rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
