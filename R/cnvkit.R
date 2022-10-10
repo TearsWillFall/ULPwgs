@@ -715,7 +715,7 @@ multisample_process_cnvkit=function(
                 file_info=sample_sheet
         }
         
-        file_info=file_info %>% dplyr::group_by(dplyr::across(-normal)) %>% dplyr::summarise(normal=list(normal))
+        file_info=file_info %>% dplyr::group_by(dplyr::across(-tumour)) %>% dplyr::summarise(normal=list(tumour))
 
         job_report[["steps"]][["multisample_process_cnvkit"]]=parallel::mclapply(seq(1,nrow(file_info)),FUN=function(x){
             
@@ -778,8 +778,8 @@ multisample_process_cnvkit=function(
 
     }else{
         bam_dir_path=system(paste("realpath",bam_dir),intern=TRUE)
-        normal=system(paste0("find ",bam_dir_path,"| grep ",pattern),intern=TRUE)
-      
+        tumour=system(paste0("find ",bam_dir_path,"| grep ",pattern),intern=TRUE)
+
 
             job_report<-parallel_samples_process_cnvkit(     
                 target=target,
