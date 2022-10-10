@@ -525,7 +525,7 @@ parallel_samples_process_cnvkit=function(
                   corrected_cnr=paste0(out_file_dir,"/cnvkit_reports/",names(tumour_list),"/",
                   names(tumour_list),".cnr"),
                   segments_cns=paste0(out_file_dir,"/cnvkit_reports/",names(tumour_list),"/",
-                  names(tumour_list),".cns"),
+                  names(tumour_list),".cns")
                 )
             )
     }
