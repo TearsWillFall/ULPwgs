@@ -137,7 +137,7 @@ process_cnvkit=function(
 
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir,name=id)
+    out_file_dir=set_dir(dir=output_dir,name=paste0(id,"/cnvkit_reports"))
     job=build_job(executor_id=executor_id,task=task_id)
 
 
