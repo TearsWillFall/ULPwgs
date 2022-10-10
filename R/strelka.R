@@ -296,7 +296,7 @@ parallel_samples_call_variants_strelka=function(
                           "/strelka_reports/",names(tumour_list),
                           "/somatic_svs/results/variants/somaticSV.vcf.gz"),
                           somatic_sv_index=paste0(out_file_dir,"/",patient_id,
-                          "/strelka_reports/",names(tumour_list)
+                          "/strelka_reports/",names(tumour_list),
                           "/somatic_svs/results/variants/somaticSV.vcf.gz.tbi")
                     )
                  )
