@@ -122,7 +122,7 @@ process_cnvkit=function(
     if(!is.null(rdata)){
         load(rdata)
         if(!is.null(selected)){
-            tumour=region_list[selected]
+            tumour=tumour_list[selected]
         }
     }
       
