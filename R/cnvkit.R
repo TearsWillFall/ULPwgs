@@ -829,7 +829,7 @@ multisample_process_cnvkit=function(
 
 
     if(wait&&mode=="batch"){
-        job_validator(job=unlist_level(named_list=job_report[["steps"]][["multisample_haplotypecaller"]],var="job_id"),
+        job_validator(job=unlist_level(named_list=job_report[["steps"]][["multisample_process_cnvkit"]],var="job_id"),
         time=update_time,verbose=verbose,threads=threads)
     }
 
