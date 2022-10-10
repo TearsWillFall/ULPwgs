@@ -164,7 +164,6 @@ process_cnvkit=function(
         read_count=read_count,
         min_mapq=min_mapq,
         verbose=verbose,
-        output_dir=out_file_dir,
         batch_config=batch_config,
         threads=threads,ram=ram,mode=mode,
         executor_id=task_id,
