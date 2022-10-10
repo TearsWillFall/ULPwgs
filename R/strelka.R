@@ -31,11 +31,14 @@
 
 
 call_variants_strelka=function(
+    rdata=NULL,
+    selected=NULL,
     bin_strelka_somatic=build_default_tool_binary_list()$bin_strelka$somatic,
     bin_strelka_germline=build_default_tool_binary_list()$bin_strelka$germline,
     bin_manta=build_default_tool_binary_list()$bin_manta,
     tumour="",normal="",variants="all",indel_cnds=TRUE,
     ref_genome="",output_dir=".",
+    output_name="",
     targeted=TRUE,verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     threads=1,ram=4,mode="local",
@@ -44,9 +47,26 @@ call_variants_strelka=function(
     update_time=60,wait=FALSE,hold=NULL
 ){
 
+  if(!is.null(rdata)){
+    load(rdata)
+    if(!is.null(selected)){
+      tumour=tumour_list[selected]
+    }
+  }
+
+
+    id=""
+    if(output_name!=""){
+      id=output_name
+    }else{
+      id=get_file_name(tumour)
+    }
+
+
+
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir,name="strelka_reports")
+    out_file_dir=set_dir(dir=output_dir,name=paste0(id,"/strelka_reports"))
     job=build_job(executor_id=executor_id,task_id=task_id)
 
 
@@ -75,7 +95,7 @@ call_variants_strelka=function(
         if(indel_cnds){
           hold=jobs_report[["steps"]][["callSVManta"]]$job_id
           indel_candidates=jobs_report[["steps"]][["callSVManta"]]$out_files$indel_candidates
-          indel_candidates=paste0(" --indelCandidates ",indel_candidates)
+          
         }
    }
 
@@ -84,6 +104,7 @@ call_variants_strelka=function(
         jobs_report[["steps"]][["callSNVStrelka"]]=call_snvs_strelka(
           bin_strelka_somatic=bin_strelka_somatic,
           bin_strelka_germline=bin_strelka_germline,
+          indel_candidates=indel_candidates,
           tumour=tumour,normal=normal,
           ref_genome=ref_genome,output_dir=out_file_dir,
           targeted=targeted,verbose=verbose,
@@ -94,6 +115,378 @@ call_variants_strelka=function(
     }
     return(jobs_report)
 }
+
+
+
+
+
+#' Parallel call variants per sample Strelka
+#'
+#' This function wraps the functions for variant calling with Strelka and Manta
+#' 
+#' @param bin_strelka_somatic Path to strelka somatic workflow binary
+#' @param bin_strelka_germline Path to strelka germline workflow binary
+#' @param bin_manta Path to manta pipeline binary
+#' @param tumour [OPTIONAL] Path to tumour BAM file. If not given will assume germline variant calling.
+#' @param normal [REQUIRED] Path to tumour BAM file.
+#' @param ref_genome [REQUIRED] Path to reference genome FASTA
+#' @param variants [REQUIRED] Variants types to call. Default all. Options ["snv","sv","all"]
+#' @param indel_cnds [REQUIRED] Use indel candidates to correct SNV calls. Default TRUE
+#' @param targeted [REQUIRED] Remove coverage filtering for exome/targeted data. Default TRUE
+#' @param output_dir [OPTIONAL] Path to the output directory. Default current directory
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param batch_config [OPTIONAL] Default configuration for job submission in batch.
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+
+parallel_samples_call_variants_strelka=function(
+    bin_strelka_somatic=build_default_tool_binary_list()$bin_strelka$somatic,
+    bin_strelka_germline=build_default_tool_binary_list()$bin_strelka$germline,
+    bin_manta=build_default_tool_binary_list()$bin_manta,
+    patient_id="",tumour=NULL,normal=NULL,variants="all",indel_cnds=TRUE,
+    ref_genome=build_default_reference_list()$HG19$reference$genome,
+    output_dir=".",
+    targeted=TRUE,verbose=FALSE,
+    batch_config=build_default_preprocess_config(),
+    threads=1,ram=4,mode="local",
+    executor_id=make_unique_id("parSampleCallSVManta"),
+    task_name="parSampleCallSVManta",time="48:0:0",
+    update_time=60,wait=FALSE,hold=NULL
+){
+
+    argg <- as.list(environment())
+    task_id=make_unique_id(task_name)
+    out_file_dir=set_dir(dir=output_dir,name=patient_id)
+    job=build_job(executor_id=executor_id,task_id=task_id)
+
+
+    tumour_list=tumour
+    names(tumour_list)=Vectorize(get_file_name)(tumour_list)
+    if(is.null(tumour)){
+        normal_list=normal
+        names(normal_list)=Vectorize(get_file_name)(normal)
+     }
+    
+    if(mode=="local"){
+      jobs_report[["steps"]][["par_sample_call_variants"]]<-
+      parallel::mclapply(tumour_list,FUN=function(tumour){
+        job_report <- call_variants_strelka(
+            bin_strelka_somatic=bin_strelka_somatic,
+            bin_strelka_germline=bin_strelka_germline,
+            bin_manta=bin_manta,
+            tumour=tumour,normal=normal,
+            variants=variants,indel_cnds=indel_cnds,
+            ref_genome=ref_genome,output_dir=out_file_dir,
+            targeted=targeted,verbose=verbose,
+            batch_config=batch_config,
+            threads=threads,ram=ram,mode=mode,
+            executor_id=task_id,
+            time=time,
+            hold=hold
+        )
+      },mc.cores=threads)
+    }else if(mode=="batch"){
+            rdata_file=paste0(tmp_dir,"/",job,".samples.RData")
+            output_dir=out_file_dir
+            executor_id=task_id
+            save(
+              tumour_list,
+              bin_strelka_somatic,
+              bin_strelka_germline,
+              bin_manta,
+              variants,
+              indel_cnds,
+              ref_genome,
+              targeted,
+              verbose
+            )
+            exec_code=paste0("Rscript -e \"ULPwgs::parallel_samples_call_variants_strelka(rdata=\\\"",
+            rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
+            out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+            batch_code=build_job_exec(job=job,time=time,ram=ram,
+            threads=threads,output_dir=out_file_dir2,
+            hold=hold,array=length(tumour_list))
+            exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+
+            if(verbose){
+                print_verbose(job=job,arg=argg,exec_code=exec_code)
+            }
+            error=execute_job(exec_code=exec_code)
+            if(error!=0){
+                stop("strelka failed to run due to unknown error.
+                Check std error for more information.")
+            }
+
+    
+          jobs_report[["steps"]][["par_sample_call_variants"]]<- build_job_report(
+                job_id=job,
+                executor_id=executor_id,
+                exec_code=exec_code, 
+                task_id=task_id,
+                input_args=argg,
+                out_file_dir=out_file_dir,
+                out_files=list(
+                    somatic=list(
+                      snvs=list(
+                             workflow=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
+                          "/strelka_reports/somatic_snvs/runWorkflow.py"),
+                              stats=list(
+                                tsv=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
+                          "/strelka_reports/somatic_snvs/results/stats/runStats.tsv"),
+                                xml=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
+                          "/strelka_reports/somatic_snvs/results/stats/runStats.tsv")
+                            ),
+                            variants=list(
+                                indel=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
+                          "/strelka_reports/somatic_snvs/results/variants/somatic.indels.vcf.gz"),
+                                indel_index=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
+                          "/strelka_reports/somatic_snvs/results/variants/somatic.indels.vcf.gz.tbi"),
+                                snvs=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
+                          "/strelka_reports/somatic_snvs/results/variants/somatic.snvs.vcf.gz"),
+                                snvs_index=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
+                          "/strelka_reports/somatic_snvs/results/variants/somatic.snvs.vcf.gz.tbi")
+                            )
+                    ),
+                    svs=list(
+                        workflow=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
+                          "/strelka_reports/somatic_sv/runWorkflow.py"),
+                        stats=list(
+                          aligment=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
+                          "/strelka_reports/somatic_sv/results/stats/alignmentStatsSummary.txt"),
+                          tsv=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
+                          "/strelka_reports/somatic_sv/results/stats/svCandidateGenerationStats.tsv"),
+                          xml=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
+                          "/strelka_reports/somatic_sv/results/stats/svCandidateGenerationStats.xml"),
+                          graph=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
+                          "/strelka_reports/somatic_sv/results/stats/svLocusGraphStats.tsv")
+                        ),
+                        variants=list(
+                          small_indel_candidate=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
+                          "/strelka_reports/somatic_sv/results/variants/candidateSmallIndels.vcf.gz"),
+                          small_indel_candidate_index=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
+                          "/strelka_reports/somatic_sv/results/variants/candidateSmallIndels.vcf.gz.tbi"),
+                          sv_candidate=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
+                          "/strelka_reports/somatic_sv/results/variants/candidateSV.vcf.gz"),
+                          sv_candidate_index=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
+                          "/strelka_reports/somatic_sv/results/variants/candidateSV.vcf.gz.tbi"),
+                          diploid_sv=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
+                          "/strelka_reports/somatic_sv/results/variants/diploidSV.vcf.gz"),
+                          diploid_sv_index=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
+                          "/strelka_reports/somatic_sv/results/variants/diploidSV.vcf.gz.tbi"),
+                          somatic_sv=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
+                          "/strelka_reports/somatic_svs/results/variants/somaticSV.vcf.gz"),
+                          somatic_sv_index=paste0(out_file_dir,"/",patient_id,"/",names(tumour_list),
+                          "/strelka_reports/somatic_svs/results/variants/somaticSV.vcf.gz.tbi")
+                    )
+                 )
+              )
+            )
+          )
+        
+      }
+
+    return(job_report)
+}
+
+
+
+#' Parallel call variants per sample Strelka
+#'
+#' This function wraps the functions for variant calling with Strelka and Manta
+#' 
+#' @param bin_strelka_somatic Path to strelka somatic workflow binary
+#' @param bin_strelka_germline Path to strelka germline workflow binary
+#' @param bin_manta Path to manta pipeline binary
+#' @param sample_sheet [OPTIONAL] Path to sheet with sample information.
+#' @param bam_dir [OPTIONAL] Path to directory with BAM files.
+#' @param normal_id [OPTIONAL] Path to directory with BAM files.
+#' @param pattern [OPTIONAL] Pattern to search BAM files within directory.
+#' @param ref_genome [REQUIRED] Path to reference genome FASTA
+#' @param variants [REQUIRED] Variants types to call. Default all. Options ["snv","sv","all"]
+#' @param indel_cnds [REQUIRED] Use indel candidates to correct SNV calls. Default TRUE
+#' @param targeted [REQUIRED] Remove coverage filtering for exome/targeted data. Default TRUE
+#' @param output_dir [OPTIONAL] Path to the output directory. Default current directory
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param batch_config [OPTIONAL] Default configuration for job submission in batch.
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+
+
+multisample_call_variants_strelka=function(
+    bin_strelka_somatic=build_default_tool_binary_list()$bin_strelka$somatic,
+    bin_strelka_germline=build_default_tool_binary_list()$bin_strelka$germline,
+    bin_manta=build_default_tool_binary_list()$bin_manta,
+    ref_genome=build_default_reference_list()$HG19$reference$genome,
+    sample_sheet=NULL,
+    normal_id=NULL,
+    bam_dir="",
+    pattern="bam$",
+    patient_id="",
+    variants="all",
+    indel_cnds=TRUE,
+    output_dir=".",
+    header=TRUE,
+    sep="\t",
+    targeted=TRUE,verbose=FALSE,
+    batch_config=build_default_preprocess_config(),
+    threads=1,ram=4,mode="local",
+    executor_id=make_unique_id("multisampleStrelka"),
+    task_name="multisampleStrelka",time="48:0:0",
+    update_time=60,wait=FALSE,hold=NULL
+){
+
+  argg <- as.list(environment())
+
+        task_id=make_unique_id(task_name)
+        out_file_dir=set_dir(dir=output_dir)
+
+        job=build_job(executor_id=executor_id,task_id=task_id)
+
+        job_report=build_job_report(
+                job_id=job,
+                executor_id=executor_id,
+                exec_code=list(), 
+                task_id=task_id,
+                input_args=argg,
+                out_file_dir=out_file_dir,
+                out_files=list(
+                )
+        )
+
+
+
+    columns=c(
+        "bin_strelka_somatic",
+        "bin_strelka_germline",
+        "bin_manta",
+        "patient_id",
+        "tumour",
+        "normal",
+        "variants",
+        "indel_cnds",
+        "ref_genome",
+        "output_dir",
+        "targeted",
+        "verbose=FALSE",
+        "batch_config",
+        "threads",
+        "ram",
+        "mode",
+        "time",
+        "hold"
+    )
+
+
+    if(!is.null(sample_sheet)){
+      
+        if(!is.data.frame(sample_sheet)){
+                file_info=read.csv(sample_sheet,header=header,sep=sep,stringsAsFactors=FALSE)
+                if(!header){
+                    names(file_info)=columns
+                }
+        }else{
+                file_info=sample_sheet
+        }
+        
+        file_info=file_info %>% dplyr::group_by(dplyr::across(-tumour)) %>% dplyr::summarise(tumour=list(tumour))
+
+        job_report[["steps"]][["multisample_strelka"]]=parallel::mclapply(seq(1,nrow(file_info)),FUN=function(x){
+            
+            lapply(columns,FUN=function(col){
+                if(is.null(file_info[[col]])){
+                    file_info[[col]]<<-get(col)
+                }
+
+                if(is.null(file_info[[x,col]])){
+                    file_info[[x,col]]<<-get(col)
+                }
+            
+            })
+            
+        
+            job_report<-parallel_samples_process_cnvkit(     
+                bin_strelka_somatic=file_info[x,]$bin_strelka_somatic,
+                bin_strelka_germline=file_info[x,]$bin_strelka_germline,
+                bin_manta=file_info[x,]$bin_manta,
+                patient_id=file_info[x,]$patient_id,
+                tumour=file_info[x,]$tumour,
+                normal=file_info[x,]$normal,
+                variants=file_info[x,]$variants,
+                indel_cnds=file_info[x,]$indel_cnds,
+                ref_genome=file_info[x,]$ref_genome,
+                output_dir=file_info[x,]$output_dir,
+                targeted=file_info[x,]$targeted,
+                verbose=file_info[x,]$verbose,
+                batch_config=file_info[x,]$batch_config,
+                threads=file_info[x,]$threads,
+                ram=file_info[x,]$ram,mode=file_info[x,]$mode,
+                executor_id=task_id,
+                time=file_info[x,]$time,
+                hold=file_info[x,]$hold
+              )
+            },mc.cores=ifelse(mode=="local",1,3))
+
+    }else{
+        bam_dir_path=system(paste("realpath",bam_dir),intern=TRUE)
+        normal=system(paste0("find ",bam_dir_path,"| grep ",pattern),intern=TRUE)
+        tumour=bam_files[!grepl(normal_id,bam_files)]
+        normal=bam_files[grepl(normal_id,bam_files)]
+
+
+              job_report<-parallel_samples_process_cnvkit(     
+                bin_strelka_somatic=bin_strelka_somatic,
+                bin_strelka_germline=bin_strelka_germline,
+                bin_manta=bin_manta,
+                patient_id=patient_id,
+                tumour=tumour,
+                normal=normal,
+                variants=variants,
+                indel_cnds=indel_cnds,
+                ref_genome=ref_genome,
+                output_dir=output_dir,
+                targeted=targeted,verbose=verbose,
+                batch_config=batch_config,
+                threads=threads,ram=ram,mode=mode,
+                executor_id=task_id,
+                time=time,
+                hold=hold
+              )
+    }
+
+
+    if(wait&&mode=="batch"){
+        job_validator(job=unlist_level(named_list=job_report[["steps"]][["multisample_strelka"]],var="job_id"),
+        time=update_time,verbose=verbose,threads=threads)
+    }
+
+    return(job_report)
+
+}
+
+
+
+
+
 
 
 #' Manta  wrapper for structural variant calling
@@ -381,7 +774,7 @@ call_somatic_snvs_strelka=function(
         snvs=paste0(out_file_dir,"/results/variants/somatic.snvs.vcf.gz"),
         snvs_index=paste0(out_file_dir,"/results/variants/somatic.snvs.vcf.gz.tbi")
     )
-    )
+  )
   )
 
     exome=""

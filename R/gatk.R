@@ -3814,7 +3814,7 @@ multisample_haplotypecaller_gatk=function(
                 file_info=sample_sheet
         }
         
-        file_info=file_info %>% dplyr::group_by(dplyr::across(-tumour)) %>% dplyr::summarise(tumour=list(tumour))
+        file_info=file_info %>% dplyr::group_by(dplyr::across(-normal)) %>% dplyr::summarise(tumour=list(normal))
 
         job_report[["steps"]][["multisample_haplotypecaller"]]=parallel::mclapply(seq(1,nrow(file_info)),FUN=function(x){
             

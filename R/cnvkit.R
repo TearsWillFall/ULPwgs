@@ -94,7 +94,6 @@ process_cnvkit=function(
     edge=TRUE,
     rmask=TRUE,
     smooth=FALSE,
-    low_tc=FALSE,
     drop_low_coverage=TRUE,
     drop_outliers=10,
     range_scatter="",
@@ -280,6 +279,570 @@ process_cnvkit=function(
 
  
 }
+
+#' Multiregion parallelization of Haplotypecaller Gatk Variant Calling for multiple-samples
+#'
+#' This function functions calls Haplotypecaller across multiple regions in parallel across multiple sanmples
+#' If a vector of normal samples are provided these will be processed in co-joint calling  mode.
+#' To run in normal mode suppply a normal sample.
+#' 
+#' //TODO validate co-joint calling mode
+#' 
+#' For more information read:
+#' https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller
+#'
+#' @param rdata [OPTIONAL] Import R data information with list of BAM.
+#' @param selected [OPTIONAL] Select BAM from list.
+#' @param sif_gatk [REQUIRED] Path to gatk sif file.
+#' @param bin_bcftools [REQUIRED] Path to bcftools binary file.
+#' @param bin_bgzip [REQUIRED] Path to bgzip binary file.
+#' @param bin_tabix [REQUIRED] Path to tabix binary file.
+#' @param bin_samtools [REQUIRED] Path to samtools binary file.
+#' @param normal [OPTIONAL] Path to normal BAM file.
+#' @param patient_id [OPTIONAL] Patient ID.
+#' @param ref_genome [REQUIRED] Path to reference genome fasta file.
+#' @param indel_db [OPTIONAL] Path to database with indel info.
+#' @param haplotype_db [OPTIONAL] Path to database with haplotype info.
+#' @param info_key [OPTIONAL] Info Key for CNN model training. Default CNN_1D. Options ["CNN_1D","CNN_2D"]
+#' @param snp_tranche [OPTIONAL] SNP tranche cut-off.
+#' @param indel_tranche [OPTIONAL] INDEL tranche cut-off.
+#' @param keep_previous_tranche [OPTIONAL] Remove previous filter information.
+#' @param regions [OPTIONAL] Regions to parallelize through. If not given will be infered from BAM file.
+#' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param filter [OPTIONAL] Filter variants. Default TRUE
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param batch_config [REQUIRED] Additional batch configuration if batch mode selected.
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+parallel_samples_process_cnvkit=function(
+    target=build_default_reference_list()$HG19$panel$PCF_V3$binned$target,
+    antitarget=build_default_reference_list()$HG19$panel$PCF_V3$binned$antitarget,
+    ref_genome=build_default_reference_list()$HG19$reference$genome,
+    access=build_default_reference_list()$HG19$reference$access_5k,
+    sif_cnvkit=build_default_sif_list()$sif_cnvkit,
+    pon=build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn_male,
+    tumour="",
+    patient_id="",
+    seg_method="cbs",
+    seq_method="hybrid",
+    output_name="",
+    output_dir=".",
+    diagram=TRUE,
+    scatter=TRUE,
+    verbose=FALSE,
+    read_count=FALSE,
+    min_mapq=0,
+    gc=TRUE,
+    edge=TRUE,
+    rmask=TRUE,
+    smooth=FALSE,
+    drop_low_coverage=TRUE,
+    drop_outliers=10,
+    range_scatter="",
+    range_list_scatter="",
+    genes_scatter="",
+    margin_width_scatter=1000000,
+    plot_by_bin_scatter=FALSE,
+    trend_scatter=FALSE,
+    antitarget_symbol_scatter="@",
+    segment_colour_scatter="red",
+    y_max_scatter=NULL,
+    y_min_scatter=NULL,
+    cn_thr_diagram=0.5,
+    min_probes_diagram=3,
+    male_reference_diagram=FALSE,
+    gender_diagram="male",
+    shift_diagram=TRUE,
+    batch_config=build_default_preprocess_config(),
+    threads=4,ram=4,mode="local",
+    executor_id=make_unique_id("parSampleProcessCNVkit"),
+    task_name="parSampleProcessCNVkit",time="48:0:0",
+    update_time=60,
+    wait=FALSE,hold=NULL
+){
+
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
+  out_file_dir=set_dir(dir=output_dir,name=patient_id)
+  tmp_dir=set_dir(dir=out_file_dir,name="tmp")
+ 
+
+  job=build_job(executor_id=executor_id,task_id=task_id)
+
+
+  jobs_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    exec_code=list(), 
+    task_id=task_id,
+    input_args=argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+      )
+    )
+
+
+    tumour_list=tumour
+    names(tumour_list)=Vectorize(get_file_name)(tumour)
+
+    if(mode=="local"){
+      jobs_report[["steps"]][["par_sample_processs_cnvkit"]]<-
+      parallel::mclapply(tumour_list,FUN=function(tumour){
+      job_report <- process_cnvkit(
+          target=target,
+          antitarget=antitarget,
+          ref_genome=ref_genome,
+          access=access,
+          sif_cnvkit=sif_cnvkit,
+          pon=pon,
+          tumour=tumour,
+          seg_method=seg_method,
+          seq_method=seq_method,
+          output_name=get_file_name(tumour),
+          output_dir=out_file_dir,
+          diagram=diagram,
+          scatter=scatter,
+          verbose=verbose,
+          read_count=read_count,
+          min_mapq=min_mapq,
+          gc=gc,
+          edge=edge,
+          rmask=rmask,
+          smooth=smooth,
+          drop_low_coverage=drop_low_coverage,
+          drop_outliers=drop_outliers,
+          range_scatter=range_scatter,
+          range_list_scatter=range_list_scatter,
+          genes_scatter=genes_scatter,
+          margin_width_scatter=margin_width_scatter,
+          plot_by_bin_scatter=plot_by_bin_scatter,
+          trend_scatter=trend_scatter,
+          antitarget_symbol_scatter=antitarget_symbol_scatter,
+          segment_colour_scatter=segment_colour_scatter,
+          y_max_scatter=y_max_scatter,
+          y_min_scatter=y_min_scatter,
+          cn_thr_diagram=cn_thr_diagram,
+          min_probes_diagram=min_probes_diagram,
+          male_reference_diagram=male_reference_diagram,
+          gender_diagram=gender_diagram,
+          shift_diagram=shift_diagram,
+          batch_config=batch_config,
+          threads=1,ram=4,
+          executor_id=task_id,
+          time=time,
+          hold=hold)
+
+        },mc.cores=threads)
+    }else if(mode=="batch"){
+
+            rdata_file=paste0(tmp_dir,"/",job,".samples.RData")
+            output_dir=out_file_dir
+            executor_id=task_id
+            save(
+              tumour_list,
+              target,
+              antitarget,
+              ref_genome,
+              access,
+              sif_cnvkit,
+              pon,
+              seg_method,
+              seq_method,
+              output_dir,
+              diagram,
+              scatter,
+              verbose,
+              read_count,
+              min_mapq,
+              gc,
+              edge,
+              rmask,
+              smooth,
+              drop_low_coverage,
+              drop_outliers,
+              range_scatter,
+              range_list_scatter,
+              genes_scatter,
+              margin_width_scatter,
+              plot_by_bin_scatter,
+              trend_scatter,
+              antitarget_symbol_scatter,
+              segment_colour_scatter,
+              y_max_scatter,
+              y_min_scatter,
+              cn_thr_diagram,
+              min_probes_diagram,
+              male_reference_diagram,
+              gender_diagram,
+              shift_diagram
+            )
+            exec_code=paste0("Rscript -e \"ULPwgs::process_cnvkit(rdata=\\\"",
+            rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
+            out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+            batch_code=build_job_exec(job=job,time=time,ram=ram,
+            threads=1,output_dir=out_file_dir2,
+            hold=hold,array=length(tumour_list))
+            exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+
+            if(verbose){
+                print_verbose(job=job,arg=argg,exec_code=exec_code)
+            }
+            error=execute_job(exec_code=exec_code)
+            if(error!=0){
+                stop("gatk failed to run due to unknown error.
+                Check std error for more information.")
+            }
+    
+          jobs_report[["steps"]][["par_sample_processs_cnvkit"]]<- build_job_report(
+                job_id=job,
+                executor_id=executor_id,
+                exec_code=exec_code, 
+                task_id=task_id,
+                input_args=argg,
+                out_file_dir=out_file_dir,
+                out_files=list(
+                  diagram=ifelse(diagram,paste0(out_file_dir,"/",
+                  names(tumour_list),"/cnvkit_reports/",
+                  names(tumour_list),".diagram.pdf"),""),
+                  scatter=ifelse(diagram,paste0(out_file_dir,"/",
+                  names(tumour_list),"/cnvkit_reports/",
+                  names(tumour_list),".scatter.pdf"),""),
+                  target_cnn=paste0(out_file_dir,"/",
+                  names(tumour_list),"/cnvkit_reports/",
+                  names(tumour_list),".target.cnn"),
+                  antitarget_cnn=paste0(out_file_dir,"/",
+                  names(tumour_list),"/cnvkit_reports/",
+                  names(tumour_list),".antitarget.cnn"),
+                  corrected_cnr=paste0(out_file_dir,"/",
+                  names(tumour_list),"/cnvkit_reports/",
+                  names(tumour_list),".cnr"),
+                  segments_cns=paste0(out_file_dir,"/",
+                  names(tumour_list),"/cnvkit_reports/",
+                  names(tumour_list),".cns"),
+                )
+            )
+    }
+
+  if(wait&&mode=="batch"){
+    job_validator(job=unlist_lvl(jobs_report[["steps"]],var="job_id"),time=update_time,
+    verbose=verbose,threads=threads)
+  }
+
+  return(jobs_report)
+
+}
+
+
+
+#' Multiregion parallelization of Haplotypecaller Gatk Variant Calling for multiple-samples for single and multiple samples
+#'
+#' This function functions calls Haplotypecaller across multiple regions in parallel across multiple sanmples
+#' If a vector of normal samples are provided these will be processed in co-joint calling  mode.
+#' To run in normal mode suppply a normal sample.
+#' 
+#' //TODO validate co-joint calling mode
+#' 
+#' For more information read:
+#' https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller
+#' 
+#' 
+#' @param rdata [OPTIONAL] Import R data information with list of BAM.
+#' @param selected [OPTIONAL] Select BAM from list.
+#' @param sif_gatk [REQUIRED] Path to gatk sif file.
+#' @param bin_bcftools [REQUIRED] Path to bcftools binary file.
+#' @param bin_bgzip [REQUIRED] Path to bgzip binary file.
+#' @param bin_tabix [REQUIRED] Path to tabix binary file.
+#' @param bin_samtools [REQUIRED] Path to samtools binary file.
+#' @param sample_sheet [OPTIONAL] Path to sheet with sample information.
+#' @param normal [OPTIONAL] Path to normal BAM file.
+#' @param patient_id [OPTIONAL] Patient ID.
+#' @param bam_dir [OPTIONAL] Path to directory with BAM files.
+#' @param pattern [OPTIONAL] Pattern to use to search for BAM files in BAM directory.
+#' @param ref_genome [REQUIRED] Path to reference genome fasta file.
+#' @param indel_db [OPTIONAL] Path to database with indel info.
+#' @param haplotype_db [OPTIONAL] Path to database with haplotype info.
+#' @param info_key [OPTIONAL] Info Key for CNN model training. Default CNN_1D. Options ["CNN_1D","CNN_2D"]
+#' @param snp_tranche [OPTIONAL] SNP tranche cut-off.
+#' @param indel_tranche [OPTIONAL] INDEL tranche cut-off.
+#' @param keep_previous_tranche [OPTIONAL] Remove previous filter information.
+#' @param regions [OPTIONAL] Regions to parallelize through. If not given will be infered from BAM file.
+#' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param filter [OPTIONAL] Filter variants. Default TRUE
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param batch_config [REQUIRED] Additional batch configuration if batch mode selected.
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+multisample_process_cnvkit=function(
+    target=build_default_reference_list()$HG19$panel$PCF_V3$binned$target,
+    antitarget=build_default_reference_list()$HG19$panel$PCF_V3$binned$antitarget,
+    ref_genome=build_default_reference_list()$HG19$reference$genome,
+    access=build_default_reference_list()$HG19$reference$access_5k,
+    sif_cnvkit=build_default_sif_list()$sif_cnvkit,
+    pon=build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn_male,
+    sample_sheet=NULL,
+    bam_dir="",
+    patient_id="",
+    pattern="bam$",
+    header=TRUE,
+    sep="\t",
+    seg_method="cbs",
+    seq_method="hybrid",
+    output_name="",
+    output_dir=".",
+    diagram=TRUE,
+    scatter=TRUE,
+    verbose=FALSE,
+    read_count=FALSE,
+    min_mapq=0,
+    gc=TRUE,
+    edge=TRUE,
+    rmask=TRUE,
+    smooth=FALSE,
+    drop_low_coverage=TRUE,
+    drop_outliers=10,
+    range_scatter="",
+    range_list_scatter="",
+    genes_scatter="",
+    margin_width_scatter=1000000,
+    plot_by_bin_scatter=FALSE,
+    trend_scatter=FALSE,
+    antitarget_symbol_scatter="@",
+    segment_colour_scatter="red",
+    y_max_scatter=NULL,
+    y_min_scatter=NULL,
+    cn_thr_diagram=0.5,
+    min_probes_diagram=3,
+    male_reference_diagram=FALSE,
+    gender_diagram="male",
+    shift_diagram=TRUE,
+    batch_config=build_default_preprocess_config(),
+    threads=4,ram=4,mode="local",
+    executor_id=make_unique_id("parSampleProcessCNVkit"),
+    task_name="parSampleProcessCNVkit",time="48:0:0",
+    update_time=60,
+    wait=FALSE,hold=NULL
+){
+
+  argg <- as.list(environment())
+
+        task_id=make_unique_id(task_name)
+        out_file_dir=set_dir(dir=output_dir)
+
+        job=build_job(executor_id=executor_id,task_id=task_id)
+
+        job_report=build_job_report(
+                job_id=job,
+                executor_id=executor_id,
+                exec_code=list(), 
+                task_id=task_id,
+                input_args=argg,
+                out_file_dir=out_file_dir,
+                out_files=list(
+                )
+        )
+
+
+
+    columns=c(
+        "seg_method",
+        "seq_method",
+        "output_dir",
+        "diagram",
+        "scatter",
+        "verbose",
+        "read_count",
+        "min_mapq",
+        "gc",
+        "edge",
+        "rmask",
+        "smooth",
+        "drop_low_coverage",
+        "drop_outliers",
+        "range_scatter",
+        "range_list_scatter",
+        "genes_scatter",
+        "margin_width_scatter",
+        "plot_by_bin_scatter",
+        "trend_scatter",
+        "antitarget_symbol_scatter",
+        "segment_colour_scatter",
+        "y_max_scatter",
+        "y_min_scatter",
+        "cn_thr_diagram",
+        "min_probes_diagram",
+        "male_reference_diagram",
+        "gender_diagram",
+        "shift_diagram",
+        "batch_config",
+        "threads",
+        "ram",
+        "mode",
+        "time",
+        "hold"
+    )
+
+
+    if(!is.null(sample_sheet)){
+      
+        if(!is.data.frame(sample_sheet)){
+                file_info=read.csv(sample_sheet,header=header,sep=sep,stringsAsFactors=FALSE)
+                if(!header){
+                    names(file_info)=columns
+                }
+        }else{
+                file_info=sample_sheet
+        }
+        
+        file_info=file_info %>% dplyr::group_by(dplyr::across(-normal)) %>% dplyr::summarise(normal=list(normal))
+
+        job_report[["steps"]][["multisample_process_cnvkit"]]=parallel::mclapply(seq(1,nrow(file_info)),FUN=function(x){
+            
+            lapply(columns,FUN=function(col){
+                if(is.null(file_info[[col]])){
+                    file_info[[col]]<<-get(col)
+                }
+
+                if(is.null(file_info[[x,col]])){
+                    file_info[[x,col]]<<-get(col)
+                }
+            
+            })
+        
+            job_report<-parallel_samples_process_cnvkit(     
+                target=file_info[x,]$target,
+                antitarget=file_info[x,]$antitarget,
+                ref_genome=file_info[x,]$ref_genome,
+                access=file_info[x,]$access,
+                sif_cnvkit=file_info[x,]$sif_cnvkit,
+                pon=file_info[x,]$pon,
+                tumour=file_info[x,]$tumour,
+                seg_method=file_info[x,]$seg_method,
+                seq_method=file_info[x,]$seq_method,
+                output_dir=file_info[x,]$output_dir,
+                diagram=file_info[x,]$diagram,
+                scatter=file_info[x,]$scatter,
+                verbose=file_info[x,]$verbose,
+                read_count=file_info[x,]$read_count,
+                min_mapq=file_info[x,]$min_mapq,
+                gc=file_info[x,]$gc,
+                edge=file_info[x,]$edge,
+                rmask=file_info[x,]$rmask,
+                smooth=file_info[x,]$smooth,
+                drop_low_coverage=file_info[x,]$drop_low_coverage,
+                drop_outliers=file_info[x,]$drop_outliers,
+                range_scatter=file_info[x,]$range_scatter,
+                range_list_scatter=file_info[x,]$range_list_scatter,
+                genes_scatter=file_info[x,]$genes_scatter,
+                margin_width_scatter=file_info[x,]$margin_width_scatter,
+                plot_by_bin_scatter=file_info[x,]$plot_by_bin_scatter,
+                trend_scatter=file_info[x,]$trend_scatter,
+                antitarget_symbol_scatter=file_info[x,]$antitarget_symbol_scatter,
+                segment_colour_scatter=file_info[x,]$segment_colour_scatter,
+                y_max_scatter=file_info[x,]$x_min_scatter,
+                y_min_scatter=file_info[x,]$y_min_scatter,
+                cn_thr_diagram=file_info[x,]$cn_thr_diagram,
+                min_probes_diagram=file_info[x,]$min_probes_diagram,
+                male_reference_diagram=file_info[x,]$male_reference_diagram,
+                gender_diagram=file_info[x,]$gender_diagram,
+                shift_diagram=file_info[x,]$shift_diagram,
+                batch_config=file_info[x,]$batch_config,
+                threads=file_info[x,]$threads,ram=file_info[x,]$ram,
+                mode=file_info[x,]$mode,
+                executor_id=task_id,
+                time=file_info[x,]$time,
+                hold=file_info[x,]$hold
+              )
+            },mc.cores=ifelse(mode=="local",1,3))
+
+    }else{
+        bam_dir_path=system(paste("realpath",bam_dir),intern=TRUE)
+        normal=system(paste0("find ",bam_dir_path,"| grep ",pattern),intern=TRUE)
+      
+
+            job_report<-parallel_samples_process_cnvkit(     
+                target=target,
+                antitarget=antitarget,
+                ref_genome=ref_genome,
+                access=access,
+                sif_cnvkit=sif_cnvkit,
+                pon=pon,
+                tumour=tumour,
+                seg_method=seg_method,
+                seq_method=seq_method,
+                output_dir=output_dir,
+                diagram=diagram,
+                scatter=scatter,
+                verbose=verbose,
+                read_count=read_count,
+                min_mapq=min_mapq,
+                gc=gc,
+                edge=edge,
+                rmask=rmask,
+                smooth=mooth,
+                drop_low_coverage=drop_low_coverage,
+                drop_outliers=drop_outliers,
+                range_scatter=range_scatter,
+                range_list_scatter=range_list_scatter,
+                genes_scatter=genes_scatter,
+                margin_width_scatter=margin_width_scatter,
+                plot_by_bin_scatter=plot_by_bin_scatter,
+                trend_scatter=trend_scatter,
+                antitarget_symbol_scatter=antitarget_symbol_scatter,
+                segment_colour_scatter=segment_colour_scatter,
+                y_max_scatter=x_min_scatter,
+                y_min_scatter=y_min_scatter,
+                cn_thr_diagram=cn_thr_diagram,
+                min_probes_diagram=min_probes_diagram,
+                male_reference_diagram=male_reference_diagram,
+                gender_diagram=gender_diagram,
+                shift_diagram=shift_diagram,
+                batch_config=file_info[x,]$batch_config,
+                threads=threads,ram=ram,
+                mode=mode,
+                executor_id=task_id,
+                time=time,
+                hold=hold
+              )
+    }
+
+
+    if(wait&&mode=="batch"){
+        job_validator(job=unlist_level(named_list=job_report[["steps"]][["multisample_haplotypecaller"]],var="job_id"),
+        time=update_time,verbose=verbose,threads=threads)
+    }
+
+    return(job_report)
+
+}
+
+
+
+
+
+
+
 
 
 
