@@ -443,7 +443,7 @@ parallel_sample_ichor_capture=function(
 
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir,name="ichor_capture")
+    out_file_dir=set_dir(dir=output_dir,name=paste0("ichor_capture/",id))
  
     job=build_job(executor_id=executor_id,task_id=task_id)
 

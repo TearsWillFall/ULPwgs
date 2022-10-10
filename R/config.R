@@ -559,7 +559,8 @@ build_default_tool_binary_list=function(
                     bigBedToBed="/lustre/scratch/scratch/regmova/tools/OtherTools/bigBedToBed",
                     bedToBigBed="/lustre/scratch/scratch/regmova/tools/OtherTools/bedToBigBed",
                     liftOver="/lustre/scratch/scratch/regmova/tools/OtherTools/liftOver"
-                ),    
+                ),
+                bin_vep="/lustre/scratch/scratch/regmova/tools/ensembl-vep/vep",    
                 bin_manta="/lustre/scratch/scratch/regmova/tools/manta-1.6.0/build/bin/configManta.py",
                 bin_ichor_pon="/lustre/scratch/scratch/regmova/tools/ichorCNA/scripts/createPanelOfNormals.R",
                 bin_ichor="/lustre/scratch/scratch/regmova/tools/ichorCNA/scripts/runIchorCNA.R",
