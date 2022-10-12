@@ -1547,19 +1547,19 @@ parallel_samples_mutect2_gatk=function(
             output_dir=out_file_dir
             executor_id=task_id
             save(tumour_list,normal,
-            sif_gatk,
-            bin_bcftools,
-            bin_samtools,
-            bin_bgzip,
-            bin_tabix,
-            germ_resource,
-            biallelic_db,db_interval,pon,ref_genome,
-            filter,orientation,mnps,
-            mode,ram,
-            executor_id,
-            output_dir,
-            contamination,clean,
-            verbose,file = rdata_file)
+              sif_gatk,
+              bin_bcftools,
+              bin_samtools,
+              bin_bgzip,
+              bin_tabix,
+              germ_resource,
+              biallelic_db,db_interval,pon,ref_genome,
+              filter,orientation,mnps,
+              mode,ram,
+              executor_id,
+              output_dir,
+              contamination,clean,
+              verbose,file = rdata_file)
             exec_code=paste0("Rscript -e \"ULPwgs::parallel_regions_mutect2_gatk(rdata=\\\"",
             rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
             out_file_dir2=set_dir(dir=out_file_dir,name="batch")
@@ -1788,7 +1788,8 @@ multisample_mutect2_gatk=function(
                 }
             
             })
-        
+
+            print(file_info[x,])
             job_report<- parallel_samples_mutect2_gatk(
               sif_gatk=sif_gatk,
               bin_bcftools=bin_bcftools,
