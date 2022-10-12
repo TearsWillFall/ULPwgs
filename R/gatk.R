@@ -1299,7 +1299,7 @@ parallel_regions_mutect2_gatk=function(
           rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
           out_file_dir2=set_dir(dir=out_file_dir,name="batch")
           batch_code=build_job_exec(job=job,time=time,ram=ram,
-          threads=1,output_dir=out_file_dir2,
+          threads=2,output_dir=out_file_dir2,
           hold=hold,array=length(region_list))
           exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
 
@@ -1564,7 +1564,7 @@ parallel_samples_mutect2_gatk=function(
             rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
             out_file_dir2=set_dir(dir=out_file_dir,name="batch")
             batch_code=build_job_exec(job=job,time=time,ram=ram,
-            threads=2,output_dir=out_file_dir2,
+            threads=1,output_dir=out_file_dir2,
             hold=hold,array=length(tumour_list))
             exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
 
