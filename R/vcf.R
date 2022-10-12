@@ -388,6 +388,7 @@ variants_by_filters_vcf=function(
   }
 
   vcf=read_vcf(vcf=vcf,sep=sep)
+
   if(exclusive){
     vcf$body=vcf$body %>% dplyr::filter(lengths(FILTER)==length(filters))
   }
@@ -402,6 +403,7 @@ variants_by_filters_vcf=function(
     bin_tabix=bin_tabix,
     compress=compress,index=index,
     index_format=index_format,
+    verbose=verbose,
     bgzip_index=bgzip_index,clean=clean,
     output_dir=out_file_dir,executor_id=task_id,
     mode=mode,time=time,threads=threads,ram=ram,
