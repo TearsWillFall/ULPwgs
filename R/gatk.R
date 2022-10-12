@@ -1833,6 +1833,7 @@ multisample_mutect2_gatk=function(
                   bin_tabix=bin_tabix,
                   tumour=tumour,
                   normal=normal,
+                  patient_id=patient_id,
                   ref_genome=ref_genome,
                   germ_resource=germ_resource,
                   biallelic_db=biallelic_db,
