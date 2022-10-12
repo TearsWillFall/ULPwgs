@@ -274,12 +274,14 @@ max_log2_limit=0.5,gene_tg=TRUE,gene_ctrl=FALSE,gene_other=FALSE){
     newdata <- dplyr::bind_cols(repdata, newcoord_up, newcoord_down)
     return(newdata)
   }
+  
 
 
   plt_data=plt_data %>% dplyr::mutate(cn_t=ifelse(chr=="X",round(2**all_log2),
   2*round(2**all_log2)),
   beta=ifelse(evidence>=ai_limit,beta,1),log2.c=ifelse(min_log2_limit>all_log2,
-  min_log2_limit,ifelse(max_log2_limit<all_log2,max_log2_limit,all_log2)))
+  min_log2_limit,ifelse(max_log2_limit<all_log2,max_log2_limit,all_log2))) %>%
+  dplyr::mutate(log2.c=ifelse(log2_cutoff_pass,log2.c,0))
 
 
   to_plot=list()

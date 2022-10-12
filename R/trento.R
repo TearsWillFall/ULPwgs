@@ -360,8 +360,8 @@ clonet_view_trento=function(method="log2_beta", clonet_dir="",threads=3,
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
     out_file_dir=set_dir(dir=output_dir)
-    lapply(clonet_dir,FUN=check_clonet_output,clonet_dirs=clonet_dirs)
-
+    validation=unlist(lapply(clonet_dir,FUN=check_clonet_output,clonet_dirs=clonet_dirs))
+    clonet_dir=clonet_dir[validation]
     plt_data=list()
     
     ## Reac CN data
@@ -370,8 +370,9 @@ clonet_view_trento=function(method="log2_beta", clonet_dir="",threads=3,
         tryCatch({
                cn_data=read.table(x,sep=",",header=TRUE)
         },error=function(e){
-            warning(paste0("Could not find file ",x))
-
+            return()
+            ##warning(paste0("Could not find file ",x))
+            
         })
     })
 
@@ -382,7 +383,8 @@ clonet_view_trento=function(method="log2_beta", clonet_dir="",threads=3,
         tryCatch({
                tc_data=read.table(x,sep=",",header=TRUE)
         },error=function(e){
-            warning(paste0("Could not find file ",x))
+            return()
+            ##warning(paste0("Could not find file ",x))
 
         })
     })
@@ -397,7 +399,6 @@ clonet_view_trento=function(method="log2_beta", clonet_dir="",threads=3,
 
   
     cn_data=dplyr::bind_rows(cn_data)
-    cn_data %>% tidyr::complete(sample,gene)
     cn_data=dplyr::left_join(cn_data,cn_list,by=c("cn.call.corr"="cn"))
     cn_data=dplyr::left_join(cn_data,annot_data %>% 
     dplyr::filter(PANEL_VERSION==panel[which.min(panel$diff),]$PANEL_VERSION),
@@ -944,9 +945,7 @@ clonet_dirs=build_default_clonet_dir_list()){
         file.exists(search_dir)
     })))
 
-    if(!validation){
-        stop(paste0("Could not validate all CLONET files in ",clonet_dir))
-    }
+    return(validation)
     
 }
 

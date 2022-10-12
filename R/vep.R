@@ -112,7 +112,7 @@ annotate_vep=function(
             threads=1,ram=ram,mode=mode,
             executor_id=task_id,
             time=time,
-            hold=job_id
+            hold=job
     )
     }
 

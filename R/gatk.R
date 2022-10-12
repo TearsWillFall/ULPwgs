@@ -1406,6 +1406,13 @@ parallel_regions_mutect2_gatk=function(
         )
   }
 
+  if(annotate_pass){
+    
+  }
+
+
+
+
   if(wait&&mode=="batch"){
     job_validator(job=unlist_lvl(jobs_report[["steps"]],var="job_id"),time=update_time,
     verbose=verbose,threads=threads)
@@ -1776,8 +1783,8 @@ multisample_mutect2_gatk=function(
                     file_info[[col]]<<-get(col)
                 }
 
-                if(is.null(file_info[[x,col]])){
-                    file_info[[x,col]]<<-get(col)
+                if(is.null(file_info[x,col])){
+                    file_info[x,col]<<-get(col)
                 }
             
             })
