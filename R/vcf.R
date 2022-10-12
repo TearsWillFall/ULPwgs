@@ -737,7 +737,7 @@ write_vcf=function(
           chrom=data.frame(CHROM=names(vcf_descriptors$contig),
           order=seq(1,length(vcf_descriptors$contig)))
           vcf_body=dplyr::left_join(vcf_body,chrom) %>% 
-          arrange(order,POS) %>% dplyr::select(-order)
+          fplyr::arrange(order,POS) %>% dplyr::select(-order)
           return(vcf_body)
        }
     
