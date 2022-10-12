@@ -104,8 +104,8 @@ process_cnvkit=function(
     trend_scatter=FALSE,
     antitarget_symbol_scatter="@",
     segment_colour_scatter="red",
-    y_max_scatter=NA,
-    y_min_scatter=NA,
+    y_max_scatter=NULL,
+    y_min_scatter=NULL,
     cn_thr_diagram=0.5,
     min_probes_diagram=3,
     male_reference_diagram=FALSE,
@@ -357,8 +357,8 @@ parallel_samples_process_cnvkit=function(
     trend_scatter=FALSE,
     antitarget_symbol_scatter="@",
     segment_colour_scatter="red",
-    y_max_scatter=NA,
-    y_min_scatter=NA,
+    y_max_scatter=NULL,
+    y_min_scatter=NULL,
     cn_thr_diagram=0.5,
     min_probes_diagram=3,
     male_reference_diagram=FALSE,
@@ -706,7 +706,7 @@ multisample_process_cnvkit=function(
     )
 
 
-    if(!is.na(sample_sheet)){
+    if(!is.null(sample_sheet)){
       
         if(!is.data.frame(sample_sheet)){
                 file_info=read.csv(sample_sheet,header=header,sep=sep,stringsAsFactors=FALSE)
@@ -994,7 +994,7 @@ access_cnvkit=function(
     target="",
     bin_size_target=75,
     bin_size_antitarget=500000,
-    min_bin_size_antitarget=NA,
+    min_bin_size_antitarget=NULL,
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     threads=1,ram=1,mode="local",
@@ -1021,7 +1021,7 @@ access_cnvkit=function(
     if(access!=""){
       paste0(" -g ",access)
     }
-    if(!is.na(min_bin_size_antitarget)){
+    if(!is.null(min_bin_size_antitarget)){
       min_bin_size_antitarget=paste0(" --antitarget-min-size ",min_bin_size_antitarget)
     }
 
@@ -1233,7 +1233,7 @@ access_cnvkit=function(
     output_name="",
     output_dir=".",
     bin_size=500000,
-    min_bin_size=NA,
+    min_bin_size=NULL,
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     threads=1,ram=1,mode="local",
@@ -1257,7 +1257,7 @@ access_cnvkit=function(
     }
 
     add=""
-    if(!is.na(min_bin_size)){
+    if(!is.null(min_bin_size)){
       add=paste0(" -m ",min_bin_size)
     }
 
@@ -1358,7 +1358,7 @@ bin_targets_cnvkit=function(
     output_dir=".",
     bin_size_antitarget=100000,
     bin_size_target=100,
-    min_bin_size_antitarge=NA,
+    min_bin_size_antitarget=NULL,
     split=FALSE,
     short_names=FALSE,
     verbose=FALSE,
@@ -1891,7 +1891,7 @@ de
     out_file_dir=set_dir(dir=output_dir)
     job=build_job(executor_id=executor_id,task_id=task_id)
 
-    if(!is.na(gender)){
+    if(!is.null(gender)){
       gender=paste0(" -x ",gender)
     }
 
@@ -2559,9 +2559,9 @@ de
     trend=TRUE,
     antitarget_symbol="@",
     segment_colour="red",
-    title=NA,
-    y_max=NA,
-    y_min=NA,
+    title=NULL,
+    y_max=NULL,
+    y_min=NULL,
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     threads=1,ram=1,mode="local",
@@ -2610,15 +2610,15 @@ de
 
     add=""
 
-     if(!is.na(title)){
+     if(!is.null(title)){
       title=paste0(" --title ",title)
     }
-     if(!is.na(y_max)){
+     if(!is.null(y_max)){
       y_max=paste0(" --y-max ",y_max)
     }
 
 
-    if(!is.na(y_min)){
+    if(!is.null(y_min)){
       y_min=paste0(" --y-min ",y_min)
     }
     
@@ -2747,7 +2747,7 @@ de
     male_reference=FALSE,
     gender="male",
     shift=TRUE,
-    title=NA,
+    title=NULL,
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     threads=1,ram=1,mode="local",
@@ -2776,7 +2776,7 @@ de
       id=get_file_name(cnr)
     }
 
-    if(!is.na(gender)){
+    if(!is.null(gender)){
       gender=paste0(" -x ",gender)
     }
 
@@ -2796,7 +2796,7 @@ de
 
     }
 
-    if(!is.na(title)){
+    if(!is.null(title)){
       title=paste0(" --title ",title)
     }
 
