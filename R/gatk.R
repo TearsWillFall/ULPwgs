@@ -1150,6 +1150,7 @@ mutect2_gatk=function(region="",
 #' @param sif_gatk [REQUIRED] Path to gatk sif file.
 #' @param bin_bcftools [REQUIRED] Path to bcftools binary file.
 #' @param bin_bgzip [REQUIRED] Path to bgzip binary file.
+#' @param bin_vep [REQUIRED] Path to VEP binary.
 #' @param bin_tabix [REQUIRED] Path to tabix binary file.
 #' @param bin_samtools [REQUIRED] Path to samtools binary file.
 #' @param tumour [REQUIRED] Path to tumour BAM file.
@@ -1161,6 +1162,8 @@ mutect2_gatk=function(region="",
 #' @param pon [OPTIONAL] Path to panel of normal.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param mnps [OPTIONAL] Report MNPs in vcf file.
+#' @param extract_pass [OPTIONAL] Extract variants with a PASS filter.Default TRUE
+#' @param annotate [OPTIONAL] Annotate variants. Default TRUE
 #' @param contamination [OPTIONAL] Produce sample cross-contamination reports. Default TRUE.
 #' @param orientation [OPTIONAL] Produce read orientation inforamtion. Default FALSE
 #' @param filter [OPTIONAL] Filter Mutect2. Default TRUE.
@@ -1184,6 +1187,7 @@ parallel_regions_mutect2_gatk=function(
   rdata=NULL,selected=NULL,
   sif_gatk=build_default_sif_list()$sif_gatk,
   bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
+  bin_vep=build_default_tool_binary_list()$bin_vep,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
@@ -1194,6 +1198,7 @@ parallel_regions_mutect2_gatk=function(
   db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
   regions=NULL,pon="",output_dir=".",
   verbose=FALSE,filter=TRUE,
+  extract_pass=TRUE,annotate=TRUE,
   orientation=TRUE,mnps=FALSE,
   contamination=TRUE,clean=FALSE,
   batch_config=build_default_preprocess_config(),
@@ -1396,6 +1401,7 @@ parallel_regions_mutect2_gatk=function(
             segmentation_table=segmentation_table,
             orientation_model=orientation_model,output_name=output_name,
             ref_genome=ref_genome,
+            extract_pass=extract_pass,
             output_dir=out_file_dir,
             verbose=verbose,clean=clean,
             batch_config=batch_config,
@@ -1404,10 +1410,29 @@ parallel_regions_mutect2_gatk=function(
             time=time,
             hold=unlist_lvl(jobs_report[["steps"]],var="job_id")
         )
+    if(extract_pass){
+        vcf=jobs_report[["steps"]][["filterMutectGatk"]][["steps"]][["steps"]][["par_vcf_filter_variants"]]$out_files$extract_vcf
+    }else{
+        vcf=jobs_report[["steps"]][["filterMutectGatk"]]$out_files$filtered_vcf
+    }
   }
 
-  if(annotate_pass){
-    
+  if(annotate){
+    jobs_report[["steps"]][["filterMutectGatk"]]<- annotate_vep(
+        bin_vep=bin_vep,
+        bin_bgzip=bin_bgzip,
+        bin_tabix=bin_tabix,
+        vcf=vcf,
+        output_name=paste0(get_file_name(vcf),ifelse(extract_pass,".PASS","")),
+        output_dir=out_file_dir,
+        verbose=verbose,
+        batch_config=batch_config,
+        threads=threads,
+        ram=ram,mode=mode,
+        executor_id=task_id,
+        time=time,
+        hold=unlist_lvl(jobs_report[["steps"]][["filterMutectGatk"]],var="job_id") 
+    )
   }
 
 
@@ -1436,6 +1461,7 @@ parallel_regions_mutect2_gatk=function(
 #'
 #' @param sif_gatk [REQUIRED] Path to gatk sif file.
 #' @param bin_bcftools [REQUIRED] Path to bcftools binary file.
+#' @param bin_vep [REQUIRED] Path to VEP binary.
 #' @param bin_bgzip [REQUIRED] Path to bgzip binary file.
 #' @param bin_tabix [REQUIRED] Path to tabix binary file.
 #' @param bin_samtools [REQUIRED] Path to samtools binary file.
@@ -1448,6 +1474,8 @@ parallel_regions_mutect2_gatk=function(
 #' @param pon [OPTIONAL] Path to panel of normal.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param mnps [OPTIONAL] Report MNPs in vcf file.
+#' @param extract_pass [OPTIONAL] Extract variants with a PASS filter.Default TRUE
+#' @param annotate [OPTIONAL] Annotate variants. Default TRUE
 #' @param method [OPTIONAL] Default variant calling method. Default single. Options ["single","multi"]
 #' @param contamination [OPTIONAL] Produce sample cross-contamination reports. Default TRUE.
 #' @param orientation [OPTIONAL] Produce read orientation inforamtion. Default FALSE
@@ -1468,6 +1496,7 @@ parallel_regions_mutect2_gatk=function(
 
 parallel_samples_mutect2_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
+  bin_vep=build_default_tool_binary_list()$bin_vep,
   bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
@@ -1481,6 +1510,7 @@ parallel_samples_mutect2_gatk=function(
   method="single",
   verbose=FALSE,filter=TRUE,
   orientation=TRUE,mnps=FALSE,
+  annotate=TRUE,extract_pass=TRUE,
   contamination=TRUE,clean=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
@@ -1653,6 +1683,7 @@ parallel_samples_mutect2_gatk=function(
 #'
 #' @param sif_gatk [REQUIRED] Path to gatk sif file.
 #' @param bin_bcftools [REQUIRED] Path to bcftools binary file.
+#' @param bin_vep [REQUIRED] Path to VEP binary.
 #' @param bin_bgzip [REQUIRED] Path to bgzip binary file.
 #' @param bin_tabix [REQUIRED] Path to tabix binary file.
 #' @param bin_samtools [REQUIRED] Path to samtools binary file.
@@ -1686,6 +1717,7 @@ parallel_samples_mutect2_gatk=function(
 
 multisample_mutect2_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
+  bin_vep=build_default_tool_binary_list()$bin_vep,
   bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
@@ -1703,6 +1735,7 @@ multisample_mutect2_gatk=function(
   method="single",
   regions=NULL,output_dir=".",
   verbose=FALSE,filter=TRUE,
+  annotate=TRUE,extract_pass=TRUE,
   orientation=TRUE,mnps=FALSE,
   contamination=TRUE,clean=FALSE,
   header=TRUE,
@@ -1737,6 +1770,7 @@ multisample_mutect2_gatk=function(
       "bin_bcftools",
       "bin_samtools",
       "bin_bgzip",
+      "bin_vep",
       "bin_tabix",
       "patient_id",
       "tumour",
@@ -1749,6 +1783,8 @@ multisample_mutect2_gatk=function(
       "regions",
       "filter",
       "orientation",
+      "annotate",
+      "extract_pass",
       "mnps",
       "method",
       "contamination",
@@ -1789,6 +1825,7 @@ multisample_mutect2_gatk=function(
        
             job_report<- parallel_samples_mutect2_gatk(
               sif_gatk=sif_gatk,
+              bin_vep=bin_vep,
               bin_bcftools=bin_bcftools,
               bin_samtools=bin_samtools,
               bin_bgzip=bin_bgzip,
@@ -1804,6 +1841,8 @@ multisample_mutect2_gatk=function(
               regions=file_info[[x,"regions"]],
               method=file_info[x,]$method,
               output_dir=file_info[x,]$output_dir,
+              extract_pass=file_info[x,]$extract_pass,
+              annotate=file_info[x,]$annotate,
               verbose=file_info[x,]$verbose,
               filter=file_info[x,]$filter,
               orientation=file_info[x,]$orientation,mnps=file_info[x,]$mnps,
@@ -1827,6 +1866,7 @@ multisample_mutect2_gatk=function(
       
           job_report<-parallel_samples_mutect2_gatk(
                   sif_gatk=sif_gatk,
+                  bin_vep=bin_vep,
                   bin_bcftools=bin_bcftools,
                   bin_samtools=bin_samtools,
                   bin_bgzip=bin_bgzip,
@@ -1838,6 +1878,8 @@ multisample_mutect2_gatk=function(
                   germ_resource=germ_resource,
                   biallelic_db=biallelic_db,
                   db_interval=biallelic_db,
+                  extract_pass=extract_pass,
+                  annotate=annotate,
                   regions=regions,
                   method=method,
                   pon=pon,
@@ -2015,9 +2057,6 @@ mutect_filter_gatk=function(
           hold=job
         )
     }
-
-
-
 
   if(wait&&mode=="batch"){
     job_validator(job=job_report$job_id,time=update_time,

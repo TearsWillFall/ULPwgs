@@ -9,6 +9,7 @@ parallel_regions_mutect2_gatk(
   selected = NULL,
   sif_gatk = build_default_sif_list()$sif_gatk,
   bin_bcftools = build_default_tool_binary_list()$bin_bcftools,
+  bin_vep = build_default_tool_binary_list()$bin_vep,
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
@@ -24,6 +25,8 @@ parallel_regions_mutect2_gatk(
   output_dir = ".",
   verbose = FALSE,
   filter = TRUE,
+  extract_pass = TRUE,
+  annotate = TRUE,
   orientation = TRUE,
   mnps = FALSE,
   contamination = TRUE,
@@ -44,6 +47,8 @@ parallel_regions_mutect2_gatk(
 \item{sif_gatk}{\link{REQUIRED} Path to gatk sif file.}
 
 \item{bin_bcftools}{\link{REQUIRED} Path to bcftools binary file.}
+
+\item{bin_vep}{\link{REQUIRED} Path to VEP binary.}
 
 \item{bin_samtools}{\link{REQUIRED} Path to samtools binary file.}
 
@@ -70,6 +75,10 @@ parallel_regions_mutect2_gatk(
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
 \item{filter}{\link{OPTIONAL} Filter Mutect2. Default TRUE.}
+
+\item{extract_pass}{\link{OPTIONAL} Extract variants with a PASS filter.Default TRUE}
+
+\item{annotate}{\link{OPTIONAL} Annotate variants. Default TRUE}
 
 \item{orientation}{\link{OPTIONAL} Produce read orientation inforamtion. Default FALSE}
 

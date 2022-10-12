@@ -6,6 +6,7 @@
 \usage{
 parallel_samples_mutect2_gatk(
   sif_gatk = build_default_sif_list()$sif_gatk,
+  bin_vep = build_default_tool_binary_list()$bin_vep,
   bin_bcftools = build_default_tool_binary_list()$bin_bcftools,
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
@@ -25,6 +26,8 @@ parallel_samples_mutect2_gatk(
   filter = TRUE,
   orientation = TRUE,
   mnps = FALSE,
+  annotate = TRUE,
+  extract_pass = TRUE,
   contamination = TRUE,
   clean = FALSE,
   batch_config = build_default_preprocess_config(),
@@ -41,6 +44,8 @@ parallel_samples_mutect2_gatk(
 }
 \arguments{
 \item{sif_gatk}{\link{REQUIRED} Path to gatk sif file.}
+
+\item{bin_vep}{\link{REQUIRED} Path to VEP binary.}
 
 \item{bin_bcftools}{\link{REQUIRED} Path to bcftools binary file.}
 
@@ -73,6 +78,10 @@ parallel_samples_mutect2_gatk(
 \item{orientation}{\link{OPTIONAL} Produce read orientation inforamtion. Default FALSE}
 
 \item{mnps}{\link{OPTIONAL} Report MNPs in vcf file.}
+
+\item{annotate}{\link{OPTIONAL} Annotate variants. Default TRUE}
+
+\item{extract_pass}{\link{OPTIONAL} Extract variants with a PASS filter.Default TRUE}
 
 \item{contamination}{\link{OPTIONAL} Produce sample cross-contamination reports. Default TRUE.}
 

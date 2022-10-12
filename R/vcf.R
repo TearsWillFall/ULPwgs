@@ -565,7 +565,7 @@ parallel_vcfs_variants_by_filters_vcf=function(
                 input_args=argg,
                 out_file_dir=out_file_dir,
                 out_files=list(
-                  no_filter_vcf=paste0(out_file_dir,"/",names(vcf_list),"/",
+                  extract_vcf=paste0(out_file_dir,"/",names(vcf_list),"/",
                   names(vcf_list),".",paste0(filters,collapse="."),".vcf")
                 )
           )

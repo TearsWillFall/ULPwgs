@@ -6,6 +6,7 @@
 \usage{
 multisample_mutect2_gatk(
   sif_gatk = build_default_sif_list()$sif_gatk,
+  bin_vep = build_default_tool_binary_list()$bin_vep,
   bin_bcftools = build_default_tool_binary_list()$bin_bcftools,
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
@@ -25,6 +26,8 @@ multisample_mutect2_gatk(
   output_dir = ".",
   verbose = FALSE,
   filter = TRUE,
+  annotate = TRUE,
+  extract_pass = TRUE,
   orientation = TRUE,
   mnps = FALSE,
   contamination = TRUE,
@@ -45,6 +48,8 @@ multisample_mutect2_gatk(
 }
 \arguments{
 \item{sif_gatk}{\link{REQUIRED} Path to gatk sif file.}
+
+\item{bin_vep}{\link{REQUIRED} Path to VEP binary.}
 
 \item{bin_bcftools}{\link{REQUIRED} Path to bcftools binary file.}
 
