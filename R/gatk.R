@@ -1960,6 +1960,11 @@ mutect_filter_gatk=function(
     exec_code=paste(exec_code," && rm",vcf)
   }
 
+  if(extract_pass){
+    exec_code=paste(exec_code,
+      " && Rscript -e \"ULPwgs::variants_by_filters_vcf(vcf=\\\"",out_file,"\\\")\"",vcf)
+  }
+
 
  if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
@@ -1975,6 +1980,7 @@ mutect_filter_gatk=function(
   error=execute_job(exec_code=exec_code)
   
   
+
   if(error!=0){
     stop("gatk failed to run due to unknown error.
     Check std error for more information.")

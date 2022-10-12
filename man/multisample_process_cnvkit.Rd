@@ -35,7 +35,7 @@ multisample_process_cnvkit(
   range_scatter = "",
   range_list_scatter = "",
   genes_scatter = "",
-  margin_width_scatter = 1e+06,
+  margin_width_scatter = 1000000,
   plot_by_bin_scatter = FALSE,
   trend_scatter = FALSE,
   antitarget_symbol_scatter = "@",

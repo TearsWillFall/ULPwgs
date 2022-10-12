@@ -308,9 +308,107 @@ unnest_vcf_body=function(vcf_body,full=FALSE){
 
 
 
-unnest_to_column=function(vcf_body,column="INFO"){
+unnest_to_column_vcf=function(vcf_body,column="INFO"){
     vcf_body=vcf_body %>% tidyr::unnest_wider(var(column),names_sep=paste0(column,"_"))
     return(vcf_body)
+}
+
+
+#' Writes VCF file from a VCF data.structure
+#'
+#' VCF datastructure is in list format and contains a header, a body and
+#' the corresponding col_names
+#'
+#' @param bin_bgzip Path to bgzip executable.
+#' @param bin_tabix Path to TABIX executable.
+#' @param vcf Path to the input VCF file.
+#' @param filters Filters to filter VCF by. Default PASS
+#' @param exclusive Only keep variants with exactly these filters. Default TRUE.
+#' @param output_name Output file name.
+#' @param compress Compress VCF file. Default TRUE.
+#' @param index Index VCF file. Default TRUE.
+#' @param index_format VCF index format. Default tbi. Options [tbi,cbi].
+#' @param bgzip_index Create BGZIP index for compressed file. Default FALSE
+#' @param output_dir Path to the output directory.
+#' @param clean Remove input VCF after completion. Default FALSE.
+#' @param verbose Enables progress messages. Default False.
+#' @param executor_id Task EXECUTOR ID. Default "gatherBQSR"
+#' @param task_name Task name. Default "gatherBQSR"
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param threads Number of threads to split the work. Default 3
+#' @param ram [OPTIONAL] If batch mode. RAM memory in GB per job. Default 1
+#' @param update_time [OPTIONAL] If batch mode. Show job updates every update time. Default 60
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+#' 
+
+variants_by_filters_vcf=function(
+  bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+  bin_tabix=build_default_tool_binary_list()$bin_tabix,
+  vcf="",filters="PASS",
+  output_name="",
+  exclusive=TRUE,
+  compress=TRUE,index=TRUE,
+  index_format="tbi",
+  bgzip_index=FALSE,
+  clean=TRUE,
+  output_dir=".",verbose=FALSE,sep="\t",
+  batch_config=build_default_preprocess_config(),
+  threads=4,ram=4,mode="local",
+  executor_id=make_unique_id("variantsByFiltersVCF"),
+  task_name="variantsByFiltersVCF",time="48:0:0",
+  update_time=60,wait=FALSE,hold=NULL
+){
+
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
+  out_file_dir=set_dir(dir=output_dir)
+  job=build_job(executor_id=executor_id,task_id=task_id)
+
+
+
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    exec_code=list(),
+    task_id=task_id,
+    input_args = argg,
+    out_file_dir=out_file_dir,
+    out_files=list()
+  )
+
+
+  id=""
+  if(output_name!=""){ 
+    id=output_name
+  }else{
+    id=get_file_name(vcf)
+  }
+
+  vcf=read_vcf(vcf=vcf,sep=sep)
+  if(exclusive){
+    vcf$body=vcf$body %>% dplyr::filter(lengths(FILTER)==length(filters))
+  }
+
+  vcf$body=vcf$body %>% dplyr::filter(eval(parse(text=paste0(lapply(
+    filters,FUN=function(x){paste0("grepl(\"",x,"\",FILTER)")}),collapse="&"))))
+
+  vcf$descriptors$variants_by_filters<-paste0(filters,collapse=";")
+  
+  job_report[["steps"]][["writeVCF"]]<-write_vcf(
+    bin_bgzip=bin_bgzip,
+    bin_tabix=bin_tabix,
+    compress=compress,index=index,
+    index_format=index_format,
+    bgzip_index=bgzip_index,clean=clean,
+    output_dir=out_file_dir,executor_id=task_id,
+    mode=mode,time=time,threads=threads,ram=ram,
+    hold=hold,
+    vcf=vcf,output_name=id
+  )
+  return(job_report)
 }
 
 
@@ -601,10 +699,10 @@ write_vcf=function(
     out_file_dir=set_dir(dir=output_dir)
     job=build_job(executor_id=executor_id,task_id=task_id)
 
-    build_header_vcf=function(vcf_descriptors){
-      header=unlist(lapply(names(vcf_descriptors),
+    build_header_vcf=function(vcf){
+      header=unlist(lapply(names(vcf$descriptors),
         FUN=function(col){
-          val=vcf_descriptors[[col]];
+          val=vcf$descriptors[[col]];
         
           if(length(val)>1){
             ids=names(val)
@@ -617,22 +715,36 @@ write_vcf=function(
       )) 
     }
 
-    build_body_vcf=function(vcf_body,vcf_samples){
-      to_nest=c("FORMAT",vcf_samples)
+    build_body_vcf=function(vcf){
+
+      to_nest=c("FORMAT",vcf$samples)
       names(to_nest)=to_nest
-      vcf_body=sv$body %>% unnest_vcf_body() %>% 
+      vcf=sort_vcf(vcf)
+      vcf_body=vcf$body %>% unnest_vcf_body() %>% 
       tidyr::pivot_wider(names_from=SAMPLE,values_from=VALUE) %>%
       dplyr::group_by(dplyr::across(-to_nest)) %>% 
       dplyr::summarise(dplyr::across(to_nest,list))
 
       vcf_body=vcf_body%>% dplyr::rowwise() %>%
-       dplyr::mutate(across(c("FORMAT",all_of(vcf_samples)),
+       dplyr::mutate(across(c("FORMAT",all_of(vcf$samples)),
        function(x) paste0(unlist(x),collapse=":")))%>%
-       dplyr::mutate(FILTER=paste0(FILTER,collapse=","),
+       dplyr::mutate(FILTER=paste0(FILTER,collapse=";"),
        INFO=paste0(paste0(names(unlist(INFO)),
        ifelse(unlist(INFO)!="","=",""),unlist(INFO)),collapse=","))
-      return(vcf_body)
+     
+      sort_vcf_body=function(vcf_body,vcf_descriptors){
+          chrom=data.frame(CHROM=names(vcf_descriptors$contig),
+          order=seq(1,length(vcf_descriptors$contig)))
+          vcf_body=dplyr::left_join(vcf_body,chrom) %>% 
+          arrange(order,POS) %>% select(-order)
+          return(vcf_body)
+       }
+    
+      return(sort_vcf_body(vcf_body,vcf$descriptors))
     }
+ 
+ 
+    
 
 
     out_file=paste0(out_file_dir,"/",output_name,".vcf")
@@ -654,10 +766,10 @@ write_vcf=function(
     }
     
     ###Construct VCF header
-    vcf_header=build_header_vcf(vcf_descriptors=vcf$descriptors)
+    vcf_header=build_header_vcf(vcf)
 
     ###Construct VCF body
-    vcf_body=build_body_vcf(vcf_body=vcf$body,vcf_samples=vcf$samples)
+    vcf_body=build_body_vcf(vcf=vcf)
 
     write.table(
       x=vcf_header,

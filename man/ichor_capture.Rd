@@ -14,7 +14,7 @@ ichor_capture(
   includeHOMD = FALSE,
   scStates = NULL,
   txnE = 0.9999999,
-  txnStrength = 1e+07,
+  txnStrength = 10000000,
   output_name = "",
   output_dir = ".",
   min_cov = -15,
