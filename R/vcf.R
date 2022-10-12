@@ -376,7 +376,7 @@ variants_by_filters_vcf=function(
   if(output_name!=""){ 
     id=output_name
   }else{
-    id=get_file_name(vcf)
+    id=paste0(get_file_name(vcf),".",paste0(filters,collapse="."))
   }
 
 
@@ -510,7 +510,6 @@ parallel_vcfs_variants_by_filters_vcf=function(
               bin_tabix=bin_tabix,
               vcf=vcf,
               filters=filters,
-              output_name=paste0(get_file_name(vcf),".",paste0(filters,collapse=".")),
               exclusive=exclusive,
               compress=compress,
               index=index,
