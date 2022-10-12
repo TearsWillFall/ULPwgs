@@ -316,11 +316,6 @@ unnest_to_column=function(vcf_body,column="INFO"){
 
 
 
-
-vcf=dat
-
-
-
 filter_format_vcf=function(
   vcf,exprs=NULL,
   descriptor_id=NULL,
@@ -352,13 +347,7 @@ filter_format_vcf=function(
   return(vcf)
 }
 
-filter_format_vcf
 
-
-tmp=vcf %>% filter_vcf(exprs=">0.6",exclude=FALSE,descriptor_id="AF",filter_name="af_above_0.6")
-
-
-tmp
 
 check_body_format_vcf=function(vcf_body){
   if(typeof(vcf_body$FORMAT)=="list"&
