@@ -25,7 +25,7 @@ create_pon_cnvkit(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NA
+  hold = NULL
 )
 }
 \arguments{

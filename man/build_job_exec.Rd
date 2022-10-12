@@ -10,7 +10,7 @@ build_job_exec(
   ram = 3,
   threads = 1,
   output_dir = ".",
-  hold = NA,
+  hold = NULL,
   wd = getwd(),
   array = ""
 )

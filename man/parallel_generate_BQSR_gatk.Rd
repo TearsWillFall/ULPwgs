@@ -8,7 +8,7 @@ parallel_generate_BQSR_gatk(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   sif_gatk = build_default_sif_list()$sif_gatk,
   bam = "",
-  regions = NA,
+  regions = NULL,
   ref_genome = "",
   clean = TRUE,
   dbsnp = "",
@@ -24,7 +24,7 @@ parallel_generate_BQSR_gatk(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NA
+  hold = NULL
 )
 }
 \arguments{

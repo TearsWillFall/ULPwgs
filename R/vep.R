@@ -40,7 +40,7 @@ annotate_vep=function(
     executor_id=make_unique_id("callVEP"),
     task_name="callVEP",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=NA
+    wait=FALSE,hold=NULL
 ){
 
     if(!is.null(rdata)){

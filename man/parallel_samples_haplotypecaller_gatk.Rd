@@ -21,7 +21,7 @@ parallel_samples_haplotypecaller_gatk(
   indel_tranche = 99.4,
   keep_previous_filters = FALSE,
   clean = FALSE,
-  regions = NA,
+  regions = NULL,
   method = "single",
   verbose = FALSE,
   output_dir = ".",
@@ -34,7 +34,7 @@ parallel_samples_haplotypecaller_gatk(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NA
+  hold = NULL
 )
 }
 \arguments{

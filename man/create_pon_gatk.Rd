@@ -12,7 +12,7 @@ create_pon_gatk(
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
   output_name = "PoN",
   vcfs = "",
-  regions = NA,
+  regions = NULL,
   output_dir = ".",
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   germ_resource = build_default_reference_list()$HG19$variant$germ_reference,
@@ -26,7 +26,7 @@ create_pon_gatk(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NA
+  hold = NULL
 )
 }
 \arguments{

@@ -27,7 +27,7 @@ bigBedToBed_ucsc=function(
     output_dir=".",verbose=FALSE,batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("bigBedToBed"),task_name="bigBedToBed",
     mode="local",time="48:0:0",
-    threads=4,ram=4,update_time=60,wait=FALSE,hold=NA
+    threads=4,ram=4,update_time=60,wait=FALSE,hold=NULL
   ){
  
     options(scipen = 999)
@@ -136,7 +136,7 @@ parallel_sample_bigBedToBed_ucsc=function(
     executor_id=make_unique_id("parSampleBigBedToBed"),
     task_name="parSampleBigBedToBed",
     mode="local",time="48:0:0",
-    threads=4,ram=4,update_time=60,wait=FALSE,hold=NA
+    threads=4,ram=4,update_time=60,wait=FALSE,hold=NULL
   ){
  
     options(scipen = 999)
@@ -245,7 +245,7 @@ liftOver_ucsc=function(
     output_dir=".",verbose=FALSE,batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("bigBedToBed"),task_name="bigBedToBed",
     mode="local",time="48:0:0",
-    threads=4,ram=4,update_time=60,wait=FALSE,hold=NA
+    threads=4,ram=4,update_time=60,wait=FALSE,hold=NULL
   ){
  
     options(scipen = 999)

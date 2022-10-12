@@ -27,7 +27,7 @@ preprocess_seq_trento=function(
     batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("preprocess_trento"),tmp_dir=".",
     task_name="reprocess_trento",mode="local",time="48:0:0",
-    update_time=60,wait=FALSE,hold=NA){
+    update_time=60,wait=FALSE,hold=NULL){
 
     argg <- as.list(environment())
 
@@ -120,7 +120,7 @@ multisample_clonet_trento=function(
     batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("multi_clonet"),
     task_name="multi_clonet",mode="local",time="48:0:0",
-    update_time=60,wait=FALSE,hold=NA
+    update_time=60,wait=FALSE,hold=NULL
 ){
 
         argg <- as.list(environment())
@@ -178,12 +178,13 @@ multisample_clonet_trento=function(
                 patient_id=file_info[x,]$patient_id,
                 version=file_info[x,]$version,
                 threads=file_info[x,]$threads,
-                ram=file_info[x,]$ram,output_dir=paste0(out_file_dir,file_info[x,]$patient_id),
+                ram=file_info[x,]$ram,
+                output_dir=paste0(out_file_dir,file_info[x,]$patient_id),
                 verbose=file_info[x,]$verbose,
                 executor_id=task_id,
                 mode=file_info[x,]$mode,
                 time=file_info[x,]$time,
-                hold=try(file_info[x,]$hold,silent=TRUE))
+                hold=file_info[[x,"hold"]])
             },mc.cores=ifelse(mode=="local",1,3))
 
     }else{
@@ -253,7 +254,7 @@ clonet_trento=function(
     batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("clonet"),
     task_name="clonet",mode="local",time="48:0:0",
-    update_time=60,wait=FALSE,hold=NA
+    update_time=60,wait=FALSE,hold=NULL
 ){
 
     argg <- as.list(environment())
@@ -353,7 +354,7 @@ clonet_view_trento=function(method="log2_beta", clonet_dir="",threads=3,
     batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("clonet_view"),
     task_name="clonet_view",mode="local",time="48:0:0",
-    update_time=60,wait=FALSE,hold=NA,cn_list=build_default_cn_list(),
+    update_time=60,wait=FALSE,hold=NULL,cn_list=build_default_cn_list(),
     clonet_dirs=build_default_clonet_dir_list()
 ){
 

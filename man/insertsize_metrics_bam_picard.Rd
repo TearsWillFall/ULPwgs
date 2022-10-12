@@ -19,7 +19,7 @@ insertsize_metrics_bam_picard(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NA
+  hold = NULL
 )
 }
 \arguments{

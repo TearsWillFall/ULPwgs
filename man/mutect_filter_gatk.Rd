@@ -10,10 +10,10 @@ mutect_filter_gatk(
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
   vcf = "",
-  stats = NA,
-  contamination_table = NA,
-  segmentation_table = NA,
-  orientation_model = NA,
+  stats = NULL,
+  contamination_table = NULL,
+  segmentation_table = NULL,
+  orientation_model = NULL,
   output_name = "",
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   output_dir = ".",
@@ -28,7 +28,7 @@ mutect_filter_gatk(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NA
+  hold = NULL
 )
 }
 \arguments{

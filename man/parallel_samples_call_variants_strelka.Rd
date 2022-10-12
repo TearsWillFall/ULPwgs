@@ -8,7 +8,7 @@ parallel_samples_call_variants_strelka(
   bin_strelka_somatic = build_default_tool_binary_list()$bin_strelka$somatic,
   bin_strelka_germline = build_default_tool_binary_list()$bin_strelka$germline,
   bin_manta = build_default_tool_binary_list()$bin_manta,
-  patient_id = "",
+  patient_id = NA,
   tumour = NA,
   normal = NA,
   variants = "all",
@@ -26,7 +26,7 @@ parallel_samples_call_variants_strelka(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NA
+  hold = NULL
 )
 }
 \arguments{
