@@ -166,10 +166,7 @@ multisample_clonet_trento=function(
                     file_info[[col]]<<-get(col)
                 }
 
-                if(is.null(file_info[[x,col]])){
-                    file_info[[x,col]]<<-get(col)
-                }
-            
+        
             })
         
             job_report<- clonet_trento(

@@ -3830,10 +3830,7 @@ multisample_haplotypecaller_gatk=function(
                     file_info[[col]]<<-get(col)
                 }
 
-                if(is.null(file_info[[x,col]])){
-                    file_info[[x,col]]<<-get(col)
-                }
-            
+           
             })
         
             job_report<-parallel_samples_haplotypecaller_gatk(

@@ -720,9 +720,6 @@ multisample_process_cnvkit=function(
                     file_info[[col]]<<-get(col)
                 }
 
-                if(is.null(file_info[[x,col]])){
-                    file_info[[x,col]]<<-get(col)
-                }
             
             })
         
@@ -743,7 +740,6 @@ multisample_process_cnvkit=function(
                 verbose=file_info[x,]$verbose,
                 read_count=file_info[x,]$read_count,
                 min_mapq=file_info[x,]$min_mapq,
-                regions=file_info[[x,"regions"]],
                 gc=file_info[x,]$gc,
                 edge=file_info[x,]$edge,
                 rmask=file_info[x,]$rmask,
