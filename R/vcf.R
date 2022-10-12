@@ -517,7 +517,7 @@ parallel_vcfs_variants_by_filters_vcf=function(
               index=index,
               index_format=index_format,
               bgzip_index=bgzip_index,
-              verbose=verbose,sep=sep,
+              sep=sep,
               clean=clean,
               output_dir=out_file_dir,
               verbose=verbose,
