@@ -721,7 +721,6 @@ write_vcf=function(
 
       to_nest=c("FORMAT",vcf$samples)
       names(to_nest)=to_nest
-      vcf=sort_vcf(vcf)
       vcf_body=vcf$body %>% unnest_vcf_body() %>% 
       tidyr::pivot_wider(names_from=SAMPLE,values_from=VALUE) %>%
       dplyr::group_by(dplyr::across(-to_nest)) %>% 
