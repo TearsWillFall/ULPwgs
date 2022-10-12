@@ -1783,9 +1783,6 @@ multisample_mutect2_gatk=function(
                     file_info[[col]]<<-get(col)
                 }
 
-                if(is.null(file_info[[x,col]])){
-                    file_info[[x,col]]<<-get(col)
-                }
             
             })
 
