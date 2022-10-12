@@ -1886,6 +1886,7 @@ multisample_mutect2_gatk=function(
 #' @param segmentation_table [OPTIONAL] Path to segmentation tables for each tumour samples in VCF.
 #' @param orientation_model [OPTIONAL] Path to orientation model generated F1R2 read information.
 #' @param clean [OPTIONAL] Remove unfiltered VCF after completion. Default FALSE.
+#' @param extract_pass [OPTIONAL] Extract PASSing variants. Default TRUE.
 #' @param output_name [OPTIONAL] Name for the output. If not given the name of one of the samples will be used.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param threads [OPTIONAL] Number of threads to split the work. Default 4
@@ -1907,6 +1908,7 @@ mutect_filter_gatk=function(
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
   vcf="",stats=NULL,contamination_table=NULL,
+  extract_pass=TRUE,
   segmentation_table=NULL,orientation_model=NULL,output_name="",
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   output_dir=".",verbose=FALSE,clean=FALSE,
@@ -1982,12 +1984,7 @@ mutect_filter_gatk=function(
   }
 
 
-  if(extract_pass){
-    
 
-
-    
-  }
 
   job_report=build_job_report(
     job_id=job,
@@ -1999,6 +1996,25 @@ mutect_filter_gatk=function(
     out_files=list(
       filtered_vcf=out_file)
   )
+
+
+    if(extract_pass){
+      job_report[["steps"]][["extractPASSvcf"]]<-
+        parallel_vcfs_variants_by_filters_vcf(
+          bin_bgzip=bin_bgzip,
+          bin_tabix=bin_tabix,
+          vcf=out_file,filters="PASS",
+          exclusive=TRUE,
+          compress=FALSE,
+          output_dir=out_file_dir,
+          verbose=verbose,
+          batch_config=batch_config,
+          threads=threads,ram=ram,mode=mode,
+          executor_id=task_id,
+          time=time,
+          hold=job
+        )
+    }
 
 
 

@@ -9,7 +9,6 @@ parallel_vcfs_variants_by_filters_vcf(
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
   vcf = "",
   filters = "PASS",
-  output_name = "",
   exclusive = TRUE,
   compress = TRUE,
   index = TRUE,
@@ -39,8 +38,6 @@ parallel_vcfs_variants_by_filters_vcf(
 \item{vcf}{Path to the input VCF file.}
 
 \item{filters}{Filters to filter VCF by. Default PASS}
-
-\item{output_name}{Output file name.}
 
 \item{exclusive}{Only keep variants with exactly these filters. Default TRUE.}
 
@@ -75,6 +72,8 @@ parallel_vcfs_variants_by_filters_vcf(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
+
+\item{output_name}{Output file name.}
 }
 \description{
 VCF datastructure is in list format and contains a header, a body and

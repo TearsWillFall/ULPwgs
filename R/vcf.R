@@ -464,7 +464,6 @@ parallel_vcfs_variants_by_filters_vcf=function(
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
   vcf="",filters="PASS",
-  output_name="",
   exclusive=TRUE,
   compress=TRUE,index=TRUE,
   index_format="tbi",
