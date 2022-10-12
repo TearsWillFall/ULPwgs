@@ -1564,7 +1564,7 @@ parallel_samples_mutect2_gatk=function(
             rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
             out_file_dir2=set_dir(dir=out_file_dir,name="batch")
             batch_code=build_job_exec(job=job,time=time,ram=ram,
-            threads=1,output_dir=out_file_dir2,
+            threads=2,output_dir=out_file_dir2,
             hold=hold,array=length(tumour_list))
             exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
 
@@ -1789,7 +1789,7 @@ multisample_mutect2_gatk=function(
             
             })
 
-            print(file_info[x,])
+       
             job_report<- parallel_samples_mutect2_gatk(
               sif_gatk=sif_gatk,
               bin_bcftools=bin_bcftools,
@@ -1805,7 +1805,7 @@ multisample_mutect2_gatk=function(
               patient_id=file_info[x,]$patient_id,
               pon=file_info[x,]$pon,
               method=file_info[x,]$method,
-              output_dir=paste0(out_file_dir,file_info[x,]$patient_id),
+              output_dir=file_info[x,]$output_dir,
               verbose=file_info[x,]$verbose,
               filter=file_info[x,]$filter,
               orientation=file_info[x,]$orientation,mnps=file_info[x,]$mnps,
@@ -1843,7 +1843,7 @@ multisample_mutect2_gatk=function(
                   regions=regions,
                   method=method,
                   pon=pon,
-                  output_dir=paste0(out_file_dir,patient_id),
+                  output_dir=output_dir,
                   verbose=verbose,
                   filter=filter,
                   orientation=orientation,mnps=mnps,
@@ -3607,7 +3607,7 @@ parallel_samples_haplotypecaller_gatk=function(
             rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
             out_file_dir2=set_dir(dir=out_file_dir,name="batch")
             batch_code=build_job_exec(job=job,time=time,ram=ram,
-            threads=1,output_dir=out_file_dir2,
+            threads=2,output_dir=out_file_dir2,
             hold=hold,array=length(normal_list))
             exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
 
@@ -3851,6 +3851,7 @@ multisample_haplotypecaller_gatk=function(
                   snp_tranche=file_info[x,]$snp_tranche,
                   indel_tranche=file_info[x,]$indel_tranche,
                   keep_previous_filters=file_info[x,]$keep_previous_filters,
+                  output_dir=file_info[x,]$output_dir,
                   clean=file_info[x,]$clean,
                   regions=file_info[x,]$regions,
                   method=file_info[x,]$method,
