@@ -30,7 +30,7 @@ trimming_skewer=function(
   batch_config=build_default_preprocess_config(),
   output_name="",mode="local",executor_id=make_unique_id("trimmingSkewer"),
   task_name="trimmingSkewer",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  update_time=60,wait=FALSE,hold=NA
 ){
 
 

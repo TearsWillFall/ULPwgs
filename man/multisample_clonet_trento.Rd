@@ -5,7 +5,7 @@
 \title{Process multiple tumour samples using CLONET}
 \usage{
 multisample_clonet_trento(
-  sample_sheet = NULL,
+  sample_sheet = NA,
   bam_dir = "",
   normal_id = "",
   patient_id = "",
@@ -24,7 +24,7 @@ multisample_clonet_trento(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NULL
+  hold = NA
 )
 }
 \arguments{

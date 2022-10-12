@@ -13,7 +13,7 @@ bin_targets_cnvkit(
   output_dir = ".",
   bin_size_antitarget = 1e+05,
   bin_size_target = 100,
-  min_bin_size_antitarget = NULL,
+  min_bin_size_antitarge = NA,
   split = FALSE,
   short_names = FALSE,
   verbose = FALSE,
@@ -26,7 +26,7 @@ bin_targets_cnvkit(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NULL
+  hold = NA
 )
 }
 \arguments{
@@ -45,8 +45,6 @@ bin_targets_cnvkit(
 \item{bin_size_antitarget}{\link{OPTIONAL} Average bin size for target. Default 500000.}
 
 \item{bin_size_target}{\link{OPTIONAL} Average bin size for target. Default 120.}
-
-\item{min_bin_size_antitarget}{\link{OPTIONAL} Average bin size for target. Default null.}
 
 \item{split}{\link{OPTIONAL} Average bin size for target. Default null.}
 
@@ -71,6 +69,8 @@ bin_targets_cnvkit(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
+
+\item{min_bin_size_antitarget}{\link{OPTIONAL} Average bin size for target. Default null.}
 }
 \description{
 This function wraps around target and antitarget functiosn for CNVkit

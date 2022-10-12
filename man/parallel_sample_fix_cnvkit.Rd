@@ -24,7 +24,7 @@ parallel_sample_fix_cnvkit(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NULL
+  hold = NA
 )
 }
 \arguments{

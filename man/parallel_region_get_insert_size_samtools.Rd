@@ -8,7 +8,7 @@ parallel_region_get_insert_size_samtools(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bin_picard = build_default_tool_binary_list()$bin_picard,
   bam = "",
-  bed = NULL,
+  bed = NA,
   flags = c(99, 147, 83, 163),
   sep = "\\t",
   header = FALSE,
@@ -27,7 +27,7 @@ parallel_region_get_insert_size_samtools(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NULL
+  hold = NA
 )
 }
 \arguments{

@@ -14,7 +14,7 @@ create_pon_cnvkit(
   target = "",
   bin_size_target = 75,
   bin_size_antitarget = 5e+05,
-  min_bin_size_antitarget = NULL,
+  min_bin_size_antitarget = NA,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 1,
@@ -25,7 +25,7 @@ create_pon_cnvkit(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NULL
+  hold = NA
 )
 }
 \arguments{

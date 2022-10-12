@@ -15,8 +15,8 @@ parallel_sample_ichor_capture(
   txnStrength = 1e+07,
   output_dir = ".",
   min_cov = -15,
-  lambda = NULL,
-  coverage = NULL,
+  lambda = NA,
+  coverage = NA,
   minSegmentBins = 50,
   minTumFracToCorrect = 0.01,
   chrs = c(1:22, "X"),
@@ -41,7 +41,7 @@ parallel_sample_ichor_capture(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NULL
+  hold = NA
 )
 }
 \arguments{

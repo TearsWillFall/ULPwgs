@@ -24,7 +24,7 @@ apply_BQSR_gatk(
   time = "48:0:0",
   update_time = 60,
   wait = TRUE,
-  hold = NULL
+  hold = NA
 )
 }
 \arguments{

@@ -9,8 +9,8 @@ multisample_call_variants_strelka(
   bin_strelka_germline = build_default_tool_binary_list()$bin_strelka$germline,
   bin_manta = build_default_tool_binary_list()$bin_manta,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
-  sample_sheet = NULL,
-  normal_id = NULL,
+  sample_sheet = NA,
+  normal_id = NA,
   bam_dir = "",
   pattern = "bam$",
   patient_id = "",
@@ -30,7 +30,7 @@ multisample_call_variants_strelka(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NULL
+  hold = NA
 )
 }
 \arguments{

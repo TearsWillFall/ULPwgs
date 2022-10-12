@@ -10,7 +10,7 @@ mutect2_gatk(
   selected = NULL,
   sif_gatk = build_default_sif_list()$sif_gatk,
   tumour = "",
-  normal = NULL,
+  normal = NA,
   output_name = "",
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   germ_resource = build_default_reference_list()$HG19$variant$germ_reference,
@@ -29,7 +29,7 @@ mutect2_gatk(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NULL
+  hold = NA
 )
 }
 \arguments{

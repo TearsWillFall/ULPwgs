@@ -27,7 +27,7 @@ markdups_gatk=function(
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   tmp_dir=".",threads=3,ram=4,remove_duplicates=TRUE,
   executor_id=make_unique_id("markdupsGATK"),task_name="markdupsGATK",
-  mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=NULL){
+  mode="local",time="48:0:0",update_time=60,wait=FALSE,hold=NA){
 
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
@@ -129,7 +129,7 @@ recal_gatk=function(
   tmp_dir=".",verbose=FALSE,batch_config=build_default_preprocess_config(),
   executor_id=make_unique_id("recalGATK"),
   task_name="recalGATK",clean=TRUE,mode="local",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  update_time=60,wait=FALSE,hold=NA
   ){
 
 
@@ -261,7 +261,7 @@ generate_BQSR_gatk=function(
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("generateBQSR"),task_name="generateBQSR",
-  time="48:0:0",update_time=60,wait=FALSE,hold=NULL
+  time="48:0:0",update_time=60,wait=FALSE,hold=NA
 ){  
 
   if(!is.null(rdata)){
@@ -370,13 +370,13 @@ generate_BQSR_gatk=function(
 parallel_generate_BQSR_gatk=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   sif_gatk=build_default_sif_list()$sif_gatk,bam="",
-  regions=NULL,ref_genome="", clean=TRUE, dbsnp="",
+  regions=NA,ref_genome="", clean=TRUE, dbsnp="",
   tmp_dir=".",threads=3,ram=4,
   executor_id=make_unique_id("par_generateBQSR"),
   task_name="par_generateBQSR",output_dir=".",
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   mode="local",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL){
+  update_time=60,wait=FALSE,hold=NA){
 
   options(scipen = 999)
  
@@ -396,7 +396,7 @@ parallel_generate_BQSR_gatk=function(
       )
     )
 
-  if(is.null(regions)){
+  if(is.na(regions)){
 
     job_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
       bin_samtools=bin_samtools,
@@ -525,7 +525,7 @@ gather_BQSR_reports_gatk=function(
   task_name="gatherBQSR",
   batch_config=build_default_preprocess_config(),
   mode="local",time="48:0:0",
-  threads=4,ram=4,update_time=60,wait=FALSE,hold=NULL){
+  threads=4,ram=4,update_time=60,wait=FALSE,hold=NA){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -618,7 +618,7 @@ apply_BQSR_gatk=function(
   rec_table="",output_dir=".",verbose=FALSE,tmp_dir=".",
   batch_config=build_default_preprocess_config(),mode="local", threads=4,ram=4,
   executor_id=make_unique_id("applyBQSR"),task_name="applyBQSR",time="48:0:0",
-  update_time=60,wait=TRUE,hold=NULL){
+  update_time=60,wait=TRUE,hold=NA){
 
 
   if(!is.null(rdata)){
@@ -720,13 +720,13 @@ parallel_apply_BQSR_gatk=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   sif_gatk=build_default_sif_list()$sif_gatk,
   bin_picard=build_default_tool_binary_list()$bin_picard,
-  bam="",regions=NULL,ref_genome="",rec_table="",clean=TRUE,
+  bam="",regions=NA,ref_genome="",rec_table="",clean=TRUE,
   output_dir=".",verbose=FALSE,tmp_dir=".",
   batch_config=build_default_preprocess_config(),mode="local",
   executor_id=make_unique("par_applyBQSR"),
   task_name="par_applyBQSR",
   time="48:0:0",threads=4,ram=4,
-  update_time=60,wait=FALSE, hold=NULL){
+  update_time=60,wait=FALSE, hold=NA){
 
   options(scipen = 999)
  
@@ -735,7 +735,7 @@ parallel_apply_BQSR_gatk=function(
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
 
-   if(is.null(regions)){
+   if(is.na(regions)){
       job_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
       bin_samtools=bin_samtools,
       bam=bam,verbose=verbose,output_dir=tmp_dir,
@@ -882,7 +882,7 @@ analyze_covariates_gatk=function(
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("recalCovariates"),
   task_name="recalCovariates",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  update_time=60,wait=FALSE,hold=NA
 ){
 
   argg <- as.list(environment())
@@ -1007,7 +1007,7 @@ analyze_covariates_gatk=function(
 mutect2_gatk=function(region="",
   rdata=NULL,selected=NULL,
   sif_gatk=build_default_sif_list()$sif_gatk,
-  tumour="",normal=NULL,output_name="",
+  tumour="",normal=NA,output_name="",
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   germ_resource=build_default_reference_list()$HG19$variant$germ_reference,
   pon="",output_dir=".",tmp_dir=".",
@@ -1016,7 +1016,7 @@ mutect2_gatk=function(region="",
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("Mutect2"),
   task_name="Mutect2",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  update_time=60,wait=FALSE,hold=NA
 ){
 
   if(!is.null(rdata)){
@@ -1058,7 +1058,7 @@ mutect2_gatk=function(region="",
     tumour=paste0(" -I ",tumour)
   }
   norm=" "
-  if (!is.null(normal)){
+  if (!is.na(normal)){
     if (is.vector(normal)){
       norm=paste0(" -I ",paste(normal,collapse=" -I ")," -normal ",
       paste(Vectorize(get_file_name)(normal),collapse=" -normal "))
@@ -1192,7 +1192,7 @@ parallel_regions_mutect2_gatk=function(
   germ_resource=build_default_reference_list()$HG19$variant$germ_reference,
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
   db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
-  regions=NULL,pon="",output_dir=".",
+  regions=NA,pon="",output_dir=".",
   verbose=FALSE,filter=TRUE,
   orientation=TRUE,mnps=FALSE,
   contamination=TRUE,clean=FALSE,
@@ -1200,7 +1200,7 @@ parallel_regions_mutect2_gatk=function(
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("parRegionMutect2"),
   task_name="parRegionMutect2",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  update_time=60,wait=FALSE,hold=NA
 ){
 
 
@@ -1237,7 +1237,7 @@ parallel_regions_mutect2_gatk=function(
       )
     )
 
-  if(is.null(regions)){
+  if(is.na(regions)){
 
     jobs_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
       bin_samtools=bin_samtools,
@@ -1477,7 +1477,7 @@ parallel_samples_mutect2_gatk=function(
   germ_resource=build_default_reference_list()$HG19$variant$germ_reference,
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
   db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
-  regions=NULL,pon="",output_dir=".",
+  regions=NA,pon="",output_dir=".",
   method="single",
   verbose=FALSE,filter=TRUE,
   orientation=TRUE,mnps=FALSE,
@@ -1486,7 +1486,7 @@ parallel_samples_mutect2_gatk=function(
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("parSamplesMutect2"),
   task_name="parSamplesMutect2",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  update_time=60,wait=FALSE,hold=NA
 ){
 
   argg <- as.list(environment())
@@ -1690,7 +1690,7 @@ multisample_mutect2_gatk=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  sample_sheet=NULL,
+  sample_sheet=NA,
   bam_dir="",
   normal_id="",
   patient_id="",
@@ -1701,7 +1701,7 @@ multisample_mutect2_gatk=function(
   db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
   pon=build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_muts,
   method="single",
-  regions=NULL,output_dir=".",
+  regions=NA,output_dir=".",
   verbose=FALSE,filter=TRUE,
   orientation=TRUE,mnps=FALSE,
   contamination=TRUE,clean=FALSE,
@@ -1711,7 +1711,7 @@ multisample_mutect2_gatk=function(
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("multiSampleMutect2"),
   task_name="multiSampleMutect2",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  update_time=60,wait=FALSE,hold=NA
 ){
 
   argg <- as.list(environment())
@@ -1763,7 +1763,7 @@ multisample_mutect2_gatk=function(
       "hold")
 
 
-    if(!is.null(sample_sheet)){
+    if(!is.na(sample_sheet)){
       
         if(!is.data.frame(sample_sheet)){
                 file_info=read.csv(sample_sheet,header=header,sep=sep,stringsAsFactors=FALSE)
@@ -1783,8 +1783,8 @@ multisample_mutect2_gatk=function(
                     file_info[[col]]<<-get(col)
                 }
 
-                if(is.null(file_info[x,col])){
-                    file_info[x,col]<<-get(col)
+                if(is.null(file_info[[x,col]])){
+                    file_info[[x,col]]<<-get(col)
                 }
             
             })
@@ -1905,15 +1905,15 @@ mutect_filter_gatk=function(
   bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  vcf="",stats=NULL,contamination_table=NULL,
-  segmentation_table=NULL,orientation_model=NULL,output_name="",
+  vcf="",stats=NA,contamination_table=NA,
+  segmentation_table=NA,orientation_model=NA,output_name="",
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   output_dir=".",verbose=FALSE,clean=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("filterMutect2Gatk"),
   task_name="filterMutect2Gatk",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  update_time=60,wait=FALSE,hold=NA
 ){
 
   argg <- as.list(environment())
@@ -1929,21 +1929,21 @@ mutect_filter_gatk=function(
      id=get_file_name(vcf)
   }
 
-  if(!is.null(stats)){
+  if(!is.na(stats)){
       stats=paste0(" -stats ",stats)
   }
 
-  if (!is.null(contamination_table)){
+  if (!is.na(contamination_table)){
      contamination_table=paste0(" --contamination-table ", paste0(contamination_table,
      collapse=" --contamination-table "))
   }
   
-  if(!is.null(segmentation_table)){
+  if(!is.na(segmentation_table)){
       segmentation_table=paste0(" --tumor-segmentation ",paste0(segmentation_table,
       collapse=" --tumor-segmentation "))
     }
 
-  if(!is.null(orientation_model)){
+  if(!is.na(orientation_model)){
       orientation_model=paste0(" --ob-priors ",orientation_model)
   }
   
@@ -2011,13 +2011,13 @@ gather_mutect2_gatk=function(
   bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  vcfs="",stats=NULL,f1r2=NULL,output_dir=".",tmp_dir=".",
+  vcfs="",stats=NA,f1r2=NA,output_dir=".",tmp_dir=".",
   output_name="",verbose=FALSE,orientation=FALSE,clean=TRUE,
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("gatherMutect"),
   task_name="gatherMutect",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  update_time=60,wait=FALSE,hold=NA
 ){
 
   argg <- as.list(environment())
@@ -2125,7 +2125,7 @@ learn_orientation_gatk=function(
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("learnOrientationMutect2"),
   task_name="learnOrientationMutect2",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  update_time=60,wait=FALSE,hold=NA
 ){
 
   argg <- as.list(environment())
@@ -2141,7 +2141,7 @@ learn_orientation_gatk=function(
      id=get_file_name(f1r2[1])
   }
  
-  if (!is.null(f1r2)){
+  if (!is.na(f1r2)){
     f1r2_list=paste0(" -I ",paste0(f1r2,collapse=" -I "))
   }
   
@@ -2224,7 +2224,7 @@ learn_orientation_gatk=function(
 estimate_contamination_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
   rdata=NULL,selected=NULL,
-  tumour="",normal=NULL,tumour_pileup="",
+  tumour=NA,normal=NA,tumour_pileup="",
   normal_pileup="",output_name="",output_dir=".",tmp_dir=".",
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
   db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
@@ -2232,7 +2232,7 @@ estimate_contamination_gatk=function(
   threads=1,ram=4,mode="local",
   executor_id=make_unique_id("estimateContaminationGatk"),
   task_name="estimateContaminationGatk",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL){
+  update_time=60,wait=FALSE,hold=NA){
 
   if(!is.null(rdata)){
     load(rdata)
@@ -2275,7 +2275,7 @@ estimate_contamination_gatk=function(
     )
   )
 
-  if(!is.null(normal)){
+  if(!is.na(normal)){
       jobs_report[["steps"]][["nPileupGatk"]]<-pileup_summary_gatk(
         sif_gatk=sif_gatk,
         bam=normal,output_name=get_file_name(normal),
@@ -2290,7 +2290,7 @@ estimate_contamination_gatk=function(
 
   }
 
-  if(!is.null(tumour)){
+  if(!is.na(tumour)){
         jobs_report[["steps"]][["tPileupGatk"]]<-pileup_summary_gatk(
           sif_gatk=sif_gatk,
           bam=tumour,output_name=get_file_name(tumour),
@@ -2384,7 +2384,7 @@ parallel_estimate_contamination_gatk=function(
   threads=1,ram=4,mode="local",
   executor_id=make_unique_id("parEstimateContaminationGatk"),
   task_name="parEstimateContaminationGatk",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  update_time=60,wait=FALSE,hold=NA
 ){
 
     argg <- as.list(environment())
@@ -2519,7 +2519,7 @@ pileup_summary_gatk=function(
   threads=1,ram=4,mode="local",
   executor_id=make_unique_id("pileupSummaryGatk"),
   task_name="pileupSummaryGatk",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  update_time=60,wait=FALSE,hold=NA
 ){
   
   if(!is.null(rdata)){
@@ -2621,7 +2621,7 @@ parallel_pileup_summary_gatk=function(
   threads=1,ram=4,mode="local",
   executor_id=make_unique_id("parPileupSummaryGatk"),
   task_name="parPileupSummaryGatk",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL){
+  update_time=60,wait=FALSE,hold=NA){
 
 
   argg <- as.list(environment())
@@ -2727,12 +2727,12 @@ parallel_pileup_summary_gatk=function(
 
 merge_mutect_stats_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
-  stats=NULL,output_name="",output_dir=".",clean=FALSE,
+  stats=NA,output_name="",output_dir=".",clean=FALSE,
   verbose=TRUE, batch_config=build_default_preprocess_config(),
   threads=1,ram=4,mode="local",
   executor_id=make_unique_id("mergeMutectStats"),
   task_name="mergeMutectStats",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL){
+  update_time=60,wait=FALSE,hold=NA){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -2747,7 +2747,7 @@ merge_mutect_stats_gatk=function(
      id=get_file_name(stats[1])
   }
  
-  if (!is.null(stats)){
+  if (!is.na(stats)){
     stat=paste0(" -stats ",paste0(stats,collapse=" -stats "))
   }
   
@@ -2846,7 +2846,7 @@ create_pon_gatk=function(
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
   output_name="PoN",
   vcfs="",
-  regions=NULL,output_dir=".",
+  regions=NA,output_dir=".",
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   germ_resource=build_default_reference_list()$HG19$variant$germ_reference,
   verbose=FALSE,
@@ -2854,7 +2854,7 @@ create_pon_gatk=function(
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("createPoNGatk"),
   task_name="createPoNGATK",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  update_time=60,wait=FALSE,hold=NA
 ){
 
   argg <- as.list(environment())
@@ -2962,14 +2962,14 @@ create_genomic_db_gatk=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  vcfs="",regions=NULL,output_dir=".",
+  vcfs="",regions=NA,output_dir=".",
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   verbose=FALSE,size=10,
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("createGenomicDB"),
   task_name="createGenomicDB",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  update_time=60,wait=FALSE,hold=NA
 ){
 
   argg <- as.list(environment())
@@ -2999,7 +2999,7 @@ create_genomic_db_gatk=function(
   )
 
 
-  if(is.null(regions)){
+  if(is.na(regions)){
 
     jobs_report[["steps"]][["getChr"]] <- get_fai_reference_chr(
       fasta=ref_genome,verbose=verbose,output_dir=tmp_dir,
@@ -3103,7 +3103,7 @@ haplotypecaller_gatk=function(
     threads=4,ram=4,mode="local",
     executor_id=make_unique_id("parallelCallHaplotypecallerGatk"),
     task_name="parallelCallHaplotypecallerGatk",time="48:0:0",
-    update_time=60,wait=FALSE,hold=NULL
+    update_time=60,wait=FALSE,hold=NA
 ){
 
   if(!is.null(rdata)){
@@ -3248,7 +3248,7 @@ parallel_regions_haplotypecaller_gatk=function(
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
   normal="",
   ref_genome=build_default_reference_list()$HG19$reference$genome,
-  regions=NULL,
+  regions=NA,
   output_dir=".",
   indel_db=build_default_reference_list()$HG19$variant$mills_reference,
   haplotype_db=build_default_reference_list()$HG19$variant$hapmap_reference,
@@ -3264,7 +3264,7 @@ parallel_regions_haplotypecaller_gatk=function(
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("parallelCallHaplotypecallerGatk"),
   task_name="parallelCallHaplotypecallerGatk",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  update_time=60,wait=FALSE,hold=NA
 ){
   
   if(!is.null(rdata)){
@@ -3300,7 +3300,7 @@ parallel_regions_haplotypecaller_gatk=function(
       )
     )
 
-  if(is.null(regions)){
+  if(is.na(regions)){
 
     jobs_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
       bin_samtools=bin_samtools,
@@ -3510,7 +3510,7 @@ parallel_samples_haplotypecaller_gatk=function(
   indel_tranche=99.4,
   keep_previous_filters=FALSE,
   clean=FALSE,
-  regions=NULL,
+  regions=NA,
   method="single",
   verbose=FALSE,
   output_dir=".",
@@ -3518,7 +3518,7 @@ parallel_samples_haplotypecaller_gatk=function(
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("parSamplesHaplotypeCaller"),
   task_name="parSamplesHaplotypeCaller",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  update_time=60,wait=FALSE,hold=NA
 ){
 
   argg <- as.list(environment())
@@ -3731,7 +3731,7 @@ multisample_haplotypecaller_gatk=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  sample_sheet=NULL,
+  sample_sheet=NA,
   bam_dir="",
   patient_id="",
   pattern="bam$",
@@ -3744,7 +3744,7 @@ multisample_haplotypecaller_gatk=function(
   indel_tranche=99.4,
   keep_previous_filters=FALSE,
   clean=FALSE,
-  regions=NULL,
+  regions=NA,
   method="single",
   verbose=FALSE,
   output_dir=".",
@@ -3754,7 +3754,7 @@ multisample_haplotypecaller_gatk=function(
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("multiSampleHaplotypeCaller"),
   task_name="multiSampleHaplotypeCaller",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  update_time=60,wait=FALSE,hold=NA
 ){
 
   argg <- as.list(environment())
@@ -3806,7 +3806,7 @@ multisample_haplotypecaller_gatk=function(
       "hold")
 
 
-    if(!is.null(sample_sheet)){
+    if(!is.na(sample_sheet)){
       
         if(!is.data.frame(sample_sheet)){
                 file_info=read.csv(sample_sheet,header=header,sep=sep,stringsAsFactors=FALSE)
@@ -3817,7 +3817,7 @@ multisample_haplotypecaller_gatk=function(
                 file_info=sample_sheet
         }
         
-        file_info=file_info %>% dplyr::group_by(dplyr::across(-normal)) %>% dplyr::summarise(tumour=list(normal))
+        file_info=file_info %>% dplyr::group_by(dplyr::across(-normal)) %>% dplyr::summarise(normal=list(normal))
 
         job_report[["steps"]][["multisample_haplotypecaller"]]=parallel::mclapply(seq(1,nrow(file_info)),FUN=function(x){
             
@@ -3965,7 +3965,7 @@ filter_variant_tranches_gatk=function(
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("FilterVariantTranchesGatk"),
   task_name="FilterVariantTranchesGatk",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  update_time=60,wait=FALSE,hold=NA
 ){
 
 

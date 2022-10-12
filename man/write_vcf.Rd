@@ -25,7 +25,7 @@ write_vcf(
   ram = 4,
   update_time = 60,
   wait = FALSE,
-  hold = NULL
+  hold = NA
 )
 }
 \arguments{

@@ -18,7 +18,7 @@ diagram_cnvkit(
   male_reference = FALSE,
   gender = "male",
   shift = TRUE,
-  title = NULL,
+  title = NA,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 1,
@@ -29,7 +29,7 @@ diagram_cnvkit(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NULL
+  hold = NA
 )
 }
 \arguments{

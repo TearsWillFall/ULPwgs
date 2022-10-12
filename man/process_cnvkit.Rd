@@ -37,8 +37,8 @@ process_cnvkit(
   trend_scatter = FALSE,
   antitarget_symbol_scatter = "@",
   segment_colour_scatter = "red",
-  y_max_scatter = NULL,
-  y_min_scatter = NULL,
+  y_max_scatter = NA,
+  y_min_scatter = NA,
   cn_thr_diagram = 0.5,
   min_probes_diagram = 3,
   male_reference_diagram = FALSE,
@@ -53,7 +53,7 @@ process_cnvkit(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NULL
+  hold = NA
 )
 }
 \arguments{

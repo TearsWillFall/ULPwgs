@@ -118,7 +118,7 @@ add_snv_af_strelka_vcf=function(
   batch_config=build_default_preprocess_config(),
   mode="local",time="48:0:0",
   threads=1,ram=4,update_time=60,
-  wait=FALSE,hold=NULL){
+  wait=FALSE,hold=NA){
     
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
@@ -219,7 +219,7 @@ add_indel_af_strelka_vcf=function(
   batch_config=build_default_preprocess_config(),
   mode="local",time="48:0:0",
   threads=1,ram=4,update_time=60,
-  wait=FALSE,hold=NULL){
+  wait=FALSE,hold=NA){
     
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
@@ -425,7 +425,7 @@ add_sv_af_strelka_vcf=function(
   batch_config=build_default_preprocess_config(),
   mode="local",time="48:0:0",
   threads=1,ram=4,update_time=60,
-  wait=FALSE,hold=NULL){
+  wait=FALSE,hold=NA){
     
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
@@ -594,7 +594,7 @@ write_vcf=function(
   batch_config=build_default_preprocess_config(),
   mode="local",time="48:0:0",
   threads=1,ram=4,update_time=60,
-  wait=FALSE,hold=NULL
+  wait=FALSE,hold=NA
 ){  
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)

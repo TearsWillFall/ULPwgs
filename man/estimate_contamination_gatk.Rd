@@ -8,8 +8,8 @@ estimate_contamination_gatk(
   sif_gatk = build_default_sif_list()$sif_gatk,
   rdata = NULL,
   selected = NULL,
-  tumour = "",
-  normal = NULL,
+  tumour = NA,
+  normal = NA,
   tumour_pileup = "",
   normal_pileup = "",
   output_name = "",
@@ -27,7 +27,7 @@ estimate_contamination_gatk(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NULL
+  hold = NA
 )
 }
 \arguments{

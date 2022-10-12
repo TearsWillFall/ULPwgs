@@ -11,7 +11,7 @@ clonet_view_trento(
   ram = 4,
   output_dir = ".",
   verbose = FALSE,
-  sample_labels = NULL,
+  sample_labels = NA,
   batch_config = build_default_preprocess_config(),
   executor_id = make_unique_id("clonet_view"),
   task_name = "clonet_view",
@@ -19,7 +19,7 @@ clonet_view_trento(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NULL,
+  hold = NA,
   cn_list = build_default_cn_list(),
   clonet_dirs = build_default_clonet_dir_list()
 )

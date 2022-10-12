@@ -27,7 +27,7 @@ preprocess_seq_trento=function(
     batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("preprocess_trento"),tmp_dir=".",
     task_name="reprocess_trento",mode="local",time="48:0:0",
-    update_time=60,wait=FALSE,hold=NULL){
+    update_time=60,wait=FALSE,hold=NA){
 
     argg <- as.list(environment())
 
@@ -115,12 +115,12 @@ preprocess_seq_trento=function(
 #' @export
 
 multisample_clonet_trento=function(
-    sample_sheet=NULL,bam_dir="",normal_id="",patient_id="",version="V3",
+    sample_sheet=NA,bam_dir="",normal_id="",patient_id="",version="V3",
     tmp_dir=".",header=TRUE,sep="",threads=3,ram=4,output_dir=".",verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("multi_clonet"),
     task_name="multi_clonet",mode="local",time="48:0:0",
-    update_time=60,wait=FALSE,hold=NULL
+    update_time=60,wait=FALSE,hold=NA
 ){
 
         argg <- as.list(environment())
@@ -147,7 +147,7 @@ multisample_clonet_trento=function(
     "batch_config","threads","ram","time","mode","hold")
 
 
-    if(!is.null(sample_sheet)){
+    if(!is.na(sample_sheet)){
       
         if(!is.data.frame(sample_sheet)){
                 file_info=read.csv(sample_sheet,header=header,sep=sep,stringsAsFactors=FALSE)
@@ -253,12 +253,12 @@ clonet_trento=function(
     batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("clonet"),
     task_name="clonet",mode="local",time="48:0:0",
-    update_time=60,wait=FALSE,hold=NULL
+    update_time=60,wait=FALSE,hold=NA
 ){
 
     argg <- as.list(environment())
 
-    if(!is.null(version)){
+    if(!is.na(version)){
         sif_path=build_default_sif_list()$sif_clonet[version]
         if(is.null(sif_clonet)){
             stop(paste0(ver, " is not a valid PCF Select panel version"))
@@ -349,11 +349,11 @@ clonet_trento=function(
 
 
 clonet_view_trento=function(method="log2_beta", clonet_dir="",threads=3,
-    ram=4,output_dir=".",verbose=FALSE,sample_labels=NULL,
+    ram=4,output_dir=".",verbose=FALSE,sample_labels=NA,
     batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("clonet_view"),
     task_name="clonet_view",mode="local",time="48:0:0",
-    update_time=60,wait=FALSE,hold=NULL,cn_list=build_default_cn_list(),
+    update_time=60,wait=FALSE,hold=NA,cn_list=build_default_cn_list(),
     clonet_dirs=build_default_clonet_dir_list()
 ){
 
@@ -403,7 +403,7 @@ clonet_view_trento=function(method="log2_beta", clonet_dir="",threads=3,
     cn_data=dplyr::left_join(cn_data,annot_data %>% 
     dplyr::filter(PANEL_VERSION==panel[which.min(panel$diff),]$PANEL_VERSION),
     by=c("gene"="hgnc_symbol"))
-    if(!is.null(sample_labels)){
+    if(!is.na(sample_labels)){
         label_annotation=data.frame(s_name=names(sample_labels),id=sample_labels)
         cn_data=dplyr::left_join(cn_data,label_annotation,by=c("sample"="id"))
         cn_data=cn_data %>% dplyr::arrange(s_name,sample)

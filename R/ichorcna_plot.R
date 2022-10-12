@@ -13,7 +13,7 @@
 ## plot solutions for all samples
 plotSolutions <- function(hmmResults.cor, tumour_copy, logR.column = "logR", call.column = "event", 
 					      chrs, outDir, plotSegs = TRUE,
-                          numSamples=1, plotFileType="pdf", plotYLim=c(-2,2), seqinfo = NULL,
+                          numSamples=1, plotFileType="pdf", plotYLim=c(-2,2), seqinfo = NA,
                           estimateScPrevalence=FALSE, maxCN){
   ## for each sample ##
   for (s in 1:numSamples){
@@ -89,7 +89,7 @@ plotSolutions <- function(hmmResults.cor, tumour_copy, logR.column = "logR", cal
 
 plotGWSolution <- function(hmmResults.cor, s, outPlotFile, plotFileType="pdf", 
 						   logR.column = "logR", call.column = "event",
-						   seqinfo = NULL, plotSegs = TRUE,coverage=NULL,
+						   seqinfo = NA, plotSegs = TRUE,coverage=NA,
                            plotYLim=c(-2,2), estimateScPrevalence, main,
                            turnDevOn=TRUE, turnDevOff=TRUE){
     ## plot genome wide figures for each solution ##
@@ -112,14 +112,14 @@ plotGWSolution <- function(hmmResults.cor, s, outPlotFile, plotFileType="pdf",
     if (plotSegs){
     	segsToUse <- hmmResults.cor$results$segs[[s]]
     }else{
-    	segsToUse <- NULL
+    	segsToUse <- NA
     }
     plotCNlogRByChr(dataIn=hmmResults.cor$cna[[s]], segs = segsToUse, plotSegs=plotSegs, seqinfo=seqinfo,
-                    param = hmmResults.cor$results$param, chr=NULL,
+                    param = hmmResults.cor$results$param, chr=NA,
                     logR.column = logR.column, call.column = call.column,  
                     ploidy = ploidyAll, cytoBand=T, yrange=plotYLim, main=main)  #ylim for plot
     annotStr <- paste0("Tumor Fraction: ", signif(purityEst, digits=4), ", Ploidy: ", signif(ploidyEst, digits=3))
-    if (!is.null(coverage)){
+    if (!is.na(coverage)){
       annotStr <- paste0(annotStr, ", Coverage: ", signif(coverage, digits=2))
     }
     mtext(line=-1, annotStr, cex=1.5)
@@ -147,10 +147,10 @@ plotGWSolution <- function(hmmResults.cor, s, outPlotFile, plotFileType="pdf",
 #alphaVal = [0,1]
 #geneAnnot is a dataframe with 4 columns: geneSymbol, chr, start, stop
 #spacing is the distance between each track
-plotCNlogRByChr <- function(dataIn, segs, param = NULL, logR.column = "logR", call.column = "event",
- plotSegs = TRUE, seqinfo=NULL, chr=NULL, ploidy = NULL, 
- geneAnnot=NULL, yrange=c(-4,6), xlim=NULL, xaxt = "n", 
- cex = 0.5, gene.cex = 0.5, plot.title = NULL, spacing=4, 
+plotCNlogRByChr <- function(dataIn, segs, param = NA, logR.column = "logR", call.column = "event",
+ plotSegs = TRUE, seqinfo=NA, chr=NA, ploidy = NA, 
+ geneAnnot=NA, yrange=c(-4,6), xlim=NA, xaxt = "n", 
+ cex = 0.5, gene.cex = 0.5, plot.title = NA, spacing=4, 
  cytoBand=T, alphaVal=1, main){
   #color coding
   alphaVal <- ceiling(alphaVal * 255); class(alphaVal) = "hexmode"
@@ -167,16 +167,16 @@ plotCNlogRByChr <- function(dataIn, segs, param = NULL, logR.column = "logR", ca
 #    segCol[ind] <- "#00FF00"
 #  }
   # adjust for ploidy #
-  if (!is.null(ploidy)){
+  if (!is.na(ploidy)){
     dataIn[, logR.column] <- as.numeric(dataIn[, logR.column]) + log2(ploidy / 2)
     
-    if (!is.null(segs)){
+    if (!is.na(segs)){
       segs[, "median"] <- segs[, "median"] + log2(ploidy / 2)
     }
   }
   
   
-  if (!is.null(chr)){
+  if (!is.na(chr)){
     for (i in chr){
       
       dataByChr <- dataIn[dataIn[,"chr"]==as.character(i),]
@@ -186,11 +186,11 @@ plotCNlogRByChr <- function(dataIn, segs, param = NULL, logR.column = "logR", ca
       par(mar=c(spacing,8,4,2))
       #par(xpd=NA)
       coord <- (as.numeric(dataByChr[,"end"]) + as.numeric(dataByChr[,"start"]))/2
-      if (is.null(xlim)){
+      if (is.na(xlim)){
         xlim <- c(1,as.numeric(dataByChr[dim(dataByChr)[1],"start"]))
         xaxt <- "n"
       }
-      if (is.null(plot.title)){
+      if (is.na(plot.title)){
         plot.title <- paste("Chromosome ",i,sep="")
       }
       ## plot logR for bins ##
@@ -201,7 +201,7 @@ plotCNlogRByChr <- function(dataIn, segs, param = NULL, logR.column = "logR", ca
       title(plot.title, line = 1.25, xpd=NA, cex.main=1.5)
       ## plot centre line ##
       lines(c(1,as.numeric(dataByChr[dim(dataByChr)[1],3])),rep(0,2),type="l",col="grey",lwd=0.75)
-      if (!is.null(segs) & plotSegs){
+      if (!is.na(segs) & plotSegs){
         segsByChr <- segs[segs[,"chr"]==as.character(i),,drop=FALSE]
         ind <- segsByChr$subclone.status == FALSE
         apply(segsByChr[ind, ], 1, function(x){
@@ -216,7 +216,7 @@ plotCNlogRByChr <- function(dataIn, segs, param = NULL, logR.column = "logR", ca
         }
       }
       
-      if (!is.null(geneAnnot)){
+      if (!is.na(geneAnnot)){
         #par(xpd=F)
         colnames(geneAnnot) <- c("Gene","Chr","Start","Stop")
         geneAnnot <- geneAnnot[geneAnnot[,"Chr"]==chr,]
@@ -282,7 +282,7 @@ plotCNlogRByChr <- function(dataIn, segs, param = NULL, logR.column = "logR", ca
 }
 
 
-plotCorrectionGenomeWide <- function(correctOutput, seqinfo = NULL, ...) {
+plotCorrectionGenomeWide <- function(correctOutput, seqinfo = NA, ...) {
   
   midpt <- (start(correctOutput) + end(correctOutput))/2
   coord <- getGenomeWidePositions(GenomeInfoDb::seqnames(correctOutput),midpt, seqinfo)
@@ -352,7 +352,7 @@ plotChrLines <- function(chrs,chrBkpt,yrange){
 #   return(list(posns=positions,chrBkpt=chrBkpt))
 # }
 
-getGenomeWidePositions <- function(chrs, posns, seqinfo = NULL) {
+getGenomeWidePositions <- function(chrs, posns, seqinfo =NA) {
     # create genome coordinate scaffold
     positions <- as.numeric(posns)
     chrs <- as.character(chrs)
@@ -363,7 +363,7 @@ getGenomeWidePositions <- function(chrs, posns, seqinfo = NULL) {
     if (length(chrsNum) > 1){
 		for (i in 2:length(chrsNum)) {
 			chrInd <- which(chrs == chrsNum[i])
-			if (!is.null(seqinfo)){
+			if (!is.na(seqinfo)){
 				prevChrPos <- GenomeInfoDb::seqlengths(seqinfo)[i-1] + prevChrPos
 			}else{
 				prevChrPos <- positions[chrInd[1] - 1]
@@ -405,7 +405,7 @@ getGenomeWidePositions <- function(chrs, posns, seqinfo = NULL) {
 # }
 
 ####  TODO: SUBCLONAL STATES #####
-plotParams<- function(mus, lambdas, nu, subclone = NULL, copy.states = 0:6, ...) {
+plotParams<- function(mus, lambdas, nu, subclone = NA, copy.states = 0:6, ...) {
   #cols <- stateCols()
   cols <- c("#00FF00","#006400","#0000FF","#8B0000",rep("#FF0000", 10))
   cols <- cols[copy.states + 1]

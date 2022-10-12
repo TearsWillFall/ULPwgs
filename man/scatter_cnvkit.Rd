@@ -21,9 +21,9 @@ scatter_cnvkit(
   trend = TRUE,
   antitarget_symbol = "@",
   segment_colour = "red",
-  title = NULL,
-  y_max = NULL,
-  y_min = NULL,
+  title = NA,
+  y_max = NA,
+  y_min = NA,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 1,
@@ -34,7 +34,7 @@ scatter_cnvkit(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NULL
+  hold = NA
 )
 }
 \arguments{

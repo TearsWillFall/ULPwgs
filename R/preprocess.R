@@ -44,7 +44,7 @@ preprocess_seq=function(
     mode="local",
     batch_config=build_default_preprocess_config(),
     time="48:0:0",
-    update_time=60,wait=FALSE,hold=NULL,
+    update_time=60,wait=FALSE,hold=NA,
     verbose=FALSE){
           
     argg <- as.list(environment())
@@ -66,7 +66,7 @@ preprocess_seq=function(
         out_file_dir=out_file_dir,
         out_files=list()
       )
-    if(!is.null(sample_sheet)){
+    if(!is.na(sample_sheet)){
         
         if(!is.data.frame(sample_sheet)){
                 sample_sheet=read.csv(sample_sheet,header=header,sep=sep,
@@ -155,7 +155,7 @@ for_id=function(
     mode="local",
     batch_config=build_default_preprocess_config(),
     time="48:0:0",
-    update_time=60,wait=FALSE,hold=NULL,
+    update_time=60,wait=FALSE,hold=NA,
     verbose=FALSE
    ){              
                 
@@ -177,7 +177,7 @@ for_id=function(
                     mode="local",
                     batch_config=build_default_preprocess_config(),
                     clean=TRUE,time="48:0:0",
-                    update_time=60,wait=FALSE,hold=NULL,
+                    update_time=60,wait=FALSE,hold=NA,
                     verbose=FALSE){
                                         argg <- as.list(environment())
                                         task_id=make_unique_id(task_name)
@@ -366,7 +366,7 @@ process_sample=function(rdata=""){
       
                 load(file=rdata)
                 report=list()
-                hold=NULL
+                hold=NA
                 bam=""
                 cat("\t\n")
                 cat(crayon::magenta(paste0("Processing sample: ",new_name,"\n")))

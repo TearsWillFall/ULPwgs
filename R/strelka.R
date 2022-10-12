@@ -44,7 +44,7 @@ call_variants_strelka=function(
     threads=1,ram=4,mode="local",
     executor_id=make_unique_id("callSVManta"),
     task_name="callSVManta",time="48:0:0",
-    update_time=60,wait=FALSE,hold=NULL
+    update_time=60,wait=FALSE,hold=NA
 ){
 
   if(!is.null(rdata)){
@@ -153,7 +153,7 @@ parallel_samples_call_variants_strelka=function(
     bin_strelka_somatic=build_default_tool_binary_list()$bin_strelka$somatic,
     bin_strelka_germline=build_default_tool_binary_list()$bin_strelka$germline,
     bin_manta=build_default_tool_binary_list()$bin_manta,
-    patient_id="",tumour=NULL,normal=NULL,variants="all",indel_cnds=TRUE,
+    patient_id="",tumour=NA,normal=NA,variants="all",indel_cnds=TRUE,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     output_dir=".",
     targeted=TRUE,verbose=FALSE,
@@ -161,7 +161,7 @@ parallel_samples_call_variants_strelka=function(
     threads=1,ram=4,mode="local",
     executor_id=make_unique_id("parSampleCallSVManta"),
     task_name="parSampleCallSVManta",time="48:0:0",
-    update_time=60,wait=FALSE,hold=NULL
+    update_time=60,wait=FALSE,hold=NA
 ){
 
     argg <- as.list(environment())
@@ -348,8 +348,8 @@ multisample_call_variants_strelka=function(
     bin_strelka_germline=build_default_tool_binary_list()$bin_strelka$germline,
     bin_manta=build_default_tool_binary_list()$bin_manta,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
-    sample_sheet=NULL,
-    normal_id=NULL,
+    sample_sheet=NA,
+    normal_id=NA,
     bam_dir="",
     pattern="bam$",
     patient_id="",
@@ -363,7 +363,7 @@ multisample_call_variants_strelka=function(
     threads=1,ram=4,mode="local",
     executor_id=make_unique_id("multisampleStrelka"),
     task_name="multisampleStrelka",time="48:0:0",
-    update_time=60,wait=FALSE,hold=NULL
+    update_time=60,wait=FALSE,hold=NA
 ){
 
   argg <- as.list(environment())
@@ -408,7 +408,7 @@ multisample_call_variants_strelka=function(
     )
 
 
-    if(!is.null(sample_sheet)){
+    if(!is.na(sample_sheet)){
       
         if(!is.data.frame(sample_sheet)){
                 file_info=read.csv(sample_sheet,header=header,sep=sep,stringsAsFactors=FALSE)
@@ -533,7 +533,7 @@ call_sv_manta=function(
     threads=1,ram=4,mode="local",
     executor_id=make_unique_id("callSVManta"),
     task_name="callSVManta",time="48:0:0",
-    update_time=60,wait=FALSE,hold=NULL
+    update_time=60,wait=FALSE,hold=NA
 ){
   
     argg <- as.list(environment())
@@ -661,7 +661,7 @@ call_snvs_strelka=function(
     threads=1,ram=4,mode="local",
     executor_id=make_unique_id("callSNVStrelka"),
     task_name="callSNVStrelka",time="48:0:0",
-    update_time=60,wait=FALSE,hold=NULL
+    update_time=60,wait=FALSE,hold=NA
 ){
   
     argg <- as.list(environment())
@@ -750,7 +750,7 @@ call_somatic_snvs_strelka=function(
     threads=1,ram=4,mode="local",
     executor_id=make_unique_id("callSomaticSNVStrelka"),
     task_name="callSomaticSNVStrelka",time="48:0:0",
-    update_time=60,wait=FALSE,hold=NULL
+    update_time=60,wait=FALSE,hold=NA
 ){
 
     argg <- as.list(environment())
@@ -866,7 +866,7 @@ call_germline_snvs_strelka=function(
     threads=1,ram=4,mode="local",
     executor_id=make_unique_id("callGermlineSNVStrelka"),
     task_name="callGermlineSNVStrelka",time="48:0:0",
-    update_time=60,wait=FALSE,hold=NULL
+    update_time=60,wait=FALSE,hold=NA
 ){
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)

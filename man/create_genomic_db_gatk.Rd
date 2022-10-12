@@ -10,7 +10,7 @@ create_genomic_db_gatk(
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
   vcfs = "",
-  regions = NULL,
+  regions = NA,
   output_dir = ".",
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   verbose = FALSE,
@@ -24,7 +24,7 @@ create_genomic_db_gatk(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NULL
+  hold = NA
 )
 }
 \arguments{

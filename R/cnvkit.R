@@ -104,8 +104,8 @@ process_cnvkit=function(
     trend_scatter=FALSE,
     antitarget_symbol_scatter="@",
     segment_colour_scatter="red",
-    y_max_scatter=NULL,
-    y_min_scatter=NULL,
+    y_max_scatter=NA,
+    y_min_scatter=NA,
     cn_thr_diagram=0.5,
     min_probes_diagram=3,
     male_reference_diagram=FALSE,
@@ -116,7 +116,7 @@ process_cnvkit=function(
     executor_id=make_unique_id("processCNVkit"),
     task_name="processCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=NULL
+    wait=FALSE,hold=NA
   ){
 
     if(!is.null(rdata)){
@@ -357,8 +357,8 @@ parallel_samples_process_cnvkit=function(
     trend_scatter=FALSE,
     antitarget_symbol_scatter="@",
     segment_colour_scatter="red",
-    y_max_scatter=NULL,
-    y_min_scatter=NULL,
+    y_max_scatter=NA,
+    y_min_scatter=NA,
     cn_thr_diagram=0.5,
     min_probes_diagram=3,
     male_reference_diagram=FALSE,
@@ -369,7 +369,7 @@ parallel_samples_process_cnvkit=function(
     executor_id=make_unique_id("parSampleProcessCNVkit"),
     task_name="parSampleProcessCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=NULL
+    wait=FALSE,hold=NA
 ){
 
   argg <- as.list(environment())
@@ -596,7 +596,7 @@ multisample_process_cnvkit=function(
     access=build_default_reference_list()$HG19$reference$access_5k,
     sif_cnvkit=build_default_sif_list()$sif_cnvkit,
     pon=build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn_male,
-    sample_sheet=NULL,
+    sample_sheet=NA,
     bam_dir="",
     patient_id="",
     pattern="bam$",
@@ -625,8 +625,8 @@ multisample_process_cnvkit=function(
     trend_scatter=FALSE,
     antitarget_symbol_scatter="@",
     segment_colour_scatter="red",
-    y_max_scatter=NULL,
-    y_min_scatter=NULL,
+    y_max_scatter=NA,
+    y_min_scatter=NA,
     cn_thr_diagram=0.5,
     min_probes_diagram=3,
     male_reference_diagram=FALSE,
@@ -637,7 +637,7 @@ multisample_process_cnvkit=function(
     executor_id=make_unique_id("parSampleProcessCNVkit"),
     task_name="parSampleProcessCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=NULL
+    wait=FALSE,hold=NA
 ){
 
   argg <- as.list(environment())
@@ -700,7 +700,7 @@ multisample_process_cnvkit=function(
     )
 
 
-    if(!is.null(sample_sheet)){
+    if(!is.na(sample_sheet)){
       
         if(!is.data.frame(sample_sheet)){
                 file_info=read.csv(sample_sheet,header=header,sep=sep,stringsAsFactors=FALSE)
@@ -884,7 +884,7 @@ access_cnvkit=function(
     executor_id=make_unique_id("accessCNVkit"),
     task_name="accessCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=NULL
+    wait=FALSE,hold=NA
   ){
 
 
@@ -991,14 +991,14 @@ access_cnvkit=function(
     target="",
     bin_size_target=75,
     bin_size_antitarget=500000,
-    min_bin_size_antitarget=NULL,
+    min_bin_size_antitarget=NA,
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     threads=1,ram=1,mode="local",
     executor_id=make_unique_id("createPonCNVkit"),
     task_name="createPonCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=NULL
+    wait=FALSE,hold=NA
   ){
 
     argg <- as.list(environment())
@@ -1018,7 +1018,7 @@ access_cnvkit=function(
     if(access!=""){
       paste0(" -g ",access)
     }
-    if(!is.null(min_bin_size_antitarget)){
+    if(!is.na(min_bin_size_antitarget)){
       min_bin_size_antitarget=paste0(" --antitarget-min-size ",min_bin_size_antitarget)
     }
 
@@ -1121,7 +1121,7 @@ access_cnvkit=function(
     executor_id=make_unique_id("targetCNVkit"),
     task_name="targetCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=NULL
+    wait=FALSE,hold=NA
   ){
 
     argg <- as.list(environment())
@@ -1230,14 +1230,14 @@ access_cnvkit=function(
     output_name="",
     output_dir=".",
     bin_size=500000,
-    min_bin_size=NULL,
+    min_bin_size=NA,
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     threads=1,ram=1,mode="local",
     executor_id=make_unique_id("antitargetCNVkit"),
     task_name="antitargetCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=NULL
+    wait=FALSE,hold=NA
   ){
 
     argg <- as.list(environment())
@@ -1254,7 +1254,7 @@ access_cnvkit=function(
     }
 
     add=""
-    if(!is.null(min_bin_size)){
+    if(!is.na(min_bin_size)){
       add=paste0(" -m ",min_bin_size)
     }
 
@@ -1355,7 +1355,7 @@ bin_targets_cnvkit=function(
     output_dir=".",
     bin_size_antitarget=100000,
     bin_size_target=100,
-    min_bin_size_antitarget=NULL,
+    min_bin_size_antitarge=NA,
     split=FALSE,
     short_names=FALSE,
     verbose=FALSE,
@@ -1364,7 +1364,7 @@ bin_targets_cnvkit=function(
     executor_id=make_unique_id("bintargetCNVkit"),
     task_name="bintargetCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=NULL
+    wait=FALSE,hold=NA
 ){
 
     argg <- as.list(environment())
@@ -1485,7 +1485,7 @@ bin_targets_cnvkit=function(
     executor_id=make_unique_id("autobinCNVkit"),
     task_name="autobinCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=NULL
+    wait=FALSE,hold=NA
   ){
 
     argg <- as.list(environment())
@@ -1606,7 +1606,7 @@ de
     executor_id=make_unique_id("coverageCNVkit"),
     task_name="coverageCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=NULL
+    wait=FALSE,hold=NA
   ){
 
     if(!is.null(rdata)){
@@ -1726,7 +1726,7 @@ de
     executor_id=make_unique_id("parSamplecoverageCNVkit"),
     task_name="parSamplecoverageCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=NULL
+    wait=FALSE,hold=NA
   ){
 
     argg <- as.list(environment())
@@ -1880,7 +1880,7 @@ de
     executor_id=make_unique_id("referenceCNVkit"),
     task_name="referenceCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=NULL
+    wait=FALSE,hold=NA
   ){
 
     argg <- as.list(environment())
@@ -1888,7 +1888,7 @@ de
     out_file_dir=set_dir(dir=output_dir)
     job=build_job(executor_id=executor_id,task_id=task_id)
 
-    if(!is.null(gender)){
+    if(!is.na(gender)){
       gender=paste0(" -x ",gender)
     }
 
@@ -2018,7 +2018,7 @@ de
     executor_id=make_unique_id("fixCNVkit"),
     task_name="fixCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=NULL
+    wait=FALSE,hold=NA
   ){
 
     argg <- as.list(environment())
@@ -2152,7 +2152,7 @@ de
     executor_id=make_unique_id("parFixCNVkit"),
     task_name="parFixCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=NULL
+    wait=FALSE,hold=NA
   ){
 
     argg <- as.list(environment())
@@ -2289,7 +2289,7 @@ de
     executor_id=make_unique_id("segmentCNVkit"),
     task_name="segmentCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=NULL
+    wait=FALSE,hold=NA
   ){
 
     argg <- as.list(environment())
@@ -2417,7 +2417,7 @@ de
     executor_id=make_unique_id("segmentCNVkit"),
     task_name="segmentCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=NULL
+    wait=FALSE,hold=NA
   ){
 
     argg <- as.list(environment())
@@ -2556,16 +2556,16 @@ de
     trend=TRUE,
     antitarget_symbol="@",
     segment_colour="red",
-    title=NULL,
-    y_max=NULL,
-    y_min=NULL,
+    title=NA,
+    y_max=NA,
+    y_min=NA,
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     threads=1,ram=1,mode="local",
     executor_id=make_unique_id("scatterCNVkit"),
     task_name="scatterCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=NULL
+    wait=FALSE,hold=NA
   ){
 
     argg <- as.list(environment())
@@ -2607,15 +2607,15 @@ de
 
     add=""
 
-     if(!is.null(title)){
+     if(!is.na(title)){
       title=paste0(" --title ",title)
     }
-     if(!is.null(y_max)){
+     if(!is.na(y_max)){
       y_max=paste0(" --y-max ",y_max)
     }
 
 
-    if(!is.null(y_min)){
+    if(!is.na(y_min)){
       y_min=paste0(" --y-min ",y_min)
     }
     
@@ -2744,14 +2744,14 @@ de
     male_reference=FALSE,
     gender="male",
     shift=TRUE,
-    title=NULL,
+    title=NA,
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     threads=1,ram=1,mode="local",
     executor_id=make_unique_id("diagramCNVkit"),
     task_name="diagramCNVkit",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=NULL
+    wait=FALSE,hold=NA
   ){
 
     argg <- as.list(environment())
@@ -2773,7 +2773,7 @@ de
       id=get_file_name(cnr)
     }
 
-    if(!is.null(gender)){
+    if(!is.na(gender)){
       gender=paste0(" -x ",gender)
     }
 
@@ -2793,7 +2793,7 @@ de
 
     }
 
-    if(!is.null(title)){
+    if(!is.na(title)){
       title=paste0(" --title ",title)
     }
 

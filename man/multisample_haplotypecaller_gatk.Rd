@@ -10,7 +10,7 @@ multisample_haplotypecaller_gatk(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
-  sample_sheet = NULL,
+  sample_sheet = NA,
   bam_dir = "",
   patient_id = "",
   pattern = "bam$",
@@ -23,7 +23,7 @@ multisample_haplotypecaller_gatk(
   indel_tranche = 99.4,
   keep_previous_filters = FALSE,
   clean = FALSE,
-  regions = NULL,
+  regions = NA,
   method = "single",
   verbose = FALSE,
   output_dir = ".",
@@ -38,7 +38,7 @@ multisample_haplotypecaller_gatk(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NULL
+  hold = NA
 )
 }
 \arguments{

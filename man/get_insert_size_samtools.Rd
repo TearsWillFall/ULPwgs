@@ -9,7 +9,7 @@ get_insert_size_samtools(
   selected = NULL,
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = "",
-  region = NULL,
+  region = NA,
   flags = c(99, 147, 83, 163),
   output_name = "",
   output_dir = ".",
@@ -23,7 +23,7 @@ get_insert_size_samtools(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NULL
+  hold = NA
 )
 }
 \arguments{

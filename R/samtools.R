@@ -31,7 +31,7 @@ sort_and_index_bam_samtools=function(
   coord_sort=TRUE,index=TRUE,stats="all", clean=FALSE,
   mode="local",executor_id=make_unique_id("sortANDindex"),
   task_name="sortANDindex",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  update_time=60,wait=FALSE,hold=NA
 ){
 
   argg <- as.list(environment())
@@ -133,7 +133,7 @@ sort_bam_samtools=function(
   batch_config=build_default_preprocess_config(),
   threads=3,ram=1,coord_sort=TRUE,mode="local",
   executor_id=make_unique_id("sortBAM"),clean=FALSE,task_name="sortBAM",
-  time="48:0:0",update_time=60,wait=FALSE,hold=NULL){
+  time="48:0:0",update_time=60,wait=FALSE,hold=NA){
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -196,7 +196,7 @@ index_bam_samtools=function(
   bam="",verbose=FALSE,batch_config=build_default_preprocess_config(),
   threads=3,ram=4,mode="local",executor_id=make_unique_id("indexBAM"),
   task_name="indexBAM",time="48:0:0",update_time=60, output_dir=".",
-  wait=FALSE,hold=NULL
+  wait=FALSE,hold=NA
 ){
 
   argg <- as.list(environment())
@@ -276,7 +276,7 @@ stats_bam_samtools=function(
   threads=3,ram=4,stats="all",
   mode="local",executor_id=make_unique_id("statsBAM"),
   task_name="statsBAM",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  update_time=60,wait=FALSE,hold=NA
 ){
 
   argg <- as.list(environment())
@@ -349,7 +349,7 @@ stats_flag_samtools=function(
   batch_config=build_default_preprocess_config(),
   threads=3,ram=4,mode="local",executor_id=make_unique_id("statsFlag"),
   task_name="statsFlag",time="48:0:0",update_time=60,
-  wait=FALSE,hold=NULL
+  wait=FALSE,hold=NA
 ){
 
   argg <- as.list(environment())
@@ -425,7 +425,7 @@ stats_index_samtools=function(
   bam="",output_dir=".",verbose=FALSE,
   batch_config=build_default_preprocess_config(),threads=3,ram=4,mode="local",
   executor_id=make_unique_id("statsINDEX"),task_name="statsINDEX",
-  time="48:0:0",update_time=60,wait=FALSE,hold=NULL
+  time="48:0:0",update_time=60,wait=FALSE,hold=NA
 ){
 
   argg <- as.list(environment())
@@ -500,7 +500,7 @@ mapq_metrics_bam_samtools=function(
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   threads=3,ram=4,mode="local",
   executor_id=make_unique_id("metricsMAPQ"),
-  task_name="metricsMAPQ",time="48:0:0",update_time=60,wait=FALSE,hold=NULL
+  task_name="metricsMAPQ",time="48:0:0",update_time=60,wait=FALSE,hold=NA
 ){
 
   argg <- as.list(environment())
@@ -580,7 +580,7 @@ filter_bam_by_size_samtools=function(
   selected=NULL,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam="",
-  region=NULL,
+  region=NA,
   min_frag_size=0,
   max_frag_size=167,
   flags=c(99, 147, 83, 163),
@@ -592,7 +592,7 @@ filter_bam_by_size_samtools=function(
   threads=1,ram=4,mode="local",
   executor_id=make_unique_id("filterBAMbyInsertSize"),
   task_name="filterBAMbyInsertSize",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  update_time=60,wait=FALSE,hold=NA
 ){
 
   if(!is.null(rdata)){
@@ -617,13 +617,13 @@ filter_bam_by_size_samtools=function(
   job=build_job(executor_id=executor_id,task_id=task_id)
 
   fg=""
-  if(!is.null(flags)){
+  if(!is.na(flags)){
     fg=paste0(" -f ",paste0(flags,collapse=","))
   }
   
 
   position=""
-  if(!is.null(region)){
+  if(!is.na(region)){
     position=strsplit(region,split="__")[[1]][2]
     out_file=paste0(out_file_dir,"/",id,".",ifelse(include,"include_","exclude_"),
     min_frag_size,"_",max_frag_size,".",region,".bam")
@@ -708,7 +708,7 @@ filter_bam_by_size_samtools=function(
 parallel_region_filter_bam_by_size_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bin_picard=build_default_tool_binary_list()$bin_picard,
-  bam="",bed=NULL,
+  bam="",bed=NA,
   min_frag_size=1,
   max_frag_size=167,
   flags=c(99, 147, 83, 163),
@@ -724,7 +724,7 @@ parallel_region_filter_bam_by_size_samtools=function(
   threads=3,ram=4,mode="local",
   executor_id=make_unique_id("parRegionfilterBAMbyInsertSize"),
   task_name="parRegionfilterBAMbyInsertSize",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  update_time=60,wait=FALSE,hold=NA
 
 ){
 
@@ -766,7 +766,7 @@ parallel_region_filter_bam_by_size_samtools=function(
   sep="\t",header=TRUE,stringsAsFactors = FALSE)
   bam_chr$order=as.numeric(as.factor(bam_chr$chr))
 
-  if(!is.null(bed)){
+  if(!is.na(bed)){
       regions=read.table(bed,sep=sep,header=header)
       names(regions)[1:3]=c("chr","start","end")
       miss_chr=setdiff(unique(regions[1,]), bam_chr)
@@ -915,7 +915,7 @@ get_insert_size_samtools=function(
   selected=NULL,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam="",
-  region=NULL,
+  region=NA,
   flags=c(99, 147, 83, 163),
   output_name="",
   output_dir=".",
@@ -924,7 +924,7 @@ get_insert_size_samtools=function(
   threads=1,ram=4,mode="local",
   executor_id=make_unique_id("getInsertSizeBAM"),
   task_name="getInsertSizeBAM",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  update_time=60,wait=FALSE,hold=NA
 ){
 
   if(!is.null(rdata)){
@@ -949,13 +949,13 @@ get_insert_size_samtools=function(
   job=build_job(executor_id=executor_id,task_id=task_id)
 
  fg=""
-  if(!is.null(flags)){
+  if(!is.na()(flags)){
     fg=paste0(" -f ",paste0(flags,collapse=","))
   }
   
 
   position=""
-  if(!is.null(region)){
+  if(!is.na(region)){
     position=strsplit(region,split="__")[[1]][2]
     out_file=paste0(out_file_dir,"/",id,".",region,".fragments.txt")
   }else{
@@ -1094,7 +1094,7 @@ get_insert_size_samtools=function(
 parallel_region_get_insert_size_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bin_picard=build_default_tool_binary_list()$bin_picard,
-  bam="",bed=NULL,
+  bam="",bed=NA,
   flags=c(99, 147, 83, 163),
   sep="\t",
   header=FALSE,
@@ -1108,7 +1108,7 @@ parallel_region_get_insert_size_samtools=function(
   threads=3,ram=4,mode="local",
   executor_id=make_unique_id("parRegionGetInsertSizeBAM"),
   task_name="parRegionGetInsertSizeBAM",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  update_time=60,wait=FALSE,hold=NA
 ){
 
   options(scipen=999)
@@ -1149,7 +1149,7 @@ parallel_region_get_insert_size_samtools=function(
   sep="\t",header=TRUE,stringsAsFactors = FALSE)
   bam_chr$order=as.numeric(as.factor(bam_chr$chr))
 
-  if(!is.null(bed)){
+  if(!is.na(bed)){
       regions=read.table(bed,sep=sep,header=header)
       names(regions)[1:3]=c("chr","start","end")
       miss_chr=setdiff(unique(regions[1,]), bam_chr)

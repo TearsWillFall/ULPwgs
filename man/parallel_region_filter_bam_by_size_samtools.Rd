@@ -8,7 +8,7 @@ parallel_region_filter_bam_by_size_samtools(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bin_picard = build_default_tool_binary_list()$bin_picard,
   bam = "",
-  bed = NULL,
+  bed = NA,
   min_frag_size = 1,
   max_frag_size = 167,
   flags = c(99, 147, 83, 163),
@@ -29,7 +29,7 @@ parallel_region_filter_bam_by_size_samtools(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NULL
+  hold = NA
 )
 }
 \arguments{

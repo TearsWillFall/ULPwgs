@@ -10,7 +10,7 @@ multisample_mutect2_gatk(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
-  sample_sheet = NULL,
+  sample_sheet = NA,
   bam_dir = "",
   normal_id = "",
   patient_id = "",
@@ -21,7 +21,7 @@ multisample_mutect2_gatk(
   db_interval = build_default_reference_list()$HG19$variant$biallelic_reference,
   pon = build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_muts,
   method = "single",
-  regions = NULL,
+  regions = NA,
   output_dir = ".",
   verbose = FALSE,
   filter = TRUE,
@@ -40,7 +40,7 @@ multisample_mutect2_gatk(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NULL
+  hold = NA
 )
 }
 \arguments{

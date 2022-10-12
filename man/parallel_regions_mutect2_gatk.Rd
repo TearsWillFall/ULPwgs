@@ -19,7 +19,7 @@ parallel_regions_mutect2_gatk(
   germ_resource = build_default_reference_list()$HG19$variant$germ_reference,
   biallelic_db = build_default_reference_list()$HG19$variant$biallelic_reference,
   db_interval = build_default_reference_list()$HG19$variant$biallelic_reference,
-  regions = NULL,
+  regions = NA,
   pon = "",
   output_dir = ".",
   verbose = FALSE,
@@ -37,7 +37,7 @@ parallel_regions_mutect2_gatk(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NULL
+  hold = NA
 )
 }
 \arguments{
