@@ -11,7 +11,7 @@
 # This script is the main script to run the HMM.
 
 runHMMsegment <- function(x,
-    validInd = NA, dataType = "log2", param = NA, 
+    validInd = NULL, dataType = "log2", param = NULL, 
     chrTrain = c(1:22), maxiter = 50, estimateNormal = TRUE, estimatePloidy = TRUE, 
     estimatePrecision = TRUE, estimateSubclone = FALSE, estimateTransition = TRUE,
     estimateInitDist = TRUE, logTransform = FALSE, verbose = TRUE) {
@@ -29,17 +29,17 @@ runHMMsegment <- function(x,
   for (i in 1:length(x)){
     GenomicRanges::mcols(x[[i]])[, dataType] <- dataMat[, i]
   }
-  if (!is.na(chrTrain)) {
+  if (!is.null(chrTrain)) {
 		chrInd <- chr %in% chrTrain
   }else{
   	chrInd <- !logical(length(chr))
   }
 
-  if (!is.na(validInd)){
+  if (!is.null(validInd)){
     chrInd <- chrInd & validInd
   }  
 
-	if (is.na(param)){
+	if (is.null(param)){
 		param <- getDefaultParameters(dataMat[chrInd])
 	}
 	#if (param$n_0 == 0){
@@ -126,7 +126,7 @@ getTransitionMatrix <- function(K, e, strength){
   return(list(A=A, dirPrior=dirPrior))
 }
 
-getDefaultParameters <- function(x, maxCN = 5, ct.sc = na, ploidy = 2, e = 0.9999999, e.sameState = 10, strength = 10000000, includeHOMD = FALSE){
+getDefaultParameters <- function(x, maxCN = 5, ct.sc = NULL, ploidy = 2, e = 0.9999999, e.sameState = 10, strength = 10000000, includeHOMD = FALSE){
   if (includeHOMD){
     ct <- 0:maxCN
   }else{
@@ -146,7 +146,7 @@ getDefaultParameters <- function(x, maxCN = 5, ct.sc = na, ploidy = 2, e = 0.999
 	)
 	K <- length(param$ct)
   ## initialize hyperparameters for precision using observed data ##
-	if (!is.na(dim(x))){ # multiple samples (columns)
+	if (!is.null(dim(x))){ # multiple samples (columns)
     param$numberSamples <- ncol(x)
     #betaLambdaVal <- ((apply(x, 2, function(x){ sd(diff(x), na.rm=TRUE) }) / sqrt(length(param$ct))) ^ 2)
     betaLambdaVal <- ((apply(x, 2, sd, na.rm = TRUE) / sqrt(length(param$ct))) ^ 2)   
@@ -164,7 +164,7 @@ getDefaultParameters <- function(x, maxCN = 5, ct.sc = na, ploidy = 2, e = 0.999
 	#param$lambda[param$ct == 0] <- 1 #HOMD
 	S <- param$numberSamples
 	logR.var <- 1 / ((apply(x, 2, sd, na.rm = TRUE) / sqrt(length(param$ct))) ^ 2)
-	if (!is.na(dim(x))){ # multiple samples (columns)
+	if (!is.null(dim(x))){ # multiple samples (columns)
 		param$lambda <- matrix(logR.var, nrow=K, ncol=S, byrow=T, dimnames=list(c(),colnames(x)))
 	}else{ # only 1 sample    
 		#logR.var <- 1 / ((sd(x, na.rm = TRUE) / sqrt(length(param$ct))) ^ 2)
@@ -370,8 +370,8 @@ runEMs <- function(copy, chr, chrTrain, param, maxiter, verbose = TRUE,
     stop("runEM: Length of inputs do not match for one of: copy, chr, chrTrain")
   }
   
-  if (is.na(param$ct) || is.na(param$lambda) || is.na(param$nu) ||
-      is.na(param$kappa)) {
+  if (is.null(param$ct) || is.null(param$lambda) || is.null(param$nu) ||
+      is.null(param$kappa)) {
     stop("runEM: Parameter missing, ensure all parameters exist as columns in",
          "data frame: ct, lambda, nu, kappa")
   }
@@ -581,7 +581,7 @@ get2ComponentMixture <- function(ct, n, phi){
   #}
   cn <- 2
   #mu <-  ((1 - n) * ct + n * cn) / ((1 - n) * phi + n * cn)
-  mu <- NA
+  mu <- NULL
   for (s in 1:S){
     mu <- cbind(mu, ((1 - n[s]) * ct[, s] + n[s] * cn) / ((1 - n[s]) * phi[s] + n[s] * cn))
   }
@@ -625,8 +625,8 @@ betapdflog <- function(x, a, b) {
 
 tdistPDF <- function(x, mu, lambda, nu) {
   S <- ncol(x)
-  if (!is.na(S)){
-    p <- NA
+  if (!is.null(S)){
+    p <- NULL
     for (s in 1:S){
       tpdf <- (gamma(nu / 2 + 0.5)/gamma(nu / 2)) * ((lambda[s] / (pi * nu)) ^ (0.5)) *
         (1 + (lambda[s] * (x[, s] - mu[s]) ^ 2) / nu) ^ (-0.5 * nu - 0.5)

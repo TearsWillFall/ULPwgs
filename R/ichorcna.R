@@ -46,14 +46,14 @@ ichor_capture=function(
     ploidy=2,
     maxCN=7,
     includeHOMD=FALSE,
-    scStates=NA,
+    scStates=NULL,
     txnE=0.9999999,
     txnStrength=1e7,
     output_name="",
     output_dir=".",
     min_cov=-15,
-    lambda=NA,
-    coverage=NA,
+    lambda=NULL,
+    coverage=NULL,
     minSegmentBins=50,
     minTumFracToCorrect=0.01,
     chrs=c(1:22,"X"),
@@ -74,7 +74,7 @@ ichor_capture=function(
     executor_id=make_unique_id("hybridIchorCNA"),
     task_name="hybridIchorCNA",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=NA
+    wait=FALSE,hold=NULL
 ){  
 
     options(scipen=0, stringsAsFactors=F)
@@ -191,7 +191,7 @@ for (n in normal){
         ######## CUSTOM PARAMETER SETTINGS #########
         ############################################
         # 0.1x cfDNA #
-        if (is.na(lambda)){
+        if (is.null(lambda)){
                 logR.var <- 1 / ((apply(logR, 2, sd, na.rm = TRUE) / sqrt(length(param$ct))) ^ 2)
                 param$lambda <- rep(logR.var, length(param$ct))
                 param$lambda[param$ct %in% c(2)] <- logR.var 
@@ -270,7 +270,7 @@ for (n in normal){
             plotGWSolution(hmmResults.cor=hmmResults.cor, s=s, outPlotFile=outPlotFile, plotFileType=plotFileType, 
                 logR.column = "logR", call.column = "Corrected_Call",
                         plotYLim=plotYLim, estimateScPrevalence=estimateScPrevalence,
-                         seqinfo=NA, main=mainName[counter])
+                         seqinfo=NULL, main=mainName[counter])
         }
         iter <- hmmResults.cor$results$iter
         results[[counter]] <- hmmResults.cor
@@ -325,7 +325,7 @@ for (n in normal){
         plotGWSolution(hmmResults.cor, s=s, outPlotFile=outPlotFile, plotFileType="pdf", 
                             logR.column = "logR", call.column = "Corrected_Call",
                             plotYLim=plotYLim, estimateScPrevalence=estimateScPrevalence, 
-                            seqinfo =NA,
+                            seqinfo = NULL,
                             turnDevOn = turnDevOn, turnDevOff = turnDevOff, main=mainName[ind[i]])
         
         }
@@ -343,7 +343,7 @@ for (n in normal){
 
         plotSolutions(hmmResults.cor, tumour_copy, chrs, outDir=out_file_dir, numSamples=numSamples,
               logR.column = "logR", call.column = "Corrected_Call",
-              plotFileType=plotFileType, plotYLim=plotYLim, seqinfo = NA,
+              plotFileType=plotFileType, plotYLim=plotYLim, seqinfo = NULL,
               estimateScPrevalence=estimateScPrevalence, maxCN=maxCN)
 
 
@@ -416,8 +416,8 @@ parallel_sample_ichor_capture=function(
     txnStrength=1e7,
     output_dir=".",
     min_cov=-15,
-    lambda=NA,
-    coverage=NA,
+    lambda=NULL,
+    coverage=NULL,
     minSegmentBins=50,
     minTumFracToCorrect=0.01,
     chrs=c(1:22,"X"),
@@ -438,7 +438,7 @@ parallel_sample_ichor_capture=function(
     executor_id=make_unique_id("parSamplehybridIchorCNA"),
     task_name="parSamplehybridIchorCNA",time="48:0:0",
     update_time=60,
-    wait=FALSE,hold=NA
+    wait=FALSE,hold=NULL
 ){  
 
     argg <- as.list(environment())

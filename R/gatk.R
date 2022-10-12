@@ -1690,7 +1690,7 @@ multisample_mutect2_gatk=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  sample_sheet=NA,
+  sample_sheet=NULL,
   bam_dir="",
   normal_id="",
   patient_id="",
@@ -1763,7 +1763,7 @@ multisample_mutect2_gatk=function(
       "hold")
 
 
-    if(!is.na(sample_sheet)){
+    if(!is.null(sample_sheet)){
       
         if(!is.data.frame(sample_sheet)){
                 file_info=read.csv(sample_sheet,header=header,sep=sep,stringsAsFactors=FALSE)
@@ -1908,8 +1908,8 @@ mutect_filter_gatk=function(
   bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  vcf="",stats=NA,contamination_table=NA,
-  segmentation_table=NA,orientation_model=NA,output_name="",
+  vcf="",stats=NULL,contamination_table=NULL,
+  segmentation_table=NULL,orientation_model=NULL,output_name="",
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   output_dir=".",verbose=FALSE,clean=FALSE,
   batch_config=build_default_preprocess_config(),
@@ -1932,21 +1932,21 @@ mutect_filter_gatk=function(
      id=get_file_name(vcf)
   }
 
-  if(!is.na(stats)){
+  if(!is.null(stats)){
       stats=paste0(" -stats ",stats)
   }
 
-  if (!is.na(contamination_table)){
+  if (!is.null(contamination_table)){
      contamination_table=paste0(" --contamination-table ", paste0(contamination_table,
      collapse=" --contamination-table "))
   }
   
-  if(!is.na(segmentation_table)){
+  if(!is.null(segmentation_table)){
       segmentation_table=paste0(" --tumor-segmentation ",paste0(segmentation_table,
       collapse=" --tumor-segmentation "))
     }
 
-  if(!is.na(orientation_model)){
+  if(!is.null(orientation_model)){
       orientation_model=paste0(" --ob-priors ",orientation_model)
   }
   
@@ -2014,7 +2014,7 @@ gather_mutect2_gatk=function(
   bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  vcfs="",stats=NA,f1r2=NA,output_dir=".",tmp_dir=".",
+  vcfs="",stats=NULL,f1r2=NULL,output_dir=".",tmp_dir=".",
   output_name="",verbose=FALSE,orientation=FALSE,clean=TRUE,
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
@@ -2144,7 +2144,7 @@ learn_orientation_gatk=function(
      id=get_file_name(f1r2[1])
   }
  
-  if (!is.na(f1r2)){
+  if (!is.null(f1r2)){
     f1r2_list=paste0(" -I ",paste0(f1r2,collapse=" -I "))
   }
   
@@ -3734,7 +3734,7 @@ multisample_haplotypecaller_gatk=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  sample_sheet=NA,
+  sample_sheet=NULL,
   bam_dir="",
   patient_id="",
   pattern="bam$",
@@ -3809,7 +3809,7 @@ multisample_haplotypecaller_gatk=function(
       "hold")
 
 
-    if(!is.na(sample_sheet)){
+    if(!is.null(sample_sheet)){
       
         if(!is.data.frame(sample_sheet)){
                 file_info=read.csv(sample_sheet,header=header,sep=sep,stringsAsFactors=FALSE)

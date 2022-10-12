@@ -91,8 +91,8 @@ wigToGRanges <- function(wigfile, verbose = TRUE){
   if (verbose) { message(paste("Slurping:", wigfile)) }
   input <- readLines(wigfile, warn = FALSE)
   breaks <- c(grep("fixedStep", input), length(input) + 1)
-  temp <- NA
-  span <- NA
+  temp <- NULL
+  span <- NULL
   for (i in 1:(length(breaks) - 1)) {
     data_range <- (breaks[i] + 1):(breaks[i + 1] - 1)
     track_info <- input[breaks[i]]
@@ -117,40 +117,40 @@ wigToGRanges <- function(wigfile, verbose = TRUE){
 }
 
 
-loadReadCountsFromWig <- function(counts, chrs = c(1:22, "X", "Y"), gc = NA, map = NA, centromere = NA, flankLength = 100000, targetedSequences = NA, genomeStyle = "NCBI", applyCorrection = TRUE, mapScoreThres = 0.9, chrNormalize = c(1:22, "X", "Y"), fracReadsInChrYForMale = 0.002, chrXMedianForMale = -0.5, useChrY = TRUE){
+loadReadCountsFromWig <- function(counts, chrs = c(1:22, "X", "Y"), gc = NULL, map = NULL, centromere = NULL, flankLength = 100000, targetedSequences = NULL, genomeStyle = "NCBI", applyCorrection = TRUE, mapScoreThres = 0.9, chrNormalize = c(1:22, "X", "Y"), fracReadsInChrYForMale = 0.002, chrXMedianForMale = -0.5, useChrY = TRUE){
 	require(HMMcopy)
 	require(GenomeInfoDb)
 	seqlevelsStyle(counts) <- genomeStyle
 	counts.raw <- counts	
 	counts <- keepChr(counts, chrs)
 	
-	if (!is.na(gc)){ 
+	if (!is.null(gc)){ 
 		seqlevelsStyle(gc) <- genomeStyle
 		counts$gc <- keepChr(gc, chrs)$value
 	}
-	if (!is.na(map)){ 
+	if (!is.null(map)){ 
 		seqlevelsStyle(map) <- genomeStyle
 		counts$map <- keepChr(map, chrs)$value
 	}
 	colnames(values(counts))[1] <- c("reads")
 	
 	# remove centromeres
-	if (!is.na(centromere)){ 
+	if (!is.null(centromere)){ 
 		counts <- excludeCentromere(counts, centromere, flankLength = flankLength, genomeStyle=genomeStyle)
 	}
 	# keep targeted sequences
-	if (!is.na(targetedSequences)){
+	if (!is.null(targetedSequences)){
 		colnames(targetedSequences)[1:3] <- c("chr", "start", "end")
 		targetedSequences.GR <- as(targetedSequences, "GRanges")
 		seqlevelsStyle(targetedSequences.GR) <- genomeStyle
 		countsExons <- filterByTargetedSequences(counts, targetedSequences.GR)
 		counts <- counts[countsExons$ix,]
 	}
-	gender <- NA
+	gender <- NULL
 	if (applyCorrection){
 		## correct read counts ##
 		counts <- correctReadCounts(counts, chrNormalize = chrNormalize)
-		if (!is.na(map)) {
+		if (!is.null(map)) {
 		  ## filter bins by mappability
 		  counts <- filterByMappabilityScore(counts, map=map, mapScoreThres = mapScoreThres)
 		}
@@ -190,7 +190,7 @@ selectFemaleChrXSolution <- function(){
 ### FUNCTION TO DETERMINE GENDER #################
 ##################################################
 getGender <- function(rawReads, normReads, gc, map, fracReadsInChrYForMale = 0.002, chrXMedianForMale = -0.5, useChrY = TRUE,
-					  centromere=NA, flankLength=1e5, targetedSequences=NA, genomeStyle="NCBI"){
+					  centromere=NULL, flankLength=1e5, targetedSequences=NULL, genomeStyle="NCBI"){
 	chrXStr <- grep("X", runValue(GenomeInfoDb::seqnames(normReads)), value = TRUE)
 	chrYStr <- grep("Y", runValue(GenomeInfoDb::seqnames(rawReads)), value = TRUE)
 	chrXInd <- as.character(GenomeInfoDb::seqnames(normReads)) == chrXStr
@@ -213,14 +213,14 @@ getGender <- function(rawReads, normReads, gc, map, fracReadsInChrYForMale = 0.0
 	}else{
 		gender <- "unknown" # chrX is not provided
 		chrYCov <- NA
-		chrXMedian <- NA
+		chrXMedian <- NULL
 	}
 	return(list(gender=gender, chrYCovRatio=chrYCov, chrXMedian=chrXMedian))
 }
 	
 	
 normalizeByPanelOrMatchedNormal <- function(tumour_copy, chrs = c(1:22, "X", "Y"), 
-      normal_panel = NA, normal_copy = NA, gender = "female", normalizeMaleX = FALSE){
+      normal_panel = NULL, normal_copy = NULL, gender = "female", normalizeMaleX = FALSE){
     genomeStyle <- seqlevelsStyle(tumour_copy)[1]
     seqlevelsStyle(chrs) <- genomeStyle
  	### COMPUTE LOG RATIO FROM MATCHED NORMAL OR PANEL AND HANDLE CHRX ###
@@ -229,23 +229,23 @@ normalizeByPanelOrMatchedNormal <- function(tumour_copy, chrs = c(1:22, "X", "Y"
 	## WHY DO WE NOT NORMALIZE BY NORMAL WITH PANEL? ##
 	chrXInd <- grep("X", as.character(GenomeInfoDb::seqnames(tumour_copy)))
 	chrXMedian <- median(tumour_copy[chrXInd, ]$copy, na.rm = TRUE)
-	if (!is.na(normal_copy) && is.na(normal_panel)){
+	if (!is.null(normal_copy) && is.null(normal_panel)){
 			message("Normalizing Tumour by Normal")
 			tumour_copy$copy <- tumour_copy$copy - normal_copy$copy
 			rm(normal_copy)
 	}
 	# matched normal and panel and male, then compute normalized chrX median (WES)
-	if (!is.na(normal_copy) && !is.na(normal_panel) && gender=="male"){
+	if (!is.null(normal_copy) && !is.null(normal_panel) && gender=="male"){
 			message("Normalizing by matched normal for ChrX")
 			chrX.MNnorm <- tumour_copy$copy[chrXInd] - normal_copy$copy[chrXInd]
 			chrXMedian.MNnorm <- median(chrX.MNnorm, na.rm = TRUE)
 	}
 	# if male, then just normalize chrX to median (ULP and WES)
-	if (is.na(normal_copy) && gender=="male" && !gender.mismatch && normalizeMaleX){
+	if (is.null(normal_copy) && gender=="male" && !gender.mismatch && normalizeMaleX){
 			tumour_copy$copy[chrXInd] <- tumour_copy$copy[chrXInd] - chrXMedian
 	}
 	# PANEL, then normalize by panel instead of matched normal (ULP and WES)
-	if (!is.na(normal_panel)){
+	if (!is.null(normal_panel)){
 		## load in IRanges object, then convert to GRanges
 		panel <- readRDS(normal_panel)
 		seqlevelsStyle(panel) <- genomeStyle
@@ -317,8 +317,8 @@ correctReadCounts <- function(x, chrNormalize = c(1:22), mappability = 0.9, samp
 ## Recompute integer CN for high-level amplifications ##
 ## compute logR-corrected copy number ##
 correctIntegerCN <- function(cn, segs, callColName = "event", 
-		purity, ploidy, cellPrev, maxCNtoCorrect.autosomes =NA, 
-		maxCNtoCorrect.X = NA, correctHOMD = TRUE,
+		purity, ploidy, cellPrev, maxCNtoCorrect.autosomes = NULL, 
+		maxCNtoCorrect.X = NULL, correctHOMD = TRUE,
 		 minPurityToCorrect = 0.2, gender = "male", chrs = c(1:22, "X")){
 	names <- c("HOMD","HETD","NEUT","GAIN","AMP","HLAMP", rep("HLAMP", 1000))
 
@@ -326,10 +326,10 @@ correctIntegerCN <- function(cn, segs, callColName = "event",
 	autosomeStr <- grep("X|Y", chrs, value=TRUE, invert=TRUE)
 	chrXStr <- grep("X", chrs, value=TRUE)
 	
-	if (is.na(maxCNtoCorrect.autosomes)){
+	if (is.null(maxCNtoCorrect.autosomes)){
 		maxCNtoCorrect.autosomes <- max(segs[segs$chr %in% autosomeStr, "copy.number"], na.rm = TRUE)
 	}
-	if (is.na(maxCNtoCorrect.X) & gender == "female" & length(chrXStr) > 0){
+	if (is.null(maxCNtoCorrect.X) & gender == "female" & length(chrXStr) > 0){
 		maxCNtoCorrect.X <- max(segs[segs$chr == chrXStr, "copy.number"], na.rm=TRUE)
 	}
 	## correct log ratio and compute corrected CN
@@ -457,14 +457,14 @@ computeBIC <- function(params){
 
 
 
-outputHMM <- function(cna, segs, results, patientID = NA, outDir = "."){
+outputHMM <- function(cna, segs, results, patientID = NULL, outDir = "."){
   names <- c("HOMD","HETD","NEUT","GAIN","AMP","HLAMP",paste0(rep("HLAMP", 8), 2:25))
 
   S <- results$param$numberSamples
   
-  segout <- NA
-  shuffle <- NA
-  if (is.na(patientID)){
+  segout <- NULL
+  shuffle <- NULL
+  if (is.null(patientID)){
     patientID <- names(cna)[1]
   }
   ### PRINT OUT SEGMENTS FOR EACH SAMPLE TO SEPARATE FILES ###
@@ -543,7 +543,7 @@ outputParametersToFile <- function(hmmResults, file){
       write.table(paste0("Fraction Genome Subclonal:\t", signif(subcloneGenomeFrac, digits = 4)), file = fc, col.names = FALSE, row.names = FALSE, quote = FALSE, sep = "\t")
       write.table(paste0("Fraction CNA Subclonal:\t", signif(subcloneCNAFrac, digits = 4)), file = fc, col.names = FALSE, row.names = FALSE, quote = FALSE, sep = "\t")
     #}
-    if (is.na(x$coverage)){
+    if (is.null(x$coverage)){
     	coverage <- NA
     }else{
     	coverage <- signif(coverage, digits = 4)
@@ -551,11 +551,11 @@ outputParametersToFile <- function(hmmResults, file){
 		write.table(paste0("Coverage:\t", coverage), file = fc, col.names = FALSE, 
 								row.names = FALSE, quote = FALSE, sep = "\t")
 	
-    if (!is.na(x$chrYCov)){
+    if (!is.null(x$chrYCov)){
       write.table(paste0("ChrY coverage fraction:\t", signif(x$chrYCov[s], digits = 4)), file = fc, col.names = FALSE, 
                   row.names = FALSE, quote = FALSE, sep = "\t")
     }
-    if (!is.na(x$chrXMedian)){
+    if (!is.null(x$chrXMedian)){
       write.table(paste0("ChrX median log ratio:\t", signif(x$chrXMedian[s], digits = 4)), file = fc, col.names = FALSE, 
                   row.names = FALSE, quote = FALSE, sep = "\t")
     }

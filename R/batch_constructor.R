@@ -63,7 +63,7 @@ job_order=1, input_args="",out_file_dir="", out_files=list(file="file")){
 build_job_exec=function(job="",time="48:0:0",ram=3,threads=1,
 output_dir=".",hold=NA,wd=getwd(),array=""){
   
-  if(!is.na(hold)){
+  if(!all(is.na(hold))){
     hold=paste0(" -hold_jid ",paste0(hold,collapse=","))
   }
   if(array!=""){

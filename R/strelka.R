@@ -153,7 +153,7 @@ parallel_samples_call_variants_strelka=function(
     bin_strelka_somatic=build_default_tool_binary_list()$bin_strelka$somatic,
     bin_strelka_germline=build_default_tool_binary_list()$bin_strelka$germline,
     bin_manta=build_default_tool_binary_list()$bin_manta,
-    patient_id="",tumour=NA,normal=NA,variants="all",indel_cnds=TRUE,
+    patient_id=NA,tumour=NA,normal=NA,variants="all",indel_cnds=TRUE,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     output_dir=".",
     targeted=TRUE,verbose=FALSE,
@@ -348,8 +348,8 @@ multisample_call_variants_strelka=function(
     bin_strelka_germline=build_default_tool_binary_list()$bin_strelka$germline,
     bin_manta=build_default_tool_binary_list()$bin_manta,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
-    sample_sheet=NA,
-    normal_id=NA,
+    sample_sheet=NULL,
+    normal_id=NULL,
     bam_dir="",
     pattern="bam$",
     patient_id="",
@@ -408,7 +408,7 @@ multisample_call_variants_strelka=function(
     )
 
 
-    if(!is.na(sample_sheet)){
+    if(!is.null(sample_sheet)){
       
         if(!is.data.frame(sample_sheet)){
                 file_info=read.csv(sample_sheet,header=header,sep=sep,stringsAsFactors=FALSE)
