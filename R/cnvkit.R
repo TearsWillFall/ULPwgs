@@ -717,6 +717,8 @@ multisample_process_cnvkit=function(
                 file_info=sample_sheet
         }
         
+        file_info=file_info %>% dplyr::group_by(dplyr::across(-tumour)) %>% dplyr::summarise(tumour=list(tumour))
+
     
         job_report[["steps"]][["multisample_process_cnvkit"]]=parallel::mclapply(seq(1,nrow(file_info)),FUN=function(x){
             
@@ -735,7 +737,7 @@ multisample_process_cnvkit=function(
                 access=file_info[x,]$access,
                 sif_cnvkit=file_info[x,]$sif_cnvkit,
                 pon=file_info[x,]$pon,
-                tumour=file_info[x,]$tumour,
+                tumour=unlist(file_info[x,]$tumour),
                 patient_id=file_info[x,]$patient_id,
                 seg_method=file_info[x,]$seg_method,
                 seq_method=file_info[x,]$seq_method,
