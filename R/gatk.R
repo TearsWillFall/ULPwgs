@@ -1411,9 +1411,9 @@ parallel_regions_mutect2_gatk=function(
             hold=unlist_lvl(jobs_report[["steps"]],var="job_id")
         )
     if(extract_pass){
-        vcf=jobs_report[["steps"]][["filterMutectGatk"]][["steps"]][["extractPASSvcf"]]$out_files$extract_vcf
+        vcf=unlist_lvl(jobs_report[["steps"]][["filterMutectGatk"]],var="extract_vcf")
     }else{
-        vcf=jobs_report[["steps"]][["filterMutectGatk"]]$out_files$filtered_vcf
+        vcf=unlist_lvl(jobs_report[["steps"]][["filterMutectGatk"]],var="filtered_vcf")
     }
   }
 
