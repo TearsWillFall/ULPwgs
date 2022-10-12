@@ -1036,20 +1036,20 @@ mutect2_gatk=function(region="",
     tmp_dir=paste0(" --tmp-dir ",tmp_dir)
   }
   
-
-  if(output_name!=""&length(tumour)>1){
-    fname=output_name
+  id=""
+  if(output_name!=""){
+    id=output_name
   }else{  
-    fname=get_file_name(tumour[1])
+    id=get_file_name(tumour[1])
   }
   
   reg=""
   if (region==""){
-      out_file=paste0(out_file_dir,"/",fname,".unfilt.vcf")
+      out_file=paste0(out_file_dir,"/",id,".unfilt.vcf")
   }else{
       reg=paste0(" -L ",region)
-      fname=paste0(fname,".",region)
-      out_file=paste0(out_file_dir,"/",fname,".unfilt.vcf")
+      id=paste0(id,".",region)
+      out_file=paste0(out_file_dir,"/",id,".unfilt.vcf")
   }
 
   if (is.vector(tumour)){
@@ -1074,7 +1074,7 @@ mutect2_gatk=function(region="",
   f1r2=""
   if (orientation){
       out_file_dir_ort=set_dir(dir=output_dir,name="orientation")
-      out_file2=paste0(out_file_dir_ort,"/",fname,".f1r2.tar.gz")
+      out_file2=paste0(out_file_dir_ort,"/",id,".f1r2.tar.gz")
       f1r2=paste0(" --f1r2-tar-gz ",out_file2)
   }
 
@@ -3124,20 +3124,20 @@ haplotypecaller_gatk=function(
     tmp_dir=paste0(" --tmp-dir ",tmp_dir)
   }
   
-
-  if(output_name!=""&length(normal)>1){
-    fname=output_name
+  id=""
+  if(output_name!=""){
+    id=output_name
   }else{  
-    fname=get_file_name(normal[1])
+    id=get_file_name(normal[1])
   }
   
   reg=""
   if (region==""){
-      out_file=paste0(out_file_dir,"/",fname,".unfilt.vcf.gz")
+      out_file=paste0(out_file_dir,"/",id,".unfilt.vcf.gz")
   }else{
       reg=paste0(" -L ",region)
-      fname=paste0(fname,".",region)
-      out_file=paste0(out_file_dir,"/",fname,".unfilt.vcf.gz")
+      id=paste0(id,".",region)
+      out_file=paste0(out_file_dir,"/",id,".unfilt.vcf.gz")
   }
 
   if (is.vector(normal)){
