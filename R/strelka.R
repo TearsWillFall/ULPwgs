@@ -428,10 +428,7 @@ multisample_call_variants_strelka=function(
                     file_info[[col]]<<-get(col)
                 }
 
-                if(is.null(file_info[[x,col]])){
-                    file_info[[x,col]]<<-get(col)
-                }
-            
+         
             })
             
         
