@@ -1431,7 +1431,7 @@ parallel_regions_mutect2_gatk=function(
         ram=ram,mode=mode,
         executor_id=task_id,
         time=time,
-        hold=unlist_lvl(jobs_report[["steps"]][["filterMutectGatk"]],var="job_id") 
+        hold=unlist_lvl(jobs_report[["steps"]],var="job_id")
     )
   }
 
