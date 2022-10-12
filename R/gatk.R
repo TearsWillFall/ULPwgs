@@ -1802,6 +1802,7 @@ multisample_mutect2_gatk=function(
               germ_resource=file_info[x,]$germ_resource,
               biallelic_db=file_info[x,]$biallelic_db,
               db_interval=file_info[x,]$biallelic_db,
+              patient_id=file_info[x,]$patient_id,
               pon=file_info[x,]$pon,
               method=file_info[x,]$method,
               output_dir=paste0(out_file_dir,file_info[x,]$patient_id),
