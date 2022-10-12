@@ -1816,7 +1816,7 @@ multisample_mutect2_gatk=function(
               mode=file_info[x,]$mode,
               executor_id=task_id,
               time=file_info[x,]$time,
-              hold=try(file_info[x,]$hold,silent=TRUE))
+              hold=file_info[x,]$hold)
             },mc.cores=ifelse(mode=="local",1,3))
 
     }else{
