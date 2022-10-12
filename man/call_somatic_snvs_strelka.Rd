@@ -22,7 +22,7 @@ call_somatic_snvs_strelka(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NA
+  hold = NULL
 )
 }
 \arguments{

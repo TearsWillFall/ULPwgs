@@ -26,7 +26,7 @@ add_sv_af_strelka_vcf(
   ram = 4,
   update_time = 60,
   wait = FALSE,
-  hold = NA
+  hold = NULL
 )
 }
 \arguments{

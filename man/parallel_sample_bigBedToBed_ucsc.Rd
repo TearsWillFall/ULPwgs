@@ -18,7 +18,7 @@ parallel_sample_bigBedToBed_ucsc(
   ram = 4,
   update_time = 60,
   wait = FALSE,
-  hold = NA
+  hold = NULL
 )
 }
 \arguments{

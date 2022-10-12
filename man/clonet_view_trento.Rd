@@ -19,7 +19,7 @@ clonet_view_trento(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NA,
+  hold = NULL,
   cn_list = build_default_cn_list(),
   clonet_dirs = build_default_clonet_dir_list()
 )

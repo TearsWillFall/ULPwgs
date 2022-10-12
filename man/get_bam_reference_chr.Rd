@@ -20,7 +20,7 @@ get_bam_reference_chr(
   ram = 4,
   update_time = 60,
   wait = FALSE,
-  hold = NA
+  hold = NULL
 )
 }
 \arguments{
