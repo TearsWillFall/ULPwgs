@@ -314,7 +314,7 @@ unnest_to_column_vcf=function(vcf_body,column="INFO"){
 }
 
 
-#' Writes VCF file from a VCF data.structure
+#' Removes variants with from VCF file vased on the values in the FILTER column
 #'
 #' VCF datastructure is in list format and contains a header, a body and
 #' the corresponding col_names
@@ -345,6 +345,8 @@ unnest_to_column_vcf=function(vcf_body,column="INFO"){
 #' 
 
 variants_by_filters_vcf=function(
+  rdata=NULL,
+  selected=NULL,
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
   vcf="",filters="PASS",
@@ -361,6 +363,22 @@ variants_by_filters_vcf=function(
   task_name="variantsByFiltersVCF",time="48:0:0",
   update_time=60,wait=FALSE,hold=NULL
 ){
+
+  if(!is.null(rdata)){
+    load(rdata)
+  if(!is.null(selected)){
+      vcf=vcf_list[selected]
+    }
+  }
+
+
+  id=""
+  if(output_name!=""){ 
+    id=output_name
+  }else{
+    id=get_file_name(vcf)
+  }
+
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
@@ -380,13 +398,7 @@ variants_by_filters_vcf=function(
   )
 
 
-  id=""
-  if(output_name!=""){ 
-    id=output_name
-  }else{
-    id=get_file_name(vcf)
-  }
-
+ 
   vcf=read_vcf(vcf=vcf,sep=sep)
 
   if(exclusive){
@@ -411,6 +423,164 @@ variants_by_filters_vcf=function(
     vcf=vcf,output_name=id
   )
   return(job_report)
+}
+
+
+
+
+
+#' Removes variants from VCF file based on the values in the FILTER column across multiple VCFS in parallel
+#'
+#' VCF datastructure is in list format and contains a header, a body and
+#' the corresponding col_names
+#'
+#' @param bin_bgzip Path to bgzip executable.
+#' @param bin_tabix Path to TABIX executable.
+#' @param vcf Path to the input VCF file.
+#' @param filters Filters to filter VCF by. Default PASS
+#' @param exclusive Only keep variants with exactly these filters. Default TRUE.
+#' @param output_name Output file name.
+#' @param compress Compress VCF file. Default TRUE.
+#' @param index Index VCF file. Default TRUE.
+#' @param index_format VCF index format. Default tbi. Options [tbi,cbi].
+#' @param bgzip_index Create BGZIP index for compressed file. Default FALSE
+#' @param output_dir Path to the output directory.
+#' @param clean Remove input VCF after completion. Default FALSE.
+#' @param verbose Enables progress messages. Default False.
+#' @param executor_id Task EXECUTOR ID. Default "gatherBQSR"
+#' @param task_name Task name. Default "gatherBQSR"
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param threads Number of threads to split the work. Default 3
+#' @param ram [OPTIONAL] If batch mode. RAM memory in GB per job. Default 1
+#' @param update_time [OPTIONAL] If batch mode. Show job updates every update time. Default 60
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+#' 
+
+
+parallel_vcfs_variants_by_filters_vcf=function(
+  bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+  bin_tabix=build_default_tool_binary_list()$bin_tabix,
+  vcf="",filters="PASS",
+  output_name="",
+  exclusive=TRUE,
+  compress=TRUE,index=TRUE,
+  index_format="tbi",
+  bgzip_index=FALSE,
+  clean=TRUE,
+  output_dir=".",verbose=FALSE,sep="\t",
+  batch_config=build_default_preprocess_config(),
+  threads=4,ram=4,mode="local",
+  executor_id=make_unique_id("parVCFvariantsByFiltersVCF"),
+  task_name="parVCFvariantsByFiltersVCF",time="48:0:0",
+  update_time=60,wait=FALSE,hold=NULL
+){
+
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
+  out_file_dir=set_dir(dir=output_dir)
+  tmp_dir=set_dir(dir=out_file_dir,name="tmp")
+ 
+
+  job=build_job(executor_id=executor_id,task_id=task_id)
+
+
+  jobs_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    exec_code=list(), 
+    task_id=task_id,
+    input_args=argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+      )
+    )
+
+
+
+    vcf_list=vcf
+    names(vcf_list)=Vectorize(get_file_name)(vcf)
+
+    if(mode=="local"){
+      jobs_report[["steps"]][["par_vcf_filter_variants"]]<-
+      parallel::mclapply(vcf_list,FUN=function(vcf){
+        job_report <- variants_by_filters_vcf(
+              bin_bgzip=bin_bgzip,
+              bin_tabix=bin_tabix,
+              vcf=vcf,
+              filters=filters,
+              output_name=paste0(get_file_name(vcf),".",paste0(filters,collapse=".")),
+              exclusive=exclusive,
+              compress=compress,
+              index=index,
+              index_format=index_format,
+              bgzip_index=bgzip_index,
+              verbose=verbose,sep=sep,
+              clean=clean,
+              output_dir=out_file_dir,
+              verbose=verbose,
+              threads=threads,
+              executor_id=task_id)
+      },mc.cores=threads)
+    }else if(mode=="batch"){
+            rdata_file=paste0(tmp_dir,"/",job,".vcfs.RData")
+            output_dir=out_file_dir
+            executor_id=task_id
+            save(vcf_list,
+              bin_bgzip,
+              bin_tabix,
+              filters,
+              exclusive,
+              compress,
+              index,
+              sep,
+              index_format,
+              bgzip_index,
+              executor_id,
+              output_dir,
+              clean,
+              verbose,file = rdata_file)
+            exec_code=paste0("Rscript -e \"ULPwgs::variants_by_filters_vcf(rdata=\\\"",
+            rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
+            out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+            batch_code=build_job_exec(job=job,time=time,ram=ram,
+            threads=1,output_dir=out_file_dir2,
+            hold=hold,array=length(vcf_list))
+            exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+
+            if(verbose){
+                print_verbose(job=job,arg=argg,exec_code=exec_code)
+            }
+            error=execute_job(exec_code=exec_code)
+            if(error!=0){
+                stop("vcf_process failed to run due to unknown error.
+                Check std error for more information.")
+            }
+ 
+          jobs_report[["steps"]][["par_vcf_filter_variants"]]<- build_job_report(
+                job_id=job,
+                executor_id=executor_id,
+                exec_code=exec_code, 
+                task_id=task_id,
+                input_args=argg,
+                out_file_dir=out_file_dir,
+                out_files=list(
+                  no_filter_vcf=paste0(out_file_dir,"/",names(vcf_list),"/",
+                  names(vcf_list),".",paste0(filters,collapse="."),".vcf")
+                )
+          )
+             }
+  
+
+  if(wait&&mode=="batch"){
+    job_validator(job=unlist_lvl(jobs_report[["steps"]],var="job_id"),time=update_time,
+    verbose=verbose,threads=threads)
+  }
+
+  return(jobs_report)
+
 }
 
 
