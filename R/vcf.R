@@ -731,7 +731,7 @@ write_vcf=function(
        function(x) paste0(unlist(x),collapse=":")))%>%
        dplyr::mutate(FILTER=paste0(FILTER,collapse=";"),
        INFO=paste0(paste0(names(unlist(INFO)),
-       ifelse(unlist(INFO)!="","=",""),unlist(INFO)),collapse=","))
+       ifelse(unlist(INFO)!="","=",""),unlist(INFO)),collapse=";"))
      
       sort_vcf_body=function(vcf_body,vcf_descriptors){
           chrom=data.frame(CHROM=names(vcf_descriptors$contig),
@@ -743,9 +743,6 @@ write_vcf=function(
     
       return(sort_vcf_body(vcf_body,vcf$descriptors))
     }
- 
- 
-    
 
 
     out_file=paste0(out_file_dir,"/",output_name,".vcf")
