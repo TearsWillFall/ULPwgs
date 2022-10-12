@@ -11,6 +11,7 @@ annotate_vep(
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
   vcf = "",
+  output_name = "",
   compress = TRUE,
   clean = FALSE,
   output_dir = ".",
@@ -28,19 +29,21 @@ annotate_vep(
 )
 }
 \arguments{
-\item{bin_vep}{Path to VEP binary.}
+\item{bin_vep}{\link{REQUIRED} Path to VEP binary.}
 
-\item{bin_bgzip}{Path to bgzip binary.}
+\item{bin_bgzip}{\link{REQUIRED} Path to bgzip binary.}
 
-\item{bin_tabix}{Path to tabix binary.}
+\item{bin_tabix}{\link{REQUIRED} Path to tabix binary.}
 
-\item{vcf}{Path to VCF file.}
+\item{vcf}{\link{REQUIRED} Path to VCF file.}
 
-\item{compress}{Generate a compressed VCF}
+\item{output_name}{\link{OPTIONAL} Name of output file}
 
-\item{clean}{Remove extra files.}
+\item{compress}{\link{OPTIONAL} Generate a compressed VCF}
 
-\item{output_dir}{Path to the output directory.}
+\item{clean}{\link{OPTIONAL}Remove extra files.}
+
+\item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
