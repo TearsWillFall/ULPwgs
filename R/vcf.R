@@ -7,6 +7,7 @@
 #' @return A list with the header, body and column names of the VCF
 #' @export
 
+
 read_vcf=function(vcf="",sep="\t"){
   cols=c("CHROM","POS","ID","REF","ALT","QUAL","FILTER","INFO","FORMAT")
   if(check_if_compressed(vcf)){
@@ -565,7 +566,7 @@ parallel_vcfs_variants_by_filters_vcf=function(
                 input_args=argg,
                 out_file_dir=out_file_dir,
                 out_files=list(
-                  extract_vcf=paste0(out_file_dir,"/",names(vcf_list),"/",
+                  extract_vcf=paste0(out_file_dir,"/",
                   names(vcf_list),".",paste0(filters,collapse="."),".vcf")
                 )
           )
@@ -580,6 +581,60 @@ parallel_vcfs_variants_by_filters_vcf=function(
   return(jobs_report)
 
 }
+
+
+
+#' Tabulate INFO column information extracted from VCF file
+#'
+#' VCF datastructure with tabulated INFO column body
+#'
+#' @param vcf 
+
+tabulate_info_vcf=function(vcf){
+  vcf$body=vcf$body %>% unnest_wider(INFO)  
+  return(vcf)
+}
+
+
+#' Return tabulated INFO column information to single INFO column
+#'
+#' VCF datastructure with tabulated INFO column body
+#'
+#' @param vcf 
+
+untabulate_info_vcf=function(tab_vcf){
+  columns=intersect(names(tab_vcf$descriptors$INFO),names(tab_vcf$body))
+  tab_vcf$body=tab_vcf$body%>%
+  pivot_longer(names_to="name_INFO",values_to="value_INFO",columns)
+  names(tab_vcf$body$value_INFO)=tab_vcf$body$name_INFO
+  tab_vcf$body=tab_vcf$body %>% na.omit(value_INFO)%>% 
+  group_by(across(-c(name_INFO,value_INFO))) %>%
+  summarise(INFO=list(as.list(value_INFO)))
+  return(tab_vcf)
+}
+
+
+
+
+#' Return tabulated INFO column information to single INFO column
+#'
+#' VCF datastructure with tabulated INFO column body
+#'
+#' @param vcf 
+
+extract_csq_info_vcf=function(vcf){
+  cols_to_save=c(setdiff(names(vcf$body),"INFO"),"CSQ")
+  cols_in_csq=unlist(strsplit(strsplit(
+    split="Format: ",gsub("\"","",
+    vcf$descriptors$INFO$CSQ$Description))[[1]][2],split="\\|"))
+  vcf=tabulate_info_vcf(vcf)
+  vcf$body=vcf$body %>% dplyr::select(cols_to_save)%>% rowwise() %>% mutate(CSQ=list(as.list(dplyr::bind_rows(lapply(unlist(stringr::str_split(CSQ,pattern=",")),
+  FUN=function(x){lst=unlist(stringr::str_split(x,pattern="\\|"));
+  names(lst)=cols_in_csq;lst}))))) %>% tidyr::unnest_wider(CSQ)
+  return(vcf)
+}
+
+
 
 
 
@@ -614,6 +669,8 @@ filter_format_vcf=function(
   vcf$body=vcf$body %>% dplyr::select(-FIL) %>% nest_vcf_body()
   return(vcf)
 }
+
+
 
 
 

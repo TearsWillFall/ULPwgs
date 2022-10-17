@@ -590,6 +590,103 @@ vars_list=build_default_variable_list()){
 
 
 
+
+
+
+#' Concat multiple delimited files
+#'
+#' This function functions calls Haplotypecaller across multiple regions in parallel.
+#' If a vector of normal samples are provided these will be processed in co-joint calling  mode.
+#' To run in normal mode suppply a normal sample.
+#' 
+#' //TODO validate co-joint calling mode
+#' 
+#' For more information read:
+#' https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller
+#'
+#'
+#' @param files [REQUIRED] Files to concatenate
+#' @param sep [OPTIONAL] Delimiter separator
+#' @param header [OPTIONAL] Is header present
+#' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param filter [OPTIONAL] Filter variants. Default TRUE
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param batch_config [REQUIRED] Additional batch configuration if batch mode selected.
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+concat_file_list=function(
+  files="",
+  sep="\t",
+  header=FALSE,
+  output_name="concat",
+  output_dir=".",
+  verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  threads=4,ram=4,mode="local",
+  executor_id=make_unique_id("concat_files"),
+  task_name="concat_files",time="48:0:0",
+  update_time=60,wait=FALSE,hold=NULL){
+
+  
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
+  out_file_dir=set_dir(dir=output_dir)
+
+  job=build_job(executor_id=executor_id,task_id=task_id)
+
+  if(is.null(output_name)){
+    stop("Output file name is required")
+  }
+
+
+
+  out_file=paste0(out_file_dir,output_name,".",get_file_ext(files[1]))
+
+  dat=lapply(seq(1,length(files)),FUN=function(x){
+    dat=read.delim(files[x],sep=sep,header=header)
+    if(!is.null(names(files[x]))){
+      dat$id=names(files[x])
+    }else{
+      dat$id=get_file_name(files[x])
+    }
+    return(dat)
+  })
+
+  dat=dplyr::bind_rows(dat)
+
+  write.table(dat,file=out_file,quote=FALSE,row.names=FALSE,
+  col.names=header,sep=sep)
+
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    exec_code=list(), 
+    task_id=task_id,
+    input_args=argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+      concat_file=out_file
+      )
+    )
+
+  return(job_report)
+      
+}
+
+
+
+
 #' Check parameter configuration in sample sheet
 #'
 #' Check parameter configuration in sample sheet

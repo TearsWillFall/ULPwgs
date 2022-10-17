@@ -18,7 +18,7 @@ diagram_cnvkit(
   male_reference = FALSE,
   gender = "male",
   shift = TRUE,
-  title = NA,
+  title = NULL,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 1,

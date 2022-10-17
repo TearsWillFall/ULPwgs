@@ -406,6 +406,7 @@ clonet_view_trento=function(method="log2_beta", clonet_dir="",threads=3,
         cn_data=dplyr::left_join(cn_data,label_annotation,by=c("sample"="id"))
         cn_data=cn_data %>% dplyr::arrange(s_name,sample)
         cn_data$g_order=as.numeric(as.factor(cn_data$gene))
+      
         cn_data$s_order=as.numeric(as.factor(paste0(cn_data$s_name,"_",cn_data$sample)))
     }else{
         cn_data=cn_data %>% dplyr::arrange(sample,gene)

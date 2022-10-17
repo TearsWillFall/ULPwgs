@@ -3506,6 +3506,27 @@ parallel_regions_haplotypecaller_gatk=function(
         hold=hold
     )
 
+
+    if(extract_pass){
+      vcf<- jobs_report[["steps"]][["filterVariantTranchesGatk"]]$out_files$filtered_vcf
+      hold<-jobs_report[["steps"]][["filterVariantTranchesGatk"]]$job_id
+      job_report[["steps"]][["extractPASSvcf"]]<-
+        parallel_vcfs_variants_by_filters_vcf(
+          bin_bgzip=bin_bgzip,
+          bin_tabix=bin_tabix,
+          vcf=vcf,filters="PASS",
+          exclusive=TRUE,
+          compress=FALSE,
+          output_dir=out_file_dir,
+          verbose=verbose,
+          batch_config=batch_config,
+          threads=threads,ram=ram,mode=mode,
+          executor_id=task_id,
+          time=time,
+          hold=job
+        )
+    }
+
   }
 
   return(jobs_report)
@@ -4100,7 +4121,7 @@ filter_variant_tranches_gatk=function(
     input_args = argg,
     out_file_dir=out_file_dir,
     out_files=list(
-      scored_vcf=out_file,
+      filtered_vcf=out_file,
       idx=paste0(out_file,".idx")
     )
   )
