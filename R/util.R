@@ -654,7 +654,7 @@ concat_file_list=function(
   out_file=paste0(out_file_dir,output_name,".",get_file_ext(files[1]))
 
   dat=lapply(seq(1,length(files)),FUN=function(x){
-    dat=read.delim(files[x],sep=sep,header=header)
+    dat=data.table::fread(files[x],sep=sep,header=header)
     if(!is.null(names(files[x]))){
       dat$id=names(files[x])
     }else{

@@ -661,6 +661,7 @@ multisample_process_cnvkit=function(
 
 
     columns=c(
+        "tumour",
         "target",
         "antitarget",
         "ref_genome",
