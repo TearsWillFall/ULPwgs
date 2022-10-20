@@ -407,6 +407,7 @@ for (n in normal){
 
 parallel_sample_ichor_capture=function(
     cnrs="",
+    patient_id="",
     normal=0.5,
     ploidy=2,
     maxCN=7,
