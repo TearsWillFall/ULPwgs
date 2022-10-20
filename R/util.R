@@ -661,7 +661,7 @@ concat_file_list=function(
       dat$id=get_file_name(files[x])
     }
     return(dat)
-  })
+  })y
 
   dat=dplyr::bind_rows(dat)
 

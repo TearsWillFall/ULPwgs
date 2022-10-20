@@ -97,7 +97,7 @@ ichor_capture=function(
       id=get_file_name(cnr)
     }
 
-    out_file_dir=set_dir(dir=output_dir,name=paste0(id,"/ichor_capture"))
+    out_file_dir=set_dir(dir=output_dir,name=paste0("ichor_capture/",id))
     tmp_dir=set_dir(dir=out_file_dir,name="tmp")
     task_id=make_unique_id(task_name)
     job=build_job(executor_id=executor_id,task_id=task_id)
@@ -443,7 +443,7 @@ parallel_sample_ichor_capture=function(
 
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir,name=paste0("ichor_capture/",id))
+    out_file_dir=set_dir(dir=output_dir,name=patient_id)
  
     job=build_job(executor_id=executor_id,task_id=task_id)
 
@@ -555,8 +555,8 @@ parallel_sample_ichor_capture=function(
               input_args=argg,
               out_file_dir=out_file_dir,
               out_files=list(
-                  param=paste0(out_file_dir,"/",names(cnr_list),"/ichor_capture/",names(cnr_list),".params.txt"),
-                  plot=paste0(out_file_dir,"/",names(cnr_list),"/ichor_capture/",names(cnr_list),"_genomeWide_all_sols.",plotFileType)
+                  param=paste0(out_file_dir,"/ichor_capture/",names(cnr_list),"/",names(cnr_list),".params.txt"),
+                  plot=paste0(out_file_dir,"/ichor_capture/",names(cnr_list),"/",names(cnr_list),"_genomeWide_all_sols.",plotFileType)
               )
         )
     }
