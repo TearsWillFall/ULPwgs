@@ -773,13 +773,13 @@ build_default_reference_list=function(
                         ),
                          ascat=list(
                             G1000=list(
-                                alleleData="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/G1000/alleleData_chr",
+                                allele="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/G1000/alleleData_chr",
                                 loci="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/G1000/loci_chr",
                                 gc="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/G1000/gc.txt",
                                 rt="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/G1000/rt.txt"
                             ),
                             battenberg=list(
-                                alleleData="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/battenberg/alleleData_chr",
+                                allele="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/battenberg/alleleData_chr",
                                 loci="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/battenberg/loci_chr",
                                 gc="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/battenberg/gc.txt",
                                 rt="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/battenberg/rt.txt"
@@ -806,13 +806,13 @@ build_default_reference_list=function(
                         ),
                         ascat=list(
                             G1000=list(
-                                alleleData="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/G1000/alleleData_chr",
+                                allele="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/G1000/alleleData_chr",
                                 loci="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/G1000/loci_chr",
                                 gc="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/G1000/gc.txt",
                                 rt="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/G1000/rt.txt"
                             ),
                             battenberg=list(
-                                alleleData="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/battenberg/alleleData_chr",
+                                allele="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/battenberg/alleleData_chr",
                                 loci="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/battenberg/loci_chr",
                                 gc="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/battenberg/gc.txt",
                                 rt="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/battenberg/rt.txt"
