@@ -20,7 +20,6 @@ call_ascat=function(
 
 #' Prepare ASCAT data from PCF select BAM files
 #' 
-#'
 #' @param bin_allele_counter [REQUIRED] Path to allele_counter binary.
 #' @param tumour [REQUIRED] Path to tumour BAM file.
 #' @param normal [REQUIRED] Path to normal BAM file.
@@ -46,10 +45,12 @@ call_ascat=function(
 
 
 prepare_ascat=function(
+  rdata=NULL,
+  selected=NULL,
   bin_allcounter=build_default_tool_binary_list()$bin_allele_counter,
-  tumour,
-  normal,
-  patient_id,
+  tumour=NULL,
+  normal=NULL,
+  patient_id=NULL,
   ref_dataset="battenberg",
   gender="XY",
   genome_version="HG19",
