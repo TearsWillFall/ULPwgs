@@ -81,13 +81,13 @@ if(!is.null(rdata)){
 
   
   if(is.null(patient_id)){
-    stop("patient_id argument is required")
+    stop("Patient ID argument is required")
   }
 
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir,name=paste0(patient_id,"/",get_file_name(tumour)))
+  out_file_dir=set_dir(dir=output_dir,name=paste0(patient_id,"/",get_file_name(tumour),"/",genome_version,"/",panel_version,"/",ref_dataset))
   job=build_job(executor_id=executor_id,task=task_id)
   
 
