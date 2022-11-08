@@ -105,9 +105,8 @@ if(!is.null(rdata)){
 
   
 
-  exec_code=paste0("Rscript -e \"","setwd(",out_file_dir,");
-            ASCAT::ascat.prepareHTS(
-            tumourseqfile =\\\"",tumour,"\\\"",
+  exec_code=paste0("Rscript -e \"","setwd(\\\"",
+            out_file_dir,"\\\");ASCAT::ascat.prepareHTS(tumourseqfile =\\\"",tumour,"\\\"",
             "normalseqfile =\\\"",normal,"\\\"",
             "tumourname = \\\"",get_file_name(tumour),"\\\"",
             "normalname = \\\"",get_file_name(normal),"\\\"",
