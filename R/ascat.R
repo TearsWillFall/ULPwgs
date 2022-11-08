@@ -102,9 +102,6 @@ if(!is.null(rdata)){
   job=build_job(executor_id=executor_id,task=task_id)
   
 
-
-
-  setwd(out_file_dir)
   out_file_tumour_log2=paste0(get_file_name(tumour),".LogR.txt")
   out_file_tumour_baf=paste0(get_file_name(tumour),".BAF.txt")
   out_file_normal_log2=paste0(get_file_name(normal),".LogR.txt")
