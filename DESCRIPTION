@@ -37,13 +37,13 @@ Imports:
     ggnewscale,
     patchwork,
     ggh4x,
-    DT
+    DT,
+    ASCAT
 biocViews:
 Remotes:
         git::https://github.com/TearsWillFall/BTools.git,
         git::https://github.com/broadinstitute/gsalib.git,
-        git::https://github.com/thomasp85/patchwork.git,
-        git::https://github.com/VanLoo-lab/ascat.git
+        git::https://github.com/thomasp85/patchwork.git
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
