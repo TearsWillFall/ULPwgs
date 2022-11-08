@@ -13,6 +13,17 @@ call_ascat=function(
     wait=FALSE,hold=NULL
 ){
 
+  job_reports=prepare_ascat()
+  ascat.bc = ascat.loadData(Tumor_LogR_file = "Tumor_LogR.txt", Tumor_BAF_file = "Tumor_BAF.txt", Germline_LogR_file = "Germline_LogR.txt", Germline_BAF_file = "Germline_BAF.txt", gender = 'XX', genomeVersion = "hg19")
+  ascat.plotRawData(ascat.bc, img.prefix = "Before_correction_")
+  ascat.bc = ascat.correctLogR(ascat.bc, GCcontentfile = "GC_file.txt", replictimingfile = "RT_file.txt")
+  ascat.plotRawData(ascat.bc, img.prefix = "After_correction_")
+  ascat.bc = ascat.aspcf(ascat.bc)
+  ascat.plotSegmentedData(ascat.bc)
+  ascat.output = ascat.runAscat(ascat.bc, gamma=1, write_segments = T)
+  QC = ascat.metrics(ascat.bc,ascat.output)
+  save(ascat.bc, ascat.output, QC, file = 'ASCAT_objects.Rdata')
+
 }
 
 
@@ -107,19 +118,19 @@ if(!is.null(rdata)){
 
   exec_code=paste0("Rscript -e \"","setwd(\\\"",
             out_file_dir,"\\\");ASCAT::ascat.prepareHTS(tumourseqfile =\\\"",tumour,"\\\"",
-            "normalseqfile =\\\"",normal,"\\\"",
-            "tumourname = \\\"",get_file_name(tumour),"\\\"",
-            "normalname = \\\"",get_file_name(normal),"\\\"",
-            "allelecounter_exe =\\\"",bin_allele_counter,"\\\"",
-            "alleles.prefix=\\\"",allele_prefix,"\\\"",
-            "loci.prefix=\\\"",loci_prefix,"\\\"",
-            "gender=\\\"",gender,"\\\"",
-            "genomeVersion=\\\"",tolower(genome_version),"\\\"",
-            "nthreads=\\\"", threads,"\\\"",
-            "tumourLogR_file=\\\"", out_file_tumour_log2,"\\\"",
-            "tumourBAF_file=\\\"", out_file_tumour_baf,"\\\"",
-            "normalLogR_file=\\\"", out_file_normal_log2,"\\\"",
-            "normalBAF_file=\\\"", out_file_normal_baf,"\\\""
+            ",normalseqfile =\\\"",normal,"\\\"",
+            ",tumourname = \\\"",get_file_name(tumour),"\\\"",
+            ",normalname = \\\"",get_file_name(normal),"\\\"",
+            ",allelecounter_exe =\\\"",bin_allele_counter,"\\\"",
+            ",alleles.prefix=\\\"",allele_prefix,"\\\"",
+            ",loci.prefix=\\\"",loci_prefix,"\\\"",
+            ",gender=\\\"",gender,"\\\"",
+            ",genomeVersion=\\\"",tolower(genome_version),"\\\"",
+            ",nthreads=\\\"", threads,"\\\"",
+            ",tumourLogR_file=\\\"", out_file_tumour_log2,"\\\"",
+            ",tumourBAF_file=\\\"", out_file_tumour_baf,"\\\"",
+            ",normalLogR_file=\\\"", out_file_normal_log2,"\\\"",
+            ",normalBAF_file=\\\"", out_file_normal_baf,"\\\")\""
   )
 
 
