@@ -516,6 +516,7 @@ parallel_sample_ichor_capture=function(
             txnStrength,
             min_cov,
             lambda,
+            output_dir,
             coverage,
             minSegmentBins,
             minTumFracToCorrect,

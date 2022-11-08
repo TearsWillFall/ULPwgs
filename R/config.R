@@ -551,6 +551,7 @@ build_default_tool_binary_list=function(
                 bin_tabix="/lustre/scratch/scratch/regmova/tools/htslib/bin/tabix",
                 bin_htsfile="/lustre/scratch/scratch/regmova/tools/htslib/bin/htsfile",
                 bin_bwa="/lustre/scratch/scratch/regmova/tools/bwa/bwa",
+                bin_allele_counter="/lustre/scratch/scratch/regmova/tools/alleleCount/bin/alleleCounter",
                 bin_strelka=list(
                     somatic="/lustre/scratch/scratch/regmova/tools/strelka-2.9.10/build/bin/configureStrelkaSomaticWorkflow.py",
                     germline="/lustre/scratch/scratch/regmova/tools/strelka-2.9.10/build/bin/configureStrelkaGermlineWorkflow.py"
@@ -769,6 +770,20 @@ build_default_reference_list=function(
                         binned=list(
                             target="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/cap_tg.binned.targets.bed",
                             antitarget="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/cap_tg.binned.antitargets.bed"
+                        ),
+                         ascat=list(
+                            G1000=list(
+                                alleleData="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/G1000/alleleData_chr",
+                                loci="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/G1000/loci_chr",
+                                gc="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/G1000/gc.txt",
+                                rt="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/G1000/rt.txt"
+                            ),
+                            battenberg=list(
+                                alleleData="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/battenberg/alleleData_chr",
+                                loci="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/battenberg/loci_chr",
+                                gc="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/battenberg/gc.txt",
+                                rt="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/battenberg/rt.txt"
+                            )
                         )
                     ),
                     PCF_V3=list(
@@ -788,6 +803,20 @@ build_default_reference_list=function(
                         binned=list(
                             target="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/cap_tg.binned.targets.bed",
                             antitarget="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/cap_tg.binned.antitargets.bed"
+                        ),
+                        ascat=list(
+                            G1000=list(
+                                alleleData="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/G1000/alleleData_chr",
+                                loci="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/G1000/loci_chr",
+                                gc="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/G1000/gc.txt",
+                                rt="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/G1000/rt.txt"
+                            ),
+                            battenberg=list(
+                                alleleData="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/battenberg/alleleData_chr",
+                                loci="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/battenberg/loci_chr",
+                                gc="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/battenberg/gc.txt",
+                                rt="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/battenberg/rt.txt"
+                            )
                         )
                 
                     )
