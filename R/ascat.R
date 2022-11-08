@@ -100,8 +100,8 @@ if(!is.null(rdata)){
   out_file_normal_baf=paste0(get_file_name(normal),".BAF.txt")
   
   
-  allele_prefix=ascat_reference[[toupper(genome_version)]]$panel[[paste0("PCF_",panel_version)]]$ascat[[ref_dataset]]$alleleData
-  loci_prefix=ascat_reference[[toupper(genome_version)]]$panel[[paste0("PCF_",panel_version)]]$ascat[[ref_dataset]]$alleleData
+  allele_prefix=ascat_ref[[toupper(genome_version)]]$panel[[paste0("PCF_",panel_version)]]$ascat[[ref_dataset]]$alleleData
+  loci_prefix=ascat_ref[[toupper(genome_version)]]$panel[[paste0("PCF_",panel_version)]]$ascat[[ref_dataset]]$alleleData
 
   
 
