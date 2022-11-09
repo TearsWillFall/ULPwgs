@@ -2,10 +2,15 @@
 % Please edit documentation in R/refphase.R
 \name{read_and_load_ascat_refphase}
 \alias{read_and_load_ascat_refphase}
-\title{Format chromosomes to fit numerical}
+\title{Read and load ASCAT style data from rdata files}
 \usage{
 read_and_load_ascat_refphase(ascat_rdata = NULL, homozygous_cutoff = 0.7)
 }
+\arguments{
+\item{homozygous_cutoff}{\link{OPTIONAL} Cut-off to consider homozygous snps . Default 0.7.}
+
+\item{ascat_data}{\link{REQUIRED} Path to allele_counter binary.}
+}
 \description{
-Formatting such that chromosom 1 is "1". Chromosome X and Y are labelled as "X" and "Y", respectively
+Read and load ASCAT style data from rdata files
 }

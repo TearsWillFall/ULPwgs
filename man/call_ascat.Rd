@@ -8,6 +8,7 @@ call_ascat(
   rdata = NULL,
   selected = NULL,
   bin_allele_counter = build_default_tool_binary_list()$bin_allele_counter,
+  ascat_ref = build_default_reference_list(),
   tumour = NULL,
   normal = NULL,
   patient_id = NULL,
@@ -15,11 +16,10 @@ call_ascat(
   gender = "XY",
   genome_version = "HG19",
   panel_version = "V3",
-  output_dir = ".",
   gamma = 1,
   penalty = 25,
+  output_dir = ".",
   verbose = FALSE,
-  ascat_ref = build_default_reference_list(),
   batch_config = build_default_preprocess_config(),
   threads = 8,
   ram = 4,
@@ -35,6 +35,8 @@ call_ascat(
 \arguments{
 \item{bin_allele_counter}{\link{REQUIRED} Path to allele_counter binary.}
 
+\item{ascat_ref}{\link{OPTIONAL} List with default references.}
+
 \item{tumour}{\link{REQUIRED} Path to tumour BAM file.}
 
 \item{normal}{\link{REQUIRED} Path to normal BAM file.}
@@ -49,15 +51,13 @@ call_ascat(
 
 \item{panel_version}{\link{OPTIONAL} PCF Select panel version. Default V3.}
 
-\item{output_dir}{\link{OPTIONAL} Path to the output directory.}
-
 \item{gamma}{\link{OPTIONAL} Gamma parameter. Default 1.}
 
 \item{penalty}{\link{OPTIONAL} Penalty parameter. Default 25.}
 
-\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
+\item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
-\item{ascat_ref}{\link{OPTIONAL} List with default references.}
+\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
 \item{batch_config}{\link{OPTIONAL} List with default references.}
 

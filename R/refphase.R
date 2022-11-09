@@ -1,3 +1,213 @@
+#' Process ASCAT data using REFPHASE
+#' 
+#' @param tumour [REQUIRED] Path to tumour BAM file/s.
+#' @param normal [REQUIRED] Path to normal BAM file/s.
+#' @param homozygous_cutoff  [OPTIONAL] Cut-off to consider homozygous snps . Default 0.7. 
+#' @param patient_id [REQUIRED] Path to normal BAM file.
+#' @param center_baf [OPTIONAL] Re-center BAF values. Default TRUE
+#' @param fit_log2 [OPTIONAL] Better fit ASCAT log2 ratios. Default TRUE
+#' @param panel_version [OPTIONAL] PCF Select panel version. Default V3.
+#' @param ref_dataset [OPTIONAL] Reference dataset for panel allele and loci selection. Default battenberg
+#' @param gender [OPTIONAL] Sample gender. Default XY.
+#' @param gamma [OPTIONAL] Gamma parameter. Default 1.
+#' @param penalty [OPTIONAL] Penalty parameter. Default 25.
+#' @param genome_version [OPTIONAL] Genome reference version. Default HG19.
+#' @param ascat_ref [OPTIONAL] List with default references.
+#' @param batch_config [OPTIONAL] List with default references.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "processRefphase"
+#' @param task_name Task name. Default "processRefphase"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+call_refphase=function(
+    bin_allele_counter=build_default_tool_binary_list()$bin_allele_counter,
+    ascat_ref=build_default_reference_list(),
+    ref_dataset="battenberg",
+    gender="XY",
+    genome_version="HG19",
+    panel_version="V3",
+    tumour=NULL,
+    normal=NULL,
+    patient_id=NULL,
+    homozygous_cutoff=0.7,
+    center_baf=TRUE,
+    fit_logr=TRUE,
+    gamma=1,
+    penalty=25,
+    output_dir=".",
+    verbose=FALSE,
+    batch_config=build_default_preprocess_config(),
+    threads=8,
+    ram=4,mode="local",
+    executor_id=make_unique_id("callRefphase"),
+    task_name="callRefphase",time="48:0:0",
+    update_time=60,
+    wait=FALSE,
+    hold=NULL
+){
+
+    argg <- as.list(environment())
+    task_id=make_unique_id(task_name)
+    out_file_dir=set_dir(dir=output_dir)
+    job=build_job(executor_id=executor_id,task=task_id)
+
+
+  jobs_report[["steps"]][["paralle_call_ascat"]]<-parallel_samples_call_ascat(
+    bin_allele_counter=bin_allele_counter,
+    tumour=tumour,
+    normal=normal,
+    patient_id=patient_id,
+    ref_dataset=ref_dataset,
+    gender=gender,
+    genome_version=genome_version,
+    panel_version=panel_version,
+    output_dir=out_file_dir,
+    gamma=gamma,
+    penalty=penalty,
+    verbose=verbose,
+    ascat_ref=ascat_ref,
+    batch_config=batch_config,
+    threads=threads,
+    ram=ram,mode=mode,
+    executor_id=task_id,
+    time=time,
+    hold=hold
+  )
+
+  jobs_report[["steps"]][["process_refphase"]]<-process_refphase(
+      ascat_rdata=ascat_rdata,
+      patient_id=patient_id,
+      homozygous_cutoff=homozygous_cutoff,
+      center_baf=center_baf,
+      fit_logr=fit_logr,
+      output_dir=out_file_dir,
+      verbose=verbose,
+      batch_config=batch_config,
+      threads=threads,
+      ram=ram,mode=mode,
+      executor_id=task_id,
+      time=time,
+      hold=hold
+  )
+
+   return(jobs_report)
+}
+
+
+#' Process ASCAT data using REFPHASE
+#' 
+#' @param ascat_data [REQUIRED] Path to allele_counter binary.
+#' @param homozygous_cutoff  [OPTIONAL] Cut-off to consider homozygous snps . Default 0.7. 
+#' @param patient_id [REQUIRED] Path to normal BAM file.
+#' @param center_baf [OPTIONAL] Re-center BAF values. Default TRUE
+#' @param fit_log2 [OPTIONAL] Better fit ASCAT log2 ratios. Default TRUE
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "processRefphase"
+#' @param task_name Task name. Default "processRefphase"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+process_refphase=function(
+  ascat_rdata=NULL,
+  patient_id=NULL,
+  homozygous_cutoff=0.7,
+  center_baf=TRUE,
+  fit_logr=TRUE,
+  output_dir=".",
+  verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  threads=8,
+  ram=4,mode="local",
+  executor_id=make_unique_id("processRefphase"),
+  task_name="processRefphase",time="48:0:0",
+  update_time=60,
+  wait=FALSE,
+  hold=NULL
+){
+
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
+  out_file_dir=set_dir(dir=output_dir)
+  job=build_job(executor_id=executor_id,task=task_id)
+
+  rdata=paste0(patient_id,".refphase.RData")
+
+  exec_code=paste0("Rscript -e \"",
+    "setwd(\\\"",out_file_dir,"\\\");",
+    "library(refphase);",
+    "refphase_input <-ULPwgs::read_and_load_ascat_refphase(ascat_data=unlist(strsplit(split=\\\",\\\",\\\"",
+    paste(ascat_rdata,collapse = ","),"\\\"),homozygous_cutoff=",homozygous_cutoff,");",
+    ifelse(center_baf,"refphase_input <- center_baf(refphase_input);",""),
+    ifelse(fit_log2,"refphase_input <- fit_logr_to_ascat(refphase_input);",""),
+    "results <- refphase(refphase_input);",
+    "refphase::write_segs(results$phased_segs, file = paste0(",patient_id, "\\\".refphase-segmentation.tsv\\\"));",
+    "refphase::write_snps(results$phased_snps, file = paste0(",patient_id, "\\\".refphase-phased-snps.tsv.gz\\\"));",
+    "save(refphase_input, results, file =\\\"",rdata,"\\\")\""
+  )
+
+  if(mode=="batch"){
+       out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+       batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
+       output_dir=out_file_dir2,hold=hold)
+       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+  }
+
+
+  if(verbose){
+      print_verbose(job=job,arg=argg,exec_code=exec_code)
+  }
+
+  error=execute_job(exec_code=exec_code)
+  
+  if(error!=0){
+      stop("gatk failed to run due to unknown error.
+      Check std error for more information.")
+  }
+
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    exec_code=exec_code, 
+    task_id=task_id,
+    input_args = argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+        data=list(
+          rdata=paste0(out_file_dir,"/",rdata),
+          phased_segments=paste0(out_file_dir,"/",patient_id,".refphase-segmentation.tsv"),
+          phased_snps=paste0(out_file_dir,"/",tumour_id,".refphase-phased-snps.tsv.gz")
+        )
+      )
+  )
+
+  return(job_report)
+}
+
+
+
+
+#' Read and load ASCAT style data from rdata files
+#' 
+#' @param ascat_data [REQUIRED] Path to allele_counter binary.
+#' @param homozygous_cutoff  [OPTIONAL] Cut-off to consider homozygous snps . Default 0.7. 
+#' @export
 
 
 read_and_load_ascat_refphase=function(ascat_rdata=NULL,homozygous_cutoff = 0.7){
@@ -17,9 +227,9 @@ read_and_load_ascat_refphase=function(ascat_rdata=NULL,homozygous_cutoff = 0.7){
   validate_ascat_data(samples, ascat_input, ascat_output)
   data <- list("segs" = list(), "snps" = list(), "purity" = list(), "ploidy" = list())
 
-    #' Format chromosomes to fit numerical
-    #'
-    #' Formatting such that chromosom 1 is "1". Chromosome X and Y are labelled as "X" and "Y", respectively
+    #Format chromosomes to fit numerical
+    #Formatting such that chromosom 1 is "1". Chromosome X and Y are labelled as "X" and "Y", respectively
+    
     format_chromosomes <- function(chromosomes) {
     chromosomes <- gsub("(23)|x", "X", chromosomes)
     chromosomes <- gsub("(24)|y", "Y", chromosomes)
@@ -139,121 +349,3 @@ read_and_load_ascat_refphase=function(ascat_rdata=NULL,homozygous_cutoff = 0.7){
   return(refphase_input_data)
 
 }
-
-
-
-
-call_refphase=function(tumour=NULL,normal=NULL,
-    patient_id=NULL,
-    homozygous_cutoff=0.7,
-    center_baf=TRUE,
-    fit_logr=TRUE,
-    output_dir=".",
-    verbose=FALSE,
-    batch_config=build_default_preprocess_config(),
-    threads=8,
-    ram=4,mode="local",
-    executor_id=make_unique_id("callRefphase"),
-    task_name="callRefphase",time="48:0:0",
-    update_time=60,
-    wait=FALSE,hold=NULL
-){
-
-  jobs_report[["steps"]][["call_ascat"]]<-
-
-  jobs_report[["steps"]][["process_refphase"]]<-process_refphase(
-      ascat_rdata=ascat_rdata,
-      patient_id=patient_id,
-      homozygous_cutoff=homozygous_cutoff,
-      center_baf=center_baf,
-      fit_logr=fit_logr,
-      output_dir=out_file_dir,
-      verbose=verbose,
-      batch_config=build_default_preprocess_config(),
-      threads=threads,
-      ram=ram,mode=mode,
-      executor_id=task_id,
-      time=time,
-      hold=hold
-  )
- 
-}
-
-
-process_refphase=function(
-  ascat_rdata=NULL,
-  patient_id=NULL,
-  homozygous_cutoff=0.7,
-  center_baf=TRUE,
-  fit_logr=TRUE,
-  output_dir=".",
-  verbose=FALSE,
-  batch_config=build_default_preprocess_config(),
-  threads=8,
-  ram=4,mode="local",
-  executor_id=make_unique_id("processRefphase"),
-  task_name="processRefphase",time="48:0:0",
-  update_time=60,
-  wait=FALSE,hold=NULL){
-
-
-
-  argg <- as.list(environment())
-  task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir)
-  job=build_job(executor_id=executor_id,task=task_id)
-
-  rdata=paste0(patient_id,".refphase.RData")
-
-  exec_code=paste0("Rscript -e \"",
-    "setwd(\\\"",out_file_dir,"\\\");",
-    "library(refphase);",
-    "refphase_input <-ULPwgs::read_and_load_ascat_refphase(ascat_data=unlist(strsplit(split=\\\",\\\",\\\"",
-    paste(ascat_rdata,collapse = ","),"\\\"),homozygous_cutoff=",homozygous_cutoff,");",
-    ifelse(center_baf,"refphase_input <- center_baf(refphase_input);",""),
-    ifelse(fit_logr,"refphase_input <- fit_logr_to_ascat(refphase_input);",""),
-    "results <- refphase(refphase_input);",
-    "refphase::write_segs(results$phased_segs, file = paste0(",patient_id, "\\\".refphase-segmentation.tsv\\\"));",
-    "refphase::write_snps(results$phased_snps, file = paste0(",patient_id, "\\\".refphase-phased-snps.tsv.gz\\\"));",
-    "save(refphase_input, results, file =\\\"",rdata,"\\\")\""
-  )
-
-  if(mode=="batch"){
-       out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-       batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
-       output_dir=out_file_dir2,hold=hold)
-       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
-  }
-
-
-  if(verbose){
-      print_verbose(job=job,arg=argg,exec_code=exec_code)
-  }
-
-  error=execute_job(exec_code=exec_code)
-  
-  if(error!=0){
-      stop("gatk failed to run due to unknown error.
-      Check std error for more information.")
-  }
-
-  job_report=build_job_report(
-    job_id=job,
-    executor_id=executor_id,
-    exec_code=exec_code, 
-    task_id=task_id,
-    input_args = argg,
-    out_file_dir=out_file_dir,
-    out_files=list(
-        data=list(
-          rdata=paste0(out_file_dir,"/",rdata),
-          phased_segments=paste0(out_file_dir,"/",patient_id,".refphase-segmentation.tsv"),
-          phased_snps=paste0(out_file_dir,"/",tumour_id,".refphase-phased-snps.tsv.gz")
-        )
-      )
-  )
-
-  return(job_report)
-}
-
-
