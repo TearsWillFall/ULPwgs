@@ -115,7 +115,7 @@ call_ascat=function(
     output_dir=paste0(out_file_dir,"/process_ascat"),
     verbose=verbose,
     ascat_ref=ascat_ref,
-    batch_config=natch_config,
+    batch_config=batch_config,
     threads=threads,
     ram=ram,mode=mode,
     executor_id=task_id,
