@@ -11,7 +11,7 @@
 #' @param ascat_ref [OPTIONAL] List with default references.
 #' @param batch_config [OPTIONAL] List with default references.
 #' @param gamma [OPTIONAL] Gamma parameter. Default 1.
-#' @param penalty [OPTIONAL] Penalty parameter. Default 0.25.
+#' @param penalty [OPTIONAL] Penalty parameter. Default 25.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param threads [OPTIONAL] Number of threads to split the work. Default 4
 #' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
@@ -269,7 +269,7 @@ prepare_ascat=function(
 #' @param genome_version [OPTIONAL] Genome reference version. Default HG19.
 #' @param ascat_ref [OPTIONAL] List with default references.
 #' @param gamma [OPTIONAL] Gamma parameter. Default 1.
-#' @param penalty [OPTIONAL] Penalty parameter. Default 0.25.
+#' @param penalty [OPTIONAL] Penalty parameter. Default 25.
 #' @param batch_config [OPTIONAL] List with default references.
 #' @param output_dir [OPTIONAL] Path to the output directory.
 #' @param threads [OPTIONAL] Number of threads to split the work. Default 4
@@ -348,7 +348,7 @@ process_ascat=function(
             "ascat.bc = ASCAT::ascat.correctLogR(ascat.bc, GCcontentfile =\\\"",gc,"\\\"",
             ",replictimingfile =\\\"",rt,"\\\");",
             "ASCAT::ascat.plotRawData(ascat.bc,img.prefix = \\\"After_correction_\\\");",
-            "ascat.bc = ASCAT::ascat.aspcf(ascat.bc,penalty=,",penalty,");",
+            "ascat.bc = ASCAT::ascat.aspcf(ascat.bc,penalty=",penalty,");",
             "ascat.output = ASCAT::ascat.runAscat(ascat.bc, gamma=",gamma,", write_segments = T);",
             "ASCAT::ascat.plotSegmentedData(ascat.bc);",
             "QC = ASCAT::ascat.metrics(ascat.bc,ascat.output);",
