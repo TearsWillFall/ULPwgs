@@ -1,7 +1,18 @@
 
-### Modified version of refphase_load_ascat to fix issue with ASCAT naming
 
-modified_refphase_load_ascat <- function(samples, ascat_input, ascat_output, het_only = FALSE, homozygous_cutoff = 0.7) {
+read_and_load_ascat_refphase=function(ascat_rdata=NULL,homozygous_cutoff = 0.7){
+    samples=Vectorize(get_file_name)(ascat_rdata)
+
+    ascat_input <- list()
+    ascat_output <- list()
+    lapply(ascat_rdata,FUN=function(x){
+      load(x)
+      sample=get_file_name(x)
+      ascat_input[[sample]] <- ascat.bc
+      ascat_output[[sample]] <- ascat.output
+    })
+
+  modified_load_ascat_refphase <- function(samples, ascat_input, ascat_output, het_only = FALSE, homozygous_cutoff = 0.7) {
 
   validate_ascat_data(samples, ascat_input, ascat_output)
   data <- list("segs" = list(), "snps" = list(), "purity" = list(), "ploidy" = list())
@@ -121,6 +132,128 @@ modified_refphase_load_ascat <- function(samples, ascat_input, ascat_output, het
   class(data) <- "RefphaseInput"
 
   data
+  }
+
+  refphase_input_data=modified_load_ascat_refphase(samples,ascat_input,ascat_output)
+ 
+  return(refphase_input_data)
+
+}
+
+
+
+
+call_refphase=function(tumour=NULL,normal=NULL
+    patient_id=NULL,
+    homozygous_cutoff=0.7,
+    center_baf=TRUE,
+    fit_logr=TRUE,
+    output_dir=".",
+    verbose=FALSE,
+    batch_config=build_default_preprocess_config(),
+    threads=8,
+    ram=4,mode="local",
+    executor_id=make_unique_id("callRefphase"),
+    task_name="callRefphase",time="48:0:0",
+    update_time=60,
+    wait=FALSE,hold=NULL
+){
+
+  jobs_report[["steps"]][["call_ascat"]]<-
+
+  jobs_report[["steps"]][["process_refphase"]]<-process_refphase(
+      ascat_rdata=ascat_rdata,
+      patient_id=patient_id,
+      homozygous_cutoff=homozygous_cutoff,
+      center_baf=center_baf,
+      fit_logr=fit_logr,
+      output_dir=out_file_dir,
+      verbose=verbose,
+      batch_config=build_default_preprocess_config(),
+      threads=threads,
+      ram=ram,mode=mode,
+      executor_id=task_id,
+      time=time,
+      hold=hold
+  )
+ 
+}
+
+
+process_refphase=function(
+  ascat_rdata=NULL,
+  patient_id=NULL,
+  homozygous_cutoff=0.7,
+  center_baf=TRUE,
+  fit_logr=TRUE,
+  output_dir=".",
+  verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  threads=8,
+  ram=4,mode="local",
+  executor_id=make_unique_id("processRefphase"),
+  task_name="processRefphase",time="48:0:0",
+  update_time=60,
+  wait=FALSE,hold=NULL){
+
+
+
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
+  out_file_dir=set_dir(dir=output_dir)
+  job=build_job(executor_id=executor_id,task=task_id)
+
+  rdata=paste0(patient_id,".refphase.RData")
+
+  exec_code=paste0("Rscript -e \"",
+    "setwd(\\\"",out_file_dir,"\\\");",
+    "library(refphase);",
+    "refphase_input <-ULPwgs::read_and_load_ascat_refphase(ascat_data=unlist(strsplit(split=\\\",\\\",\\\"",
+    paste(ascat_rdata,collapse = ","),"\\\"),homozygous_cutoff=",homozygous_cutoff,");",
+    ifelse(center_baf,"refphase_input <- center_baf(refphase_input);",""),
+    ifelse(fit_logr,"refphase_input <- fit_logr_to_ascat(refphase_input);",""),
+    "results <- refphase(refphase_input);",
+    "refphase::write_segs(results$phased_segs, file = paste0(",patient_id, "\\\".refphase-segmentation.tsv\\\"));",
+    "refphase::write_snps(results$phased_snps, file = paste0(",patient_id, "\\\".refphase-phased-snps.tsv.gz\\\"));",
+    "save(refphase_input, results, file =\\\"",rdata,"\\\")\""
+  )
+
+  if(mode=="batch"){
+       out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+       batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
+       output_dir=out_file_dir2,hold=hold)
+       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+  }
+
+
+  if(verbose){
+      print_verbose(job=job,arg=argg,exec_code=exec_code)
+  }
+
+  error=execute_job(exec_code=exec_code)
+  
+  if(error!=0){
+      stop("gatk failed to run due to unknown error.
+      Check std error for more information.")
+  }
+
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    exec_code=exec_code, 
+    task_id=task_id,
+    input_args = argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+        data=list(
+          rdata=paste0(out_file_dir,"/",rdata),
+          phased_segments=paste0(out_file_dir,"/",patient_id,".refphase-segmentation.tsv"),
+          phased_snps=paste0(out_file_dir,"/",tumour_id,".refphase-phased-snps.tsv.gz")
+        )
+      )
+  )
+
+  return(job_report)
 }
 
 
