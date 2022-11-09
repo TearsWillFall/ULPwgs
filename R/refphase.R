@@ -143,7 +143,7 @@ read_and_load_ascat_refphase=function(ascat_rdata=NULL,homozygous_cutoff = 0.7){
 
 
 
-call_refphase=function(tumour=NULL,normal=NULL
+call_refphase=function(tumour=NULL,normal=NULL,
     patient_id=NULL,
     homozygous_cutoff=0.7,
     center_baf=TRUE,

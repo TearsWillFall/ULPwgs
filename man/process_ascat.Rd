@@ -13,7 +13,7 @@ process_ascat(
   gender = "XY",
   genome_version = "HG19",
   gamma = 1,
-  penalty = 0.25,
+  penalty = 25,
   panel_version = "V3",
   output_dir = ".",
   verbose = FALSE,
@@ -39,7 +39,7 @@ process_ascat(
 
 \item{gamma}{\link{OPTIONAL} Gamma parameter. Default 1.}
 
-\item{penalty}{\link{OPTIONAL} Penalty parameter. Default 0.25.}
+\item{penalty}{\link{OPTIONAL} Penalty parameter. Default 25.}
 
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
