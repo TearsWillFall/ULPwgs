@@ -101,12 +101,12 @@ call_ascat=function(
     executor_id=task_id,
     time=time,hold=hold
   )
-
+normalize
   jobs_report[["steps"]][["process_ascat"]]=process_ascat(
-    tumour_log2=jobs_report[["steps"]][["prepare_ascat"]]$out_files$tumour_log2,
-    normal_log2=jobs_report[["steps"]][["prepare_ascat"]]$out_files$normal_log2,
-    tumour_baf=jobs_report[["steps"]][["prepare_ascat"]]$out_files$tumour_baf,
-    normal_baf=jobs_report[["steps"]][["prepare_ascat"]]$out_files$normal_baf,
+    tumour_log2=normalizePath(jobs_report[["steps"]][["prepare_ascat"]]$out_files$tumour_log2),
+    normal_log2=normalizePath(jobs_report[["steps"]][["prepare_ascat"]]$out_files$normal_log2),
+    tumour_baf=normalizePath(jobs_report[["steps"]][["prepare_ascat"]]$out_files$tumour_baf),
+    normal_baf=normalizePath(jobs_report[["steps"]][["prepare_ascat"]]$out_files$normal_baf),
     ref_dataset=ref_dataset,
     gender=gender,
     genome_version=genome_version,
