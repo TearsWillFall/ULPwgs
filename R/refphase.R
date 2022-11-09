@@ -61,7 +61,7 @@ call_refphase=function(
     job=build_job(executor_id=executor_id,task=task_id)
 
 
-  jobs_report[["steps"]][["paralle_call_ascat"]]<-parallel_samples_call_ascat(
+  jobs_report[["steps"]][["parallel_call_ascat"]]<-parallel_samples_call_ascat(
     bin_allele_counter=bin_allele_counter,
     tumour=tumour,
     normal=normal,
@@ -82,9 +82,10 @@ call_refphase=function(
     time=time,
     hold=hold
   )
+ 
 
   jobs_report[["steps"]][["process_refphase"]]<-process_refphase(
-      ascat_rdata=ascat_rdata,
+      ascat_rdata=unlist(unlist_lvl(jobs_report[["steps"]][["parallel_call_ascat"]],var="rdata")),
       patient_id=patient_id,
       homozygous_cutoff=homozygous_cutoff,
       center_baf=center_baf,
@@ -96,7 +97,8 @@ call_refphase=function(
       ram=ram,mode=mode,
       executor_id=task_id,
       time=time,
-      hold=hold
+      hold=unlist_lvl(jobs_report[["steps"]][["parallel_call_ascat"]],var="job_id")
+
   )
 
    return(jobs_report)
