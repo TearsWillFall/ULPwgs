@@ -160,7 +160,7 @@ call_ascat=function(
 
 parallel_samples_call_ascat=function(
   bin_allele_counter=build_default_tool_binary_list()$bin_allele_counter,
-  tumours=NULL,
+  tumour=NULL,
   normal=NULL,
   patient_id=NULL,
   ref_dataset="battenberg",
