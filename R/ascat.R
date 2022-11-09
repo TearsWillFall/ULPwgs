@@ -39,7 +39,7 @@ call_ascat=function(
   panel_version="V3",
   output_dir=".",
   gamma=1,
-  penalty=0.25,
+  penalty=25,
   verbose=FALSE,
   ascat_ref=build_default_reference_list(),
   batch_config=build_default_preprocess_config(),
@@ -101,7 +101,7 @@ call_ascat=function(
     executor_id=task_id,
     time=time,hold=hold
   )
-normalize
+
   jobs_report[["steps"]][["process_ascat"]]=process_ascat(
     tumour_log2=normalizePath(jobs_report[["steps"]][["prepare_ascat"]]$out_files$tumour_log2),
     normal_log2=normalizePath(jobs_report[["steps"]][["prepare_ascat"]]$out_files$normal_log2),
@@ -112,6 +112,7 @@ normalize
     genome_version=genome_version,
     panel_version=panel_version,
     gamma=gamma,
+    penalty=penalty,
     output_dir=paste0(out_file_dir,"/process_ascat"),
     verbose=verbose,
     ascat_ref=ascat_ref,
@@ -293,7 +294,7 @@ process_ascat=function(
   gender="XY",
   genome_version="HG19",
   gamma=1,
-  penalty=0.25,
+  penalty=25,
   panel_version="V3",
   output_dir=".",
   verbose=FALSE,
@@ -342,7 +343,7 @@ process_ascat=function(
             ",Germline_BAF_file =\\\"",normal_baf,"\\\"",
             ",Germline_LogR_file =\\\"",normal_log2,"\\\"",
             ",gender=\\\"",toupper(gender),"\\\"",
-            ",genomeVersion=\\\"",tolower(genome_version),"\\\");",
+            ",genomeVersion=\\\"",tolower(genome_version),"\\\",isTargetedSeq=T);",
             "ASCAT::ascat.plotRawData(ascat.bc,img.prefix = \\\"Before_correction_\\\");",
             "ascat.bc = ASCAT::ascat.correctLogR(ascat.bc, GCcontentfile =\\\"",gc,"\\\"",
             ",replictimingfile =\\\"",rt,"\\\");",
