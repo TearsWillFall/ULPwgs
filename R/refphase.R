@@ -60,6 +60,17 @@ call_refphase=function(
     out_file_dir=set_dir(dir=output_dir)
     job=build_job(executor_id=executor_id,task=task_id)
 
+    jobs_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    exec_code=list(), 
+    task_id=task_id,
+    input_args=argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+      )
+    )
+
 
   jobs_report[["steps"]][["parallel_call_ascat"]]<-parallel_samples_call_ascat(
     bin_allele_counter=bin_allele_counter,
