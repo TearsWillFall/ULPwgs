@@ -949,7 +949,7 @@ get_insert_size_samtools=function(
   job=build_job(executor_id=executor_id,task_id=task_id)
 
  fg=""
-  if(!is.na(flags)){
+  if(!is.null(flags)){
     fg=paste0(" -f ",paste0(flags,collapse=","))
   }
   
