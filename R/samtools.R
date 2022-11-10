@@ -956,7 +956,12 @@ get_insert_size_samtools=function(
 
   position=""
   if(!is.na(region)){
-    position=strsplit(region,split="__")[[1]][2]
+    if(grepl("__",region)){
+      position=strsplit(region,split="__")[[1]][2]
+    }else{
+      position=region
+  }
+    
     out_file=paste0(out_file_dir,"/",id,".",region,".fragments.txt")
   }else{
     out_file=paste0(out_file_dir,"/",id,".fragments.txt")
