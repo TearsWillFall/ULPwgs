@@ -1032,7 +1032,7 @@ get_insert_size_samtools=function(
                 fl_sd = 0;
             }
         };
-      printf(\"ID\\tFLAGS\\tREGION\\tTOTAL\\tfl_median\\tfl_mode\\tfl_max\\tfl_average\\tfl_sd\\tmotif_mode\\tfl_str_dist\\tmotif_str_dist);
+      printf(\"ID\\tFLAGS\\tREGION\\tTOTAL\\tfl_median\\tfl_mode\\tfl_max\\tfl_average\\tfl_sd\\tmotif_mode\\tfl_str_dist\\tmotif_str_dist\\n\");
       printf(\"",id,"\\t",paste0(flags,collapse=","),"\\t",ifelse(position=="","GENOME",position),"\\t%d\\t%d\\t%d\\t%d\\t%d\\t%d\\t%s\\t%s\\t%s\\n\", NR , fl_median, fl_mode, fl_max, fl_average , fl_sd , motif_mode , fl_str_dist , motif_str_dist);}'> ",out_file
   )
 
