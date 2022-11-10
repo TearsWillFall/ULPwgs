@@ -225,15 +225,15 @@ process_refphase=function(
 
 
 read_and_load_ascat_refphase=function(ascat_rdata=NULL,homozygous_cutoff = 0.7){
-  samples=as.vector(Vectorize(get_file_name)(ascat_rdata))
+  samples=Vectorize(get_file_name)(ascat_rdata)
 
     ascat_input <- list()
     ascat_output <- list()
     lapply(ascat_rdata,FUN=function(x){
       load(x)
       sample=get_file_name(x)
-      ascat_input[[sample]] <- ascat.bc
-      ascat_output[[sample]] <- ascat.output
+      ascat_input[[sample]] <<- ascat.bc
+      ascat_output[[sample]] <<- ascat.output
     })
 
   modified_load_ascat_refphase <- function(samples, ascat_input, ascat_output, het_only = FALSE, homozygous_cutoff = 0.7) {
