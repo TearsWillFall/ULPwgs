@@ -171,8 +171,8 @@ process_refphase=function(
     ifelse(center_baf,"refphase_input <- center_baf(refphase_input);",""),
     ifelse(fit_log2,"refphase_input <- fit_logr_to_ascat(refphase_input);",""),
     "results <- refphase(refphase_input);",
-    "refphase::write_segs(results$phased_segs, file = paste0(",patient_id, "\\\".refphase-segmentation.tsv\\\"));",
-    "refphase::write_snps(results$phased_snps, file = paste0(",patient_id, "\\\".refphase-phased-snps.tsv.gz\\\"));",
+    "refphase::write_segs(results$phased_segs, file = paste0(\\\"",patient_id, "\\\",\\\".refphase-segmentation.tsv\\\"));",
+    "refphase::write_snps(results$phased_snps, file = paste0(\\\"",patient_id, "\\\",\\\".refphase-phased-snps.tsv.gz\\\"));",
     "save(refphase_input, results, file =\\\"",rdata,"\\\")\""
   )
 
@@ -237,9 +237,20 @@ read_and_load_ascat_refphase=function(ascat_rdata=NULL,homozygous_cutoff = 0.7){
     })
 
   modified_load_ascat_refphase <- function(samples, ascat_input, ascat_output, het_only = FALSE, homozygous_cutoff = 0.7) {
+  
 
-  validate_ascat_data(samples, ascat_input, ascat_output)
-  data <- list("segs" = list(), "snps" = list(), "purity" = list(), "ploidy" = list())
+
+
+
+        # Validates loaded ASCAT input and output
+      validate_ascat_data <- function(samples, ascat_input, ascat_output) {
+        if (any(length(samples) != length(ascat_input) | length(samples) != length(ascat_output))) {
+          stop("samples does not have same length as ascat_input or ascat_output")
+        }
+        if (any(samples != names(ascat_input) | samples != names(ascat_output))) {
+          stop("samples differs from names(ascat_input) or names(ascat_output)")
+        }
+      }
 
     #Format chromosomes to fit numerical
     #Formatting such that chromosom 1 is "1". Chromosome X and Y are labelled as "X" and "Y", respectively
@@ -306,6 +317,11 @@ read_and_load_ascat_refphase=function(ascat_rdata=NULL,homozygous_cutoff = 0.7){
 
         sample_data
     }
+
+
+    validate_ascat_data(samples, ascat_input, ascat_output)
+    data <- list("segs" = list(), "snps" = list(), "purity" = list(), "ploidy" = list())
+
 
 
 
