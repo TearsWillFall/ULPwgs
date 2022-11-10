@@ -167,7 +167,7 @@ process_refphase=function(
     "options(warn = -1);",
     "library(ASCAT,quietly=TRUE);library(refphase,quietly=TRUE);",
     "refphase_input <-ULPwgs::read_and_load_ascat_refphase(ascat_data=unlist(strsplit(split=\\\",\\\",\\\"",
-    paste(ascat_rdata,collapse = ","),"\\\"),homozygous_cutoff=",homozygous_cutoff,");",
+    paste(ascat_rdata,collapse = ","),"\\\")),homozygous_cutoff=",homozygous_cutoff,");",
     ifelse(center_baf,"refphase_input <- center_baf(refphase_input);",""),
     ifelse(fit_log2,"refphase_input <- fit_logr_to_ascat(refphase_input);",""),
     "results <- refphase(refphase_input);",
