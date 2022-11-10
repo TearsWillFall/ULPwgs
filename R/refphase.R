@@ -162,6 +162,7 @@ process_refphase=function(
 
   rdata=paste0(patient_id,".refphase.RData")
 
+
   exec_code=paste0("Rscript -e \"",
     "setwd(\\\"",out_file_dir,"\\\");",
     "library(refphase);",
@@ -205,7 +206,7 @@ process_refphase=function(
         data=list(
           rdata=paste0(out_file_dir,"/",rdata),
           phased_segments=paste0(out_file_dir,"/",patient_id,".refphase-segmentation.tsv"),
-          phased_snps=paste0(out_file_dir,"/",tumour_id,".refphase-phased-snps.tsv.gz")
+          phased_snps=paste0(out_file_dir,"/",patient_id,".refphase-phased-snps.tsv.gz")
         )
       )
   )
