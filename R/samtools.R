@@ -634,11 +634,11 @@ filter_bam_by_size_samtools=function(
 
 
   if(include){
-    exec_code=paste(bin_samtools,"view -h ",fg,bam,position," | \ awk 'substr($0,1,1)==\"@\""," || ($9>=",
+    exec_code=paste(bin_samtools,"view ",fg,bam,position," | \ awk 'substr($0,1,1)==\"@\""," || ($9>=",
     min_frag_size,"&& $9<=",max_frag_size,") ||", "($9<=-",min_frag_size,"&& $9>=-",max_frag_size,
     ")'|",bin_samtools, "view -b >",out_file)
   }else{
-    exec_code=paste(bin_samtools,"view -h ",fg,bam,position," | \ awk 'substr($0,1,1)==\"@\""," || ($9=<",
+    exec_code=paste(bin_samtools,"view ",fg,bam,position," | \ awk 'substr($0,1,1)==\"@\""," || ($9=<",
     min_frag_size,"&& $9>=",max_frag_size,") ||", "($9>=-",min_frag_size,"&& $9<=-",max_frag_size,
     ")'|",bin_samtools, "view -b >",out_file)
 
@@ -963,7 +963,7 @@ get_insert_size_samtools=function(
   }
 
 
-  exec_code=paste(bin_samtools,"view -h ",fg,bam,position,
+  exec_code=paste(bin_samtools,"view ",fg,bam,position,
    " | awk '{
     mot = substr($10, 1, 4);
     fl_count[NR] = ($9^2)^(1/2);
