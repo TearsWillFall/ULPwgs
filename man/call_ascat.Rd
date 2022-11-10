@@ -11,7 +11,6 @@ call_ascat(
   ascat_ref = build_default_reference_list(),
   tumour = NULL,
   normal = NULL,
-  patient_id = NULL,
   ref_dataset = "battenberg",
   gender = "XY",
   genome_version = "HG19",
@@ -40,8 +39,6 @@ call_ascat(
 \item{tumour}{\link{REQUIRED} Path to tumour BAM file.}
 
 \item{normal}{\link{REQUIRED} Path to normal BAM file.}
-
-\item{patient_id}{\link{REQUIRED} Path to normal BAM file.}
 
 \item{ref_dataset}{\link{OPTIONAL} Reference dataset for panel allele and loci selection. Default battenberg}
 

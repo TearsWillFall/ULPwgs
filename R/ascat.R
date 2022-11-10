@@ -3,7 +3,6 @@
 #' @param bin_allele_counter [REQUIRED] Path to allele_counter binary.
 #' @param tumour [REQUIRED] Path to tumour BAM file.
 #' @param normal [REQUIRED] Path to normal BAM file.
-#' @param patient_id [REQUIRED] Path to normal BAM file.
 #' @param panel_version [OPTIONAL] PCF Select panel version. Default V3.
 #' @param ref_dataset [OPTIONAL] Reference dataset for panel allele and loci selection. Default battenberg
 #' @param gender [OPTIONAL] Sample gender. Default XY.
@@ -33,7 +32,6 @@ call_ascat=function(
   ascat_ref=build_default_reference_list(),
   tumour=NULL,
   normal=NULL,
-  patient_id=NULL,
   ref_dataset="battenberg",
   gender="XY",
   genome_version="HG19",
@@ -63,7 +61,7 @@ call_ascat=function(
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir,name=paste0(patient_id,"/",get_file_name(tumour),"/ascat_reports"))
+  out_file_dir=set_dir(dir=output_dir,name=paste0(get_file_name(tumour),"/ascat_reports"))
   job=build_job(executor_id=executor_id,task=task_id)
   
   if(is.null(tumour)|is.null(normal)){
@@ -183,7 +181,7 @@ parallel_samples_call_ascat=function(
   
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir)
+  out_file_dir=set_dir(dir=output_dir,name=patient_id)
   tmp_dir=set_dir(dir=out_file_dir,name="tmp")
  
 
@@ -212,7 +210,6 @@ parallel_samples_call_ascat=function(
               bin_allele_counter=bin_allele_counter,
               tumour=tumour,
               normal=normal,
-              patient_id=patient_id,
               ref_dataset=ref_dataset,
               gender=gender,
               genome_version=genome_version,
@@ -238,7 +235,6 @@ parallel_samples_call_ascat=function(
             save(
               tumour_list,
               bin_allele_counter,
-              patient_id,
               ref_dataset,
               gender,
               genome_version,
@@ -286,67 +282,67 @@ parallel_samples_call_ascat=function(
                     prepare_ascat=list(
                       data=list(
                         tumour_log2=paste0(out_file_dir,"/",
-                          paste0(patient_id,"/",names(tumour_list),"/ascat_reports"),
+                          paste0(names(tumour_list),"/ascat_reports"),
                           "/",out_file_tumour_log2),
                         tumour_baf=paste0(out_file_dir,"/",
-                          paste0(patient_id,"/",names(tumour_list),"/ascat_reports"),
+                          paste0(names(tumour_list),"/ascat_reports"),
                           "/",out_file_tumour_baf),
                         normal_log2=paste0(out_file_dir,"/",
-                          paste0(patient_id,"/",names(tumour_list),"/ascat_reports"),
+                          paste0(names(tumour_list),"/ascat_reports"),
                           "/",out_file_normal_log2),
                         normal_baf=paste0(out_file_dir,"/",
-                          paste0(patient_id,"/",names(tumour_list),"/ascat_reports"),
+                          paste0(names(tumour_list),"/ascat_reports"),
                           "/",out_file_normal_baf)
                       )
                   ),
                   process_ascat=list(
                       plots=list(
                         before_corr_normal=paste0(out_file_dir,"/",
-                          paste0(patient_id,"/",names(tumour_list),"/ascat_reports"),
+                          paste0(names(tumour_list),"/ascat_reports"),
                           "/Before_correction_",names(tumour_list),".germline.png"),
                         after_corr_normal=paste0(out_file_dir,"/",
-                          paste0(patient_id,"/",names(tumour_list),"/ascat_reports"),
+                          paste0(names(tumour_list),"/ascat_reports"),
                           "/After_correction_",names(tumour_list),".germline.png"),
                         before_corr_tumour=paste0(out_file_dir,"/",
-                          paste0(patient_id,"/",names(tumour_list),"/ascat_reports"),
+                          paste0(names(tumour_list),"/ascat_reports"),
                           "/Before_correction_",names(tumour_list),".tumour.png"),
                         after_corr_tumour=paste0(out_file_dir,"/",
-                          paste0(patient_id,"/",names(tumour_list),"/ascat_reports"),
+                          paste0(names(tumour_list),"/ascat_reports"),
                           "/After_correction_",names(tumour_list),".tumour.png"),
                         aspcf=paste0(out_file_dir,"/",
-                          paste0(patient_id,"/",names(tumour_list),"/ascat_reports"),
+                          paste0(names(tumour_list),"/ascat_reports"),
                           "/",names(tumour_list),".ASPCF.png"),
                         ascat_profile=paste0(out_file_dir,"/",
-                          paste0(patient_id,"/",names(tumour_list),"/ascat_reports"),
+                          paste0(names(tumour_list),"/ascat_reports"),
                           "/",names(tumour_list),".ASCATfprofile.png"),
                         raw_profile=paste0(out_file_dir,"/",
-                          paste0(patient_id,"/",names(tumour_list),"/ascat_reports"),
+                          paste0(names(tumour_list),"/ascat_reports"),
                           "/",names(tumour_list),".rawprofile.png"),
                         sunrise=paste0(out_file_dir,"/",
-                          paste0(patient_id,"/",names(tumour_list),"/ascat_reports"),
+                          paste0(names(tumour_list),"/ascat_reports"),
                           "/",names(tumour_list),".sunrise.png")
                       ),
                       data=list(
                         rdata=paste0(out_file_dir,"/",
-                          paste0(patient_id,"/",names(tumour_list),"/ascat_reports"),
+                          paste0(names(tumour_list),"/ascat_reports"),
                           "/",rdata),
                         tumour_log2_pcfed=paste0(out_file_dir,"/",
-                          paste0(patient_id,"/",names(tumour_list),"/ascat_reports"),
+                          paste0(names(tumour_list),"/ascat_reports"),
                           "/",names(tumour_list),".LogR.PCFed.txt"),
                         tumour_baf_pcfed=paste0(out_file_dir,"/",
-                          paste0(patient_id,"/",names(tumour_list),"/ascat_reports"),
+                          paste0(names(tumour_list),"/ascat_reports"),
                           "/",names(tumour_list),".BAF.PCFed.txt"),
                         normal_log2_pcfed=paste0(out_file_dir,"/",
-                          paste0(patient_id,"/",names(tumour_list),"/ascat_reports"),
+                          paste0(names(tumour_list),"/ascat_reports"),
                           "/",normal,".LogR.PCFed.txt"),
                         normal_baf_pcfed=paste0(out_file_dir,"/",
-                          paste0(patient_id,"/",names(tumour_list),"/ascat_reports"),
+                          paste0(names(tumour_list),"/ascat_reports"),
                           "/",normal,".BAF.PCFed.txt"),
                         segments=paste0(out_file_dir,"/",
-                          paste0(patient_id,"/",names(tumour_list),"/ascat_reports"),
+                          paste0(names(tumour_list),"/ascat_reports"),
                           "/",names(tumour_list),".segments.txt"),
                         segments_raw=paste0(out_file_dir,"/",
-                          paste0(patient_id,"/",names(tumour_list),"/ascat_reports"),
+                          paste0(names(tumour_list),"/ascat_reports"),
                           "/",names(tumour_list),".segments_raw.txt")
                       )
                   )

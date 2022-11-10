@@ -16,7 +16,7 @@ call_refphase(
   patient_id = NULL,
   homozygous_cutoff = 0.7,
   center_baf = TRUE,
-  fit_logr = TRUE,
+  fit_log2 = TRUE,
   gamma = 1,
   penalty = 25,
   output_dir = ".",
@@ -54,6 +54,8 @@ call_refphase(
 
 \item{center_baf}{\link{OPTIONAL} Re-center BAF values. Default TRUE}
 
+\item{fit_log2}{\link{OPTIONAL} Better fit ASCAT log2 ratios. Default TRUE}
+
 \item{gamma}{\link{OPTIONAL} Gamma parameter. Default 1.}
 
 \item{penalty}{\link{OPTIONAL} Penalty parameter. Default 25.}
@@ -81,8 +83,6 @@ call_refphase(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
-
-\item{fit_log2}{\link{OPTIONAL} Better fit ASCAT log2 ratios. Default TRUE}
 }
 \description{
 Process ASCAT data using REFPHASE

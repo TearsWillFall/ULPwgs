@@ -55,21 +55,21 @@ call_refphase=function(
     hold=NULL
 ){
 
-    argg <- as.list(environment())
-    task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir)
-    job=build_job(executor_id=executor_id,task=task_id)
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
+  out_file_dir=set_dir(dir=output_dir)
+  job=build_job(executor_id=executor_id,task=task_id)
 
-    jobs_report=build_job_report(
-    job_id=job,
-    executor_id=executor_id,
-    exec_code=list(), 
-    task_id=task_id,
-    input_args=argg,
-    out_file_dir=out_file_dir,
-    out_files=list(
-      )
+  jobs_report=build_job_report(
+  job_id=job,
+  executor_id=executor_id,
+  exec_code=list(), 
+  task_id=task_id,
+  input_args=argg,
+  out_file_dir=out_file_dir,
+  out_files=list(
     )
+  )
 
 
   jobs_report[["steps"]][["parallel_call_ascat"]]<-parallel_samples_call_ascat(
@@ -96,12 +96,12 @@ call_refphase=function(
  
 
   jobs_report[["steps"]][["process_refphase"]]<-process_refphase(
-      ascat_rdata=unlist(unlist_lvl(jobs_report[["steps"]][["parallel_call_ascat"]],var="rdata")),
+      ascat_rdata=normalizePath(unlist(unlist_lvl(jobs_report[["steps"]][["parallel_call_ascat"]],var="rdata"))),
       patient_id=patient_id,
       homozygous_cutoff=homozygous_cutoff,
       center_baf=center_baf,
       fit_log2=fit_log2,
-      output_dir=out_file_dir,
+      output_dir=paste0(out_file_dir,"/",patient_id),
       verbose=verbose,
       batch_config=batch_config,
       threads=threads,
@@ -157,22 +157,22 @@ process_refphase=function(
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir)
+  out_file_dir=set_dir(dir=output_dir,name="rephase_reports")
   job=build_job(executor_id=executor_id,task=task_id)
 
-  rdata=paste0(patient_id,".refphase.RData")
+  rdata=paste0(out_file_dir,"/",patient_id,".refphase.RData")
 
 
   exec_code=paste0("Rscript -e \"",
-    "options(warn = -1);setwd(\\\"",out_file_dir,"\\\");",
+    "options(warn = -1);",
     "library(ASCAT,quietly=TRUE);library(refphase,quietly=TRUE);",
     "refphase_input <-ULPwgs::read_and_load_ascat_refphase(ascat_data=unlist(strsplit(split=\\\",\\\",\\\"",
     paste(ascat_rdata,collapse = ","),"\\\"),homozygous_cutoff=",homozygous_cutoff,");",
     ifelse(center_baf,"refphase_input <- center_baf(refphase_input);",""),
     ifelse(fit_log2,"refphase_input <- fit_logr_to_ascat(refphase_input);",""),
     "results <- refphase(refphase_input);",
-    "refphase::write_segs(results$phased_segs, file = paste0(\\\"",patient_id, "\\\",\\\".refphase-segmentation.tsv\\\"));",
-    "refphase::write_snps(results$phased_snps, file = paste0(\\\"",patient_id, "\\\",\\\".refphase-phased-snps.tsv.gz\\\"));",
+    "results$name <-",patient_id,";",
+    "refphase::export(refobj=results,output_folder=\\\"",out_file_dir,"\\\");",
     "save(refphase_input, results, file =\\\"",rdata,"\\\")\""
   )
 
@@ -191,7 +191,7 @@ process_refphase=function(
   error=execute_job(exec_code=exec_code)
   
   if(error!=0){
-      stop("gatk failed to run due to unknown error.
+      stop("refphase failed to run due to unknown error.
       Check std error for more information.")
   }
 
@@ -205,8 +205,10 @@ process_refphase=function(
     out_files=list(
         data=list(
           rdata=paste0(out_file_dir,"/",rdata),
-          phased_segments=paste0(out_file_dir,"/",patient_id,".refphase-segmentation.tsv"),
-          phased_snps=paste0(out_file_dir,"/",patient_id,".refphase-phased-snps.tsv.gz")
+          phased_segments=paste0(out_file_dir,"/",patient_id,"_phased_segments.tsv"),
+          phased_snps=paste0(out_file_dir,"/",patient_id,"_phased_snps.tsv"),
+          consensus_events=paste0(out_file_dir,"/",patient_id,"_consensus_events.tsv"),
+          genome_proportions=paste0(out_file_dir,"/",patient_id,"_genome_proportions.tsv")
         )
       )
   )

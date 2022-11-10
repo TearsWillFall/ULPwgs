@@ -9,7 +9,7 @@ process_refphase(
   patient_id = NULL,
   homozygous_cutoff = 0.7,
   center_baf = TRUE,
-  fit_logr = TRUE,
+  fit_log2 = TRUE,
   output_dir = ".",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
@@ -30,6 +30,8 @@ process_refphase(
 \item{homozygous_cutoff}{\link{OPTIONAL} Cut-off to consider homozygous snps . Default 0.7.}
 
 \item{center_baf}{\link{OPTIONAL} Re-center BAF values. Default TRUE}
+
+\item{fit_log2}{\link{OPTIONAL} Better fit ASCAT log2 ratios. Default TRUE}
 
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
@@ -54,8 +56,6 @@ process_refphase(
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
 
 \item{ascat_data}{\link{REQUIRED} Path to allele_counter binary.}
-
-\item{fit_log2}{\link{OPTIONAL} Better fit ASCAT log2 ratios. Default TRUE}
 }
 \description{
 Process ASCAT data using REFPHASE
