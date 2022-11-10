@@ -171,7 +171,7 @@ process_refphase=function(
     ifelse(center_baf,"refphase_input <- center_baf(refphase_input);",""),
     ifelse(fit_log2,"refphase_input <- fit_logr_to_ascat(refphase_input);",""),
     "results <- refphase(refphase_input);",
-    "results$name <-",patient_id,";",
+    "results$name <-\\\"",patient_id,"\\\"";",
     "refphase::export(refobj=results,output_folder=\\\"",out_file_dir,"\\\");",
     "save(refphase_input, results, file =\\\"",rdata,"\\\")\""
   )
