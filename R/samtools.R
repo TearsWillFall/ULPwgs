@@ -971,9 +971,10 @@ get_insert_size_samtools=function(
   exec_code=paste(bin_samtools,"view ",fg,bam,position,
    " | awk '{
     mot = substr($10, 1, 4);
-    fl_count[NR] = ($9^2)^(1/2);
-    fl_dist[$9\":\"] = fl_dist[$9\":\"]+1;
-    motif_dist[mot\":\"] = motif_dist[mot]+1;
+    val=($9^2)^(1/2);
+    fl_count[NR] = val;
+    fl_dist[val] = fl_dist[val]+1;
+    motif_dist[mot] = motif_dist[mot]+1;
     }END{
         fl_str_dist=\"\";
         fl_median = 0;
@@ -995,7 +996,7 @@ get_insert_size_samtools=function(
         motif_mode= 0;
 
         for( motif in motif_dist ) {
-            motif_str_dist  = motif_str_dist\"|\"motif motif_dist[motif];
+            motif_str_dist  = motif_str_dist\"|\"motif\":\"motif_dist[motif];
             if(motif_max<=motif_dist[motif]){
               motif_max=motif_dist[motif];
               motif_mode=motif;
