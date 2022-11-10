@@ -984,7 +984,7 @@ get_insert_size_samtools=function(
         fl_max= 0;
         for( fl in fl_dist ) {
             fl_str_dist = fl_str_dist\"|\"fl\":\"fl_dist[fl];
-            if(motif_max<=fl_dist[fl]){
+            if(fl_max<=fl_dist[fl]){
               fl_max=fl_dist[fl];
               fl_mode=fl;
             }
