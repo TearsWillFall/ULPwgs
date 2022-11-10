@@ -996,7 +996,7 @@ get_insert_size_samtools=function(
         motif_mode= 0;
 
         for( mot in motif_dist ) {
-            motif_str_dist  = motif_str_dist\"|\"motif\":\"motif_dist[mot];
+            motif_str_dist  = motif_str_dist\"|\"mot\":\"motif_dist[mot];
             if(motif_max<=motif_dist[mot]){
               motif_max=motif_dist[mot];
               motif_mode=mot;
@@ -1032,7 +1032,8 @@ get_insert_size_samtools=function(
                 fl_sd = 0;
             }
         };
-      printf(\"",id,"\\t",paste0(flags,collapse=","),"\\t",position,"\\t%d\\t%d\\t%d\\t%d\\t%d\\t%d\\t%s\\t%s\\t%s\\n\", NR , fl_median, fl_mode, fl_max, fl_average , fl_sd , fl_str_dist , motif_mode, motif_str_dist);}'> ",out_file
+      printf(\"ID\\tFLAGS\\tREGION\\tTOTAL\\tfl_median\\tfl_mode\\tfl_max\\tfl_average\\tfl_sd\\tmotif_mode\\tfl_str_dist\\tmotif_str_dist);
+      printf(\"",id,"\\t",paste0(flags,collapse=","),"\\t",ifelse(position=="","GENOME",position),"\\t%d\\t%d\\t%d\\t%d\\t%d\\t%d\\t%s\\t%s\\t%s\\n\", NR , fl_median, fl_mode, fl_max, fl_average , fl_sd , motif_mode , fl_str_dist , motif_str_dist);}'> ",out_file
   )
 
 
