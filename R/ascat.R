@@ -578,7 +578,7 @@ process_ascat=function(
   rdata=paste0(tumour_id,'.ASCAT_objects.Rdata')
 
   exec_code=paste0("Rscript -e \"","options(warn = -1);setwd(\\\"",
-            out_file_dir,"\\\");library(ASCAT);",
+            out_file_dir,"\\\");library(ASCAT,quietly=TRUE);",
             "ascat.bc = ASCAT::ascat.loadData(Tumor_LogR_file =\\\"",tumour_log2,"\\\"",
             ",Tumor_BAF_file =\\\"",tumour_baf,"\\\"",
             ",Germline_BAF_file =\\\"",normal_baf,"\\\"",

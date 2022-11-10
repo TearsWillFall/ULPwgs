@@ -165,7 +165,7 @@ process_refphase=function(
 
   exec_code=paste0("Rscript -e \"",
     "options(warn = -1);setwd(\\\"",out_file_dir,"\\\");",
-    "library(refphase);",
+    "library(ASCAT,quietly=TRUE);library(refphase,quietly=TRUE);",
     "refphase_input <-ULPwgs::read_and_load_ascat_refphase(ascat_data=unlist(strsplit(split=\\\",\\\",\\\"",
     paste(ascat_rdata,collapse = ","),"\\\"),homozygous_cutoff=",homozygous_cutoff,");",
     ifelse(center_baf,"refphase_input <- center_baf(refphase_input);",""),
@@ -213,7 +213,6 @@ process_refphase=function(
 
   return(job_report)
 }
-
 
 
 
