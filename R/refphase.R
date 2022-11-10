@@ -225,7 +225,7 @@ process_refphase=function(
 
 
 read_and_load_ascat_refphase=function(ascat_rdata=NULL,homozygous_cutoff = 0.7){
-    samples=Vectorize(get_file_name)(ascat_rdata)
+  samples=as.vector(Vectorize(get_file_name)(ascat_rdata))
 
     ascat_input <- list()
     ascat_output <- list()
