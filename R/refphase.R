@@ -164,7 +164,7 @@ process_refphase=function(
 
 
   exec_code=paste0("Rscript -e \"",
-    "setwd(\\\"",out_file_dir,"\\\");",
+    "options(warn = -1);setwd(\\\"",out_file_dir,"\\\");",
     "library(refphase);",
     "refphase_input <-ULPwgs::read_and_load_ascat_refphase(ascat_data=unlist(strsplit(split=\\\",\\\",\\\"",
     paste(ascat_rdata,collapse = ","),"\\\"),homozygous_cutoff=",homozygous_cutoff,");",

@@ -439,7 +439,7 @@ prepare_ascat=function(
 
   
 
-  exec_code=paste0("Rscript -e \"","setwd(\\\"",
+  exec_code=paste0("Rscript -e \"","options(warn = -1);setwd(\\\"",
             out_file_dir,"\\\");library(ASCAT);ASCAT::ascat.prepareHTS(tumourseqfile =\\\"",tumour,"\\\"",
             ",normalseqfile =\\\"",normal,"\\\"",
             ",tumourname = \\\"",get_file_name(tumour),"\\\"",
@@ -577,7 +577,7 @@ process_ascat=function(
   
   rdata=paste0(tumour_id,'.ASCAT_objects.Rdata')
 
-  exec_code=paste0("Rscript -e \"","setwd(\\\"",
+  exec_code=paste0("Rscript -e \"","options(warn = -1);setwd(\\\"",
             out_file_dir,"\\\");library(ASCAT);",
             "ascat.bc = ASCAT::ascat.loadData(Tumor_LogR_file =\\\"",tumour_log2,"\\\"",
             ",Tumor_BAF_file =\\\"",tumour_baf,"\\\"",
