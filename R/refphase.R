@@ -72,27 +72,28 @@ call_refphase=function(
   )
 
 
-  jobs_report[["steps"]][["parallel_call_ascat"]]<-parallel_samples_call_ascat(
-    bin_allele_counter=bin_allele_counter,
-    tumour=tumour,
-    normal=normal,
-    patient_id=patient_id,
-    ref_dataset=ref_dataset,
-    gender=gender,
-    genome_version=genome_version,
-    panel_version=panel_version,
-    output_dir=out_file_dir,
-    gamma=gamma,
-    penalty=penalty,
-    verbose=verbose,
-    ascat_ref=ascat_ref,
-    batch_config=batch_config,
-    threads=threads,
-    ram=ram,mode=mode,
-    executor_id=task_id,
-    time=time,
-    hold=hold
-  )
+  jobs_report[["steps"]][["parallel_call_ascat"]]<-
+    parallel_sample_call_ascat(
+      bin_allele_counter=bin_allele_counter,
+      tumour=tumour,
+      normal=normal,
+      patient_id=patient_id,
+      ref_dataset=ref_dataset,
+      gender=gender,
+      genome_version=genome_version,
+      panel_version=panel_version,
+      output_dir=out_file_dir,
+      gamma=gamma,
+      penalty=penalty,
+      verbose=verbose,
+      ascat_ref=ascat_ref,
+      batch_config=batch_config,
+      threads=threads,
+      ram=ram,mode=mode,
+      executor_id=task_id,
+      time=time,
+      hold=hold
+    )
  
 
   jobs_report[["steps"]][["process_refphase"]]<-process_refphase(
