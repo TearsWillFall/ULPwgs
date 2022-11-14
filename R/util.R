@@ -1488,7 +1488,7 @@ bin_genome=function(
     )
   }
   
-  dat=read.table(job_report[["steps"]][["get_reference"]],header=header,sep="\t")
+  dat=read.table(job_report[["steps"]][["get_reference"]]$out_files$ref,header=header,sep="\t")
   dat=GenomicRanges::tile(GenomicRanges::GRanges(dat),n=n_bins,width=bin_size)
   dat=as.data.frame(dat)[,c("seqnames","start","end")]
   names(dat)[1]<-"chr"

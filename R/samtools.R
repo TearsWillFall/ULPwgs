@@ -1186,7 +1186,7 @@ parallel_region_get_insert_size_samtools=function(
   if(!is.null(bed)){
       regions=read.table(bed,sep=sep,header=header)
       names(regions)[1:3]=c("chr","start","end")
-      miss_chr=setdiff(unique(regions[1,]), bam_chr)
+      miss_chr=setdiff(unique(regions[,1]), bam_chr$chr)
     
       ### Validate chromosome format in BED file
 
