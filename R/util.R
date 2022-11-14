@@ -223,7 +223,7 @@ check_req_types=function(sheet_col,col_name,types){
 #' @export
 
 
-check_job_limit=function(job_limit=900){
+check_job_limit=function(job_limit=1000000){
   n_jobs=system("qstat -u $USER | wc -l",intern=TRUE)
   return(as.numeric(n_jobs)>=job_limit)
 }
