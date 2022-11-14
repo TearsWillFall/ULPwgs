@@ -613,8 +613,8 @@ build_default_sif_list=function(
     sifs=
         list(
             sif_clonet=list(
-                V2="/lustre/scratch/scratch/regmova/Singularity_Images/pcf_select_v2_12_08_2022.sif",
-                V3="/lustre/scratch/scratch/regmova/Singularity_Images/pcf_select_v3_12_08_2022.sif"
+                V2="/lustre/scratch/scratch/regmova/Singularity_Images/pcf_select_v2_14_11_2022.sif",
+                V3="/lustre/scratch/scratch/regmova/Singularity_Images/pcf_select_v3_14_11_2022.sif"
             ),
             sif_preprocess="/lustre/scratch/scratch/regmova/Singularity_Images/preProcess_latest.sif",
             sif_gatk="/lustre/scratch/scratch/regmova/Singularity_Images/gatk_latest.sif",
