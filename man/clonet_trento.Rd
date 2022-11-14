@@ -10,6 +10,8 @@ clonet_trento(
   tumour = "",
   normal = "",
   patient_id = "",
+  tc = NULL,
+  ploidy = NULL,
   tmp_dir = ".",
   threads = 3,
   ram = 4,

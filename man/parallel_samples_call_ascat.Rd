@@ -78,5 +78,5 @@ parallel_samples_call_ascat(
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
 }
 \description{
-Analyze in parallel multiple pair of tumour-normal samples using ASCAT
+\\\\ TO DO FIX PARALLELIZATION IN LOCAL. Seems to be issues with running multiple files
 }

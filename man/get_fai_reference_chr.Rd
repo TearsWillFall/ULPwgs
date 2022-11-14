@@ -6,7 +6,7 @@
 \usage{
 get_fai_reference_chr(
   fasta = "",
-  output_name = "chrRef",
+  output_name = "chrReference",
   output_dir = ".",
   header = TRUE,
   verbose = FALSE,

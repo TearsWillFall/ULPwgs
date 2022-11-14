@@ -10,7 +10,7 @@ filter_bam_by_size_samtools(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = "",
   region = NA,
-  min_frag_size = 0,
+  min_frag_size = 1,
   max_frag_size = 167,
   flags = c(99, 147, 83, 163),
   output_name = "",

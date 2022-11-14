@@ -10,6 +10,7 @@ get_insert_size_samtools(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = "",
   region = NA,
+  mq = 0,
   flags = c(99, 147, 83, 163),
   output_name = "",
   output_dir = ".",
@@ -52,6 +53,8 @@ get_insert_size_samtools(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} Hold job until job is finished. Job ID.}
+
+\item{mapq}{Flags of the reads to read. Default c(99, 147, 83, 163)}
 }
 \description{
 Filter BAM file by size using samtools
