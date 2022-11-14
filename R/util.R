@@ -1494,7 +1494,7 @@ bin_genome=function(
   names(dat)[1]<-"chr"
   out_file=paste0(out_file_dir,output_name,".",bin_size,".bed")
   write.table(
-    dat,out_file,sep="\t",
+    x=dat,file=out_file,sep="\t",
     col.names=header,
     quote=FALSE,row.names=FALSE
   )
@@ -1599,7 +1599,7 @@ sliding_bin_genome=function(
   names(dat)[1]<-"chr"
   out_file=paste0(out_file_dir,output_name,".bs_",bin_size,".ss_",step_size,".bed")
   write.table(
-    dat,out_file,sep="\t",
+    x=dat,file=out_file,sep="\t",
     col.names=header,
     quote=FALSE,row.names=FALSE
   )
