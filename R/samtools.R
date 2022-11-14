@@ -1124,7 +1124,9 @@ get_insert_size_samtools=function(
 parallel_region_get_insert_size_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bin_picard=build_default_tool_binary_list()$bin_picard,
-  bam="",bed=NA,
+  bam="",
+  bed=NULL,
+  mq=0,
   flags=c(99, 147, 83, 163),
   sep="\t",
   header=FALSE,
@@ -1169,6 +1171,8 @@ parallel_region_get_insert_size_samtools=function(
       )
     )
 
+
+ 
   jobs_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
     bin_samtools=bin_samtools,
     bam=bam,verbose=verbose,output_dir=out_file_dir_tmp,
@@ -1179,7 +1183,7 @@ parallel_region_get_insert_size_samtools=function(
   sep="\t",header=TRUE,stringsAsFactors = FALSE)
   bam_chr$order=as.numeric(as.factor(bam_chr$chr))
 
-  if(!is.na(bed)){
+  if(!is.null(bed)){
       regions=read.table(bed,sep=sep,header=header)
       names(regions)[1:3]=c("chr","start","end")
       miss_chr=setdiff(unique(regions[1,]), bam_chr)
@@ -1209,6 +1213,7 @@ parallel_region_get_insert_size_samtools=function(
           bin_samtools=bin_samtools,
           bam=bam,
           region=region,
+          mq=mq,
           verbose=verbose,
           flags=flags,
           output_name=id,
@@ -1228,6 +1233,7 @@ parallel_region_get_insert_size_samtools=function(
             bam,
             output_dir,
             verbose,
+            mq,
             flags,
             file = rdata_file)
           exec_code=paste0("Rscript -e \"ULPwgs::get_insert_size_samtools(rdata=\\\"",

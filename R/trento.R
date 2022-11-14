@@ -143,7 +143,7 @@ multisample_clonet_trento=function(
 
 
 
-    columns=c("patient_id","tumour","normal","version","verbose",
+    columns=c("patient_id","tumour","normal","version","verbose","tc","ploidy",
     "batch_config","threads","ram","time","mode","hold")
 
 
@@ -175,6 +175,8 @@ multisample_clonet_trento=function(
                 patient_id=file_info[x,]$patient_id,
                 version=file_info[x,]$version,
                 threads=file_info[x,]$threads,
+                tc=file_info[x,]$tc,
+                ploidy=file_info[x,]$ploidy,
                 ram=file_info[x,]$ram,
                 output_dir=paste0(out_file_dir,file_info[x,]$patient_id),
                 verbose=file_info[x,]$verbose,
@@ -196,6 +198,8 @@ multisample_clonet_trento=function(
                         patient_id=patient_id,
                         version=version,
                         threads=threads,
+                        tc=tc,
+                        ploidy=ploidy,
                         ram=ram,output_dir=paste0(out_file_dir,patient_id),verbose=verbose,
                         executor_id=task_id,mode=mode,time=time,
                         hold=hold
@@ -246,7 +250,7 @@ multisample_clonet_trento=function(
 clonet_trento=function(
     sif_clonet=build_default_sif_list()$sif_clonet$V3,
     version="V3",tumour="",normal="",
-    patient_id="",tmp_dir=".",threads=3,
+    patient_id="",tc=NULL,ploidy=NULL,tmp_dir=".",threads=3,
     ram=4,output_dir=".",verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("clonet"),
@@ -269,7 +273,14 @@ clonet_trento=function(
     out_file_dir=set_dir(dir=out_file_dir,name=get_file_name(tumour))
     out_file_dir_tmp=set_dir(dir= out_file_dir_tmp,name=get_file_name(tumour))
     
-    
+
+    if(!is.null(tc)){
+        tc=paste(" -c ",tc)
+    }
+
+    if(!is.null(ploidy)){
+        ploidy=paste(" -p ",ploidy)
+    }
     
     file_info=data.frame(Patient=patient_id,Tumour=normalizePath(tumour),Normal=normalizePath(normal))
 
@@ -278,8 +289,9 @@ clonet_trento=function(
 
 
     exec_code=paste(" singularity run -H ",paste0(getwd(),":/home"), " --app pcfs ",
-    sif_clonet, " -s ", sample_sheet ," -o ", paste0(getwd(),"/",out_file_dir)," -t ",out_file_dir_tmp,
-    " -n " , threads)
+    sif_clonet, " -s ", sample_sheet ," -o ", paste0(getwd(),"/",
+    out_file_dir), " -t ", out_file_dir_tmp, " -n " , threads, 
+    tc, ploidy)
     
 
  
@@ -295,7 +307,6 @@ clonet_trento=function(
     if(verbose){
         print_verbose(job=job,arg=argg,exec_code=exec_code)
     }
-
 
     job_report=build_job_report(
         job_id=job,
