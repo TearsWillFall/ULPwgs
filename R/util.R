@@ -1431,7 +1431,7 @@ get_fai_reference_chr=function(
 bin_genome=function(
     bin_samtools=build_default_tool_binary_list()$bin_samtools,
     file=NULL, 
-    output_name="chrRef",
+    output_name="chrReference",
     bin_size=NULL,
     n_bins=NULL,
     output_dir=".",header=TRUE,
@@ -1536,7 +1536,7 @@ bin_genome=function(
 sliding_bin_genome=function(
     bin_samtools=build_default_tool_binary_list()$bin_samtools,
     file=NULL, 
-    output_name="chrRef",
+    output_name="chrReference",
     bin_size=NULL,
     step_size=NULL,
     output_dir=".",header=TRUE,
@@ -1593,7 +1593,7 @@ sliding_bin_genome=function(
     )
   }
   
-  dat=read.table(job_report[["steps"]][["get_reference"]],header=header,sep="\t")
+  dat=read.table(job_report[["steps"]][["get_reference"]]$out_files$ref,header=header,sep="\t")
   dat=GenomicRanges::slidingWindows(GenomicRanges::GRanges(dat),step=step_size,width=bin_size)
   dat=as.data.frame(dat)[,c("seqnames","start","end")]
   names(dat)[1]<-"chr"
