@@ -998,7 +998,7 @@ get_insert_size_samtools=function(
             if(fl_str_dist!=\"\"){
               fl_str_dist = fl_str_dist\"|\"fl\":\"fl_dist[fl];
             } else{
-              fl_str_dist = \"fl\":\"fl_dist[fl];
+              fl_str_dist = fl\":\"fl_dist[fl];
             }
             
             if(fl_max<=fl_dist[fl]){
@@ -1016,7 +1016,7 @@ get_insert_size_samtools=function(
             if(motif_str_dist!=\"\"){
               motif_str_dist  = motif_str_dist\"|\"mot\":\"motif_dist[mot];
             }else{
-               motif_str_dist =\"mot\":\"motif_dist[mot];
+               motif_str_dist =mot\":\"motif_dist[mot];
             }
 
             if(motif_max<=motif_dist[mot]){
