@@ -1195,7 +1195,7 @@ parallel_region_get_insert_size_samtools=function(
       }
 
       regions=dplyr::left_join(regions,bam_chr[,c("chr","order")])
-      regions=regions %>% arrange(order,start,end)
+      regions=regions %>% dplyr::arrange(order,start,end)
   }else{
       regions=bam_chr
   }
