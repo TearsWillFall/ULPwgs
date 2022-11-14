@@ -235,7 +235,7 @@ check_job_limit=function(job_limit=1000000){
 #' @param delay Time to wait for job limit checks in seconds
 #' @export
 
-execute_job=function(exec_code,delay=600){
+execute_job=function(exec_code,delay=10){
   limit=check_job_limit()
   while(limit){
     date_time<-Sys.time()
