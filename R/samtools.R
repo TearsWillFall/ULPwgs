@@ -957,9 +957,9 @@ get_insert_size_samtools=function(
   }
 
 
-  mq=""
-  if(!is.null(mapq)){
-    fg=paste0(" -q ",mapq)
+  mapq=""
+  if(!is.null(mq)){
+    fg=paste0(" -q ",mq)
   }
   
   
