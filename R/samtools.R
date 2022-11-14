@@ -918,7 +918,7 @@ get_insert_size_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam="",
   region=NA,
-  mq=60,
+  mq=0,
   flags=c(99, 147, 83, 163),
   output_name="",
   output_dir=".",
@@ -995,7 +995,12 @@ get_insert_size_samtools=function(
         fl_mode= 0;
         fl_max= 0;
         for( fl in fl_dist ) {
-            fl_str_dist = fl_str_dist\"|\"fl\":\"fl_dist[fl];
+            if(fl_str_dist!=\"\"){
+              fl_str_dist = fl_str_dist\"|\"fl\":\"fl_dist[fl];
+            } else{
+              fl_str_dist = \"fl\":\"fl_dist[fl];
+            }
+            
             if(fl_max<=fl_dist[fl]){
               fl_max=fl_dist[fl];
               fl_mode=fl;
@@ -1008,7 +1013,12 @@ get_insert_size_samtools=function(
         motif_mode= 0;
 
         for( mot in motif_dist ) {
-            motif_str_dist  = motif_str_dist\"|\"mot\":\"motif_dist[mot];
+            if(motif_str_dist!=\"\"){
+              motif_str_dist  = motif_str_dist\"|\"mot\":\"motif_dist[mot];
+            }else{
+               motif_str_dist =\"mot\":\"motif_dist[mot];
+            }
+
             if(motif_max<=motif_dist[mot]){
               motif_max=motif_dist[mot];
               motif_mode=mot;
