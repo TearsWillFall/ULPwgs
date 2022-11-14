@@ -959,7 +959,7 @@ get_insert_size_samtools=function(
 
   mapq=""
   if(!is.null(mq)){
-    fg=paste0(" -q ",mq)
+    mapq=paste0(" -q ",mq)
   }
   
   
@@ -979,7 +979,7 @@ get_insert_size_samtools=function(
   }
 
 
-  exec_code=paste(bin_samtools,"view ",fg,mq,bam,position,
+  exec_code=paste(bin_samtools,"view ",fg,mapq,bam,position,
    " | awk '{
       mot = substr($10, 1, 4);
       fl=($9^2)^(1/2);
