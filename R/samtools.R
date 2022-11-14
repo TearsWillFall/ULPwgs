@@ -896,6 +896,8 @@ parallel_region_filter_bam_by_size_samtools=function(
 #'
 #' @param bam Path to the input file with the sequence.
 #' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
+#' @param mapq Mapping quality of the read to analyze. Default 60.
+#' @param mapq Flags of the reads to read. Default c(99, 147, 83, 163)
 #' @param region Genomic region to search
 #' @param output_dir Path to the output directory.
 #' @param verbose Enables progress messages. Default False.
@@ -916,6 +918,7 @@ get_insert_size_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam="",
   region=NA,
+  mq=60,
   flags=c(99, 147, 83, 163),
   output_name="",
   output_dir=".",
@@ -952,7 +955,15 @@ get_insert_size_samtools=function(
   if(!is.null(flags)){
     fg=paste0(" -f ",paste0(flags,collapse=","))
   }
+
+
+  mq=""
+  if(!is.null(mapq)){
+    fg=paste0(" -q ",mapq)
+  }
   
+  
+
 
   position=""
   if(!is.na(region)){
@@ -968,13 +979,14 @@ get_insert_size_samtools=function(
   }
 
 
-  exec_code=paste(bin_samtools,"view ",fg,bam,position,
+  exec_code=paste(bin_samtools,"view ",fg,mq,bam,position,
    " | awk '{
-    mot = substr($10, 1, 4);
-    fl=($9^2)^(1/2);
-    fl_count[NR] = val;
-    fl_dist[fl] = fl_dist[fl]+1;
-    motif_dist[mot] = motif_dist[mot]+1;
+      mot = substr($10, 1, 4);
+      fl=($9^2)^(1/2);
+      fl_count[NR] = fl;
+      fl_dist[fl] = fl_dist[fl]+1;
+      motif_dist[mot] = motif_dist[mot]+1;
+
     }END{
         fl_str_dist=\"\";
         fl_median = 0;
@@ -1032,8 +1044,9 @@ get_insert_size_samtools=function(
                 fl_sd = 0;
             }
         };
-      printf(\"ID\\tFLAGS\\tREGION\\tTOTAL\\tfl_median\\tfl_mode\\tfl_max\\tfl_average\\tfl_sd\\tmotif_mode\\tfl_str_dist\\tmotif_str_dist\\n\");
-      printf(\"",id,"\\t",paste0(flags,collapse=","),"\\t",ifelse(position=="","GENOME",position),"\\t%d\\t%d\\t%d\\t%d\\t%d\\t%d\\t%s\\t%s\\t%s\\n\", NR , fl_median, fl_mode, fl_max, fl_average , fl_sd , motif_mode , fl_str_dist , motif_str_dist);}'> ",out_file
+      printf(\"ID\\tFLAGS\\tMAPQ\\tREGION\\tTOTAL\\tfl_median\\tfl_mode\\tfl_max\\tfl_average\\tfl_sd\\tmotif_mode\\tmotif_max\\tfl_str_dist\\tmotif_str_dist\\n\");
+      printf(\"",id,"\\t",paste0(flags,collapse=","),"\\t",ifelse(position=="","GENOME",position),"\\",mq,
+      "\\t%d\\t%d\\t%d\\t%d\\t%d\\t%d\\t%s\\t%s\\t%s\\t%s\\n\", NR , fl_median, fl_mode, fl_max, fl_average , fl_sd , motif_mode , motif_max, fl_str_dist , motif_str_dist);}'> ",out_file
   )
 
 
