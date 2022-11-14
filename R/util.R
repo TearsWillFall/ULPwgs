@@ -1429,6 +1429,7 @@ get_fai_reference_chr=function(
 
 
 bin_genome=function(
+    bin_samtools=build_default_tool_binary_list()$bin_samtools,
     file=NULL, 
     output_name="chrRef",
     bin_size=NULL,
@@ -1501,6 +1502,112 @@ bin_genome=function(
   return(job_report)
 
 }
+
+
+
+
+
+
+
+#' Function to bin chromosome across_sliding windows
+#' 
+#'
+#' This function takes a FAI/ BAM file and generates a bed file with the binned regions
+#'
+#' @param file Path to directory with fasta file.
+#' @param header Create column header. Default TRUE
+#' @param output_name Output name
+#' @param verbose Enables progress messages. Default False.
+#' @param bin_size Average bin size. Defaul NULL.
+#' @param n_bins Number of bins. Defaul NULL.
+#' @param threads Number of threads . Default 4
+#' @param ram RAM memory. Default 4
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "mardupsGATK"
+#' @param task_name Task name. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.#
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
+#' @export
+
+
+sliding_bin_genome=function(
+    bin_samtools=build_default_tool_binary_list()$bin_samtools,
+    file=NULL, 
+    output_name="chrRef",
+    bin_size=NULL,
+    step_size=NULL,
+    output_dir=".",header=TRUE,
+    verbose=FALSE,batch_config=build_default_preprocess_config(),
+    executor_id=make_unique_id("binGenome"),
+    task_name="binGenome",
+    mode="local",time="48:0:0",
+    threads=4,ram=4,update_time=60,
+    wait=FALSE,hold=NULL)
+  {
+
+  options(scipen = 999)
+  
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
+  out_file_dir=set_dir(dir=output_dir)
+
+  job=build_job(executor_id=executor_id,task_id=task_id)
+
+  if(is.null(file)){
+    stop("File argument has to include path to a FAI or BAM file")
+  }
+
+  job_report=build_job_report(
+      job_id=job,
+      executor_id=executor_id,
+      exec_code=list(),
+      task_id=task_id, 
+      input_args = argg,
+      out_file_dir=out_file_dir,
+        out_files=list()
+    )
+
+  if(grepl(".bam$",file)){
+    job_report[["steps"]][["get_reference"]]<-
+    get_bam_reference_chr(
+      bin_samtools=bin_samtools,
+      bam=file,output_name=output_name,header=header,
+      output_dir=out_file_dir,verbose=verbose,
+      batch_config=batch_config,
+      executor_id=task_id,
+      mode=mode,time=time,
+      threads=threads,ram=ram,hold=hold
+    )
+  }else if(grepl(".fai$",file)){
+    job_report[["steps"]][["get_reference"]]<-
+    get_fai_reference_chr(
+      fasta=file,output_name=output_name,header=header,
+      output_dir=out_file_dir,verbose=verbose,
+      batch_config=batch_config,
+      executor_id=task_id,
+      mode=mode,time=time,
+      threads=threads,ram=ram,hold=hold
+    )
+  }
+  
+  dat=read.table(job_report[["steps"]][["get_reference"]],header=header,sep="\t")
+  dat=GenomicRanges::slidingWindows(GenomicRanges::GRanges(dat),step=step_size,width=bin_size)
+  dat=as.data.frame(dat)[,c("seqnames","start","end")]
+  names(dat)[1]<-"chr"
+  out_file=paste0(out_file_dir,output_name,".bs_",bin_size,".ss_",step_size,".bed")
+  write.table(
+    dat,out_file,sep="\t",
+    col.names=header,
+    quote=FALSE,row.names=FALSE
+  )
+
+  return(job_report)
+
+}
+
 
 
 
