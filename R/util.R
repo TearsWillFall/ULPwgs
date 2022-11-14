@@ -1466,7 +1466,7 @@ bin_genome=function(
 
   if(grepl(".bam$",file)){
     job_report[["steps"]][["get_reference"]]<-
-    get_bam_chr_reference(
+    get_bam_reference_chr(
       bin_samtools=bin_samtools,
       bam=file,output_name=output_name,header=header,
       output_dir=out_file_dir,verbose=verbose,
@@ -1477,7 +1477,7 @@ bin_genome=function(
     )
   }else if(grepl(".fai$",file)){
     job_report[["steps"]][["get_reference"]]<-
-    get_fai_chr_reference(
+    get_fai_reference_chr(
       fasta=file,output_name=output_name,header=header,
       output_dir=out_file_dir,verbose=verbose,
       batch_config=batch_config,
