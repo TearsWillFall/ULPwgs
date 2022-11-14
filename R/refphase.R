@@ -73,7 +73,7 @@ call_refphase=function(
 
 
   jobs_report[["steps"]][["parallel_call_ascat"]]<-
-    parallel_sample_call_ascat(
+    parallel_samples_call_ascat(
       bin_allele_counter=bin_allele_counter,
       tumour=tumour,
       normal=normal,
