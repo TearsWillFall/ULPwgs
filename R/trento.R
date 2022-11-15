@@ -100,6 +100,8 @@ preprocess_seq_trento=function(
 #' @param bam_dir Path to bam directory. Only if sample sheet is not provided. 
 #' @param normal_id Normal sample identifier. Only if sample sheet is not provided. 
 #' @param patient_id Patient id. Only if sample sheet is not provided. 
+#' @param tc Pre-computed tumour content. Default NULL.
+#' @param ploidy Pre-computed ploidy. Default NULL.
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
 #' @param executor_id Executor ID. Default "preprocess_trento"
 #' @param task_name Name of the task. Default "preprocess_trento"
@@ -116,7 +118,9 @@ preprocess_seq_trento=function(
 
 multisample_clonet_trento=function(
     sample_sheet=NA,bam_dir="",normal_id="",patient_id="",version="V3",
-    tmp_dir=".",header=TRUE,sep="",threads=3,ram=4,output_dir=".",verbose=FALSE,
+    tc=NULL,ploidy=NULL,
+    tmp_dir=".",header=TRUE,sep="",threads=3,
+    ram=4,output_dir=".",verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("multi_clonet"),
     task_name="multi_clonet",mode="local",time="48:0:0",
@@ -143,7 +147,7 @@ multisample_clonet_trento=function(
 
 
 
-    columns=c("patient_id","tumour","normal","version","verbose","tc","ploidy",
+    columns=c("patient_id","tumour","normal","version","tc","ploidy","verbose",
     "batch_config","threads","ram","time","mode","hold")
 
 
@@ -232,6 +236,8 @@ multisample_clonet_trento=function(
 #' @param tumour Path to tumour BAM file 
 #' @param normal Path to normal BAM file
 #' @param patient_id Patient id. 
+#' @param tc Pre-computed tumour content. Default NULL.
+#' @param ploidy Pre-computed ploidy. Default NULL.
 #' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
 #' @param executor_id Executor ID. Default "clonet"
 #' @param task_name Name of the task. Default "clonet"
