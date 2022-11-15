@@ -36,6 +36,10 @@ clonet_trento(
 
 \item{patient_id}{Patient id.}
 
+\item{tc}{Pre-computed tumour content. Default NULL.}
+
+\item{ploidy}{Pre-computed ploidy. Default NULL.}
+
 \item{tmp_dir}{Path to temporary file directory.}
 
 \item{threads}{Number of CPU cores to use. Default 3.}

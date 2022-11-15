@@ -10,6 +10,8 @@ multisample_clonet_trento(
   normal_id = "",
   patient_id = "",
   version = "V3",
+  tc = NULL,
+  ploidy = NULL,
   tmp_dir = ".",
   header = TRUE,
   sep = "",
@@ -35,6 +37,10 @@ multisample_clonet_trento(
 \item{normal_id}{Normal sample identifier. Only if sample sheet is not provided.}
 
 \item{patient_id}{Patient id. Only if sample sheet is not provided.}
+
+\item{tc}{Pre-computed tumour content. Default NULL.}
+
+\item{ploidy}{Pre-computed ploidy. Default NULL.}
 
 \item{tmp_dir}{Path to temporary file directory.}
 
