@@ -207,7 +207,7 @@ parallel_samples_call_ascat=function(
 
     if(mode=="local"){
       jobs_report[["steps"]][["par_sample_call_ascat"]]<-
-      lapply(tumour_list,FUN=function(tumour){
+      parallel::mclapply(tumour_list,FUN=function(tumour){
       job_report <- call_ascat(
               bin_allele_counter=bin_allele_counter,
               tumour=tumour,
@@ -222,13 +222,13 @@ parallel_samples_call_ascat=function(
               verbose=verbose,
               ascat_ref=ascat_ref,
               batch_config=ascat_ref,
-              threads=threads,
+              threads=4,
               ram=ram,mode=mode,
               executor_id=task_id,
               time=time,
               hold=hold
             )
-      })
+      },mc.cores=5)
     }else if(mode=="batch"){
 
             rdata_file=paste0(tmp_dir,"/",job,".samples.RData")
@@ -576,7 +576,8 @@ process_ascat=function(
   rdata=paste0(tumour_id,'.ASCAT_objects.Rdata')
 
   exec_code=paste0("Rscript -e \"","options(warn = -1);setwd(\\\"",
-            out_file_dir,"\\\");library(ASCAT,quietly=TRUE);",
+            out_file_dir,"\\\");library(ASCAT,quietly=TRUE);
+            library(data.table)",
             "ascat.bc = ASCAT::ascat.loadData(Tumor_LogR_file =\\\"",tumour_log2,"\\\"",
             ",Tumor_BAF_file =\\\"",tumour_baf,"\\\"",
             ",Germline_BAF_file =\\\"",normal_baf,"\\\"",
