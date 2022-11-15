@@ -144,4 +144,31 @@ make_unique_id=function(name,id=sample(1:100000000000000,1),sep="_"){
 }
 
 
+#' Check for job limit in Myriad SGE
+#'
+#' @param exec_code Execution code
+#' @param delay Time to wait for job limit checks in seconds
+#' @export
+
+
+check_job_limit=function(job_limit=1000000){
+  n_jobs=system("qstat -u $USER | wc -l",intern=TRUE)
+  return(as.numeric(n_jobs)>=job_limit)
+}
+
+
+#' Execute job with delay if job limit in Myriad SGE reached
+#' 
+#' @param exec_code Execution code
+#' @param delay Time to wait for job limit checks in seconds
+#' @export
+
+execute_job=function(exec_code){
+  error=system(exec_code)
+  return(error)
+}
+
+
+
+
 

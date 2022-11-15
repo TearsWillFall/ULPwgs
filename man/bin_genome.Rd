@@ -7,7 +7,7 @@
 bin_genome(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   file = NULL,
-  output_name = "chrRef",
+  output_name = "chrReference",
   bin_size = NULL,
   n_bins = NULL,
   output_dir = ".",

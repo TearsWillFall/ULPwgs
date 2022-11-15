@@ -216,39 +216,6 @@ check_req_types=function(sheet_col,col_name,types){
 
 
 
-#' Check for job limit in Myriad SGE
-#'
-#' @param exec_code Execution code
-#' @param delay Time to wait for job limit checks in seconds
-#' @export
-
-
-check_job_limit=function(job_limit=1000000){
-  n_jobs=system("qstat -u $USER | wc -l",intern=TRUE)
-  return(as.numeric(n_jobs)>=job_limit)
-}
-
-
-#' Execute job with delay if job limit in Myriad SGE reached
-#' 
-#' @param exec_code Execution code
-#' @param delay Time to wait for job limit checks in seconds
-#' @export
-
-execute_job=function(exec_code,delay=1){
-  limit=check_job_limit()
-  while(limit){
-    date_time<-Sys.time()
-    Sys.sleep(delay)
-    limit=check_job_limit()
-  }
-  error=system(exec_code)
-  return(error)
-}
-
-
-
-
 
 
 
