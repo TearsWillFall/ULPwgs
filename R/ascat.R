@@ -207,7 +207,7 @@ parallel_samples_call_ascat=function(
 
     if(mode=="local"){
       jobs_report[["steps"]][["par_sample_call_ascat"]]<-
-      parallel::mclapply(tumour_list,FUN=function(tumour){
+      lapply(tumour_list,FUN=function(tumour){
       job_report <- call_ascat(
               bin_allele_counter=bin_allele_counter,
               tumour=tumour,
@@ -228,7 +228,7 @@ parallel_samples_call_ascat=function(
               time=time,
               hold=hold
             )
-      },mc.cores=4)
+      })
     }else if(mode=="batch"){
 
             rdata_file=paste0(tmp_dir,"/",job,".samples.RData")
