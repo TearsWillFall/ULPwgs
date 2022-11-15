@@ -228,7 +228,7 @@ parallel_samples_call_ascat=function(
               time=time,
               hold=hold
             )
-      },mc.cores=5)
+      },mc.cores=4)
     }else if(mode=="batch"){
 
             rdata_file=paste0(tmp_dir,"/",job,".samples.RData")
