@@ -310,7 +310,6 @@ parallel_samples_call_variants_strelka=function(
 }
 
 
-
 #' Parallel call variants per sample Strelka
 #'
 #' This function wraps the functions for variant calling with Strelka and Manta
