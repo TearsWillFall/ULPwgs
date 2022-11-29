@@ -83,7 +83,7 @@ realign_circlemap=function(
 
 
 
-    jobs_report[["steps"]][["sort_bam_name"]]<-sort_and_index_bam_samtools(
+    jobs_report[["steps"]][["sort_and_index"]]<-sort_and_index_bam_samtools(
             bin_samtools=bin_samtools,
             bam=bam,output_dir=out_file_dir_tmp,verbose=verbose,
             batch_config=batch_config,threads=threads,ram=ram,sort=TRUE,
@@ -483,6 +483,23 @@ circdna_circlemap=function(
 
 
 
+
+    
+    jobs_report[["steps"]][["realign_circlemap"]]<-realign_circlemap(
+        env_circlemap=env_circlemap,
+        bin_samtools=bin_samtools,
+        bam=normalizePath(bam),
+        ref_genome=normalizePath(ref_genome),
+        output_dir=out_file_dir,verbose=verbose,
+        tmp_dir=out_file_dir_tmp,
+        batch_config=batch_config,
+        threads=threads,ram=ram, mode=mode,
+        executor_id=task_id,
+        time=time,
+        hold=hold
+    )
+
+
     
     jobs_report[["steps"]][["repeats_circlemap"]]<-repeat_caller_circlemap(
         env_circlemap=env_circlemap,
@@ -497,19 +514,6 @@ circdna_circlemap=function(
 
 
 
-    jobs_report[["steps"]][["realign_circlemap"]]<-realign_circlemap(
-        env_circlemap=env_circlemap,
-        bin_samtools=bin_samtools,
-        bam=normalizePath(bam),
-        ref_genome=normalizePath(ref_genome),
-        output_dir=out_file_dir,verbose=verbose,
-        tmp_dir=out_file_dir_tmp,
-        batch_config=batch_config,
-        threads=threads,ram=ram, mode=mode,
-        executor_id=task_id,
-        time=time,
-        hold=hold
-    )
 
 
  
