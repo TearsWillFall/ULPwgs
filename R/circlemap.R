@@ -33,6 +33,7 @@ realign_circlemap=function(
         env_circlemap=build_default_python_enviroment_list()$env_circlemap,
         bin_samtools=build_default_tool_binary_list()$bin_samtools,
         bam=NULL,output_dir=".",output_name="",verbose=FALSE,
+        ref_genome=build_default_reference_list()$HG19$reference$genome,
         batch_config=build_default_preprocess_config(),
         threads=3,ram=1, mode="local",
         tmp_dir=NULL,
@@ -112,10 +113,10 @@ realign_circlemap=function(
     hold=unlist_lvl(job_report[["steps"]][["extract_circular_reads"]],var="job_id")
 
 
-    exec_code=paste(set_conda_enviroment(env_circlemap),"Circle-Map Realign -sbam ",bam, " -qbam ", 
+    exec_code=paste(set_conda_enviroment(env_circlemap),"Circle-Map Realign -sbam ",normalizePath(bam), " -qbam ", 
     jobs_report[["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam," -i ",
     jobs_report[["steps"]][["extract_circular_reads"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam,
-    " -o ",out_file," -t ",threads," -dir /")
+    " -o ",out_file," -t ",threads," -dir /", " -fasta ",normalizePath(ref_genome))
     
      
     if(mode=="batch"){
@@ -227,7 +228,7 @@ read_extractor_circlemap=function(
 
     out_file=paste0(out_file_dir,"/",id,".circular_read_candidates.bam")
     exec_code=paste(set_conda_enviroment(env_circlemap),"Circle-Map ReadExtractor -i ",
-    bam, " -o ", out_file," -dir /")
+    normalizePath(bam), " -o ", out_file," -dir /")
     
     if(mode=="batch"){
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
@@ -351,7 +352,8 @@ repeat_caller_circlemap=function(
 
 
     out_file=paste0(out_file_dir,"/",id,".circular_repeat_candidates.bed")
-    exec_code=paste(set_conda_enviroment(env_circlemap),"Circle-Map Repeats -i ", bam, " -o ",
+    exec_code=paste(set_conda_enviroment(env_circlemap),"Circle-Map Repeats -i ",
+     normalizePath(bam), " -o ",
     out_file, " -dir /")
     
 
@@ -438,6 +440,7 @@ repeat_caller_circlemap=function(
 circdna_circlemap=function(
         env_circlemap=build_default_python_enviroment_list()$env_circlemap,
         bin_samtools=build_default_tool_binary_list()$bin_samtools,
+        ref_genome=build_default_reference_list()$HG19$reference$genome,
         bam=NULL,output_dir=".",output_name="",verbose=FALSE,
         batch_config=build_default_preprocess_config(),
         threads=3,ram=1, mode="local",
@@ -467,7 +470,6 @@ circdna_circlemap=function(
     }
 
 
-
     jobs_report=build_job_report(
         job_id=job,
         executor_id=executor_id,
@@ -484,7 +486,7 @@ circdna_circlemap=function(
     
     jobs_report[["steps"]][["repeats_circlemap"]]<-repeat_caller_circlemap(
         env_circlemap=env_circlemap,
-        bam=bam,output_dir=out_file_dir,verbose=verbose,
+        bam=normalizePath(bam),output_dir=out_file_dir,verbose=verbose,
         batch_config=batch_config,
         threads=threads,ram=ram,
         mode=mode,
@@ -498,7 +500,9 @@ circdna_circlemap=function(
     jobs_report[["steps"]][["realign_circlemap"]]<-realign_circlemap(
         env_circlemap=env_circlemap,
         bin_samtools=bin_samtools,
-        bam=bam,output_dir=out_file_dir,verbose=verbose,
+        bam=normalizePath(bam),
+        ref_genome=normalizePath(ref_genome),
+        output_dir=out_file_dir,verbose=verbose,
         tmp_dir=out_file_dir_tmp,
         batch_config=batch_config,
         threads=threads,ram=ram, mode=mode,
@@ -506,8 +510,6 @@ circdna_circlemap=function(
         time=time,
         hold=hold
     )
-
-
 
 
  
