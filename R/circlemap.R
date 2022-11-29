@@ -44,12 +44,12 @@ realign_circlemap=function(
 
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir,name="realign_call")
+    out_file_dir=set_dir(dir=output_dir,name="realign_reports")
 
     if(!is.null(tmp_dir)){
         out_file_dir_tmp=tmp_dir
     }else {
-        out_file_dir=set_dir(dir=out_file_dir,name="tmp")
+        out_file_dir_tmp=set_dir(dir=out_file_dir,name="tmp")
     }  
 
     job=build_job(executor_id=executor_id,task_id=task_id)
@@ -117,7 +117,7 @@ realign_circlemap=function(
     "Circle-Map Realign -sbam ",normalizePath(bam), " -qbam ", 
     jobs_report[["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam," -i ",
     jobs_report[["steps"]][["extract_circular_reads"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam,
-    " -o ",out_file," -t ",threads," -dir /", " -fasta ",normalizePath(ref_genome))
+    " -o ",out_file," -t ",threads," -dir /", " -fasta ",normalizePath(ref_genome), " -tdir ",out_file_dir_tmp)
     
      
     if(mode=="batch"){
@@ -337,7 +337,7 @@ repeat_caller_circlemap=function(
 
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir,name="repeat_call")
+    out_file_dir=set_dir(dir=output_dir,name="repeat_reports")
     job=build_job(executor_id=executor_id,task_id=task_id)
 
     if(is.null(bam)){
@@ -421,9 +421,11 @@ repeat_caller_circlemap=function(
 #' 
 #' 
 #' @param env_circlemap [REQUIRED] Conda enviroment for circlemap tool.
+#' @param bin_samtools [REQUIRED] Path to samtools binary file.
 #' @param bam [OPTIONAL] Path to BAM file
 #' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
 #' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param tmp_dir [OPTIONAL] Path to the temporary directory.
 #' @param threads [OPTIONAL] Number of threads to split the work. Default 4
 #' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
 #' @param verbose [OPTIONAL] Enables progress messages. Default False.
@@ -442,7 +444,7 @@ circdna_circlemap=function(
         env_circlemap=build_default_python_enviroment_list()$env_circlemap,
         bin_samtools=build_default_tool_binary_list()$bin_samtools,
         ref_genome=build_default_reference_list()$HG19$reference$genome,
-        bam=NULL,output_dir=".",output_name="",verbose=FALSE,
+        bam=NULL,output_dir=".",tmp_dir=NULL,output_name="",verbose=FALSE,
         batch_config=build_default_preprocess_config(),
         threads=3,ram=1, mode="local",
         executor_id=make_unique_id("circdnaCircleMap"),
@@ -459,12 +461,18 @@ circdna_circlemap=function(
     }
 
 
-
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir,name=paste0(id,"/circlemap"))
+    out_file_dir=set_dir(dir=output_dir,name=paste0(id,"/circlemap_reports"))
     out_file_dir_tmp=set_dir(dir=out_file_dir,name="tmp")
     job=build_job(executor_id=executor_id,task_id=task_id)
+
+
+    if(!is.null(tmp_dir)){
+        out_file_dir_tmp=tmp_dir
+    }else {
+        out_file_dir_tmp=set_dir(dir=out_file_dir,name="tmp")
+    }  
 
     if(is.null(bam)){
         stop("bam argument is required")
@@ -536,4 +544,154 @@ circdna_circlemap=function(
 
 
 
+
+
+
+#' Extract Circular DNA Candidates using Circlemap tool
+#'
+#' This function generates a BED file with circular DNA candidates
+#' 
+#' 
+#' //TODO validate co-joint calling mode
+#' 
+#' For more information read:
+#' https://github.com/iprada/Circle-Map
+#' 
+#' 
+#' 
+#' @param env_circlemap [REQUIRED] Conda enviroment for circlemap tool.
+#' @param bam [OPTIONAL] Path to BAM file
+#' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param tmp_dir [OPTIONAL] Path to the temporary directory.
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param batch_config [REQUIRED] Additional batch configuration if batch mode selected.
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+
+
+parallel_samples_circdna_circlemap=function(
+        env_circlemap=build_default_python_enviroment_list()$env_circlemap,
+        bin_samtools=build_default_tool_binary_list()$bin_samtools,
+        ref_genome=build_default_reference_list()$HG19$reference$genome,
+        bam=NULL,output_dir=".",output_name="",verbose=FALSE,
+        patient_id=NULL,
+        batch_config=build_default_preprocess_config(),
+        threads=3,ram=1, mode="local",
+        executor_id=make_unique_id("parcircdnaCircleMap"),
+        task_name="parcircdnaCircleMap",time="48:0:0",
+        update_time=60,wait=FALSE,hold=NULL
+    ){
+
+
+        argg <- as.list(environment())
+        task_id=make_unique_id(task_name)
+        out_file_dir=set_dir(dir=output_dir,name=patient_id)
+        out_file_dir_tmp=set_dir(dir=out_file_dir,name="tmp")
+        job=build_job(executor_id=executor_id,task_id=task_id)
+
+        if(is.null(bam)){
+            stop("bam argument is required")
+        }
+
+        if(is.null(patient_id)){
+            stop("patient_id argument is required")
+        }
+
+        jobs_report=build_job_report(
+            job_id=job,
+            executor_id=executor_id,
+            exec_code=list(), 
+            task_id=task_id,
+            input_args = argg,
+            out_file_dir=out_file_dir,
+            out_files=list(
+            )
+        )
+
+
+    bam_list=bam
+    names(bam_list)=Vectorize(get_file_name)(bam)
+
+    if(mode=="local"){
+      jobs_report[["steps"]][["par_sample_call_circdna"]]<-
+      lapply(bam_list,FUN=function(b){
+            job_report <-circdna_circlemap(
+            env_circlemap=env_circlemap,
+            bin_samtools=bin_samtools,
+            ref_genome=normalizePath(ref_genome),
+            bam=normalizePath(bam),output_dir=out_file_dir,
+            output_name=get_file_name(bam),
+            tmp_dir=out_file_dir_tmp,
+            verbose=verbose,
+            batch_config=batch_config,
+            threads=threads,ram=ram,
+            mode=mode,
+            executor_id=task_id,
+            time=time,
+            hold=hold
+    )
+      })
+    }else if(mode=="batch"){
+            rdata_file=paste0(tmp_dir,"/",job,".samples.RData")
+            output_dir=out_file_dir
+            executor_id=task_id
+            tmp_dir=out_file_dir_tmp
+            save(
+              bam_list,
+              bin_samtools,
+              env_circlemap,
+              normalizePath(ref_genome),
+              output_dir,
+              tmp_dir,
+              executor_id,
+              clean,
+              verbose
+            )
+            exec_code=paste0("Rscript -e \"ULPwgs::circdna_circlemap(rdata=\\\"",
+            rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
+            out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+            batch_code=build_job_exec(job=job,time=time,ram=ram,
+            threads=2,output_dir=out_file_dir2,
+            hold=hold,array=length(bam_list))
+            exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+
+            if(verbose){
+                print_verbose(job=job,arg=argg,exec_code=exec_code)
+            }
+            error=execute_job(exec_code=exec_code)
+            if(error!=0){
+                stop("circlemap failed to run due to unknown error.
+                Check std error for more information.")
+            }
+    
+          jobs_report[["steps"]][["par_sample_call_circdna"]]<- build_job_report(
+                job_id=job,
+                executor_id=executor_id,
+                exec_code=exec_code, 
+                task_id=task_id,
+                input_args=argg,
+                out_file_dir=out_file_dir,
+                out_files=list(
+                  circ_bed=paste0(out_file_dir,"/",names(bam_list),"/circlemap_reports/",
+                  "repeat_reports/",names(bam_list),".circular_candidates.bed"),
+                  circ_repeat_bed=paste0(out_file_dir,"/",names(bam_list),"/circlemap_reports/",
+                  "realign_reports/",names(bam_list),".circular_repeat_candidates.bed"))
+                )
+        
+    }
+
+    return(jobs_report)
+
+}
 

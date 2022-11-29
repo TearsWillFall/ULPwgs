@@ -10,6 +10,7 @@ annotate_vep(
   bin_vep = build_default_tool_binary_list()$bin_vep,
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
+  vep_cache = build_default_cache_list()$vep_cache,
   vcf = "",
   output_name = "",
   compress = TRUE,
@@ -34,6 +35,8 @@ annotate_vep(
 \item{bin_bgzip}{\link{REQUIRED} Path to bgzip binary.}
 
 \item{bin_tabix}{\link{REQUIRED} Path to tabix binary.}
+
+\item{vep_cache}{\link{REQUIRED} Path to vep cache location.}
 
 \item{vcf}{\link{REQUIRED} Path to VCF file.}
 

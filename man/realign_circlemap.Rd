@@ -9,7 +9,9 @@ realign_circlemap(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = NULL,
   output_dir = ".",
+  output_name = "",
   verbose = FALSE,
+  ref_genome = build_default_reference_list()$HG19$reference$genome,
   batch_config = build_default_preprocess_config(),
   threads = 3,
   ram = 1,
@@ -29,6 +31,8 @@ realign_circlemap(
 \item{bam}{\link{OPTIONAL} Path to BAM file}
 
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
+
+\item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
@@ -51,8 +55,6 @@ realign_circlemap(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
-
-\item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
 }
 \description{
 This function generates a BED file with circular DNA candidates
