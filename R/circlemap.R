@@ -87,7 +87,7 @@ realign_circlemap=function(
             bin_samtools=bin_samtools,
             bam=bam,output_dir=out_file_dir_tmp,verbose=verbose,
             batch_config=batch_config,threads=threads,ram=ram,sort=TRUE,
-            coord_sort=FALSE,index=FALSE,stats="all", clean=TRUE,
+            coord_sort=FALSE,index=FALSE,stats="all", clean=FALSE,
             mode=mode,executor_id=task_id,
             time=time,
             hold=hold
