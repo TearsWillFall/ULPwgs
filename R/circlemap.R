@@ -380,7 +380,7 @@ repeat_caller_circlemap=function(
         Check std error for more information.")
     }
 
-    jobs_report=build_job_report(
+    jobs_report[["steps"]][["sort_and_index"]]=build_job_report(
         job_id=job,
         executor_id=executor_id,
         exec_code=exec_code, 
