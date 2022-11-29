@@ -115,7 +115,7 @@ realign_circlemap=function(
     exec_code=paste(set_conda_enviroment(env_circlemap),"Circle-Map Realign -sbam ",bam, " -qbam ", 
     jobs_report[["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam," -i ",
     jobs_report[["steps"]][["extract_circular_reads"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam,
-    " -o ",out_file," -t ",threads," -dir ",out_file_dir)
+    " -o ",out_file," -t ",threads," -dir /")
     
      
     if(mode=="batch"){
@@ -229,7 +229,7 @@ read_extractor_circlemap=function(
 
     out_file=paste0(out_file_dir,"/",id,".circular_read_candidates.bam")
     exec_code=paste(set_conda_enviroment(env_circlemap),"Circle-Map ReadExtractor -i ",
-    bam, " -o ", out_file," -dir ",out_file_dir)
+    bam, " -o ", out_file," -dir /")
     
     if(mode=="batch"){
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
@@ -354,8 +354,12 @@ repeat_caller_circlemap=function(
 
     out_file=paste0(out_file_dir,"/",id,".circular_repeat_candidates.bed")
     exec_code=paste(set_conda_enviroment(env_circlemap),"Circle-Map Repeats -i ", bam, " -o ",
-     out_file, " -dir ",out_file_dir)
+    out_file, " -dir /")
     
+
+
+
+
     if(mode=="batch"){
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
