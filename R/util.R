@@ -79,7 +79,7 @@ set_dir=function(dir="",name=""){
   if (!dir.exists(new_dir)){
       dir.create(new_dir,recursive=TRUE)
   }
-  return(new_dir)
+  return(normalizePath(new_dir))
 }
 
 

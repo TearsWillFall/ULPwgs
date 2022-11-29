@@ -225,8 +225,6 @@ read_extractor_circlemap=function(
 
 
 
-
-
     out_file=paste0(out_file_dir,"/",id,".circular_read_candidates.bam")
     exec_code=paste(set_conda_enviroment(env_circlemap),"Circle-Map ReadExtractor -i ",
     bam, " -o ", out_file," -dir /")
