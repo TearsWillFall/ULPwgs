@@ -32,7 +32,7 @@
 realign_circlemap=function(
         env_circlemap=build_default_python_enviroment_list()$env_circlemap,
         bin_samtools=build_default_tool_binary_list()$bin_samtools,
-        bam=NULL,output_dir=".",verbose=FALSE,
+        bam=NULL,output_dir=".",output_name="",verbose=FALSE,
         batch_config=build_default_preprocess_config(),
         threads=3,ram=1, mode="local",
         tmp_dir=NULL,
@@ -322,7 +322,7 @@ read_extractor_circlemap=function(
 
 repeat_caller_circlemap=function(
     env_circlemap=build_default_python_enviroment_list()$env_circlemap,
-    bam=NULL,output_dir=".",verbose=FALSE,
+    bam=NULL,output_dir=".",output_name="",verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     threads=1,ram=1,
     mode="local",
@@ -473,6 +473,22 @@ circdna_circlemap=function(
         )
     )
 
+
+
+    
+    jobs_report[["steps"]][["repeats_circlemap"]]<-repeat_caller_circlemap(
+        env_circlemap=env_circlemap,
+        bam=bam,output_dir=out_file_dir,verbose=verbose,
+        batch_config=batch_config,
+        threads=threads,ram=ram,
+        mode=mode,
+        executor_id=task_id,
+        time=time,
+        hold=hold
+    )
+
+
+
     jobs_report[["steps"]][["realign_circlemap"]]<-realign_circlemap(
         env_circlemap=env_circlemap,
         bin_samtools=bin_samtools,
@@ -485,18 +501,6 @@ circdna_circlemap=function(
         hold=hold
     )
 
-
-
-    jobs_report[["steps"]][["repeats_circlemap"]]<-repeat_caller_circlemap(
-        env_circlemap=env_circlemap,
-        bam=bam,output_dir=out_file_dir,verbose=verbose,
-        batch_config=batch_config,
-        threads=threads,ram=ram,
-        mode=mode,
-        executor_id=task_id,
-        time=time,
-        hold=hold
-    )
 
 
 
