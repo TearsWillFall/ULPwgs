@@ -778,7 +778,6 @@ parallel_apply_BQSR_gatk=function(
         output_dir=out_file_dir,verbose=verbose)},
         mc.cores=threads)
   }else if(mode=="batch"){
-        
         rdata_file=paste0(tmp_dir,"/",job,".regions.RData")
         executor_id=task_id
         save(
@@ -1053,17 +1052,17 @@ mutect2_gatk=function(region="",
   }
 
   if (is.vector(tumour)){
-    tumour=paste0(" -I ",paste(tumour,collapse=" -I "))
+    tumour=paste0(" -I ",paste(normalizePath(tumour),collapse=" -I "))
   }else{
-    tumour=paste0(" -I ",tumour)
+    tumour=paste0(" -I ",normalizePath(tumour))
   }
   norm=" "
   if (!is.null(normal)){
     if (is.vector(normal)){
-      norm=paste0(" -I ",paste(normal,collapse=" -I ")," -normal ",
+      norm=paste0(" -I ",paste(normalizePath(normal),collapse=" -I ")," -normal ",
       paste(Vectorize(get_file_name)(normal),collapse=" -normal "))
   }else{
-      norm=paste0(" -I ",normal," -normal ",get_file_name(normal))
+      norm=paste0(" -I ",normalizePath(normal)," -normal ",get_file_name(normal))
       }
   }
 
@@ -1246,7 +1245,7 @@ parallel_regions_mutect2_gatk=function(
 
     jobs_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
       bin_samtools=bin_samtools,
-      bam=tumour[1],verbose=verbose,output_dir=tmp_dir,
+      bam=normalizePath(tumour[1]),verbose=verbose,output_dir=tmp_dir,
       output_name=paste0(get_file_name(tumour[1]),"_Ref"),
       executor_id=task_id,mode="local",threads=threads,ram=ram,
       time=time,update_time=update_time,wait=FALSE,hold=hold)
@@ -1270,12 +1269,12 @@ parallel_regions_mutect2_gatk=function(
       job_report <- mutect2_gatk(
             sif_gatk=sif_gatk,
             region=region,
-            tumour=tumour,
-            normal=normal,
+            tumour=normalizePath(tumour),
+            normal=normalizePath(normal),
             output_name=id,
-            ref_genome=ref_genome,
-            germ_resource = germ_resource,
-            pon=pon,output_dir=tmp_dir,tmp_dir=tmp_dir,
+            ref_genome=normalizePath(ref_genome),
+            germ_resource = normalizePath(germ_resource),
+            pon=normalizePath(pon),output_dir=tmp_dir,tmp_dir=tmp_dir,
             verbose=verbose,orientation=orientation,mnps=mnps,
             executor_id=task_id)
     },mc.cores=threads)
@@ -1287,13 +1286,13 @@ parallel_regions_mutect2_gatk=function(
           output_name=id
           save(
             region_list,
-            tumour,
-            normal,
+            normalizePath(tumour),
+            normalizePath(normal),
             sif_gatk,
-            ref_genome,
+            normalizePath(ref_genome),
             output_name,
-            germ_resource,
-            pon,
+            normalizePath(germ_resource),
+            normalizePath(pon),
             orientation,
             mnps,
             executor_id,
@@ -1345,8 +1344,8 @@ parallel_regions_mutect2_gatk=function(
       bin_bcftools=bin_bcftools,
       bin_bgzip=bin_bgzip,
       bin_tabix=bin_tabix,
-      vcfs=vcfs,stats=stats,
-      f1r2=f1r2,
+      vcfs=normalizePath(vcfs),stats=normalizePath(stats),
+      f1r2=normalizePath(f1r2),
       clean=clean,
       output_name=output_name,
       output_dir=out_file_dir,tmp_dir=tmp_dir,
@@ -1372,8 +1371,8 @@ parallel_regions_mutect2_gatk=function(
   if(contamination){
           jobs_report[["steps"]][["estimateContaminationGatk"]]<- parallel_estimate_contamination_gatk(
                 sif_gatk=sif_gatk,
-                tumours=tumour,
-                normal=normal,
+                tumours=normalizePath(tumour),
+                normal=normalizePath(normal),
                 output_dir=out_file_dir,
                 verbose=verbose,tmp_dir=tmp_dir,
                 batch_config=batch_config,
@@ -1397,10 +1396,10 @@ parallel_regions_mutect2_gatk=function(
             bin_bcftools=bin_bcftools,
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf=vcf,stats=stats,contamination_table=contamination_table,
-            segmentation_table=segmentation_table,
-            orientation_model=orientation_model,output_name=output_name,
-            ref_genome=ref_genome,
+            vcf=normalizePath(vcf),stats=normalizePath(stats),contamination_table=normalizePath(contamination_table),
+            segmentation_table=normalizePath(segmentation_table),
+            orientation_model=normalizePath(orientation_model),output_name=output_name,
+            ref_genome=normalizePath(ref_genome),
             extract_pass=extract_pass,
             output_dir=out_file_dir,
             verbose=verbose,clean=clean,
@@ -1422,7 +1421,7 @@ parallel_regions_mutect2_gatk=function(
         bin_vep=bin_vep,
         bin_bgzip=bin_bgzip,
         bin_tabix=bin_tabix,
-        vcf=vcf,
+        vcf=normalizePath(vcf),
         output_name=paste0(get_file_name(vcf),ifelse(extract_pass,".PASS","")),
         output_dir=out_file_dir,
         verbose=verbose,
@@ -1555,11 +1554,11 @@ parallel_samples_mutect2_gatk=function(
               bin_tabix=bin_tabix,
               regions=regions,
               output_name=get_file_name(tumour),
-              ref_genome=ref_genome,
-              germ_resource=germ_resource,
-              biallelic_db=biallelic_db,
-              db_interval=db_interval,
-              pon=pon,
+              ref_genome=normalizePath(ref_genome),
+              germ_resource=normalizePath(germ_resource),
+              biallelic_db=normalizePath(biallelic_db),
+              db_interval=normalizePath(db_interval),
+              pon=normalizePath(pon),
               filter=filter,
               orientation=orientation,
               mnps=mnps,
@@ -1634,11 +1633,11 @@ parallel_samples_mutect2_gatk=function(
                 bin_tabix=bin_tabix,
                 regions=regions,
                 output_name=patient_id,
-                ref_genome=ref_genome,
-                germ_resource=germ_resource,
-                biallelic_db=biallelic_db,
-                db_interval=db_interval,
-                pon=pon,
+                ref_genome=normalizePath(ref_genome),
+                germ_resource=normalizePath(germ_resource),
+                biallelic_db=normalizePath(biallelic_db),
+                db_interval=normalizePath(db_interval),
+                pon=normalizePath(pon),
                 filter=filter,
                 orientation=orientation,
                 mnps=mnps,
@@ -1830,14 +1829,14 @@ multisample_mutect2_gatk=function(
               bin_samtools=bin_samtools,
               bin_bgzip=bin_bgzip,
               bin_tabix=bin_tabix,
-              tumour=unlist(file_info[x,]$tumour),
-              normal=file_info[x,]$normal,
-              ref_genome=file_info[x,]$ref_genome,
-              germ_resource=file_info[x,]$germ_resource,
-              biallelic_db=file_info[x,]$biallelic_db,
-              db_interval=file_info[x,]$biallelic_db,
+              tumour=normalizePath(unlist(file_info[x,]$tumour)),
+              normal=normalizePath(file_info[x,]$normal),
+              ref_genome=normalizePath(file_info[x,]$ref_genome),
+              germ_resource=normalizePath(file_info[x,]$germ_resource),
+              biallelic_db=normalizePath(file_info[x,]$biallelic_db),
+              db_interval=normalizePath(file_info[x,]$biallelic_db),
               patient_id=file_info[x,]$patient_id,
-              pon=file_info[x,]$pon,
+              pon=normalizePath(file_info[x,]$pon),
               regions=file_info[[x,"regions"]],
               method=file_info[x,]$method,
               output_dir=file_info[x,]$output_dir,
@@ -1871,13 +1870,13 @@ multisample_mutect2_gatk=function(
                   bin_samtools=bin_samtools,
                   bin_bgzip=bin_bgzip,
                   bin_tabix=bin_tabix,
-                  tumour=tumour,
-                  normal=normal,
+                  tumour=normalizePath(tumour),
+                  normal=normalizePath(normal),
                   patient_id=patient_id,
-                  ref_genome=ref_genome,
-                  germ_resource=germ_resource,
-                  biallelic_db=biallelic_db,
-                  db_interval=biallelic_db,
+                  ref_genome=normalizePath(ref_genome),
+                  germ_resource=normalizePath(germ_resource),
+                  biallelic_db=normalizePath(biallelic_db),
+                  db_interval=normalizePath(biallelic_db),
                   extract_pass=extract_pass,
                   annotate=annotate,
                   regions=regions,
@@ -1975,28 +1974,28 @@ mutect_filter_gatk=function(
   }
 
   if(!is.null(stats)){
-      stats=paste0(" -stats ",stats)
+      stats=paste0(" -stats ",normalizePath(stats))
   }
 
   if (!is.null(contamination_table)){
-     contamination_table=paste0(" --contamination-table ", paste0(contamination_table,
+     contamination_table=paste0(" --contamination-table ", paste0(normalizePath(contamination_table),
      collapse=" --contamination-table "))
   }
   
   if(!is.null(segmentation_table)){
-      segmentation_table=paste0(" --tumor-segmentation ",paste0(segmentation_table,
+      segmentation_table=paste0(" --tumor-segmentation ",paste0(normalizePath(segmentation_table),
       collapse=" --tumor-segmentation "))
     }
 
   if(!is.null(orientation_model)){
-      orientation_model=paste0(" --ob-priors ",orientation_model)
+      orientation_model=paste0(" --ob-priors ",normalizePath(orientation_model))
   }
   
   out_file=paste0(out_file_dir,"/",id,".filtered.vcf")
 
 
   exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk,
-  " /gatk/gatk   FilterMutectCalls -R ",ref_genome," -O ",out_file," -V ",vcf, stats,
+  " /gatk/gatk   FilterMutectCalls -R ",ref_genome," -O ",out_file," -V ",normalizePath(vcf), stats,
   contamination_table,segmentation_table,orientation_model
   )
 
@@ -2105,7 +2104,7 @@ gather_mutect2_gatk=function(
     bin_bcftools=bin_bcftools,
     bin_bgzip=bin_bgzip,
     bin_tabix=bin_tabix,
-    vcfs=vcfs,clean=clean,sort=TRUE,
+    vcfs=normalizePath(vcfs),clean=clean,sort=TRUE,
     compress=FALSE,format="vcf",
     verbose=verbose,output_name=output_name,
     output_dir=out_file_dir,
@@ -2207,7 +2206,7 @@ learn_orientation_gatk=function(
   }
  
   if (!is.null(f1r2)){
-    f1r2_list=paste0(" -I ",paste0(f1r2,collapse=" -I "))
+    f1r2_list=paste0(" -I ",paste0(normalizePath(f1r2),collapse=" -I "))
   }
   
   out_file=paste0(out_file_dir,"/",id,".ROM.tar.gz")
@@ -2343,11 +2342,11 @@ estimate_contamination_gatk=function(
   if(!is.na(normal)){
       jobs_report[["steps"]][["nPileupGatk"]]<-pileup_summary_gatk(
         sif_gatk=sif_gatk,
-        bam=normal,output_name=get_file_name(normal),
+        bam=normalizePath(normal),output_name=get_file_name(normal),
         output_dir=paste0(out_file_dir,"/pileup_reports/normal"),
         verbose=verbose,batch_config=batch_config,
-        biallelic_db=biallelic_db,
-        db_interval=db_interval,
+        biallelic_db=normalizePath(biallelic_db),
+        db_interval=normalizePath(db_interval),
         threads=1,ram=ram,mode=mode,
         executor_id=task_id,hold=hold
       )
@@ -2358,11 +2357,11 @@ estimate_contamination_gatk=function(
   if(!is.na(tumour)){
         jobs_report[["steps"]][["tPileupGatk"]]<-pileup_summary_gatk(
           sif_gatk=sif_gatk,
-          bam=tumour,output_name=get_file_name(tumour),
+          bam=normalizePath(tumour),output_name=get_file_name(tumour),
           output_dir=paste0(out_file_dir,"/pileup_reports/tumour"),
           verbose=verbose,batch_config=batch_config,
-          biallelic_db=biallelic_db,
-          db_interval=db_interval,
+          biallelic_db=normalizePath(biallelic_db),
+          db_interval=normalizePath(db_interval),
           threads=1,ram=ram,mode=mode,
           executor_id=task_id,hold=hold
         )
@@ -2372,7 +2371,7 @@ estimate_contamination_gatk=function(
 
   
   if (normal_pileup!=""){
-        normal_pileup=paste0(" -matched ",normal_pileup)
+        normal_pileup=paste0(" -matched ",normalizePath(normal_pileup))
   }
 
 
@@ -2380,7 +2379,7 @@ estimate_contamination_gatk=function(
 
   exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk,
   " /gatk/gatk   CalculateContamination  -O ",out_file, " -tumor-segmentation ", out_file2,
-  " -I ",tumour_pileup,normal_pileup)
+  " -I ",normalizePath(tumour_pileup),normal_pileup)
 
   if(mode=="batch"){
        hold=unlist_lvl(jobs_report[["steps"]],var="job_id")
@@ -2494,7 +2493,7 @@ parallel_estimate_contamination_gatk=function(
       parallel::mclapply(tumour_list,FUN=function(tumour){
         job_report <-  estimate_contamination_gatk(
             sif_gatk= sif_gatk,
-            tumour = tumour,
+            tumour = normalizePath(tumour),
             normal="",
             normal_pileup= normal_pileup,
             output_name=get_file_name(tumour),
@@ -2610,8 +2609,8 @@ pileup_summary_gatk=function(
   out_file=paste0(out_file_dir,"/",id,".pileup.table")
 
   exec_code=paste0("singularity exec -H ",getwd(),":/home ",sif_gatk,
-  " /gatk/gatk  GetPileupSummaries  -O ",out_file," -V ",biallelic_db," -L ",
-   db_interval, " -I ",bam)
+  " /gatk/gatk  GetPileupSummaries  -O ",out_file," -V ",normalizePath(biallelic_db)," -L ",
+   normalizePath(db_interval), " -I ",normalizePath(bam))
 
 
   if(mode=="batch"){
@@ -2715,17 +2714,17 @@ parallel_pileup_summary_gatk=function(
     parallel::mclapply(bam_list,FUN=function(bam){
       job_report <-  pileup_summary_gatk(
           sif_gatk=sif_gatk,
-          bam=bam,output_name=get_file_name(bam),output_dir=out_file_dir,
+          bam=normalizePath(bam),output_name=get_file_name(bam),output_dir=out_file_dir,
           verbose=verbose,batch_config=batch_config,
-          biallelic_db=biallelic_db,
-          db_interval=db_interval,
+          biallelic_db=normalizePath(biallelic_db),
+          db_interval=normalizePath(db_interval),
           executor_id=task_id,
           time=time,hold=hold)
     },mc.cores=threads)
     }else if(mode=="batch"){
           rdata_file=paste0(tmp_dir,"/",job,".tumours.RData")
           output_dir=out_file_dir
-          save(bam_list,sif_gatk,output_dir,biallelic_db,db_interval,verbose,tmp_dir,file = rdata_file)
+          save(bam_list,sif_gatk,output_dir,normalizePath(biallelic_db),normalizePath(db_interval),verbose,tmp_dir,file = rdata_file)
           exec_code=paste0("Rscript -e \"ULPwgs::pileup_summary_gatk(rdata=\\\"",rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
           out_file_dir2=set_dir(dir=out_file_dir,name="batch")
           batch_code=build_job_exec(job=job,time=time,ram=ram,
@@ -2813,7 +2812,7 @@ merge_mutect_stats_gatk=function(
   }
  
   if (!is.null(stats)){
-    stat=paste0(" -stats ",paste0(stats,collapse=" -stats "))
+    stat=paste0(" -stats ",paste0(normalizePath(stats),collapse=" -stats "))
   }
   
   out_file=paste0(out_file_dir,"/",id,".merged.vcf.stats")
@@ -2822,7 +2821,7 @@ merge_mutect_stats_gatk=function(
   " /gatk/gatk  MergeMutectStats -O ", out_file ,stat)
 
   if(clean){
-    exec_code=paste(exec_code," && rm",paste(stats,collapse=" "))
+    exec_code=paste(exec_code," && rm",paste(normalizePath(stats),collapse=" "))
 }
 
   if(mode=="batch"){
@@ -2944,7 +2943,7 @@ create_pon_gatk=function(
 
   jobs_report[["steps"]][["createGenomicDbGatk"]]<-create_genomic_db_gatk(
       sif_gatk=sif_gatk,
-      vcfs=vcfs,output_dir=out_file_dir,
+      vcfs=normalizePath(vcfs),output_dir=out_file_dir,
       ref_genome=build_default_reference_list()$HG19$reference$genome,
       verbose=verbose,
       batch_config=batch_config,
@@ -3079,13 +3078,13 @@ create_genomic_db_gatk=function(
   
 
   exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
-  " /gatk/gatk GenomicsDBImport -R ",ref_genome,
+  " /gatk/gatk GenomicsDBImport -R ",normalizePath(ref_genome),
   " --genomicsdb-workspace-path ",paste0(output_dir,"/db"),
   " --batch-size ",size,
   " --max-num-intervals-to-import-in-parallel ",threads,
-  " --tmp-dir ",tmp_dir," --reader-threads ",threads,
+  " --tmp-dir ",normalizePath(tmp_dir)," --reader-threads ",threads,
   " --overwrite-existing-genomicsdb-workspace TRUE",
-  " --sample-name-map ",map_file, " -L ",regions)
+  " --sample-name-map ",normalizePath(map_file), " -L ",regions)
 
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=output_dir,name="batch")
@@ -3186,7 +3185,7 @@ haplotypecaller_gatk=function(
 
 
   if(tmp_dir!=""){
-    tmp_dir=paste0(" --tmp-dir ",tmp_dir)
+    tmp_dir=paste0(" --tmp-dir ",normalizePath(tmp_dir))
   }
   
   id=""
@@ -3206,14 +3205,14 @@ haplotypecaller_gatk=function(
   }
 
   if (is.vector(normal)){
-    normal=paste0(" -I ",paste(normal,collapse=" -I "))
+    normal=paste0(" -I ",paste(normalizePath(normal),collapse=" -I "))
   }else{
-    normla=paste0(" -I ",normal)
+    normla=paste0(" -I ",normalizePath(normal))
   }
 
 
   exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
-  " /gatk/gatk HaplotypeCaller -R ",ref_genome, normal," -O ",out_file,reg)
+  " /gatk/gatk HaplotypeCaller -R ",normalizePath(ref_genome), normal," -O ",out_file,reg)
 
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
@@ -3369,7 +3368,7 @@ parallel_regions_haplotypecaller_gatk=function(
 
     jobs_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
       bin_samtools=bin_samtools,
-      bam=normal[1],verbose=verbose,output_dir=tmp_dir,
+      bam=normalizePath(normal[1]),verbose=verbose,output_dir=normalizePath(tmp_dir),
       output_name=paste0(get_file_name(normal[1]),"_Ref"),
       executor_id=task_id,mode="local",threads=threads,ram=ram,
       time=time,update_time=update_time,wait=FALSE,hold=hold)
@@ -3392,9 +3391,9 @@ parallel_regions_haplotypecaller_gatk=function(
       job_report <- haplotypecaller_gatk(
             sif_gatk=sif_gatk,
             region=region,
-            normal=normal,
+            normal=normalizePath(normal),
             output_name=id,
-            ref_genome=ref_genome,
+            ref_genome=normalizePath(ref_genome),
             output_dir=tmp_dir,
             tmp_dir=tmp_dir,
             verbose=verbose,
@@ -3409,8 +3408,8 @@ parallel_regions_haplotypecaller_gatk=function(
           executor_id=task_id
           save(
             region_list,
-            normal,sif_gatk,
-            ref_genome,
+            normalizePath(normal),sif_gatk,
+            normalizePath(ref_genome),
             output_name,
             output_dir,
             executor_id,
@@ -3458,7 +3457,7 @@ parallel_regions_haplotypecaller_gatk=function(
     bin_bcftools=bin_bcftools,
     bin_bgzip=bin_bgzip,
     bin_tabix=bin_tabix,
-    vcfs=vcfs,clean=clean,sort=TRUE,
+    vcfs=normalizePath(vcfs),clean=clean,sort=TRUE,
     compress=FALSE,format="vcf",
     verbose=verbose,output_name=id,
     output_dir=out_file_dir,
@@ -3473,8 +3472,8 @@ parallel_regions_haplotypecaller_gatk=function(
         hold<-jobs_report[["steps"]][["concatVCF"]]$job_id
         jobs_report[["steps"]][["cnnScoreVariantsGatk"]]<-cnn_score_variants_gatk(
         sif_gatk=sif_gatk,
-        vcf=vcf,bam=ifelse(info_key=="CNN_1D","",bam),
-        ref_genome=ref_genome,
+        vcf=normalizePath(vcf),bam=ifelse(info_key=="CNN_1D","",bam),
+        ref_genome=normalizePath(ref_genome),
         output_dir=out_file_dir,output_name=id,
         verbose=verbose,
         batch_config=batch_config,
@@ -3489,10 +3488,10 @@ parallel_regions_haplotypecaller_gatk=function(
 
       jobs_report[["steps"]][["filterVariantTranchesGatk"]]<-filter_variant_tranches_gatk(
         sif_gatk=sif_gatk,
-        vcf=vcf,
-        ref_genome=ref_genome,
-        indel_db=indel_db,
-        haplotype_db=haplotype_db,
+        vcf=normalizePath(vcf),
+        ref_genome=normalizePath(ref_genome),
+        indel_db=normalizePath(indel_db),
+        haplotype_db=normalizePath(haplotype_db),
         output_dir=out_file_dir,output_name=id,
         info_key=info_key,
         snp_tranche=snp_tranche,
@@ -3514,7 +3513,7 @@ parallel_regions_haplotypecaller_gatk=function(
         parallel_vcfs_variants_by_filters_vcf(
           bin_bgzip=bin_bgzip,
           bin_tabix=bin_tabix,
-          vcf=vcf,filters="PASS",
+          vcf=normalizePath(vcf),filters="PASS",
           exclusive=TRUE,
           compress=FALSE,
           output_dir=out_file_dir,
@@ -3641,12 +3640,12 @@ parallel_samples_haplotypecaller_gatk=function(
             bin_samtools=bin_samtools,
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            normal=normal,
-            ref_genome=ref_genome,
+            normal=normalizePath(normal),
+            ref_genome=normalizePath(ref_genome),
             regions=regions,
             output_dir=out_file_dir,
-            indel_db=indel_db,
-            haplotype_db=haplotype_db,
+            indel_db=normalizePath(indel_db),
+            haplotype_db=normalizePath(haplotype_db),
             filter=filter,
             output_name=get_file_name(normal),
             info_key=info_key,
@@ -3672,11 +3671,11 @@ parallel_samples_haplotypecaller_gatk=function(
               bin_samtools,
               bin_bgzip,
               bin_tabix,
-              ref_genome,
+              normalizePath(ref_genome),
               regions,
               output_dir,
-              indel_db,
-              haplotype_db,
+              normalizePath(indel_db),
+              normalizePath(haplotype_db),
               filter,
               info_key,
               snp_tranche,
@@ -3724,12 +3723,12 @@ parallel_samples_haplotypecaller_gatk=function(
             bin_samtools=bin_samtools,
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            normal=normal,
-            ref_genome=ref_genome,
+            normal=normalizePath(normal),
+            ref_genome=normalizePath(ref_genome),
             regions=regions,
             output_dir=out_file_dir,
-            indel_db=indel_db,
-            haplotype_db=haplotype_db,
+            indel_db=normalizePath(indel_db),
+            haplotype_db=normalizePath(haplotype_db),
             filter=filter,
             output_name=patient_id,
             info_key=info_key,
@@ -3921,11 +3920,11 @@ multisample_haplotypecaller_gatk=function(
                   bin_samtools=file_info[x,]$bin_samtools,
                   bin_bgzip=file_info[x,]$bin_bgzip,
                   bin_tabix=file_info[x,]$bin_tabix,
-                  normal=file_info[x,]$normal,
+                  normal=normalizePath(file_info[x,]$normal),
                   patient_id=file_info[x,]$patient_id,
-                  ref_genome=file_info[x,]$ref_genome,
-                  indel_db=file_info[x,]$indel_db,
-                  haplotype_db=file_info[x,]$haplotype_db,
+                  ref_genome=normalizePath(file_info[x,]$ref_genome),
+                  indel_db=normalizePath(file_info[x,]$indel_db),
+                  haplotype_db=normalizePath(file_info[x,]$haplotype_db),
                   filter=file_info[x,]$filter,
                   info_key=file_info[x,]$info_key,
                   snp_tranche=file_info[x,]$snp_tranche,
@@ -3957,11 +3956,11 @@ multisample_haplotypecaller_gatk=function(
                   bin_samtools=bin_samtools,
                   bin_bgzip=bin_bgzip,
                   bin_tabix=bin_tabix,
-                  normal=normal,
+                  normal=normalizePath(normal),
                   patient_id=patient_id,
-                  ref_genome=ref_genome,
-                  indel_db=indel_db,
-                  haplotype_db=haplotype_db,
+                  ref_genome=normalizePath(ref_genome),
+                  indel_db=normalizePath(indel_db),
+                  haplotype_db=normalizePath(haplotype_db),
                   filter=filter,
                   info_key=info_key,
                   snp_tranche=snp_tranche,
@@ -4072,11 +4071,11 @@ filter_variant_tranches_gatk=function(
   }
 
   if(indel_db!=""){
-    indel_db=paste0(" --resource ",indel_db)
+    indel_db=paste0(" --resource ",normalizePath(indel_db))
   }
 
   if(haplotype_db!=""){
-    haplotype_db=paste0(" --resource ",haplotype_db)
+    haplotype_db=paste0(" --resource ",normalizePath(haplotype_db))
   }
 
 

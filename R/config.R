@@ -580,6 +580,25 @@ build_default_tool_binary_list=function(
 }
 
 
+#' Build default python enviroment list
+#' 
+#'
+#' @param enviroments List with tool_names and paths 
+#' @export
+
+
+build_default_python_enviroment_list=function(
+    enviroments=
+        list(
+                env_circlemap="/lustre/home/regmova/miniconda3/envs/circle-map",
+                env_hatchet="/lustre/home/regmova/miniconda3/envs/hatchet"   
+        )
+    ){
+         return(enviroments)
+}
+
+
+
 
 #' Build chromosome list
 #' 
