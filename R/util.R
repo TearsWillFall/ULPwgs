@@ -128,6 +128,19 @@ unlist_lvl=function(named_list,var,recursive=FALSE){
 
 
 #' @export
+ set_conda_enviroment=function(env){
+      paste("source activate ",env,";cd ",normalizePath(getwd()),";")
+}
+
+
+
+
+
+
+
+
+
+#' @export
 parse_var=function(var,sep="\\\""){
     paste0(sep,var,sep)
 }
