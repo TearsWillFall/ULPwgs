@@ -470,7 +470,6 @@ circdna_circlemap=function(
         input_args = argg,
         out_file_dir=out_file_dir,
         out_files=list(
-            circ_bed=out_file
         )
     )
 
