@@ -113,7 +113,8 @@ realign_circlemap=function(
     hold=unlist_lvl(jobs_report[["steps"]][["extract_circular_reads"]],var="job_id")
 
 
-    exec_code=paste(set_conda_enviroment(env_circlemap),"Circle-Map Realign -sbam ",normalizePath(bam), " -qbam ", 
+    exec_code=paste(set_conda_enviroment(env_circlemap),
+    "Circle-Map Realign -sbam ",normalizePath(bam), " -qbam ", 
     jobs_report[["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam," -i ",
     jobs_report[["steps"]][["extract_circular_reads"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam,
     " -o ",out_file," -t ",threads," -dir /", " -fasta ",normalizePath(ref_genome))
@@ -262,7 +263,7 @@ read_extractor_circlemap=function(
         )
     )
 
-    jobs_report[["steps"]][["sort_bam_name"]]<-sort_and_index_bam_samtools(
+    jobs_report[["steps"]][["sort_and_index"]]<-sort_and_index_bam_samtools(
                     bin_samtools=bin_samtools,
                     bam=out_file,
                     output_dir=out_file_dir,
@@ -380,7 +381,7 @@ repeat_caller_circlemap=function(
         Check std error for more information.")
     }
 
-    jobs_report[["steps"]][["sort_and_index"]]=build_job_report(
+    jobs_report=build_job_report(
         job_id=job,
         executor_id=executor_id,
         exec_code=exec_code, 
