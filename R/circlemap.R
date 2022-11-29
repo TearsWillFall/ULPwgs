@@ -110,7 +110,7 @@ realign_circlemap=function(
 
 
 
-    hold=unlist_lvl(job_report[["steps"]][["extract_circular_reads"]],var="job_id")
+    hold=unlist_lvl(jobs_report[["steps"]][["extract_circular_reads"]],var="job_id")
 
 
     exec_code=paste(set_conda_enviroment(env_circlemap),"Circle-Map Realign -sbam ",normalizePath(bam), " -qbam ", 
