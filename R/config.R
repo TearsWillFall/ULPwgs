@@ -751,7 +751,28 @@ build_default_option_list=function(
     return(options)
 }
 
-build_default_config()
+
+#' Build default cache list
+#' 
+#'
+#' @param cache List with options for each variable
+#' @export
+
+build_default_cache_list=function(
+    cache=list(
+        cache_vep="/lustre/home/regmova/.vep"
+    )
+){
+    return(cache)
+}
+
+
+
+
+
+
+
+
 
 #' Build default references
 #' 
@@ -761,6 +782,7 @@ build_default_config()
 
 build_default_reference_list=function(
     references=list(
+        
             HG19=list(
                 reference=list(
                     genome="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.fa",

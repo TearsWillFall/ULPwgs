@@ -5,6 +5,7 @@
 #' @param bin_vep [REQUIRED] Path to VEP binary.
 #' @param bin_bgzip [REQUIRED] Path to bgzip binary.
 #' @param bin_tabix [REQUIRED] Path to tabix binary.
+#' @param vep_cache [REQUIRED] Path to vep cache location.
 #' @param vcf [REQUIRED] Path to VCF file.
 #' @param compress [OPTIONAL] Generate a compressed VCF
 #' @param output_name [OPTIONAL] Name of output file
@@ -29,6 +30,7 @@ annotate_vep=function(
     bin_vep=build_default_tool_binary_list()$bin_vep,
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
     bin_tabix=build_default_tool_binary_list()$bin_tabix,
+    vep_cache=build_default_cache_list()$vep_cache,
     vcf="",
     output_name="",
     compress=TRUE,
@@ -66,7 +68,8 @@ annotate_vep=function(
 
   out_file=paste0(out_file_dir,"/",id,".annotated.vcf")
 
-  exec_code=paste(bin_vep,"-i",vcf,"-o",out_file,"--cache --port 3337 --everything --force_overwrite --vcf --fork ",threads)
+  exec_code=paste(bin_vep,"-i",vcf,"-o",out_file,
+  "--cache --port 3337 --everything --force_overwrite --vcf --fork ",threads," --dir ",vep_cache)
 
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
