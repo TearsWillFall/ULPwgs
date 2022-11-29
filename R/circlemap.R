@@ -65,7 +65,8 @@ realign_circlemap=function(
         id=get_file_name(bam[1])
     }
 
-
+    
+    out_file=paste0(out_file_dir,"/",id,".circular_candidates.bed")
 
     jobs_report=build_job_report(
         job_id=job,
@@ -111,7 +112,6 @@ realign_circlemap=function(
     hold=unlist_lvl(job_report[["steps"]][["extract_circular_reads"]],var="job_id")
 
 
-    out_file=paste0(out_file_dir,"/",id,".circular_candidates.bed")
     exec_code=paste(set_conda_enviroment(env_circlemap),"Circle-Map Realign -sbam ",bam, " -qbam ", 
     jobs_report[["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam," -i ",
     jobs_report[["steps"]][["extract_circular_reads"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam,
