@@ -295,7 +295,7 @@ file_scp=function(
   }
 
   if(!is.null(target_remote)){
-      exec_code=paste("scp -r ",file, paste0(server,":",target_remote) ,collapse=" & ")
+        exec_code=paste("scp -r ",file, paste0(server,":",target_remote) ,collapse=" & ")
   }
 
   if(!is.null(target_local)){
