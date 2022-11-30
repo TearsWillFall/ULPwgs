@@ -796,7 +796,7 @@ annotate_bed_circlemap=function(
     )
 
     partial_left$annot_type="PARTIAL"
-    partial_left=anti_join(partial_left,full_gene,
+    partial_left=dplyr::anti_join(partial_left,full_gene,
         by=c("chr.x"="chr.x",
             "start.x"="start.x",
             "end.x"="end.x",
@@ -809,7 +809,7 @@ annotate_bed_circlemap=function(
     )
 
     partial_right$annot_type="PARTIAL"
-    partial_right=anti_join(partial_right,full_gene,
+    partial_right=dplyr::anti_join(partial_right,full_gene,
         by=c("chr.x"="chr.x",
             "start.x"="start.x",
             "end.x"="end.x",
