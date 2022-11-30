@@ -309,7 +309,7 @@ file_scp=function(
   }
 
   if(mode=="batch"){
-       out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+       out_file_dir2=set_dir(dir="/tmp",name="batch")
        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
