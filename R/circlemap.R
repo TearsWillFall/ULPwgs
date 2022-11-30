@@ -724,7 +724,7 @@ read_bed_circlemap=function(
 ){
    
     if(is.null(id)){
-        id=get_file_name(sample)
+        id=get_file_name(bed)
     }
 
     if(type=="repeat"){
@@ -781,7 +781,7 @@ annotate_bed_circlemap=function(
     sep=""
 ){
     dat=read_bed_circlemap(bed=bed,id=id,type=type,sep=sep)
-    annotation_ref=read.table(annotation_ref,sep="\t")
+    annotation_ref=read.table(annotation_ref,sep="\t",heder=TRUE)
 
     full_gene=fuzzyjoin::fuzzy_left_join(dat,annotation,
         by=c("chr"="chr","start"="start","end"="end"),
