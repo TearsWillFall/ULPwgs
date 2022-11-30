@@ -791,23 +791,43 @@ annotate_bed_circlemap=function(
     full_gene$annot_type="COMPLETE"
 
     partial_left=fuzzyjoin::fuzzy_left_join(dat,annotation,
-        by=c("chr"="chr","start"="start","end"="end"),
-        match_fun=c(`==`,`>=`,`>`)
+        by=c("chr"="chr","start"="start","end"="start"),
+        match_fun=c(`==`,`>=`,`<=`)
     )
 
     partial_left$annot_type="PARTIAL"
+    partial_left=anti_join(partial_left,full_gene,
+        by=c("chr.x"="chr.x",
+            "start.x"="start.x",
+            "end.x"="end.x",
+            "gene_id"="gene_id"
+        ))
 
     partial_right=fuzzyjoin::fuzzy_left_join(dat,annotation,
-        by=c("chr"="chr","start"="start","end"="end"),
-        match_fun=c(`==`,`<`,`<=`)
+        by=c("chr"="chr","start"="end","end"="end"),
+        match_fun=c(`==`,`>=`,`<=`)
     )
 
     partial_right$annot_type="PARTIAL"
+    partial_right=anti_join(partial_right,full_gene,
+        by=c("chr.x"="chr.x",
+            "start.x"="start.x",
+            "end.x"="end.x",
+            "gene_id"="gene_id"
+        ))
+
 
     complete_dat=rbind(full_gene,partial_left,partial_right)
+    summarised_dat= complete_dat %>% 
+        dplyr::filter(!is.na(PANEL_VERSION)) %>% 
+        dplyr::select(chr.x:gene_id,annot_type)  %>% 
+        dplyr::group_by(dplyr::across(chr.x:id)) %>% 
+        dpyr::summarise(genes=paste0(paste0(gene_id,":",annot_type),
+        collapse=";")
+    )
     
     
-    return(complete_dat)
+    return(summarised_dat)
 
 }
 
