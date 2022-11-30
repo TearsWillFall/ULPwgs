@@ -267,10 +267,6 @@ file_cp=function(
 #' @export
 
 
-
-
-
-
 file_scp=function(
   bin_sshpass=build_default_binary_list()$bin_sshpass,
   file=NULL,
@@ -294,8 +290,8 @@ file_scp=function(
     stop("file argument is required.")
   }
   
-  if(is.null(target)){
-    stop("target argument is required.")
+  if(is.null(target_remote)& is.null(target_local)){
+    stop("target_remote or target_local argument is required.")
   }
 
   if(!is.null(target_remote)){
