@@ -561,6 +561,7 @@ build_default_tool_binary_list=function(
                     bedToBigBed="/lustre/scratch/scratch/regmova/tools/OtherTools/bedToBigBed",
                     liftOver="/lustre/scratch/scratch/regmova/tools/OtherTools/liftOver"
                 ),
+                bin_sshpass="/lustre/scratch/scratch/regmova/tools/sshpass/sshpass",
                 bin_vep="/lustre/scratch/scratch/regmova/tools/ensembl-vep/vep",    
                 bin_manta="/lustre/scratch/scratch/regmova/tools/manta-1.6.0/build/bin/configManta.py",
                 bin_ichor_pon="/lustre/scratch/scratch/regmova/tools/ichorCNA/scripts/createPanelOfNormals.R",
@@ -782,7 +783,6 @@ build_default_cache_list=function(
 
 build_default_reference_list=function(
     references=list(
-        
             HG19=list(
                 reference=list(
                     genome="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.fa",
@@ -825,7 +825,10 @@ build_default_reference_list=function(
                                 gc="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/battenberg/gc.txt",
                                 rt="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/battenberg/rt.txt"
                             )
-                        )
+                        ),
+                          genes=list(
+                            list="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/genes.bed"
+                            )
                     ),
                     PCF_V3=list(
                         intervals=list(
@@ -858,7 +861,10 @@ build_default_reference_list=function(
                                 gc="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/battenberg/gc.txt",
                                 rt="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/battenberg/rt.txt"
                             )
-                        )
+                        ),
+                        genes=list(
+                            list="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/genes.bed"
+                            )
                 
                     )
 

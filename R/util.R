@@ -83,6 +83,275 @@ set_dir=function(dir="",name=""){
 }
 
 
+
+
+#' Remove file/directory
+#' This function removes/deletes one or multiple files/directories
+#'
+#' @param file Path to the file/directory
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param batch_config [REQUIRED] Additional batch configuration if batch mode selected.
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+file_rm=function(
+  file="",
+  verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  threads=4,ram=4,mode="local",
+  executor_id=make_unique_id("rmFile"),
+  task_name="rmFile",time="48:0:0",
+  update_time=60,wait=FALSE,hold=NULL
+){
+
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
+  job=build_job(executor_id=executor_id,task_id=task_id)
+
+
+
+  exec_code=paste("rm -r ",paste0(file,collapse=" "))
+
+  if(mode=="batch"){
+       out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+       batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+       threads=threads,output_dir=out_file_dir2)
+       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+  }
+
+  if(verbose){
+       print_verbose(job=job,arg=argg,exec_code=exec_code)
+  }
+
+  error=execute_job(exec_code=exec_code)
+  
+  
+  if(error!=0){
+    stop("rm failed to run due to unknown error.
+    Check std error for more information.")
+  }
+
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    exec_code=exec_code, 
+    task_id=task_id,
+    input_args = argg,
+    out_file_dir=list(),
+    out_files=list(
+    )
+  )
+
+  if(wait&&mode=="batch"){
+    job_validator(job=job_report$job_id,time=update_time,
+    verbose=verbose,threads=threads)
+  }
+
+  return(job_report)
+}
+
+
+#' cp file/directory
+#' This function removes/deletes one or multiple files/directories
+#'
+#' @param file Path to the file/directory.[REQUIRED]
+#' @param target Path to the file/directory.[REQUIRED]
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param batch_config [REQUIRED] Additional batch configuration if batch mode selected.
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+file_cp=function(
+  file=NULL,
+  target=NULL,
+  verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  threads=4,ram=4,mode="local",
+  executor_id=make_unique_id("cpFile"),
+  task_name="cpFile",time="48:0:0",
+  update_time=60,wait=FALSE,hold=NULL
+){
+
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
+  job=build_job(executor_id=executor_id,task_id=task_id)
+
+
+  if(is.null(file)){
+    stop("file argument is required.")
+  }
+  
+  if(is.null(target)){
+    stop("target argument is required.")
+  }
+
+
+  exec_code=paste("cp -r ",file," -t ", target,collapse=" & ")
+
+  if(mode=="batch"){
+       out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+       batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+       threads=threads,output_dir=out_file_dir2)
+       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+  }
+
+  if(verbose){
+       print_verbose(job=job,arg=argg,exec_code=exec_code)
+  }
+
+  error=execute_job(exec_code=exec_code)
+  
+  
+  if(error!=0){
+    stop("cp failed to run due to unknown error.
+    Check std error for more information.")
+  }
+
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    exec_code=exec_code, 
+    task_id=task_id,
+    input_args = argg,
+    out_file_dir=list(),
+    out_files=list(
+    )
+  )
+
+  if(wait&&mode=="batch"){
+    job_validator(job=job_report$job_id,time=update_time,
+    verbose=verbose,threads=threads)
+  }
+
+  return(job_report)
+}
+
+
+
+
+#' scp file/directory
+#' This function scp files from local to remote machine
+#'
+#' @param bin_sshpass Path sshpass binary. [REQUIRED]
+#' @param file Path to the file/directory.[REQUIRED]
+#' @param target Path to the file/directory.[REQUIRED]
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param batch_config [REQUIRED] Additional batch configuration if batch mode selected.
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+
+
+
+
+file_scp=function(
+  bin_sshpass=build_default_binary_list()$bin_sshpass,
+  file=NULL,
+  target_local=NULL,
+  target_remote=NULL,
+  server="ssh.rd.ucl.ac.uk",
+  verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  threads=4,ram=4,mode="local",
+  executor_id=make_unique_id("scpFile"),
+  task_name="scpFile",time="48:0:0",
+  update_time=60,wait=FALSE,hold=NULL
+){
+
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
+  job=build_job(executor_id=executor_id,task_id=task_id)
+
+
+  if(is.null(file)){
+    stop("file argument is required.")
+  }
+  
+  if(is.null(target)){
+    stop("target argument is required.")
+  }
+
+  if(!is.null(target_remote)){
+      exec_code=paste("scp -r ",file, paste0(server,":",target_remote) ,collapse=" & ")
+  }
+
+  if(!is.null(target_local)){
+          exec_code=paste("scp -r ", paste0(server,":",file), " ", target_local ,collapse=" & ")
+  }
+
+  if(!is.null(password)){
+    exec_code=paste0(bin_sshpass," -p \"",password,"\" ",,exec_code)
+
+  }
+
+  if(mode=="batch"){
+       out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+       batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
+       threads=threads,output_dir=out_file_dir2)
+       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+  }
+
+  if(verbose){
+       print_verbose(job=job,arg=argg,exec_code=exec_code)
+  }
+
+  error=execute_job(exec_code=exec_code)
+  
+  
+  if(error!=0){
+    stop("scp failed to run due to unknown error.
+    Check std error for more information.")
+  }
+
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    exec_code=exec_code, 
+    task_id=task_id,
+    input_args = argg,
+    out_file_dir=list(),
+    out_files=list(
+    )
+  )
+
+  if(wait&&mode=="batch"){
+    job_validator(job=job_report$job_id,time=update_time,
+    verbose=verbose,threads=threads)
+  }
+
+  return(job_report)
+}
+
+
+
+
 #' Set the current name
 #' This function sets a new a name for a level
 #'
@@ -131,6 +400,24 @@ unlist_lvl=function(named_list,var,recursive=FALSE){
  set_conda_enviroment=function(env){
       paste("source activate ",env,";cd ",normalizePath(getwd()),";")
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
