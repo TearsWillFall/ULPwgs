@@ -273,6 +273,7 @@ file_scp=function(
   target_local=NULL,
   target_remote=NULL,
   password=NULL,
+  tmp_dir="/tmp",
   server="ssh.rd.ucl.ac.uk",
   verbose=FALSE,
   batch_config=build_default_preprocess_config(),
@@ -309,7 +310,7 @@ file_scp=function(
   }
 
   if(mode=="batch"){
-       out_file_dir2=set_dir(dir="/tmp",name="batch")
+       out_file_dir2=set_dir(dir=tmp_dir,name="batch")
        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
        threads=threads,output_dir=out_file_dir2)
        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
