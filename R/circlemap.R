@@ -778,10 +778,10 @@ annotate_bed_circlemap=function(
     id=NULL,
     type="repeat",
     annotation_ref=build_default_reference_list()$HG19$panel$PCF_V3$genes$list,
-    sep=""
+    sep="\t"
 ){
     dat=read_bed_circlemap(bed=bed,id=id,type=type,sep=sep)
-    annotation_ref=read.table(annotation_ref,sep="\t",heder=TRUE)
+    annotation_ref=read.table(annotation_ref,sep="\t",header=TRUE)
 
     full_gene=fuzzyjoin::fuzzy_left_join(dat,annotation,
         by=c("chr"="chr","start"="start","end"="end"),
