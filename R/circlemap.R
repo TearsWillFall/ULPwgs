@@ -785,14 +785,14 @@ annotate_bed_circlemap=function(
 
     full_gene=fuzzyjoin::fuzzy_left_join(dat,annotation,
         by=c("chr"="chr","start"="start","end"="end"),
-        match_fun=c(`==`,`=>`,`<=`)
+        match_fun=c(`==`,`>=`,`<=`)
     )
 
     full_gene$annot_type="COMPLETE"
 
     partial_left=fuzzy_join::fuzzy_left_join(dat,annotation,
         by=c("chr"="chr","start"="start","end"="end"),
-        match_fun=c(`==`,`=>`,`>`)
+        match_fun=c(`==`,`>=`,`>`)
     )
 
     partial_left$annot_type="PARTIAL"
