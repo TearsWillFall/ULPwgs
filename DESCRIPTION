@@ -37,7 +37,8 @@ Imports:
     ggnewscale,
     patchwork,
     ggh4x,
-    DT
+    DT,
+    fuzzyjoin
 biocViews:
 Remotes:
         git::https://github.com/TearsWillFall/BTools.git,
