@@ -312,7 +312,7 @@ file_scp=function(
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=tmp_dir,name="batch")
        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
-       threads=threads,output_dir=out_file_dir2)
+       threads=threads,output_dir=out_file_dir2,wd=tmp_dir)
        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
   }
 
@@ -402,30 +402,8 @@ unlist_lvl=function(named_list,var,recursive=FALSE){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #' @export
+#' 
 parse_var=function(var,sep="\\\""){
     paste0(sep,var,sep)
 }
