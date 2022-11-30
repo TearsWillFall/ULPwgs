@@ -793,6 +793,10 @@ build_default_reference_list=function(
                     all_snps="/lustre/scratch/scratch/regmova/PCF/references/hg19/database/00-All.vcf.gz",
                     all_common="/lustre/scratch/scratch/regmova/PCF/references/hg19/database/00-common_all.vcf.gz"
                 ),
+                annotation=list(
+                    reflat="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/refFlat.txt",
+                    genes="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/genes.txt"
+                ),
                 panel=list(
                     PCF_V2=list(
                         intervals=list(
@@ -826,9 +830,8 @@ build_default_reference_list=function(
                                 rt="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/battenberg/rt.txt"
                             )
                         ),
-                          genes=list(
-                            list="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/genes.bed"
-                            )
+                          annotation=list(
+                            genes="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/genes.bed")
                     ),
                     PCF_V3=list(
                         intervals=list(
@@ -862,11 +865,9 @@ build_default_reference_list=function(
                                 rt="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/battenberg/rt.txt"
                             )
                         ),
-                        genes=list(
-                            list="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/genes.bed"
-                            )
-                
-                    )
+                        annotation=list(
+                            genes="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/genes.bed")
+                        )
 
                 ),
                 rnaseq=list(

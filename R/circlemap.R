@@ -777,7 +777,7 @@ annotate_bed_circlemap=function(
     bed=NULL,
     id=NULL,
     type="repeat",
-    annotation_ref=build_default_reference_list()$HG19$panel$PCF_V3$genes$list,
+    annotation_ref=build_default_reference_list()$HG19$panel$PCF_V3$annotation$genes,
     sep="\t"
 ){
     dat=read_bed_circlemap(bed=bed,id=id,type=type,sep=sep)
