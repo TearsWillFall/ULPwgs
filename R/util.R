@@ -272,6 +272,7 @@ file_scp=function(
   file=NULL,
   target_local=NULL,
   target_remote=NULL,
+  password=NULL,
   server="ssh.rd.ucl.ac.uk",
   verbose=FALSE,
   batch_config=build_default_preprocess_config(),
