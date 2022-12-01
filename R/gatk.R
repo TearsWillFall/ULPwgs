@@ -1511,7 +1511,7 @@ parallel_samples_mutect2_gatk=function(
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
   tumour="",normal="",patient_id="",
-  chr=c(1:22,"X","Y","MT")
+  chr=c(1:22,"X","Y","MT"),
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   germ_resource=build_default_reference_list()$HG19$variant$germ_reference,
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
@@ -3333,7 +3333,7 @@ parallel_regions_haplotypecaller_gatk=function(
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   regions=NULL,
   output_dir=".",
-  chr=c(1:22,"X","Y","MT")
+  chr=c(1:22,"X","Y","MT"),
   indel_db=build_default_reference_list()$HG19$variant$mills_reference,
   haplotype_db=build_default_reference_list()$HG19$variant$hapmap_reference,
   filter=TRUE,
@@ -3401,9 +3401,9 @@ parallel_regions_haplotypecaller_gatk=function(
   regions$start=regions$start+1
   regions=regions %>% dplyr::mutate(region=paste0(chr,":",start,"-",end))
 
-  if(!is.null(chr){
+  if(!is.null(chr)){
     regions=regions[regions$chr %in% chr,]
-  })
+  }
 
   region_list=regions$region
   names(region_list)=regions$region
