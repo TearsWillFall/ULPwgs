@@ -1426,7 +1426,7 @@ parallel_regions_mutect2_gatk=function(
   }
 
   if(annotate){
-    jobs_report[["steps"]][["annotateMutectGatk"]]<- annotate_vep(
+    jobs_report[["steps"]][["filterMutectGatk"]]<- annotate_vep(
         bin_vep=bin_vep,
         bin_bgzip=bin_bgzip,
         bin_tabix=bin_tabix,
@@ -2308,7 +2308,7 @@ estimate_contamination_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
   rdata=NULL,selected=NULL,
   tumour=NA,normal=NA,tumour_pileup="",
-  normal_pileup="",output_name=NULL,output_dir=".",tmp_dir=".",
+  normal_pileup="",output_name="",output_dir=".",tmp_dir=".",
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
   db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
   verbose=FALSE,batch_config=build_default_preprocess_config(),
@@ -2332,7 +2332,7 @@ estimate_contamination_gatk=function(
   job=build_job(executor_id=executor_id,task_id=task_id)
 
 
-  if(!is.null(output_name)){
+  if(output_name!=""){
     id=output_name
   }else if(tumour!=""){
     id=get_file_name(tumour)
@@ -2596,7 +2596,7 @@ parallel_estimate_contamination_gatk=function(
 
 pileup_summary_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
-  bam="",output_name=NULL,output_dir=".",
+  bam="",output_name="",output_dir=".",
   rdata=NULL,selected=NULL,
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
@@ -2621,10 +2621,10 @@ pileup_summary_gatk=function(
 
 
   id=""
-  if(!is.null(output_name)){
+  if(output_name!=""){
     id=output_name
   }else{
-    id=get_file_name(bam)
+     id=get_file_name(bam)
   }
 
   out_file=paste0(out_file_dir,"/",id,".pileup.table")

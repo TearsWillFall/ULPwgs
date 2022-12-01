@@ -187,7 +187,7 @@ parallel_samples_call_variants_strelka=function(
     
     if(mode=="local"){
       jobs_report[["steps"]][["par_sample_call_variants"]]<-
-      parallel::mclapply(tumour_list,FUN=function(tumour){
+      lapply(tumour_list,FUN=function(tumour){
         job_report <- call_variants_strelka(
             bin_strelka_somatic=bin_strelka_somatic,
             bin_strelka_germline=bin_strelka_germline,
@@ -202,7 +202,7 @@ parallel_samples_call_variants_strelka=function(
             time=time,
             hold=hold
         )
-      },mc.cores=threads)
+      })
     }else if(mode=="batch"){
             rdata_file=paste0(tmp_dir,"/",job,".samples.RData")
             output_dir=out_file_dir
@@ -377,11 +377,9 @@ multisample_call_variants_strelka=function(
 ){
 
   argg <- as.list(environment())
-
-        task_id=make_unique_id(task_name)
-        out_file_dir=set_dir(dir=output_dir)
-
-        job=build_job(executor_id=executor_id,task_id=task_id)
+  task_id=make_unique_id(task_name)
+  out_file_dir=set_dir(dir=output_dir)
+  job=build_job(executor_id=executor_id,task_id=task_id)
 
         job_report=build_job_report(
                 job_id=job,
@@ -568,31 +566,31 @@ call_sv_manta=function(
 
   
     job_report=build_job_report(
-    job_id=job,
-    executor_id=executor_id,
-    task_id=task_id,
-    input_args = argg,
-    out_file_dir=out_file_dir,
-    out_files=list(
-      workflow=paste0(out_file_dir,"/runWorkflow.py"),
-      stats=list(
-        aligment=paste0(out_file_dir,"/results/stats/alignmentStatsSummary.txt"),
-        tsv=paste0(out_file_dir,"/results/stats/svCandidateGenerationStats.tsv"),
-        xml=paste0(out_file_dir,"/results/stats/svCandidateGenerationStats.xml"),
-        graph=paste0(out_file_dir,"/results/stats/svLocusGraphStats.tsv")
-      ),
-      variants=list(
-        small_indel_candidate=paste0(out_file_dir,"/results/variants/candidateSmallIndels.vcf.gz"),
-        small_indel_candidate_index=paste0(out_file_dir,"/results/variants/candidateSmallIndels.vcf.gz.tbi"),
-        sv_candidate=paste0(out_file_dir,"/results/variants/candidateSV.vcf.gz"),
-        sv_candidate_index=paste0(out_file_dir,"/results/variants/candidateSV.vcf.gz.tbi"),
-        diploid_sv=paste0(out_file_dir,"/results/variants/diploidSV.vcf.gz"),
-        diploid_sv_index=paste0(out_file_dir,"/results/variants/diploidSV.vcf.gz.tbi"),
-        somatic_sv=somatic_sv,
-        somatic_sv_index=somatic_sv_index
+      job_id=job,
+      executor_id=executor_id,
+      task_id=task_id,
+      input_args = argg,
+      out_file_dir=out_file_dir,
+      out_files=list(
+        workflow=paste0(out_file_dir,"/runWorkflow.py"),
+        stats=list(
+          aligment=paste0(out_file_dir,"/results/stats/alignmentStatsSummary.txt"),
+          tsv=paste0(out_file_dir,"/results/stats/svCandidateGenerationStats.tsv"),
+          xml=paste0(out_file_dir,"/results/stats/svCandidateGenerationStats.xml"),
+          graph=paste0(out_file_dir,"/results/stats/svLocusGraphStats.tsv")
+        ),
+        variants=list(
+          small_indel_candidate=paste0(out_file_dir,"/results/variants/candidateSmallIndels.vcf.gz"),
+          small_indel_candidate_index=paste0(out_file_dir,"/results/variants/candidateSmallIndels.vcf.gz.tbi"),
+          sv_candidate=paste0(out_file_dir,"/results/variants/candidateSV.vcf.gz"),
+          sv_candidate_index=paste0(out_file_dir,"/results/variants/candidateSV.vcf.gz.tbi"),
+          diploid_sv=paste0(out_file_dir,"/results/variants/diploidSV.vcf.gz"),
+          diploid_sv_index=paste0(out_file_dir,"/results/variants/diploidSV.vcf.gz.tbi"),
+          somatic_sv=somatic_sv,
+          somatic_sv_index=somatic_sv_index
+          )
         )
       )
-    )
 
   
     exec_code=paste0(bin_manta,tumour_input,normal_input," --referenceFasta ", 
@@ -617,11 +615,6 @@ call_sv_manta=function(
         stop("manta failed to run due to unknown error.
         Check std error for more information.")
     }
-
-
-
-
-
 
 
     if(wait&&mode=="batch"){
@@ -794,7 +787,7 @@ call_somatic_snvs_strelka=function(
     }
     
 
-    job_report=build_job_report(
+    jobs_report=build_job_report(
       job_id=job,
       executor_id=executor_id,
       task_id=task_id,
@@ -832,7 +825,7 @@ call_somatic_snvs_strelka=function(
         exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
     } 
 
-    job_report$exec_code=exec_code
+    jobs_report$exec_code=exec_code
 
     if(verbose){
         print_verbose(job=job,arg=argg,exec_code=exec_code)
