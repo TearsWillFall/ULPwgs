@@ -14,6 +14,7 @@ parallel_samples_mutect2_gatk(
   tumour = "",
   normal = "",
   patient_id = "",
+  chr = c(1:22, "X", "Y", "MT"),
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   germ_resource = build_default_reference_list()$HG19$variant$germ_reference,
   biallelic_db = build_default_reference_list()$HG19$variant$biallelic_reference,
@@ -58,6 +59,8 @@ parallel_samples_mutect2_gatk(
 \item{tumour}{\link{REQUIRED} Path to tumour BAM file.}
 
 \item{normal}{\link{OPTIONAL} Path to normal BAM file.}
+
+\item{chr}{\link{OPTIONAL} Chromosomes to analyze. Default c(1:22,"X","Y","MT")}
 
 \item{ref_genome}{\link{REQUIRED} Path to reference genome fasta file.}
 

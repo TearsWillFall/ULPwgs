@@ -12,6 +12,7 @@ parallel_samples_haplotypecaller_gatk(
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
   normal = "",
   patient_id = "",
+  chr = c(1:22, "X", "Y", "MT"),
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   indel_db = build_default_reference_list()$HG19$variant$mills_reference,
   haplotype_db = build_default_reference_list()$HG19$variant$hapmap_reference,

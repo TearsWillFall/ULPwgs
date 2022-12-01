@@ -5,6 +5,10 @@
 \title{Strelka wrapper for SNV variant calling}
 \usage{
 call_snvs_strelka(
+  bin_bcftools = build_default_tool_binary_list()$bin_bcftools,
+  bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
+  bin_tabix = build_default_tool_binary_list()$bin_tabix,
+  bin_vep = build_default_tool_binary_list()$bin_vep,
   bin_strelka_somatic = build_default_tool_binary_list()$bin_strelka$somatic,
   bin_strelka_germline = build_default_tool_binary_list()$bin_strelka$germline,
   tumour = "",

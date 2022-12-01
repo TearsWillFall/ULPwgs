@@ -14,6 +14,7 @@ multisample_haplotypecaller_gatk(
   bam_dir = "",
   patient_id = "",
   pattern = "bam$",
+  chr = c(1:22, "X", "Y", "MT"),
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   indel_db = build_default_reference_list()$HG19$variant$mills_reference,
   haplotype_db = build_default_reference_list()$HG19$variant$hapmap_reference,

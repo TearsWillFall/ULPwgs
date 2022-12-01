@@ -16,6 +16,7 @@ parallel_regions_haplotypecaller_gatk(
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   regions = NULL,
   output_dir = ".",
+  chr = c(1:22, "X", "Y", "MT"),
   indel_db = build_default_reference_list()$HG19$variant$mills_reference,
   haplotype_db = build_default_reference_list()$HG19$variant$hapmap_reference,
   filter = TRUE,

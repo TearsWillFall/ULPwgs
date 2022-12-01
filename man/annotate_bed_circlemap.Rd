@@ -8,8 +8,8 @@ annotate_bed_circlemap(
   bed = NULL,
   id = NULL,
   type = "repeat",
-  annotation_ref = build_default_reference_list()$HG19$panel$PCF_V3$genes$list,
-  sep = ""
+  annotation_ref = build_default_reference_list()$HG19$panel$PCF_V3$annotation$genes,
+  sep = "\\t"
 )
 }
 \arguments{

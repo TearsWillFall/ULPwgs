@@ -7,7 +7,7 @@
 pileup_summary_gatk(
   sif_gatk = build_default_sif_list()$sif_gatk,
   bam = "",
-  output_name = "",
+  output_name = NULL,
   output_dir = ".",
   rdata = NULL,
   selected = NULL,

@@ -21,6 +21,7 @@ multisample_mutect2_gatk(
   biallelic_db = build_default_reference_list()$HG19$variant$biallelic_reference,
   db_interval = build_default_reference_list()$HG19$variant$biallelic_reference,
   pon = build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_muts,
+  chr = c(1:22, "X", "Y", "MT"),
   method = "single",
   regions = NULL,
   output_dir = ".",
@@ -36,7 +37,7 @@ multisample_mutect2_gatk(
   sep = "\\t",
   batch_config = build_default_preprocess_config(),
   threads = 4,
-  ram = 4,
+  ram = 8,
   mode = "local",
   executor_id = make_unique_id("multiSampleMutect2"),
   task_name = "multiSampleMutect2",
@@ -70,6 +71,8 @@ multisample_mutect2_gatk(
 \item{germ_resource}{\link{REQUIRED}Path to germline resources vcf file.}
 
 \item{pon}{\link{OPTIONAL} Path to panel of normal.}
+
+\item{chr}{\link{OPTIONAL} Chromosomes to analyze. Default c(1:22,"X","Y","MT")}
 
 \item{method}{\link{OPTIONAL} Default variant calling method. Default single. Options \link{"single","multi"}}
 

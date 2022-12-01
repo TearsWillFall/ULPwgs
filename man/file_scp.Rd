@@ -10,6 +10,8 @@ file_scp(
   file = NULL,
   target_local = NULL,
   target_remote = NULL,
+  password = NULL,
+  tmp_dir = "tmp",
   server = "ssh.rd.ucl.ac.uk",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
