@@ -396,6 +396,7 @@ multisample_call_variants_strelka=function(
         "indel_cnds",
         "ref_genome",
         "output_dir",
+        "verbose",
         "targeted",
         "verbose=FALSE",
         "batch_config",
