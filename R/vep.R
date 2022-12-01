@@ -184,13 +184,24 @@ anotate_strelka_vep=function(
         stop("vcf_snv/vcf_indel arguments are required")
     }
 
+     job_report=build_job_report(
+      job_id=job,
+      executor_id=executor_id,
+      exec_code=list(),
+      task_id=task_id,
+      input_args = argg,
+      out_file_dir=out_file_dir,
+      out_files=list()
+    )
+
+
     jobs_report[["steps"]][["annotateSnvStrelka"]]<- annotate_vep(
           bin_vep=bin_vep,
           bin_bgzip=bin_bgzip,
           bin_tabix=bin_tabix,
           cache_vep=cache_vep,
           vcf=vcf_snv,
-          output_name=paste0(get_file_name(vcf_snv),ifelse(extract_pass,".PASS","")),
+          output_name=paste0("somatic.snv",ifelse(extract_pass,".PASS","")),
           output_dir=out_file_dir,
           verbose=verbose,
           batch_config=batch_config,
@@ -207,7 +218,7 @@ anotate_strelka_vep=function(
           bin_tabix=bin_tabix,
           cache_vep=cache_vep,
           vcf=vcf_indel,
-          output_name=paste0(get_file_name(vcf_indel),ifelse(extract_pass,".PASS","")),
+          output_name=paste0("somatic.indel",ifelse(extract_pass,".PASS","")),
           output_dir=out_file_dir,
           verbose=verbose,
           batch_config=batch_config,
