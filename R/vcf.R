@@ -507,9 +507,11 @@ variants_by_filters_vcf=function(
   )
 
 
- 
+  
+
   vcf=read_vcf(vcf=vcf,sep=sep)
 
+  
   if(exclusive){
     vcf$body=vcf$body %>% dplyr::filter(lengths(FILTER)==length(filters))
   }
@@ -1201,6 +1203,7 @@ write_vcf=function(
           order=seq(1,length(vcf_descriptors$contig)))
           vcf_body=dplyr::left_join(vcf_body,chrom) %>% 
           dplyr::arrange(order,POS) %>% dplyr::select(-order)
+          
           return(vcf_body)
        }
     
@@ -1230,7 +1233,17 @@ write_vcf=function(
     vcf_header=build_header_vcf(vcf)
 
     ###Construct VCF body
-    vcf_body=build_body_vcf(vcf=vcf)
+    if(nrow(vcf$body)>1){
+      vcf_body=build_body_vcf(vcf=vcf)
+      colnames=paste0("#",paste0(names(vcf_body),collapse="\t"))
+    }else(
+      vcf_body=""
+      colnames=paste0("#",c("CHROM","POS","ID",
+      "REF","ALT","QUAL","FILTER","INFO","FORMAT",
+       vcf$samples),collapse="\t")
+    )
+    
+    
 
     write.table(
       x=vcf_header,
@@ -1242,7 +1255,7 @@ write_vcf=function(
     )
 
     write.table(
-      x=paste0("#",paste0(names(vcf_body),collapse="\t")),
+      x=colnames,
       file=out_file,
       sep="\t",
       quote=FALSE,
