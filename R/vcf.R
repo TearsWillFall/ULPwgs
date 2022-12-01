@@ -330,7 +330,6 @@ add_indel_af_strelka_vcf=function(
 
           argg <- as.list(environment())
           task_id=make_unique_id(task_name)
-          out_file_dir=set_dir(dir=output_dir)
           job=build_job(executor_id=executor_id,task_id=task_id)
 
           jobs_report=build_job_report(
