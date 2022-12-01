@@ -163,8 +163,6 @@ anotate_strelka_vep=function(
     vcf_snv="",
     vcf_indel="",
     extract_pass=TRUE,
-    compress=TRUE,
-    clean=FALSE,
     output_dir=".",
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
@@ -221,10 +219,8 @@ anotate_strelka_vep=function(
       )
 
     jobs_report$out_files=list(
-        vcf_snv=ifelse(compress,unlist_lvl(jobs_report[["steps"]][["annotateeSnvStrelka"]],var="compressed_vcf"),
-        unlist_lvl(jobs_report[["steps"]][["annotateeSnvStrelka"]],var="vcf")),
-        vcf_indel=ifelse(compress,unlist_lvl(jobs_report[["steps"]][["annotateIndelStrelka"]],var="compressed_vcf"),
-        unlist_lvl(jobs_report[["steps"]][["annotateeIndelStrelka"]],var="vcf"))
+        vcf_snv=unlist_lvl(jobs_report[["steps"]][["annotateeSnvStrelka"]],var="compressed_vcf"),
+        vcf_indel=unlist_lvl(jobs_report[["steps"]][["annotateIndelStrelka"]],var="compressed_vcf")
     )
 
 
