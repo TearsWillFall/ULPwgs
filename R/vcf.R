@@ -377,7 +377,7 @@ add_indel_af_strelka_vcf=function(
 
     jobs_report$out_files=list(
         vcf_snv=ifelse(compress,unlist_lvl( jobs_report[["steps"]][["annotateAFsnvStrelka"]],var="compressed_vcf"),
-        unlist_lvl(jobs_report[["steps"]][["annotateAFsnvStrelka"]],var="vcf"))
+        unlist_lvl(jobs_report[["steps"]][["annotateAFsnvStrelka"]],var="vcf")),
         vcf_indel=ifelse(compress,unlist_lvl(jobs_report[["steps"]][["annotateAFindelStrelka"]],var="compressed_vcf"),
         unlist_lvl(jobs_report[["steps"]][["annotateAFindelStrelka"]],var="vcf"))
     )
@@ -796,7 +796,7 @@ extract_pass_variants_strelks_vcf=function(
 
     jobs_report$out_files=list(
         vcf_snv=ifelse(compress,unlist_lvl( jobs_report[["steps"]][["extractPASSsnvVCF"]],var="compressed_vcf"),
-        unlist_lvl(jobs_report[["steps"]][["extractPASSsnvVCF"]],var="vcf"))
+        unlist_lvl(jobs_report[["steps"]][["extractPASSsnvVCF"]],var="vcf")),
         vcf_indel=ifelse(compress,unlist_lvl(jobs_report[["steps"]][["extractPASSindelVCF"]],var="compressed_vcf"),
         unlist_lvl(jobs_report[["steps"]][["extractPASSindelVCF"]],var="vcf"))
     )
