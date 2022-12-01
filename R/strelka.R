@@ -800,10 +800,10 @@ call_somatic_snvs_strelka=function(
           xml=paste0(out_file_dir,"/results/stats/runStats.tsv")
       ),
       variants=list(
-          indel=paste0(out_file_dir,"/results/variants/somatic.indels.vcf.gz"),
+          vcf_indel=paste0(out_file_dir,"/results/variants/somatic.indels.vcf.gz"),
           indel_index=paste0(out_file_dir,"/results/variants/somatic.indels.vcf.gz.tbi"),
-          snvs=paste0(out_file_dir,"/results/variants/somatic.snvs.vcf.gz"),
-          snvs_index=paste0(out_file_dir,"/results/variants/somatic.snvs.vcf.gz.tbi")
+          vcf_snv=paste0(out_file_dir,"/results/variants/somatic.snvs.vcf.gz"),
+          snv_index=paste0(out_file_dir,"/results/variants/somatic.snvs.vcf.gz.tbi")
       )
       ) 
     )
