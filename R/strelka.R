@@ -763,7 +763,7 @@ call_somatic_snvs_strelka=function(
     bin_strelka=build_default_tool_binary_list()$bin_strelka$somatic,
     tumour="",normal="",ref_genome=build_default_reference_list()$HG19$reference$genome,
     output_dir=".",indel_candidates="",
-    extract=TRUE,
+    extract_pass=TRUE,
     annotate=TRUE,
     targeted=TRUE,verbose=TRUE,
     batch_config=build_default_preprocess_config(),
