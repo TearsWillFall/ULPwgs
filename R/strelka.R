@@ -398,7 +398,6 @@ multisample_call_variants_strelka=function(
         "output_dir",
         "verbose",
         "targeted",
-        "verbose=FALSE",
         "batch_config",
         "threads",
         "ram",
