@@ -184,7 +184,7 @@ anotate_strelka_vep=function(
         stop("vcf_snv/vcf_indel arguments are required")
     }
 
-     job_report=build_job_report(
+     jobs_report=build_job_report(
       job_id=job,
       executor_id=executor_id,
       exec_code=list(),
