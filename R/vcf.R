@@ -317,10 +317,7 @@ add_indel_af_strelka_vcf=function(
       bin_tabix=build_default_tool_binary_list()$bin_tabix,
       vcf_snv=NULL,
       vcf_indel=NULL,
-      overwrite=FALSE,
-      compress=TRUE,index=TRUE,
-      index_format="tbi",bgzip_index=FALSE,
-      clean=TRUE,verbose=FALSE, 
+      verbose=FALSE, 
       executor_id=make_unique_id("addAFStrelka"),
       task_name="addAFStrelka",
       batch_config=build_default_preprocess_config(),
@@ -349,7 +346,7 @@ add_indel_af_strelka_vcf=function(
               vcf=vcf_snv,
               compress=TRUE,index=TRUE,
               index_format="tbi",bgzip_index=FALSE,
-              clean=FALSE,verbose=verbose, 
+              clean=TRUE,verbose=verbose, 
               executor_id=task_id,
               batch_config=batch_config,
               mode=mode,time=time,
@@ -363,9 +360,10 @@ add_indel_af_strelka_vcf=function(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
             vcf=vcf_indel,
-            compress=compress,index=index,
-            index_format=index_format,bgzip_index=FALSE,
-            clean=clean,verbose=verbose, 
+            compress=TRUE,index=TRUE,
+            index_format="tbi",
+            bgzip_index=FALSE,
+            clean=TRUE,verbose=verbose, 
             executor_id=task_id,
             batch_config=batch_config,
             mode=mode,time=time,
@@ -374,13 +372,12 @@ add_indel_af_strelka_vcf=function(
         )
 
     jobs_report$out_files=list(
-        vcf_snv=ifelse(compress,unlist_lvl( jobs_report[["steps"]][["annotateAFsnvStrelka"]],var="compressed_vcf"),
-        unlist_lvl(jobs_report[["steps"]][["annotateAFsnvStrelka"]],var="vcf")),
-        vcf_indel=ifelse(compress,unlist_lvl(jobs_report[["steps"]][["annotateAFindelStrelka"]],var="compressed_vcf"),
-        unlist_lvl(jobs_report[["steps"]][["annotateAFindelStrelka"]],var="vcf"))
+        vcf_snv=unlist_lvl( jobs_report[["steps"]][["annotateAFsnvStrelka"]],var="compressed_vcf"),
+        vcf_indel=unlist_lvl(jobs_report[["steps"]][["annotateAFindelStrelka"]],var="compressed_vcf")
+
     )
 
-        return(jobs_report)
+  return(jobs_report)
 
     }
 
