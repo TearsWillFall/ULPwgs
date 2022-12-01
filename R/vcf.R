@@ -338,7 +338,6 @@ add_indel_af_strelka_vcf=function(
             exec_code=list(), 
             task_id=task_id,
             input_args=argg,
-            out_file_dir=list(),
             out_files=list(
               )
             )
