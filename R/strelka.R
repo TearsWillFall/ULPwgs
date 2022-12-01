@@ -636,13 +636,13 @@ call_sv_manta=function(
           graph=paste0(out_file_dir,"/results/stats/svLocusGraphStats.tsv")
         ),
         variants=list(
-          small_indel_candidate=paste0(out_file_dir,"/results/variants/candidateSmallIndels.vcf.gz"),
+          vcf_small_indel_candidate=paste0(out_file_dir,"/results/variants/candidateSmallIndels.vcf.gz"),
           small_indel_candidate_index=paste0(out_file_dir,"/results/variants/candidateSmallIndels.vcf.gz.tbi"),
-          sv_candidate=paste0(out_file_dir,"/results/variants/candidateSV.vcf.gz"),
+          vcf_sv_candidate=paste0(out_file_dir,"/results/variants/candidateSV.vcf.gz"),
           sv_candidate_index=paste0(out_file_dir,"/results/variants/candidateSV.vcf.gz.tbi"),
-          diploid_sv=paste0(out_file_dir,"/results/variants/diploidSV.vcf.gz"),
+          vcf_diploid_sv=paste0(out_file_dir,"/results/variants/diploidSV.vcf.gz"),
           diploid_sv_index=paste0(out_file_dir,"/results/variants/diploidSV.vcf.gz.tbi"),
-          somatic_sv=somatic_sv,
+          vcf_somatic_sv=somatic_sv,
           somatic_sv_index=somatic_sv_index
           )
         )
@@ -671,6 +671,66 @@ call_sv_manta=function(
         stop("manta failed to run due to unknown error.
         Check std error for more information.")
     }
+
+
+     jobs_report[["steps"]][["addAFStrelka"]] <- add_af_strelka_vcf(
+      bin_bgzip=bin_bgzip,
+      bin_tabix=bin_tabix,
+      vcf_sv=jobs_report$out_files$variants$vcf_somatic_sv,
+      verbose=verbose, 
+      executor_id=task_id,
+      batch_config=batch_config,
+      mode=mode,time=time,
+      threads=1,ram=1,
+      hold=job
+    )
+    
+    vcf_sv=jobs_report[["steps"]][["addAFStrelka"]]$out_files$vcf_sv
+
+    if(extract_pass){
+        jobs_report[["steps"]][["extractPASS"]]<-extract_pass_variants_strelks_vcf(
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            vcf_sv=vcf_sv,
+            output_dir=out_file_dir,
+            verbose=verbose,
+            batch_config=batch_config,
+            threads=1,ram=1,mode=mode,
+            executor_id=task_id,
+            time=time,
+            hold=unlist_lvl(jobs_report[["steps"]][["addAFStrelka"]],var="job_id")
+        )
+        vcf_sv=jobs_report[["steps"]][["extractPASS"]]$out_files$vcf_sv
+    
+
+    }
+
+  if(annotate){
+
+      jobs_report[["steps"]][["annotateVEP"]]<-anotate_strelka_vep(
+          bin_vep=bin_vep,
+          bin_bgzip=bin_bgzip,
+          bin_tabix=bin_tabix,
+          cache_vep=cache_vep,
+          vcf_snv=vcf_snv,
+          vcf_indel=vcf_indel,
+          extract_pass=extract_pass,
+          output_dir=out_file_dir,
+          verbose=verbose,
+          batch_config=batch_config,
+          threads=threads,ram=ram,mode=mode,
+          executor_id=task_id,
+          time=time,
+          hold=hold
+      )
+      
+  }
+
+
+
+
+
+
 
 
     if(wait&&mode=="batch"){

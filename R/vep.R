@@ -33,6 +33,7 @@ annotate_vep=function(
     cache_vep=build_default_cache_list()$cache_vep,
     vcf="",
     output_name="",
+    fmt="vcf",
     compress=TRUE,
     clean=FALSE,
     output_dir=".",
@@ -68,7 +69,7 @@ annotate_vep=function(
 
   out_file=paste0(out_file_dir,"/",id,".annotated.vcf")
 
-  exec_code=paste(bin_vep,"-i",vcf,"-o",out_file,
+  exec_code=paste(bin_vep," -format ",fmt,"-i",vcf,"-o",out_file,
   "--cache --port 3337 --everything --force_overwrite --vcf --fork ",threads," --dir ",cache_vep)
 
   if(mode=="batch"){
@@ -160,8 +161,9 @@ anotate_strelka_vep=function(
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
     bin_tabix=build_default_tool_binary_list()$bin_tabix,
     cache_vep=build_default_cache_list()$cache_vep,
-    vcf_snv="",
-    vcf_indel="",
+    vcf_snv=NULL,
+    vcf_indel=NULL,
+    vcf_sv=NULL,
     extract_pass=TRUE,
     output_dir=".",
     verbose=FALSE,
@@ -193,6 +195,10 @@ anotate_strelka_vep=function(
       out_file_dir=out_file_dir,
       out_files=list()
     )
+  
+  if(!is.null(vcf_snv)){
+
+
 
 
     jobs_report[["steps"]][["annotateSnvStrelka"]]<- annotate_vep(
@@ -212,13 +218,41 @@ anotate_strelka_vep=function(
           hold=hold
       )
 
-    jobs_report[["steps"]][["annotateIndelStrelka"]]<-annotate_vep(
+  }
+
+
+
+   if(!is.null(vcf_indel)){
+
+      jobs_report[["steps"]][["annotateIndelStrelka"]]<-annotate_vep(
+            bin_vep=bin_vep,
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            cache_vep=cache_vep,
+            vcf=vcf_indel,
+            output_name=paste0("somatic.indel",ifelse(extract_pass,".PASS","")),
+            output_dir=out_file_dir,
+            verbose=verbose,
+            batch_config=batch_config,
+            threads=threads,
+            ram=ram,mode=mode,
+            executor_id=task_id,
+            time=time,
+            hold=hold
+        )
+   }
+
+
+  if(!is.null(vcf_indel)){
+
+
+    jobs_report[["steps"]][["annotateSvStrelka"]]<-annotate_vep(
           bin_vep=bin_vep,
           bin_bgzip=bin_bgzip,
           bin_tabix=bin_tabix,
           cache_vep=cache_vep,
-          vcf=vcf_indel,
-          output_name=paste0("somatic.indel",ifelse(extract_pass,".PASS","")),
+          vcf=vcf_sv,
+          output_name=paste0("somaticSV",ifelse(extract_pass,".PASS","")),
           output_dir=out_file_dir,
           verbose=verbose,
           batch_config=batch_config,
@@ -228,10 +262,13 @@ anotate_strelka_vep=function(
           time=time,
           hold=hold
       )
+  }
 
     jobs_report$out_files=list(
         vcf_snv=unlist_lvl(jobs_report[["steps"]][["annotateeSnvStrelka"]],var="compressed_vcf"),
         vcf_indel=unlist_lvl(jobs_report[["steps"]][["annotateIndelStrelka"]],var="compressed_vcf")
+        vcf_sv=unlist_lvl(jobs_report[["steps"]][["annotateSvStrelka"]],var="compressed_vcf")
+    
     )
 
 

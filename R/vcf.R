@@ -519,7 +519,7 @@ add_sv_af_strelka_vcf=function(
     jobs_report$out_files=list(
         vcf_snv=unlist_lvl( jobs_report[["steps"]][["annotateAFsnvStrelka"]],var="compressed_vcf"),
         vcf_indel=unlist_lvl(jobs_report[["steps"]][["annotateAFindelStrelka"]],var="compressed_vcf"),
-        vcf_sv=unlist_lvl(jobs_report[["steps"]][["annotateAFindelStrelka"]],var="compressed_vcf")
+        vcf_sv=unlist_lvl(jobs_report[["steps"]][["annotateAFsvStrelka"]],var="compressed_vcf")
     )
 
   return(jobs_report)
@@ -869,6 +869,7 @@ extract_pass_variants_strelks_vcf=function(
       bin_tabix=build_default_tool_binary_list()$bin_tabix,
       vcf_snv=NULL,
       vcf_indel=NULL,
+      vcf_sv=NULL,
       output_dir=".",verbose=FALSE,sep="\t",
       batch_config=build_default_preprocess_config(),
       threads=4,ram=4,mode="local",
@@ -893,6 +894,7 @@ extract_pass_variants_strelks_vcf=function(
           )
         )
 
+   if(!is.null(vcf_snv)){
 
     jobs_report[["steps"]][["extractPASSsnvVCF"]]<-
         variants_by_filters_vcf(
@@ -913,6 +915,9 @@ extract_pass_variants_strelks_vcf=function(
           hold=hold
         )
 
+   }
+
+    if(!is.null(vcf_indel)){
 
     jobs_report[["steps"]][["extractPASSindelVCF"]]<-
         variants_by_filters_vcf(
@@ -932,12 +937,15 @@ extract_pass_variants_strelks_vcf=function(
           time=time,
           hold=hold
        )
+    }
+
+  if(!is.null(vcf_sv)){
 
     jobs_report[["steps"]][["extractPASSindelVCF"]]<-
         variants_by_filters_vcf(
           bin_bgzip=bin_bgzip,
           bin_tabix=bin_tabix,
-          vcf=vcf_indel,
+          vcf=vcf_sv,
           filters="PASS",
           output_name="somaticSV",
           exclusive=TRUE,
@@ -952,7 +960,7 @@ extract_pass_variants_strelks_vcf=function(
           hold=hold
        )
 
-
+  }
 
     jobs_report$out_files=list(
         vcf_snv=unlist_lvl( jobs_report[["steps"]][["extractPASSsnvVCF"]],var="compressed_vcf"),
