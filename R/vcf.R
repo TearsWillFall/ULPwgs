@@ -886,13 +886,6 @@ tabulate_vcf=function(vcf){
 
 
 
-
-
-
-
-
-
-
 filter_format_vcf=function(
   vcf,exprs=NULL,
   descriptor_id=NULL,

@@ -730,7 +730,7 @@ call_snvs_strelka=function(
     }else {
       stop("Missing tumour/normal BAM file/s.")
     }
-    
+  return(jobs_report)
 
 }
 
@@ -795,25 +795,25 @@ call_somatic_snvs_strelka=function(
     
 
     job_report=build_job_report(
-    job_id=job,
-    executor_id=executor_id,
-    task_id=task_id,
-    input_args = argg,
-    out_file_dir=out_file_dir,
-    out_files=list(
-      workflow=paste0(out_file_dir,"/runWorkflow.py"),
-      stats=list(
-        tsv=paste0(out_file_dir,"/results/stats/runStats.tsv"),
-        xml=paste0(out_file_dir,"/results/stats/runStats.tsv")
-    ),
-    variants=list(
-        indel=paste0(out_file_dir,"/results/variants/somatic.indels.vcf.gz"),
-        indel_index=paste0(out_file_dir,"/results/variants/somatic.indels.vcf.gz.tbi"),
-        snvs=paste0(out_file_dir,"/results/variants/somatic.snvs.vcf.gz"),
-        snvs_index=paste0(out_file_dir,"/results/variants/somatic.snvs.vcf.gz.tbi")
+      job_id=job,
+      executor_id=executor_id,
+      task_id=task_id,
+      input_args = argg,
+      out_file_dir=out_file_dir,
+      out_files=list(
+        workflow=paste0(out_file_dir,"/runWorkflow.py"),
+        stats=list(
+          tsv=paste0(out_file_dir,"/results/stats/runStats.tsv"),
+          xml=paste0(out_file_dir,"/results/stats/runStats.tsv")
+      ),
+      variants=list(
+          indel=paste0(out_file_dir,"/results/variants/somatic.indels.vcf.gz"),
+          indel_index=paste0(out_file_dir,"/results/variants/somatic.indels.vcf.gz.tbi"),
+          snvs=paste0(out_file_dir,"/results/variants/somatic.snvs.vcf.gz"),
+          snvs_index=paste0(out_file_dir,"/results/variants/somatic.snvs.vcf.gz.tbi")
+      )
+      ) 
     )
-    ) 
-  )
 
     exome=""
     if (targeted){
@@ -862,6 +862,7 @@ call_somatic_snvs_strelka=function(
       threads=1,ram=1,
       hold=job
     )
+    
     vcf_snv=jobs_report[["steps"]][["addAFStrelka"]][["steps"]]$out_files$vcf_snv
     vcf_indel=jobs_report[["steps"]][["addAFStrelka"]][["steps"]]$out_files$vcf_indel
     
