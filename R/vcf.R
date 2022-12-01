@@ -748,11 +748,12 @@ extract_pass_variants_strelks_vcf=function(
 
 
     jobs_report[["steps"]][["extractPASSsnvVCF"]]<-
-        parallel_vcfs_variants_by_filters_vcf(
+        variants_by_filters_vcf(
           bin_bgzip=bin_bgzip,
           bin_tabix=bin_tabix,
           vcf=vcf_snv,
           filters="PASS",
+          output_name="somatic.snv",
           exclusive=TRUE,
           compress=TRUE,
           clean=TRUE,
@@ -767,11 +768,12 @@ extract_pass_variants_strelks_vcf=function(
 
 
     jobs_report[["steps"]][["extractPASSindelVCF"]]<-
-        parallel_vcfs_variants_by_filters_vcf(
+        variants_by_filters_vcf(
           bin_bgzip=bin_bgzip,
           bin_tabix=bin_tabix,
           vcf=vcf_indel,
           filters="PASS",
+          output_name="somatic.indel",
           exclusive=TRUE,
           compress=TRUE,
           clean=TRUE,
