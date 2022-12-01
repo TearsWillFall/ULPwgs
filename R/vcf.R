@@ -1238,9 +1238,9 @@ write_vcf=function(
       colnames=paste0("#",paste0(names(vcf_body),collapse="\t"))
     }else{
       vcf_body=""
-      colnames=paste0("#",c("CHROM","POS","ID",
+      colnames=paste0("#",paste0(c("CHROM","POS","ID",
       "REF","ALT","QUAL","FILTER","INFO","FORMAT",
-       vcf$samples),collapse="\t")
+       vcf$samples),collapse="\t"))
     }
     
     
