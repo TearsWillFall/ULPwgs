@@ -1191,6 +1191,7 @@ parallel_regions_mutect2_gatk=function(
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
   tumour="",normal="",output_name="",
+  chr=c(1:22,"X","Y","MT"),
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   germ_resource=build_default_reference_list()$HG19$variant$germ_reference,
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
@@ -1258,7 +1259,14 @@ parallel_regions_mutect2_gatk=function(
 
   regions$start=regions$start+1
   regions=regions %>% dplyr::mutate(region=paste0(chr,":",start,"-",end))
-
+  
+  
+  ##### Ignore regions that are found in chromosome we are not interested
+  
+  if(!is.null(chr)){
+    regions=regions[regions$chr %in% chr,]
+  }
+  
 
   region_list=regions$region
   names(region_list)=regions$region
@@ -1344,7 +1352,8 @@ parallel_regions_mutect2_gatk=function(
       bin_bcftools=bin_bcftools,
       bin_bgzip=bin_bgzip,
       bin_tabix=bin_tabix,
-      vcfs=normalizePath(vcfs),stats=normalizePath(stats),
+      vcfs=normalizePath(vcfs),
+      stats=normalizePath(stats),
       f1r2=normalizePath(f1r2),
       clean=clean,
       output_name=output_name,
@@ -1467,6 +1476,7 @@ parallel_regions_mutect2_gatk=function(
 #' @param tumour [REQUIRED] Path to tumour BAM file.
 #' @param normal [OPTIONAL] Path to normal BAM file.
 #' @param ref_genome [REQUIRED] Path to reference genome fasta file.
+#' @param chr [OPTIONAL] Chromosomes to analyze. Default c(1:22,"X","Y","MT")
 #' @param germ_resource [REQUIRED]Path to germline resources vcf file.
 #' @param regions [OPTIONAL] Regions to analyze. If regions for parallelization are not provided then these will be infered from BAM file.
 #' @param output_name [OPTIONAL] Name for the output. If not given the name of one of the samples will be used.
@@ -1501,6 +1511,7 @@ parallel_samples_mutect2_gatk=function(
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
   tumour="",normal="",patient_id="",
+  chr=c(1:22,"X","Y","MT")
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   germ_resource=build_default_reference_list()$HG19$variant$germ_reference,
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
@@ -1554,6 +1565,7 @@ parallel_samples_mutect2_gatk=function(
               bin_tabix=bin_tabix,
               regions=regions,
               output_name=get_file_name(tumour),
+              chr=chr,
               ref_genome=normalizePath(ref_genome),
               germ_resource=normalizePath(germ_resource),
               biallelic_db=normalizePath(biallelic_db),
@@ -1581,6 +1593,7 @@ parallel_samples_mutect2_gatk=function(
               bin_samtools,
               bin_bgzip,
               bin_tabix,
+              chr,
               germ_resource,
               biallelic_db,db_interval,pon,ref_genome,
               filter,orientation,mnps,
@@ -1593,7 +1606,7 @@ parallel_samples_mutect2_gatk=function(
             rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
             out_file_dir2=set_dir(dir=out_file_dir,name="batch")
             batch_code=build_job_exec(job=job,time=time,ram=ram,
-            threads=1,output_dir=out_file_dir2,
+            threads=4,output_dir=out_file_dir2,
             hold=hold,array=length(tumour_list))
             exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
 
@@ -1633,6 +1646,7 @@ parallel_samples_mutect2_gatk=function(
                 bin_tabix=bin_tabix,
                 regions=regions,
                 output_name=patient_id,
+                chr=chr,
                 ref_genome=normalizePath(ref_genome),
                 germ_resource=normalizePath(germ_resource),
                 biallelic_db=normalizePath(biallelic_db),
@@ -1689,6 +1703,7 @@ parallel_samples_mutect2_gatk=function(
 #' @param sample_sheet [OPTIONAL] Path to sheet with sample information.
 #' @param bam_dir [OPTIONAL] Path to directory with BAM files.
 #' @param normal_id [OPTIONAL] Path to directory with BAM files.
+#' @param chr [OPTIONAL] Chromosomes to analyze. Default c(1:22,"X","Y","MT")
 #' @param ref_genome [REQUIRED] Path to reference genome fasta file.
 #' @param germ_resource [REQUIRED]Path to germline resources vcf file.
 #' @param regions [OPTIONAL] Regions to analyze. If regions for parallelization are not provided then these will be infered from BAM file.
@@ -1731,6 +1746,7 @@ multisample_mutect2_gatk=function(
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
   db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
   pon=build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_muts,
+  chr=c(1:22,"X","Y","MT"),
   method="single",
   regions=NULL,output_dir=".",
   verbose=FALSE,filter=TRUE,
@@ -1740,7 +1756,7 @@ multisample_mutect2_gatk=function(
   header=TRUE,
   sep="\t",
   batch_config=build_default_preprocess_config(),
-  threads=4,ram=4,mode="local",
+  threads=4,ram=8,mode="local",
   executor_id=make_unique_id("multiSampleMutect2"),
   task_name="multiSampleMutect2",time="48:0:0",
   update_time=60,wait=FALSE,hold=NULL
@@ -1774,6 +1790,7 @@ multisample_mutect2_gatk=function(
       "patient_id",
       "tumour",
       "normal",
+      "chr",
       "ref_genome",
       "germ_resource",
       "biallelic_db",
@@ -1837,6 +1854,7 @@ multisample_mutect2_gatk=function(
               db_interval=normalizePath(file_info[x,]$biallelic_db),
               patient_id=file_info[x,]$patient_id,
               pon=normalizePath(file_info[x,]$pon),
+              chr=eval(parse(text=file_info[x,]$chr)),
               regions=file_info[[x,"regions"]],
               method=file_info[x,]$method,
               output_dir=file_info[x,]$output_dir,
@@ -1878,6 +1896,7 @@ multisample_mutect2_gatk=function(
                   biallelic_db=normalizePath(biallelic_db),
                   db_interval=normalizePath(biallelic_db),
                   extract_pass=extract_pass,
+                  chr=chr,
                   annotate=annotate,
                   regions=regions,
                   method=method,
@@ -3314,6 +3333,7 @@ parallel_regions_haplotypecaller_gatk=function(
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   regions=NULL,
   output_dir=".",
+  chr=c(1:22,"X","Y","MT")
   indel_db=build_default_reference_list()$HG19$variant$mills_reference,
   haplotype_db=build_default_reference_list()$HG19$variant$hapmap_reference,
   filter=TRUE,
@@ -3381,6 +3401,9 @@ parallel_regions_haplotypecaller_gatk=function(
   regions$start=regions$start+1
   regions=regions %>% dplyr::mutate(region=paste0(chr,":",start,"-",end))
 
+  if(!is.null(chr){
+    regions=regions[regions$chr %in% chr,]
+  })
 
   region_list=regions$region
   names(region_list)=regions$region
@@ -3506,14 +3529,15 @@ parallel_regions_haplotypecaller_gatk=function(
     )
 
 
-    if(extract_pass){
+  if(extract_pass){
       vcf<- jobs_report[["steps"]][["filterVariantTranchesGatk"]]$out_files$filtered_vcf
       hold<-jobs_report[["steps"]][["filterVariantTranchesGatk"]]$job_id
       job_report[["steps"]][["extractPASSvcf"]]<-
         parallel_vcfs_variants_by_filters_vcf(
           bin_bgzip=bin_bgzip,
           bin_tabix=bin_tabix,
-          vcf=normalizePath(vcf),filters="PASS",
+          vcf=normalizePath(vcf),
+          filters="PASS",
           exclusive=TRUE,
           compress=FALSE,
           output_dir=out_file_dir,
@@ -3586,6 +3610,7 @@ parallel_samples_haplotypecaller_gatk=function(
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
   normal="",patient_id="",
+  chr=c(1:22,"X","Y","MT"),
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   indel_db=build_default_reference_list()$HG19$variant$mills_reference,
   haplotype_db=build_default_reference_list()$HG19$variant$hapmap_reference,
@@ -3820,6 +3845,7 @@ multisample_haplotypecaller_gatk=function(
   bam_dir="",
   patient_id="",
   pattern="bam$",
+  chr=c(1:22,"X","Y","MT"),
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   indel_db=build_default_reference_list()$HG19$variant$mills_reference,
   haplotype_db=build_default_reference_list()$HG19$variant$hapmap_reference,
@@ -3860,8 +3886,6 @@ multisample_haplotypecaller_gatk=function(
                 )
         )
 
-
-
     columns=c(
       "sif_gatk",
       "bin_bcftools",
@@ -3874,6 +3898,7 @@ multisample_haplotypecaller_gatk=function(
       "indel_db",
       "haplotype_db",
       "filter",
+      "chr",
       "info_key",
       "snp_tranche",
       "indel_tranche",
@@ -3927,6 +3952,7 @@ multisample_haplotypecaller_gatk=function(
                   haplotype_db=normalizePath(file_info[x,]$haplotype_db),
                   filter=file_info[x,]$filter,
                   info_key=file_info[x,]$info_key,
+                  chr=evaluate(parse(text=file_info[x,]$chr)),
                   snp_tranche=file_info[x,]$snp_tranche,
                   indel_tranche=file_info[x,]$indel_tranche,
                   keep_previous_filters=file_info[x,]$keep_previous_filters,
@@ -3958,6 +3984,7 @@ multisample_haplotypecaller_gatk=function(
                   bin_tabix=bin_tabix,
                   normal=normalizePath(normal),
                   patient_id=patient_id,
+                  chr=chr,
                   ref_genome=normalizePath(ref_genome),
                   indel_db=normalizePath(indel_db),
                   haplotype_db=normalizePath(haplotype_db),
