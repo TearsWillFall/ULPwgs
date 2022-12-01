@@ -1236,12 +1236,12 @@ write_vcf=function(
     if(nrow(vcf$body)>1){
       vcf_body=build_body_vcf(vcf=vcf)
       colnames=paste0("#",paste0(names(vcf_body),collapse="\t"))
-    }else(
+    }else{
       vcf_body=""
       colnames=paste0("#",c("CHROM","POS","ID",
       "REF","ALT","QUAL","FILTER","INFO","FORMAT",
        vcf$samples),collapse="\t")
-    )
+    }
     
     
 
