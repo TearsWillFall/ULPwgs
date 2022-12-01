@@ -750,9 +750,6 @@ extract_pass_variants_strelks_vcf=function(
         )
 
 
-   
-    
-
 
     jobs_report[["steps"]][["extractPASSsnvVCF"]]<-
         parallel_vcfs_variants_by_filters_vcf(
@@ -761,7 +758,8 @@ extract_pass_variants_strelks_vcf=function(
           vcf=vcf_snv,
           filters="PASS",
           exclusive=TRUE,
-          compress=FALSE,
+          compress=TRUE,
+          clean=TRUE,
           output_dir=out_file_dir,
           verbose=verbose,
           batch_config=batch_config,
@@ -781,7 +779,8 @@ extract_pass_variants_strelks_vcf=function(
           vcf=vcf_indel,
           filters="PASS",
           exclusive=TRUE,
-          compress=FALSE,
+          compress=TRUE,
+          clean=TRUE,
           output_dir=out_file_dir,
           verbose=verbose,
           batch_config=batch_config,
