@@ -1008,7 +1008,6 @@ call_germline_snvs_strelka=function(
     bin_vep=build_default_tool_binary_list()$bin_vep,
     cache_vep=build_default_cache_list()$cache_vep,
     bin_strelka=build_default_tool_binary_list()$bin_strelka$germline,
-    cache_vep=build_default_cache_list()$cache_vep,
     normal="",ref_genome=build_default_reference_list()$HG19$reference$genome,
     output_dir=".",indel_candidates="",
     targeted=TRUE,verbose=TRUE,
