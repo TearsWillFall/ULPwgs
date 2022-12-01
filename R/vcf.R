@@ -750,7 +750,6 @@ extract_pass_variants_strelks_vcf=function(
         )
 
 
-
     jobs_report[["steps"]][["extractPASSsnvVCF"]]<-
         parallel_vcfs_variants_by_filters_vcf(
           bin_bgzip=bin_bgzip,
@@ -770,8 +769,6 @@ extract_pass_variants_strelks_vcf=function(
         )
 
 
-
-
     jobs_report[["steps"]][["extractPASSindelVCF"]]<-
         parallel_vcfs_variants_by_filters_vcf(
           bin_bgzip=bin_bgzip,
@@ -784,7 +781,7 @@ extract_pass_variants_strelks_vcf=function(
           output_dir=out_file_dir,
           verbose=verbose,
           batch_config=batch_config,
-          threads=threads,ram=ram,mode=mode,
+          threads=1,ram=1,mode=mode,
           executor_id=task_id,
           time=time,
           hold=hold
@@ -792,10 +789,8 @@ extract_pass_variants_strelks_vcf=function(
 
 
     jobs_report$out_files=list(
-        vcf_snv=ifelse(compress,unlist_lvl( jobs_report[["steps"]][["extractPASSsnvVCF"]],var="compressed_vcf"),
-        unlist_lvl(jobs_report[["steps"]][["extractPASSsnvVCF"]],var="vcf")),
-        vcf_indel=ifelse(compress,unlist_lvl(jobs_report[["steps"]][["extractPASSindelVCF"]],var="compressed_vcf"),
-        unlist_lvl(jobs_report[["steps"]][["extractPASSindelVCF"]],var="vcf"))
+        vcf_snv=unlist_lvl( jobs_report[["steps"]][["extractPASSsnvVCF"]],var="compressed_vcf")
+        vcf_indel=unlist_lvl(jobs_report[["steps"]][["extractPASSindelVCF"]],var="compressed_vcf")
     )
 
 
