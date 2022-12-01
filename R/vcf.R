@@ -636,6 +636,40 @@ extract_csq_info_vcf=function(vcf){
 
 
 
+#' Return TABULATED file
+#'
+#' VCF datastructure with tabulated INFO column body
+#'
+#' @param vcf 
+
+
+
+tabulate_vcf=function(vcf){
+  vcf=read_vcf(vcf)
+  vcf=extract_csq_info_vcf(vcf)
+
+  ##### Extract body information from VCF
+
+  vcf_body=vcf$body %>% unnest(cols=Allele:TRANSCRIPTION_FACTORS)
+  vcf_body=vcf_body %>% unnest_vcf_body() %>% 
+  pivot_wider(values_from=VALUE,names_from=c(SAMPLE,FORMAT))
+
+}
+
+
+
+dat=read_vcf("J73_0133.PASS.vcf")
+
+
+
+
+
+
+
+
+
+
+
 filter_format_vcf=function(
   vcf,exprs=NULL,
   descriptor_id=NULL,

@@ -2308,7 +2308,7 @@ estimate_contamination_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
   rdata=NULL,selected=NULL,
   tumour=NA,normal=NA,tumour_pileup="",
-  normal_pileup="",output_name="",output_dir=".",tmp_dir=".",
+  normal_pileup="",output_name=NULL,output_dir=".",tmp_dir=".",
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
   db_interval=build_default_reference_list()$HG19$variant$biallelic_reference,
   verbose=FALSE,batch_config=build_default_preprocess_config(),
@@ -2332,7 +2332,7 @@ estimate_contamination_gatk=function(
   job=build_job(executor_id=executor_id,task_id=task_id)
 
 
-  if(output_name!=""){
+  if(!is.null(output_name)){
     id=output_name
   }else if(tumour!=""){
     id=get_file_name(tumour)
@@ -2361,7 +2361,8 @@ estimate_contamination_gatk=function(
   if(!is.na(normal)){
       jobs_report[["steps"]][["nPileupGatk"]]<-pileup_summary_gatk(
         sif_gatk=sif_gatk,
-        bam=normalizePath(normal),output_name=get_file_name(normal),
+        bam=normalizePath(normal),
+        output_name=get_file_name(normal),
         output_dir=paste0(out_file_dir,"/pileup_reports/normal"),
         verbose=verbose,batch_config=batch_config,
         biallelic_db=normalizePath(biallelic_db),
@@ -2376,7 +2377,8 @@ estimate_contamination_gatk=function(
   if(!is.na(tumour)){
         jobs_report[["steps"]][["tPileupGatk"]]<-pileup_summary_gatk(
           sif_gatk=sif_gatk,
-          bam=normalizePath(tumour),output_name=get_file_name(tumour),
+          bam=normalizePath(tumour),
+          output_name=get_file_name(tumour),
           output_dir=paste0(out_file_dir,"/pileup_reports/tumour"),
           verbose=verbose,batch_config=batch_config,
           biallelic_db=normalizePath(biallelic_db),
@@ -2594,7 +2596,7 @@ parallel_estimate_contamination_gatk=function(
 
 pileup_summary_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
-  bam="",output_name="",output_dir=".",
+  bam="",output_name=NULL,output_dir=".",
   rdata=NULL,selected=NULL,
   verbose=FALSE,batch_config=build_default_preprocess_config(),
   biallelic_db=build_default_reference_list()$HG19$variant$biallelic_reference,
@@ -2619,10 +2621,10 @@ pileup_summary_gatk=function(
 
 
   id=""
-  if(output_name!=""){
+  if(!is.null(output_name)){
     id=output_name
   }else{
-     id=get_file_name(bam)
+    id=get_file_name(bam)
   }
 
   out_file=paste0(out_file_dir,"/",id,".pileup.table")
