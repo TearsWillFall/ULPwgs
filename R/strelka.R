@@ -854,8 +854,8 @@ call_somatic_snvs_strelka=function(
       hold=job
     )
     
-    vcf_snv=jobs_report[["steps"]][["addAFStrelka"]][["steps"]]$out_files$vcf_snv
-    vcf_indel=jobs_report[["steps"]][["addAFStrelka"]][["steps"]]$out_files$vcf_indel
+    vcf_snv=jobs_report[["steps"]][["addAFStrelka"]]$out_files$vcf_snv
+    vcf_indel=jobs_report[["steps"]][["addAFStrelka"]]$out_files$vcf_indel
     
     if(extract_pass){
         jobs_report[["steps"]][["extractPASS"]]<-extract_pass_variants_strelks_vcf(
@@ -871,8 +871,8 @@ call_somatic_snvs_strelka=function(
             time=time,
             hold=unlist_lvl(jobs_report[["steps"]][["addAFStrelka"]],var="job_id")
         )
-        vcf_snv=jobs_report[["steps"]][["extractPASS"]][["steps"]]$out_files$vcf_snv
-        vcf_indel=jobs_report[["steps"]][["extractPASS"]][["steps"]]$out_files$vcf_indel
+        vcf_snv=jobs_report[["steps"]][["extractPASS"]]$out_files$vcf_snv
+        vcf_indel=jobs_report[["steps"]][["extractPASS"]]$out_files$vcf_indel
        
 
     }
@@ -900,8 +900,6 @@ call_somatic_snvs_strelka=function(
       
   }
 
-
- 
 
     if(wait&&mode=="batch"){
         job_validator(job=job_report$job_id,time=update_time,
