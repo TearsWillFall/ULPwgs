@@ -83,6 +83,11 @@ call_variants_strelka=function(
 
     if(variants=="sv"|variants=="all"){
          jobs_report[["steps"]][["callSVManta"]]=call_sv_manta(
+            bin_bcftools=bin_bcftools,
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            bin_vep=bin_vep,
+            cache_vep=cache_vep,
             bin_manta=bin_manta,
             tumour=tumour,normal=normal,
             ref_genome=ref_genome,output_dir=out_file_dir,
@@ -102,6 +107,11 @@ call_variants_strelka=function(
 
     if(variants=="snv"|variants=="all"){
         jobs_report[["steps"]][["callSNVStrelka"]]=call_snvs_strelka(
+          bin_bcftools=bin_bcftools,
+          bin_bgzip=bin_bgzip,
+          bin_tabix=bin_tabix,
+          bin_vep=bin_vep,
+          cache_vep=cache_vep,
           bin_strelka_somatic=bin_strelka_somatic,
           bin_strelka_germline=bin_strelka_germline,
           indel_candidates=indel_candidates,
@@ -150,9 +160,14 @@ call_variants_strelka=function(
 
 
 parallel_samples_call_variants_strelka=function(
+    bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
+    bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+    bin_tabix=build_default_tool_binary_list()$bin_tabix,
+    bin_vep=build_default_tool_binary_list()$bin_vep,
     bin_strelka_somatic=build_default_tool_binary_list()$bin_strelka$somatic,
     bin_strelka_germline=build_default_tool_binary_list()$bin_strelka$germline,
     bin_manta=build_default_tool_binary_list()$bin_manta,
+    cache_vep=build_default_cache_list()$cache_vep,
     patient_id=NA,tumour=NA,normal=NA,variants="all",indel_cnds=TRUE,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     output_dir=".",
@@ -189,6 +204,11 @@ parallel_samples_call_variants_strelka=function(
       jobs_report[["steps"]][["par_sample_call_variants"]]<-
       lapply(tumour_list,FUN=function(tumour){
         job_report <- call_variants_strelka(
+            bin_bcftools=bin_bcftools,
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            bin_vep=bin_vep,
+            cache_vep=cache_vep,
             bin_strelka_somatic=bin_strelka_somatic,
             bin_strelka_germline=bin_strelka_germline,
             bin_manta=bin_manta,
@@ -209,6 +229,11 @@ parallel_samples_call_variants_strelka=function(
             executor_id=task_id
             save(
               tumour_list,
+              bin_bcftools,
+              bin_bgzip,
+              bin_tabix,
+              bin_vep,
+              cache_vep,
               bin_strelka_somatic,
               bin_strelka_germline,
               bin_manta,
@@ -354,6 +379,11 @@ parallel_samples_call_variants_strelka=function(
 
 
 multisample_call_variants_strelka=function(
+    bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
+    bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+    bin_tabix=build_default_tool_binary_list()$bin_tabix,
+    bin_vep=build_default_tool_binary_list()$bin_vep,
+    cache_vep=build_default_cache_list()$cache_vep,
     bin_strelka_somatic=build_default_tool_binary_list()$bin_strelka$somatic,
     bin_strelka_germline=build_default_tool_binary_list()$bin_strelka$germline,
     bin_manta=build_default_tool_binary_list()$bin_manta,
@@ -395,6 +425,11 @@ multisample_call_variants_strelka=function(
 
 
     columns=c(
+        "bin_bcftools",
+        "bin_bgzip",
+        "bin_tabix",
+        "bin_vep",
+        "cache_vep",
         "bin_strelka_somatic",
         "bin_strelka_germline",
         "bin_manta",
@@ -440,7 +475,12 @@ multisample_call_variants_strelka=function(
             })
             
         
-            job_report<-parallel_samples_call_variants_strelka(     
+            job_report<-parallel_samples_call_variants_strelka(   
+                bin_bcftools=file_info[x,]$bin_bcftools,
+                bin_bgzip=file_info[x,]$bin_bgzip,
+                bin_tabix=file_info[x,]$bin_tabix,
+                bin_vep=file_info[x,]$bin_vep,
+                cache_vep=file_info[x,]$cache_vep,
                 bin_strelka_somatic=file_info[x,]$bin_strelka_somatic,
                 bin_strelka_germline=file_info[x,]$bin_strelka_germline,
                 bin_manta=file_info[x,]$bin_manta,
@@ -469,7 +509,12 @@ multisample_call_variants_strelka=function(
         normal=bam_files[grepl(normal_id,bam_files)]
 
 
-              job_report<-parallel_samples_call_variants_strelka(     
+              job_report<-parallel_samples_call_variants_strelka(
+                bin_bcftools=bin_bcftools,
+                bin_bgzip=bin_bgzip,
+                bin_tabix=bin_tabix,
+                bin_vep=bin_vep,
+                cache_vep=cache_vep,
                 bin_strelka_somatic=bin_strelka_somatic,
                 bin_strelka_germline=bin_strelka_germline,
                 bin_manta=bin_manta,
@@ -531,8 +576,14 @@ multisample_call_variants_strelka=function(
 
 
 call_sv_manta=function(
+    bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
+    bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+    bin_tabix=build_default_tool_binary_list()$bin_tabix,
+    bin_vep=build_default_tool_binary_list()$bin_vep,
+    cache_vep=build_default_cache_list()$cache_vep,
     bin_manta=build_default_tool_binary_list()$bin_manta,
-    tumour="",normal="",ref_genome=build_default_reference_list()$HG19$reference$genome,
+    tumour="",normal="",
+    ref_genome=build_default_reference_list()$HG19$reference$genome,
     output_dir=".",targeted=TRUE,verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     threads=1,ram=4,mode="local",
@@ -664,7 +715,9 @@ call_snvs_strelka=function(
     bin_vep=build_default_tool_binary_list()$bin_vep,
     bin_strelka_somatic=build_default_tool_binary_list()$bin_strelka$somatic,
     bin_strelka_germline=build_default_tool_binary_list()$bin_strelka$germline,
-    tumour="",normal="",ref_genome=build_default_reference_list()$HG19$reference$genome,
+    cache_vep=build_default_cache_list()$cache_vep,
+    tumour="",normal="",
+    ref_genome=build_default_reference_list()$HG19$reference$genome,
     output_dir=".",indel_candidates="",
     targeted=TRUE,verbose=TRUE,
     batch_config=build_default_preprocess_config(),
@@ -696,6 +749,7 @@ call_snvs_strelka=function(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
             bin_vep=bin_vep,
+            cache_vep=cache_vep,
             bin_strelka=bin_strelka_somatic,
             tumour=tumour,normal=normal,
             ref_genome=ref_genome,
@@ -709,6 +763,11 @@ call_snvs_strelka=function(
       )
     }else if(normal!=""){
          jobs_report[["steps"]][["callGermlineSNVStrelka"]]<-call_germline_snvs_strelka(
+             bin_bcftools=bin_bcftools,
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            bin_vep=bin_vep,
+            cache_vep=cache_vep,
             bin_strelka=bin_strelka_germline,
             normal=normal,
             ref_genome=ref_genome,
@@ -761,7 +820,9 @@ call_somatic_snvs_strelka=function(
     bin_tabix=build_default_tool_binary_list()$bin_tabix,
     bin_vep=build_default_tool_binary_list()$bin_vep,
     bin_strelka=build_default_tool_binary_list()$bin_strelka$somatic,
-    tumour="",normal="",ref_genome=build_default_reference_list()$HG19$reference$genome,
+    cache_vep=build_default_cache_list()$cache_vep,
+    tumour="",normal="",
+    ref_genome=build_default_reference_list()$HG19$reference$genome,
     output_dir=".",indel_candidates="",
     extract_pass=TRUE,
     annotate=TRUE,
@@ -941,7 +1002,13 @@ call_somatic_snvs_strelka=function(
 
 
 call_germline_snvs_strelka=function(
+    bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
+    bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+    bin_tabix=build_default_tool_binary_list()$bin_tabix,
+    bin_vep=build_default_tool_binary_list()$bin_vep,
+    cache_vep=build_default_cache_list()$cache_vep,
     bin_strelka=build_default_tool_binary_list()$bin_strelka$germline,
+    cache_vep=build_default_cache_list()$cache_vep,
     normal="",ref_genome=build_default_reference_list()$HG19$reference$genome,
     output_dir=".",indel_candidates="",
     targeted=TRUE,verbose=TRUE,
