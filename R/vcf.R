@@ -789,7 +789,7 @@ extract_pass_variants_strelks_vcf=function(
 
 
     jobs_report$out_files=list(
-        vcf_snv=unlist_lvl( jobs_report[["steps"]][["extractPASSsnvVCF"]],var="compressed_vcf")
+        vcf_snv=unlist_lvl( jobs_report[["steps"]][["extractPASSsnvVCF"]],var="compressed_vcf"),
         vcf_indel=unlist_lvl(jobs_report[["steps"]][["extractPASSindelVCF"]],var="compressed_vcf")
     )
 
