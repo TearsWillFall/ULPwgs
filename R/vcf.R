@@ -283,6 +283,119 @@ add_indel_af_strelka_vcf=function(
 }
 
 
+
+
+#' Add AF information to Strelka VCF file
+#' This function reads and modifies Strelka produced VCF files to 
+#' add an entry for AF within the VCF file
+#' 
+#' @param bin_bgzip Path to bgzip executable.
+#' @param bin_tabix Path to TABIX executable.
+#' @param vcf_snv Path to VCF file with snv
+#' @param vcf_indel Path to VCF file with snv
+#' @param compress Compress VCF file. Default TRUE.
+#' @param index Index VCF file. Default TRUE.
+#' @param index_format VCF index format. Default tbi. Options [tbi,cbi].
+#' @param bgzip_index Create BGZIP index for compressed file. Default FALSE
+#' @param output_dir Path to the output directory.
+#' @param clean Remove input VCF after completion. Default FALSE.
+#' @param verbose Enables progress messages. Default False.
+#' @param executor_id Task EXECUTOR ID. Default "gatherBQSR"
+#' @param task_name Task name. Default "gatherBQSR"
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param threads Number of threads to split the work. Default 3
+#' @param ram [OPTIONAL] If batch mode. RAM memory in GB per job. Default 1
+#' @param update_time [OPTIONAL] If batch mode. Show job updates every update time. Default 60
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+  add_af_strelka_vcf=function(
+      bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+      bin_tabix=build_default_tool_binary_list()$bin_tabix,
+      vcf_snv=NULL,
+      vcf_indel=NULL,
+      overwrite=FALSE,
+      compress=TRUE,index=TRUE,
+      index_format="tbi",bgzip_index=FALSE,
+      clean=TRUE,verbose=FALSE, 
+      executor_id=make_unique_id("addAFStrelka"),
+      task_name="addAFStrelka",
+      batch_config=build_default_preprocess_config(),
+      mode="local",time="48:0:0",
+      threads=1,ram=4,update_time=60,
+      wait=FALSE,hold=NULL){
+
+          argg <- as.list(environment())
+          task_id=make_unique_id(task_name)
+          out_file_dir=set_dir(dir=output_dir)
+          job=build_job(executor_id=executor_id,task_id=task_id)
+
+          jobs_report=build_job_report(
+            job_id=job,
+            executor_id=executor_id,
+            exec_code=list(), 
+            task_id=task_id,
+            input_args=argg,
+            out_file_dir=out_file_dir,
+            out_files=list(
+              )
+            )
+
+            
+          jobs_report[["steps"]][["annotateAFsnvStrelka"]]<-add_snv_af_strelka_vcf(
+              bin_bgzip=bin_bgzip,
+              bin_tabix=bin_tabix,
+              vcf=vcf_snv,
+              compress=TRUE,index=TRUE,
+              index_format="tbi",bgzip_index=FALSE,
+              clean=FALSE,verbose=verbose, 
+              executor_id=task_id,
+              batch_config=batch_config,
+              mode=mode,time=time,
+              threads=1,ram=1,
+              hold=hold
+          )
+
+
+
+        jobs_report[["steps"]][["annotateAFindelStrelka"]]<-add_indel_af_strelka_vcf(
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            vcf=vcf_indel,
+            compress=compress,index=index,
+            index_format=index_format,bgzip_index=FALSE,
+            clean=clean,verbose=verbose, 
+            executor_id=task_id,
+            batch_config=batch_config,
+            mode=mode,time=time,
+            threads=threads,ram=ram,
+            hold=hold
+        )
+
+    jobs_report$out_files=list(
+        vcf_snv=ifelse(compress,unlist_lvl( jobs_report[["steps"]][["annotateAFsnvStrelka"]],var="compressed_vcf"),
+        unlist_lvl(jobs_report[["steps"]][["annotateAFsnvStrelka"]],var="vcf"))
+        vcf_indel=ifelse(compress,unlist_lvl(jobs_report[["steps"]][["annotateAFindelStrelka"]],var="compressed_vcf"),
+        unlist_lvl(jobs_report[["steps"]][["annotateAFindelStrelka"]],var="vcf"))
+    )
+
+        return(jobs_report)
+
+    }
+
+
+
+
+
+
+
+
+
+
+
 #' Unnest VCF body
 #' 
 #' Unnest VCF body structure
@@ -581,6 +694,120 @@ parallel_vcfs_variants_by_filters_vcf=function(
   return(jobs_report)
 
 }
+
+
+
+
+#' Extract PASS variants in VCF file
+#'
+#' VCF datastructure is in list format and contains a header, a body and
+#' the corresponding col_names
+#'
+#' @param bin_bgzip Path to bgzip executable.
+#' @param bin_tabix Path to TABIX executable.
+#' @param vcf Path to the input VCF file.
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param executor_id Task EXECUTOR ID. Default "gatherBQSR"
+#' @param task_name Task name. Default "gatherBQSR"
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param threads Number of threads to split the work. Default 3
+#' @param ram [OPTIONAL] If batch mode. RAM memory in GB per job. Default 1
+#' @param update_time [OPTIONAL] If batch mode. Show job updates every update time. Default 60
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+#' 
+
+
+
+extract_pass_variants_strelks_vcf=function(
+      bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+      bin_tabix=build_default_tool_binary_list()$bin_tabix,
+      vcf_snv=NULL,
+      vcf_indel=NULL,
+      output_dir=".",verbose=FALSE,sep="\t",
+      batch_config=build_default_preprocess_config(),
+      threads=4,ram=4,mode="local",
+      executor_id=make_unique_id("extractPASStrelka"),
+      task_name="extractPASStrelka",time="48:0:0",
+      update_time=60,wait=FALSE,hold=NULL
+    ){
+
+      argg <- as.list(environment())
+      task_id=make_unique_id(task_name)
+      out_file_dir=set_dir(dir=output_dir)
+      job=build_job(executor_id=executor_id,task_id=task_id)
+
+      jobs_report=build_job_report(
+        job_id=job,
+        executor_id=executor_id,
+        exec_code=list(), 
+        task_id=task_id,
+        input_args=argg,
+        out_file_dir=out_file_dir,
+        out_files=list(
+          )
+        )
+
+
+   
+    
+
+
+    jobs_report[["steps"]][["extractPASSsnvVCF"]]<-
+        parallel_vcfs_variants_by_filters_vcf(
+          bin_bgzip=bin_bgzip,
+          bin_tabix=bin_tabix,
+          vcf=vcf_snv,
+          filters="PASS",
+          exclusive=TRUE,
+          compress=FALSE,
+          output_dir=out_file_dir,
+          verbose=verbose,
+          batch_config=batch_config,
+          threads=1,ram=1,mode=mode,
+          executor_id=task_id,
+          time=time,
+          hold=hold
+        )
+
+
+
+
+    jobs_report[["steps"]][["extractPASSindelVCF"]]<-
+        parallel_vcfs_variants_by_filters_vcf(
+          bin_bgzip=bin_bgzip,
+          bin_tabix=bin_tabix,
+          vcf=vcf_indel,
+          filters="PASS",
+          exclusive=TRUE,
+          compress=FALSE,
+          output_dir=out_file_dir,
+          verbose=verbose,
+          batch_config=batch_config,
+          threads=threads,ram=ram,mode=mode,
+          executor_id=task_id,
+          time=time,
+          hold=hold
+       )
+
+
+    jobs_report$out_files=list(
+        vcf_snv=ifelse(compress,unlist_lvl( jobs_report[["steps"]][["extractPASSsnvVCF"]],var="compressed_vcf"),
+        unlist_lvl(jobs_report[["steps"]][["extractPASSsnvVCF"]],var="vcf"))
+        vcf_indel=ifelse(compress,unlist_lvl(jobs_report[["steps"]][["extractPASSindelVCF"]],var="compressed_vcf"),
+        unlist_lvl(jobs_report[["steps"]][["extractPASSindelVCF"]],var="vcf"))
+    )
+
+
+      return(jobs_report)
+  }
+
+
+
+
 
 
 

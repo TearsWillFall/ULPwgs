@@ -30,7 +30,7 @@ annotate_vep=function(
     bin_vep=build_default_tool_binary_list()$bin_vep,
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
     bin_tabix=build_default_tool_binary_list()$bin_tabix,
-    vep_cache=build_default_cache_list()$vep_cache,
+    cache_vep=build_default_cache_list()$cache_vep,
     vcf="",
     output_name="",
     compress=TRUE,
@@ -69,7 +69,7 @@ annotate_vep=function(
   out_file=paste0(out_file_dir,"/",id,".annotated.vcf")
 
   exec_code=paste(bin_vep,"-i",vcf,"-o",out_file,
-  "--cache --port 3337 --everything --force_overwrite --vcf --fork ",threads," --dir ",vep_cache)
+  "--cache --port 3337 --everything --force_overwrite --vcf --fork ",threads," --dir ",cache_vep)
 
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
@@ -124,4 +124,110 @@ return(jobs_report)
 
 
  
+}
+
+
+
+#' Annotate Strelka VCF files with VEP annotation tool
+#'
+#' This function annotates Strelka VCF file using VEP
+#'
+#' @param bin_vep [REQUIRED] Path to VEP binary.
+#' @param bin_bgzip [REQUIRED] Path to bgzip binary.
+#' @param bin_tabix [REQUIRED] Path to tabix binary.
+#' @param vep_cache [REQUIRED] Path to vep cache location.
+#' @param vcf_snv [REQUIRED] Path to VCF file.
+#' @param vcf_in [REQUIRED] Path to VCF file.
+#' @param compress [OPTIONAL] Generate a compressed VCF
+#' @param output_name [OPTIONAL] Name of output file
+#' @param clean [OPTIONAL]Remove extra files.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+anotate_strelka_vep=function(
+    bin_vep=build_default_tool_binary_list()$bin_vep,
+    bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+    bin_tabix=build_default_tool_binary_list()$bin_tabix,
+    cache_vep=build_default_cache_list()$cache_vep,
+    vcf_snv="",
+    vcf_indel="",
+    extract_pass=TRUE,
+    compress=TRUE,
+    clean=FALSE,
+    output_dir=".",
+    verbose=FALSE,
+    batch_config=build_default_preprocess_config(),
+    threads=1,ram=1,mode="local",
+    executor_id=make_unique_id("callVEP"),
+    task_name="callVEP",time="48:0:0",
+    update_time=60,
+    wait=FALSE,hold=NULL
+){
+
+
+    argg <- as.list(environment())
+    task_id=make_unique_id(task_name)
+    out_file_dir=set_dir(dir=output_dir)
+    job=build_job(executor_id=executor_id,task_id=task_id)
+
+
+    if(is.null(vcf_snv)|is.null(vcf_indel)){
+        stop("vcf_snv/vcf_indel arguments are required")
+    }
+
+    jobs_report[["steps"]][["annotateSnvStrelka"]]<- annotate_vep(
+          bin_vep=bin_vep,
+          bin_bgzip=bin_bgzip,
+          bin_tabix=bin_tabix,
+          cache_vep=cache_vep,
+          vcf=vcf_snv,
+          output_name=paste0(get_file_name(vcf_snv),ifelse(extract_pass,".PASS","")),
+          output_dir=out_file_dir,
+          verbose=verbose,
+          batch_config=batch_config,
+          threads=threads,
+          ram=ram,mode=mode,
+          executor_id=task_id,
+          time=time,
+          hold=hold
+      )
+
+    jobs_report[["steps"]][["annotateIndelStrelka"]]<-annotate_vep(
+          bin_vep=bin_vep,
+          bin_bgzip=bin_bgzip,
+          bin_tabix=bin_tabix,
+          cache_vep=cache_vep,
+          vcf=vcf_indel,
+          output_name=paste0(get_file_name(vcf_indel),ifelse(extract_pass,".PASS","")),
+          output_dir=out_file_dir,
+          verbose=verbose,
+          batch_config=batch_config,
+          threads=threads,
+          ram=ram,mode=mode,
+          executor_id=task_id,
+          time=time,
+          hold=hold
+      )
+
+    jobs_report$out_files=list(
+        vcf_snv=ifelse(compress,unlist_lvl(jobs_report[["steps"]][["annotateeSnvStrelka"]],var="compressed_vcf"),
+        unlist_lvl(jobs_report[["steps"]][["annotateeSnvStrelka"]],var="vcf")),
+        vcf_indel=ifelse(compress,unlist_lvl(jobs_report[["steps"]][["annotateIndelStrelka"]],var="compressed_vcf"),
+        unlist_lvl(jobs_report[["steps"]][["annotateeIndelStrelka"]],var="vcf"))
+    )
+
+
+    return(jobs_report)
+
 }

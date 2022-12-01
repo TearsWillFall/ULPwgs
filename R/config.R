@@ -885,6 +885,13 @@ build_default_reference_list=function(
                     mills_reference="/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/Mills_and_1000G_gold_standard.indels.b37.vcf"
                 )
             ),
+            HG19_ALT=list(
+                reference=list(
+                    genome="/lustre/scratch/scratch/regmova/PCF/references/hg19_alt/reference/human_g1k_v37.fasta"
+                )
+
+
+            ),
             HG38=list(
                 reference=list(
                     genome="/lustre/scratch/scratch/regmova/PCF/references/hg38/reference/ucsc.hg38.fa"

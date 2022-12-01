@@ -1426,7 +1426,7 @@ parallel_regions_mutect2_gatk=function(
   }
 
   if(annotate){
-    jobs_report[["steps"]][["filterMutectGatk"]]<- annotate_vep(
+    jobs_report[["steps"]][["annotateMutectGatk"]]<- annotate_vep(
         bin_vep=bin_vep,
         bin_bgzip=bin_bgzip,
         bin_tabix=bin_tabix,

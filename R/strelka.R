@@ -170,6 +170,17 @@ parallel_samples_call_variants_strelka=function(
     job=build_job(executor_id=executor_id,task_id=task_id)
 
 
+    
+    jobs_report=build_job_report(
+      job_id=job,
+      executor_id=list(),
+      task_id=task_id,
+      input_args = argg,
+      out_file_dir=out_file_dir,
+      out_files=list()
+    )
+
+
     tumour_list=tumour
     names(tumour_list)=Vectorize(get_file_name)(tumour_list)
  
@@ -306,7 +317,7 @@ parallel_samples_call_variants_strelka=function(
         
       }
 
-    return(job_report)
+    return(jobs_report)
 }
 
 
@@ -607,6 +618,12 @@ call_sv_manta=function(
         Check std error for more information.")
     }
 
+
+
+
+
+
+
     if(wait&&mode=="batch"){
         job_validator(job=job_report$job_id,time=update_time,
         verbose=verbose,threads=threads)
@@ -648,6 +665,10 @@ call_sv_manta=function(
 
 
 call_snvs_strelka=function( 
+    bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
+    bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+    bin_tabix=build_default_tool_binary_list()$bin_tabix,
+    bin_vep=build_default_tool_binary_list()$bin_vep,
     bin_strelka_somatic=build_default_tool_binary_list()$bin_strelka$somatic,
     bin_strelka_germline=build_default_tool_binary_list()$bin_strelka$germline,
     tumour="",normal="",ref_genome=build_default_reference_list()$HG19$reference$genome,
@@ -678,6 +699,10 @@ call_snvs_strelka=function(
 
     if(tumour!=""&normal!=""){
        jobs_report[["steps"]][["callSomaticSNVStrelka"]]<-call_somatic_snvs_strelka(
+            bin_bcftools=bin_bcftools,
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            bin_vep=bin_vep,
             bin_strelka=bin_strelka_somatic,
             tumour=tumour,normal=normal,
             ref_genome=ref_genome,
@@ -738,9 +763,15 @@ call_snvs_strelka=function(
 
 
 call_somatic_snvs_strelka=function(
+    bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
+    bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+    bin_tabix=build_default_tool_binary_list()$bin_tabix,
+    bin_vep=build_default_tool_binary_list()$bin_vep,
     bin_strelka=build_default_tool_binary_list()$bin_strelka$somatic,
     tumour="",normal="",ref_genome=build_default_reference_list()$HG19$reference$genome,
     output_dir=".",indel_candidates="",
+    extract=TRUE,
+    annotate=TRUE,
     targeted=TRUE,verbose=TRUE,
     batch_config=build_default_preprocess_config(),
     threads=1,ram=4,mode="local",
@@ -781,7 +812,7 @@ call_somatic_snvs_strelka=function(
         snvs=paste0(out_file_dir,"/results/variants/somatic.snvs.vcf.gz"),
         snvs_index=paste0(out_file_dir,"/results/variants/somatic.snvs.vcf.gz.tbi")
     )
-  )
+    ) 
   )
 
     exome=""
@@ -808,11 +839,77 @@ call_somatic_snvs_strelka=function(
     }
 
     error=execute_job(exec_code=exec_code)
-    
+
+
+
     if(error!=0){
         stop("gatk failed to run due to unknown error.
         Check std error for more information.")
     }
+
+      
+    jobs_report[["steps"]][["addAFStrelka"]] <- add_af_strelka_vcf(
+      bin_bgzip=bin_bgzip,
+      bin_tabix=bin_tabix,
+      vcf_snv=jobs_report$out_files$variants$vcf_snv,
+      vcf_indel=jobs_report$out_files$variants$vcf_indel,
+      overwrite=TRUE,
+      compress=TRUE,
+      clean=TRUE,verbose=verbose, 
+      executor_id=task_id,
+      batch_config=batch_config,
+      mode=mode,time=time,
+      threads=1,ram=1,
+      hold=job
+    )
+    vcf_snv=jobs_report[["steps"]][["addAFStrelka"]][["steps"]]$out_files$vcf_snv
+    vcf_indel=jobs_report[["steps"]][["addAFStrelka"]][["steps"]]$out_files$vcf_indel
+    
+    if(extract_pass){
+        jobs_report[["steps"]][["extractPASS"]]<-extract_pass_variants_strelks_vcf(
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            vcf_snv=vcf_snv,
+            vcf_indel=vcf_indel,
+            output_dir=out_file_dir,
+            verbose=verbose,
+            batch_config=batch_config,
+            threads=1,ram=1,mode=mode,
+            executor_id=task_id,
+            time=time,
+            hold=unlist_lvl(jobs_report[["steps"]][["addAFStrelka"]],var="job_id")
+        )
+        vcf_snv=jobs_report[["steps"]][["extractPASS"]][["steps"]]$out_files$vcf_snv
+        vcf_indel=jobs_report[["steps"]][["extractPASS"]][["steps"]]$out_files$vcf_indel
+       
+
+    }
+
+  if(annotate){
+
+      jobs_report[["steps"]][["annotateVEP"]]<-anotate_strelka_vep(
+          bin_vep=bin_vep,
+          bin_bgzip=bin_bgzip,
+          bin_tabix=bin_tabix,
+          cache_vep=cache_vep,
+          vcf_snv=vcf_snv,
+          vcf_indel=vcf_indel,
+          extract_pass=extract_pass,
+          compress=TRUE,
+          clean=clean,
+          output_dir=out_file_dir,
+          verbose=verbose,
+          batch_config=batch_config,
+          threads=threads,ram=ram,mode=mode,
+          executor_id=task_id,
+          time=time,
+          hold=hold
+      )
+      
+  }
+
+
+ 
 
     if(wait&&mode=="batch"){
         job_validator(job=job_report$job_id,time=update_time,
