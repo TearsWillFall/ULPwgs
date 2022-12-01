@@ -600,7 +600,7 @@ tabulate_info_vcf=function(vcf){
 #'
 #' VCF datastructure with tabulated INFO column body
 #'
-#' @param vcf 
+#' @param vcf
 
 untabulate_info_vcf=function(tab_vcf){
   columns=intersect(names(tab_vcf$descriptors$INFO),names(tab_vcf$body))
@@ -655,10 +655,6 @@ tabulate_vcf=function(vcf){
   pivot_wider(values_from=VALUE,names_from=c(SAMPLE,FORMAT))
 
 }
-
-
-
-dat=read_vcf("J73_0133.PASS.vcf")
 
 
 
