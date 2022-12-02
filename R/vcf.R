@@ -1158,6 +1158,7 @@ tabulate_vcf=function(
       output_dir=out_file_dir,
       nspace="ULPwgs",
       fun=func_name,
+      mode=mode,
       hold=hold,
       time=time,
       threads=threads,
