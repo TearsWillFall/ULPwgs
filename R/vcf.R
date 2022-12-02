@@ -1163,6 +1163,7 @@ tabulate_vcf=function(
       mode=mode,
       hold=hold,
       time=time,
+      verbose=verbose,
       threads=threads,
       ram=ram
     )
