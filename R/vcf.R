@@ -1052,6 +1052,8 @@ extract_csq_info_vcf=function(vcf){
 
 
 tabulate_vcf=function(
+  rdata=NULL,
+  selected=NULL,
   vcf=NULL,
   output_dir=".",verbose=FALSE,
   batch_config=build_default_preprocess_config(),
@@ -1150,7 +1152,6 @@ tabulate_vcf=function(
       return(job_report)
       
   }else{
-    
     jobs_report=run_job(
       envir=environment(),
       job_id=job,
