@@ -421,8 +421,13 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
          cat(crayon::blue("Arguments:"))
          rep(cat("    \n"),ws)
          lapply(names(arg),FUN=function(ag){
-          rep(cat("    \n"),ws)
-          cat(paste0(crayon::silver(ag),": ",arg[[ag]],"\n"))
+          if(
+            typeof(arg[[ag]])!="enviroment"
+          ){
+            rep(cat("    \n"),ws)
+            cat(paste0(crayon::silver(ag),": ",arg[[ag]],"\n"))
+          }
+        
       })
       }
       rep(cat("    \n"),ws)

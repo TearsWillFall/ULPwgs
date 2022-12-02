@@ -341,9 +341,7 @@ run_job=function(
   ram=1,
   error_mssg="Job failed"
 ){
-
-    vars=as.list(envir)
-    print(vars)
+  
 
     if(mode=="local"){
         lapply(seq(1,length(slist)),
@@ -361,7 +359,7 @@ run_job=function(
                 if(verbose){
                     print_verbose(
                       job=job_id,
-                      arg=vars,
+                      arg=as.list(envir),
                       exec_code=exec_code)
                 }
 
@@ -404,7 +402,7 @@ run_job=function(
 
       if(verbose){
           print_verbose(job=job_id,
-            arg=vars,
+            arg=as.list(envir),
             exec_code=exec_code
           )
       }
