@@ -1068,8 +1068,8 @@ tabulate_vcf=function(
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
   job=build_job(executor_id=executor_id,task_id=task_id)
-  func_name=rlang::call_name(rlang::current_call())
-  func_nspace=rlang::call_ns(rlang::current_call())
+  func_name=as.character(rlang::call_name(rlang::current_call()))
+  func_nspace=as.character(rlang::call_ns(rlang::current_call()))
 
   jobs_report=build_job_report(
     job_id=job,
