@@ -343,6 +343,7 @@ run_job=function(
 ){
 
     vars=as.list(envir)
+    print(vars)
 
     if(mode=="local"){
         lapply(seq(1,length(slist)),
