@@ -1034,11 +1034,21 @@ extract_csq_info_vcf=function(vcf){
 
 
 
-#' Return TABULATED file
+#' Generate tabulated table from annotate VCF
 #'
 #' VCF datastructure with tabulated INFO column body
 #'
-#' @param vcf 
+#' @param vcf Path to VCF file
+#' @param output_dir Path to the output directory.
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export 
 
 
 tabulate_vcf=function(

@@ -2,7 +2,7 @@
 % Please edit documentation in R/vcf.R
 \name{tabulate_vcf}
 \alias{tabulate_vcf}
-\title{Return TABULATED file}
+\title{Generate tabulated table from annotate VCF}
 \usage{
 tabulate_vcf(
   vcf = NULL,
@@ -19,7 +19,25 @@ tabulate_vcf(
 )
 }
 \arguments{
-\item{vcf}{}
+\item{vcf}{Path to VCF file}
+
+\item{output_dir}{Path to the output directory.}
+
+\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
+
+\item{executor_id}{Task EXECUTOR ID. Default "recalCovariates"}
+
+\item{task_name}{Task name. Default "recalCovariates"}
+
+\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+
+\item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
+
+\item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
+
+\item{ram}{\link{OPTIONAL} RAM memory to asing to each thread. Default 4}
 }
 \description{
 VCF datastructure with tabulated INFO column body
