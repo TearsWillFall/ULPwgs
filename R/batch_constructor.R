@@ -235,7 +235,7 @@ build_exec_innit=function(
         selected=NULL
       ){
 
-        if(is.null(func_name)){
+        if(is.null(fun)){
             stop("fun argument can't be type NULL.")
         }
 
