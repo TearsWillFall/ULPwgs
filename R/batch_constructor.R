@@ -254,8 +254,8 @@ build_exec_innit=function(
         ### Use SGE TASK ID if mode is set to batch otherwise use value
 
         selected=ifelse(inherit_scheduler,"$SGE_TASK_ID",selected)
-        
-        exec_code=paste0("Rscript -e \"",nspace,":",fun,"(rdata=\\\"",
+         
+        exec_code=paste0("Rscript -e \" ",nspace,":",fun,"(rdata=\\\"",
         rdata,"\\\",selected=$SGE_TASK_ID)\"")
         
         return(exec_code)

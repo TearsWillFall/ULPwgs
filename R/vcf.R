@@ -1068,7 +1068,7 @@ tabulate_vcf=function(
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
   job=build_job(executor_id=executor_id,task_id=task_id)
-  func_name=match.call()[[1]]
+  func_name=rlang::call_name()
 
   jobs_report=build_job_report(
     job_id=job,
