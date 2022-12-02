@@ -201,13 +201,13 @@ execute_job=function(exec_code){
 
 
 build_rdata_object=function(
-  objects=NULL,
-  job_id,
+  envir=NULL,
+  job_id=NULL,
   output_dir="."
 ){
           out_file_dir=set_dir(dir=output_dir,name="RData")
           rdata_file=paste0(out_file_dir,"/",job_id,".RData")
-          save(objects,file = rdata_file)
+          save(envir=envir,file = rdata_file)
           return(rdata_file)
   }
       
@@ -227,7 +227,7 @@ build_rdata_object=function(
 
 
 build_exec_innit=function(
-        objects=NULL,
+        envir=NULL,
         job_id=NULL,
         output_dir=".",
         nspace="ULPwgs",
@@ -246,7 +246,7 @@ build_exec_innit=function(
         ### Create RData object to inherit vars
 
         rdata=build_rdata_object(
-          objects,
+          envir=envir,
           job_id=job_id,
           output_dir=output_dir
         )
@@ -255,7 +255,7 @@ build_exec_innit=function(
 
         selected=ifelse(inherit_scheduler,"$SGE_TASK_ID",selected)
          
-        exec_code=paste0("Rscript -e \" ",nspace,":",fun,"(rdata=\\\"",
+        exec_code=paste0("Rscript -e \" ",nspace,"::",fun,"(rdata=\\\"",
         rdata,"\\\",selected=$SGE_TASK_ID)\"")
         
         return(exec_code)
@@ -347,7 +347,7 @@ run_job=function(
         lapply(seq(1,length(slist)),
             FUN=function(selected){
                 exec_code=build_exec_innit(
-                      objects=envir,
+                      envir=envir,
                       job_id=job_id,
                       output_dir=output_dir,
                       nspace=nspace,
@@ -379,7 +379,7 @@ run_job=function(
 
 
       exec_code=build_exec_innit(
-            objects=envir,
+            envir=envir,
             job_id=job_id,
             output_dir=output_dir,
             nspace=nspace,
