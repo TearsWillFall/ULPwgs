@@ -1154,6 +1154,7 @@ tabulate_vcf=function(
   }else{
     jobs_report=run_job(
       envir=environment(),
+      slist=slist,
       job_id=job,
       output_dir=out_file_dir,
       nspace="ULPwgs",

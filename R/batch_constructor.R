@@ -326,6 +326,7 @@ build_batch_exec_innit=function(
 
 run_job=function(
   envir=environment(),
+  slist=NULL,
   job_id=NULL,
   output_dir=".",
   nspace="ULPwgs",
