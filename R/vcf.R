@@ -1081,7 +1081,7 @@ tabulate_vcf=function(
   main_tabulate_vcf=function(
       vcf=NULL,
       output_dir=".",
-      output_name="",
+      output_name=NULL,
       executor_id=make_unique_id("main"),
       task_name="main"
     ){
@@ -1094,7 +1094,7 @@ tabulate_vcf=function(
 
 
       id=""
-      if(output_name!=""){ 
+      if(!is.null(output_name)){ 
         id=output_name
       }else{
         id=get_file_name(vcf)
