@@ -1068,7 +1068,7 @@ tabulate_vcf=function(
   hold=NULL
 ){
 
-  argg <- as.list(environment())
+
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir)
   job=build_job(executor_id=executor_id,task_id=task_id)
@@ -1145,6 +1145,11 @@ tabulate_vcf=function(
 
     }
 
+
+
+
+  envir=environment()
+
   if(!is.null(selected)){
       vcf=slist[selected]
       job_report=main_tabulate_vcf(
@@ -1157,7 +1162,7 @@ tabulate_vcf=function(
       
   }else{
     jobs_report=run_job(
-      envir=environment(),
+      envir=envir,
       slist=slist,
       job_id=job,
       output_dir=out_file_dir,
