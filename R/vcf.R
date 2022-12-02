@@ -1138,6 +1138,7 @@ tabulate_vcf=function(
   
 
     if(!is.null(selected)){
+        load(rdata)
         vcf=slist[selected]
         job_report=main_tabulate_vcf(
           vcf=vcf,
