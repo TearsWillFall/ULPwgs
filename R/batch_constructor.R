@@ -357,7 +357,7 @@ run_job=function(
 
                 if(verbose){
                     print_verbose(
-                      job=job,
+                      job=job_id,
                       arg=as.list(envir),
                       exec_code=exec_code)
                 }
@@ -400,7 +400,7 @@ run_job=function(
       }
 
       if(verbose){
-          print_verbose(job=job,
+          print_verbose(job=job_id,
             arg=as.list(envir),
             exec_code=exec_code
           )
