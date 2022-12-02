@@ -278,7 +278,7 @@ build_exec_innit=function(
 
 build_batch_exec_innit=function(
   exec_code=NULL,
-  job=NULL,
+  job_id=NULL,
   time="48:0:0",
   ram=3,
   threads=1,
@@ -295,7 +295,7 @@ build_batch_exec_innit=function(
 
 
     batch_code=build_job_exec(
-      job=job,time=time,ram=ram,
+      job=job_id,time=time,ram=ram,
       threads=threads,wd=wd,
       output_dir=output_dir,
       hold=hold,array=array
