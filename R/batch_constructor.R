@@ -207,7 +207,7 @@ build_rdata_object=function(
 ){
           out_file_dir=set_dir(dir=output_dir,name="RData")
           rdata_file=paste0(out_file_dir,"/",job_id,".RData")
-          save(envir=envir,file = rdata_file)
+          save(list = ls(envir,all.names = TRUE),envir=envir,file = rdata_file)
           return(rdata_file)
   }
       
