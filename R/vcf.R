@@ -1076,7 +1076,7 @@ tabulate_vcf=function(
  
 
   
-  envir=environment()
+
 
   main_tabulate_vcf=function(
       vcf=NULL,
@@ -1135,6 +1135,8 @@ tabulate_vcf=function(
 
   }
 
+  
+
     if(!is.null(selected)){
         vcf=slist[selected]
         job_report=main_tabulate_vcf(
@@ -1147,8 +1149,10 @@ tabulate_vcf=function(
         
     }else{
 
+   
       slist=vcf
       names(slist)=Vectorize(get_file_name)(slist)
+      envir=environment()  
 
       jobs_report=run_job(
         envir=envir,
