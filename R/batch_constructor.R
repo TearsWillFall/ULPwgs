@@ -336,6 +336,7 @@ run_job=function(
   hold=NULL,
   mode="local",
   time="48:00:00",
+  batch_config=build_default_preprocess_config(),
   threads=1,
   ram=1,
   error_mssg="Job failed"
@@ -380,9 +381,9 @@ run_job=function(
       exec_code=build_exec_innit(
             objects=envir,
             job_id=job_id,
-            output_dir=out_file_dir,
+            output_dir=output_dir,
             nspace=nspace,
-            fun=func_name,
+            fun=fun,
             inherit_scheduler=TRUE
       )
 
@@ -394,7 +395,7 @@ run_job=function(
             ram=ram,
             hold=hold,
             array=n_jobs,
-            output_dir=out_file_dir,
+            output_dir=output_dir,
             batch_config=batch_config
           )
       }

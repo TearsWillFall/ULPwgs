@@ -1056,13 +1056,16 @@ tabulate_vcf=function(
   selected=NULL,
   vcf=NULL,
   ns="ULPwgs",
-  output_dir=".",verbose=FALSE,
+  output_dir=".",
+  mode="local",
+  time="48:0:0",
+  threads=1,
+  ram=1,
+  verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   executor_id=make_unique_id("tabVCF"),
   task_name="tabVCF",
-  mode="local",time="48:0:0",
-  update_time=60,
-  wait=FALSE,hold=NULL
+  hold=NULL
 ){
 
   argg <- as.list(environment())
@@ -1165,7 +1168,8 @@ tabulate_vcf=function(
       time=time,
       verbose=verbose,
       threads=threads,
-      ram=ram
+      ram=ram,
+      batch_config=batch_config
     )
     return(jobs_report)
   }
