@@ -4,7 +4,19 @@
 \alias{tabulate_vcf}
 \title{Return TABULATED file}
 \usage{
-tabulate_vcf(vcf)
+tabulate_vcf(
+  vcf = NULL,
+  output_dir = ".",
+  verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
+  executor_id = make_unique_id("tabVCF"),
+  task_name = "tabVCF",
+  mode = "local",
+  time = "48:0:0",
+  update_time = 60,
+  wait = FALSE,
+  hold = NULL
+)
 }
 \arguments{
 \item{vcf}{}

@@ -9,11 +9,10 @@ anotate_strelka_vep(
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
   cache_vep = build_default_cache_list()$cache_vep,
-  vcf_snv = "",
-  vcf_indel = "",
+  vcf_snv = NULL,
+  vcf_indel = NULL,
+  vcf_sv = NULL,
   extract_pass = TRUE,
-  compress = TRUE,
-  clean = FALSE,
   output_dir = ".",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
@@ -36,10 +35,6 @@ anotate_strelka_vep(
 \item{bin_tabix}{\link{REQUIRED} Path to tabix binary.}
 
 \item{vcf_snv}{\link{REQUIRED} Path to VCF file.}
-
-\item{compress}{\link{OPTIONAL} Generate a compressed VCF}
-
-\item{clean}{\link{OPTIONAL}Remove extra files.}
 
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
@@ -67,7 +62,11 @@ anotate_strelka_vep(
 
 \item{vcf_in}{\link{REQUIRED} Path to VCF file.}
 
+\item{compress}{\link{OPTIONAL} Generate a compressed VCF}
+
 \item{output_name}{\link{OPTIONAL} Name of output file}
+
+\item{clean}{\link{OPTIONAL}Remove extra files.}
 }
 \description{
 This function annotates Strelka VCF file using VEP

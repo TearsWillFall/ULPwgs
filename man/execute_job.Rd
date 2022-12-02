@@ -5,6 +5,8 @@
 \title{Execute job with delay if job limit in Myriad SGE reached}
 \usage{
 execute_job(exec_code)
+
+execute_job(exec_code)
 }
 \arguments{
 \item{exec_code}{Execution code}
@@ -12,5 +14,7 @@ execute_job(exec_code)
 \item{delay}{Time to wait for job limit checks in seconds}
 }
 \description{
+Execute job with delay if job limit in Myriad SGE reached
+
 Execute job with delay if job limit in Myriad SGE reached
 }

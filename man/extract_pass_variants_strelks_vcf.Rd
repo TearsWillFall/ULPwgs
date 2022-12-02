@@ -9,6 +9,7 @@ extract_pass_variants_strelks_vcf(
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
   vcf_snv = NULL,
   vcf_indel = NULL,
+  vcf_sv = NULL,
   output_dir = ".",
   verbose = FALSE,
   sep = "\\t",

@@ -5,6 +5,11 @@
 \title{Manta  wrapper for structural variant calling}
 \usage{
 call_sv_manta(
+  bin_bcftools = build_default_tool_binary_list()$bin_bcftools,
+  bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
+  bin_tabix = build_default_tool_binary_list()$bin_tabix,
+  bin_vep = build_default_tool_binary_list()$bin_vep,
+  cache_vep = build_default_cache_list()$cache_vep,
   bin_manta = build_default_tool_binary_list()$bin_manta,
   tumour = "",
   normal = "",

@@ -13,6 +13,7 @@ annotate_vep(
   cache_vep = build_default_cache_list()$cache_vep,
   vcf = "",
   output_name = "",
+  fmt = "vcf",
   compress = TRUE,
   clean = FALSE,
   output_dir = ".",

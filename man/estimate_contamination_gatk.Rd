@@ -12,7 +12,7 @@ estimate_contamination_gatk(
   normal = NA,
   tumour_pileup = "",
   normal_pileup = "",
-  output_name = NULL,
+  output_name = "",
   output_dir = ".",
   tmp_dir = ".",
   biallelic_db = build_default_reference_list()$HG19$variant$biallelic_reference,

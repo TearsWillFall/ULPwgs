@@ -2,7 +2,7 @@
 % Please edit documentation in R/vcf.R
 \name{add_sv_af_strelka_vcf}
 \alias{add_sv_af_strelka_vcf}
-\title{Add sv AF information to Strelka VCF file
+\title{Add structural variant AF information to Strelka VCF file
 This function reads and modifies Strelka produced VCF files to
 add an entry for AF within the VCF file}
 \usage{
@@ -17,8 +17,8 @@ add_sv_af_strelka_vcf(
   bgzip_index = FALSE,
   clean = TRUE,
   verbose = FALSE,
-  executor_id = make_unique_id("addAFsvStrelka"),
-  task_name = "addAFsvStrelka",
+  executor_id = make_unique_id("addAFindelStrelka"),
+  task_name = "addAFindelStrelka",
   batch_config = build_default_preprocess_config(),
   mode = "local",
   time = "48:0:0",
@@ -69,7 +69,7 @@ add_sv_af_strelka_vcf(
 \item{output_dir}{Path to the output directory.}
 }
 \description{
-Add sv AF information to Strelka VCF file
+Add structural variant AF information to Strelka VCF file
 This function reads and modifies Strelka produced VCF files to
 add an entry for AF within the VCF file
 }

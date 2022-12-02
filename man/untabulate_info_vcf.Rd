@@ -6,6 +6,9 @@
 \usage{
 untabulate_info_vcf(tab_vcf)
 }
+\arguments{
+\item{vcf}{VCF datastructure with tabulated INFO column body}
+}
 \description{
 VCF datastructure with tabulated INFO column body
 }

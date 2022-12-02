@@ -5,6 +5,11 @@
 \title{Strelka wrapper for germline SNV variant calling}
 \usage{
 call_germline_snvs_strelka(
+  bin_bcftools = build_default_tool_binary_list()$bin_bcftools,
+  bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
+  bin_tabix = build_default_tool_binary_list()$bin_tabix,
+  bin_vep = build_default_tool_binary_list()$bin_vep,
+  cache_vep = build_default_cache_list()$cache_vep,
   bin_strelka = build_default_tool_binary_list()$bin_strelka$germline,
   normal = "",
   ref_genome = build_default_reference_list()$HG19$reference$genome,

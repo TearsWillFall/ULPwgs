@@ -266,7 +266,7 @@ anotate_strelka_vep=function(
 
     jobs_report$out_files=list(
         vcf_snv=unlist_lvl(jobs_report[["steps"]][["annotateeSnvStrelka"]],var="compressed_vcf"),
-        vcf_indel=unlist_lvl(jobs_report[["steps"]][["annotateIndelStrelka"]],var="compressed_vcf")
+        vcf_indel=unlist_lvl(jobs_report[["steps"]][["annotateIndelStrelka"]],var="compressed_vcf"),
         vcf_sv=unlist_lvl(jobs_report[["steps"]][["annotateSvStrelka"]],var="compressed_vcf")
     
     )

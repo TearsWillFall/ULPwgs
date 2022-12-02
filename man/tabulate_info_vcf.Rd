@@ -7,7 +7,7 @@
 tabulate_info_vcf(vcf)
 }
 \arguments{
-\item{vcf}{}
+\item{vcf}{VCF datastructure with tabulated INFO column body}
 }
 \description{
 VCF datastructure with tabulated INFO column body

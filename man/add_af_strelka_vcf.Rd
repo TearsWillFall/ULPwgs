@@ -11,12 +11,7 @@ add_af_strelka_vcf(
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
   vcf_snv = NULL,
   vcf_indel = NULL,
-  overwrite = FALSE,
-  compress = TRUE,
-  index = TRUE,
-  index_format = "tbi",
-  bgzip_index = FALSE,
-  clean = TRUE,
+  vcf_sv = NULL,
   verbose = FALSE,
   executor_id = make_unique_id("addAFStrelka"),
   task_name = "addAFStrelka",
@@ -39,16 +34,6 @@ add_af_strelka_vcf(
 
 \item{vcf_indel}{Path to VCF file with snv}
 
-\item{compress}{Compress VCF file. Default TRUE.}
-
-\item{index}{Index VCF file. Default TRUE.}
-
-\item{index_format}{VCF index format. Default tbi. Options \link{tbi,cbi}.}
-
-\item{bgzip_index}{Create BGZIP index for compressed file. Default FALSE}
-
-\item{clean}{Remove input VCF after completion. Default FALSE.}
-
 \item{verbose}{Enables progress messages. Default False.}
 
 \item{executor_id}{Task EXECUTOR ID. Default "gatherBQSR"}
@@ -69,7 +54,17 @@ add_af_strelka_vcf(
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
 
+\item{compress}{Compress VCF file. Default TRUE.}
+
+\item{index}{Index VCF file. Default TRUE.}
+
+\item{index_format}{VCF index format. Default tbi. Options \link{tbi,cbi}.}
+
+\item{bgzip_index}{Create BGZIP index for compressed file. Default FALSE}
+
 \item{output_dir}{Path to the output directory.}
+
+\item{clean}{Remove input VCF after completion. Default FALSE.}
 }
 \description{
 Add AF information to Strelka VCF file

@@ -982,7 +982,7 @@ extract_pass_variants_strelks_vcf=function(
 #'
 #' VCF datastructure with tabulated INFO column body
 #'
-#' @param vcf 
+#' @param vcf VCF datastructure with tabulated INFO column body
 
 tabulate_info_vcf=function(vcf){
   vcf$body=vcf$body %>% unnest_wider(INFO)  
@@ -994,7 +994,7 @@ tabulate_info_vcf=function(vcf){
 #'
 #' VCF datastructure with tabulated INFO column body
 #'
-#' @param vcf
+#' @param vcf VCF datastructure with tabulated INFO column body
 
 untabulate_info_vcf=function(tab_vcf){
   columns=intersect(names(tab_vcf$descriptors$INFO),names(tab_vcf$body))
@@ -1030,6 +1030,10 @@ extract_csq_info_vcf=function(vcf){
 
 
 
+
+
+
+
 #' Return TABULATED file
 #'
 #' VCF datastructure with tabulated INFO column body
@@ -1037,17 +1041,121 @@ extract_csq_info_vcf=function(vcf){
 #' @param vcf 
 
 
+tabulate_vcf=function(
+  vcf=NULL,
+  output_dir=".",verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  executor_id=make_unique_id("tabVCF"),
+  task_name="tabVCF",
+  mode="local",time="48:0:0",
+  update_time=60,
+  wait=FALSE,hold=NULL
+){
 
-tabulate_vcf=function(vcf){
-  vcf=read_vcf(vcf)
-  vcf=extract_csq_info_vcf(vcf)
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
+  out_file_dir=set_dir(dir=output_dir)
+  job=build_job(executor_id=executor_id,task_id=task_id)
+  func_name=match.call()[[1]]
 
-  ##### Extract body information from VCF
+  jobs_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    task_id=task_id,
+    input_args = argg,
+    out_file_dir=out_file_dir,
+    out_files=list()
+  )
 
-  vcf_body=vcf$body %>% unnest(cols=Allele:TRANSCRIPTION_FACTORS)
-  vcf_body=vcf_body %>% unnest_vcf_body() %>% 
-  pivot_wider(values_from=VALUE,names_from=c(SAMPLE,FORMAT))
+  slist=vcf
 
+  names(slist)=Vectorize(get_file_name)(slist)
+
+  main_tabulate_vcf=function(
+      vcf=NULL,
+      output_dir=".",
+      output_name="",
+      executor_id=make_unique_id("main"),
+      task_name="main"
+    ){
+
+      argg <- as.list(environment())
+      task_id=make_unique_id(task_name)
+      out_file_dir=set_dir(dir=output_dir)
+      
+      job=build_job(executor_id=executor_id,task_id=task_id)
+
+
+      id=""
+      if(output_name!=""){ 
+        id=output_name
+      }else{
+        id=get_file_name(vcf)
+      }
+
+
+      out_file=paste0(out_file_dir,"/",id,".tabulated.tsv")
+
+
+      vcf=read_vcf(vcf)
+      vcf=extract_csq_info_vcf(vcf)
+
+      ##### Extract body information from VCF
+
+      vcf_body=vcf$body %>% unnest(cols=Allele:TRANSCRIPTION_FACTORS)
+      vcf_body=vcf_body %>% unnest_vcf_body() %>% 
+      pivot_wider(values_from=VALUE,names_from=c(SAMPLE,FORMAT))
+
+      #### Write to file 
+
+
+      job_report=build_job_report(
+        job_id=job,
+        executor_id=executor_id,
+        exec_code=list(), 
+        task_id=task_id,
+        input_args=argg,
+        out_file_dir=out_file_dir,
+        out_files=list(
+          vfc_tab=out_file
+          )
+        )
+
+      write.table(vcf_body,file=out_file,sep="\t",
+      quote=FALSE,row.names=FALSE,col.names=TRUE)
+
+      return(job_report)
+
+    }
+
+
+  if(!is.null(selected)){
+      vcf=slist[selected]
+      job_report=main_tabulate_vcf(
+        vcf=vcf,
+        output_dir=out_file_dir,
+        output_name=get_file_name(vcf),
+        executor_id=task_id
+      )
+      return(job_report)
+      
+  }else{
+    
+    jobs_report=run_job(
+      envir=environment(),
+      job_id=job,
+      output_dir=out_file_dir,
+      library="ULPwgs",
+      fun=func_name,
+      hold=hold,
+      time=time,
+      threads=threads,
+      ram=ram
+    )
+    return(jobs_report)
+  }
+
+      
 }
 
 

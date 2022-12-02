@@ -62,6 +62,10 @@ job_order=1, input_args="",out_file_dir="", out_files=list(file="file")){
 
 build_job_exec=function(job="",time="48:0:0",ram=3,threads=1,
 output_dir=".",hold=NULL,wd=getwd(),array=""){
+
+  if(is.null(job)){ 
+    stop("A job ID has to be supplied to uniquely identify the job.")
+  }
   
   if(!is.null(hold)){
     hold=paste0(" -hold_jid ",paste0(hold,collapse=","))
@@ -169,6 +173,242 @@ execute_job=function(exec_code){
 }
 
 
+
+
+
+
+
+#' Execute job with delay if job limit in Myriad SGE reached
+#' 
+#' @param exec_code Execution code
+#' @param delay Time to wait for job limit checks in seconds
+#' @export
+
+execute_job=function(exec_code){
+  error=system(exec_code)
+  return(error)
+}
+
+
+
+
+#' Build RData object to inherit in main_function
+#' 
+#' @param objects List of objects to save in RData object
+#' @param job_id Job Identifier
+#' @param output_dir Path to output directory 
+#' @export
+
+
+build_rdata_object=function(
+  objects=NULL,
+  job_id,
+  output_dir="."
+){
+          out_file_dir=set_dir(dir=output_dir,name="RData")
+          rdata_file=paste0(out_file_dir,"/",job_id,".RData")
+          save(objects,file = rdata_file)
+          return(rdata_file)
+  }
+      
+
+
+
+
+#' Build execution innit for function to execute
+#' 
+#' @param objects List of objects to save in RData object
+#' @param job_id Job Identifier
+#' @param nspace Function namespace. Default ULPwgs
+#' @param fun Function name. Default NULL
+#' @param inherit_scheduler Inherit submission order from scheduler. Default FALSE
+#' @param output_dir Path to output directory 
+#' @export
+
+
+build_exec_innit=function(
+        objects,job_id,
+        output_dir,
+        nspace="ULPwgs",
+        fun=NULL,
+        inherit_scheduler=FALSE,
+        selected=NULL
+      ){
+
+        if(is.null(func_name)){
+            stop("fun argument can't be type NULL.")
+        }
+
+        if(is.null(selected)){
+          stop("selected argument can't be of type NULL.")
+        }
+        ### Create RData object to inherit vars
+
+        rdata=build_rdata_object(
+          objects,
+          job_id=job_id,
+          output_dir=output_dir
+        )
+      
+        ### Use SGE TASK ID if mode is set to batch otherwise use value
+
+        selected=ifelse(inherit_scheduler,"$SGE_TASK_ID",selected)
+        
+        exec_code=paste0("Rscript -e \"",nspace,":",fun,"(rdata=\\\"",
+        rdata,"\\\",selected=$SGE_TASK_ID)\"")
+        
+        return(exec_code)
+
+}
+
+
+
+
+#' Build execution innit for batch
+#' 
+#' @param objects List of objects to save in RData object
+#' @param job_id Job Identifier
+#' @param nspace Function namespace. Default ULPwgs
+#' @param fun Function name. Default NULL
+#' @param inherit_scheduler Inherit submission order from scheduler. Default FALSE
+#' @param output_dir Path to output directory 
+#' @export
+
+
+build_batch_exec_innit=function(
+  exec_code=NULL,
+  job=NULL,
+  time="48:0:0",
+  ram=3,
+  threads=1,
+  wd=getwd(),
+  hold=NULL,
+  array=NULL,
+  output_dir=".",
+  batch_config=build_default_preprocess_config()
+){  
+
+    if(is.null(exec_code)){
+      stop("exec_code argument can't be of type NULL")
+    }
+
+
+    batch_code=build_job_exec(
+      job=job,time=time,ram=ram,
+      threads=threads,wd=wd,
+      output_dir=output_dir,
+      hold=hold,array=array
+    )
+
+    out_file_dir=set_dir(dir=output_dir,name="batch")
+    exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
+    ";",exec_code,"'|",batch_code)
+
+    return(exec_code)
+}
+
+
+#' Run job from batch constructor
+#' 
+#' @param envir Current enviroment.
+#' @param job_id Job Identifier
+#' @param time Current job time
+#' @param time Job time
+#' @param output_dir Path to output directory
+#' @param nspace Function namespace. Default ULPwgs
+#' @param fun Function name. Default NULL
+#' @param hold Job identifier to hold on. Default NULL
+#' @param output_dir Path to output directory 
+#' 
+#' 
+#' @export
+
+
+run_job=function(
+  envir=environment(),
+  job_id=NULL,
+  output_dir=".",
+  nspace="ULPwgs",
+  fun=NULL,
+  hold=NULL,
+  time="48:00:00",
+  threads=1,
+  ram=1
+){
+ 
+    if(mode=="local"){
+        lapply(seq(1,length(slist)),
+            FUN=function(selected){
+                exec_code=build_exec_innit(
+                      objects=envir,
+                      job_id=job,
+                      output_dir=output_dir,
+                      nspace=nspace,
+                      fun=fun,
+                      inherit_scheduler=FALSE,
+                      selected=selected
+                )
+
+
+                if(verbose){
+                    print_verbose(
+                      job=job,
+                      arg=as.list(envir),
+                      exec_code=exec_code)
+                }
+
+
+                error=execute_job(exec_code=exec_code)
+                
+                if(error!=0){
+                    stop(error_message)
+                }
+              }
+         )
+        
+    }else if(mode=="batch"){
+        
+        
+      n_jobs=length(slist)
+
+
+      exec_code=build_exec_innit(
+            objects=envir,
+            job_id=job_id,
+            output_dir=out_file_dir,
+            nspace=nspace,
+            fun=func_name,
+            inherit_scheduler=TRUE
+      )
+
+      exec_code=build_batch_exec_innit(
+            exec_code=exec_code,
+            job=job,
+            time=time,
+            threads=threads,
+            ram=ram,
+            hold=hold,
+            array=n_jobs,
+            output_dir=out_file_dir,
+            batch_config=batch_config
+          )
+      }
+
+      if(verbose){
+          print_verbose(job=job,
+            arg=as.list(envir),
+            exec_code=exec_code
+          )
+      }
+
+
+      error=execute_job(exec_code=exec_code)
+
+      if(error!=0){
+          stop(error_message)
+      }
+
+}
 
 
 
