@@ -1055,6 +1055,7 @@ tabulate_vcf=function(
   rdata=NULL,
   selected=NULL,
   vcf=NULL,
+  namespace="ULPwgs",
   output_dir=".",verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   executor_id=make_unique_id("tabVCF"),
@@ -1069,7 +1070,7 @@ tabulate_vcf=function(
   out_file_dir=set_dir(dir=output_dir)
   job=build_job(executor_id=executor_id,task_id=task_id)
   func_name=as.character(rlang::call_name(rlang::current_call()))
-  func_nspace=as.character(rlang::call_ns(rlang::current_call()))
+ 
 
   jobs_report=build_job_report(
     job_id=job,
