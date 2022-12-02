@@ -1069,6 +1069,7 @@ tabulate_vcf=function(
   out_file_dir=set_dir(dir=output_dir)
   job=build_job(executor_id=executor_id,task_id=task_id)
   func_name=rlang::call_name()
+  func_nspace=rlang::call_namespace()
 
   jobs_report=build_job_report(
     job_id=job,
@@ -1140,7 +1141,6 @@ tabulate_vcf=function(
 
     }
 
-
   if(!is.null(selected)){
       vcf=slist[selected]
       job_report=main_tabulate_vcf(
@@ -1157,7 +1157,7 @@ tabulate_vcf=function(
       slist=slist,
       job_id=job,
       output_dir=out_file_dir,
-      nspace="ULPwgs",
+      nspace=func_nspace,
       fun=func_name,
       mode=mode,
       hold=hold,
