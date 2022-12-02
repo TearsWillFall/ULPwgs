@@ -227,8 +227,9 @@ build_rdata_object=function(
 
 
 build_exec_innit=function(
-        objects,job_id,
-        output_dir,
+        objects=NULL,
+        job_id=NULL,
+        output_dir=".",
         nspace="ULPwgs",
         fun=NULL,
         inherit_scheduler=FALSE,
@@ -335,15 +336,17 @@ run_job=function(
   mode="local",
   time="48:00:00",
   threads=1,
-  ram=1
+  ram=1,
+  error_mssg="Job failed"
 ){
+
  
     if(mode=="local"){
         lapply(seq(1,length(slist)),
             FUN=function(selected){
                 exec_code=build_exec_innit(
                       objects=envir,
-                      job_id=job,
+                      job_id=job_id,
                       output_dir=output_dir,
                       nspace=nspace,
                       fun=fun,
@@ -363,7 +366,7 @@ run_job=function(
                 error=execute_job(exec_code=exec_code)
                 
                 if(error!=0){
-                    stop(error_message)
+                    stop(error_mssg)
                 }
               }
          )
@@ -385,7 +388,7 @@ run_job=function(
 
       exec_code=build_batch_exec_innit(
             exec_code=exec_code,
-            job=job,
+            job_id=job_id,
             time=time,
             threads=threads,
             ram=ram,
