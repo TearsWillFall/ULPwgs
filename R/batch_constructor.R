@@ -330,6 +330,7 @@ run_job=function(
   slist=NULL,
   job_id=NULL,
   output_dir=".",
+  verbose=FALSE,
   nspace="ULPwgs",
   fun=NULL,
   hold=NULL,
@@ -353,7 +354,6 @@ run_job=function(
                       inherit_scheduler=FALSE,
                       selected=selected
                 )
-
 
                 if(verbose){
                     print_verbose(
