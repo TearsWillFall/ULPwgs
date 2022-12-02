@@ -369,8 +369,8 @@ run_job=function(
                 if(error!=0){
                     stop(error_mssg)
                 }
-              }
-         )
+            }
+        )
         
     }else if(mode=="batch"){
         

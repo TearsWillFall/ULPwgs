@@ -1074,11 +1074,13 @@ tabulate_vcf=function(
   job=build_job(executor_id=executor_id,task_id=task_id)
   func_name=as.character(rlang::call_name(rlang::current_call()))
  
-
-
   slist=vcf
 
   names(slist)=Vectorize(get_file_name)(slist)
+
+
+  
+  envir=environment()
 
   main_tabulate_vcf=function(
       vcf=NULL,
@@ -1135,38 +1137,38 @@ tabulate_vcf=function(
 
       return(job_report)
 
-    }
-
-  envir=environment()
-
-  if(!is.null(selected)){
-      vcf=slist[selected]
-      job_report=main_tabulate_vcf(
-        vcf=vcf,
-        output_dir=out_file_dir,
-        output_name=get_file_name(vcf),
-        executor_id=task_id
-      )
-      return(job_report)
-      
-  }else{
-    jobs_report=run_job(
-      envir=envir,
-      slist=slist,
-      job_id=job,
-      output_dir=out_file_dir,
-      nspace=ns,
-      fun=func_name,
-      mode=mode,
-      hold=hold,
-      time=time,
-      verbose=verbose,
-      threads=threads,
-      ram=ram,
-      batch_config=batch_config
-    )
-    return(jobs_report)
   }
+
+   
+
+    if(!is.null(selected)){
+        vcf=slist[selected]
+        job_report=main_tabulate_vcf(
+          vcf=vcf,
+          output_dir=out_file_dir,
+          output_name=get_file_name(vcf),
+          executor_id=task_id
+        )
+        return(job_report)
+        
+    }else{
+      jobs_report=run_job(
+        envir=envir,
+        slist=slist,
+        job_id=job,
+        output_dir=out_file_dir,
+        nspace=ns,
+        fun=func_name,
+        mode=mode,
+        hold=hold,
+        time=time,
+        verbose=verbose,
+        threads=threads,
+        ram=ram,
+        batch_config=batch_config
+      )
+      return(jobs_report)
+    }
 
       
 }
