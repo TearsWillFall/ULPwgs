@@ -1074,10 +1074,6 @@ tabulate_vcf=function(
   job=build_job(executor_id=executor_id,task_id=task_id)
   func_name=as.character(rlang::call_name(rlang::current_call()))
  
-  slist=vcf
-
-  names(slist)=Vectorize(get_file_name)(slist)
-
 
   
   envir=environment()
@@ -1152,6 +1148,10 @@ tabulate_vcf=function(
         return(job_report)
         
     }else{
+
+      slist=vcf
+      names(slist)=Vectorize(get_file_name)(slist)
+
       jobs_report=run_job(
         envir=envir,
         slist=slist,
