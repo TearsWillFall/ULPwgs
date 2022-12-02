@@ -331,6 +331,7 @@ run_job=function(
   nspace="ULPwgs",
   fun=NULL,
   hold=NULL,
+  mode="local",
   time="48:00:00",
   threads=1,
   ram=1
