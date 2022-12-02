@@ -1135,8 +1135,6 @@ tabulate_vcf=function(
 
   }
 
-   
-
     if(!is.null(selected)){
         vcf=slist[selected]
         job_report=main_tabulate_vcf(
