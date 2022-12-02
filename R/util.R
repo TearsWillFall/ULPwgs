@@ -422,7 +422,7 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
          rep(cat("    \n"),ws)
          lapply(names(arg),FUN=function(ag){
           if(
-            typeof(arg[[ag]])!="enviroment"
+            is.environment(arg[[ag]])
           ){
             rep(cat("    \n"),ws)
             cat(paste0(crayon::silver(ag),": ",arg[[ag]],"\n"))
