@@ -986,7 +986,7 @@ extract_pass_variants_strelks_vcf=function(
 #' @export
 
 tabulate_info_vcf=function(vcf){
-  vcf$body=vcf$body %>% unnest_wider(INFO)  
+  vcf$body=vcf$body %>% tidyr::unnest_wider(INFO)  
   return(vcf)
 }
 
