@@ -621,7 +621,7 @@ call_sv_manta=function(
     } 
 
   
-    job_report=build_job_report(
+    jobs_report=build_job_report(
       job_id=job,
       executor_id=executor_id,
       task_id=task_id,
@@ -738,7 +738,7 @@ call_sv_manta=function(
         verbose=verbose,threads=threads)
     }
 
-    return(job_report)
+    return(jobs_report)
 
 
 
