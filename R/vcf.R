@@ -1115,27 +1115,10 @@ tabulate_vcf=function(
       vcf_body=vcf$body %>% tidyr::unnest(cols=Allele:TRANSCRIPTION_FACTORS)
       vcf_body=vcf_body %>% unnest_vcf_body(full=TRUE) %>% 
       tidyr::pivot_wider(values_from=VALUE,names_from=c(SAMPLE,FORMAT))
-      print(vcf_body)
-
-      #### Write to file 
-
-
-      job_report=build_job_report(
-        job_id=job,
-        executor_id=executor_id,
-        exec_code=list(), 
-        task_id=task_id,
-        input_args=argg,
-        out_file_dir=out_file_dir,
-        out_files=list(
-          vfc_tab=out_file
-          )
-        )
+  
 
       write.table(vcf_body,file=out_file,sep="\t",
       quote=FALSE,row.names=FALSE,col.names=TRUE)
-
-      return(job_report)
 
   }
 
@@ -1145,13 +1128,12 @@ tabulate_vcf=function(
         select=selected
         load(rdata)
         vcf=slist[select]
-        job_report=main_tabulate_vcf(
+        main_tabulate_vcf(
           vcf=vcf,
           output_dir=out_file_dir,
           output_name=get_file_name(vcf),
           executor_id=task_id
         )
-        return(job_report)
         
     }else{
 
@@ -1159,7 +1141,7 @@ tabulate_vcf=function(
       names(slist)=Vectorize(get_file_name)(slist)
       envir=environment()  
 
-      jobs_report=run_job(
+      run_job(
         envir=envir,
         slist=slist,
         job_id=job,
@@ -1174,7 +1156,7 @@ tabulate_vcf=function(
         ram=ram,
         batch_config=batch_config
       )
-      return(jobs_report)
+     
     }
 
       

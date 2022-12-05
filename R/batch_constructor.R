@@ -345,7 +345,7 @@ run_job=function(
 
  
     if(mode=="local"){
-        lapply(seq(1,length(slist)),
+        lapply(1:length(slist),
             FUN=function(selected){
                 exec_code=build_exec_innit(
                       envir=envir,
