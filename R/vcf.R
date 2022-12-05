@@ -983,6 +983,7 @@ extract_pass_variants_strelks_vcf=function(
 #' VCF datastructure with tabulated INFO column body
 #'
 #' @param vcf VCF datastructure with tabulated INFO column body
+#' @export
 
 tabulate_info_vcf=function(vcf){
   vcf$body=vcf$body %>% unnest_wider(INFO)  
@@ -995,6 +996,7 @@ tabulate_info_vcf=function(vcf){
 #' VCF datastructure with tabulated INFO column body
 #'
 #' @param vcf VCF datastructure with tabulated INFO column body
+#' @export
 
 untabulate_info_vcf=function(tab_vcf){
   columns=intersect(names(tab_vcf$descriptors$INFO),names(tab_vcf$body))
@@ -1138,9 +1140,9 @@ tabulate_vcf=function(
   
 
     if(!is.null(selected)){
-        toSelect=selected
+        select=selected
         load(rdata)
-        vcf=slist[toSelect]
+        vcf=slist[select]
         job_report=main_tabulate_vcf(
           vcf=vcf,
           output_dir=out_file_dir,
