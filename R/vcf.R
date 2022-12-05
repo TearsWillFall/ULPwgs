@@ -1079,7 +1079,7 @@ tabulate_vcf=function(
   func_name=as.character(rlang::call_name(rlang::current_call()))
  
 
-  
+  main_tabulate_vcf("C:\\Users\\regmova\\Github\\ULPwgs\\J73_0133.PASS.vcf")
 
 
   main_tabulate_vcf=function(
@@ -1114,8 +1114,9 @@ tabulate_vcf=function(
       ##### Extract body information from VCF
 
       vcf_body=vcf$body %>% tidyr::unnest(cols=Allele:TRANSCRIPTION_FACTORS)
-      vcf_body=vcf_body %>% unnest_vcf_body() %>% 
+      vcf_body=vcf_body %>% unnest_vcf_body(full=TRUE) %>% 
       tidyr::pivot_wider(values_from=VALUE,names_from=c(SAMPLE,FORMAT))
+      print(vcf_body)
 
       #### Write to file 
 
