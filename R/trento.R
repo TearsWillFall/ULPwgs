@@ -277,7 +277,7 @@ clonet_trento=function(
     out_file_dir=set_dir(dir=output_dir,name="clonet_reports")
     out_file_dir_tmp=set_dir(dir=output_dir,name="clonet_tmp")
     out_file_dir=set_dir(dir=out_file_dir,name=get_file_name(tumour))
-    out_file_dir_tmp=set_dir(dir= out_file_dir_tmp,name=get_file_name(tumour))
+    out_file_dir_tmp=set_dir(dir=out_file_dir_tmp,name=get_file_name(tumour))
     
 
     if(!is.null(tc)){
@@ -295,7 +295,8 @@ clonet_trento=function(
 
 
     exec_code=paste(" singularity run -H ",paste0(getwd(),":/home"), " --app pcfs ",
-    sif_clonet, " -s ", sample_sheet ," -o ", out_file_dir, " -t ", out_file_dir_tmp, " -n " , threads, 
+    sif_clonet, " -s ", normalizePath(sample_sheet) ," -o ", out_file_dir, " -t ", 
+    out_file_dir_tmp, " -n " , threads, 
     tc, ploidy)
     
 

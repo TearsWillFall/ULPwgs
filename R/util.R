@@ -68,6 +68,7 @@ filter_chr=function(
 
 
 set_dir=function(dir="",name=""){
+  
   sep="/"
 
   if(dir==""){
