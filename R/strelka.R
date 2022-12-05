@@ -727,12 +727,6 @@ call_sv_manta=function(
   }
 
 
-
-
-
-
-
-
     if(wait&&mode=="batch"){
         job_validator(job=job_report$job_id,time=update_time,
         verbose=verbose,threads=threads)
