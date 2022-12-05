@@ -21,8 +21,9 @@ read_vcf=function(vcf="",sep="\t"){
   raw_header=header[-length(header)]
   descriptors=extract_descriptors_vcf(raw_header)
   body=read.delim(text=body,stringsAsFactors = FALSE,sep=sep,
-  header=FALSE)
-  names(body)=read.table(text=sub("#","",col_names),stringsAsFactors = FALSE)
+  header=FALSE,colClasses="character")
+  names(body)=read.table(text=sub("#","",col_names),
+  stringsAsFactors = FALSE,colClasses="character")
   samples=setdiff(names(body),cols)
   body=extract_body_vcf(body,samples)
   vcf_object=list(
