@@ -399,21 +399,25 @@ run_job=function(
             output_dir=output_dir,
             batch_config=batch_config
           )
+
+
+        
+        if(verbose){
+            print_verbose(job=job_id,
+              arg=as.list(envir),
+              exec_code=exec_code
+            )
+        }
+
+
+        error=execute_job(exec_code=exec_code)
+
+        if(error!=0){
+            stop(error_message)
+        }
+        
       }
 
-      if(verbose){
-          print_verbose(job=job_id,
-            arg=as.list(envir),
-            exec_code=exec_code
-          )
-      }
-
-
-      error=execute_job(exec_code=exec_code)
-
-      if(error!=0){
-          stop(error_message)
-      }
 
 }
 
