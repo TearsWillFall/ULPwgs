@@ -435,8 +435,8 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
          rep(cat("    \n"),ws)
          lapply(names(arg),FUN=function(ag){
           tryCatch({
-            rep(cat("    \n"),ws)
-            cat(paste0(crayon::silver(ag),": ",arg[[ag]],"\n"))},e=function(e){
+            rep(cat("    \n"),ws);
+            cat(paste0(crayon::silver(ag),": ",arg[[ag]],"\n"))},error=function(e){
                 NULL
             })
       })
