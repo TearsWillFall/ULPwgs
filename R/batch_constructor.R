@@ -415,11 +415,36 @@ run_job=function(
         if(error!=0){
             stop(error_message)
         }
-        
+
       }
 
 
 }
 
 
+#' @export
+
+print_verbose=function(exec_code,arg=NULL,job,ws=1){
+      rep(cat("    \n"),ws)
+      cat(crayon::blue("Job:"))
+      rep(cat("    \n"),ws)
+      cat(paste0(crayon::red(job,"\n")))
+      rep(cat("    \n"),ws)
+      if(!is.null(arg)){
+         cat(crayon::blue("Arguments:"))
+         rep(cat("    \n"),ws)
+         lapply(names(arg),FUN=function(ag){
+          tryCatch({
+            rep(cat("    \n"),ws)
+            cat(paste0(crayon::silver(ag),": ",arg[[ag]],"\n"))},e=function(e){
+                NULL
+            })
+      })
+      }
+      rep(cat("    \n"),ws)
+      cat(crayon::blue("Command:"))
+      rep(cat("    \n"),ws)
+      cat(paste0(crayon::green(exec_code,"\n")))
+      rep(cat("    \n"),ws)
+}
 

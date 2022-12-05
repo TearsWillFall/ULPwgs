@@ -410,33 +410,7 @@ parse_var=function(var,sep="\\\""){
 }
 
 
-#' @export
 
-print_verbose=function(exec_code,arg=NULL,job,ws=1){
-      rep(cat("    \n"),ws)
-      cat(crayon::blue("Job:"))
-      rep(cat("    \n"),ws)
-      cat(paste0(crayon::red(job,"\n")))
-      rep(cat("    \n"),ws)
-      if(!is.null(arg)){
-         cat(crayon::blue("Arguments:"))
-         rep(cat("    \n"),ws)
-         lapply(names(arg),FUN=function(ag){
-          if(
-            is.environment(unlist(arg[[ag]]))
-          ){
-            rep(cat("    \n"),ws)
-            cat(paste0(crayon::silver(ag),": ",arg[[ag]],"\n"))
-          }
-        
-      })
-      }
-      rep(cat("    \n"),ws)
-      cat(crayon::blue("Command:"))
-      rep(cat("    \n"),ws)
-      cat(paste0(crayon::green(exec_code,"\n")))
-      rep(cat("    \n"),ws)
-}
 
 
 #' Check required columns in sample sheet
