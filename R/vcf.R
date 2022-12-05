@@ -1053,6 +1053,7 @@ extract_csq_info_vcf=function(vcf){
 
 tabulate_vcf=function(
   rdata=NULL,
+  selected=NULL,
   vcf=NULL,
   ns="ULPwgs",
   output_dir=".",
@@ -1136,9 +1137,10 @@ tabulate_vcf=function(
 
   
 
-    if(exists(selected)){
+    if(!is.null(selected)){
+        toSelect=selected
         load(rdata)
-        vcf=slist[selected]
+        vcf=slist[toSelect]
         job_report=main_tabulate_vcf(
           vcf=vcf,
           output_dir=out_file_dir,
