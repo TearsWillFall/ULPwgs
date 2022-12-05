@@ -437,7 +437,7 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
           tryCatch({
             rep(cat("    \n"),ws);
             cat(paste0(crayon::silver(ag),": ",arg[[ag]],"\n"))},error=function(e){
-                NULL
+              cat(paste0(crayon::silver(ag),": ","\n"))
             })
       })
       }
