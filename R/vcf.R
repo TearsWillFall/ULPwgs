@@ -1079,7 +1079,6 @@ tabulate_vcf=function(
   func_name=as.character(rlang::call_name(rlang::current_call()))
  
 
-  main_tabulate_vcf("C:\\Users\\regmova\\Github\\ULPwgs\\J73_0133.PASS.vcf")
 
 
   main_tabulate_vcf=function(
