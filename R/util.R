@@ -70,7 +70,7 @@ filter_chr=function(
 set_dir=function(dir="",name=""){
   
   sep="/"
-
+  dir=normalizePath(dir)
   if(dir==""){
     sep=""
   }
@@ -80,7 +80,7 @@ set_dir=function(dir="",name=""){
   if (!dir.exists(new_dir)){
       dir.create(new_dir,recursive=TRUE)
   }
-  return(normalizePath(new_dir))
+  return(new_dir)
 }
 
 
