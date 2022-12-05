@@ -250,13 +250,19 @@ build_exec_innit=function(
           job_id=job_id,
           output_dir=output_dir
         )
-         
-        ### Use SGE TASK ID if mode is set to batch otherwise use value
+        
+        nsamples=length(envir$slist)
 
-        selected=ifelse(inherit_scheduler,"$SGE_TASK_ID",selected)
+        ### Use SGE TASK ID if mode is set to batch otherwise use value
+        
+        if(inherit_scheduler){
+               exec_code=paste0("Rscript -e \" ", nspace,"::",fun,"(rdata=\\\"",rdata,"\\\",selected=$SGE_TASK_ID)\"")
+        }else{
+               exec_code=paste0("Rscript -e \" lapply(1:",nsamples,",FUN=function(selected){",nspace,"::",fun,"(rdata=\\\"",
+               rdata,"\\\",selected=selected})\"")
+        }
          
-        exec_code=paste0("Rscript -e \" ",nspace,"::",fun,"(rdata=\\\"",
-        rdata,"\\\",selected=",selected,")\"")
+     
         
         return(exec_code)
 
@@ -345,17 +351,14 @@ run_job=function(
 
  
     if(mode=="local"){
-        lapply(1:length(slist),
-            FUN=function(selected){
+     
                 exec_code=build_exec_innit(
                       envir=envir,
                       job_id=job_id,
                       output_dir=output_dir,
                       nspace=nspace,
                       fun=fun,
-                      inherit_scheduler=FALSE,
-                      selected=selected
-                )
+                      inherit_scheduler=FALSE)
 
                 if(verbose){
                     print_verbose(
@@ -370,8 +373,7 @@ run_job=function(
                 if(error!=0){
                     stop(error_mssg)
                 }
-            }
-        )
+
         
     }else if(mode=="batch"){
         
