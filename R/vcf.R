@@ -329,7 +329,7 @@ add_sv_af_strelka_vcf=function(
     
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
-    out_file=paste0(get_file_name(vcf),".indel")
+    out_file=get_file_name(vcf)
     out_file_dir=dirname(vcf)
     job=build_job(executor_id=executor_id,task_id=task_id)
 
