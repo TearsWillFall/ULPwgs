@@ -976,7 +976,7 @@ call_somatic_snvs_strelka=function(
     
     vcf_snv=jobs_report[["steps"]][["addAFStrelka"]]$out_files$vcf_snv
     vcf_indel=jobs_report[["steps"]][["addAFStrelka"]]$out_files$vcf_indel
-    
+
     if(extract_pass){
         jobs_report[["steps"]][["extractPASS"]]<-extract_pass_variants_strelks_vcf(
             bin_bgzip=bin_bgzip,

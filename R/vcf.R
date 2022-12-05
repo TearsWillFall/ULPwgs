@@ -502,7 +502,7 @@ add_sv_af_strelka_vcf=function(
         jobs_report[["steps"]][["annotateAFsvStrelka"]]<-add_sv_af_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf=vcf_indel,
+            vcf=vcf_sv,
             compress=TRUE,index=TRUE,
             index_format="tbi",
             bgzip_index=FALSE,
