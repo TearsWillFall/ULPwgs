@@ -1053,7 +1053,6 @@ extract_csq_info_vcf=function(vcf){
 
 tabulate_vcf=function(
   rdata=NULL,
-  selected=NULL,
   vcf=NULL,
   ns="ULPwgs",
   output_dir=".",
@@ -1150,7 +1149,6 @@ tabulate_vcf=function(
         
     }else{
 
-   
       slist=vcf
       names(slist)=Vectorize(get_file_name)(slist)
       envir=environment()  

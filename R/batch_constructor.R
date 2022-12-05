@@ -343,6 +343,7 @@ run_job=function(
 ){
   
 
+ 
     if(mode=="local"){
         lapply(seq(1,length(slist)),
             FUN=function(selected){
