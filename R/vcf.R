@@ -1115,7 +1115,7 @@ tabulate_vcf=function(
 
       vcf_body=vcf$body %>% tidyr::unnest(cols=Allele:TRANSCRIPTION_FACTORS)
       vcf_body=vcf_body %>% unnest_vcf_body() %>% 
-      dplyr::pivot_wider(values_from=VALUE,names_from=c(SAMPLE,FORMAT))
+      tidyr::pivot_wider(values_from=VALUE,names_from=c(SAMPLE,FORMAT))
 
       #### Write to file 
 
