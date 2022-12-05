@@ -1017,6 +1017,7 @@ untabulate_info_vcf=function(tab_vcf){
 #' VCF datastructure with tabulated INFO column body
 #'
 #' @param vcf 
+#' @export
 
 extract_csq_info_vcf=function(vcf){
   cols_to_save=c(setdiff(names(vcf$body),"INFO"),"CSQ")
