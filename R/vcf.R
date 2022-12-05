@@ -1025,7 +1025,8 @@ extract_csq_info_vcf=function(vcf){
     split="Format: ",gsub("\"","",
     vcf$descriptors$INFO$CSQ$Description))[[1]][2],split="\\|"))
   vcf=tabulate_info_vcf(vcf)
-  vcf$body=vcf$body %>% dplyr::select(cols_to_save)%>% rowwise() %>% mutate(CSQ=list(as.list(dplyr::bind_rows(lapply(unlist(stringr::str_split(CSQ,pattern=",")),
+  vcf$body=vcf$body %>% dplyr::select(cols_to_save)%>% dplyr::rowwise() %>% 
+  dplyr::mutate(CSQ=list(as.list(dplyr::bind_rows(lapply(unlist(stringr::str_split(CSQ,pattern=",")),
   FUN=function(x){lst=unlist(stringr::str_split(x,pattern="\\|"));
   names(lst)=cols_in_csq;lst}))))) %>% tidyr::unnest_wider(CSQ)
   return(vcf)
@@ -1112,9 +1113,9 @@ tabulate_vcf=function(
 
       ##### Extract body information from VCF
 
-      vcf_body=vcf$body %>% unnest(cols=Allele:TRANSCRIPTION_FACTORS)
+      vcf_body=vcf$body %>% tidyr::unnest(cols=Allele:TRANSCRIPTION_FACTORS)
       vcf_body=vcf_body %>% unnest_vcf_body() %>% 
-      pivot_wider(values_from=VALUE,names_from=c(SAMPLE,FORMAT))
+      dplyr::pivot_wider(values_from=VALUE,names_from=c(SAMPLE,FORMAT))
 
       #### Write to file 
 
