@@ -296,8 +296,7 @@ clonet_trento=function(
 
     exec_code=paste(" singularity run -H ",paste0(normalizePath(getwd()),":/home"), " --app pcfs ",
     sif_clonet, " -s ", normalizePath(sample_sheet) ," -o ", out_file_dir, " -t ", 
-    out_file_dir_tmp, " -n " , threads, 
-    tc, ploidy)
+    out_file_dir_tmp, " -n " , threads, tc, ploidy)
     
 
  
