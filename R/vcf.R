@@ -1057,6 +1057,7 @@ tabulate_vcf=function(
   selected=NULL,
   vcf=NULL,
   ns="ULPwgs",
+  output_name="",
   output_dir=".",
   mode="local",
   time="48:0:0",
@@ -1116,12 +1117,6 @@ tabulate_vcf=function(
       write.table(vcf_body,file=out_file,sep="\t",
       quote=FALSE,row.names=FALSE,col.names=TRUE)
 
-      
-
-
-
-
-    
 
   }
 
@@ -1133,10 +1128,17 @@ tabulate_vcf=function(
         select=selected
         load(rdata)
         vcf=slist[select]
+        
+        id=""
+        if(output_name!=""){
+          id=output_name
+        }else{
+          id=get_file_name(vcf)
+        }
         main_tabulate_vcf(
           vcf=vcf,
           output_dir=out_file_dir,
-          output_name=get_file_name(vcf),
+          output_name=id,
           executor_id=task_id
         )
         
