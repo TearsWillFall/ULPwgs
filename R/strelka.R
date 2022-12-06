@@ -739,7 +739,7 @@ call_sv_manta=function(
 
   if(annotate){
 
-      jobs_report[["steps"]][["annotateVEP"]]<-anotate_strelka_vep(
+      jobs_report[["steps"]][["annotateVEP"]]<-annotate_strelka_vep(
           bin_vep=bin_vep,
           bin_bgzip=bin_bgzip,
           bin_tabix=bin_tabix,
@@ -1039,7 +1039,7 @@ call_somatic_snvs_strelka=function(
 
   if(annotate){
 
-      jobs_report[["steps"]][["annotateVEP"]]<-anotate_strelka_vep(
+      jobs_report[["steps"]][["annotateVEP"]]<-annotate_strelka_vep(
           bin_vep=bin_vep,
           bin_bgzip=bin_bgzip,
           bin_tabix=bin_tabix,

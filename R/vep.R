@@ -156,7 +156,7 @@ return(jobs_report)
 #' @export
 
 
-anotate_strelka_vep=function(
+annotate_strelka_vep=function(
     bin_vep=build_default_tool_binary_list()$bin_vep,
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
     bin_tabix=build_default_tool_binary_list()$bin_tabix,
@@ -181,10 +181,6 @@ anotate_strelka_vep=function(
     out_file_dir=set_dir(dir=output_dir)
     job=build_job(executor_id=executor_id,task_id=task_id)
 
-
-    if(is.null(vcf_snv)&is.null(vcf_indel)&is.null(vcf_sv)){
-        stop("vcf_snv/vcf_indel/vcf_sv arguments are required")
-    }
 
      jobs_report=build_job_report(
       job_id=job,
