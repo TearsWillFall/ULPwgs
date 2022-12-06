@@ -1104,19 +1104,30 @@ tabulate_vcf=function(
 
       out_file=paste0(out_file_dir,"/",id,".tabulated.tsv")
 
+      ignore=FALSE
+      vcf=tryCatch({read_vcf(vcf)},error=function(e){
+          warning("No variants detected in VCF. Ignoring read VCF")
+          ignore=TRUE
+      })
 
-      vcf=read_vcf(vcf)
-      vcf=extract_csq_info_vcf(vcf)
 
-      ##### Extract body information from VCF
+      vcf_body=""
 
-      vcf_body=vcf$body %>% tidyr::unnest(cols=Allele:TRANSCRIPTION_FACTORS)
-      vcf_body=vcf_body %>% unnest_vcf_body(full=TRUE) %>% 
-      tidyr::pivot_wider(values_from=VALUE,names_from=c(SAMPLE,FORMAT))
+      if(!ignore){
+          vcf=extract_csq_info_vcf(vcf)
+
+          ##### Extract body information from VCF
+
+          vcf_body=vcf$body %>% tidyr::unnest(cols=Allele:TRANSCRIPTION_FACTORS)
+          vcf_body=vcf_body %>% unnest_vcf_body(full=TRUE) %>% 
+          tidyr::pivot_wider(values_from=VALUE,names_from=c(SAMPLE,FORMAT))
+
+      }
+      
 
       write.table(vcf_body,file=out_file,sep="\t",
       quote=FALSE,row.names=FALSE,col.names=TRUE)
-
+      
 
   }
 
