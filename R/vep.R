@@ -70,7 +70,8 @@ annotate_vep=function(
   out_file=paste0(out_file_dir,"/",id,".annotated.vcf")
 
   exec_code=paste(bin_vep," -format ",fmt,"-i",vcf,"-o",out_file,
-  "--cache --port 3337 --everything --force_overwrite --vcf --fork ",threads," --dir ",cache_vep)
+  "--cache --port 3337 --everything --force_overwrite --vcf --fork ",
+  threads," --dir ",cache_vep)
 
   if(mode=="batch"){
        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
@@ -88,7 +89,7 @@ annotate_vep=function(
     jobs_report=build_job_report(
             job_id=job,
             executor_id=executor_id,
-            exec_code="", 
+            exec_code=exec_code, 
             task_id=task_id,
             input_args = argg,
             out_file_dir=out_file_dir,
@@ -110,7 +111,8 @@ annotate_vep=function(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
             vcf=out_file,
-            output_dir=out_file_dir,output_name=id,
+            output_dir=out_file_dir,
+            output_name=paste0(id,".annotated"),
             clean=clean,verbose=verbose,
             batch_config=batch_config,
             threads=1,ram=ram,mode=mode,
