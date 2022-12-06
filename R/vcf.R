@@ -26,6 +26,7 @@ read_vcf=function(vcf="",sep="\t"){
   stringsAsFactors = FALSE,colClasses="character")
   samples=setdiff(names(body),cols)
   body=extract_body_vcf(body,samples)
+  body$POS=as.numeric(body$POS)
   vcf_object=list(
     vcf_origin=normalizePath(vcf),
     samples=samples,
