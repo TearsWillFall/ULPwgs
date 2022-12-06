@@ -255,7 +255,7 @@ build_exec_innit=function(
                exec_code=paste0("Rscript -e \" ", nspace,"::",fun,"(rdata=\\\"",rdata,"\\\",selected=$SGE_TASK_ID)\"")
         }else{
                exec_code=paste0("Rscript -e \" lapply(1:",nsamples,",FUN=function(selected){",nspace,"::",fun,"(rdata=\\\"",
-               rdata,"\\\",selected=selected})\"")
+               rdata,"\\\",selected=selected)})\"")
         }
          
      
