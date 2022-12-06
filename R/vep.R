@@ -178,7 +178,6 @@ annotate_strelka_vep=function(
 
     argg <- as.list(environment())
     task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir)
     job=build_job(executor_id=executor_id,task_id=task_id)
 
 
@@ -188,7 +187,7 @@ annotate_strelka_vep=function(
       exec_code=list(),
       task_id=task_id,
       input_args = argg,
-      out_file_dir=out_file_dir,
+      out_file_dir=list(),
       out_files=list()
     )
   
@@ -200,8 +199,8 @@ annotate_strelka_vep=function(
           bin_tabix=bin_tabix,
           cache_vep=cache_vep,
           vcf=vcf_snv,
-          output_name=paste0("somatic.snv",ifelse(extract_pass,".PASS","")),
-          output_dir=out_file_dir,
+          output_name=paste0("somatic.snv.af",ifelse(extract_pass,".PASS","")),
+          output_dir=dirname(vcf_snv),
           verbose=verbose,
           batch_config=batch_config,
           threads=threads,
@@ -223,8 +222,8 @@ annotate_strelka_vep=function(
             bin_tabix=bin_tabix,
             cache_vep=cache_vep,
             vcf=vcf_indel,
-            output_name=paste0("somatic.indel",ifelse(extract_pass,".PASS","")),
-            output_dir=out_file_dir,
+            output_name=paste0("somatic.indel.af",ifelse(extract_pass,".PASS","")),
+            output_dir=dirname(vcf_indel),
             verbose=verbose,
             batch_config=batch_config,
             threads=threads,
@@ -237,16 +236,14 @@ annotate_strelka_vep=function(
 
 
   if(!is.null(vcf_sv)){
-
-
     jobs_report[["steps"]][["annotateSvStrelka"]]<-annotate_vep(
           bin_vep=bin_vep,
           bin_bgzip=bin_bgzip,
           bin_tabix=bin_tabix,
           cache_vep=cache_vep,
           vcf=vcf_sv,
-          output_name=paste0("somaticSV",ifelse(extract_pass,".PASS","")),
-          output_dir=out_file_dir,
+          output_name=paste0("somaticSV.af",ifelse(extract_pass,".PASS","")),
+          output_dir=dirname(vcf_sv),
           verbose=verbose,
           batch_config=batch_config,
           threads=threads,
