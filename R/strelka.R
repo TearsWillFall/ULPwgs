@@ -756,11 +756,11 @@ call_sv_manta=function(
 
 
     if(tabulate){
-        jobs_report[["steps"]][["tabulateVCF"]]=tabulate_vcf(
+        jobs_report[["steps"]][["tabulateVCF"]]<-tabulate_vcf(
                   vcf=jobs_report[["steps"]][["annotateVEP"]]$out_files$vcf_sv,
                   output_dir=dirname(jobs_report[["steps"]][["annotateVEP"]]$out_files$vcf_sv),
                   mode=mode,
-                  output_name=paste0(ifelse(extract_pass,get_file_name(vcf_sv),".af",".PASS",""),".annotated"),
+                  output_name=paste0(get_file_name(vcf_sv),ifelse(extract_pass,".af",".PASS",""),".annotated"),
                   time=time,
                   threads=threads,
                   ram=ram,
