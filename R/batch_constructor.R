@@ -232,17 +232,13 @@ build_exec_innit=function(
         output_dir=".",
         nspace="ULPwgs",
         fun=NULL,
-        inherit_scheduler=FALSE,
-        selected=NULL
+        inherit_scheduler=FALSE
       ){
 
         if(is.null(fun)){
             stop("fun argument can't be type NULL.")
         }
 
-        if(is.null(selected)){
-          stop("selected argument can't be of type NULL.")
-        }
         ### Create RData object to inherit vars
 
         rdata=build_rdata_object(
