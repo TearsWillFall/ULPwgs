@@ -687,7 +687,7 @@ call_sv_manta=function(
     paste0(out_file_dir,"/runWorkflow.py -m local -j ",threads))
 
     if(mode=="batch"){
-        hold=unlist_lvl(job_report[["steps"]],var="job_id")
+        hold=unlist_lvl(jobs_report[["steps"]],var="job_id")
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
         threads=threads,output_dir=out_file_dir2)
@@ -978,7 +978,7 @@ call_somatic_snvs_strelka=function(
     paste0(out_file_dir,"/runWorkflow.py -m local -j ",threads))
 
     if(mode=="batch"){
-        hold=unlist_lvl(job_report[["steps"]],var="job_id")
+        hold=unlist_lvl(jobs_report[["steps"]],var="job_id")
         out_file_dir2=set_dir(dir=out_file_dir,name="batch")
         batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
         threads=threads,output_dir=out_file_dir2)
@@ -1064,7 +1064,7 @@ call_somatic_snvs_strelka=function(
         verbose=verbose,threads=threads)
     }
 
-    return(job_report)
+    return(jobs_report)
 
 
 
@@ -1127,24 +1127,24 @@ call_germline_snvs_strelka=function(
     }
     
     job_report=build_job_report(
-    job_id=job,
-    executor_id=executor_id,
-    task_id=task_id,
-    input_args = argg,
-    out_file_dir=out_file_dir,
-    out_files=list(
-      workflow=paste0(out_file_dir,"/runWorkflow.py"),
-      stats=list(
-        tsv=paste0(out_file_dir,"/results/stats/runStats.tsv"),
-        xml=paste0(out_file_dir,"/results/stats/runStats.tsv")
-    ),
-    variants=list(
-        indel=paste0(out_file_dir,"/results/variants/somatic.indels.vcf.gz"),
-        indel_index=paste0(out_file_dir,"/results/variants/somatic.indels.vcf.gz.tbi"),
-        snvs=paste0(out_file_dir,"/results/variants/somatic.snvs.vcf.gz"),
-        snvs_index=paste0(out_file_dir,"/results/variants/somatic.snvs.vcf.gz.tbi")
-    )
-    )
+      job_id=job,
+      executor_id=executor_id,
+      task_id=task_id,
+      input_args = argg,
+      out_file_dir=out_file_dir,
+      out_files=list(
+        workflow=paste0(out_file_dir,"/runWorkflow.py"),
+        stats=list(
+          tsv=paste0(out_file_dir,"/results/stats/runStats.tsv"),
+          xml=paste0(out_file_dir,"/results/stats/runStats.tsv")
+      ),
+      variants=list(
+          indel=paste0(out_file_dir,"/results/variants/somatic.indels.vcf.gz"),
+          indel_index=paste0(out_file_dir,"/results/variants/somatic.indels.vcf.gz.tbi"),
+          snvs=paste0(out_file_dir,"/results/variants/somatic.snvs.vcf.gz"),
+          snvs_index=paste0(out_file_dir,"/results/variants/somatic.snvs.vcf.gz.tbi")
+      )
+      )
   )
 
     exome=""
