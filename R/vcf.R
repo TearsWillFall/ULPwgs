@@ -499,7 +499,6 @@ add_sv_af_strelka_vcf=function(
         }
 
      if(!is.null(vcf_sv)){
-        
         jobs_report[["steps"]][["annotateAFsvStrelka"]]<-add_sv_af_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
@@ -518,7 +517,7 @@ add_sv_af_strelka_vcf=function(
 
 
     jobs_report$out_files=list(
-        vcf_snv=unlist_lvl( jobs_report[["steps"]][["annotateAFsnvStrelka"]],var="compressed_vcf"),
+        vcf_snv=unlist_lvl(jobs_report[["steps"]][["annotateAFsnvStrelka"]],var="compressed_vcf"),
         vcf_indel=unlist_lvl(jobs_report[["steps"]][["annotateAFindelStrelka"]],var="compressed_vcf"),
         vcf_sv=unlist_lvl(jobs_report[["steps"]][["annotateAFsvStrelka"]],var="compressed_vcf")
     )
@@ -611,7 +610,7 @@ variants_by_filters_vcf=function(
   index_format="tbi",
   bgzip_index=FALSE,
   clean=TRUE,
-  output_dir=".",verbose=FALSE,sep="\t",
+  verbose=FALSE,sep="\t",
   batch_config=build_default_preprocess_config(),
   threads=4,ram=4,mode="local",
   executor_id=make_unique_id("variantsByFiltersVCF"),
@@ -637,7 +636,7 @@ variants_by_filters_vcf=function(
 
   argg <- as.list(environment())
   task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir)
+  out_file_dir=set_dir(dir=dirname(vcf))
   job=build_job(executor_id=executor_id,task_id=task_id)
 
 
@@ -670,6 +669,7 @@ variants_by_filters_vcf=function(
   job_report[["steps"]][["writeVCF"]]<-write_vcf(
     bin_bgzip=bin_bgzip,
     bin_tabix=bin_tabix,
+    output_name=id,
     compress=compress,index=index,
     index_format=index_format,
     verbose=verbose,
@@ -903,7 +903,7 @@ extract_pass_variants_strelks_vcf=function(
           bin_tabix=bin_tabix,
           vcf=vcf_snv,
           filters="PASS",
-          output_name="somatic.snv",
+          output_name="somatic.snv.af.PASS",
           exclusive=TRUE,
           compress=TRUE,
           clean=TRUE,
@@ -926,7 +926,7 @@ extract_pass_variants_strelks_vcf=function(
           bin_tabix=bin_tabix,
           vcf=vcf_indel,
           filters="PASS",
-          output_name="somatic.indel",
+          output_name="somatic.indel.af.PASS",
           exclusive=TRUE,
           compress=TRUE,
           clean=TRUE,
@@ -948,7 +948,7 @@ extract_pass_variants_strelks_vcf=function(
           bin_tabix=bin_tabix,
           vcf=vcf_sv,
           filters="PASS",
-          output_name="somaticSV",
+          output_name="somaticSV.sv.af.PASS",
           exclusive=TRUE,
           compress=TRUE,
           clean=TRUE,

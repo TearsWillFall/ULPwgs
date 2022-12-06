@@ -110,7 +110,7 @@ call_variants_strelka=function(
         ### Call INDELs before calling SNVs if indel cnds are given
         if(indel_cnds){
           hold=jobs_report[["steps"]][["callSVManta"]]$job_id
-          indel_candidates=jobs_report[["steps"]][["callSVManta"]]$out_files$indel_candidates
+          indel_candidates=jobs_report[["steps"]][["callSVManta"]]$out_files$vcf_small_indel_candidate
           
         }
    }
@@ -735,7 +735,6 @@ call_sv_manta=function(
         )
         vcf_sv=jobs_report[["steps"]][["extractPASS"]]$out_files$vcf_sv
     
-
     }
 
   if(annotate){
