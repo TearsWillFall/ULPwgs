@@ -1071,6 +1071,40 @@ call_somatic_snvs_strelka=function(
           time=time,
           hold=hold
       )
+
+
+    if(tabulate){
+      jobs_report[["steps"]][["tabulateVCF"]]<-tabulate_vcf(
+                vcf=jobs_report[["steps"]][["annotateVEP"]]$out_files$vcf_snv,
+                output_dir=dirname(jobs_report[["steps"]][["annotateVEP"]]$out_files$vcf_snv),
+                mode=mode,
+                output_name=paste0(get_file_name(vcf_snv),".af",ifelse(extract_pass,".PASS",""),".annotated"),
+                time=time,
+                threads=threads,
+                ram=ram,
+                verbose=verbose,
+                batch_config=batch_config,
+                executor_id=task_id,
+                hold=hold
+            )
+
+
+      jobs_report[["steps"]][["tabulateVCF"]]<-tabulate_vcf(
+          vcf=jobs_report[["steps"]][["annotateVEP"]]$out_files$vcf_indel,
+          output_dir=dirname(jobs_report[["steps"]][["annotateVEP"]]$out_files$vcf_indel),
+          mode=mode,
+          output_name=paste0(get_file_name(vcf_indel),".af",ifelse(extract_pass,".PASS",""),".annotated"),
+          time=time,
+          threads=threads,
+          ram=ram,
+          verbose=verbose,
+          batch_config=batch_config,
+          executor_id=task_id,
+          hold=hold
+      )
+
+
+    }
       
   }
 

@@ -1134,10 +1134,6 @@ tabulate_vcf=function(
 
     }
 
-
-
-  
-
     if(!is.null(selected)){
         select=selected
         load(rdata)
@@ -1182,6 +1178,7 @@ tabulate_vcf=function(
 
       
 }
+
 
 
 
