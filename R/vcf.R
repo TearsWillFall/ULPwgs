@@ -1105,13 +1105,16 @@ tabulate_vcf=function(
       out_file=paste0(out_file_dir,"/",id,".tabulated.tsv")
 
       ignore=FALSE
-      vcf=tryCatch({read_vcf(vcf)},error=function(e){
-          warning("No variants detected in VCF. Ignoring read VCF")
+
+
+      #### Catch empty VCF 
+      tryCatch({vcf=read_vcf(vcf)},error=function(error){
+          warning("No variants detected in VCF. Ignoring input VCF.")
           ignore=TRUE
       })
 
 
-      vcf_body=""
+
 
       if(!ignore){
           vcf=extract_csq_info_vcf(vcf)
@@ -1122,11 +1125,12 @@ tabulate_vcf=function(
           vcf_body=vcf_body %>% unnest_vcf_body(full=TRUE) %>% 
           tidyr::pivot_wider(values_from=VALUE,names_from=c(SAMPLE,FORMAT))
 
+      }else{
+             write.table("No variants detected in input VCF.",file=out_file)
       }
       
 
-      write.table(vcf_body,file=out_file,sep="\t",
-      quote=FALSE,row.names=FALSE,col.names=TRUE)
+   
       
 
   }
