@@ -939,7 +939,7 @@ extract_pass_variants_strelks_vcf=function(
 
   if(!is.null(vcf_sv)){
 
-    jobs_report[["steps"]][["extractPASSindelVCF"]]<-
+    jobs_report[["steps"]][["extractPASSsvVCF"]]<-
         variants_by_filters_vcf(
           bin_bgzip=bin_bgzip,
           bin_tabix=bin_tabix,

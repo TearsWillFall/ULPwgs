@@ -752,7 +752,7 @@ call_sv_manta=function(
           executor_id=task_id,
           time=time,
           hold=hold
-      )
+  )
 
 
     if(tabulate){
