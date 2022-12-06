@@ -5,9 +5,9 @@
 \title{Build execution innit for function to execute}
 \usage{
 build_exec_innit(
-  objects,
-  job_id,
-  output_dir,
+  envir = NULL,
+  job_id = NULL,
+  output_dir = ".",
   nspace = "ULPwgs",
   fun = NULL,
   inherit_scheduler = FALSE,
@@ -15,8 +15,6 @@ build_exec_innit(
 )
 }
 \arguments{
-\item{objects}{List of objects to save in RData object}
-
 \item{job_id}{Job Identifier}
 
 \item{output_dir}{Path to output directory}
@@ -26,6 +24,8 @@ build_exec_innit(
 \item{fun}{Function name. Default NULL}
 
 \item{inherit_scheduler}{Inherit submission order from scheduler. Default FALSE}
+
+\item{objects}{List of objects to save in RData object}
 }
 \description{
 Build execution innit for function to execute

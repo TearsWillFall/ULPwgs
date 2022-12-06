@@ -6,7 +6,7 @@
 \usage{
 build_batch_exec_innit(
   exec_code = NULL,
-  job = NULL,
+  job_id = NULL,
   time = "48:0:0",
   ram = 3,
   threads = 1,
@@ -18,11 +18,11 @@ build_batch_exec_innit(
 )
 }
 \arguments{
+\item{job_id}{Job Identifier}
+
 \item{output_dir}{Path to output directory}
 
 \item{objects}{List of objects to save in RData object}
-
-\item{job_id}{Job Identifier}
 
 \item{nspace}{Function namespace. Default ULPwgs}
 

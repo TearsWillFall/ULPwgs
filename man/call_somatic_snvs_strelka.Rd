@@ -18,6 +18,7 @@ call_somatic_snvs_strelka(
   indel_candidates = "",
   extract_pass = TRUE,
   annotate = TRUE,
+  tabulate = TRUE,
   targeted = TRUE,
   verbose = TRUE,
   batch_config = build_default_preprocess_config(),

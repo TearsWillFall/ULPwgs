@@ -18,7 +18,6 @@ variants_by_filters_vcf(
   index_format = "tbi",
   bgzip_index = FALSE,
   clean = TRUE,
-  output_dir = ".",
   verbose = FALSE,
   sep = "\\t",
   batch_config = build_default_preprocess_config(),
@@ -56,8 +55,6 @@ variants_by_filters_vcf(
 
 \item{clean}{Remove input VCF after completion. Default FALSE.}
 
-\item{output_dir}{Path to the output directory.}
-
 \item{verbose}{Enables progress messages. Default False.}
 
 \item{threads}{Number of threads to split the work. Default 3}
@@ -77,6 +74,8 @@ variants_by_filters_vcf(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
+
+\item{output_dir}{Path to the output directory.}
 }
 \description{
 VCF datastructure is in list format and contains a header, a body and
