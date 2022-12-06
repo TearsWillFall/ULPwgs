@@ -754,11 +754,13 @@ call_sv_manta=function(
           hold=hold
   )
 
+  vcf_sv=jobs_report[["steps"]][["annotateVEP"]]$out_files$vcf_sv
+
 
     if(tabulate){
         jobs_report[["steps"]][["tabulateVCF"]]<-tabulate_vcf(
-                  vcf=jobs_report[["steps"]][["annotateVEP"]]$out_files$vcf_sv,
-                  output_dir=dirname(jobs_report[["steps"]][["annotateVEP"]]$out_files$vcf_sv),
+                  vcf=vcf_sv,
+                  output_dir=dirname(vcf_sv),
                   mode=mode,
                   output_name=paste0(get_file_name(vcf_sv),".af",ifelse(extract_pass,".PASS",""),".annotated"),
                   time=time,
@@ -1072,26 +1074,29 @@ call_somatic_snvs_strelka=function(
           hold=hold
       )
 
+        vcf_snv=jobs_report[["steps"]][["annotateVEP"]]$out_files$vcf_snv
+        vcf_indel=jobs_report[["steps"]][["annotateVEP"]]$out_files$vcf_indel
+
 
     if(tabulate){
-      jobs_report[["steps"]][["tabulateVCF"]]<-tabulate_vcf(
-                vcf=jobs_report[["steps"]][["annotateVEP"]]$out_files$vcf_snv,
-                output_dir=dirname(jobs_report[["steps"]][["annotateVEP"]]$out_files$vcf_snv),
-                mode=mode,
-                output_name=paste0(get_file_name(vcf_snv),".af",ifelse(extract_pass,".PASS",""),".annotated"),
-                time=time,
-                threads=threads,
-                ram=ram,
-                verbose=verbose,
-                batch_config=batch_config,
-                executor_id=task_id,
-                hold=hold
-            )
+      jobs_report[["steps"]][["tabulateVCFsnv"]]<-tabulate_vcf(
+          vcf=vcf_snv,
+          output_dir=dirname(vcf_snv),
+          mode=mode,
+          output_name=paste0(get_file_name(vcf_snv),".af",ifelse(extract_pass,".PASS",""),".annotated"),
+          time=time,
+          threads=threads,
+          ram=ram,
+          verbose=verbose,
+          batch_config=batch_config,
+          executor_id=task_id,
+          hold=hold
+      )
 
 
-      jobs_report[["steps"]][["tabulateVCF"]]<-tabulate_vcf(
-          vcf=jobs_report[["steps"]][["annotateVEP"]]$out_files$vcf_indel,
-          output_dir=dirname(jobs_report[["steps"]][["annotateVEP"]]$out_files$vcf_indel),
+      jobs_report[["steps"]][["tabulateVCFindel"]]<-tabulate_vcf(
+          vcf=vcf_indel,
+          output_dir=dirname(vcf_indel),
           mode=mode,
           output_name=paste0(get_file_name(vcf_indel),".af",ifelse(extract_pass,".PASS",""),".annotated"),
           time=time,
