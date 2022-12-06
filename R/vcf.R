@@ -362,8 +362,7 @@ add_sv_af_strelka_vcf=function(
       dplyr::mutate(VALUE=ifelse(FORMAT=="AFS",
       as.numeric(SALT)/(as.numeric(SREF)+as.numeric(SALT)),VALUE)) %>% 
       dplyr::select(-c(PALT,PREF,SALT,SREF))
-    vcf_dat$body=vcf_dat$body %>% filter(!is.na(VALUE)) %>%
-    dplyr::mutate(VALUE=ifelse(is.na(VALUE),"",VALUE)) %>% nest_vcf_body()
+    vcf_dat$body=vcf_dat$body %>% dplyr::filter(!is.na(VALUE)) %>% nest_vcf_body()
 
     
     add_afp_descriptor<-function(){
