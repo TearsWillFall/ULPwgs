@@ -1130,10 +1130,7 @@ tabulate_vcf=function(
             row.names=FALSE,col.names=TRUE)
 
         }
-        
-
-    
-        
+      
 
     }
 
