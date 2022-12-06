@@ -1079,61 +1079,63 @@ tabulate_vcf=function(
 
 
 
-  main_tabulate_vcf=function(
-      vcf=NULL,
-      output_dir=".",
-      output_name=NULL,
-      executor_id=make_unique_id("main"),
-      task_name="main"
-    ){
+    main_tabulate_vcf=function(
+        vcf=NULL,
+        output_dir=".",
+        output_name=NULL,
+        executor_id=make_unique_id("main"),
+        task_name="main"
+      ){
 
-      argg <- as.list(environment())
-      task_id=make_unique_id(task_name)
-      out_file_dir=set_dir(dir=output_dir)
-      
-      job=build_job(executor_id=executor_id,task_id=task_id)
-
-
-      id=""
-      if(!is.null(output_name)){ 
-        id=output_name
-      }else{
-        id=get_file_name(vcf)
-      }
+        argg <- as.list(environment())
+        task_id=make_unique_id(task_name)
+        out_file_dir=set_dir(dir=output_dir)
+        
+        job=build_job(executor_id=executor_id,task_id=task_id)
 
 
-      out_file=paste0(out_file_dir,"/",id,".tabulated.tsv")
+        id=""
+        if(!is.null(output_name)){ 
+          id=output_name
+        }else{
+          id=get_file_name(vcf)
+        }
 
-      ignore=FALSE
 
+        out_file=paste0(out_file_dir,"/",id,".tabulated.tsv")
 
-      #### Catch empty VCF 
-      tryCatch({vcf=read_vcf(vcf)},error=function(error){
-          warning("No variants detected in VCF. Ignoring input VCF.")
-          ignore=TRUE
-      })
+        ignore=TRUE
+        #### Catch empty VCF 
+        tryCatch({vcf=read_vcf(vcf);ignore=FALSE},error=function(error){
+            warning("No variants detected in VCF. Ignoring input VCF.")
+        })
 
 
 
 
-      if(!ignore){
-          vcf=extract_csq_info_vcf(vcf)
+        if(ignore){
 
-          ##### Extract body information from VCF
+            write.table("No variants detected in input VCF.",file=out_file)
+          
 
-          vcf_body=vcf$body %>% tidyr::unnest(cols=Allele:TRANSCRIPTION_FACTORS)
-          vcf_body=vcf_body %>% unnest_vcf_body(full=TRUE) %>% 
-          tidyr::pivot_wider(values_from=VALUE,names_from=c(SAMPLE,FORMAT))
+        }else{
+            vcf=extract_csq_info_vcf(vcf)
 
-      }else{
-             write.table("No variants detected in input VCF.",file=out_file)
-      }
-      
+            ##### Extract body information from VCF
 
-   
-      
+            vcf_body=vcf$body %>% tidyr::unnest(cols=Allele:TRANSCRIPTION_FACTORS)
+            vcf_body=vcf_body %>% unnest_vcf_body(full=TRUE) %>% 
+            tidyr::pivot_wider(values_from=VALUE,names_from=c(SAMPLE,FORMAT))
+            write.table(vcf_body,file=out_file,sep="\t",quote=FALSE,
+            row.names=FALSE,col.names=TRUE)
 
-  }
+        }
+        
+
+    
+        
+
+    }
 
 
 
