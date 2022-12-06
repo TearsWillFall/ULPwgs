@@ -182,7 +182,7 @@ anotate_strelka_vep=function(
     job=build_job(executor_id=executor_id,task_id=task_id)
 
 
-    if(is.null(vcf_snv)|is.null(vcf_indel)|is.null(vcf_sv)){
+    if(is.null(vcf_snv)&is.null(vcf_indel)&is.null(vcf_sv)){
         stop("vcf_snv/vcf_indel/vcf_sv arguments are required")
     }
 
