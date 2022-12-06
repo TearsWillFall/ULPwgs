@@ -182,8 +182,8 @@ anotate_strelka_vep=function(
     job=build_job(executor_id=executor_id,task_id=task_id)
 
 
-    if(is.null(vcf_snv)|is.null(vcf_indel)){
-        stop("vcf_snv/vcf_indel arguments are required")
+    if(is.null(vcf_snv)|is.null(vcf_indel)|is.null(vcf_sv)){
+        stop("vcf_snv/vcf_indel/vcf_sv arguments are required")
     }
 
      jobs_report=build_job_report(
@@ -197,9 +197,6 @@ anotate_strelka_vep=function(
     )
   
   if(!is.null(vcf_snv)){
-
-
-
 
     jobs_report[["steps"]][["annotateSnvStrelka"]]<- annotate_vep(
           bin_vep=bin_vep,
@@ -243,7 +240,7 @@ anotate_strelka_vep=function(
    }
 
 
-  if(!is.null(vcf_indel)){
+  if(!is.null(vcf_sv)){
 
 
     jobs_report[["steps"]][["annotateSvStrelka"]]<-annotate_vep(
