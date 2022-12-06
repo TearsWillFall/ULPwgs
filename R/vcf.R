@@ -669,7 +669,6 @@ variants_by_filters_vcf=function(
   job_report[["steps"]][["writeVCF"]]<-write_vcf(
     bin_bgzip=bin_bgzip,
     bin_tabix=bin_tabix,
-    output_name=id,
     compress=compress,index=index,
     index_format=index_format,
     verbose=verbose,
@@ -774,7 +773,6 @@ parallel_vcfs_variants_by_filters_vcf=function(
               bgzip_index=bgzip_index,
               sep=sep,
               clean=clean,
-              output_dir=out_file_dir,
               verbose=verbose,
               threads=threads,
               executor_id=task_id)
