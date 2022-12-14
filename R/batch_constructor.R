@@ -329,9 +329,9 @@ set_envir_vars=function(envir=environment(),input=NULL,id=NULL,fn=NULL,ns="ULPwg
     
     if(!is.null(envir$inherit)){
         if(!is.environment(envir$inherit)){
-          envir$inherit<-readRDS(file=envir$inherit)
+          envir$inherit <-readRDS(file=envir$inherit)
         }
-        append_envir(envir,envir$inherit)
+      append_envir(envir,envir$inherit)
     }else{
 
       envir$task_id <-make_unique_id(envir$task_name)
@@ -372,13 +372,11 @@ set_envir_vars=function(envir=environment(),input=NULL,id=NULL,fn=NULL,ns="ULPwg
 
 append_envir = function(to=environment(), from=NULL) {
       
-      to_list = ls(to)
       from_list = ls(from)
       for(var in from_list) {
            if(!is.null(from[[var]])){
               to[[var]] = from[[var]]
            }
-           
       }
 }
 
