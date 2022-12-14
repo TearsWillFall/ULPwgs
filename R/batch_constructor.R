@@ -344,7 +344,7 @@ set_envir_vars=function(envir=environment(),input=NULL,id=NULL,name=""){
         envir$input_id <- set_input_id(input=input,id=id)
       }
 
-       caller.fn=rlang::caller_fn()
+       caller.fn <- rlang::caller_fn()
 
       envir$fn <- as.character(rlang::call_name(rlang::expr(caller.fn)))
       envir$ns <- getAnywhere(envir$fn)$where
