@@ -346,8 +346,8 @@ set_envir_vars=function(envir=environment(),input=NULL,id=NULL,name=""){
 
       
      
-      envir$fn <- as.character(deparse(sys.calls()[[sys.nframe()-1]]))
-      print(envir$fn)
+      envir$fn <- paste0(as.character(deparse(sys.calls()[[sys.nframe()-1]])),collapse=",")
+     
       envir$ns <- getAnywhere(envir$fn)$where
 
     }
