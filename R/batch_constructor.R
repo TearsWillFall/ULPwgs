@@ -292,7 +292,6 @@ run_job=function(
   envir=environment()
 ){  
 
-
     build_exec_innit(
             envir=envir
     )
@@ -344,7 +343,10 @@ set_envir_vars=function(envir=environment(),input=NULL,id=NULL,name=""){
         envir$n_input <- length(input)
         envir$input_id <- set_input_id(input=input,id=id)
       }
-      envir$fn <- as.character(rlang::call_name(rlang::expr(rlang::caller_fn())))
+
+       caller.fn=rlang::caller_fn()
+
+      envir$fn <- as.character(rlang::call_name(caller.fn))
       envir$ns <- getAnywhere(envir$fn)$where
 
     }
