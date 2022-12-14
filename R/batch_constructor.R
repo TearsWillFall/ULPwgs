@@ -347,8 +347,9 @@ set_envir_vars=function(envir=environment(),input=NULL,id=NULL,fn=NULL,ns="ULPwg
 
       if(is.null(fn)){
         ## GET CALLER FUNCTION NAME IF NOT GIVEN
+
         envir$fn <- strsplit(split="::",sub("\\(.*","",
-        paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=",")))[[2]]
+        paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=",")))[[1]][2]
       }else{
         envir$fn <- fn
       }
