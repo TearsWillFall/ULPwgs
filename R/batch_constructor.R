@@ -228,13 +228,17 @@ build_exec_innit=function(
         ### Use SGE TASK ID if mode is set to batch otherwise use value
         
         if(envir$mode=="local"){
-               envir$exec_code=paste0("Rscript -e \" ", envir$ns,"::",envir$fn,"(rdata=\\\"",envir$rdata_loc,
-               "\\\",selected=$SGE_TASK_ID)\"")
+             
+              envir$exec_code=paste0("Rscript -e \" lapply(1:",envir$n_input,
+              ",FUN=function(select){",envir$ns,"::",envir$fn,"(inherit=\\\"",
+              envir$rdata_loc,"\\\",select=select)})\"")
+        
         }else if(envir$mode=="batch"){
+    
+              envir$exec_code=paste0("Rscript -e \" ",
+              envir$ns,"::",envir$fn,"(inherit=\\\"",envir$rdata_loc,
+              "\\\",select=$SGE_TASK_ID)\"")
 
-               envir$exec_code=paste0("Rscript -e \" lapply(1:",envir$n_input,
-               ",FUN=function(selected){",envir$ns,"::",envir$fn,"(rdata=\\\"",
-               envir$rdata_loc,"\\\",selected=selected)})\"")
         }else{
 
           stop("Unkown mode type")
