@@ -824,7 +824,7 @@ annotate_bed_circlemap=function(
             ))
 
 
-        complete_dat=rbind(full_gene,partial_left,partial_right) %>% distinct()
+        complete_dat=rbind(full_gene,partial_left,partial_right) %>% dplyrt::distinct()
         summarised_dat=complete_dat %>% 
             dplyr::select(chr.x:gene_id,annot_type)  %>% 
             dplyr::group_by(dplyr::across(chr.x:id)) %>% 
@@ -835,9 +835,9 @@ annotate_bed_circlemap=function(
     },mc.cores=threads)
 
     summarised_dat=dplyr::bind_rows(summarised_dat) %>% 
-    rename(chr=chr.x,start=start.x,end=end.x) %>% 
-    arrange(mixedsort(chr),start)
-    
+    dplyr::rename(chr=chr.x,start=start.x,end=end.x) %>% 
+    dplyr::arrange(mixedsort(chr),start)
+
     return(summarised_dat)
 }
 
