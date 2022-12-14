@@ -737,7 +737,7 @@ read_bed_circlemap=function(
         dat$`NA`=NULL
         ### Redundant column for repeat data
         dat$circ_score=NULL
-    }else{
+    }else if (type=="align"){
 
         dat=read.table(file=bed,sep=sep)
         names(dat)=c("chr","start","end","disc_reads","split_reads",
