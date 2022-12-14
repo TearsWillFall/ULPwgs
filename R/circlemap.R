@@ -782,12 +782,13 @@ annotate_bed_circlemap=function(
     threads=8
 ){
     dat=read_bed_circlemap(bed=bed,id=id,type=type,sep=sep)
-    annotation=read.table(annotation_ref,sep="\t",header=TRUE)
+    annotation=read.table(annotation_ref,sep="\t",header=TRUE) %>% 
+    dplyr::select(chr,start,end,gene_id)
 
 
-    summarised_dat=parallel::mclapply(unique(dat$chr),function(x){
-        tmp_dat=dat %>% dplyr::filter(chr==x)
-        tmp_annotation=dat %>% dplyr::filter(chr==x)
+    summarised_dat=parallel::mclapply(unique(dat$chr),function(chrom){
+        tmp_dat=dat %>% dplyr::filter(chr==chrom)
+        tmp_annotation=annotation %>% dplyr::filter(chr==chrom)
 
         full_gene=fuzzyjoin::fuzzy_left_join(tmp_dat,tmp_annotation,
             by=c("chr"="chr","start"="start","end"="end"),
@@ -824,7 +825,7 @@ annotate_bed_circlemap=function(
 
 
         complete_dat=rbind(full_gene,partial_left,partial_right)
-        summarised_dat= complete_dat %>% 
+        summarised_dat=complete_dat %>% 
             dplyr::select(chr.x:gene_id,annot_type)  %>% 
             dplyr::group_by(dplyr::across(chr.x:id)) %>% 
             dplyr::summarise(genes=paste0(paste0(gene_id,":",annot_type),
@@ -833,9 +834,9 @@ annotate_bed_circlemap=function(
 
 
         return(summarised_dat)
-
     },mc.cores=threads)
 
-    return(dplyr::bind_rows(summarised_dat))
+    summarised_dat=dplyr::bind_rows(summarised_dat)
+    return(summarised_dat)
 }
 
