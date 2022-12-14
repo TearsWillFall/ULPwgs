@@ -771,75 +771,168 @@ read_bed_circlemap=function(
 #' @param annotation_ref [REQUIRED] Path to annotation file.
 #' @param type [REQUIRED] circleMap output type. Default ["repeat"].
 #' @param id [OPTIONAL] Sample identifier. If not given the name of the first tumour sample of the samples will be used.
+#' @param output_dir Path to the output directory.
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 
 annotate_bed_circlemap=function(
+    rdata=NULL,
+    selected=NULL,
     bed=NULL,
     id=NULL,
+    output_name=NULL,
     type="repeat",
     annotation_ref=build_default_reference_list()$HG19$panel$PCF_V3$annotation$genes,
-    sep="\t",
-    threads=8
+    ns="ULPwgs",
+    output_dir=".",
+    mode="local",
+    time="48:0:0",
+    threads=threads,
+    ram=1,
+    verbose=FALSE,
+    batch_config=build_default_preprocess_config()
 ){
-    dat=read_bed_circlemap(bed=bed,id=id,type=type,sep=sep)
-    annotation=read.table(annotation_ref,sep="\t",header=TRUE) %>% 
-    dplyr::select(chr,start,end,gene_id)
+    task_id=make_unique_id(task_name)
+    out_file_dir=set_dir(dir=output_dir)
+    job=build_job(executor_id=executor_id,task_id=task_id)
+    func_name=as.character(rlang::call_name(rlang::current_call()))
+    
+
+    main_annotate_bed_circlemap=function(
+        bed=NULL,
+        id=NULL,
+        type="repeat",
+        write=TRUE,
+        annotation_ref=build_default_reference_list()$HG19$panel$PCF_V3$annotation$genes,
+        sep="\t",
+        threads=8
+    ){
+
+        if(!is.null(id)){
+            id=get_file_name(id)
+        }
 
 
-    summarised_dat=parallel::mclapply(unique(dat$chr),function(chrom){
-        tmp_dat=dat %>% dplyr::filter(chr==chrom)
-        tmp_annotation=annotation %>% dplyr::filter(chr==chrom)
+        dat=read_bed_circlemap(bed=bed,id=id,type=type,sep=sep)
+        annotation=read.table(annotation_ref,sep="\t",header=TRUE) %>% 
+        dplyr::select(chr,start,end,gene_id)
 
-        full_gene=fuzzyjoin::fuzzy_left_join(tmp_dat,tmp_annotation,
-            by=c("chr"="chr","start"="start","end"="end"),
-            match_fun=c(`==`,`<=`,`>=`)
+
+        summarised_dat=parallel::mclapply(unique(dat$chr),function(chrom){
+            tmp_dat=dat %>% dplyr::filter(chr==chrom)
+            tmp_annotation=annotation %>% dplyr::filter(chr==chrom)
+
+            full_gene=fuzzyjoin::fuzzy_left_join(tmp_dat,tmp_annotation,
+                by=c("chr"="chr","start"="start","end"="end"),
+                match_fun=c(`==`,`<=`,`>=`)
+                )
+
+            full_gene$annot_type="COMPLETE"
+
+            partial_left=fuzzyjoin::fuzzy_left_join(tmp_dat,tmp_annotation,
+                by=c("chr"="chr","start"="start","end"="start"),
+                match_fun=c(`==`,`<=`,`>=`)
             )
 
-        full_gene$annot_type="COMPLETE"
+            partial_left$annot_type="PARTIAL"
+            partial_left=dplyr::anti_join(partial_left,full_gene,
+                by=c("chr.x"="chr.x",
+                    "start.x"="start.x",
+                    "end.x"="end.x",
+                    "gene_id"="gene_id"
+                ))
 
-        partial_left=fuzzyjoin::fuzzy_left_join(tmp_dat,tmp_annotation,
-            by=c("chr"="chr","start"="start","end"="start"),
-            match_fun=c(`==`,`<=`,`>=`)
-        )
+            partial_right=fuzzyjoin::fuzzy_left_join(tmp_dat,tmp_annotation,
+                by=c("chr"="chr","start"="end","end"="end"),
+                match_fun=c(`==`,`<=`,`>=`)
+            )
 
-        partial_left$annot_type="PARTIAL"
-        partial_left=dplyr::anti_join(partial_left,full_gene,
-            by=c("chr.x"="chr.x",
-                "start.x"="start.x",
-                "end.x"="end.x",
-                "gene_id"="gene_id"
-            ))
-
-        partial_right=fuzzyjoin::fuzzy_left_join(tmp_dat,tmp_annotation,
-            by=c("chr"="chr","start"="end","end"="end"),
-            match_fun=c(`==`,`<=`,`>=`)
-        )
-
-        partial_right$annot_type="PARTIAL"
-        partial_right=dplyr::anti_join(partial_right,full_gene,
-            by=c("chr.x"="chr.x",
-                "start.x"="start.x",
-                "end.x"="end.x",
-                "gene_id"="gene_id"
-            ))
+            partial_right$annot_type="PARTIAL"
+            partial_right=dplyr::anti_join(partial_right,full_gene,
+                by=c("chr.x"="chr.x",
+                    "start.x"="start.x",
+                    "end.x"="end.x",
+                    "gene_id"="gene_id"
+                ))
 
 
-        complete_dat=rbind(full_gene,partial_left,partial_right)
-        summarised_dat=complete_dat %>% 
-            dplyr::rename(chr=chr.x,start=start.x,end=end.x) %>%
-            dplyr::select(chr:gene_id,annot_type)  %>% 
-            dplyr::mutate(annot_name=paste0(gene_id,":",annot_type)) %>%
-            dplyr::select(chr:id,annot_name) %>%
-            dplyr::distinct()%>%
-            dplyr::group_by(dplyr::across(c(-annot_name))) %>%
-            dplyr::summarise(genes=paste0(annot_name,collapse=";")
-        )
-        return(summarised_dat)
-    },mc.cores=threads)
+            complete_dat=rbind(full_gene,partial_left,partial_right)
+            summarised_dat=complete_dat %>% 
+                dplyr::rename(chr=chr.x,start=start.x,end=end.x) %>%
+                dplyr::select(chr:gene_id,annot_type)  %>% 
+                dplyr::mutate(annot_name=paste0(gene_id,":",annot_type)) %>%
+                dplyr::select(chr:id,annot_name) %>%
+                dplyr::distinct()%>%
+                dplyr::group_by(dplyr::across(c(-annot_name))) %>%
+                dplyr::summarise(genes=paste0(annot_name,collapse=";")
+            )
+            return(summarised_dat)
+        },mc.cores=threads)
 
-    summarised_dat=dplyr::bind_rows(summarised_dat) %>% 
-    dplyr::arrange(gtools::mixedsort(chr),start)
+        summarised_dat=dplyr::bind_rows(summarised_dat) %>% 
+        dplyr::arrange(gtools::mixedsort(chr))
 
-    return(summarised_dat)
+        if(write){
+            out_file=paste(out_file_dir,"/",id,".circular_",type,".annotated.bed")
+            write.table(file=out_file,summarised_dat,sep="\t",col.names=TRUE,row.names=FALSE,quote=FALSE)
+        }
+       
+    }
+
+
+        if(!is.null(selected)){
+            select=selected
+            load(rdata)
+            vcf=slist[select]
+            
+            id=""
+            if(output_name!=""){
+                id=output_name
+            }else{
+                id=get_file_name(vcf)
+            }
+            main_annotate_bed_circlemap(
+                bed=bed,
+                id=id,
+                type=type,
+                write=write,
+                annotation_ref=annotation_ref,
+                sep="\t",
+                threads=threads
+            )
+    }else{
+      slist=bed
+      names(slist)=Vectorize(get_file_name)(slist)
+      envir=environment()  
+
+      run_job(
+        envir=envir,
+        slist=slist,
+        job_id=job,
+        output_dir=out_file_dir,
+        nspace=ns,
+        fun=func_name,
+        mode=mode,
+        hold=hold,
+        time=time,
+        verbose=verbose,
+        threads=threads,
+        ram=ram,
+        batch_config=batch_config
+      )
+     
+    }
+
+
+
+
+
 }
 
