@@ -4,14 +4,14 @@
 \alias{build_rdata_object}
 \title{Build RData object to inherit in main_function}
 \usage{
-build_rdata_object(envir = NULL, job_id = NULL, output_dir = ".")
+build_rdata_object(envir = NULL)
 }
 \arguments{
+\item{objects}{List of objects to save in RData object}
+
 \item{job_id}{Job Identifier}
 
 \item{output_dir}{Path to output directory}
-
-\item{objects}{List of objects to save in RData object}
 }
 \description{
 Build RData object to inherit in main_function

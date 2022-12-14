@@ -4,37 +4,10 @@
 \alias{run_job}
 \title{Run job from batch constructor}
 \usage{
-run_job(
-  envir = environment(),
-  slist = NULL,
-  job_id = NULL,
-  output_dir = ".",
-  verbose = FALSE,
-  nspace = "ULPwgs",
-  fun = NULL,
-  hold = NULL,
-  mode = "local",
-  time = "48:00:00",
-  batch_config = build_default_preprocess_config(),
-  threads = 1,
-  ram = 1,
-  error_mssg = "Job failed"
-)
+run_job(envir = environment())
 }
 \arguments{
-\item{envir}{Current enviroment.}
-
-\item{job_id}{Job Identifier}
-
-\item{output_dir}{Path to output directory}
-
-\item{nspace}{Function namespace. Default ULPwgs}
-
-\item{fun}{Function name. Default NULL}
-
-\item{hold}{Job identifier to hold on. Default NULL}
-
-\item{time}{Job time}
+\item{envir}{Inherit current enviroment.}
 }
 \description{
 Run job from batch constructor

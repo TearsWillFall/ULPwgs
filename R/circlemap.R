@@ -783,12 +783,12 @@ read_bed_circlemap=function(
 #' @export
 
 annotate_bed_circlemap=function(
-    rdata=NULL,
-    selected=NULL,
+    inherit=NULL,
     bed=NULL,
     id=NULL,
     output_name=NULL,
     type="repeat",
+    write=TRUE,
     annotation_ref=build_default_reference_list()$HG19$panel$PCF_V3$annotation$genes,
     ns="ULPwgs",
     output_dir=".",
@@ -802,11 +802,29 @@ annotate_bed_circlemap=function(
     task_name="annotateBEDcirclemap",
     hold=NULL
 ){
-    task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir)
-    job=build_job(executor_id=executor_id,task_id=task_id)
-    func_name=as.character(rlang::call_name(rlang::current_call()))
     
+    this.envir=environment()
+    set_envir_vars(envir=this.envir,input=bed,id=output_name,name="circlemap_reports")
+
+   
+
+    if(!is.null(this.envir$inherit)){
+
+        main_annotate_bed_circlemap(
+            bed=this$inherited$input[this$inherit$selected],
+            id=this$inherited$input[this$inherit$selected],
+            type=this$inherit$type,
+            write=this$inherit$write,
+            annotation_ref=this$inherit$annotation_ref,
+            threads=this$inherit$threads
+        )
+    }else{
+      run_job(
+        envir=this.envir
+      )
+     
+    }
+
 
     main_annotate_bed_circlemap=function(
         bed=NULL,
@@ -888,53 +906,6 @@ annotate_bed_circlemap=function(
         }
        
     }
-
-        if(!is.null(selected)){
-            select=selected
-            load(rdata)
-            vcf=slist[select]
-            
-            id=""
-            if(!is.null(output_name)){
-                id=output_name
-            }else{
-                id=get_file_name(vcf)
-            }
-            main_annotate_bed_circlemap(
-                bed=bed,
-                id=id,
-                type=type,
-                write=write,
-                annotation_ref=annotation_ref,
-                sep="\t",
-                threads=threads
-            )
-    }else{
-      slist=bed
-      names(slist)=Vectorize(get_file_name)(slist)
-      envir=environment()  
-
-      run_job(
-        envir=envir,
-        slist=slist,
-        job_id=job,
-        output_dir=out_file_dir,
-        nspace=ns,
-        fun=func_name,
-        mode=mode,
-        hold=hold,
-        time=time,
-        verbose=verbose,
-        threads=threads,
-        ram=ram,
-        batch_config=batch_config
-      )
-     
-    }
-
-
-
-
 
 }
 

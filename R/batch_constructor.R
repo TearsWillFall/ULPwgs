@@ -47,7 +47,6 @@ job_order=1, input_args="",out_file_dir="", out_files=list(file="file")){
 }
 
 
-
 #' Build job executor in SGE
 #'
 #' @param job Name of job or jobs.
@@ -201,14 +200,11 @@ execute_job=function(exec_code){
 
 
 build_rdata_object=function(
-  envir=NULL,
-  job_id=NULL,
-  output_dir="."
+  envir=NULL
 ){
-          out_file_dir=set_dir(dir=output_dir,name="RData")
-          rdata_file=paste0(out_file_dir,"/",job_id,".RData")
-          save(list = ls(envir,all.names = TRUE),envir=envir,file = rdata_file)
-          return(rdata_file)
+          envir$out_file_dir_rdata=set_dir(dir=envir$out_file_dir_tmp,name="RData")
+          envir$rdata_file=paste0(envir$out_file_dir,"/",envir$job_id,".RData")
+          saveRDS(envir,file = rdata_file)
   }
       
 
@@ -227,12 +223,7 @@ build_rdata_object=function(
 
 
 build_exec_innit=function(
-        envir=NULL,
-        job_id=NULL,
-        output_dir=".",
-        nspace="ULPwgs",
-        fun=NULL,
-        inherit_scheduler=FALSE
+        envir=NULL
       ){
 
         if(is.null(fun)){
@@ -241,26 +232,21 @@ build_exec_innit=function(
 
         ### Create RData object to inherit vars
 
-        rdata=build_rdata_object(
-          envir=envir,
-          job_id=job_id,
-          output_dir=output_dir
-        )
+        build_rdata_object(envir=envir)
         
-        nsamples=length(envir$slist)
-
         ### Use SGE TASK ID if mode is set to batch otherwise use value
         
-        if(inherit_scheduler){
-               exec_code=paste0("Rscript -e \" ", nspace,"::",fun,"(rdata=\\\"",rdata,"\\\",selected=$SGE_TASK_ID)\"")
+        if(envir$mode=="local"){
+               envir$exec_code=paste0("Rscript -e \" ", envir$ns,"::",envir$fn,"(rdata=\\\"",envir$rdata_loc,
+               "\\\",selected=$SGE_TASK_ID)\"")
+        }else if(envir$mode=="batch"){
+               envir$exec_code=paste0("Rscript -e \" lapply(1:",envir$n_input,
+               ",FUN=function(selected){",envir$ns,"::",envir$fn,"(rdata=\\\"",
+               envir$rdata_loc,"\\\",selected=selected)})\"")
         }else{
-               exec_code=paste0("Rscript -e \" lapply(1:",nsamples,",FUN=function(selected){",nspace,"::",fun,"(rdata=\\\"",
-               rdata,"\\\",selected=selected)})\"")
+          stop("Unknown value for mode")
         }
-         
-     
-        
-        return(exec_code)
+
 
 }
 
@@ -269,155 +255,120 @@ build_exec_innit=function(
 
 #' Build execution innit for batch
 #' 
-#' @param objects List of objects to save in RData object
-#' @param job_id Job Identifier
-#' @param nspace Function namespace. Default ULPwgs
-#' @param fun Function name. Default NULL
-#' @param inherit_scheduler Inherit submission order from scheduler. Default FALSE
-#' @param output_dir Path to output directory 
+#' @param envir Inherit enviroment variables
+#' @param exec_code Execution code
 #' @export
 
 
 build_batch_exec_innit=function(
-  exec_code=NULL,
-  job_id=NULL,
-  time="48:0:0",
-  ram=3,
-  threads=1,
-  wd=getwd(),
-  hold=NULL,
-  array=NULL,
-  output_dir=".",
-  batch_config=build_default_preprocess_config()
+  envir=environment()
 ){  
 
-    if(is.null(exec_code)){
-      stop("exec_code argument can't be of type NULL")
+    if(is.null(envir$exec_code)){
+      stop("exec_code: Invalid argument type NULL")
     }
 
+    envir$out_file_dir_batch=set_dir(dir=envir$out_file_dir_tmp,name="batch")
 
-    batch_code=build_job_exec(
-      job=job_id,time=time,ram=ram,
-      threads=threads,wd=wd,
-      output_dir=output_dir,
-      hold=hold,array=array
+    envir$batch_code=build_job_exec(
+      job=envir$job_id,time=envir$time,ram=envir$ram,
+      threads=envir$threads,wd=getwd(),
+      output_dir=envir$out_file_dir_batch,
+      hold=envir$hold,array=length(envir$input)
     )
 
-    out_file_dir=set_dir(dir=output_dir,name="batch")
-    exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
-    ";",exec_code,"'|",batch_code)
+    envir$exec_code=paste0("echo '. $HOME/.bashrc;",envir$batch_config,
+    ";",envir$exec_code,"'|",envir$batch_code)
 
-    return(exec_code)
 }
 
 
 #' Run job from batch constructor
 #' 
-#' @param envir Current enviroment.
-#' @param job_id Job Identifier
-#' @param time Current job time
-#' @param time Job time
-#' @param output_dir Path to output directory
-#' @param nspace Function namespace. Default ULPwgs
-#' @param fun Function name. Default NULL
-#' @param hold Job identifier to hold on. Default NULL
-#' @param output_dir Path to output directory 
+#' @param envir Inherit current enviroment.
 #' 
 #' 
 #' @export
 
 
 run_job=function(
-  envir=environment(),
-  slist=NULL,
-  job_id=NULL,
-  output_dir=".",
-  verbose=FALSE,
-  nspace="ULPwgs",
-  fun=NULL,
-  hold=NULL,
-  mode="local",
-  time="48:00:00",
-  batch_config=build_default_preprocess_config(),
-  threads=1,
-  ram=1,
-  error_mssg="Job failed"
-){
+  envir=environment()
+){  
+
+
+    build_exec_innit(
+            envir=envir
+    )
   
+    if(envir$mode=="batch"){
+        build_batch_exec_innit(
+              envir=envir
+        )
+    }
 
- 
-    if(mode=="local"){
-     
-                exec_code=build_exec_innit(
-                      envir=envir,
-                      job_id=job_id,
-                      output_dir=output_dir,
-                      nspace=nspace,
-                      fun=fun,
-                      inherit_scheduler=FALSE)
-
-                if(verbose){
-                    print_verbose(
-                      job=job_id,
-                      arg=as.list(envir),
-                      exec_code=exec_code)
-                }
-
-
-                error=execute_job(exec_code=exec_code)
-                
-                if(error!=0){
-                    stop(error_mssg)
-                }
-
-        
-    }else if(mode=="batch"){
-        
-        
-      n_jobs=length(slist)
-
-
-      exec_code=build_exec_innit(
-            envir=envir,
-            job_id=job_id,
-            output_dir=output_dir,
-            nspace=nspace,
-            fun=fun,
-            inherit_scheduler=TRUE
-      )
-
-      exec_code=build_batch_exec_innit(
-            exec_code=exec_code,
-            job_id=job_id,
-            time=time,
-            threads=threads,
-            ram=ram,
-            hold=hold,
-            array=n_jobs,
-            output_dir=output_dir,
-            batch_config=batch_config
+    if(envir$verbose){
+          print_verbose(job=envir$job_id,
+            arg=as.list(envir),
+            exec_code=envir$exec_code
           )
+    }
 
+    envir$error=execute_job(exec_code=envir$exec_code)
 
-        
-        if(verbose){
-            print_verbose(job=job_id,
-              arg=as.list(envir),
-              exec_code=exec_code
-            )
-        }
-
-
-        error=execute_job(exec_code=exec_code)
-
-        if(error!=0){
-            stop(error_message)
-        }
-
-      }
-
+    if(envir$error!=0){
+        stop(envir$err_msg)
+    }
 
 }
+
+
+#' Set default enviromental variables based on input for all
+#' functions in package.
+#' 
+#' @param envir Inherit current enviroment.
+#' @param id Input identifier. If not given name of input will be used.
+#' @param name Name of output file directory
+#' @export
+
+set_envir_vars=function(envir=environment(),input=NULL,id=NULL,name=""){
+    if(!is.null(envir$inherit)){
+        if(!is.environment(envir$inherit)){
+          envir$inherit<-readRDS(file=envir$envir)
+        }
+    }
+  
+    envir$task_id <-make_unique_id(envir$task_name)
+    envir$out_file_dir <- set_dir(dir=envir$output_dir,name=name)
+    envir$out_file_dir_tmp <- set_dir(dir=envir$out_file_dir,name="tmp")
+    envir$job_id <-build_job(executor_id=envir$executor_id,task_id=envir$task_id)
+
+    if(!is.null(input)){
+       envir$input <- input
+       envir$input_id <-set_input_id(input=input,id=id)
+    }
+    envir$fn <- as.character(rlang::call_frame(n = 2)$fn_name)
+    envir$ns <- getAnywhere(func_name)$where
+}
+
+
+
+
+#' Set default environment ID
+#' 
+#' @param input Input file/s
+#' @param id Input file identifier
+#' @export
+
+set_input_id=function(input,id=NULL){
+      if(!is.null(id)){
+        my_id=id
+      }else{
+        my_id=Vectorize(get_file_name)(input)
+      }
+      return(my_id)
+}
+
+
 
 
 #' @export
@@ -445,4 +396,9 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
       cat(paste0(crayon::green(exec_code,"\n")))
       rep(cat("    \n"),ws)
 }
+
+
+
+
+
 

@@ -4,31 +4,12 @@
 \alias{build_batch_exec_innit}
 \title{Build execution innit for batch}
 \usage{
-build_batch_exec_innit(
-  exec_code = NULL,
-  job_id = NULL,
-  time = "48:0:0",
-  ram = 3,
-  threads = 1,
-  wd = getwd(),
-  hold = NULL,
-  array = NULL,
-  output_dir = ".",
-  batch_config = build_default_preprocess_config()
-)
+build_batch_exec_innit(envir = environment())
 }
 \arguments{
-\item{job_id}{Job Identifier}
+\item{envir}{Inherit enviroment variables}
 
-\item{output_dir}{Path to output directory}
-
-\item{objects}{List of objects to save in RData object}
-
-\item{nspace}{Function namespace. Default ULPwgs}
-
-\item{fun}{Function name. Default NULL}
-
-\item{inherit_scheduler}{Inherit submission order from scheduler. Default FALSE}
+\item{exec_code}{Execution code}
 }
 \description{
 Build execution innit for batch

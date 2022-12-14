@@ -5,10 +5,9 @@
 \title{Generate tabulated table from annotate VCF}
 \usage{
 tabulate_vcf(
-  rdata = NULL,
-  selected = NULL,
+  envir = NULL,
   vcf = NULL,
-  ns = "ULPwgs",
+  output_name = NULL,
   output_dir = ".",
   mode = "local",
   time = "48:0:0",

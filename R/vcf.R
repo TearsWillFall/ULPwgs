@@ -1052,11 +1052,9 @@ extract_csq_info_vcf=function(vcf){
 
 
 tabulate_vcf=function(
-  rdata=NULL,
-  selected=NULL,
+  envir=NULL,
   vcf=NULL,
-  ns="ULPwgs",
-  output_name="",
+  output_name=NULL,
   output_dir=".",
   mode="local",
   time="48:0:0",
@@ -1068,15 +1066,8 @@ tabulate_vcf=function(
   task_name="tabVCF",
   hold=NULL
 ){
-
-
-  task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir)
-  job=build_job(executor_id=executor_id,task_id=task_id)
-  func_name=as.character(rlang::call_name(rlang::current_call()))
- 
-
-
+    envir=environment()
+    set_envir_vars(envir=envir,input=vcf,id=output_name)
 
     main_tabulate_vcf=function(
         vcf=NULL,
@@ -1132,46 +1123,19 @@ tabulate_vcf=function(
       
 
     }
-
+  
     if(!is.null(selected)){
-        select=selected
-        load(rdata)
-        vcf=slist[select]
-        
-        id=""
-        if(output_name!=""){
-          id=output_name
-        }else{
-          id=get_file_name(vcf)
-        }
         main_tabulate_vcf(
-          vcf=vcf,
+          vcf=input[selected],
           output_dir=out_file_dir,
-          output_name=id,
+          output_name=input_id[selected],
           executor_id=task_id
         )
         
     }else{
 
-      slist=vcf
-      names(slist)=Vectorize(get_file_name)(slist)
       envir=environment()  
-
-      run_job(
-        envir=envir,
-        slist=slist,
-        job_id=job,
-        output_dir=out_file_dir,
-        nspace=ns,
-        fun=func_name,
-        mode=mode,
-        hold=hold,
-        time=time,
-        verbose=verbose,
-        threads=threads,
-        ram=ram,
-        batch_config=batch_config
-      )
+      run_job(envir=envir)
      
     }
 
