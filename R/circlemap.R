@@ -807,7 +807,11 @@ annotate_bed_circlemap=function(
     this.envir=environment()
     set_envir_vars(envir=this.envir,input=bed,id=output_name)
 
-    if(!is.null(this.envir$select)){
+    if(is.null(this.envir$select)){
+        run_job(
+            envir=this.envir
+        )
+    }else{
         main_annotate_bed_circlemap(
             bed=this.envir$input[this.envir$select],
             id=this.envir$input[this.envir$select],
@@ -817,10 +821,6 @@ annotate_bed_circlemap=function(
             threads=this.envir$threads
         )
 
-    }else{
-      run_job(
-        envir=this.envir
-      )
      
     }
 
