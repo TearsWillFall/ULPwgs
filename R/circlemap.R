@@ -832,7 +832,7 @@ annotate_bed_circlemap=function(
             dplyr::mutate(annot_name=paste0(gene_id,":",annot_type)) %>%
             dplyr::select(-gene_id,annot_type) %>%
             dplyr::distinct()%>%
-            dplyr::group_by(dplyr::across(chr:id)) %>% 
+            dplyr::group_by(dplyr::across(c(-annot_name))) %>% 
             dplyr::summarise(genes=paste0(annot_name,collapse=";")
         )
         return(summarised_dat)
