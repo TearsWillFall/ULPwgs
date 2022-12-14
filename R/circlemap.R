@@ -784,6 +784,7 @@ read_bed_circlemap=function(
 
 annotate_bed_circlemap=function(
     inherit=NULL,
+    select=NULL,
     bed=NULL,
     id=NULL,
     output_name=NULL,
