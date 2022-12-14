@@ -882,7 +882,7 @@ annotate_bed_circlemap=function(
         dplyr::arrange(gtools::mixedsort(chr))
 
         if(write){
-            out_file=paste(out_file_dir,"/",id,".circular_",type,".annotated.bed")
+            out_file=paste0(out_file_dir,"/",id,".circular_",type,".annotated.bed")
             write.table(file=out_file,summarised_dat,sep="\t",col.names=TRUE,row.names=FALSE,quote=FALSE)
         }
        
