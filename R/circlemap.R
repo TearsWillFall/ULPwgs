@@ -824,7 +824,7 @@ annotate_bed_circlemap=function(
             ))
 
 
-        complete_dat=rbind(full_gene,partial_left,partial_right) %>% dplyrt::distinct()
+        complete_dat=rbind(full_gene,partial_left,partial_right) %>% dplyr::distinct()
         summarised_dat=complete_dat %>% 
             dplyr::select(chr.x:gene_id,annot_type)  %>% 
             dplyr::group_by(dplyr::across(chr.x:id)) %>% 
