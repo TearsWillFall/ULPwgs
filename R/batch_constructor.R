@@ -204,7 +204,7 @@ build_rdata_object=function(
 ){
           envir$out_file_dir_rdata=set_dir(dir=envir$out_file_dir_tmp,name="RData")
           envir$rdata_file=paste0(envir$out_file_dir,"/",envir$job_id,".RData")
-          saveRDS(envir,file = rdata_file)
+          saveRDS(envir,file = envir$rdata_file)
   }
       
 
