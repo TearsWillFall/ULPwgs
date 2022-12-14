@@ -813,12 +813,12 @@ annotate_bed_circlemap=function(
         )
     }else{
         main_annotate_bed_circlemap(
-            bed=this.envir$input[this.envir$select],
-            id=this.envir$input[this.envir$select],
-            type=this.envir$type,
-            write=this.envir$write,
-            annotation_ref=this.envir$annotation_ref,
-            threads=this.envir$threads
+            bed=input[select],
+            id=input_id[select],
+            type=type,
+            write=write,
+            annotation_ref=annotation_ref,
+            threads=threads
         )
 
      
