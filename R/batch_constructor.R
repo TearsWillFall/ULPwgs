@@ -231,12 +231,12 @@ build_exec_innit=function(
              
               envir$exec_code=paste0("Rscript -e \" lapply(1:",envir$n_input,
               ",FUN=function(select){",envir$ns,"::",envir$fn,"(inherit=\\\"",
-              envir$rdata_loc,"\\\",select=select)})\"")
+              envir$rdata_file,"\\\",select=select)})\"")
         
         }else if(envir$mode=="batch"){
     
               envir$exec_code=paste0("Rscript -e \" ",
-              envir$ns,"::",envir$fn,"(inherit=\\\"",envir$rdata_loc,
+              envir$ns,"::",envir$fn,"(inherit=\\\"",envir$rdata_file,
               "\\\",select=$SGE_TASK_ID)\"")
 
         }else{
