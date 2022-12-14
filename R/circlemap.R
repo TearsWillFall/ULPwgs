@@ -809,12 +809,12 @@ annotate_bed_circlemap=function(
     if(!is.null(this.envir$inherit)){
 
         main_annotate_bed_circlemap(
-            bed=this$inherited$input[this$inherit$selected],
-            id=this$inherited$input[this$inherit$selected],
-            type=this$inherit$type,
-            write=this$inherit$write,
-            annotation_ref=this$inherit$annotation_ref,
-            threads=this$inherit$threads
+            bed=this.envir$inherit$input[this.envir$inherit$selected],
+            id=this.envir$inherit$input[this.envir$inherit$selected],
+            type=this.envir$inherit$type,
+            write=this.envir$inherit$write,
+            annotation_ref=this.envir$inherit$annotation_ref,
+            threads=this.envir$inherit$threads
         )
     }else{
       run_job(
