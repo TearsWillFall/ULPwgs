@@ -807,10 +807,10 @@ annotate_bed_circlemap=function(
     this.envir=environment()
     set_envir_vars(envir=this.envir,input=bed,id=output_name)
 
-    if(!is.null(this.envir$inherit)){
+    if(!is.null(this.envir$select)){
         main_annotate_bed_circlemap(
-            bed=this.envir$input[this.envir$selected],
-            id=this.envir$input[this.envir$selected],
+            bed=this.envir$input[this.envir$select],
+            id=this.envir$input[this.envir$select],
             type=this.envir$type,
             write=this.envir$write,
             annotation_ref=this.envir$annotation_ref,
