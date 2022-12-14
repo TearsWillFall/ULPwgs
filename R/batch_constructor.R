@@ -213,22 +213,13 @@ build_rdata_object=function(
 
 #' Build execution innit for function to execute
 #' 
-#' @param objects List of objects to save in RData object
-#' @param job_id Job Identifier
-#' @param nspace Function namespace. Default ULPwgs
-#' @param fun Function name. Default NULL
-#' @param inherit_scheduler Inherit submission order from scheduler. Default FALSE
-#' @param output_dir Path to output directory 
+#' @param envir List of objects to save in RData object
 #' @export
 
 
 build_exec_innit=function(
         envir=NULL
       ){
-
-        if(is.null(fun)){
-            stop("fun argument can't be type NULL.")
-        }
 
         ### Create RData object to inherit vars
 
@@ -240,11 +231,13 @@ build_exec_innit=function(
                envir$exec_code=paste0("Rscript -e \" ", envir$ns,"::",envir$fn,"(rdata=\\\"",envir$rdata_loc,
                "\\\",selected=$SGE_TASK_ID)\"")
         }else if(envir$mode=="batch"){
+
                envir$exec_code=paste0("Rscript -e \" lapply(1:",envir$n_input,
                ",FUN=function(selected){",envir$ns,"::",envir$fn,"(rdata=\\\"",
                envir$rdata_loc,"\\\",selected=selected)})\"")
         }else{
-          stop("Unknown value for mode")
+
+          stop("Unkown mode type")
         }
 
 

@@ -816,6 +816,7 @@ annotate_bed_circlemap=function(
             annotation_ref=this.envir$inherit$annotation_ref,
             threads=this.envir$inherit$threads
         )
+        
     }else{
       run_job(
         envir=this.envir
