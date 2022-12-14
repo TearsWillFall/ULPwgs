@@ -344,10 +344,12 @@ set_envir_vars=function(envir=environment(),input=NULL,id=NULL,fn=NULL,ns="ULPwg
         envir$input_id <- set_input_id(input=input,id=id)
       }
       if(!is.null(fn)){
-        envir$fn <- sub("(.*","",paste0(deparse(sys.calls()[[sys.nframe()-1]])))
+        envir$fn <- sub("*.::","",sub("(.*","",paste0(deparse(sys.calls()[[sys.nframe()-1]]))))
+      }else{
+        envir$fn <- fn
       }
       
-      envir$fn <- fn
+    
       envir$ns <- ns
      
 
