@@ -235,7 +235,7 @@ build_exec_innit=function(
         }else if(envir$mode=="batch"){
     
               envir$exec_code=paste0("Rscript -e \" ",
-              envir$ns,"::"envir$fn,"(inherit=\\\"",envir$rdata_file,
+              envir$ns,"::",envir$fn,"(inherit=\\\"",envir$rdata_file,
               "\\\",select=$SGE_TASK_ID)\"")
 
         }else{
