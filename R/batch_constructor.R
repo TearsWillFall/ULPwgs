@@ -325,7 +325,7 @@ run_job=function(
 #' @param name Name of output file directory
 #' @export
 
-set_envir_vars=function(envir=environment(),input=NULL,id=NULL,name=""){
+set_envir_vars=function(envir=environment(),input=NULL,id=NULL,fn=NULL,ns="ULPwgs",dir_name=""){
     if(!is.null(envir$inherit)){
         if(!is.environment(envir$inherit)){
           envir$inherit<-readRDS(file=envir$envir)
@@ -334,7 +334,7 @@ set_envir_vars=function(envir=environment(),input=NULL,id=NULL,name=""){
     }else{
 
       envir$task_id <-make_unique_id(envir$task_name)
-      envir$out_file_dir <- set_dir(dir=envir$output_dir,name=name)
+      envir$out_file_dir <- set_dir(dir=envir$output_dir,name=dir_name)
       envir$out_file_dir_tmp <- set_dir(dir=envir$out_file_dir,name="tmp")
       envir$job_id <-build_job(executor_id=envir$executor_id,task_id=envir$task_id)
 
@@ -343,10 +343,13 @@ set_envir_vars=function(envir=environment(),input=NULL,id=NULL,name=""){
         envir$n_input <- length(input)
         envir$input_id <- set_input_id(input=input,id=id)
       }
-
+      if(!is.null(fn)){
+        envir$fn <- sub("*.::","",sub("(.*","",paste0(deparse(sys.calls()[[sys.nframe()-1]]))))
+      }
       
-      envir$fn <- sub("(|)","",deparse(sys.calls()[[sys.nframe()-1]]))
-  
+      envir$fn <- fn
+      envir$ns <- ns
+     
 
     }
   
