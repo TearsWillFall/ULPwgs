@@ -797,7 +797,10 @@ annotate_bed_circlemap=function(
     threads=threads,
     ram=1,
     verbose=FALSE,
-    batch_config=build_default_preprocess_config()
+    batch_config=build_default_preprocess_config(),
+    executor_id=make_unique_id("annotateBEDcirclemap"),
+    task_name="annotateBEDcirclemap",
+    hold=NULL
 ){
     task_id=make_unique_id(task_name)
     out_file_dir=set_dir(dir=output_dir)
