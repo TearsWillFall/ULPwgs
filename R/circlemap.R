@@ -804,9 +804,7 @@ annotate_bed_circlemap=function(
 ){
     
     this.envir=environment()
-    set_envir_vars(envir=this.envir,input=bed,id=output_name,name="circlemap_reports")
-
-   
+    set_envir_vars(envir=this.envir,input=bed,id=output_name)
 
     if(!is.null(this.envir$inherit)){
 
