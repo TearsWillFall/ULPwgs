@@ -345,7 +345,6 @@ set_envir_vars=function(envir=environment(),input=NULL,id=NULL,name=""){
       }
 
       
-     
       envir$fn <- sub("(|)","",deparse(sys.calls()[[sys.nframe()-1]]))
   
 
