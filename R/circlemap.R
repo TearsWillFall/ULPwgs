@@ -836,7 +836,7 @@ annotate_bed_circlemap=function(
 
     summarised_dat=dplyr::bind_rows(summarised_dat) %>% 
     dplyr::rename(chr=chr.x,start=start.x,end=end.x) %>% 
-    dplyr::arrange(mixedsort(chr),start)
+    dplyr::arrange(gtools::mixedsort(chr),start)
 
     return(summarised_dat)
 }
