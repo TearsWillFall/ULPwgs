@@ -229,13 +229,13 @@ build_exec_innit=function(
         if(envir$mode=="local"){
              
               envir$exec_code=paste0("Rscript -e \" lapply(1:",envir$n_input,
-              ",FUN=function(select){",envir$fn,"(inherit=\\\"",
+              ",FUN=function(select){",envir$ns,"::",envir$fn,"(inherit=\\\"",
               envir$rdata_file,"\\\",select=select)})\"")
         
         }else if(envir$mode=="batch"){
     
               envir$exec_code=paste0("Rscript -e \" ",
-              envir$fn,"(inherit=\\\"",envir$rdata_file,
+              envir$ns,"::"envir$fn,"(inherit=\\\"",envir$rdata_file,
               "\\\",select=$SGE_TASK_ID)\"")
 
         }else{
@@ -344,7 +344,7 @@ set_envir_vars=function(envir=environment(),input=NULL,id=NULL,fn=NULL,ns="ULPwg
         envir$input_id <- set_input_id(input=input,id=id)
       }
       if(is.null(fn)){
-        envir$fn <- sub("*.::","",sub("\\(.*","",paste0(deparse(sys.calls()[[sys.nframe()-1]]))))
+        envir$fn <- sub("*.::","",sub("\\(.*","",paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=",")))
       }else{
         envir$fn <- fn
       }
