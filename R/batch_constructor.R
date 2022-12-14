@@ -346,7 +346,7 @@ set_envir_vars=function(envir=environment(),input=NULL,id=NULL,name=""){
 
       
 
-      envir$fn <- as.character(rlang::trace_back()$call[[1]])
+      envir$fn <- as.character(deparse(sys.calls()[[sys.nframe()-1]]))
       envir$ns <- getAnywhere(envir$fn)$where
 
     }
