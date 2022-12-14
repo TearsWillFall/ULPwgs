@@ -889,14 +889,13 @@ annotate_bed_circlemap=function(
        
     }
 
-
         if(!is.null(selected)){
             select=selected
             load(rdata)
             vcf=slist[select]
             
             id=""
-            if(output_name!=""){
+            if(!is.null(output_name)){
                 id=output_name
             }else{
                 id=get_file_name(vcf)
