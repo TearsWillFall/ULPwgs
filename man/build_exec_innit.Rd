@@ -7,17 +7,7 @@
 build_exec_innit(envir = NULL)
 }
 \arguments{
-\item{objects}{List of objects to save in RData object}
-
-\item{job_id}{Job Identifier}
-
-\item{nspace}{Function namespace. Default ULPwgs}
-
-\item{fun}{Function name. Default NULL}
-
-\item{inherit_scheduler}{Inherit submission order from scheduler. Default FALSE}
-
-\item{output_dir}{Path to output directory}
+\item{envir}{List of objects to save in RData object}
 }
 \description{
 Build execution innit for function to execute

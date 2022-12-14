@@ -331,22 +331,41 @@ set_envir_vars=function(envir=environment(),input=NULL,id=NULL,name=""){
     if(!is.null(envir$inherit)){
         if(!is.environment(envir$inherit)){
           envir$inherit<-readRDS(file=envir$envir)
+          append_envir(envir,envir$inherit)
         }
+    }else{
+      envir$task_id <-make_unique_id(envir$task_name)
+      envir$out_file_dir <- set_dir(dir=envir$output_dir,name=name)
+      envir$out_file_dir_tmp <- set_dir(dir=envir$out_file_dir,name="tmp")
+      envir$job_id <-build_job(executor_id=envir$executor_id,task_id=envir$task_id)
+
+      if(!is.null(input)){
+        envir$input <- input
+        envir$n_input <- length(input)
+        envir$input_id <- set_input_id(input=input,id=id)
+      }
+      envir$fn <- as.character(rlang::call_name(rlang::expr(rlang::caller_fn())))
+      envir$ns <- getAnywhere(envir$fn)$where
+
     }
   
-    envir$task_id <-make_unique_id(envir$task_name)
-    envir$out_file_dir <- set_dir(dir=envir$output_dir,name=name)
-    envir$out_file_dir_tmp <- set_dir(dir=envir$out_file_dir,name="tmp")
-    envir$job_id <-build_job(executor_id=envir$executor_id,task_id=envir$task_id)
-
-    if(!is.null(input)){
-       envir$input <- input
-       envir$input_id <-set_input_id(input=input,id=id)
-    }
-    envir$fn <- as.character(rlang::call_name(rlang::expr(rlang::caller_fn())))
-    envir$ns <- getAnywhere(envir$fn)$where
+ 
 }
 
+#' Append two enviroments
+#' 
+#' @param to Enviroment to append to
+#' @param from Enviroment to append from
+#' @export
+
+append_envir = function(to=environment(), from=NULL) {
+      
+      to_list = ls(to)
+      from_list = ls(from)
+      for(var in from_list) {
+           to[[var]] = from[[var]]
+      }
+}
 
 
 
