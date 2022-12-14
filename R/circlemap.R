@@ -807,24 +807,6 @@ annotate_bed_circlemap=function(
     this.envir=environment()
     set_envir_vars(envir=this.envir,input=bed,id=output_name)
 
-    if(is.null(select)){
-        run_job(
-            envir=this.envir
-        )
-    }else{
-        main_annotate_bed_circlemap(
-            bed=input[select],
-            id=input_id[select],
-            type=type,
-            write=write,
-            annotation_ref=annotation_ref,
-            threads=threads
-        )
-
-     
-    }
-
-
     main_annotate_bed_circlemap=function(
         bed=NULL,
         id=NULL,
@@ -905,6 +887,27 @@ annotate_bed_circlemap=function(
         }
        
     }
+
+
+    if(is.null(select)){
+        run_job(
+            envir=this.envir
+        )
+    }else{
+        main_annotate_bed_circlemap(
+            bed=input[select],
+            id=input_id[select],
+            type=type,
+            write=write,
+            annotation_ref=annotation_ref,
+            threads=threads
+        )
+
+     
+    }
+
+
+  
 
 }
 
