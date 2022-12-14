@@ -230,13 +230,13 @@ build_exec_innit=function(
         if(envir$mode=="local"){
              
               envir$exec_code=paste0("Rscript -e \" lapply(1:",envir$n_input,
-              ",FUN=function(select){",envir$ns,"::",envir$fn,"(inherit=\\\"",
+              ",FUN=function(select){"envir$fn,"(inherit=\\\"",
               envir$rdata_file,"\\\",select=select)})\"")
         
         }else if(envir$mode=="batch"){
     
               envir$exec_code=paste0("Rscript -e \" ",
-              envir$ns,"::",envir$fn,"(inherit=\\\"",envir$rdata_file,
+              envir$fn,"(inherit=\\\"",envir$rdata_file,
               "\\\",select=$SGE_TASK_ID)\"")
 
         }else{
@@ -346,9 +346,8 @@ set_envir_vars=function(envir=environment(),input=NULL,id=NULL,name=""){
 
       
      
-      envir$fn <- paste0(as.character(deparse(sys.calls()[[sys.nframe()-1]])),collapse=",")
-     
-      envir$ns <- getAnywhere(envir$fn)$where
+      envir$fn <- sub("(|)","",deparse(sys.calls()[[sys.nframe()-1]]))
+  
 
     }
   
