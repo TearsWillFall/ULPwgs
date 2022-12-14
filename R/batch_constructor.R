@@ -328,7 +328,7 @@ run_job=function(
 set_envir_vars=function(envir=environment(),input=NULL,id=NULL,fn=NULL,ns="ULPwgs",dir_name=""){
     if(!is.null(envir$inherit)){
         if(!is.environment(envir$inherit)){
-          envir$inherit<-readRDS(file=envir$envir)
+          envir$inherit<-readRDS(file=envir$inherit)
           append_envir(envir,envir$inherit)
         }
     }else{
