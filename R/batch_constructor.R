@@ -202,8 +202,7 @@ execute_job=function(exec_code){
 build_rdata_object=function(
   envir=NULL
 ){
-          envir$out_file_dir_rdata=set_dir(dir=envir$out_file_dir_tmp,name="RData")
-          envir$rdata_file=paste0(envir$out_file_dir,"/",envir$job_id,".RData")
+          envir$rdata_file=paste0(envir$out_file_dir_tmp,"/",envir$job_id,".RData")
           saveRDS(envir,file = envir$rdata_file)
   }
       
@@ -230,7 +229,7 @@ build_exec_innit=function(
         if(envir$mode=="local"){
              
               envir$exec_code=paste0("Rscript -e \" lapply(1:",envir$n_input,
-              ",FUN=function(select){"envir$fn,"(inherit=\\\"",
+              ",FUN=function(select){",envir$fn,"(inherit=\\\"",
               envir$rdata_file,"\\\",select=select)})\"")
         
         }else if(envir$mode=="batch"){
@@ -333,6 +332,7 @@ set_envir_vars=function(envir=environment(),input=NULL,id=NULL,name=""){
           append_envir(envir,envir$inherit)
         }
     }else{
+
       envir$task_id <-make_unique_id(envir$task_name)
       envir$out_file_dir <- set_dir(dir=envir$output_dir,name=name)
       envir$out_file_dir_tmp <- set_dir(dir=envir$out_file_dir,name="tmp")
