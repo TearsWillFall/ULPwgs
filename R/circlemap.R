@@ -778,55 +778,64 @@ annotate_bed_circlemap=function(
     id=NULL,
     type="repeat",
     annotation_ref=build_default_reference_list()$HG19$panel$PCF_V3$annotation$genes,
-    sep="\t"
+    sep="\t",
+    threads=8
 ){
     dat=read_bed_circlemap(bed=bed,id=id,type=type,sep=sep)
     annotation=read.table(annotation_ref,sep="\t",header=TRUE)
 
-    full_gene=fuzzyjoin::fuzzy_left_join(dat,annotation,
-        by=c("chr"="chr","start"="start","end"="end"),
-        match_fun=c(`==`,`<=`,`>=`)
-    )
 
-    full_gene$annot_type="COMPLETE"
+    summarised_dat=parallel::mclapply(unique(dat$chr),function(x){
+        tmp_dat=dat %>% dplyr::filter(chr==x)
+        tmp_annotation=dat %>% dplyr::filter(chr==x)
 
-    partial_left=fuzzyjoin::fuzzy_left_join(dat,annotation,
-        by=c("chr"="chr","start"="start","end"="start"),
-        match_fun=c(`==`,`<=`,`>=`)
-    )
+        full_gene=fuzzyjoin::fuzzy_left_join(tmp_dat,tmp_annotation,
+            by=c("chr"="chr","start"="start","end"="end"),
+            match_fun=c(`==`,`<=`,`>=`)
+            )
 
-    partial_left$annot_type="PARTIAL"
-    partial_left=dplyr::anti_join(partial_left,full_gene,
-        by=c("chr.x"="chr.x",
-            "start.x"="start.x",
-            "end.x"="end.x",
-            "gene_id"="gene_id"
-        ))
+        full_gene$annot_type="COMPLETE"
 
-    partial_right=fuzzyjoin::fuzzy_left_join(dat,annotation,
-        by=c("chr"="chr","start"="end","end"="end"),
-        match_fun=c(`==`,`<=`,`>=`)
-    )
+        partial_left=fuzzyjoin::fuzzy_left_join(tmp_dat,tmp_annotation,
+            by=c("chr"="chr","start"="start","end"="start"),
+            match_fun=c(`==`,`<=`,`>=`)
+        )
 
-    partial_right$annot_type="PARTIAL"
-    partial_right=dplyr::anti_join(partial_right,full_gene,
-        by=c("chr.x"="chr.x",
-            "start.x"="start.x",
-            "end.x"="end.x",
-            "gene_id"="gene_id"
-        ))
+        partial_left$annot_type="PARTIAL"
+        partial_left=dplyr::anti_join(partial_left,full_gene,
+            by=c("chr.x"="chr.x",
+                "start.x"="start.x",
+                "end.x"="end.x",
+                "gene_id"="gene_id"
+            ))
+
+        partial_right=fuzzyjoin::fuzzy_left_join(tmp_dat,tmp_annotation,
+            by=c("chr"="chr","start"="end","end"="end"),
+            match_fun=c(`==`,`<=`,`>=`)
+        )
+
+        partial_right$annot_type="PARTIAL"
+        partial_right=dplyr::anti_join(partial_right,full_gene,
+            by=c("chr.x"="chr.x",
+                "start.x"="start.x",
+                "end.x"="end.x",
+                "gene_id"="gene_id"
+            ))
 
 
-    complete_dat=rbind(full_gene,partial_left,partial_right)
-    summarised_dat= complete_dat %>% 
-        dplyr::select(chr.x:gene_id,annot_type)  %>% 
-        dplyr::group_by(dplyr::across(chr.x:id)) %>% 
-        dplyr::summarise(genes=paste0(paste0(gene_id,":",annot_type),
-        collapse=";")
-    )
-    
-    
-    return(summarised_dat)
+        complete_dat=rbind(full_gene,partial_left,partial_right)
+        summarised_dat= complete_dat %>% 
+            dplyr::select(chr.x:gene_id,annot_type)  %>% 
+            dplyr::group_by(dplyr::across(chr.x:id)) %>% 
+            dplyr::summarise(genes=paste0(paste0(gene_id,":",annot_type),
+            collapse=";")
+        )
 
+
+        return(summarised_dat)
+
+    },mc.cores=threads)
+
+    return(dplyr::bind_rows(summarised_dat))
 }
 
