@@ -360,7 +360,7 @@ set_envir_vars=function(
         ## GET CALLER FUNCTION NAME IF NOT GIVEN
         
    
-        envir$fn <-as.character(rlang::current_call())
+        envir$fn <-as.character(match.call()[[1]])
 
       }else{
         envir$fn <- fn
