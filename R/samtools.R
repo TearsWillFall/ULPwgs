@@ -788,7 +788,7 @@ new_stats_bam_samtools=function(
           steps$stats_bam,
             new_flag_stats_samtools(
               bin_samtools=bin_samtools,
-              bam=bam,
+              bam=input,
               output_dir=out_file_dir,
               verbose=verbose,
               threads=threads,
@@ -802,7 +802,7 @@ new_stats_bam_samtools=function(
         steps$stats_bam,
           new_index_stats_samtools(
             bin_samtools=bin_samtools,
-            bam=bam,
+            bam=input,
             output_dir=out_file_dir,
             verbose=verbose,
             threads=threads,
