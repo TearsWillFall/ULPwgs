@@ -158,7 +158,9 @@ new_sort_and_index_bam_samtools=function(
 
 
    this.envir=environment()
-   set_envir_vars(envir=this.envir,inputs=bam,ids=output_name)
+   set_envir_vars(
+    envir=this.envir,inputs=bam,ids=output_name
+  )
 
 
 
