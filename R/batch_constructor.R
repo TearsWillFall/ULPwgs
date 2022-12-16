@@ -336,16 +336,16 @@ run_self=function(
       if(verbose){
         print_verbose(
           job=job_id,arg=as.list(this.envir),
-          exec_code=steps$[[fn]]$exec_code
+          exec_code=steps[[fn]]$exec_code
         )
       }
 
 
-      steps$[[fn]]$error=execute_job(
-          exec_code=steps$[[fn]]$exec_code
+      steps[[fn]]$error=execute_job(
+          exec_code=steps[[fn]]$exec_code
         )
       
-      if(steps$[[fn]]$error!=0){
+      if(steps[[fn]]$error!=0){
           stop(err_mssg)
       }
       envir$steps <- steps
