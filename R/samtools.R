@@ -1200,7 +1200,7 @@ new_index_stats_samtools=function(
     )
     steps$index_stats$exec_code=paste0(
         bin_samtools,
-      " idxstats ",input," > ",out_file
+      " idxstats ",input," > ",steps$index_stats$out_file
     )
 
 
