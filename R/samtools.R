@@ -620,8 +620,8 @@ new_index_bam_samtools=function(
     steps=list()
     steps$index_bam$job_id=job_id
 
-    steps$out_file=paste0(input,".bai")
-    steps$exec_code=paste(bin_samtools," index",input," -@ ",threads)
+    steps$index_bam$out_file=paste0(input,".bai")
+    steps$index_bam$exec_code=paste(bin_samtools," index",input," -@ ",threads)
    
     if(verbose){
       print_verbose(
@@ -663,7 +663,7 @@ new_index_bam_samtools=function(
         envir=this.envir
     )
   }else{
-    
+
       set_envir_inputs(envir=this.envir)
       main_index_bam_samtools(
           envir=this.envir
