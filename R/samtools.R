@@ -609,8 +609,6 @@ new_index_bam_samtools=function(
   set_envir_vars(envir=this.envir,inputs=bam,ids=NULL)
 
 
-
-
   main_index_bam_samtools=function(
     envir
   ){
@@ -665,7 +663,7 @@ new_index_bam_samtools=function(
         envir=this.envir
     )
   }else{
-
+    
       set_envir_inputs(envir=this.envir)
       main_index_bam_samtools(
           envir=this.envir

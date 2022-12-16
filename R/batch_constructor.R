@@ -410,8 +410,8 @@ set_input_id=function(inputs,ids=NULL){
 
 
 set_envir_inputs=function(envir){
-      envir$input<-envir$inputs[select]
-      envir$id<-envir$inputs_id[select]
+      envir$input<-envir$inputs[envir$select]
+      envir$id<-envir$inputs_id[envir$select]
   }
 
 
