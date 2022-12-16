@@ -1233,7 +1233,7 @@ new_index_stats_samtools=function(
   }else{
 
       set_envir_inputs(envir=this.envir)
-      main_flag_stats_samtools(
+      main_index_stats_samtools(
           envir=this.envir
       )
       return(steps)
