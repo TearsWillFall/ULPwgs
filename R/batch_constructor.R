@@ -228,7 +228,7 @@ build_exec_innit=function(
         
         if(envir$mode=="local"){
              
-              envir$exec_code=paste0("Rscript -e \" lapply(1:",envir$n_input,
+              envir$exec_code=paste0("Rscript -e \" lapply(1:",envir$n_inputs,
               ",FUN=function(select){",envir$ns,"::",envir$fn,"(inherit=\\\"",
               envir$rdata_file,"\\\",select=select)})\"")
         
