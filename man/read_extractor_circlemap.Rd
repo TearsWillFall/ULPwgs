@@ -19,6 +19,7 @@ read_extractor_circlemap(
   index = FALSE,
   stats = "all",
   clean = FALSE,
+  ns = "ULPwgs",
   mode = "local",
   executor_id = make_unique_id("readExtractCircleMap"),
   task_name = "readExtractCircleMap",

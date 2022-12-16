@@ -4,12 +4,12 @@
 \alias{set_input_id}
 \title{Set default environment ID}
 \usage{
-set_input_id(input, id = NULL)
+set_input_id(inputs, ids = NULL)
 }
 \arguments{
-\item{input}{Input file/s}
+\item{inputs}{Input file/s}
 
-\item{id}{Input file identifier}
+\item{ids}{Input file identifier}
 }
 \description{
 Set default environment ID

@@ -5,6 +5,8 @@
 \title{Extract Circular DNA Repeat Candidates using Circlemap tool}
 \usage{
 repeat_caller_circlemap(
+  inherit = NULL,
+  select = NULL,
   env_circlemap = build_default_python_enviroment_list()$env_circlemap,
   bam = NULL,
   output_dir = ".",
@@ -13,6 +15,7 @@ repeat_caller_circlemap(
   batch_config = build_default_preprocess_config(),
   threads = 1,
   ram = 1,
+  ns = "ULPwgs",
   mode = "local",
   executor_id = make_unique_id("RepeatsCircleMap"),
   task_name = "RepeatsCircleMap",

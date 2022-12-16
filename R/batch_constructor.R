@@ -325,7 +325,7 @@ run_job=function(
 #' @param name Name of output file directory
 #' @export
 
-set_envir_vars=function(envir=environment(),input=NULL,id=NULL,fn=NULL,ns="ULPwgs",dir_name=""){
+set_envir_vars=function(envir=environment(),inputs=NULL,ids=NULL,fn=NULL,ns="ULPwgs",dir_name=""){
     
     if(!is.null(envir$inherit)){
         if(!is.environment(envir$inherit)){
@@ -339,10 +339,10 @@ set_envir_vars=function(envir=environment(),input=NULL,id=NULL,fn=NULL,ns="ULPwg
       envir$out_file_dir_tmp <- set_dir(dir=envir$out_file_dir,name="tmp")
       envir$job_id <-build_job(executor_id=envir$executor_id,task_id=envir$task_id)
 
-      if(!is.null(input)){
-        envir$input <- input
-        envir$n_input <- length(input)
-        envir$input_id <- set_input_id(input=input,id=id)
+      if(!is.null(inputs)){
+        envir$inputs <- inputs
+        envir$n_inputs <- length(inputs)
+        envir$inputs_id <- set_input_id(inputs=inputs,ids=ids)
       }
 
 
@@ -374,7 +374,7 @@ append_envir = function(to=environment(), from=NULL) {
       
       from_list = ls(from)
       for(var in from_list) {
-           if(!is.null(from[[var]])){
+           if(!is.null(from[[var]])&!is.environment(from[[var]])){
               to[[var]] = from[[var]]
            }
       }
@@ -384,18 +384,32 @@ append_envir = function(to=environment(), from=NULL) {
 
 #' Set default environment ID
 #' 
-#' @param input Input file/s
-#' @param id Input file identifier
+#' @param inputs Input file/s
+#' @param ids Input file identifier
 #' @export
 
-set_input_id=function(input,id=NULL){
-      if(!is.null(id)){
-        my_id=id
+set_input_id=function(inputs,ids=NULL){
+      if(!is.null(ids)){
+        my_id=ids
       }else{
-        my_id=Vectorize(get_file_name)(input)
+        my_id=Vectorize(get_file_name)(inputs)
       }
       return(my_id)
 }
+
+#' Set inputs withib enviroment from input list 
+#' 
+#' @param envir Enviroment to work within
+#' @export
+
+
+set_envir_inputs=function(envir){
+      envir$input<-envir$inputs[select]
+      envir$id<-envir$inputs_id[select]
+  }
+
+
+
 
 
 

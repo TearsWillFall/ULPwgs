@@ -5,6 +5,8 @@
 \title{Extract Circular DNA Candidates using Circlemap Realign tool}
 \usage{
 realign_circlemap(
+  inherit = NULL,
+  select = NULL,
   env_circlemap = build_default_python_enviroment_list()$env_circlemap,
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = NULL,

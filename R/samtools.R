@@ -105,6 +105,112 @@ sort_and_index_bam_samtools=function(
 }
 
 
+
+
+#' Sort and index a sequence file
+#' 
+#'
+#' Wrapper around index_bam_samtools and sort_bam_samtools functions
+#' 
+#' 
+#' @param bam Path to the input file with the sequence.
+#' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param threads Number of threads. Default 3
+#' @param ram Ram memory to use per thread in GB. Default 1GB
+#' @param sort Sort BAM file. Default TRUE.
+#' @param coord_sort Generate a coord sorted file. Otherwise queryname sorted. Default TRUE
+#' @param index Generate an index file for sorted BAM. Default TRUE
+#' @param clean Remove input files. Default FALSE
+#' @param stats Generate BAM stats. Default all. Options ["all","flag","index",""]
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR id. Default "mardupsGATK"
+#' @param task_name Name of the task. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
+#' @export
+
+new_sort_and_index_bam_samtools=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam="",output_dir=".",verbose=FALSE,
+  batch_config=build_default_preprocess_config(),threads=3,ram=1,sort=TRUE,
+  coord_sort=TRUE,index=TRUE,stats=TRUE, clean=FALSE,
+  mode="local",executor_id=make_unique_id("sortANDindex"),
+  task_name="sortANDindex",time="48:0:0",
+  update_time=60,wait=FALSE,hold=NULL
+){
+
+
+   this.envir=environment()
+   set_envir_vars(envir=this.envir,input=bam,id=output_name)
+
+
+
+  main_sort_and_index_bam_samtools=function(
+    envir
+  ){
+    this.envir=environment()
+    append_envir(this.envir,envir)
+
+    steps=list()
+    steps$sort_and_index$job_id=job_id
+  
+    if(sort){
+        steps$sort_and_index<-append(
+          steps$sort_and_index,
+            new_sort_bam_samtools(
+              bin_samtools=bin_samtools,
+              bam=input,
+              output_dir=out_file_dir,
+              ram=ram,
+              index=index,
+              stats=stats,
+              verbose=verbose,
+              threads=threads,
+              coord_sort=coord_sort,
+              clean=clean,
+              executor_id=task_id
+        )
+      )
+
+    }else{
+        steps$sort_and_index <-append(steps$sort_and_index,new_index_bam_samtools(
+          bin_samtools=bin_samtools,
+          bam=input,
+          stats=stats,
+          verbose=verbose,
+          threads=threads,
+          executor_id=task_id
+        )
+      )
+    }
+
+    envir$steps <-steps
+
+  }
+
+
+  if(is.null(select)){
+      run_job(
+          envir=this.envir
+      )
+  }else{
+
+      set_envir_inputs(envir=this.envir)
+      main_sort_and_index_bam_samtool(
+          envir=this.envir
+      )
+      return(steps)
+  }
+
+
+
+}
+
+
 #' Sort a BAM file
 #'
 #' This function sorts a genome sequence file (BAM/SAM)
@@ -191,6 +297,188 @@ sort_bam_samtools=function(
 }
 
 
+
+#' Sort a BAM file
+#'
+#' This function sorts a genome sequence file (BAM/SAM)
+#'
+#' @param bam Path to the input file with the sequence.
+#' @param bin_samtols Path to samtools executable. Default path tools/samtools/samtools.
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param threads Number of threads. Default 3
+#' @param ram Ram memory to use per thread in GB. Default 1GB
+#' @param output_dir Path to the output directory.
+#' @param coord_sort Generate a coord sorted file. Otherwise queryname sorted. Default TRUE
+#' @param clean Remove input files. Default FALSE
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "mardupsGATK"
+#' @param task_name Name of the task. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
+#' @export
+
+new_sort_bam_samtools=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam="",
+  output_dir=".",
+  index=TRUE,
+  stats=TRUE,
+  verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  threads=3,
+  ram=1,
+  coord_sort=TRUE,
+  mode="local",
+  executor_id=make_unique_id("sortBAM"),
+  clean=FALSE,
+  task_name="sortBAM",
+  time="48:0:0",
+  update_time=60,
+  wait=FALSE,
+  hold=NULL
+){
+
+    this.envir=environment()
+    set_envir_vars(envir=this.envir,input=bam,id=output_name,dir_name="sorted")
+
+    main_sort_bam_samtools=function(
+      envir
+    ){
+      
+
+      this.envir=environment()
+      append_envir(this.envir,envir)
+
+      steps=list()
+      steps$sort_bam$job_id=job_id
+
+
+
+      sort_type=""
+
+      out_file=paste0(out_file_dir,"/",id,".sorted.",get_file_ext(input))
+      
+      if(!coord_sort){
+        sort_type=" -n "
+      }
+
+      steps$sort_bam$exec_code=paste0(
+        bin_samtools," sort ",
+        sort_type, input,
+        " -@ ",threads,
+        " -m ",ram,
+        "G"," -o ",
+        out_file
+      )
+    
+      if(clean){
+        steps$sort_bam$exec_code=paste(
+          steps$sort_bam$exec_code," && rm",paste(input,collapse=" ")
+        )
+      }
+
+      if(verbose){
+        print_verbose(
+          job=job_id,arg=as.list(this.envir),
+          exec_code=steps$sort_bam$exec_code
+        )
+      }
+    
+      steps$sort_bam$error=execute_job(exec_code=steps$sort_bam$exec_code)
+  
+      if(steps$sort_bam$error!=0){
+          stop(err_mssg)
+      }
+
+
+      if(index & coord_sort){
+
+          steps$sort_bam <-append(
+            steps$sort_bam,
+              new_index_bam_samtools(
+                  bin_samtools=bin_samtools,
+                  bam=steps$sort_bam$out_file,
+                  stats=stats,
+                  verbose=verbose,
+                  threads=threads,
+                  ram=ram,
+                  executor_id=task_id,
+                  output_dir=out_file_dir
+                )
+            )
+
+      }
+
+      if(stats){
+          steps$sort_bam <-append(
+            steps$sort_bam,
+              new_stats_bam_samtools(
+                  bin_samtools=bin_samtools,
+                  bam=steps$sort_bam$out_file,
+                  stats="flag",
+                  verbose=verbose,
+                  threads=threads,
+                  ram=ram,
+                  executor_id=task_id,
+                  output_dir=out_file_dir
+                )
+            )
+      }
+
+      envir$steps <- steps
+    }
+
+
+  if(is.null(select)){
+      run_job(
+          envir=this.envir
+      )
+  }else{
+
+      set_envir_inputs(envir=this.envir)
+      main_sort_bam_samtools(
+          envir=this.envir
+      )
+      return(steps)
+  }
+
+
+  
+
+}
+
+
+
+
+
+
+#' Index a BAM file
+#'
+#' This function sorts a genome sequence file (BAM/SAM)
+#'
+#' @param bam Path to the input file with the sequence.
+#' @param bin_samtols Path to samtools executable. Default path tools/samtools/samtools.
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param threads Number of threads. Default 3
+#' @param ram Ram memory to use per thread in GB. Default 1GB
+#' @param output_dir Path to the output directory.
+#' @param coord_sort Generate a coord sorted file. Otherwise queryname sorted. Default TRUE
+#' @param clean Remove input files. Default FALSE
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "mardupsGATK"
+#' @param task_name Name of the task. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
+#' @export
+
+
+
 index_bam_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam="",verbose=FALSE,batch_config=build_default_preprocess_config(),
@@ -246,6 +534,121 @@ index_bam_samtools=function(
 
 
 
+
+#' Index a BAM file
+#'
+#' This function sorts a genome sequence file (BAM/SAM)
+#'
+#' @param bam Path to the input file with the sequence.
+#' @param bin_samtols Path to samtools executable. Default path tools/samtools/samtools.
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param threads Number of threads. Default 3
+#' @param ram Ram memory to use per thread in GB. Default 1GB
+#' @param output_dir Path to the output directory.
+#' @param coord_sort Generate a coord sorted file. Otherwise queryname sorted. Default TRUE
+#' @param clean Remove input files. Default FALSE
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "mardupsGATK"
+#' @param task_name Name of the task. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
+#' @export
+
+
+
+new_index_bam_samtools=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam="",
+  stats=TRUE,
+  verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  threads=3,
+  ram=4,
+  mode="local",
+  executor_id=make_unique_id("indexBAM"),
+  task_name="indexBAM",
+  time="48:0:0",
+  update_time=60,
+  output_dir=".",
+  wait=FALSE,hold=NULL
+){
+
+
+
+  this.envir=environment()
+  set_envir_vars(envir=this.envir,input=bam,id=output_name)
+
+
+
+
+  main_index_bam_samtools=function(
+    envir
+  ){
+
+
+    this.envir=environment()
+    append_envir(this.envir,envir)
+
+    steps=list()
+    steps$index_bam$job_id=job_id
+
+    steps$out_file=paste0(input,".bai")
+    steps$exec_code=paste(bin_samtools," index",input," -@ ",threads)
+   
+    if(verbose){
+      print_verbose(
+        job=job_id,arg=as.list(this.envir),
+        exec_code=steps$index_bam$exec_code
+      )
+    }
+
+  
+    steps$index_bam$error=execute_job(exec_code=steps$index_bam$exec_code)
+
+    if(steps$index_bam$error!=0){
+        stop(err_mssg)
+    }
+
+    if(stats){
+      steps$index_bam <-append(
+        steps$index_bam,
+        new_stats_bam_samtools(
+                  bin_samtools=bin_samtools,
+                  bam=input,
+                  output_dir=out_file_dir,
+                  verbose=verbose,
+                  threads=threads,
+                  stats="index",
+                  executor_id=task_id
+        )
+      )
+
+    }
+
+    envir$steps <-steps
+
+  }
+
+
+  if(is.null(select)){
+    run_job(
+        envir=this.envir
+    )
+  }else{
+
+      set_envir_inputs(envir=this.envir)
+      main_index_bam_samtools(
+          envir=this.envir
+      )
+      return(steps)
+  }
+
+
+
+}
 
 
 
@@ -322,6 +725,113 @@ stats_bam_samtools=function(
 
   return(job_report)
 }
+
+
+
+
+
+#' Generate BAM file flag and index stats
+#'
+#'
+#' @param bam Path to the input file with the sequence.
+#' @param bin_samtools Path to bwa executable. Default path tools/samtools/samtools.
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param threads Number of threads. Default 3
+#' @param ram RAM per thread to use. Default 4.
+#' @param stats Generate BAM stats. Default all. Options ["all","flag","index",""]
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "mardupsGATK"
+#' @param task_name Name of the task. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID.
+#' @export
+
+
+new_stats_bam_samtools=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam="",
+  output_dir=".",
+  verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  threads=3,
+  ram=4,
+  stats="all",
+  mode="local",
+  executor_id=make_unique_id("statsBAM"),
+  task_name="statsBAM",
+  time="48:0:0",
+  hold=NULL
+){
+
+  this.envir=environment()
+  set_envir_vars(
+    envir=this.envir,input=bam,id=output_name,dir_name="stats"
+  )
+
+
+  main_new_stats_bam_samtools=function(
+    envir
+  ){
+
+
+    this.envir=environment()
+    append_envir(this.envir,envir)
+
+    steps=list()
+    steps$stats_bam$job_id=job_id
+
+    if(stats=="all"|stats=="flag"){
+        steps$stats_bam<-append(
+          steps$stats_bam,
+            new_flag_stats_samtools(
+              bin_samtools=bin_samtools,
+              bam=bam,
+              output_dir=out_file_dir,
+              verbose=verbose,
+              threads=threads,
+              ram=ram
+          )
+        )
+    } 
+
+    if(stats=="all"|stats=="index"){
+      steps$stats_bam<-append(
+        steps$stats_bam,
+          new_index_stats_samtools(
+            bin_samtools=bin_samtools,
+            bam=bam,
+            output_dir=out_file_dir,
+            verbose=verbose,
+            threads=threads,
+            ram=ram
+          )
+        )
+      }
+
+    envir$steps <- steps
+
+  }
+
+  
+  if(is.null(select)){
+    run_job(
+        envir=this.envir
+    )
+  }else{
+
+      set_envir_inputs(envir=this.envir)
+      main_new_stats_bam_samtools(
+          envir=this.envir
+      )
+      return(steps)
+  }
+
+
+}
+
 
 #' Generate BAM file flagstats
 #'
@@ -401,6 +911,113 @@ stats_flag_samtools=function(
 }
 
 
+#' Generate BAM file flagstats
+#'
+#'
+#' @param bam Path to the input file with the sequence.
+#' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param threads Number of threads. Default 3
+#' @param ram RAM per thread to use. Default 4.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor Job EXECUTOR ID. Default "mardupsGATK"
+#' @param task_name Name of the task. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
+#' @export
+
+
+
+new_flag_stats_samtools=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam="",
+  output_dir=".",
+  verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  threads=3,
+  ram=4,
+  mode="local",
+  executor_id=make_unique_id("statsFlag"),
+  task_name="statsFlag",
+  time="48:0:0",
+  hold=NULL
+){
+
+  this.envir=environment()
+  set_envir_vars(
+    envir=this.envir,input=bam,id=output_name
+  )
+
+
+  main_flag_stats_samtools=function(
+    envir
+  ){
+
+    
+    this.envir=environment()
+    append_envir(this.envir,envir)
+
+    steps=list()
+    steps$flag_stats$job_id=job_id
+
+
+    steps$flag_stats$out_file=paste0(
+      out_file_dir,"/",
+      id,".flagstat.txt"
+    )
+    steps$flag_stats$exec_code=paste0(
+      bin_samtools," flagstat ",
+      input," -@ ",
+      threads," > ",
+      out_file
+    )
+
+
+    if(verbose){
+      print_verbose(
+        job=job_id,arg=as.list(this.envir),
+        exec_code=steps$flag_stats$exec_code
+      )
+    }
+
+  
+    steps$flag_stats$error=execute_job(exec_code=steps$flag_stats$exec_code)
+
+    if(steps$flag_stats$error!=0){
+        stop(err_mssg)
+    }
+
+
+     envir$steps <-steps
+
+
+  }
+
+
+  if(is.null(select)){
+    run_job(
+        envir=this.envir
+    )
+  }else{
+
+      set_envir_inputs(envir=this.envir)
+      main_flag_stats_samtools(
+          envir=this.envir
+      )
+      return(steps)
+  }
+
+
+  
+  
+}
+
+
+
+
 #' Generate BAM file indexstats
 #'
 #'
@@ -474,6 +1091,118 @@ stats_index_samtools=function(
   return(job_report)
 
 }
+
+
+
+
+
+#' Generate BAM file indexstats
+#'
+#'
+#' @param bam Path to the input file with the sequence.
+#' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param threads Number of threads. Default 3
+#' @param ram RAM per thread to use. Default 4.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Job EXECUTOR ID. Default "mardupsGATK"
+#' @param task_name Name of the task. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
+#' @export
+
+
+new_index_stats_samtools=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam="",
+  output_dir=".",
+  verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  threads=3,
+  ram=4,
+  mode="local",
+  executor_id=make_unique_id("statsINDEX"),
+  task_name="statsINDEX",
+  time="48:0:0",
+  update_time=60,
+  wait=FALSE,
+  hold=NULL
+){
+
+
+
+  this.envir=environment()
+  set_envir_vars(
+    envir=this.envir,input=bam,id=output_name
+  )
+
+
+
+  main_index_stats_samtools=function(
+    envir
+  ){
+
+    
+    this.envir=environment()
+    append_envir(this.envir,envir)
+
+    steps=list()
+    steps$index_stats$job_id=job_id
+
+
+    steps$index_stats$out_file=paste0(
+      out_file_dir,"/",id,".idxstats.txt"
+    )
+    steps$index_stats$exec_code=paste0(
+        bin_samtools,
+      " idxstats ",input," > ",out_file
+    )
+
+
+    if(verbose){
+      print_verbose(
+        job=job_id,arg=as.list(this.envir),
+        exec_code=steps$index_stats$exec_code
+      )
+    }
+
+    steps$index_stats$error=execute_job(exec_code=steps$index_stats$exec_code)
+
+    if(steps$index_stats$error!=0){
+        stop(err_mssg)
+    }
+
+
+     envir$steps <-steps
+
+
+  }
+
+
+
+  
+  if(is.null(select)){
+    run_job(
+        envir=this.envir
+    )
+  }else{
+
+      set_envir_inputs(envir=this.envir)
+      main_flag_stats_samtools(
+          envir=this.envir
+      )
+      return(steps)
+  }
+
+
+
+
+
+}
+
 
 
 #' Generate BAM MapQ metrics

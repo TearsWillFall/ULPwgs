@@ -30,131 +30,104 @@
 
 
 realign_circlemap=function(
+        inherit=NULL,
+        select=NULL,
         env_circlemap=build_default_python_enviroment_list()$env_circlemap,
         bin_samtools=build_default_tool_binary_list()$bin_samtools,
-        bam=NULL,output_dir=".",output_name="",verbose=FALSE,
+        bam=NULL,
+        output_dir=".",
+        output_name="",
+        verbose=FALSE,
         ref_genome=build_default_reference_list()$HG19$reference$genome,
         batch_config=build_default_preprocess_config(),
-        threads=3,ram=1, mode="local",
+        threads=3,
+        ram=1,
+        mode="local",
         tmp_dir=NULL,
         executor_id=make_unique_id("realignCircleMap"),
-        task_name="realignCircleMap",time="48:0:0",
-        update_time=60,wait=FALSE,hold=NULL
+        task_name="realignCircleMap",
+        time="48:0:0",
+        update_time=60,
+        wait=FALSE,
+        hold=NULL
 ){
 
-    argg <- as.list(environment())
-    task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir,name="realign_reports")
+    this.envir=environment()
+    set_envir_vars(envir=this.envir,input=bam,id=output_name,dir_name="realign_reports")
 
-    if(!is.null(tmp_dir)){
-        out_file_dir_tmp=tmp_dir
-    }else {
-        out_file_dir_tmp=set_dir(dir=out_file_dir,name="tmp")
-    }  
 
-    job=build_job(executor_id=executor_id,task_id=task_id)
-
-    if(is.null(bam)){
-        stop("bam argument is required")
-    }
-
-    id=""
-
-    if(output_name!=""){
-        id=output_name
-    }else{
-        id=get_file_name(bam[1])
-    }
-
-    
     out_file=paste0(out_file_dir,"/",id,".circular_candidates.bed")
 
-    jobs_report=build_job_report(
-        job_id=job,
-        executor_id=executor_id,
-        exec_code=list(), 
-        task_id=task_id,
-        input_args = argg,
-        out_file_dir=out_file_dir,
-        out_files=list(
-            circ_bed=out_file
-        )
-    )
+    main_realign_circlemap=function(envir){
 
 
 
-    jobs_report[["steps"]][["sort_and_index"]]<-sort_and_index_bam_samtools(
+        this.envir=environment()
+        append_envir(this.envir,envir)
+
+        steps=list()
+        steps$realign$job_id=job_id
+         
+        steps$realign <- append(steps$realign,sort_and_index_bam_samtools(
             bin_samtools=bin_samtools,
-            bam=bam,output_dir=out_file_dir_tmp,verbose=verbose,
-            batch_config=batch_config,threads=threads,ram=ram,sort=TRUE,
-            coord_sort=FALSE,index=FALSE,stats="all", clean=FALSE,
-            mode=mode,executor_id=task_id,
-            time=time,
-            hold=hold
-    )
+            bam=input,
+            output_dir=out_file_dir_tmp,
+            verbose=verbose,
+            batch_config=batch_config,
+            threads=threads,
+            ram=ram,
+            sort=TRUE,
+            coord_sort=FALSE,
+            index=FALSE,
+            stats="all", 
+            clean=FALSE,
+            executor_id=task_id
+        ))
 
-    jobs_report[["steps"]][["extract_circular_reads"]]<- read_extractor_circlemap(
+        steps$realign <- append(steps$realign,read_extractor_circlemap(
                 env_circlemap=env_circlemap,
                 bin_samtools=bin_samtools,
-                bam=jobs_report[["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam,
-                output_dir=out_file_dir_tmp,verbose=verbose,
+                bam=steps$sort_and_index$sort$out_file,
+                output_dir=out_file_dir_tmp,
+                verbose=verbose,
                 batch_config=batch_config,
                 threads=threads,ram=ram,
                 sort=TRUE,
                 coord_sort=TRUE,
-                index=TRUE,stats="all", clean=TRUE,
-                mode=mode,executor_id=task_id,
-                time=time,
-                hold=hold
-    )
-
-
-
-    hold=unlist_lvl(jobs_report[["steps"]][["extract_circular_reads"]],var="job_id")
-
-
-    exec_code=paste(set_conda_enviroment(env_circlemap),
-    "Circle-Map Realign -sbam ",normalizePath(bam), " -qbam ", 
-    jobs_report[["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam," -i ",
-    jobs_report[["steps"]][["extract_circular_reads"]][["steps"]][["sort_and_index"]][["steps"]][["sort"]]$out_files$bam,
-    " -o ",out_file," -t ",threads," -dir /", " -fasta ",normalizePath(ref_genome), " -tdir ",out_file_dir_tmp)
-    
-     
-    if(mode=="batch"){
-        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
-        threads=threads,output_dir=out_file_dir2)
-        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
-        ";",exec_code,"'|",batch_code)
-    }
-
-
-    jobs_report$exec_code=exec_code
-
-    if(verbose){
-        print_verbose(job=job,arg=argg,exec_code=exec_code)
-    }
-
-    error=execute_job(exec_code=exec_code)
-    
-    
-    if(error!=0){
-        stop("circlemap failed to run due to unknown error.
-        Check std error for more information.")
-    }
-
-
-
-    if(wait&&mode=="batch"){
-        job_validator(
-            job=job_report$job_id,
-            time=update_time,
-            verbose=verbose,
-            threads=threads
+                index=TRUE,stats="all", 
+                clean=TRUE,
+                executor_id=task_id
+            )
         )
+
+        steps$realign$exec_code <- paste(
+            set_conda_enviroment(env_circlemap),
+            " Circle-Map Realign -sbam ",normalizePath(input),
+            " -qbam ", steps$sort_and_index$out_file,
+            " -i ",steps$read_extractor$sort_and_index$sort$out_file,
+            " -o ",steps$realign$out_file,
+            " -t ",threads," -dir /", 
+            " -fasta ",normalizePath(ref_genome), 
+            " -tdir ",out_file_dir_tmp
+        )
+
+        envir$steps <- steps
+
     }
 
-    return(jobs_report)
+    if(is.null(select)){
+        run_job(
+            envir=this.envir
+        )
+    }else{
+
+       set_envir_inputs(envir=this.envir)
+       main_repeat_caller_circlemap(
+            envir=this.envir
+       )
+       return(steps)
+    }
+
 }
 
 
@@ -199,95 +172,105 @@ realign_circlemap=function(
 read_extractor_circlemap=function(
     env_circlemap=build_default_python_enviroment_list()$env_circlemap,
     bin_samtools=build_default_tool_binary_list()$bin_samtools,
-    bam=NULL,output_dir=".",output_name="",verbose=FALSE,
+    bam=NULL,
+    output_dir=".",
+    output_name="",
+    verbose=FALSE,
     batch_config=build_default_preprocess_config(),
-    threads=3,ram=1,sort=TRUE,coord_sort=FALSE,
-    index=FALSE,stats="all", clean=FALSE,
-    mode="local",executor_id=make_unique_id("readExtractCircleMap"),
-    task_name="readExtractCircleMap",time="48:0:0",
-    update_time=60,wait=FALSE,hold=NULL
+    threads=3,
+    ram=1,
+    sort=TRUE,
+    coord_sort=FALSE,
+    index=FALSE,
+    stats="all",
+    clean=FALSE,
+    ns="ULPwgs",
+    mode="local",
+    executor_id=make_unique_id("readExtractCircleMap"),
+    task_name="readExtractCircleMap",
+    time="48:0:0",
+    update_time=60,
+    wait=FALSE,
+    hold=NULL
 
   ){
 
-    argg <- as.list(environment())
-    task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir)
-    job=build_job(executor_id=executor_id,task_id=task_id)
 
-    if(is.null(bam)){
-        stop("bam argument is required")
+
+    this.envir=environment()
+    set_envir_vars(envir=this.envir,input=bam,id=output_name,dir_name="read_extractor")
+
+
+
+    main_read_extractor_circlemap=function(
+        envir
+    ){
+    
+        this.envir=environment()
+        append_envir(this.envir,envir)
+
+        steps=list()
+        steps$read_extractor$job_id=job_id
+    
+        steps$read_extractor$out_file=paste0(
+            out_file_dir,"/",id,".circular_read_candidates.bam"
+        )
+
+        steps$read_extractor$exec_code=paste(
+            set_conda_enviroment(env_circlemap),
+            "Circle-Map ReadExtractor -i ",normalizePath(input), 
+            " -o ", steps$read_extractor$out_file," -dir /"
+        )
+
+        if(verbose){
+            print_verbose(
+                job=job_id,arg=as.list(this.envir),
+                exec_code=steps$read_extractor$exec_code)
+        }
+        
+        steps$read_extractor$error=execute_job(
+            exec_code=steps$read_extractor$exec_code
+        )
+    
+        if(steps$read_extractor$error!=0){
+            stop(err_mssg)
+        }
+
+
+        steps$read_extractor<-append(
+            steps$read_extractor,
+                sort_and_index_bam_samtools(
+                bin_samtools=bin_samtools,
+                bam=steps$read_extractor$out_file,
+                output_dir=out_file_dir,
+                verbose=verbose,
+                batch_config=batch_config,
+                threads=threads,
+                ram=ram,
+                sort=TRUE,
+                coord_sort=FALSE,
+                index=TRUE,
+                clean=FALSE,
+                executor_id=task_id
+            )
+        )
+
+        envir$steps <- steps
+        
     }
 
-    id=""
-    if(output_name!=""){
-        id=output_name
+    if(is.null(select)){
+        run_job(
+            envir=this.envir
+        )
     }else{
-        id=get_file_name(bam[1])
+       set_envir_inputs(envir=this.envir)
+       main_read_extractor_circlemap(
+            envir=this.envir
+       )
+       return(steps)
     }
 
-
-
-    out_file=paste0(out_file_dir,"/",id,".circular_read_candidates.bam")
-    exec_code=paste(set_conda_enviroment(env_circlemap),"Circle-Map ReadExtractor -i ",
-    normalizePath(bam), " -o ", out_file," -dir /")
-    
-    if(mode=="batch"){
-        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
-        threads=threads,output_dir=out_file_dir2)
-        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
-        ";",exec_code,"'|",batch_code)
-    }
-
-    if(verbose){
-        print_verbose(job=job,arg=argg,exec_code=exec_code)
-    }
-
-    error=execute_job(exec_code=exec_code)
-    
-    
-    if(error!=0){
-        stop("circlemap failed to run due to unknown error.
-        Check std error for more information.")
-    }
-
-    jobs_report=build_job_report(
-        job_id=job,
-        executor_id=executor_id,
-        exec_code=exec_code, 
-        task_id=task_id,
-        input_args = argg,
-        out_file_dir=out_file_dir,
-        out_files=list(
-            circ_bam=out_file
-        )
-    )
-
-    jobs_report[["steps"]][["sort_and_index"]]<-sort_and_index_bam_samtools(
-                    bin_samtools=bin_samtools,
-                    bam=out_file,
-                    output_dir=out_file_dir,
-                    verbose=verbose,
-                    batch_config=batch_config,
-                    threads=threads,ram=ram,sort=sort,
-                    coord_sort=coord_sort,index=index,
-                    stats=stats,clean=clean,
-                    mode=mode,executor_id=task_id,
-                    time=time,
-                    hold=job
-    )
-
-
-    if(wait&&mode=="batch"){
-        job_validator(
-            job=job_report$job_id,
-            time=update_time,
-            verbose=verbose,
-            threads=threads
-        )
-    }
-
-    return(jobs_report)
 
 }
 
@@ -325,84 +308,78 @@ read_extractor_circlemap=function(
 
 
 repeat_caller_circlemap=function(
+    inherit=NULL,
+    select=NULL,
     env_circlemap=build_default_python_enviroment_list()$env_circlemap,
-    bam=NULL,output_dir=".",output_name="",verbose=FALSE,
+    bam=NULL,
+    output_dir=".",
+    output_name="",
+    verbose=FALSE,
     batch_config=build_default_preprocess_config(),
-    threads=1,ram=1,
+    threads=1,
+    ram=1,
+    ns="ULPwgs",
     mode="local",
     executor_id=make_unique_id("RepeatsCircleMap"),
-    task_name="RepeatsCircleMap",time="48:0:0",
-    update_time=60,wait=FALSE,hold=NULL
+    task_name="RepeatsCircleMap",
+    time="48:0:0",
+    update_time=60,
+    wait=FALSE,
+    hold=NULL
 ){
 
-    argg <- as.list(environment())
-    task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir,name="repeat_reports")
-    job=build_job(executor_id=executor_id,task_id=task_id)
+  
+    this.envir=environment()
+    set_envir_vars(envir=this.envir,input=bam,id=output_name,dir_name="repeat_reports")
 
-    if(is.null(bam)){
-        stop("bam argument is required")
+
+
+    main_repeat_caller_circlemap=function(
+        envir
+    ){
+            this.envir=environment()
+            append_envir(this.envir,envir)
+
+            steps=list()
+            steps$repeat_caller$job_id<-job_id
+            steps$repeat_caller$out_file=paste0(
+                out_file_dir,"/",id,".circular_repeat_candidates.bed"
+            )
+            steps$repeat_caller$exec_code=paste(
+                set_conda_enviroment(env_circlemap),
+                " Circle-Map Repeats -i ",normalizePath(input), " -o ",
+                steps$repeat_caller$out_file, " -dir /"
+            )
+
+            if(verbose){
+                print_verbose(job=job_id,arg=as.list(this.envir),
+                exec_code=steps$repeat_caller$exec_code
+                )
+            }
+    
+            steps$repeat_caller$error=execute_job(exec_code=steps$repeat_caller$exec_code)
+        
+            if(steps$repeat_caller$error!=0){
+                stop(err_mssg)
+            }
+
+            envir$steps <- steps
     }
 
-    id=""
-    if(output_name!=""){
-        id=output_name
+    if(is.null(select)){
+        run_job(
+            envir=this.envir
+        )
     }else{
-        id=get_file_name(bam[1])
-    }
 
-
-    out_file=paste0(out_file_dir,"/",id,".circular_repeat_candidates.bed")
-    exec_code=paste(set_conda_enviroment(env_circlemap),"Circle-Map Repeats -i ",
-     normalizePath(bam), " -o ",
-    out_file, " -dir /")
-    
-
-
-
-
-    if(mode=="batch"){
-        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
-        threads=threads,output_dir=out_file_dir2)
-        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
-        ";",exec_code,"'|",batch_code)
-    }
-
-    if(verbose){
-        print_verbose(job=job,arg=argg,exec_code=exec_code)
-    }
-
-    error=execute_job(exec_code=exec_code)
-    
-    
-    if(error!=0){
-        stop("circlemap failed to run due to unknown error.
-        Check std error for more information.")
-    }
-
-    jobs_report=build_job_report(
-        job_id=job,
-        executor_id=executor_id,
-        exec_code=exec_code, 
-        task_id=task_id,
-        input_args = argg,
-        out_file_dir=out_file_dir,
-        out_files=list(
-            circ_repeat_bed=out_file
+       set_envir_inputs(envir=this.envir)
+       main_repeat_caller_circlemap(
+            envir=this.envir
         )
-    )
-
-    if(wait&&mode=="batch"){
-        job_validator(
-            job=job_report$job_id,
-            time=update_time,
-            verbose=verbose,
-            threads=threads
-        )
+       return(steps)
     }
 
-    return(jobs_report)
+
 
 }
 
@@ -441,260 +418,92 @@ repeat_caller_circlemap=function(
 
 
 circdna_circlemap=function(
+        inherit=NULL,
+        select=NULL,
         env_circlemap=build_default_python_enviroment_list()$env_circlemap,
         bin_samtools=build_default_tool_binary_list()$bin_samtools,
         ref_genome=build_default_reference_list()$HG19$reference$genome,
-        bam=NULL,output_dir=".",tmp_dir=NULL,output_name="",verbose=FALSE,
+        bam=NULL,
+        output_dir=".",
+        tmp_dir=NULL,
+        output_name="",
+        verbose=FALSE,
         batch_config=build_default_preprocess_config(),
-        threads=3,ram=1, mode="local",
+        threads=3,
+        ram=1,
+        mode="local",
+        ns="ULPwgs",
         executor_id=make_unique_id("circdnaCircleMap"),
-        task_name="circdnaCircleMap",time="48:0:0",
-        update_time=60,wait=FALSE,hold=NULL
+        task_name="circdnaCircleMap",
+        time="48:0:0",
+        update_time=60,
+        wait=FALSE,
+        hold=NULL
 ){
 
-    id=""
-
-    if(output_name!=""){
-        id=output_name
-    }else{
-        id=get_file_name(bam[1])
-    }
-
-
-    argg <- as.list(environment())
-    task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir,name=paste0(id,"/circlemap_reports"))
-    out_file_dir_tmp=set_dir(dir=out_file_dir,name="tmp")
-    job=build_job(executor_id=executor_id,task_id=task_id)
-
-
-    if(!is.null(tmp_dir)){
-        out_file_dir_tmp=tmp_dir
-    }else {
-        out_file_dir_tmp=set_dir(dir=out_file_dir,name="tmp")
-    }  
-
-    if(is.null(bam)){
-        stop("bam argument is required")
-    }
-
-
-    jobs_report=build_job_report(
-        job_id=job,
-        executor_id=executor_id,
-        exec_code=list(), 
-        task_id=task_id,
-        input_args = argg,
-        out_file_dir=out_file_dir,
-        out_files=list(
-        )
-    )
-
-
-
-
-    
-    jobs_report[["steps"]][["realign_circlemap"]]<-realign_circlemap(
-        env_circlemap=env_circlemap,
-        bin_samtools=bin_samtools,
-        bam=normalizePath(bam),
-        ref_genome=normalizePath(ref_genome),
-        output_dir=out_file_dir,verbose=verbose,
-        tmp_dir=out_file_dir_tmp,
-        batch_config=batch_config,
-        threads=threads,ram=ram, mode=mode,
-        executor_id=task_id,
-        time=time,
-        hold=hold
-    )
-
-
-    
-    jobs_report[["steps"]][["repeats_circlemap"]]<-repeat_caller_circlemap(
-        env_circlemap=env_circlemap,
-        bam=normalizePath(bam),output_dir=out_file_dir,verbose=verbose,
-        batch_config=batch_config,
-        threads=threads,ram=ram,
-        mode=mode,
-        executor_id=task_id,
-        time=time,
-        hold=hold
-    )
-
-
-
-
-
  
-    if(wait&&mode=="batch"){
-        job_validator(
-            job=job_report$job_id,
-            time=update_time,
-            verbose=verbose,
-            threads=threads
-        )
-    }
+    this.envir=environment()
+    set_envir_vars(
+        envir=this.envir,
+        input=bam,
+        id=output_name,
+        dir_name="repeat_reports"
+    )
 
 
-    return(jobs_report)
-
-
-}
-
-
-
-
-
-
-
-#' Extract Circular DNA Candidates using Circlemap tool
-#'
-#' This function generates a BED file with circular DNA candidates
-#' 
-#' 
-#' //TODO validate co-joint calling mode
-#' 
-#' For more information read:
-#' https://github.com/iprada/Circle-Map
-#' 
-#' 
-#' 
-#' @param env_circlemap [REQUIRED] Conda enviroment for circlemap tool.
-#' @param bam [OPTIONAL] Path to BAM file
-#' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
-#' @param output_dir [OPTIONAL] Path to the output directory.
-#' @param tmp_dir [OPTIONAL] Path to the temporary directory.
-#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
-#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
-#' @param verbose [OPTIONAL] Enables progress messages. Default False.
-#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
-#' @param batch_config [REQUIRED] Additional batch configuration if batch mode selected.
-#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
-#' @param task_name Task name. Default "recalCovariates"
-#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
-#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
-#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
-#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
-#' @export
-
-
-
-
-parallel_samples_circdna_circlemap=function(
-        env_circlemap=build_default_python_enviroment_list()$env_circlemap,
-        bin_samtools=build_default_tool_binary_list()$bin_samtools,
-        ref_genome=build_default_reference_list()$HG19$reference$genome,
-        bam=NULL,output_dir=".",output_name="",verbose=FALSE,
-        patient_id=NULL,
-        batch_config=build_default_preprocess_config(),
-        threads=3,ram=1, mode="local",
-        executor_id=make_unique_id("parcircdnaCircleMap"),
-        task_name="parcircdnaCircleMap",time="48:0:0",
-        update_time=60,wait=FALSE,hold=NULL
+    main_circdna_circlemap=function(
+        envir
     ){
 
+        this.envir=environment()
+        append_envir(this.envir,envir)
 
-        argg <- as.list(environment())
-        task_id=make_unique_id(task_name)
-        out_file_dir=set_dir(dir=output_dir,name=patient_id)
-        out_file_dir_tmp=set_dir(dir=out_file_dir,name="tmp")
-        job=build_job(executor_id=executor_id,task_id=task_id)
-
-        if(is.null(bam)){
-            stop("bam argument is required")
-        }
-
-        if(is.null(patient_id)){
-            stop("patient_id argument is required")
-        }
-
-        jobs_report=build_job_report(
-            job_id=job,
-            executor_id=executor_id,
-            exec_code=list(), 
-            task_id=task_id,
-            input_args = argg,
-            out_file_dir=out_file_dir,
-            out_files=list(
-            )
-        )
-
-
-    bam_list=bam
-    names(bam_list)=Vectorize(get_file_name)(bam)
-
-    if(mode=="local"){
-      jobs_report[["steps"]][["par_sample_call_circdna"]]<-
-      lapply(bam_list,FUN=function(b){
-            job_report <-circdna_circlemap(
+        steps=list()
+        steps$circdna$job_id=job_id
+        steps$circdna <- append(steps$circdna,realign_circlemap(
             env_circlemap=env_circlemap,
             bin_samtools=bin_samtools,
+            bam=normalizePath(input),
             ref_genome=normalizePath(ref_genome),
-            bam=normalizePath(bam),output_dir=out_file_dir,
-            output_name=get_file_name(bam),
+            output_dir=out_file_dir,
+            verbose=verbose,
             tmp_dir=out_file_dir_tmp,
+            batch_config=batch_config,
+            threads=threads,
+            ram=ram,
+            executor_id=task_id,
+        ))
+
+
+        steps$circdna <- append(steps$circdna,repeat_caller_circlemap(
+            env_circlemap=env_circlemap,
+            bam=normalizePath(input),
+            output_dir=out_file_dir,
             verbose=verbose,
             batch_config=batch_config,
             threads=threads,ram=ram,
-            mode=mode,
-            executor_id=task_id,
-            time=time,
-            hold=hold
-    )
-      })
-    }else if(mode=="batch"){
-            rdata_file=paste0(tmp_dir,"/",job,".samples.RData")
-            output_dir=out_file_dir
             executor_id=task_id
-            tmp_dir=out_file_dir_tmp
-            save(
-              bam_list,
-              bin_samtools,
-              env_circlemap,
-              normalizePath(ref_genome),
-              output_dir,
-              tmp_dir,
-              executor_id,
-              clean,
-              verbose
-            )
-            exec_code=paste0("Rscript -e \"ULPwgs::circdna_circlemap(rdata=\\\"",
-            rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
-            out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-            batch_code=build_job_exec(job=job,time=time,ram=ram,
-            threads=2,output_dir=out_file_dir2,
-            hold=hold,array=length(bam_list))
-            exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+        ))
 
-            if(verbose){
-                print_verbose(job=job,arg=argg,exec_code=exec_code)
-            }
-            error=execute_job(exec_code=exec_code)
-            if(error!=0){
-                stop("circlemap failed to run due to unknown error.
-                Check std error for more information.")
-            }
-    
-          jobs_report[["steps"]][["par_sample_call_circdna"]]<- build_job_report(
-                job_id=job,
-                executor_id=executor_id,
-                exec_code=exec_code, 
-                task_id=task_id,
-                input_args=argg,
-                out_file_dir=out_file_dir,
-                out_files=list(
-                  circ_bed=paste0(out_file_dir,"/",names(bam_list),"/circlemap_reports/",
-                  "repeat_reports/",names(bam_list),".circular_candidates.bed"),
-                  circ_repeat_bed=paste0(out_file_dir,"/",names(bam_list),"/circlemap_reports/",
-                  "realign_reports/",names(bam_list),".circular_repeat_candidates.bed"))
-                )
+        envir$steps<-steps
         
     }
 
-    return(jobs_report)
+   
+    if(is.null(select)){
+        run_job(
+            envir=this.envir
+        )
+    }else{
+
+       set_envir_inputs(envir=this.envir)
+       main_circdna_circlemap(
+            envir=this.envir
+        )
+       return(steps)
+    }
 
 }
-
 
 
 
@@ -808,21 +617,16 @@ annotate_bed_circlemap=function(
     set_envir_vars(envir=this.envir,input=bed,id=output_name)
 
     main_annotate_bed_circlemap=function(
-        bed=NULL,
-        id=NULL,
-        type="repeat",
-        write=TRUE,
-        annotation_ref=build_default_reference_list()$HG19$panel$PCF_V3$annotation$genes,
-        sep="\t",
-        threads=8
+        envir
     ){
-
-        if(!is.null(id)){
-            id=get_file_name(id)
-        }
+        this.envir=environment()
+        append_envir(this.envir,envir)
 
 
-        dat=read_bed_circlemap(bed=bed,id=id,type=type,sep=sep)
+        steps=list()
+        steps$annotate_bed$job_id <- job_id
+
+        dat=read_bed_circlemap(bed=input,id=id,type=type,sep="\t")
         annotation=read.table(annotation_ref,sep="\t",header=TRUE) %>% 
         dplyr::select(chr,start,end,gene_id)
 
@@ -882,9 +686,11 @@ annotate_bed_circlemap=function(
         dplyr::arrange(gtools::mixedsort(chr))
 
         if(write){
-            out_file=paste0(out_file_dir,"/",id,".circular_",type,".annotated.bed")
-            write.table(file=out_file,summarised_dat,sep="\t",col.names=TRUE,row.names=FALSE,quote=FALSE)
+            steps$annotate_bed$out_file=paste0(out_file_dir,"/",id,".circular_",type,".annotated.bed")
+            write.table(file=steps$annotate_bed$out_file,summarised_dat,sep="\t",col.names=TRUE,row.names=FALSE,quote=FALSE)
         }
+
+        envir$steps<-steps
        
     }
 
@@ -894,16 +700,12 @@ annotate_bed_circlemap=function(
             envir=this.envir
         )
     }else{
+        
+        set_envir_inputs(envir=this.envir)
         main_annotate_bed_circlemap(
-            bed=input[select],
-            id=input_id[select],
-            type=type,
-            write=write,
-            annotation_ref=annotation_ref,
-            threads=threads
+           envir=this.envir
         )
-
-     
+        return(steps)
     }
 
 
