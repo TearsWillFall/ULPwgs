@@ -602,7 +602,7 @@ new_index_bam_samtools=function(
     ids=output_name
   )
 
-  steps=set_steps_vars(this.envir)
+
 
   run_main=function(
     envir
