@@ -360,7 +360,7 @@ set_envir_vars=function(
         ## GET CALLER FUNCTION NAME IF NOT GIVEN
 
         envir$fn <- strsplit(split="::",sub("\\(.*","",
-        paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=",")))[[1]][2]
+        paste0(deparse(sys.calls()[[sys.nframe()]]),collapse=",")))[[1]][2]
       }else{
         envir$fn <- fn
       }
