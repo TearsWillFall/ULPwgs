@@ -7,6 +7,8 @@
 new_index_bam_samtools(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = "",
+  output_dir = ".",
+  output_name = NULL,
   stats = TRUE,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
@@ -16,14 +18,13 @@ new_index_bam_samtools(
   executor_id = make_unique_id("indexBAM"),
   task_name = "indexBAM",
   time = "48:0:0",
-  update_time = 60,
-  output_dir = ".",
-  wait = FALSE,
   hold = NULL
 )
 }
 \arguments{
 \item{bam}{Path to the input file with the sequence.}
+
+\item{output_dir}{Path to the output directory.}
 
 \item{verbose}{Enables progress messages. Default False.}
 
@@ -39,12 +40,6 @@ new_index_bam_samtools(
 
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 
-\item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
-
-\item{output_dir}{Path to the output directory.}
-
-\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
-
 \item{hold}{\link{OPTIONAL} Hold job until job is finished. Job ID.}
 
 \item{bin_samtols}{Path to samtools executable. Default path tools/samtools/samtools.}
@@ -52,6 +47,10 @@ new_index_bam_samtools(
 \item{coord_sort}{Generate a coord sorted file. Otherwise queryname sorted. Default TRUE}
 
 \item{clean}{Remove input files. Default FALSE}
+
+\item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
+
+\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 }
 \description{
 This function sorts a genome sequence file (BAM/SAM)

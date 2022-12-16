@@ -325,7 +325,13 @@ run_job=function(
 #' @param name Name of output file directory
 #' @export
 
-set_envir_vars=function(envir=environment(),inputs=NULL,ids=NULL,fn=NULL,ns="ULPwgs",dir_name=""){
+set_envir_vars=function(
+  envir=environment(),
+  inputs=NULL,
+  ids=NULL,
+  fn=NULL,
+  ns="ULPwgs",
+  dir_name=""){
     
     if(!is.null(envir$inherit)){
         if(!is.environment(envir$inherit)){

@@ -8,6 +8,7 @@ new_sort_bam_samtools(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = "",
   output_dir = ".",
+  output_name = NULL,
   index = TRUE,
   stats = TRUE,
   verbose = FALSE,

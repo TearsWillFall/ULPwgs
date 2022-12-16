@@ -135,17 +135,27 @@ sort_and_index_bam_samtools=function(
 
 new_sort_and_index_bam_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
-  bam="",output_dir=".",verbose=FALSE,
-  batch_config=build_default_preprocess_config(),threads=3,ram=1,sort=TRUE,
-  coord_sort=TRUE,index=TRUE,stats=TRUE, clean=FALSE,
-  mode="local",executor_id=make_unique_id("sortANDindex"),
+  bam="",
+  output_dir=".",
+  output_name=NULL,
+  verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
+  threads=3,
+  ram=1,
+  sort=TRUE,
+  coord_sort=TRUE,
+  index=TRUE,
+  stats=TRUE, 
+  clean=FALSE,
+  mode="local",
+  executor_id=make_unique_id("sortANDindex"),
   task_name="sortANDindex",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  hold=NULL
 ){
 
 
    this.envir=environment()
-   set_envir_vars(envir=this.envir,input=bam,id=output_name)
+   set_envir_vars(envir=this.envir,inputs=bam,ids=output_name)
 
 
 
@@ -324,6 +334,7 @@ new_sort_bam_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam="",
   output_dir=".",
+  output_name=NULL,
   index=TRUE,
   stats=TRUE,
   verbose=FALSE,
@@ -342,7 +353,12 @@ new_sort_bam_samtools=function(
 ){
 
     this.envir=environment()
-    set_envir_vars(envir=this.envir,input=bam,id=output_name,dir_name="sorted")
+    set_envir_vars(
+      envir=this.envir,
+      inputs=bam,
+      ids=output_name,
+      dir_name="sorted"
+    )
 
     main_sort_bam_samtools=function(
       envir
@@ -562,6 +578,8 @@ index_bam_samtools=function(
 new_index_bam_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam="",
+  output_dir=".",
+  output_name=NULL,
   stats=TRUE,
   verbose=FALSE,
   batch_config=build_default_preprocess_config(),
@@ -571,15 +589,13 @@ new_index_bam_samtools=function(
   executor_id=make_unique_id("indexBAM"),
   task_name="indexBAM",
   time="48:0:0",
-  update_time=60,
-  output_dir=".",
-  wait=FALSE,hold=NULL
+  hold=NULL
 ){
 
 
 
   this.envir=environment()
-  set_envir_vars(envir=this.envir,input=bam,id=output_name)
+  set_envir_vars(envir=this.envir,inputs=bam,ids=NULL)
 
 
 
@@ -754,6 +770,7 @@ new_stats_bam_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam="",
   output_dir=".",
+  output_name=NULL,
   verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=3,
@@ -768,7 +785,7 @@ new_stats_bam_samtools=function(
 
   this.envir=environment()
   set_envir_vars(
-    envir=this.envir,input=bam,id=output_name,dir_name="stats"
+    envir=this.envir,inputs=bam,ids=output_name,dir_name="stats"
   )
 
 
@@ -935,6 +952,7 @@ new_flag_stats_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam="",
   output_dir=".",
+  output_name=NULL,
   verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=3,
@@ -948,7 +966,7 @@ new_flag_stats_samtools=function(
 
   this.envir=environment()
   set_envir_vars(
-    envir=this.envir,input=bam,id=output_name
+    envir=this.envir,inputs=bam,ids=output_name
   )
 
 
@@ -1119,6 +1137,7 @@ new_index_stats_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam="",
   output_dir=".",
+  output_name=NULL,
   verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=3,
@@ -1127,8 +1146,6 @@ new_index_stats_samtools=function(
   executor_id=make_unique_id("statsINDEX"),
   task_name="statsINDEX",
   time="48:0:0",
-  update_time=60,
-  wait=FALSE,
   hold=NULL
 ){
 
@@ -1136,7 +1153,7 @@ new_index_stats_samtools=function(
 
   this.envir=environment()
   set_envir_vars(
-    envir=this.envir,input=bam,id=output_name
+    envir=this.envir,inputs=bam,ids=output_name
   )
 
 

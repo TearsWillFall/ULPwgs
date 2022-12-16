@@ -8,6 +8,7 @@ new_index_stats_samtools(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = "",
   output_dir = ".",
+  output_name = NULL,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 3,
@@ -16,8 +17,6 @@ new_index_stats_samtools(
   executor_id = make_unique_id("statsINDEX"),
   task_name = "statsINDEX",
   time = "48:0:0",
-  update_time = 60,
-  wait = FALSE,
   hold = NULL
 )
 }
@@ -42,11 +41,11 @@ new_index_stats_samtools(
 
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 
+\item{hold}{\link{OPTIONAL} Hold job until job is finished. Job ID.}
+
 \item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
 
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
-
-\item{hold}{\link{OPTIONAL} Hold job until job is finished. Job ID.}
 }
 \description{
 Generate BAM file indexstats

@@ -8,6 +8,7 @@ new_stats_bam_samtools(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = "",
   output_dir = ".",
+  output_name = NULL,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 3,
