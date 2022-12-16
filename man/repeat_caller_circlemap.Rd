@@ -10,7 +10,7 @@ repeat_caller_circlemap(
   env_circlemap = build_default_python_enviroment_list()$env_circlemap,
   bam = NULL,
   output_dir = ".",
-  output_name = "",
+  output_name = NULL,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 1,
@@ -22,7 +22,8 @@ repeat_caller_circlemap(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NULL
+  hold = NULL,
+  err_mssg = "repeat_caller failed to run"
 )
 }
 \arguments{

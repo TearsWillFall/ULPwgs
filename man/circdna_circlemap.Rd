@@ -12,8 +12,8 @@ circdna_circlemap(
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   bam = NULL,
   output_dir = ".",
+  output_name = NULL,
   tmp_dir = NULL,
-  output_name = "",
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 3,
@@ -25,7 +25,8 @@ circdna_circlemap(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NULL
+  hold = NULL,
+  err_mssg = "circdna failed to run"
 )
 }
 \arguments{
@@ -37,9 +38,9 @@ circdna_circlemap(
 
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
-\item{tmp_dir}{\link{OPTIONAL} Path to the temporary directory.}
-
 \item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
+
+\item{tmp_dir}{\link{OPTIONAL} Path to the temporary directory.}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 

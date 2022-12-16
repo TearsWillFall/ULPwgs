@@ -50,7 +50,8 @@ realign_circlemap=function(
         time="48:0:0",
         update_time=60,
         wait=FALSE,
-        hold=NULL
+        hold=NULL,
+        err_mssg="realign failed to run"
 ){
 
     this.envir=environment()
@@ -69,7 +70,7 @@ realign_circlemap=function(
         steps=list()
         steps$realign$job_id=job_id
          
-        steps$realign <- append(steps$realign,sort_and_index_bam_samtools(
+        steps$realign <- append(steps$realign,new_sort_and_index_bam_samtools(
             bin_samtools=bin_samtools,
             bam=input,
             output_dir=out_file_dir_tmp,
@@ -77,10 +78,8 @@ realign_circlemap=function(
             batch_config=batch_config,
             threads=threads,
             ram=ram,
-            sort=TRUE,
             coord_sort=FALSE,
             index=FALSE,
-            stats="all", 
             clean=FALSE,
             executor_id=task_id
         ))
@@ -194,7 +193,8 @@ read_extractor_circlemap=function(
     time="48:0:0",
     update_time=60,
     wait=FALSE,
-    hold=NULL
+    hold=NULL,
+    err_mssg="read_extractor"
 
   ){
 
@@ -216,7 +216,7 @@ read_extractor_circlemap=function(
         steps$read_extractor$job_id=job_id
     
         steps$read_extractor$out_file=paste0(
-            out_file_dir,"/",id,".circular_read_candidates.bam"
+            out_file_dir,"/",input_id,".circular_read_candidates.bam"
         )
 
         steps$read_extractor$exec_code=paste(
@@ -328,7 +328,8 @@ repeat_caller_circlemap=function(
     time="48:0:0",
     update_time=60,
     wait=FALSE,
-    hold=NULL
+    hold=NULL,
+    err_mssg="repeat_caller failed to run"
 ){
 
   
@@ -345,8 +346,9 @@ repeat_caller_circlemap=function(
 
             steps=list()
             steps$repeat_caller$job_id<-job_id
+
             steps$repeat_caller$out_file=paste0(
-                out_file_dir,"/",id,".circular_repeat_candidates.bed"
+                out_file_dir,"/",input_id,".circular_repeat_candidates.bed"
             )
             steps$repeat_caller$exec_code=paste(
                 set_conda_enviroment(env_circlemap),
@@ -441,7 +443,8 @@ circdna_circlemap=function(
         time="48:0:0",
         update_time=60,
         wait=FALSE,
-        hold=NULL
+        hold=NULL,
+        err_mssg="circdna failed to run"
 ){
 
  
@@ -613,7 +616,8 @@ annotate_bed_circlemap=function(
     batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("annotateBEDcirclemap"),
     task_name="annotateBEDcirclemap",
-    hold=NULL
+    hold=NULL,
+    err_mssg="annotate_bed failed to run"
 ){
     
     this.envir=environment()

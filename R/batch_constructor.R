@@ -331,7 +331,8 @@ set_envir_vars=function(
   ids=NULL,
   fn=NULL,
   ns="ULPwgs",
-  dir_name=""){
+  dir_name=""
+){
     
     if(!is.null(envir$inherit)){
         if(!is.environment(envir$inherit)){
@@ -349,6 +350,9 @@ set_envir_vars=function(
         envir$inputs <- inputs
         envir$n_inputs <- length(inputs)
         envir$inputs_id <- set_input_id(inputs=inputs,ids=ids)
+        envir$inputs_ext <- Vectorize(get_file_ext)(inputs)
+      }else{
+        stop("Missing input argument")
       }
 
 
@@ -411,7 +415,8 @@ set_input_id=function(inputs,ids=NULL){
 
 set_envir_inputs=function(envir){
       envir$input<-envir$inputs[envir$select]
-      envir$id<-envir$inputs_id[envir$select]
+      envir$input_id<-envir$inputs_id[envir$select]
+      envir$input_ext<-envir$inputs_ext[envir$select]
   }
 
 

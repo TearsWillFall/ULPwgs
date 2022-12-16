@@ -5,8 +5,10 @@
 \title{Index a BAM file}
 \usage{
 new_index_bam_samtools(
+  inherit = NULL,
+  select = NULL,
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
-  bam = "",
+  bam = NULL,
   output_dir = ".",
   output_name = NULL,
   stats = TRUE,
@@ -14,11 +16,13 @@ new_index_bam_samtools(
   batch_config = build_default_preprocess_config(),
   threads = 3,
   ram = 4,
+  ns = "ULPwgs",
   mode = "local",
   executor_id = make_unique_id("indexBAM"),
   task_name = "indexBAM",
   time = "48:0:0",
-  hold = NULL
+  hold = NULL,
+  err_mssg = "index_bam failed to run"
 )
 }
 \arguments{

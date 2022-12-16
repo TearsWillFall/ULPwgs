@@ -152,8 +152,10 @@ new_sort_and_index_bam_samtools=function(
   ns="ULPwgs",
   mode="local",
   executor_id=make_unique_id("sortANDindex"),
-  task_name="sortANDindex",time="48:0:0",
-  hold=NULL
+  task_name="sortANDindex",
+  time="48:0:0",
+  hold=NULL,
+  err_mssg="sort_and_index_bam failed to run"
 ){
 
 
@@ -192,14 +194,16 @@ new_sort_and_index_bam_samtools=function(
       )
 
     }else{
-        steps$sort_and_index <-append(steps$sort_and_index,new_index_bam_samtools(
-          bin_samtools=bin_samtools,
-          bam=input,
-          stats=stats,
-          verbose=verbose,
-          threads=threads,
-          executor_id=task_id
-        )
+        steps$sort_and_index <-append(
+          steps$sort_and_index,
+            new_index_bam_samtools(
+              bin_samtools=bin_samtools,
+              bam=input,
+              stats=stats,
+              verbose=verbose,
+              threads=threads,
+              executor_id=task_id
+          )
       )
     }
 
@@ -355,9 +359,8 @@ new_sort_bam_samtools=function(
   clean=FALSE,
   task_name="sortBAM",
   time="48:0:0",
-  update_time=60,
-  wait=FALSE,
-  hold=NULL
+  hold=NULL,
+  err_mssg="sort_bam failed to run"
 ){
 
     this.envir=environment()
@@ -383,7 +386,7 @@ new_sort_bam_samtools=function(
 
       sort_type=""
 
-      out_file=paste0(out_file_dir,"/",id,".sorted.",get_file_ext(input))
+      out_file=paste0(out_file_dir,"/",input_id,".sorted.",input_ext)
       
       if(!coord_sort){
         sort_type=" -n "
@@ -600,7 +603,8 @@ new_index_bam_samtools=function(
   executor_id=make_unique_id("indexBAM"),
   task_name="indexBAM",
   time="48:0:0",
-  hold=NULL
+  hold=NULL,
+  err_mssg="index_bam failed to run"
 ){
 
 
@@ -792,7 +796,8 @@ new_stats_bam_samtools=function(
   executor_id=make_unique_id("statsBAM"),
   task_name="statsBAM",
   time="48:0:0",
-  hold=NULL
+  hold=NULL,
+  err_mssg="stats_bam failed to run"
 ){
 
   this.envir=environment()
@@ -976,7 +981,8 @@ new_flag_stats_samtools=function(
   executor_id=make_unique_id("statsFlag"),
   task_name="statsFlag",
   time="48:0:0",
-  hold=NULL
+  hold=NULL,
+  err_mssg="flag_stats failed to run"
 ){
 
   this.envir=environment()
@@ -999,7 +1005,7 @@ new_flag_stats_samtools=function(
 
     steps$flag_stats$out_file=paste0(
       out_file_dir,"/",
-      id,".flagstat.txt"
+      input_id,".flagstat.txt"
     )
     steps$flag_stats$exec_code=paste0(
       bin_samtools," flagstat ",
@@ -1164,7 +1170,8 @@ new_index_stats_samtools=function(
   executor_id=make_unique_id("statsINDEX"),
   task_name="statsINDEX",
   time="48:0:0",
-  hold=NULL
+  hold=NULL,
+  err_mssg="index_stats failed to run"
 ){
 
 
@@ -1189,7 +1196,7 @@ new_index_stats_samtools=function(
 
 
     steps$index_stats$out_file=paste0(
-      out_file_dir,"/",id,".idxstats.txt"
+      out_file_dir,"/",input_id,".idxstats.txt"
     )
     steps$index_stats$exec_code=paste0(
         bin_samtools,

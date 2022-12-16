@@ -5,20 +5,24 @@
 \title{Generate BAM file flag and index stats}
 \usage{
 new_stats_bam_samtools(
+  inherit = NULL,
+  select = NULL,
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
-  bam = "",
+  bam = NULL,
   output_dir = ".",
   output_name = NULL,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 3,
   ram = 4,
+  ns = "ULPwgs",
   stats = "all",
   mode = "local",
   executor_id = make_unique_id("statsBAM"),
   task_name = "statsBAM",
   time = "48:0:0",
-  hold = NULL
+  hold = NULL,
+  err_mssg = "stats_bam failed to run"
 )
 }
 \arguments{

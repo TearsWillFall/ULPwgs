@@ -5,8 +5,10 @@
 \title{Sort and index a sequence file}
 \usage{
 new_sort_and_index_bam_samtools(
+  inherit = NULL,
+  select = NULL,
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
-  bam = "",
+  bam = NULL,
   output_dir = ".",
   output_name = NULL,
   verbose = FALSE,
@@ -18,11 +20,13 @@ new_sort_and_index_bam_samtools(
   index = TRUE,
   stats = TRUE,
   clean = FALSE,
+  ns = "ULPwgs",
   mode = "local",
   executor_id = make_unique_id("sortANDindex"),
   task_name = "sortANDindex",
   time = "48:0:0",
-  hold = NULL
+  hold = NULL,
+  err_mssg = "sort_and_index_bam failed to run"
 )
 }
 \arguments{

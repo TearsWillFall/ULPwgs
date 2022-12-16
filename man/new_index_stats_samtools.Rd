@@ -5,19 +5,23 @@
 \title{Generate BAM file indexstats}
 \usage{
 new_index_stats_samtools(
+  inherit = NULL,
+  select = NULL,
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
-  bam = "",
+  bam = NULL,
   output_dir = ".",
   output_name = NULL,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 3,
   ram = 4,
+  ns = "ULPwgs",
   mode = "local",
   executor_id = make_unique_id("statsINDEX"),
   task_name = "statsINDEX",
   time = "48:0:0",
-  hold = NULL
+  hold = NULL,
+  err_mssg = "index_stats failed to run"
 )
 }
 \arguments{

@@ -5,11 +5,13 @@
 \title{Extract Circular Reads using Circlemap tool}
 \usage{
 read_extractor_circlemap(
+  inherit = NULL,
+  select = NULL,
   env_circlemap = build_default_python_enviroment_list()$env_circlemap,
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = NULL,
   output_dir = ".",
-  output_name = "",
+  output_name = NULL,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 3,
@@ -26,7 +28,8 @@ read_extractor_circlemap(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NULL
+  hold = NULL,
+  err_mssg = "read_extractor"
 )
 }
 \arguments{

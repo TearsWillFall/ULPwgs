@@ -23,7 +23,8 @@ annotate_bed_circlemap(
   batch_config = build_default_preprocess_config(),
   executor_id = make_unique_id("annotateBEDcirclemap"),
   task_name = "annotateBEDcirclemap",
-  hold = NULL
+  hold = NULL,
+  err_mssg = "annotate_bed failed to run"
 )
 }
 \arguments{

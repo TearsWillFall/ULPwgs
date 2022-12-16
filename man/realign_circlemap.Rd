@@ -11,12 +11,13 @@ realign_circlemap(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = NULL,
   output_dir = ".",
-  output_name = "",
+  output_name = NULL,
   verbose = FALSE,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   batch_config = build_default_preprocess_config(),
   threads = 3,
   ram = 1,
+  ns = "ULPwgs",
   mode = "local",
   tmp_dir = NULL,
   executor_id = make_unique_id("realignCircleMap"),
@@ -24,7 +25,8 @@ realign_circlemap(
   time = "48:0:0",
   update_time = 60,
   wait = FALSE,
-  hold = NULL
+  hold = NULL,
+  err_mssg = "realign failed to run"
 )
 }
 \arguments{
