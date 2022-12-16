@@ -416,7 +416,7 @@ set_envir_vars=function(
 
       envir$task_id <- make_unique_id(envir$fn)
 
-      envir$job_id <-build_job(executor_id=executor_id,task_id=envir$task_id)
+      envir$job_id <- build_job(executor_id=envir$executor_id,task_id=envir$task_id)
 
      
 
