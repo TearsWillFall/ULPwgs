@@ -134,6 +134,8 @@ sort_and_index_bam_samtools=function(
 #' @export
 
 new_sort_and_index_bam_samtools=function(
+  inherit=NULL,
+  select=NULL,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam="",
   output_dir=".",
@@ -147,6 +149,7 @@ new_sort_and_index_bam_samtools=function(
   index=TRUE,
   stats=TRUE, 
   clean=FALSE,
+  ns="ULPwgs",
   mode="local",
   executor_id=make_unique_id("sortANDindex"),
   task_name="sortANDindex",time="48:0:0",
@@ -331,8 +334,10 @@ sort_bam_samtools=function(
 #' @export
 
 new_sort_bam_samtools=function(
+  inherit=NULL,
+  select=NULL,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
-  bam="",
+  bam=NULL,
   output_dir=".",
   output_name=NULL,
   index=TRUE,
@@ -342,6 +347,7 @@ new_sort_bam_samtools=function(
   threads=3,
   ram=1,
   coord_sort=TRUE,
+  ns="ULPwgs",
   mode="local",
   executor_id=make_unique_id("sortBAM"),
   clean=FALSE,
@@ -576,8 +582,10 @@ index_bam_samtools=function(
 
 
 new_index_bam_samtools=function(
+  inherit=NULL,
+  select=NULL,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
-  bam="",
+  bam=NULL,
   output_dir=".",
   output_name=NULL,
   stats=TRUE,
@@ -585,6 +593,7 @@ new_index_bam_samtools=function(
   batch_config=build_default_preprocess_config(),
   threads=3,
   ram=4,
+  ns="ULPwgs",
   mode="local",
   executor_id=make_unique_id("indexBAM"),
   task_name="indexBAM",
@@ -767,14 +776,17 @@ stats_bam_samtools=function(
 
 
 new_stats_bam_samtools=function(
+  inherit=NULL,
+  select=NULL,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
-  bam="",
+  bam=NULL,
   output_dir=".",
   output_name=NULL,
   verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=3,
   ram=4,
+  ns="ULPwgs",
   stats="all",
   mode="local",
   executor_id=make_unique_id("statsBAM"),
@@ -949,14 +961,17 @@ stats_flag_samtools=function(
 
 
 new_flag_stats_samtools=function(
+  inherit=NULL,
+  select=NULL,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
-  bam="",
+  bam=NULL,
   output_dir=".",
   output_name=NULL,
   verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=3,
   ram=4,
+  ns="ULPwgs",
   mode="local",
   executor_id=make_unique_id("statsFlag"),
   task_name="statsFlag",
@@ -1134,14 +1149,17 @@ stats_index_samtools=function(
 
 
 new_index_stats_samtools=function(
+  inherit=NULL,
+  select=NULL,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
-  bam="",
+  bam=NULL,
   output_dir=".",
   output_name=NULL,
   verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=3,
   ram=4,
+  ns="ULPwgs",
   mode="local",
   executor_id=make_unique_id("statsINDEX"),
   task_name="statsINDEX",

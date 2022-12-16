@@ -36,12 +36,13 @@ realign_circlemap=function(
         bin_samtools=build_default_tool_binary_list()$bin_samtools,
         bam=NULL,
         output_dir=".",
-        output_name="",
+        output_name=NULL,
         verbose=FALSE,
         ref_genome=build_default_reference_list()$HG19$reference$genome,
         batch_config=build_default_preprocess_config(),
         threads=3,
         ram=1,
+        ns="ULPwgs",
         mode="local",
         tmp_dir=NULL,
         executor_id=make_unique_id("realignCircleMap"),
@@ -53,7 +54,7 @@ realign_circlemap=function(
 ){
 
     this.envir=environment()
-    set_envir_vars(envir=this.envir,input=bam,id=output_name,dir_name="realign_reports")
+    set_envir_vars(envir=this.envir,inputs=bam,ids=output_name,dir_name="realign_reports")
 
 
     out_file=paste0(out_file_dir,"/",id,".circular_candidates.bed")
@@ -170,11 +171,13 @@ realign_circlemap=function(
 
 
 read_extractor_circlemap=function(
+    inherit=NULL,
+    select=NULL,
     env_circlemap=build_default_python_enviroment_list()$env_circlemap,
     bin_samtools=build_default_tool_binary_list()$bin_samtools,
     bam=NULL,
     output_dir=".",
-    output_name="",
+    output_name=NULL,
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     threads=3,
@@ -198,7 +201,7 @@ read_extractor_circlemap=function(
 
 
     this.envir=environment()
-    set_envir_vars(envir=this.envir,input=bam,id=output_name,dir_name="read_extractor")
+    set_envir_vars(envir=this.envir,inputs=bam,ids=output_name,dir_name="read_extractor")
 
 
 
@@ -313,7 +316,7 @@ repeat_caller_circlemap=function(
     env_circlemap=build_default_python_enviroment_list()$env_circlemap,
     bam=NULL,
     output_dir=".",
-    output_name="",
+    output_name=NULL,
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
     threads=1,
@@ -330,7 +333,7 @@ repeat_caller_circlemap=function(
 
   
     this.envir=environment()
-    set_envir_vars(envir=this.envir,input=bam,id=output_name,dir_name="repeat_reports")
+    set_envir_vars(envir=this.envir,inputs=bam,ids=output_name,dir_name="repeat_reports")
 
 
 
@@ -425,8 +428,8 @@ circdna_circlemap=function(
         ref_genome=build_default_reference_list()$HG19$reference$genome,
         bam=NULL,
         output_dir=".",
+        output_name=NULL,
         tmp_dir=NULL,
-        output_name="",
         verbose=FALSE,
         batch_config=build_default_preprocess_config(),
         threads=3,
@@ -445,8 +448,8 @@ circdna_circlemap=function(
     this.envir=environment()
     set_envir_vars(
         envir=this.envir,
-        input=bam,
-        id=output_name,
+        inputs=bam,
+        ids=output_name,
         dir_name="repeat_reports"
     )
 
@@ -614,7 +617,7 @@ annotate_bed_circlemap=function(
 ){
     
     this.envir=environment()
-    set_envir_vars(envir=this.envir,input=bed,id=output_name)
+    set_envir_vars(envir=this.envir,inputs=bed,ids=output_name)
 
     main_annotate_bed_circlemap=function(
         envir
