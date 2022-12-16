@@ -287,7 +287,7 @@ build_batch_exec_innit=function(
 #' @export
 
 
-run_job=function(
+run_self=function(
   envir=environment()
 ){  
 
@@ -316,6 +316,44 @@ run_job=function(
 
 }
 
+#' Run job from batch constructor
+#' 
+#' @param envir Inherit current enviroment.
+#' 
+#' 
+#' @export
+
+
+ run_job=function(
+  envir=environment()
+ ){
+
+      this.envir=environment()
+      append_envir(this.envir,envir)
+
+
+      
+      if(verbose){
+        print_verbose(
+          job=job_id,arg=as.list(this.envir),
+          exec_code=steps$[[fn]]$exec_code
+        )
+      }
+
+
+      steps$[[fn]]$error=execute_job(
+          exec_code=steps$[[fn]]$exec_code
+        )
+      
+      if(steps$[[fn]]$error!=0){
+          stop(err_mssg)
+      }
+      envir$steps <- steps
+ }
+   
+
+
+
 
 #' Set default enviromental variables based on input for all
 #' functions in package.
@@ -330,6 +368,7 @@ set_envir_vars=function(
   inputs=NULL,
   ids=NULL,
   fn=NULL,
+  executor_id=NULL,
   ns="ULPwgs",
   dir_name=""
 ){
@@ -341,11 +380,10 @@ set_envir_vars=function(
       append_envir(envir,envir$inherit)
     }else{
 
-      envir$task_id <-make_unique_id(envir$task_name)
+     
       envir$out_file_dir <- set_dir(dir=envir$output_dir,name=dir_name)
       envir$out_file_dir_tmp <- set_dir(dir=envir$out_file_dir,name="tmp")
-      envir$job_id <-build_job(executor_id=envir$executor_id,task_id=envir$task_id)
-
+     
       if(!is.null(inputs)){
         envir$inputs <- inputs
         envir$n_inputs <- length(inputs)
@@ -369,12 +407,49 @@ set_envir_vars=function(
       
     
       envir$ns <- ns
+
+      if(is.null(executor_id)){
+        envir$executor_id <- make_unique_id(envir$fn)
+      }else{
+        envir$executor_id <- executor_id
+      }
+
+      envir$task_id <- make_unique_id(envir$fn)
+
+      envir$job_id <-build_job(executor_id=executor_id,task_id=envir$task_id)
+
      
 
     }
   
  
 }
+
+
+#' Set steps enviroment for use
+#' 
+#' @param envir Environment
+#' @export
+
+
+
+
+set_steps_vars=function(
+  envir=environment()
+){      
+      this.envir=environment()
+      append_envir(this.envir,envir)
+      steps=list()
+      steps[[fn]]$job_id=job_id
+      steps[[fn]]$executor_id=executor_id
+      steps[[fn]]$task_id=task_id
+      steps[[fn]]$select=select
+      steps[[fn]]$input=input
+      steps[[fn]]$input_id=input_id
+      return(steps)
+  }
+
+
 
 #' Append two enviroments
 #' 

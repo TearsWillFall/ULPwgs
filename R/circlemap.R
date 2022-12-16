@@ -30,47 +30,49 @@
 
 
 realign_circlemap=function(
-        inherit=NULL,
-        select=NULL,
         env_circlemap=build_default_python_enviroment_list()$env_circlemap,
         bin_samtools=build_default_tool_binary_list()$bin_samtools,
+        ref_genome=build_default_reference_list()$HG19$reference$genome,
         bam=NULL,
         output_dir=".",
         output_name=NULL,
         verbose=FALSE,
-        ref_genome=build_default_reference_list()$HG19$reference$genome,
         batch_config=build_default_preprocess_config(),
         threads=3,
         ram=1,
         ns="ULPwgs",
         mode="local",
         tmp_dir=NULL,
-        executor_id=make_unique_id("realignCircleMap"),
-        task_name="realignCircleMap",
         time="48:0:0",
-        update_time=60,
-        wait=FALSE,
-        hold=NULL,
-        err_mssg="realign failed to run"
+        err_mssg="realign failed to run",
+        inherit=NULL,
+        select=NULL,
+        executor_id=NULL,
+        hold=NULL
+
 ){
 
     this.envir=environment()
-    set_envir_vars(envir=this.envir,inputs=bam,ids=output_name,dir_name="realign_reports")
+    set_envir_vars(
+        envir=this.envir,
+        inputs=bam,ids=output_name,
+        executor_id = executor_id,
+        dir_name="realign_reports"
+    )
 
 
-    out_file=paste0(out_file_dir,"/",id,".circular_candidates.bed")
+    out_file=paste0(out_file_dir,"/",input_id,".circular_candidates.bed")
 
-    main_realign_circlemap=function(envir){
+    run_main=function(envir){
 
 
 
         this.envir=environment()
         append_envir(this.envir,envir)
-
-        steps=list()
-        steps$realign$job_id=job_id
+        set_steps_vars(envir=this.envir)
+    
          
-        steps$realign <- append(steps$realign,new_sort_and_index_bam_samtools(
+        steps[[fn]] <- append(steps[[fn]],new_sort_and_index_bam_samtools(
             bin_samtools=bin_samtools,
             bam=input,
             output_dir=out_file_dir_tmp,
@@ -84,10 +86,10 @@ realign_circlemap=function(
             executor_id=task_id
         ))
 
-        steps$realign <- append(steps$realign,read_extractor_circlemap(
+        steps[[fn]] <- append(steps[[fn]],read_extractor_circlemap(
                 env_circlemap=env_circlemap,
                 bin_samtools=bin_samtools,
-                bam=steps$sort_and_index$sort$out_file,
+                bam=steps$new_sort_and_index_bam_samtools$out_file,
                 output_dir=out_file_dir_tmp,
                 verbose=verbose,
                 batch_config=batch_config,
@@ -103,26 +105,32 @@ realign_circlemap=function(
         steps$realign$exec_code <- paste(
             set_conda_enviroment(env_circlemap),
             " Circle-Map Realign -sbam ",normalizePath(input),
-            " -qbam ", steps$sort_and_index$out_file,
-            " -i ",steps$read_extractor$sort_and_index$sort$out_file,
-            " -o ",steps$realign$out_file,
+            " -qbam ", steps$new_sort_and_index_bam_samtools$sort$out_file,
+            " -i ",steps$read_extractor_circlemap$sort_and_index$new_sort_and_index_bam_samtools$sort$out_file,
+            " -o ",steps[[fn]]$out_file,
             " -t ",threads," -dir /", 
             " -fasta ",normalizePath(ref_genome), 
             " -tdir ",out_file_dir_tmp
         )
+
+
+
+        
+
+        run_job(envir=this.envir)
 
         envir$steps <- steps
 
     }
 
     if(is.null(select)){
-        run_job(
+        run_self(
             envir=this.envir
         )
     }else{
 
        set_envir_inputs(envir=this.envir)
-       main_repeat_caller_circlemap(
+       run_main(
             envir=this.envir
        )
        return(steps)
@@ -170,8 +178,6 @@ realign_circlemap=function(
 
 
 read_extractor_circlemap=function(
-    inherit=NULL,
-    select=NULL,
     env_circlemap=build_default_python_enviroment_list()$env_circlemap,
     bin_samtools=build_default_tool_binary_list()$bin_samtools,
     bam=NULL,
@@ -188,73 +194,62 @@ read_extractor_circlemap=function(
     clean=FALSE,
     ns="ULPwgs",
     mode="local",
-    executor_id=make_unique_id("readExtractCircleMap"),
-    task_name="readExtractCircleMap",
     time="48:0:0",
-    update_time=60,
-    wait=FALSE,
-    hold=NULL,
-    err_mssg="read_extractor"
+    err_mssg="read_extractor",
+    inherit=NULL,
+    select=NULL,
+    executor_id=NULL,
+    hold=NULL
 
   ){
 
 
 
     this.envir=environment()
-    set_envir_vars(envir=this.envir,inputs=bam,ids=output_name,dir_name="read_extractor")
+    set_envir_vars(
+        envir=this.envir,
+        inputs=bam,ids=output_name,
+        executor_id = executor_id,
+        dir_name="read_extractor"
+    )
 
 
 
-    main_read_extractor_circlemap=function(
+    run_main=function(
         envir
     ){
     
         this.envir=environment()
         append_envir(this.envir,envir)
-
-        steps=list()
-        steps$read_extractor$job_id=job_id
+        set_steps_vars(envir=this.envir)
     
-        steps$read_extractor$out_file=paste0(
+        steps[[fn]]$out_file=paste0(
             out_file_dir,"/",input_id,".circular_read_candidates.bam"
         )
 
-        steps$read_extractor$exec_code=paste(
+        steps[[fn]]$exec_code=paste(
             set_conda_enviroment(env_circlemap),
             "Circle-Map ReadExtractor -i ",normalizePath(input), 
-            " -o ", steps$read_extractor$out_file," -dir /"
+            " -o ", steps[[fn]]$out_file," -dir /"
         )
 
-        if(verbose){
-            print_verbose(
-                job=job_id,arg=as.list(this.envir),
-                exec_code=steps$read_extractor$exec_code)
-        }
-        
-        steps$read_extractor$error=execute_job(
-            exec_code=steps$read_extractor$exec_code
-        )
-    
-        if(steps$read_extractor$error!=0){
-            stop(err_mssg)
-        }
+        run_job(envir=this.envir)
 
-
-        steps$read_extractor<-append(
-            steps$read_extractor,
-                sort_and_index_bam_samtools(
-                bin_samtools=bin_samtools,
-                bam=steps$read_extractor$out_file,
-                output_dir=out_file_dir,
-                verbose=verbose,
-                batch_config=batch_config,
-                threads=threads,
-                ram=ram,
-                sort=TRUE,
-                coord_sort=FALSE,
-                index=TRUE,
-                clean=FALSE,
-                executor_id=task_id
+        steps[[fn]]<-append(
+            steps[[fn]],
+                new_sort_and_index_bam_samtools(
+                    bin_samtools=bin_samtools,
+                    bam=steps[[fn]]$out_file,
+                    output_dir=out_file_dir,
+                    verbose=verbose,
+                    batch_config=batch_config,
+                    threads=threads,
+                    ram=ram,
+                    sort=TRUE,
+                    coord_sort=FALSE,
+                    index=TRUE,
+                    clean=FALSE,
+                    executor_id=task_id
             )
         )
 
@@ -263,12 +258,12 @@ read_extractor_circlemap=function(
     }
 
     if(is.null(select)){
-        run_job(
+        run_self(
             envir=this.envir
         )
     }else{
        set_envir_inputs(envir=this.envir)
-       main_read_extractor_circlemap(
+       run_main(
             envir=this.envir
        )
        return(steps)
@@ -311,8 +306,6 @@ read_extractor_circlemap=function(
 
 
 repeat_caller_circlemap=function(
-    inherit=NULL,
-    select=NULL,
     env_circlemap=build_default_python_enviroment_list()$env_circlemap,
     bam=NULL,
     output_dir=".",
@@ -323,62 +316,55 @@ repeat_caller_circlemap=function(
     ram=1,
     ns="ULPwgs",
     mode="local",
-    executor_id=make_unique_id("RepeatsCircleMap"),
-    task_name="RepeatsCircleMap",
     time="48:0:0",
-    update_time=60,
-    wait=FALSE,
-    hold=NULL,
-    err_mssg="repeat_caller failed to run"
+    err_mssg="repeat_caller failed to run",
+    inherit=NULL,
+    select=NULL,
+    executor_id=NULL,
+    hold=NULL
 ){
 
   
     this.envir=environment()
-    set_envir_vars(envir=this.envir,inputs=bam,ids=output_name,dir_name="repeat_reports")
+    set_envir_vars(
+        envir=this.envir,
+        inputs=bam,
+        ids=output_name,
+        executor_id = executor_id,
+        dir_name="repeat_reports"
+    )
 
 
 
-    main_repeat_caller_circlemap=function(
+    run_main=function(
         envir
     ){
             this.envir=environment()
             append_envir(this.envir,envir)
-
-            steps=list()
-            steps$repeat_caller$job_id<-job_id
-
-            steps$repeat_caller$out_file=paste0(
+            set_steps_vars(envir=this.envir)
+          
+            steps[[fn]]$out_file=paste0(
                 out_file_dir,"/",input_id,".circular_repeat_candidates.bed"
             )
-            steps$repeat_caller$exec_code=paste(
+            steps[[fn]]$exec_code=paste(
                 set_conda_enviroment(env_circlemap),
                 " Circle-Map Repeats -i ",normalizePath(input), " -o ",
-                steps$repeat_caller$out_file, " -dir /"
+                steps[[fn]]$out_file, " -dir /"
             )
 
-            if(verbose){
-                print_verbose(job=job_id,arg=as.list(this.envir),
-                exec_code=steps$repeat_caller$exec_code
-                )
-            }
-    
-            steps$repeat_caller$error=execute_job(exec_code=steps$repeat_caller$exec_code)
-        
-            if(steps$repeat_caller$error!=0){
-                stop(err_mssg)
-            }
+            run_job(envir=this.envir)
 
             envir$steps <- steps
     }
 
     if(is.null(select)){
-        run_job(
+        run_self(
             envir=this.envir
         )
     }else{
 
        set_envir_inputs(envir=this.envir)
-       main_repeat_caller_circlemap(
+       run_main(
             envir=this.envir
         )
        return(steps)
@@ -423,28 +409,24 @@ repeat_caller_circlemap=function(
 
 
 circdna_circlemap=function(
-        inherit=NULL,
-        select=NULL,
         env_circlemap=build_default_python_enviroment_list()$env_circlemap,
         bin_samtools=build_default_tool_binary_list()$bin_samtools,
         ref_genome=build_default_reference_list()$HG19$reference$genome,
         bam=NULL,
         output_dir=".",
         output_name=NULL,
-        tmp_dir=NULL,
         verbose=FALSE,
         batch_config=build_default_preprocess_config(),
         threads=3,
         ram=1,
         mode="local",
         ns="ULPwgs",
-        executor_id=make_unique_id("circdnaCircleMap"),
-        task_name="circdnaCircleMap",
         time="48:0:0",
-        update_time=60,
-        wait=FALSE,
-        hold=NULL,
-        err_mssg="circdna failed to run"
+        err_mssg="circdna failed to run",
+        inherit=NULL,
+        select=NULL,
+        executor_id=NULL,
+        hold=NULL
 ){
 
  
@@ -453,20 +435,21 @@ circdna_circlemap=function(
         envir=this.envir,
         inputs=bam,
         ids=output_name,
+        executor_id = executor_id,
         dir_name="repeat_reports"
     )
 
 
-    main_circdna_circlemap=function(
+    run_main=function(
         envir
     ){
 
         this.envir=environment()
         append_envir(this.envir,envir)
+        set_steps_vars(envir=this.envir)
 
-        steps=list()
-        steps$circdna$job_id=job_id
-        steps$circdna <- append(steps$circdna,realign_circlemap(
+  
+        steps[[fn]] <- append(steps[[fn]],realign_circlemap(
             env_circlemap=env_circlemap,
             bin_samtools=bin_samtools,
             bam=normalizePath(input),
@@ -481,7 +464,7 @@ circdna_circlemap=function(
         ))
 
 
-        steps$circdna <- append(steps$circdna,repeat_caller_circlemap(
+        steps[[fn]] <- append(steps[[fn]],repeat_caller_circlemap(
             env_circlemap=env_circlemap,
             bam=normalizePath(input),
             output_dir=out_file_dir,
@@ -497,13 +480,13 @@ circdna_circlemap=function(
 
    
     if(is.null(select)){
-        run_job(
+        run_self(
             envir=this.envir
         )
     }else{
 
        set_envir_inputs(envir=this.envir)
-       main_circdna_circlemap(
+       run_main(
             envir=this.envir
         )
        return(steps)
@@ -598,42 +581,43 @@ read_bed_circlemap=function(
 #' @export
 
 annotate_bed_circlemap=function(
-    inherit=NULL,
-    select=NULL,
+    annotation_ref=build_default_reference_list()$HG19$panel$PCF_V3$annotation$genes,
     bed=NULL,
-    id=NULL,
+    output_dir=".",
     output_name=NULL,
     type="repeat",
     write=TRUE,
-    annotation_ref=build_default_reference_list()$HG19$panel$PCF_V3$annotation$genes,
     ns="ULPwgs",
-    output_dir=".",
     mode="local",
     time="48:0:0",
-    threads=threads,
+    threads=8,
     ram=1,
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
-    executor_id=make_unique_id("annotateBEDcirclemap"),
-    task_name="annotateBEDcirclemap",
-    hold=NULL,
-    err_mssg="annotate_bed failed to run"
+    err_mssg="annotate_bed failed to run",
+    inherit=NULL,
+    select=NULL,
+    executor_id=NULL,
+    hold=NULL
 ){
     
     this.envir=environment()
-    set_envir_vars(envir=this.envir,inputs=bed,ids=output_name)
+    set_envir_vars(
+        envir=this.envir,
+        inputs=bed,
+        ids=output_name,
+        executor_id = executor_id
+    )
 
-    main_annotate_bed_circlemap=function(
+    run_main=function(
         envir
     ){
         this.envir=environment()
         append_envir(this.envir,envir)
+        set_steps_vars(envir=this.envir)
 
 
-        steps=list()
-        steps$annotate_bed$job_id <- job_id
-
-        dat=read_bed_circlemap(bed=input,id=id,type=type,sep="\t")
+        dat=read_bed_circlemap(bed=input,id=output_name,type=type,sep="\t")
         annotation=read.table(annotation_ref,sep="\t",header=TRUE) %>% 
         dplyr::select(chr,start,end,gene_id)
 
@@ -693,8 +677,15 @@ annotate_bed_circlemap=function(
         dplyr::arrange(gtools::mixedsort(chr))
 
         if(write){
-            steps$annotate_bed$out_file=paste0(out_file_dir,"/",id,".circular_",type,".annotated.bed")
-            write.table(file=steps$annotate_bed$out_file,summarised_dat,sep="\t",col.names=TRUE,row.names=FALSE,quote=FALSE)
+            steps[[fn]]$out_file=paste0(out_file_dir,"/",input_id,".circular_",type,".annotated.bed")
+            write.table(
+                file=steps[[fn]]$out_file,
+                summarised_dat,
+                sep="\t",
+                col.names=TRUE,
+                row.names=FALSE,
+                quote=FALSE
+            )
         }
 
         envir$steps<-steps
@@ -703,13 +694,13 @@ annotate_bed_circlemap=function(
 
 
     if(is.null(select)){
-        run_job(
+        run_self(
             envir=this.envir
         )
     }else{
         
         set_envir_inputs(envir=this.envir)
-        main_annotate_bed_circlemap(
+        run_main(
            envir=this.envir
         )
         return(steps)

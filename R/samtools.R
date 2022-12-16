@@ -134,50 +134,51 @@ sort_and_index_bam_samtools=function(
 #' @export
 
 new_sort_and_index_bam_samtools=function(
-  inherit=NULL,
-  select=NULL,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam=NULL,
+  sort=TRUE,
+  coord_sort=TRUE,
+  index=TRUE,
+  stats=TRUE, 
+  clean=FALSE,
   output_dir=".",
   output_name=NULL,
   verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=3,
   ram=1,
-  sort=TRUE,
-  coord_sort=TRUE,
-  index=TRUE,
-  stats=TRUE, 
-  clean=FALSE,
   ns="ULPwgs",
   mode="local",
-  executor_id=make_unique_id("sortANDindex"),
-  task_name="sortANDindex",
   time="48:0:0",
-  hold=NULL,
-  err_mssg="sort_and_index_bam failed to run"
+  err_mssg="sort_and_index_bam failed to run",
+  inherit=NULL,
+  select=NULL,
+  executor_id=NULL,
+  hold=NULL
 ){
 
 
    this.envir=environment()
    set_envir_vars(
-    envir=this.envir,inputs=bam,ids=output_name
+    envir=this.envir,
+    inputs=bam,
+    executor_id=executor_id,
+    ids=output_name
   )
 
 
 
-  main_sort_and_index_bam_samtools=function(
+  run_main=function(
     envir
   ){
     this.envir=environment()
     append_envir(this.envir,envir)
+    steps=set_steps_vars(this.envir)
 
-    steps=list()
-    steps$sort_and_index$job_id=job_id
   
     if(sort){
-        steps$sort_and_index<-append(
-          steps$sort_and_index,
+        steps[[fn]]<-append(
+          steps[[fn]],
             new_sort_bam_samtools(
               bin_samtools=bin_samtools,
               bam=input,
@@ -194,8 +195,8 @@ new_sort_and_index_bam_samtools=function(
       )
 
     }else{
-        steps$sort_and_index <-append(
-          steps$sort_and_index,
+        steps[[fn]] <-append(
+          steps[[fn]],
             new_index_bam_samtools(
               bin_samtools=bin_samtools,
               bam=input,
@@ -213,13 +214,13 @@ new_sort_and_index_bam_samtools=function(
 
 
   if(is.null(select)){
-      run_job(
+      run_self(
           envir=this.envir
       )
   }else{
 
       set_envir_inputs(envir=this.envir)
-      main_sort_and_index_bam_samtool(
+      main(
           envir=this.envir
       )
       return(steps)
@@ -340,49 +341,45 @@ sort_bam_samtools=function(
 #' @export
 
 new_sort_bam_samtools=function(
-  inherit=NULL,
-  select=NULL,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam=NULL,
-  output_dir=".",
-  output_name=NULL,
   index=TRUE,
   stats=TRUE,
-  verbose=FALSE,
-  batch_config=build_default_preprocess_config(),
+  coord_sort=TRUE,
+  clean=FALSE,
+  output_dir=".",
+  output_name=NULL,
   threads=3,
   ram=1,
-  coord_sort=TRUE,
+  verbose=FALSE,
+  batch_config=build_default_preprocess_config(),
   ns="ULPwgs",
   mode="local",
-  executor_id=make_unique_id("sortBAM"),
-  clean=FALSE,
-  task_name="sortBAM",
   time="48:0:0",
-  hold=NULL,
-  err_mssg="sort_bam failed to run"
+  err_mssg="sort_bam failed to run",
+  inherit=NULL,
+  select=NULL,
+  executor_id=NULL,
+  hold=NULL
 ){
 
     this.envir=environment()
     set_envir_vars(
       envir=this.envir,
       inputs=bam,
+      executor_id=executor_id,
       ids=output_name,
       dir_name="sorted"
     )
 
-    main_sort_bam_samtools=function(
+    run_main=function(
       envir
     ){
       
 
       this.envir=environment()
       append_envir(this.envir,envir)
-
-      steps=list()
-      steps$sort_bam$job_id=job_id
-
-
+      steps=set_steps_vars(this.envir)
 
       sort_type=""
 
@@ -392,7 +389,7 @@ new_sort_bam_samtools=function(
         sort_type=" -n "
       }
 
-      steps$sort_bam$exec_code=paste0(
+      steps[[fn]]$exec_code=paste0(
         bin_samtools," sort ",
         sort_type, input,
         " -@ ",threads,
@@ -402,32 +399,21 @@ new_sort_bam_samtools=function(
       )
     
       if(clean){
-        steps$sort_bam$exec_code=paste(
-          steps$sort_bam$exec_code," && rm",paste(input,collapse=" ")
+        steps[[fn]]$exec_code=paste(
+          steps[[fn]]$exec_code," && rm",paste(input,collapse=" ")
         )
       }
 
-      if(verbose){
-        print_verbose(
-          job=job_id,arg=as.list(this.envir),
-          exec_code=steps$sort_bam$exec_code
-        )
-      }
-    
-      steps$sort_bam$error=execute_job(exec_code=steps$sort_bam$exec_code)
-  
-      if(steps$sort_bam$error!=0){
-          stop(err_mssg)
-      }
 
+      run_job(envir=this.envir)
 
       if(index & coord_sort){
 
-          steps$sort_bam <-append(
-            steps$sort_bam,
+          steps[[fn]]<-append(
+            steps[[fn]],
               new_index_bam_samtools(
                   bin_samtools=bin_samtools,
-                  bam=steps$sort_bam$out_file,
+                  bam=steps[[fn]]$out_file,
                   stats=stats,
                   verbose=verbose,
                   threads=threads,
@@ -440,11 +426,11 @@ new_sort_bam_samtools=function(
       }
 
       if(stats){
-          steps$sort_bam <-append(
-            steps$sort_bam,
+          steps[[fn]] <-append(
+            steps[[fn]],
               new_stats_bam_samtools(
                   bin_samtools=bin_samtools,
-                  bam=steps$sort_bam$out_file,
+                  bam=steps[[fn]]$out_file,
                   stats="flag",
                   verbose=verbose,
                   threads=threads,
@@ -460,13 +446,13 @@ new_sort_bam_samtools=function(
 
 
   if(is.null(select)){
-      run_job(
+      run_self(
           envir=this.envir
       )
   }else{
 
       set_envir_inputs(envir=this.envir)
-      main_sort_bam_samtools(
+      run_main(
           envir=this.envir
       )
       return(steps)
@@ -587,33 +573,38 @@ index_bam_samtools=function(
 
 
 new_index_bam_samtools=function(
-  inherit=NULL,
-  select=NULL,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam=NULL,
+  stats=TRUE,
   output_dir=".",
   output_name=NULL,
-  stats=TRUE,
   verbose=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=3,
   ram=4,
   ns="ULPwgs",
   mode="local",
-  executor_id=make_unique_id("indexBAM"),
-  task_name="indexBAM",
   time="48:0:0",
-  hold=NULL,
-  err_mssg="index_bam failed to run"
+  err_mssg="index_bam failed to run",
+  inherit=NULL,
+  select=NULL,
+  executor_id=NULL,
+  hold=NULL
 ){
 
 
 
   this.envir=environment()
-  set_envir_vars(envir=this.envir,inputs=bam,ids=NULL)
+  set_envir_vars(
+    envir=this.envir,
+    inputs=bam,
+    executor_id=executor_id,
+    ids=output_name
+  )
 
+  steps=set_steps_vars(this.envir)
 
-  main_index_bam_samtools=function(
+  run_main=function(
     envir
   ){
 
@@ -621,29 +612,19 @@ new_index_bam_samtools=function(
     this.envir=environment()
     append_envir(this.envir,envir)
 
-    steps=list()
-    steps$index_bam$job_id=job_id
+    steps=set_steps_vars(this.envir)
 
-    steps$index_bam$out_file=paste0(input,".bai")
-    steps$index_bam$exec_code=paste(bin_samtools," index",input," -@ ",threads)
+    steps[[fn]]$out_file=paste0(input,".bai")
+    steps[[fn]]$exec_code=paste(
+      bin_samtools," index",
+      input," -@ ",threads
+    )
    
-    if(verbose){
-      print_verbose(
-        job=job_id,arg=as.list(this.envir),
-        exec_code=steps$index_bam$exec_code
-      )
-    }
-
-  
-    steps$index_bam$error=execute_job(exec_code=steps$index_bam$exec_code)
-
-    if(steps$index_bam$error!=0){
-        stop(err_mssg)
-    }
+    run_job(envir=this.envir)
 
     if(stats){
-      steps$index_bam <-append(
-        steps$index_bam,
+      steps[[fn]] <-append(
+        steps[[fn]],
         new_stats_bam_samtools(
                   bin_samtools=bin_samtools,
                   bam=input,
@@ -663,13 +644,13 @@ new_index_bam_samtools=function(
 
 
   if(is.null(select)){
-    run_job(
+    run_self(
         envir=this.envir
     )
   }else{
 
       set_envir_inputs(envir=this.envir)
-      main_index_bam_samtools(
+      run_main(
           envir=this.envir
       )
       return(steps)
@@ -780,10 +761,9 @@ stats_bam_samtools=function(
 
 
 new_stats_bam_samtools=function(
-  inherit=NULL,
-  select=NULL,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam=NULL,
+  stats="all",
   output_dir=".",
   output_name=NULL,
   verbose=FALSE,
@@ -791,35 +771,39 @@ new_stats_bam_samtools=function(
   threads=3,
   ram=4,
   ns="ULPwgs",
-  stats="all",
   mode="local",
-  executor_id=make_unique_id("statsBAM"),
-  task_name="statsBAM",
   time="48:0:0",
-  hold=NULL,
-  err_mssg="stats_bam failed to run"
+  err_mssg="stats_bam failed to run",
+  inherit=NULL,
+  select=NULL,
+  executor_id=NULL,
+  hold=NULL
+
 ){
 
   this.envir=environment()
   set_envir_vars(
-    envir=this.envir,inputs=bam,ids=output_name,dir_name="stats"
+    envir=this.envir,
+    inputs=bam,
+    executor_id=executor_id,
+    ids=output_name,
+    dir_name="stats"
   )
 
 
-  main_new_stats_bam_samtools=function(
+  run_main=function(
     envir
   ){
 
 
     this.envir=environment()
     append_envir(this.envir,envir)
+    steps=set_steps_vars(this.envir)
 
-    steps=list()
-    steps$stats_bam$job_id=job_id
 
     if(stats=="all"|stats=="flag"){
-        steps$stats_bam<-append(
-          steps$stats_bam,
+        steps[[fn]]<-append(
+          steps[[fn]],
             new_flag_stats_samtools(
               bin_samtools=bin_samtools,
               bam=input,
@@ -832,8 +816,8 @@ new_stats_bam_samtools=function(
     } 
 
     if(stats=="all"|stats=="index"){
-      steps$stats_bam<-append(
-        steps$stats_bam,
+      steps[[fn]]<-append(
+        steps[[fn]],
           new_index_stats_samtools(
             bin_samtools=bin_samtools,
             bam=input,
@@ -851,13 +835,13 @@ new_stats_bam_samtools=function(
 
   
   if(is.null(select)){
-    run_job(
+    run_self(
         envir=this.envir
     )
   }else{
 
       set_envir_inputs(envir=this.envir)
-      main_new_stats_bam_samtools(
+      run_main(
           envir=this.envir
       )
       return(steps)
@@ -966,8 +950,6 @@ stats_flag_samtools=function(
 
 
 new_flag_stats_samtools=function(
-  inherit=NULL,
-  select=NULL,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam=NULL,
   output_dir=".",
@@ -978,56 +960,49 @@ new_flag_stats_samtools=function(
   ram=4,
   ns="ULPwgs",
   mode="local",
-  executor_id=make_unique_id("statsFlag"),
-  task_name="statsFlag",
   time="48:0:0",
-  hold=NULL,
-  err_mssg="flag_stats failed to run"
+  err_mssg="flag_stats failed to run",
+  inherit=NULL,
+  select=NULL,
+  executor_id=NULL,
+  hold=NULL
 ){
 
   this.envir=environment()
   set_envir_vars(
-    envir=this.envir,inputs=bam,ids=output_name
+    envir=this.envir,
+    inputs=bam,
+    executor_id = executor_id,
+    ids=output_name
   )
 
 
-  main_flag_stats_samtools=function(
+
+  run_main=function(
     envir
   ){
 
     
     this.envir=environment()
     append_envir(this.envir,envir)
+    steps=set_steps_vars(this.envir)
 
-    steps=list()
-    steps$flag_stats$job_id=job_id
+   
 
-
-    steps$flag_stats$out_file=paste0(
+    steps[[fn]]$out_file=paste0(
       out_file_dir,"/",
       input_id,".flagstat.txt"
     )
-    steps$flag_stats$exec_code=paste0(
+    steps[[fn]]$exec_code=paste0(
       bin_samtools," flagstat ",
       input," -@ ",
       threads," > ",
       out_file
     )
 
-
-    if(verbose){
-      print_verbose(
-        job=job_id,arg=as.list(this.envir),
-        exec_code=steps$flag_stats$exec_code
-      )
-    }
-
-  
-    steps$flag_stats$error=execute_job(exec_code=steps$flag_stats$exec_code)
-
-    if(steps$flag_stats$error!=0){
-        stop(err_mssg)
-    }
+     run_job(
+        envir=this.envir
+     )
 
 
      envir$steps <-steps
@@ -1037,13 +1012,13 @@ new_flag_stats_samtools=function(
 
 
   if(is.null(select)){
-    run_job(
+    run_self(
         envir=this.envir
     )
   }else{
 
       set_envir_inputs(envir=this.envir)
-      main_flag_stats_samtools(
+      run_main(
           envir=this.envir
       )
       return(steps)
@@ -1155,8 +1130,6 @@ stats_index_samtools=function(
 
 
 new_index_stats_samtools=function(
-  inherit=NULL,
-  select=NULL,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam=NULL,
   output_dir=".",
@@ -1167,23 +1140,27 @@ new_index_stats_samtools=function(
   ram=4,
   ns="ULPwgs",
   mode="local",
-  executor_id=make_unique_id("statsINDEX"),
-  task_name="statsINDEX",
   time="48:0:0",
-  hold=NULL,
-  err_mssg="index_stats failed to run"
+  err_mssg="index_stats failed to run",
+  inherit=NULL,
+  select=NULL,
+  executor_id=NULL,
+  hold=NULL
 ){
 
 
 
   this.envir=environment()
   set_envir_vars(
-    envir=this.envir,inputs=bam,ids=output_name
+    envir=this.envir,
+    inputs=bam,
+    executor_id=executor_id,
+    ids=output_name
   )
 
 
 
-  main_index_stats_samtools=function(
+  run_main=function(
     envir
   ){
 
@@ -1191,31 +1168,20 @@ new_index_stats_samtools=function(
     this.envir=environment()
     append_envir(this.envir,envir)
 
-    steps=list()
-    steps$index_stats$job_id=job_id
+    steps=set_steps_vars(this.envir)
 
-
-    steps$index_stats$out_file=paste0(
+    steps[[fn]]$out_file=paste0(
       out_file_dir,"/",input_id,".idxstats.txt"
     )
-    steps$index_stats$exec_code=paste0(
-        bin_samtools,
-      " idxstats ",input," > ",steps$index_stats$out_file
+    steps[[fn]]$exec_code=paste0(
+        bin_samtools," idxstats ",
+        input," > ",steps[[fn]]$out_file
     )
 
 
-    if(verbose){
-      print_verbose(
-        job=job_id,arg=as.list(this.envir),
-        exec_code=steps$index_stats$exec_code
-      )
-    }
-
-    steps$index_stats$error=execute_job(exec_code=steps$index_stats$exec_code)
-
-    if(steps$index_stats$error!=0){
-        stop(err_mssg)
-    }
+    run_job(
+          envir=this.envir
+    )
 
 
      envir$steps <-steps
@@ -1227,13 +1193,13 @@ new_index_stats_samtools=function(
 
   
   if(is.null(select)){
-    run_job(
+    run_self(
         envir=this.envir
     )
   }else{
 
       set_envir_inputs(envir=this.envir)
-      main_index_stats_samtools(
+      run_main(
           envir=this.envir
       )
       return(steps)
