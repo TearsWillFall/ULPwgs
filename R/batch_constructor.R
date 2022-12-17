@@ -446,6 +446,10 @@ set_steps_vars=function(
       steps[[fn]]$select=select
       steps[[fn]]$input=input
       steps[[fn]]$input_id=input_id
+      steps[[fn]]$exec_code=""
+      steps[[fn]]$error=0
+      steps[[fn]]$output_dir=out_file_dir
+      steps[[fn]]$out_file=""
       return(steps)
   }
 
