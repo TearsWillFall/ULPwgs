@@ -61,7 +61,7 @@ realign_circlemap=function(
     )
 
 
-    out_file=paste0(out_file_dir,"/",input_id,".circular_candidates.bed")
+  
 
     run_main=function(envir){
 
@@ -102,19 +102,19 @@ realign_circlemap=function(
             )
         )
 
-        steps$realign$exec_code <- paste(
+
+        steps[[fn]]$out_file=paste0(out_file_dir,"/",input_id,".circular_candidates.bed")
+
+        steps[[fn]]$exec_code <- paste(
             set_conda_envir(env_circlemap),
             " Circle-Map Realign -sbam ",normalizePath(input),
-            " -qbam ", steps$new_sort_and_index_bam_samtools$sort$out_file,
-            " -i ",steps$read_extractor_circlemap$sort_and_index$new_sort_and_index_bam_samtools$sort$out_file,
+            " -qbam ", steps[[fn]]$new_sort_and_index_bam_samtools$sort$out_file,
+            " -i ",steps[[fn]]$new_sort_and_index_bam_samtools$sort$out_file,
             " -o ",steps[[fn]]$out_file,
             " -t ",threads," -dir /", 
             " -fasta ",normalizePath(ref_genome), 
             " -tdir ",out_file_dir_tmp
         )
-
-
-
         
 
         run_job(envir=this.envir)
