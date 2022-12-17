@@ -5,55 +5,54 @@
 \title{Sort a BAM file}
 \usage{
 new_sort_bam_samtools(
-  inherit = NULL,
-  select = NULL,
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = NULL,
-  output_dir = ".",
-  output_name = NULL,
   index = TRUE,
   stats = TRUE,
-  verbose = FALSE,
-  batch_config = build_default_preprocess_config(),
+  coord_sort = TRUE,
+  clean = FALSE,
+  output_dir = ".",
+  output_name = NULL,
   threads = 3,
   ram = 1,
-  coord_sort = TRUE,
+  verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
   ns = "ULPwgs",
   mode = "local",
-  executor_id = make_unique_id("sortBAM"),
-  clean = FALSE,
-  task_name = "sortBAM",
   time = "48:0:0",
-  hold = NULL,
-  err_mssg = "sort_bam failed to run"
+  err_mssg = "sort_bam failed to run",
+  inherit = NULL,
+  select = NULL,
+  executor_id = NULL,
+  hold = NULL
 )
 }
 \arguments{
 \item{bam}{Path to the input file with the sequence.}
 
-\item{output_dir}{Path to the output directory.}
+\item{coord_sort}{Generate a coord sorted file. Otherwise queryname sorted. Default TRUE}
 
-\item{verbose}{Enables progress messages. Default False.}
+\item{clean}{Remove input files. Default FALSE}
+
+\item{output_dir}{Path to the output directory.}
 
 \item{threads}{Number of threads. Default 3}
 
 \item{ram}{Ram memory to use per thread in GB. Default 1GB}
 
-\item{coord_sort}{Generate a coord sorted file. Otherwise queryname sorted. Default TRUE}
+\item{verbose}{Enables progress messages. Default False.}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
-\item{executor_id}{Task EXECUTOR ID. Default "mardupsGATK"}
-
-\item{clean}{Remove input files. Default FALSE}
-
-\item{task_name}{Name of the task. Default "mardupsGATK"}
-
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+
+\item{executor_id}{Task EXECUTOR ID. Default "mardupsGATK"}
 
 \item{hold}{\link{OPTIONAL} Hold job until job is finished. Job ID.}
 
 \item{bin_samtols}{Path to samtools executable. Default path tools/samtools/samtools.}
+
+\item{task_name}{Name of the task. Default "mardupsGATK"}
 
 \item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
 

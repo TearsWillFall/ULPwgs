@@ -5,10 +5,9 @@
 \title{Generate BAM file flag and index stats}
 \usage{
 new_stats_bam_samtools(
-  inherit = NULL,
-  select = NULL,
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = NULL,
+  stats = "all",
   output_dir = ".",
   output_name = NULL,
   verbose = FALSE,
@@ -16,19 +15,21 @@ new_stats_bam_samtools(
   threads = 3,
   ram = 4,
   ns = "ULPwgs",
-  stats = "all",
   mode = "local",
-  executor_id = make_unique_id("statsBAM"),
-  task_name = "statsBAM",
   time = "48:0:0",
-  hold = NULL,
-  err_mssg = "stats_bam failed to run"
+  err_mssg = "stats_bam failed to run",
+  inherit = NULL,
+  select = NULL,
+  executor_id = NULL,
+  hold = NULL
 )
 }
 \arguments{
 \item{bin_samtools}{Path to bwa executable. Default path tools/samtools/samtools.}
 
 \item{bam}{Path to the input file with the sequence.}
+
+\item{stats}{Generate BAM stats. Default all. Options \link{"all","flag","index",""}}
 
 \item{output_dir}{Path to the output directory.}
 
@@ -38,17 +39,15 @@ new_stats_bam_samtools(
 
 \item{ram}{RAM per thread to use. Default 4.}
 
-\item{stats}{Generate BAM stats. Default all. Options \link{"all","flag","index",""}}
-
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
-
-\item{executor_id}{Task EXECUTOR ID. Default "mardupsGATK"}
-
-\item{task_name}{Name of the task. Default "mardupsGATK"}
 
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 
+\item{executor_id}{Task EXECUTOR ID. Default "mardupsGATK"}
+
 \item{hold}{\link{OPTIONAL} Hold job until job is finished. Job ID.}
+
+\item{task_name}{Name of the task. Default "mardupsGATK"}
 
 \item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
 

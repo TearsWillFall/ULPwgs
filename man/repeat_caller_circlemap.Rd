@@ -5,8 +5,6 @@
 \title{Extract Circular DNA Repeat Candidates using Circlemap tool}
 \usage{
 repeat_caller_circlemap(
-  inherit = NULL,
-  select = NULL,
   env_circlemap = build_default_python_enviroment_list()$env_circlemap,
   bam = NULL,
   output_dir = ".",
@@ -17,13 +15,12 @@ repeat_caller_circlemap(
   ram = 1,
   ns = "ULPwgs",
   mode = "local",
-  executor_id = make_unique_id("RepeatsCircleMap"),
-  task_name = "RepeatsCircleMap",
   time = "48:0:0",
-  update_time = 60,
-  wait = FALSE,
-  hold = NULL,
-  err_mssg = "repeat_caller failed to run"
+  err_mssg = "repeat_caller failed to run",
+  inherit = NULL,
+  select = NULL,
+  executor_id = NULL,
+  hold = NULL
 )
 }
 \arguments{
@@ -45,17 +42,17 @@ repeat_caller_circlemap(
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+
 \item{executor_id}{Task EXECUTOR ID. Default "recalCovariates"}
 
-\item{task_name}{Task name. Default "recalCovariates"}
+\item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
 
-\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+\item{task_name}{Task name. Default "recalCovariates"}
 
 \item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
 
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
-
-\item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
 }
 \description{
 This function generates a BED file with circular DNA repeat candidates

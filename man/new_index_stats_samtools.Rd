@@ -5,8 +5,6 @@
 \title{Generate BAM file indexstats}
 \usage{
 new_index_stats_samtools(
-  inherit = NULL,
-  select = NULL,
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = NULL,
   output_dir = ".",
@@ -17,11 +15,12 @@ new_index_stats_samtools(
   ram = 4,
   ns = "ULPwgs",
   mode = "local",
-  executor_id = make_unique_id("statsINDEX"),
-  task_name = "statsINDEX",
   time = "48:0:0",
-  hold = NULL,
-  err_mssg = "index_stats failed to run"
+  err_mssg = "index_stats failed to run",
+  inherit = NULL,
+  select = NULL,
+  executor_id = NULL,
+  hold = NULL
 )
 }
 \arguments{
@@ -39,13 +38,13 @@ new_index_stats_samtools(
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
-\item{executor_id}{Job EXECUTOR ID. Default "mardupsGATK"}
-
-\item{task_name}{Name of the task. Default "mardupsGATK"}
-
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 
+\item{executor_id}{Job EXECUTOR ID. Default "mardupsGATK"}
+
 \item{hold}{\link{OPTIONAL} Hold job until job is finished. Job ID.}
+
+\item{task_name}{Name of the task. Default "mardupsGATK"}
 
 \item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
 

@@ -10,6 +10,7 @@ set_envir_vars(
   inputs = NULL,
   ids = NULL,
   fn = NULL,
+  executor_id = NULL,
   ns = "ULPwgs",
   dir_name = ""
 )

@@ -5,38 +5,34 @@
 \title{Annotate Circle-Map circDNA BED file output}
 \usage{
 annotate_bed_circlemap(
-  inherit = NULL,
-  select = NULL,
+  annotation_ref = build_default_reference_list()$HG19$panel$PCF_V3$annotation$genes,
   bed = NULL,
-  id = NULL,
+  output_dir = ".",
   output_name = NULL,
   type = "repeat",
   write = TRUE,
-  annotation_ref = build_default_reference_list()$HG19$panel$PCF_V3$annotation$genes,
   ns = "ULPwgs",
-  output_dir = ".",
   mode = "local",
   time = "48:0:0",
-  threads = threads,
+  threads = 8,
   ram = 1,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
-  executor_id = make_unique_id("annotateBEDcirclemap"),
-  task_name = "annotateBEDcirclemap",
-  hold = NULL,
-  err_mssg = "annotate_bed failed to run"
+  err_mssg = "annotate_bed failed to run",
+  inherit = NULL,
+  select = NULL,
+  executor_id = NULL,
+  hold = NULL
 )
 }
 \arguments{
-\item{bed}{\link{REQUIRED} Path to bed file.}
-
-\item{id}{\link{OPTIONAL} Sample identifier. If not given the name of the first tumour sample of the samples will be used.}
-
-\item{type}{\link{REQUIRED} circleMap output type. Default \link{"repeat"}.}
-
 \item{annotation_ref}{\link{REQUIRED} Path to annotation file.}
 
+\item{bed}{\link{REQUIRED} Path to bed file.}
+
 \item{output_dir}{Path to the output directory.}
+
+\item{type}{\link{REQUIRED} circleMap output type. Default \link{"repeat"}.}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
@@ -50,9 +46,11 @@ annotate_bed_circlemap(
 
 \item{executor_id}{Task EXECUTOR ID. Default "recalCovariates"}
 
-\item{task_name}{Task name. Default "recalCovariates"}
-
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
+
+\item{id}{\link{OPTIONAL} Sample identifier. If not given the name of the first tumour sample of the samples will be used.}
+
+\item{task_name}{Task name. Default "recalCovariates"}
 }
 \description{
 This function reads the circle-map circDNA output file

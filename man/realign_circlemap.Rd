@@ -5,28 +5,25 @@
 \title{Extract Circular DNA Candidates using Circlemap Realign tool}
 \usage{
 realign_circlemap(
-  inherit = NULL,
-  select = NULL,
   env_circlemap = build_default_python_enviroment_list()$env_circlemap,
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
+  ref_genome = build_default_reference_list()$HG19$reference$genome,
   bam = NULL,
   output_dir = ".",
   output_name = NULL,
   verbose = FALSE,
-  ref_genome = build_default_reference_list()$HG19$reference$genome,
   batch_config = build_default_preprocess_config(),
   threads = 3,
   ram = 1,
   ns = "ULPwgs",
   mode = "local",
   tmp_dir = NULL,
-  executor_id = make_unique_id("realignCircleMap"),
-  task_name = "realignCircleMap",
   time = "48:0:0",
-  update_time = 60,
-  wait = FALSE,
-  hold = NULL,
-  err_mssg = "realign failed to run"
+  err_mssg = "realign failed to run",
+  inherit = NULL,
+  select = NULL,
+  executor_id = NULL,
+  hold = NULL
 )
 }
 \arguments{
@@ -48,17 +45,17 @@ realign_circlemap(
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+
 \item{executor_id}{Task EXECUTOR ID. Default "recalCovariates"}
 
-\item{task_name}{Task name. Default "recalCovariates"}
+\item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
 
-\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+\item{task_name}{Task name. Default "recalCovariates"}
 
 \item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
 
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
-
-\item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
 }
 \description{
 This function generates a BED file with circular DNA candidates

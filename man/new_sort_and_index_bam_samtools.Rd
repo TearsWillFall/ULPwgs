@@ -5,42 +5,33 @@
 \title{Sort and index a sequence file}
 \usage{
 new_sort_and_index_bam_samtools(
-  inherit = NULL,
-  select = NULL,
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = NULL,
+  sort = TRUE,
+  coord_sort = TRUE,
+  index = TRUE,
+  stats = TRUE,
+  clean = FALSE,
   output_dir = ".",
   output_name = NULL,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 3,
   ram = 1,
-  sort = TRUE,
-  coord_sort = TRUE,
-  index = TRUE,
-  stats = TRUE,
-  clean = FALSE,
   ns = "ULPwgs",
   mode = "local",
-  executor_id = make_unique_id("sortANDindex"),
-  task_name = "sortANDindex",
   time = "48:0:0",
-  hold = NULL,
-  err_mssg = "sort_and_index_bam failed to run"
+  err_mssg = "sort_and_index_bam failed to run",
+  inherit = NULL,
+  select = NULL,
+  executor_id = NULL,
+  hold = NULL
 )
 }
 \arguments{
 \item{bin_samtools}{Path to samtools executable. Default path tools/samtools/samtools.}
 
 \item{bam}{Path to the input file with the sequence.}
-
-\item{output_dir}{Path to the output directory.}
-
-\item{verbose}{Enables progress messages. Default False.}
-
-\item{threads}{Number of threads. Default 3}
-
-\item{ram}{Ram memory to use per thread in GB. Default 1GB}
 
 \item{sort}{Sort BAM file. Default TRUE.}
 
@@ -52,15 +43,23 @@ new_sort_and_index_bam_samtools(
 
 \item{clean}{Remove input files. Default FALSE}
 
+\item{output_dir}{Path to the output directory.}
+
+\item{verbose}{Enables progress messages. Default False.}
+
+\item{threads}{Number of threads. Default 3}
+
+\item{ram}{Ram memory to use per thread in GB. Default 1GB}
+
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
-
-\item{executor_id}{Task EXECUTOR id. Default "mardupsGATK"}
-
-\item{task_name}{Name of the task. Default "mardupsGATK"}
 
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 
+\item{executor_id}{Task EXECUTOR id. Default "mardupsGATK"}
+
 \item{hold}{\link{OPTIONAL} Hold job until job is finished. Job ID.}
+
+\item{task_name}{Name of the task. Default "mardupsGATK"}
 
 \item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
 

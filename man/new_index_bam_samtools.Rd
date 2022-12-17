@@ -5,24 +5,23 @@
 \title{Index a BAM file}
 \usage{
 new_index_bam_samtools(
-  inherit = NULL,
-  select = NULL,
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = NULL,
+  stats = TRUE,
   output_dir = ".",
   output_name = NULL,
-  stats = TRUE,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 3,
   ram = 4,
   ns = "ULPwgs",
   mode = "local",
-  executor_id = make_unique_id("indexBAM"),
-  task_name = "indexBAM",
   time = "48:0:0",
-  hold = NULL,
-  err_mssg = "index_bam failed to run"
+  err_mssg = "index_bam failed to run",
+  inherit = NULL,
+  select = NULL,
+  executor_id = NULL,
+  hold = NULL
 )
 }
 \arguments{
@@ -38,11 +37,9 @@ new_index_bam_samtools(
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
-\item{executor_id}{Task EXECUTOR ID. Default "mardupsGATK"}
-
-\item{task_name}{Name of the task. Default "mardupsGATK"}
-
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+
+\item{executor_id}{Task EXECUTOR ID. Default "mardupsGATK"}
 
 \item{hold}{\link{OPTIONAL} Hold job until job is finished. Job ID.}
 
@@ -51,6 +48,8 @@ new_index_bam_samtools(
 \item{coord_sort}{Generate a coord sorted file. Otherwise queryname sorted. Default TRUE}
 
 \item{clean}{Remove input files. Default FALSE}
+
+\item{task_name}{Name of the task. Default "mardupsGATK"}
 
 \item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
 
