@@ -396,7 +396,7 @@ unlist_lvl=function(named_list,var,recursive=FALSE){
 
 
 #' @export
- set_conda_enviroment=function(env){
+ set_conda_envir=function(env){
       paste("source activate ",env,";cd ",normalizePath(getwd()),";")
 }
 

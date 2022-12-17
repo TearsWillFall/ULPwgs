@@ -103,7 +103,7 @@ realign_circlemap=function(
         )
 
         steps$realign$exec_code <- paste(
-            set_conda_enviroment(env_circlemap),
+            set_conda_envir(env_circlemap),
             " Circle-Map Realign -sbam ",normalizePath(input),
             " -qbam ", steps$new_sort_and_index_bam_samtools$sort$out_file,
             " -i ",steps$read_extractor_circlemap$sort_and_index$new_sort_and_index_bam_samtools$sort$out_file,
@@ -228,7 +228,7 @@ read_extractor_circlemap=function(
         )
 
         steps[[fn]]$exec_code=paste(
-            set_conda_enviroment(env_circlemap),
+            set_conda_envir(env_circlemap),
             "Circle-Map ReadExtractor -i ",normalizePath(input), 
             " -o ", steps[[fn]]$out_file," -dir /"
         )
@@ -347,7 +347,7 @@ repeat_caller_circlemap=function(
                 out_file_dir,"/",input_id,".circular_repeat_candidates.bed"
             )
             steps[[fn]]$exec_code=paste(
-                set_conda_enviroment(env_circlemap),
+                set_conda_envir(env_circlemap),
                 " Circle-Map Repeats -i ",normalizePath(input), " -o ",
                 steps[[fn]]$out_file, " -dir /"
             )
