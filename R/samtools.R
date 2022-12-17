@@ -368,8 +368,7 @@ new_sort_bam_samtools=function(
       envir=this.envir,
       inputs=bam,
       executor_id=executor_id,
-      ids=output_name,
-      dir_name="sorted"
+      ids=output_name
     )
 
     run_main=function(
@@ -383,19 +382,17 @@ new_sort_bam_samtools=function(
 
       sort_type=""
 
-      out_file=paste0(out_file_dir,"/",input_id,".sorted.",input_ext)
+      steps[[fn]]$out_file=paste0(out_file_dir,"/",input_id,".sorted.",input_ext)
       
-      if(!coord_sort){
-        sort_type=" -n "
-      }
-
+    
       steps[[fn]]$exec_code=paste0(
         bin_samtools," sort ",
-        sort_type, input,
+        ifelse(coord_sort," -n ",""), 
+        input,
         " -@ ",threads,
         " -m ",ram,
         "G"," -o ",
-        out_file
+        steps[[fn]]$out_file
       )
     
       if(clean){
