@@ -220,7 +220,7 @@ new_sort_and_index_bam_samtools=function(
   }else{
 
       set_envir_inputs(envir=this.envir)
-      main(
+      run_main(
           envir=this.envir
       )
       return(steps)
