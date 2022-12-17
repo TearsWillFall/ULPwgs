@@ -369,6 +369,7 @@ set_envir_vars=function(
   ids=NULL,
   fn=NULL,
   executor_id=NULL,
+  err_mssg=NULL,
   ns="ULPwgs",
   dir_name=""
 ){
@@ -418,7 +419,11 @@ set_envir_vars=function(
 
       envir$job_id <- build_job(executor_id=envir$executor_id,task_id=envir$task_id)
 
-     
+      if(is.null(err_mssg)){
+         envir$err_msg <- paste0("CRITICAL ERROR: ",fn," -> ")
+      }else{
+        envir$err_msg <- paste0(envir$err_msg ,fn," -> ")
+      }
 
     }
   
