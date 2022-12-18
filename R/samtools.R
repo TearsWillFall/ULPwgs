@@ -150,6 +150,7 @@ new_sort_and_index_bam_samtools=function(
   ns="ULPwgs",
   mode="local",
   time="48:0:0",
+  sheet=NULL,
   inherit=NULL,
   select=NULL,
   executor_id=NULL,
@@ -342,6 +343,7 @@ new_sort_bam_samtools=function(
   ns="ULPwgs",
   mode="local",
   time="48:0:0",
+  sheet=NULL,
   inherit=NULL,
   select=NULL,
   executor_id=NULL,
@@ -555,6 +557,7 @@ new_index_bam_samtools=function(
   ns="ULPwgs",
   mode="local",
   time="48:0:0",
+  sheet=NULL,
   inherit=NULL,
   select=NULL,
   executor_id=NULL,
@@ -729,6 +732,7 @@ new_stats_bam_samtools=function(
   ns="ULPwgs",
   mode="local",
   time="48:0:0",
+  sheet=NULL,
   inherit=NULL,
   select=NULL,
   executor_id=NULL,
@@ -903,6 +907,7 @@ new_flag_stats_samtools=function(
   ns="ULPwgs",
   mode="local",
   time="48:0:0",
+  sheet=NULL,
   inherit=NULL,
   select=NULL,
   executor_id=NULL,
@@ -1069,6 +1074,7 @@ new_index_stats_samtools=function(
   ns="ULPwgs",
   mode="local",
   time="48:0:0",
+  sheet=NULL,
   inherit=NULL,
   select=NULL,
   executor_id=NULL,
@@ -1114,16 +1120,7 @@ new_index_stats_samtools=function(
 
   }
 
-
-
-
   run_envir(envir=this.envir)
-  
-  
-
-
-
-
 
 }
 

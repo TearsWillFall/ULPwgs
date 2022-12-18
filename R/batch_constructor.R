@@ -385,7 +385,7 @@ set_envir_vars=function(
           paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=","))
         )
       }else{
-        this.envir$fn <- fn
+      this.envir$fn <- fn
     }
       
     
@@ -451,7 +451,7 @@ set_envir_vars=function(
 
 
 set_ss_envir=function(envir){
-          dat=read.delim(envir$ss,header=TRUE)
+          dat=read.delim(envir$sheet,header=TRUE)
           dat_filt=dat %>% dplyr::distinct()
           nrows_dup=nrow(dat)-nrow(dat_filt)
           if(nrows_dup>0){
@@ -469,6 +469,7 @@ set_ss_envir=function(envir){
             FUN=function(row){
               this.envir=environment()
               append_envir(this.envir,envir)
+              this.envir$sheet <- NULL
 
               ### ASSIGN VARS IN SHEET TO ENVIROMENT
               invisible(lapply(seq(1,nrows(dat_row)),FUN=function(col){
