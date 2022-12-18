@@ -422,7 +422,7 @@ set_envir_vars=function(
           append_envir(envir,inherit)
         }
     }else{
-      if(!is.null(inputs)){
+      if(!is.null(vars)){
         this.envir$inputs <- this.envir[[vars]]
         this.envir$n_inputs <- length(this.envir$inputs)
         this.envir$inputs_id <- set_input_id(inputs=this.envir$inputs,ids=this.envir$output_name)
