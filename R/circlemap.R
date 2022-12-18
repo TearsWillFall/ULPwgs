@@ -55,7 +55,7 @@ realign_circlemap=function(
     this.envir=environment()
     set_envir_vars(
         envir=this.envir,
-        inputs=bam,ids=output_name,
+        vars="bam",
         executor_id = executor_id,
         dir_name="realign_reports"
     )
@@ -208,7 +208,7 @@ read_extractor_circlemap=function(
     this.envir=environment()
     set_envir_vars(
         envir=this.envir,
-        inputs=bam,ids=output_name,
+        vars="bam",
         executor_id = executor_id,
         dir_name="read_extractor"
     )
@@ -328,8 +328,7 @@ repeat_caller_circlemap=function(
     this.envir=environment()
     set_envir_vars(
         envir=this.envir,
-        inputs=bam,
-        ids=output_name,
+        vars="bam",
         executor_id = executor_id,
         dir_name="repeat_reports"
     )
@@ -433,8 +432,7 @@ circdna_circlemap=function(
     this.envir=environment()
     set_envir_vars(
         envir=this.envir,
-        inputs=bam,
-        ids=output_name,
+        vars="bam",
         executor_id = executor_id,
         dir_name="repeat_reports"
     )
@@ -604,8 +602,7 @@ annotate_bed_circlemap=function(
     this.envir=environment()
     set_envir_vars(
         envir=this.envir,
-        inputs=bed,
-        ids=output_name,
+        vars="bed",
         executor_id = executor_id
     )
 

@@ -160,9 +160,8 @@ new_sort_and_index_bam_samtools=function(
    this.envir=environment()
    set_envir_vars(
     envir=this.envir,
-    inputs=bam,
-    executor_id=executor_id,
-    ids=output_name
+    vars="bam",
+    executor_id=executor_id
   )
 
 
@@ -364,9 +363,8 @@ new_sort_bam_samtools=function(
     this.envir=environment()
     set_envir_vars(
       envir=this.envir,
-      inputs=bam,
-      executor_id=executor_id,
-      ids=output_name
+      vars="bam",
+      executor_id=executor_id
     )
 
     run_main=function(
@@ -591,9 +589,8 @@ new_index_bam_samtools=function(
   this.envir=environment()
   set_envir_vars(
     envir=this.envir,
-    inputs=bam,
-    executor_id=executor_id,
-    ids=output_name
+    vars="bam",
+    executor_id=executor_id
   )
 
 
@@ -777,9 +774,8 @@ new_stats_bam_samtools=function(
   this.envir=environment()
   set_envir_vars(
     envir=this.envir,
-    inputs=bam,
+    vars="bam",
     executor_id=executor_id,
-    ids=output_name,
     dir_name="stats"
   )
 
@@ -963,9 +959,8 @@ new_flag_stats_samtools=function(
   this.envir=environment()
   set_envir_vars(
     envir=this.envir,
-    inputs=bam,
-    executor_id = executor_id,
-    ids=output_name
+    vars="bam",
+    executor_id = executor_id
   )
 
 
@@ -1144,9 +1139,8 @@ new_index_stats_samtools=function(
   this.envir=environment()
   set_envir_vars(
     envir=this.envir,
-    inputs=bam,
-    executor_id=executor_id,
-    ids=output_name
+    vars="bam",
+    executor_id=executor_id
   )
 
 
@@ -1174,7 +1168,6 @@ new_index_stats_samtools=function(
           envir=this.envir
     )
 
-
      envir$steps <-steps
 
 
@@ -1182,19 +1175,30 @@ new_index_stats_samtools=function(
 
 
 
-  
-  if(is.null(select)){
-    run_self(
-        envir=this.envir
-    )
-  }else{
 
-      set_envir_inputs(envir=this.envir)
-      run_main(
+
+  if(is.null(envirs)){
+     if(is.null(select)){
+      run_self(
           envir=this.envir
       )
-      return(steps)
+    }else{
+
+        set_envir_inputs(envir=this.envir)
+        run_main(
+            envir=this.envir
+        )
+        return(steps)
+    }
+
+  }else{
+
+
+
+
   }
+  
+  
 
 
 

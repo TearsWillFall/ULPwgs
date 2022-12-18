@@ -365,70 +365,129 @@ run_self=function(
 
 set_envir_vars=function(
   envir=environment(),
-  inputs=NULL,
-  ids=NULL,
+  vars=NULL,
   fn=NULL,
+  sheet=NULL,
   executor_id=NULL,
   err_mssg=NULL,
   ns="ULPwgs",
   dir_name=""
 ){
+
+    this.envir=environment()
+    append_envir(this.envir,envir)
     
-    if(!is.null(envir$inherit)){
-        if(!is.environment(envir$inherit)){
-          envir$inherit <-readRDS(file=envir$inherit)
-        }
-      append_envir(envir,envir$inherit)
-    }else{
-
-     
-      envir$out_file_dir <- set_dir(dir=envir$output_dir,name=dir_name)
-      envir$out_file_dir_tmp <- set_dir(dir=envir$out_file_dir,name="tmp")
-     
-      if(!is.null(inputs)){
-        envir$inputs <- inputs
-        envir$n_inputs <- length(inputs)
-        envir$inputs_id <- set_input_id(inputs=inputs,ids=ids)
-        envir$inputs_ext <- Vectorize(get_file_ext)(inputs)
-      }else{
-        stop("Missing input argument")
-      }
-
-
-      if(is.null(fn)){
+    if(is.null(fn)){
         ## GET CALLER FUNCTION NAME IF NOT GIVEN
         
    
-        envir$fn <- sub(".*::","",sub("\\(.*","",
+      this.envir$fn <- sub(".*::","",sub("\\(.*","",
           paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=","))
         )
       }else{
-        envir$fn <- fn
-      }
+        this.envir$fn <- fn
+    }
       
     
-      envir$ns <- ns
+    this.envir$ns <- ns
 
-      if(is.null(executor_id)){
-        envir$executor_id <- make_unique_id(envir$fn)
-      }else{
-        envir$executor_id <- executor_id
-      }
-
-      envir$task_id <- make_unique_id(envir$fn)
-
-      envir$job_id <- build_job(executor_id=envir$executor_id,task_id=envir$task_id)
-
-      if(is.null(err_mssg)){
-         envir$err_msg <- paste0("CRITICAL ERROR: ",fn," -> ")
-      }else{
-        envir$err_msg <- paste0(envir$err_msg ,fn," -> ")
-      }
-
+    if(is.null(executor_id)){
+      this.envir$executor_id <- make_unique_id(this.envir$fn)
+    }else{
+      this.envir$executor_id <- executor_id
     }
-  
+
+    this.envir$task_id <- make_unique_id(this.envir$fn)
+
+    this.envir$job_id <- build_job(executor_id=this.envir$executor_id,task_id=this.envir$task_id)
+
+    if(is.null(err_mssg)){
+        this.envir$err_msg <- paste0("CRITICAL ERROR: ",fn," -> ")
+    }else{
+      this.envir$err_msg <- paste0(this.envir$err_msg ,fn," -> ")
+    }
+
+    if (!is.null(sheet)){
+        envir$envirs=set_ss_envir(envir=this.envir)
+        return()
+    }
+
+    
+    if(!is.null(inherit)){
+        if(!is.environment(inherit)){
+          envir$inherit <-readRDS(file=inherit)
+        }
+      append_envir(envir,inherit)
+    }else{
+      if(!is.null(inputs)){
+        this.envir$inputs <- this.envir[[vars]]
+        this.envir$n_inputs <- length(this.envir$inputs)
+        this.envir$inputs_id <- set_input_id(inputs=this.envir$inputs,ids=this.envir$output_name)
+        this.envir$inputs_ext <- Vectorize(get_file_ext)(this.envir$inputs)
+      }
+
+      this.envir$out_file_dir <- set_dir(
+            dir=this.envir$output_dir,
+            name=ifelse(this.envir$n_inputs>1,paste0(dir_name,"/",this.envir$n_inputs)
+          )
+      )
+
+      this.envir$out_file_dir_tmp <- set_dir(dir=envir$out_file_dir,name="tmp")
+
+      envir$envirs<-this.envir
+    }
+
+ 
+    return()
  
 }
+
+
+
+#' Set steps enviroment for use
+#' 
+#' @param envir Environment
+#' @export
+
+
+set_ss_envir=function(envir){
+          dat=read.delim(envir$ss,header=TRUE)
+          dat_filt=dat %>% dplyr::distinct()
+          nrows_dup=nrow(dat)-nrow(dat_filt)
+          if(nrows_dup>0){
+            warning(paste0(nrows_dup, " were duplicated in sheet"))
+          }
+          
+
+
+          dat_filt=dat_filt %>% 
+          dplyr::group_by(dplyr::across(-c(this.envir$vars))) %>%
+          summarise(!! this.envir$vars := list(!! rlang::sym(this.envir$vars)))
+
+
+          envirs=lapply(seq(1,nrow(dat_filt)),
+            FUN=function(row){
+              this.envir=environment()
+              append_envir(this.envir,envir)
+
+              ### ASSIGN VARS IN SHEET TO ENVIROMENT
+              invisible(lapply(seq(1,nrows(dat_row)),FUN=function(col){
+                    this.envir[[col]] <- dat_row[row,col]
+                    set_envir_inputs(
+                        envir=this.envir,
+                        vars=this.envir$vars,
+                        fn=this.envir$fn,
+                        executor_id=this.envir$executor_id,
+                        err_mssg=this.envir$err_msg
+                    )
+              }))
+
+              return(this.envir)
+            }
+          )
+          return(envirs)
+}
+
 
 
 #' Set steps enviroment for use
@@ -504,8 +563,6 @@ set_envir_inputs=function(envir){
       envir$input_id<-envir$inputs_id[envir$select]
       envir$input_ext<-envir$inputs_ext[envir$select]
   }
-
-
 
 
 
