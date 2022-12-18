@@ -61,8 +61,6 @@ realign_circlemap=function(
     )
 
 
-  
-
     run_main=function(envir){
 
 
@@ -258,9 +256,13 @@ read_extractor_circlemap=function(
     }
 
     if(is.null(select)){
-        run_self(
-            envir=this.envir
-        )
+        runs=lapply(1:length(this.envir$envirs),FUN=function(n_envir){
+                    run_self(
+                        envir=this.envir$envirs[n_envir]
+                    )
+                }   
+            )
+        return(runs)
     }else{
        set_envir_inputs(envir=this.envir)
        run_main(
