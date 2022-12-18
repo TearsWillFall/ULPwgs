@@ -688,7 +688,6 @@ call_sv_strelka=function(
     set_envir_vars(
         envir=this.envir,
         vars="tumour",
-        sheet=ss,
         executor_id = executor_id,
         dir_name="sv"
     )
@@ -1003,7 +1002,6 @@ call_germline_snvs_strelka=function(
     set_envir_vars(
         envir=this.envir,
         vars="normal",
-        sheet=ss,
         executor_id = executor_id,
         dir_name="germline"
     )

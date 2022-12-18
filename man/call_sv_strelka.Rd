@@ -16,7 +16,6 @@ call_sv_strelka(
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   output_dir = ".",
   output_name = NULL,
-  indel_candidates = NULL,
   targeted = TRUE,
   verbose = TRUE,
   annotate = TRUE,
@@ -42,8 +41,6 @@ call_sv_strelka(
 
 \item{output_dir}{\link{OPTIONAL} Path to the output directory. Default current directory}
 
-\item{indel_candidates}{\link{OPTIONAL} Path to indel candidates file produced by MANTA.}
-
 \item{targeted}{\link{REQUIRED} Remove coverage filtering for exome/targeted data. Default TRUE}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
@@ -67,6 +64,8 @@ call_sv_strelka(
 \item{bin_strelka_germline}{Path to strelka germline workflow binary}
 
 \item{variants}{\link{REQUIRED} Variants types to call. Default all. Options \link{"snv","sv","all"}}
+
+\item{indel_candidates}{\link{OPTIONAL} Path to indel candidates file produced by MANTA.}
 
 \item{task_name}{Task name. Default "recalCovariates"}
 

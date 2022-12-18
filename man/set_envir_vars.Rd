@@ -9,7 +9,6 @@ set_envir_vars(
   envir = environment(),
   vars = NULL,
   fn = NULL,
-  sheet = NULL,
   executor_id = NULL,
   err_mssg = NULL,
   ns = "ULPwgs",
