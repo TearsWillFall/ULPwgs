@@ -668,7 +668,6 @@ call_sv_strelka=function(
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     output_dir=".",
     output_name=NULL,
-    indel_candidates=NULL,
     targeted=TRUE,
     verbose=TRUE,
     annotate=TRUE,
@@ -723,7 +722,6 @@ call_sv_strelka=function(
                 tabulate=tabulate,
                 ref_genome=ref_genome,
                 output_dir=out_file_dir,
-                indel_candidates=indel_candidates,
                 targeted=targeted,
                 verbose=verbose,
                 threads=threads,
@@ -740,7 +738,6 @@ call_sv_strelka=function(
               steps[[fn]],
               call_germline_sv_manta(
                 bin_manta=bin_manta,
-                bin_strelka=bin_manta_germline,
                 bin_bcftools=bin_bcftools,
                 bin_bgzip=bin_bgzip,
                 bin_tabix=bin_tabix,

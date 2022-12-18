@@ -475,7 +475,7 @@ set_ss_envir=function(envir){
               ### ASSIGN VARS IN SHEET TO ENVIROMENT
               invisible(lapply(seq(1,nrows(dat_row)),FUN=function(col){
                     this.envir[[col]] <- dat_row[row,col]
-                    set_envir_inputs(
+                    set_envir_vars(
                         envir=this.envir,
                         vars=this.envir$vars,
                         fn=this.envir$fn,
