@@ -431,8 +431,7 @@ set_envir_vars=function(
 
       this.envir$out_file_dir <- set_dir(
             dir=this.envir$output_dir,
-            name=ifelse(this.envir$n_inputs>1,paste0(dir_name,"/",this.envir$n_inputs)
-          )
+            name=dir_name
       )
 
       this.envir$out_file_dir_tmp <- set_dir(dir=envir$out_file_dir,name="tmp")
