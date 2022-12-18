@@ -16,7 +16,7 @@ new_flag_stats_samtools(
   ns = "ULPwgs",
   mode = "local",
   time = "48:0:0",
-  err_mssg = "flag_stats failed to run",
+  sheet = NULL,
   inherit = NULL,
   select = NULL,
   executor_id = NULL,

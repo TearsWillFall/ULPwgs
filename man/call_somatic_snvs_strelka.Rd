@@ -11,12 +11,12 @@ call_somatic_snvs_strelka(
   bin_vep = build_default_tool_binary_list()$bin_vep,
   bin_strelka = build_default_tool_binary_list()$bin_strelka$somatic,
   cache_vep = build_default_cache_list()$cache_vep,
-  tumour = "",
-  normal = "",
+  tumour = NULL,
+  normal = NULL,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   output_dir = ".",
-  indel_candidates = "",
-  extract_pass = TRUE,
+  output_name = NULL,
+  indel_candidates = NULL,
   annotate = TRUE,
   tabulate = TRUE,
   targeted = TRUE,
@@ -25,11 +25,11 @@ call_somatic_snvs_strelka(
   threads = 1,
   ram = 4,
   mode = "local",
-  executor_id = make_unique_id("callSomaticSNVStrelka"),
-  task_name = "callSomaticSNVStrelka",
   time = "48:0:0",
-  update_time = 60,
-  wait = FALSE,
+  sheet = NULL,
+  inherit = NULL,
+  select = NULL,
+  executor_id = NULL,
   hold = NULL
 )
 }
@@ -56,21 +56,21 @@ call_somatic_snvs_strelka(
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
-\item{executor_id}{Task EXECUTOR ID. Default "recalCovariates"}
-
-\item{task_name}{Task name. Default "recalCovariates"}
-
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 
-\item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
-
-\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
+\item{executor_id}{Task EXECUTOR ID. Default "recalCovariates"}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
 
 \item{bin_strelka_somatic}{Path to strelka somatic workflow binary}
 
 \item{variants}{\link{REQUIRED} Variants types to call. Default all. Options \link{"snv","sv","all"}}
+
+\item{task_name}{Task name. Default "recalCovariates"}
+
+\item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
+
+\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 }
 \description{
 This function wraps the STRELKA functions for somatic variant calling

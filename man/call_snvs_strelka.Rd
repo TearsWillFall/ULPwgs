@@ -12,25 +12,25 @@ call_snvs_strelka(
   bin_strelka_somatic = build_default_tool_binary_list()$bin_strelka$somatic,
   bin_strelka_germline = build_default_tool_binary_list()$bin_strelka$germline,
   cache_vep = build_default_cache_list()$cache_vep,
-  tumour = "",
-  normal = "",
+  tumour = NULL,
+  normal = NULL,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   output_dir = ".",
-  indel_candidates = "",
+  output_name = NULL,
+  indel_candidates = NULL,
   targeted = TRUE,
   verbose = TRUE,
-  extract_pass = TRUE,
   annotate = TRUE,
   tabulate = TRUE,
   batch_config = build_default_preprocess_config(),
   threads = 1,
   ram = 4,
   mode = "local",
-  executor_id = make_unique_id("callSNVStrelka"),
-  task_name = "callSNVStrelka",
   time = "48:0:0",
-  update_time = 60,
-  wait = FALSE,
+  sheet = NULL,
+  inherit = NULL,
+  select = NULL,
+  executor_id = NULL,
   hold = NULL
 )
 }
@@ -61,19 +61,19 @@ call_snvs_strelka(
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
-\item{executor_id}{Task EXECUTOR ID. Default "recalCovariates"}
-
-\item{task_name}{Task name. Default "recalCovariates"}
-
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 
-\item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
-
-\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
+\item{executor_id}{Task EXECUTOR ID. Default "recalCovariates"}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
 
 \item{variants}{\link{REQUIRED} Variants types to call. Default all. Options \link{"snv","sv","all"}}
+
+\item{task_name}{Task name. Default "recalCovariates"}
+
+\item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
+
+\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 }
 \description{
 This function wraps the STRELKA functions for variant calling

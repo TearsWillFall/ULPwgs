@@ -11,24 +11,25 @@ call_germline_snvs_strelka(
   bin_vep = build_default_tool_binary_list()$bin_vep,
   cache_vep = build_default_cache_list()$cache_vep,
   bin_strelka = build_default_tool_binary_list()$bin_strelka$germline,
-  normal = "",
+  normal = NULL,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   output_dir = ".",
-  indel_candidates = "",
+  output_name = NULL,
+  indel_candidates = NULL,
   extract_pass = TRUE,
   annotate = TRUE,
   tabulate = TRUE,
   targeted = TRUE,
   verbose = TRUE,
   batch_config = build_default_preprocess_config(),
+  mode = "local",
   threads = 1,
   ram = 4,
-  mode = "local",
-  executor_id = make_unique_id("callGermlineSNVStrelka"),
-  task_name = "callGermlineSNVStrelka",
   time = "48:0:0",
-  update_time = 60,
-  wait = FALSE,
+  sheet = NULL,
+  inherit = NULL,
+  select = NULL,
+  executor_id = NULL,
   hold = NULL
 )
 }
@@ -47,21 +48,15 @@ call_germline_snvs_strelka(
 
 \item{batch_config}{\link{OPTIONAL} Default configuration for job submission in batch.}
 
+\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
 \item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
 
 \item{ram}{\link{OPTIONAL} RAM memory to asing to each thread. Default 4}
 
-\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
-
-\item{executor_id}{Task EXECUTOR ID. Default "recalCovariates"}
-
-\item{task_name}{Task name. Default "recalCovariates"}
-
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 
-\item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
-
-\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
+\item{executor_id}{Task EXECUTOR ID. Default "recalCovariates"}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
 
@@ -70,6 +65,12 @@ call_germline_snvs_strelka(
 \item{tumour}{\link{OPTIONAL} Path to tumour BAM file.}
 
 \item{variants}{\link{REQUIRED} Variants types to call. Default all. Options \link{"snv","sv","all"}}
+
+\item{task_name}{Task name. Default "recalCovariates"}
+
+\item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
+
+\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 }
 \description{
 This function wraps the STRELKA functions for germline variant calling

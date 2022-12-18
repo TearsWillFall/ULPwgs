@@ -7,10 +7,11 @@ functions in package.}
 \usage{
 set_envir_vars(
   envir = environment(),
-  inputs = NULL,
-  ids = NULL,
+  vars = NULL,
   fn = NULL,
+  sheet = NULL,
   executor_id = NULL,
+  err_mssg = NULL,
   ns = "ULPwgs",
   dir_name = ""
 )

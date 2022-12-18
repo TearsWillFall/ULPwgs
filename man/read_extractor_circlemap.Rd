@@ -23,6 +23,7 @@ read_extractor_circlemap(
   mode = "local",
   time = "48:0:0",
   err_mssg = "read_extractor",
+  sheet = NULL,
   inherit = NULL,
   select = NULL,
   executor_id = NULL,

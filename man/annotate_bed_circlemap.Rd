@@ -19,6 +19,7 @@ annotate_bed_circlemap(
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),
   err_mssg = "annotate_bed failed to run",
+  sheet = NULL,
   inherit = NULL,
   select = NULL,
   executor_id = NULL,

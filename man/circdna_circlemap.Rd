@@ -19,6 +19,7 @@ circdna_circlemap(
   ns = "ULPwgs",
   time = "48:0:0",
   err_mssg = "circdna failed to run",
+  sheet = NULL,
   inherit = NULL,
   select = NULL,
   executor_id = NULL,

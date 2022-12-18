@@ -17,6 +17,7 @@ repeat_caller_circlemap(
   mode = "local",
   time = "48:0:0",
   err_mssg = "repeat_caller failed to run",
+  sheet = NULL,
   inherit = NULL,
   select = NULL,
   executor_id = NULL,

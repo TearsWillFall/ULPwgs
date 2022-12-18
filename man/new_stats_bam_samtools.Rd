@@ -17,7 +17,7 @@ new_stats_bam_samtools(
   ns = "ULPwgs",
   mode = "local",
   time = "48:0:0",
-  err_mssg = "stats_bam failed to run",
+  sheet = NULL,
   inherit = NULL,
   select = NULL,
   executor_id = NULL,
