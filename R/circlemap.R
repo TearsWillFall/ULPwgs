@@ -255,21 +255,32 @@ read_extractor_circlemap=function(
         
     }
 
-    if(is.null(select)){
-        runs=lapply(1:length(this.envir$envirs),FUN=function(n_envir){
-                    run_self(
-                        envir=this.envir$envirs[n_envir]
-                    )
-                }   
-            )
-        return(runs)
-    }else{
-       set_envir_inputs(envir=this.envir)
-       run_main(
-            envir=this.envir
-       )
-       return(steps)
-    }
+    run=function(envir)[
+
+        this.envir=environment()
+        append_envir(this.envir,envir)
+
+        if(is.null(select)){
+            runs=lapply(
+                1:length(this.envir$envirs),FUN=function(n_envir){
+                        run_self(
+                            envir=this.envir$envirs[n_envir]
+                        )
+                    }   
+                )
+                envir$runs <- runs
+            }else{
+                set_envir_inputs(envir=this.envir)
+                run_main(
+                        envir=this.envir
+                )
+                envir$steps <- steps
+            }
+
+
+    ]
+
+    
 
 
 }
