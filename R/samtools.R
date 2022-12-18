@@ -210,19 +210,7 @@ new_sort_and_index_bam_samtools=function(
 
   }
 
-
-  if(is.null(select)){
-      run_self(
-          envir=this.envir
-      )
-  }else{
-
-      set_envir_inputs(envir=this.envir)
-      run_main(
-          envir=this.envir
-      )
-      return(steps)
-  }
+  run_envir(envir=this.envir)
 
 
 
@@ -438,18 +426,7 @@ new_sort_bam_samtools=function(
     }
 
 
-  if(is.null(select)){
-      run_self(
-          envir=this.envir
-      )
-  }else{
-
-      set_envir_inputs(envir=this.envir)
-      run_main(
-          envir=this.envir
-      )
-      return(steps)
-  }
+    run_envir(envir=this.envir)
 
 
   
@@ -634,19 +611,7 @@ new_index_bam_samtools=function(
   }
 
 
-  if(is.null(select)){
-    run_self(
-        envir=this.envir
-    )
-  }else{
-
-      set_envir_inputs(envir=this.envir)
-      run_main(
-          envir=this.envir
-      )
-      return(steps)
-  }
-
+  run_envir(envir=this.envir)
 
 
 }
@@ -823,19 +788,7 @@ new_stats_bam_samtools=function(
   }
 
   
-  if(is.null(select)){
-    run_self(
-        envir=this.envir
-    )
-  }else{
-
-      set_envir_inputs(envir=this.envir)
-      run_main(
-          envir=this.envir
-      )
-      return(steps)
-  }
-
+  run_envir(envir=this.envir)
 
 }
 
@@ -998,19 +951,7 @@ new_flag_stats_samtools=function(
   }
 
 
-  if(is.null(select)){
-    run_self(
-        envir=this.envir
-    )
-  }else{
-
-      set_envir_inputs(envir=this.envir)
-      run_main(
-          envir=this.envir
-      )
-      return(steps)
-  }
-
+  run_envir(envir=this.envir)
 
   
   
@@ -1176,27 +1117,7 @@ new_index_stats_samtools=function(
 
 
 
-
-  if(is.null(envirs)){
-     if(is.null(select)){
-      run_self(
-          envir=this.envir
-      )
-    }else{
-
-        set_envir_inputs(envir=this.envir)
-        run_main(
-            envir=this.envir
-        )
-        return(steps)
-    }
-
-  }else{
-
-
-
-
-  }
+  run_envir(envir=this.envir)
   
   
 

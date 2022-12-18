@@ -121,19 +121,7 @@ realign_circlemap=function(
 
     }
 
-    if(is.null(select)){
-        run_self(
-            envir=this.envir
-        )
-    }else{
-
-       set_envir_inputs(envir=this.envir)
-       run_main(
-            envir=this.envir
-       )
-       return(steps)
-    }
-
+    run_envir(envir=this.envir)
 }
 
 
@@ -255,6 +243,10 @@ read_extractor_circlemap=function(
         
     }
 
+
+
+    run_envir(envir=this.envir)
+
  
     
 
@@ -345,18 +337,7 @@ repeat_caller_circlemap=function(
             envir$steps <- steps
     }
 
-    if(is.null(select)){
-        run_self(
-            envir=this.envir
-        )
-    }else{
-
-       set_envir_inputs(envir=this.envir)
-       run_main(
-            envir=this.envir
-        )
-       return(steps)
-    }
+    run_envir(envir=this.envir)
 
 
 
@@ -465,19 +446,7 @@ circdna_circlemap=function(
         
     }
 
-   
-    if(is.null(select)){
-        run_self(
-            envir=this.envir
-        )
-    }else{
-
-       set_envir_inputs(envir=this.envir)
-       run_main(
-            envir=this.envir
-        )
-       return(steps)
-    }
+    run_envir(envir=this.envir)
 
 }
 
@@ -679,20 +648,7 @@ annotate_bed_circlemap=function(
     }
 
 
-    if(is.null(select)){
-        run_self(
-            envir=this.envir
-        )
-    }else{
-        
-        set_envir_inputs(envir=this.envir)
-        run_main(
-           envir=this.envir
-        )
-        return(steps)
-    }
-
-
+    run_envir(envir=this.envir)
   
 
 }

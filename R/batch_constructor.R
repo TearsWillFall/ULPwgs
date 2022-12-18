@@ -503,9 +503,9 @@ run_envir=function(envir){
 
   if(is.null(select)){
       runs=lapply(
-          1:length(this.envir$envirs),FUN=function(n_envir){
+          1:length(this.envir$envirs),FUN=function(n){
                   run_self(
-                      envir=this.envir$envirs[n_envir]
+                      envir=this.envir$envirs[n]
                   )
               }   
           )
