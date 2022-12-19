@@ -428,7 +428,7 @@ set_envir_vars=function(
         name="tmp"
       )
       envir$envirs[[1]] <- this.envir
-      print(this.envir)
+      print(as.list(this.envir))
       return()
     }
     
