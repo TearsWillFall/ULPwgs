@@ -141,7 +141,7 @@ call_variants_strelka=function(
       )
 }
 
-   run_envir(envir=this.envir)
+    envirs=run_envir(envirs=this.envir$envirs)
     
     
 }
@@ -312,7 +312,7 @@ call_somatic_sv_manta=function(
         envir$steps <- steps
     }
 
-  run_envir(envir=this.envir)
+   envirs=run_envir(envirs=this.envir$envirs)
 
 
 }
@@ -478,7 +478,7 @@ call_germline_sv_manta=function(
     }
 
 
-    run_envir(envir=this.envir)
+     envirs=run_envir(envirs=this.envir$envirs)
 
 
 }
@@ -626,7 +626,7 @@ call_snvs_strelka=function(
 
     
   
-    run_envir(envir=this.envir)
+     envirs=run_envir(envirs=this.envir$envirs)
 
 }
 
@@ -763,7 +763,7 @@ call_sv_strelka=function(
 
     
   
-    run_envir(envir=this.envir)
+     envirs=run_envir(envirs=this.envir$envirs)
 }
 
 
@@ -942,7 +942,7 @@ call_somatic_snvs_strelka=function(
 
 
     
-      run_envir(envir=this.envir)
+       envirs=run_envir(envirs=this.envir$envirs)
 
 }
 
@@ -1048,6 +1048,6 @@ call_germline_snvs_strelka=function(
         envir$steps <-steps
 
       }
-      run_envir(envir=this.envir)
+       envirs=run_envir(envirs=this.envir$envirs)
 
 }

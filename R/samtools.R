@@ -210,7 +210,7 @@ new_sort_and_index_bam_samtools=function(
 
   }
 
-  run_envir(envir=this.envir)
+   envirs=run_envir(envirs=this.envir$envirs)
 
 
 
@@ -425,7 +425,7 @@ new_sort_bam_samtools=function(
     }
 
 
-    run_envir(envir=this.envir)
+     envirs=run_envir(envirs=this.envir$envirs)
 
 
   
@@ -610,7 +610,7 @@ new_index_bam_samtools=function(
   }
 
 
-  run_envir(envir=this.envir)
+   envirs=run_envir(envirs=this.envir$envirs)
 
 
 }
@@ -786,7 +786,7 @@ new_stats_bam_samtools=function(
   }
 
   
-  run_envir(envir=this.envir)
+   envirs=run_envir(envirs=this.envir$envirs)
 
 }
 
@@ -949,7 +949,7 @@ new_flag_stats_samtools=function(
   }
 
 
-  run_envir(envir=this.envir)
+  envirs=run_envir(envirs=this.envir$envirs)
 
   
   
@@ -1091,7 +1091,7 @@ new_index_stats_samtools=function(
     
     this.envir=environment()
     append_envir(this.envir,envir)
-    
+
     steps=set_steps_vars(this.envir)
 
     steps[[fn]]$out_file=paste0(
@@ -1112,7 +1112,8 @@ new_index_stats_samtools=function(
 
   }
 
-  run_envir(envir=this.envir)
+  envirs=run_envir(envirs=this.envir$envirs)
+
 
 }
 

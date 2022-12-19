@@ -494,27 +494,29 @@ set_ss_envir=function(envir){
 #' @export
 
 
-run_envir=function(envir){
+run_envir=function(envirs){
 
-  this.envir=environment()
-  append_envir(this.envir,envir)
+      lapply(
+          seq(1,length(envirs)),FUN=function(n){
+              if(is.null(select)){
+                    run_self(
+                      envir=envirs[[n]]
+              )
+              }else{
+                    set_envir_inputs(
+                      envir=envirs[[n]]
+                    )
 
-  if(is.null(select)){
-      runs=lapply(
-          seq(1,length(this.envir$envirs)),FUN=function(n){
-                  run_self(
-                      envir=this.envir$envirs[[n]]
-                  )
-              }   
-          )
-          envir$runs <- runs
-  }else{
-          set_envir_inputs(envir=this.envir$envirs[[1]])
-          run_main(
-                  envir=this.envir$envirs[[1]]
-          )
-          envir$steps <- steps
-  }
+                    run_main(
+                            envir=envirs[[n]]
+                    )
+      
+              }
+
+          }
+      )
+                  
+            
 }
 
 
