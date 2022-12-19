@@ -120,7 +120,7 @@ realign_circlemap=function(
 
     }
 
-  envirs=run_envir(envirs=envirs)
+  envirs=run_envir(envirs=this.envir$envirs)
 }
 
 
@@ -243,7 +243,7 @@ read_extractor_circlemap=function(
 
 
 
-  envirs=run_envir(envirs=envirs)
+  envirs=run_envir(envirs=this.envir$envirs)
 
  
     
@@ -334,7 +334,7 @@ repeat_caller_circlemap=function(
             envir$steps <- steps
     }
 
-  envirs=run_envir(envirs=envirs)
+  envirs=run_envir(envirs=this.envir$envirs)
 
 
 
@@ -442,7 +442,7 @@ circdna_circlemap=function(
         
     }
 
-  envirs=run_envir(envirs=envirs)
+  envirs=run_envir(envirs=this.envir$envirs)
 
 }
 
@@ -644,7 +644,7 @@ annotate_bed_circlemap=function(
     }
 
 
-  envirs=run_envir(envirs=envirs)
+  envirs=run_envir(envirs=this.envir$envirs)
   
 
 }

@@ -503,8 +503,6 @@ run_envir=function(envirs){
                       envir=envirs[[n]]
                     
                     )
-                   
-              
               }else{
                     set_envir_inputs(
                       envir=envirs[[n]]
