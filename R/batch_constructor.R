@@ -403,7 +403,7 @@ set_envir_vars=function(
 
     if (!is.null(sheet)){
         envirs=set_ss_envir()
-        return()
+        return(envirs)
     }
 
 
@@ -413,8 +413,8 @@ set_envir_vars=function(
           inherit <-readRDS(file=inherit)
         }
         append_env(to=.this.env,from=inherit)
-        .env$envirs[[1]] <- .this.env
-        return()
+        envirs[[1]] <- .this.env
+        return(envirs)
     }else{
       if(!is.null(vars)){
         inputs <- get(vars)
@@ -436,8 +436,8 @@ set_envir_vars=function(
       )
 
      
-      .env$envirs[[1]] <- .this.env
-      return()
+      envirs[[1]] <- .this.env
+      return(envirs)
     }
 
     
