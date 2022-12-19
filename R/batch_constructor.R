@@ -172,11 +172,6 @@ execute_job=function(exec_code){
 }
 
 
-
-
-
-
-
 #' Execute job with delay if job limit in Myriad SGE reached
 #' 
 #' @param exec_code Execution code
@@ -187,7 +182,6 @@ execute_job=function(exec_code){
   error=system(exec_code)
   return(error)
 }
-
 
 
 
@@ -227,8 +221,6 @@ build_exec_innit=function(
         .this.env=environment()
         append_envir(to=.this.env,from=.envir)
 
-  
-        
         ### Use SGE TASK ID if mode is set to batch otherwise use value
         
         if(mode=="local"){
@@ -277,7 +269,7 @@ build_batch_exec_innit=function(
       hold=hold,array=length(input)
     )
 
-    .envir$exec_code=paste0("ecenivrho '. $HOME/.bashrc;",batch_config,
+    .envir$exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
     ";",exec_code,"'|",.envir$batch_code)
 
 }
@@ -301,10 +293,10 @@ run_self=function(
 
     ### Create RData object to inherit vars
 
-    build_rdata_object(.envir=.envir)
+    build_rdata_object(.envir=.this.envir)
 
     build_exec_innit(
-            .envir=.envir
+            .envir=.this.envir
     )
 
 
