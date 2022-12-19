@@ -434,7 +434,7 @@ set_envir_vars=function(
         name="tmp"
       )
 
-      envir$envirs[1] <- this.envir
+      envir$envirs[[1]] <- this.envir
       envir
     }
 
