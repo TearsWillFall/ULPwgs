@@ -377,7 +377,7 @@ run_self=function(
 #' @export
 
 set_envir_vars=function(
-  envir=environment(),
+  .envir=environment(),
   vars=NULL,
   fn=NULL,
   err_mssg=NULL
@@ -465,7 +465,7 @@ set_envir_vars=function(
 
 set_ss_envir=function(.envir){
 
-          dat=read.delim(envir$sheet,header=TRUE)
+          dat=read.delim(.envir$sheet,header=TRUE)
           dat_filt=dat %>% dplyr::distinct()
           nrows_dup=nrow(dat)-nrow(dat_filt)
           if(nrows_dup>0){
@@ -476,7 +476,7 @@ set_ss_envir=function(.envir){
 
           dat_filt=dat_filt %>% 
           dplyr::group_by(dplyr::across(-c(.envir$vars))) %>%
-          summarise(!! envir$vars := list(!! rlang::sym(.envir$vars)))
+          summarise(!! .envir$vars := list(!! rlang::sym(.envir$vars)))
 
           envirs=lapply(seq(1,nrow(dat_filt)),
             FUN=function(row){
