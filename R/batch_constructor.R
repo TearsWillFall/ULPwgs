@@ -564,9 +564,8 @@ append_envir = function(to=environment(), from=NULL) {
       
       from_list = ls(from)
       for(var in from_list) {
-           if(!is.environment(from[[var]])){
+      
               to[[var]] = from[[var]]
-           }
       }
 }
 
