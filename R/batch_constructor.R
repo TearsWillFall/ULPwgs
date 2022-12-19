@@ -200,7 +200,7 @@ execute_job=function(exec_code){
 
 
 build_rdata_object=function(
-  envir=NULL
+  envir=environment()
 ){
           envir$rdata_file=paste0(envir$out_file_dir_tmp,"/",envir$job_id,".RData")
           saveRDS(envir,file = envir$rdata_file)
@@ -411,9 +411,8 @@ set_envir_vars=function(
     if(!is.null(inherit)){
         if(!is.environment(inherit)){
           inherit <-readRDS(file=inherit)
-        }else{
-          append_envir(envir,inherit)
         }
+        append_envir(envir,inherit)
     }else{
       if(!is.null(vars)){
         this.envir$inputs <- this.envir[[vars]]
@@ -433,12 +432,8 @@ set_envir_vars=function(
         dir=this.envir$out_file_dir,
         name="tmp"
       )
-
-      envir$envirs[[1]] <- this.envir
     }
-
- 
-    return()
+    envir$envirs[[1]] <- this.envir
  
 }
 
@@ -506,7 +501,7 @@ run_envir=function(envirs){
                     )
 
                     run_main(
-                            envir=envirs[[n]]
+                      envir=envirs[[n]]
                     )
       
               }
