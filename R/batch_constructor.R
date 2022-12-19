@@ -434,7 +434,7 @@ set_envir_vars=function(
         name="tmp"
       )
 
-      envir$envirs[[1]] <- this.envir
+      envir$envirs[1] <- this.envir
       envir
     }
 
@@ -504,7 +504,7 @@ run_envir=function(envir){
       runs=lapply(
           seq(1,length(this.envir$envirs)),FUN=function(n){
                   run_self(
-                      envir=this.envir$envirs[[n]]
+                      envir=this.envir$envirs[n]
                   )
               }   
           )
@@ -512,7 +512,7 @@ run_envir=function(envir){
   }else{
           set_envir_inputs(envir=this.envir$envirs[[1]])
           run_main(
-                  envir=this.envir$envirs[[1]]
+                  envir=this.envir$envirs[1]
           )
           envir$steps <- steps
   }
