@@ -473,10 +473,7 @@ set_ss_envir=function(envir){
                     this.envir[[col]] <- dat_row[row,col]
                     set_envir_vars(
                         envir=this.envir,
-                        vars=this.envir$vars,
-                        fn=this.envir$fn,
-                        executor_id=this.envir$executor_id,
-                        err_mssg=this.envir$err_msg
+                        vars=this.envir$vars
                     )
               }))
 
