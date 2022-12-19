@@ -61,7 +61,7 @@ realign_circlemap=function(
 
     run_main=function(envir){
 
-        append_envir(from=envir)
+        append_env(from=envir)
         set_steps_vars()
     
          
@@ -197,7 +197,7 @@ read_extractor_circlemap=function(
         envir
     ){
     
-        append_envir(to=,from=envir)
+        append_env(to=,from=envir)
         set_steps_vars()
     
         steps[[fn]]$out_file=paste0(
@@ -309,7 +309,7 @@ repeat_caller_circlemap=function(
         envir
     ){
         
-            append_envir(from=envir)
+            append_env(from=envir)
             set_steps_vars()
           
             steps[[fn]]$out_file=paste0(
@@ -398,7 +398,7 @@ circdna_circlemap=function(
         envir
     ){
 
-        append_envir(from=envir)
+        append_env(from=envir)
         set_steps_vars()
 
   
@@ -551,7 +551,7 @@ annotate_bed_circlemap=function(
         envir
     ){
    
-        append_envir(from=envir)
+        append_env(from=envir)
         set_steps_vars()
 
 

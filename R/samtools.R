@@ -164,9 +164,9 @@ new_sort_and_index_bam_samtools=function(
 
 
   run_main=function(
-    envir
+    .env
   ){
-    append_envir(from=envir)
+    append_env(from=envir)
     set_steps_vars()
 
   
@@ -355,7 +355,7 @@ new_sort_bam_samtools=function(
       
 
     
-      append_envir(from=envir)
+      append_env(from=envir)
       set_steps_vars()
 
       sort_type=""
@@ -556,18 +556,18 @@ new_index_bam_samtools=function(
  
   .base.env=environment()
   set_envir_vars(
-    .envir=.base.env,
+    .env=.base.env,
     vars="bam"
   )
 
   run_main=function(
-    .envir
+    .env
   ){
 
     .this.env=environment()
-    append_envir(to=.this.env,from=.envir)
+    append_env(to=.this.env,from=.env)
 
-    set_steps_vars(.envir=.this.env)
+    set_steps_vars(.env=.this.env)
 
     steps[[fn]]$out_file=paste0(input,".bai")
     steps[[fn]]$exec_code=paste(
@@ -575,7 +575,7 @@ new_index_bam_samtools=function(
       input," -@ ",threads
     )
    
-    run_job(.envir=.this.envir)
+    run_job(.env=.this.env)
 
     if(stats){
       steps[[fn]] <-append(
@@ -593,7 +593,7 @@ new_index_bam_samtools=function(
 
     }
 
-    .envir$steps <-steps
+    .env$steps <-steps
 
   }
 
@@ -736,7 +736,7 @@ new_stats_bam_samtools=function(
   ){
 
 
-    append_envir(from=envir)
+    append_env(from=envir)
     set_steps_vars()
 
 
@@ -908,7 +908,7 @@ new_flag_stats_samtools=function(
     envir
   ){
 
-    append_envir(from=envir)
+    append_env(from=envir)
     set_steps_vars()
 
    
@@ -1069,9 +1069,9 @@ new_index_stats_samtools=function(
 
     
     .this.env=environment()
-    append_envir(to=.this.env,from=.envir)
+    append_env(to=.this.env,from=.env)
 
-    set_steps_vars(.envir=.this.env)
+    set_steps_vars(.env=.this.env)
 
     steps[[fn]]$out_file=paste0(
       out_file_dir,"/",input_id,".idxstats.txt"
@@ -1082,7 +1082,7 @@ new_index_stats_samtools=function(
     )
 
 
-    run_job(.envir=.this.env)
+    run_job(.env=.this.env)
 
     envir$steps <-steps
 

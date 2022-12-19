@@ -194,13 +194,13 @@ execute_job=function(exec_code){
 
 
 build_rdata_object=function(
-  .envir=environment()
+  .env=environment()
 ){        
 
           .this.env=environment()
-          append_envir(to=.this.env,from=.envir)
-          .envir$rdata_file=paste0(out_file_dir_tmp,"/",job_id,".RData")
-          saveRDS(.envir,file = .envir$rdata_file)
+          append_env(to=.this.env,from=.env)
+          .env$rdata_file=paste0(out_file_dir_tmp,"/",job_id,".RData")
+          saveRDS(.env,file = .env$rdata_file)
   }
       
 
@@ -209,29 +209,28 @@ build_rdata_object=function(
 
 #' Build execution innit for function to execute
 #' 
-#' @param envir List of objects to save in RData object
+#' @param env List of objects to save in RData object
 #' @export
 
 
 build_exec_innit=function(
-        .envir=environment()
+        .env=environment()
 ){
 
-
         .this.env=environment()
-        append_envir(to=.this.env,from=.envir)
+        append_env(to=.this.env,from=.env)
 
         ### Use SGE TASK ID if mode is set to batch otherwise use value
         
         if(mode=="local"){
              
-              .envir$exec_code=paste0("Rscript -e \" lapply(1:",n_inputs,
+              .env$exec_code=paste0("Rscript -e \" lapply(1:",n_inputs,
               ",FUN=function(select){",ns,"::",fn,"(inherit=\\\"",
               rdata_file,"\\\",select=select)})\"")
         
         }else if(mode=="batch"){
     
-              .envir$exec_code=paste0("Rscript -e \" ",
+              .env$exec_code=paste0("Rscript -e \" ",
               ns,"::",fn,"(inherit=\\\"",rdata_file,
               "\\\",select=$SGE_TASK_ID)\"")
 
@@ -246,76 +245,76 @@ build_exec_innit=function(
 
 #' Build execution innit for batch
 #' 
-#' @param envir Inherit enviroment variables
+#' @param env Inherit envoment variables
 #' @param exec_code Execution code
 #' @export
 
 
 build_batch_exec_innit=function(
-  .envir=environment()
+  .env=environment()
 ){  
 
 
     .this.env=environment()
-    append_envir(to=.this.env,from=.envir)
+    append_env(to=.this.env,from=.env)
 
   
-    .envir$out_file_dir_batch=set_dir(dir=out_file_dir_tmp,name="batch")
+    .env$out_file_dir_batch=set_dir(dir=out_file_dir_tmp,name="batch")
 
-    .envir$batch_code=build_job_exec(
+    .env$batch_code=build_job_exec(
       job=job_id,time=time,ram=ram,
       threads=threads,wd=getwd(),
       output_dir=out_file_dir_batch,
       hold=hold,array=length(input)
     )
 
-    .envir$exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
-    ";",exec_code,"'|",.envir$batch_code)
+    .env$exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
+    ";",exec_code,"'|",.env$batch_code)
 
 }
 
 
 #' Run job from batch constructor
 #' 
-#' @param envir Inherit current enviroment.
+#' @param env Inherit current enviroment.
 #' 
 #' 
 #' @export
 
 
 run_self=function(
-  .envir=environment()
+  .env=environment()
 ){  
 
     .this.env=environment()
-    append_envir(to=.this.env,from=.envir)
+    append_env(to=.this.env,from=.env)
 
 
     ### Create RData object to inherit vars
 
-    build_rdata_object(.envir=.this.envir)
+    build_rdata_object(.env=.this.env)
 
     build_exec_innit(
-            .envir=.this.envir
+            .env=.this.env
     )
 
 
     if(mode=="batch"){
         build_batch_exec_innit(
-              .envir=.this.envir
+              .env=.this.env
         )
     }
 
     if(verbose){
           print_verbose(job=job_id,
-            arg=as.list(.this.envir),
+            arg=as.list(.this.env),
             exec_code=exec_code
           )
     }
 
-    .envir$error=execute_job(exec_code=exec_code)
+    .env$error=execute_job(exec_code=exec_code)
 
-    if(.envir$error!=0){
+    if(.env$error!=0){
         stop(err_msg)
     }
 
@@ -323,17 +322,17 @@ run_self=function(
 
 #' Run job from batch constructor
 #' 
-#' @param envir Inherit current enviroment.
+#' @param env Inherit current enviroment.
 #' 
 #' 
 #' @export
 
 
  run_job=function(
-  .envir=environment()
+  .env=environment()
  ){
       .this.env=environment()
-      append_envir(to=.this.env,from=.envir)
+      append_env(to=.this.env,from=.env)
 
 
       if(verbose){
@@ -351,7 +350,7 @@ run_self=function(
       if(steps[[fn]]$error!=0){
           stop(err_mssg)
       }
-      .envir$steps <- steps
+      .env$steps <- steps
  }
    
 
@@ -367,7 +366,7 @@ run_self=function(
 #' @export
 
 set_envir_vars=function(
-  .envir=environment(),
+  .env=environment(),
   vars=NULL,
   fn=NULL,
   err_mssg=NULL
@@ -375,7 +374,7 @@ set_envir_vars=function(
 
     .this.env=environment()
 
-    append_envir(to=.this.env,from=.envir)
+    append_env(to=.this.env,from=.env)
     
     
     if(is.null(fn)){
@@ -410,11 +409,11 @@ set_envir_vars=function(
 
     
     if(!is.null(inherit)){
-        if(!is.environment(inherit)){
+        if(!is.envonment(inherit)){
           inherit <-readRDS(file=inherit)
         }
-        append_envir(to=.this.env,from=inherit)
-        .envir$envirs[[1]] <- .this.env
+        append_env(to=.this.env,from=inherit)
+        .env$envirs[[1]] <- .this.env
         return()
     }else{
       if(!is.null(vars)){
@@ -437,7 +436,7 @@ set_envir_vars=function(
       )
 
      
-      .envir$envirs[[1]] <- .this.env
+      .env$envirs[[1]] <- .this.env
       return()
     }
 
@@ -453,9 +452,9 @@ set_envir_vars=function(
 #' @export
 
 
-set_ss_envir=function(.envir){
+set_ss_envir=function(.env){
 
-          dat=read.delim(.envir$sheet,header=TRUE)
+          dat=read.delim(.env$sheet,header=TRUE)
           dat_filt=dat %>% dplyr::distinct()
           nrows_dup=nrow(dat)-nrow(dat_filt)
           if(nrows_dup>0){
@@ -465,25 +464,25 @@ set_ss_envir=function(.envir){
 
 
           dat_filt=dat_filt %>% 
-          dplyr::group_by(dplyr::across(-c(.envir$vars))) %>%
-          summarise(!! .envir$vars := list(!! rlang::sym(.envir$vars)))
+          dplyr::group_by(dplyr::across(-c(.env$vars))) %>%
+          summarise(!! .env$vars := list(!! rlang::sym(.env$vars)))
 
           envirs=lapply(seq(1,nrow(dat_filt)),
             FUN=function(row){
-              .this.envir=environment()
-              append_envir(to=.this.envir,from=.envir)
+              .this.env=environment()
+              append_env(to=.this.env,from=.env)
               sheet <- NULL
 
               ### ASSIGN VARS IN SHEET TO ENVIROMENT
               invisible(lapply(seq(1,nrows(dat_row)),FUN=function(col){
-                    .envir[[col]] <- dat_row[row,col]
+                    .env[[col]] <- dat_row[row,col]
                     set_envir_vars(
-                        .envir=.this.envir,
-                        vars=.this.envir$vars
+                        .env=.this.env,
+                        vars=.this.env$vars
                     )
               }))
 
-              return(.this.envir)
+              return(.this.env)
             }
           )
           return(envirs)
@@ -503,15 +502,15 @@ run_envir=function(envirs){
           seq(1,length(envirs)),FUN=function(n){
               if(is.null(envirs[[n]]$select)){
                     run_self(
-                      .envir=envirs[[n]]
+                      .env=envirs[[n]]
                     )
               }else{
                     set_envir_inputs(
-                      .envir=envirs[[n]]
+                      .env=envirs[[n]]
                     )
 
                     run_main(
-                      .envir=envirs[[n]]
+                      .env=envirs[[n]]
                     )
       
               }
@@ -535,10 +534,10 @@ run_envir=function(envirs){
 
 
 set_steps_vars=function(
-  .envir=environment()
+  .env=environment()
 ){     
       .this.env=environment()
-      append_envir(to=.this.env,from=.envir)
+      append_env(to=.this.env,from=.env)
       steps=list()
       steps[[fn]]$job_id=job_id
       steps[[fn]]$executor_id=executor_id
@@ -562,7 +561,7 @@ set_steps_vars=function(
 #' @param from Enviroment to append from
 #' @export
 
-append_envir = function(to=environment(), from=NULL) {
+append_env = function(to=environment(), from=NULL) {
       
       from_list = ls(from)
       for(var in from_list) {
@@ -598,10 +597,10 @@ set_input_id=function(inputs,ids=NULL){
 #' @export
 
 
-set_envir_inputs=function(.envir){
-      .envir$input<-.envir$inputs[.envir$select]
-      .envir$input_id<-.envir$inputs_id[.envir$select]
-      .envir$input_ext<-.envir$inputs_ext[.envir$select]
+set_envir_inputs=function(.env){
+      .env$input<-.env$inputs[.env$select]
+      .env$input_id<-.env$inputs_id[.env$select]
+      .env$input_ext<-.env$inputs_ext[.env$select]
   }
 
 

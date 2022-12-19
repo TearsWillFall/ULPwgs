@@ -1077,7 +1077,7 @@ tabulate_vcf=function(
       ){
 
       
-        append_envir(from=envir)
+        append_env(from=envir)
         set_steps_vars()
 
       
