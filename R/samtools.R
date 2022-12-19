@@ -590,7 +590,6 @@ new_index_bam_samtools=function(
                   executor_id=task_id
         )
       )
-
     }
 
     .env$steps <-steps
