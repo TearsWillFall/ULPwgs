@@ -332,7 +332,6 @@ run_self=function(
       append_envir(this.envir,envir)
 
 
-      
       if(verbose){
         print_verbose(
           job=job_id,arg=as.list(this.envir),
@@ -435,7 +434,7 @@ set_envir_vars=function(
         name="tmp"
       )
 
-      envir$envirs <- this.envir
+      envir$envirs[[1]] <- this.envir
     }
 
  
