@@ -498,10 +498,13 @@ run_envir=function(envirs){
 
       lapply(
           seq(1,length(envirs)),FUN=function(n){
-              if(is.null(select)){
+              if(is.null(envirs[[n]]$select)){
                     run_self(
                       envir=envirs[[n]]
-              )
+                    
+                    )
+                   
+              
               }else{
                     set_envir_inputs(
                       envir=envirs[[n]]
