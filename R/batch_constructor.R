@@ -366,6 +366,7 @@ set_envir_vars=function(
   envir=environment(),
   vars=NULL,
   fn=NULL,
+  executor_id=NULL,
   err_mssg=NULL
 ){
 
