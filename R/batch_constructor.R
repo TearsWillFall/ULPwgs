@@ -364,7 +364,6 @@ set_envir_vars=function(
   envir=environment(),
   vars=NULL,
   fn=NULL,
-  executor_id=NULL,
   err_mssg=NULL
 ){
 
@@ -394,7 +393,7 @@ set_envir_vars=function(
     }
 
     if (!is.null(sheet)){
-        envir$envirs=set_ss_envir(envir=environment())
+        envir$envirs=set_ss_envir()
         return()
     }
 
@@ -408,7 +407,7 @@ set_envir_vars=function(
         return()
     }else{
       if(!is.null(vars)){
-        inputs <- environment()[[vars]]
+        inputs <- get(vars)
         n_inputs <- length(inputs)
         inputs_id <- set_input_id(
           inputs=inputs,
@@ -553,11 +552,11 @@ append_envir = function(to=environment(), from=NULL) {
       from_list = ls(from)
       for(var in from_list) {
 
-        if(is.null(to[[var]])&!is.environment(from[[var]])){
+        if(is.null(to[[var]])){
            to[[var]]<-NULL
         }
        
-        if(!is.null(from[[var]])&!is.environment(from[[var]])){
+        if(!is.null(from[[var]])){
            to[[var]] <- from[[var]]
         }
       }
