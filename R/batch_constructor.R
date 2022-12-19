@@ -367,6 +367,7 @@ set_envir_vars=function(
   envir=environment(),
   vars=NULL,
   fn=NULL,
+  err_mssg=NULL,
   dir_name=""
 ){
 
