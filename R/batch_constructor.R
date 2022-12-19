@@ -378,30 +378,23 @@ set_envir_vars=function(
         ## GET CALLER FUNCTION NAME IF NOT GIVEN
         
    
-      this.envir$fn <- sub(".*::","",sub("\\(.*","",
+      fn <- sub(".*::","",sub("\\(.*","",
           paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=","))
         )
-    }else{
-      this.envir$fn <- fn
     }
-      
-    
-    this.envir$ns <- ns
 
     if(is.null(executor_id)){
-      this.envir$executor_id <- make_unique_id(this.envir$fn)
-    }else{
-      this.envir$executor_id <- executor_id
+      executor_id <- make_unique_id(this.envir$fn)
     }
 
-    this.envir$task_id <- make_unique_id(this.envir$fn)
+    task_id <- make_unique_id(fn)
 
-    this.envir$job_id <- build_job(executor_id=this.envir$executor_id,task_id=this.envir$task_id)
+    job_id <- build_job(executor_id=executor_id,task_id=task_id)
 
     if(is.null(err_mssg)){
-        this.envir$err_msg <- paste0("CRITICAL ERROR: ",this.envir$fn," -> ")
+        err_msg <- paste0("CRITICAL ERROR: ",fn," -> ")
     }else{
-      this.envir$err_msg <- paste0(this.envir$err_msg ,this.envir$fn," -> ")
+        err_msg <- paste0(err_msg ,fn," -> ")
     }
 
     if (!is.null(sheet)){
@@ -417,21 +410,21 @@ set_envir_vars=function(
         append_envir(envir,inherit)
     }else{
       if(!is.null(vars)){
-        this.envir$inputs <- this.envir[[vars]]
-        this.envir$n_inputs <- length(this.envir$inputs)
-        this.envir$inputs_id <- set_input_id(
-          inputs=this.envir$inputs,
-          ids=this.envir$output_name
+        inputs <- this.envir[[vars]]
+        n_inputs <- length(inputs)
+        inputs_id <- set_input_id(
+          inputs=inputs,
+          ids=output_name
         )
-        this.envir$inputs_ext <- Vectorize(get_file_ext)(this.envir$inputs)
+        inputs_ext <- Vectorize(get_file_ext)(inputs)
       }
 
-      this.envir$out_file_dir <- set_dir(
-            dir=this.envir$output_dir
+      out_file_dir <- set_dir(
+            dir=output_dir
       )
 
-      this.envir$out_file_dir_tmp <- set_dir(
-        dir=this.envir$out_file_dir,
+      out_file_dir_tmp <- set_dir(
+        dir=out_file_dir,
         name="tmp"
       )
     }
