@@ -435,6 +435,7 @@ set_envir_vars=function(
       )
 
       envir$envirs[[1]] <- this.envir
+      envir$this.envir <- NULL
     }
 
  
@@ -451,6 +452,8 @@ set_envir_vars=function(
 
 
 set_ss_envir=function(envir){
+
+
           dat=read.delim(envir$sheet,header=TRUE)
           dat_filt=dat %>% dplyr::distinct()
           nrows_dup=nrow(dat)-nrow(dat_filt)
@@ -458,8 +461,6 @@ set_ss_envir=function(envir){
             warning(paste0(nrows_dup, " were duplicated in sheet"))
           }
           
-
-
           dat_filt=dat_filt %>% 
           dplyr::group_by(dplyr::across(-c(this.envir$vars))) %>%
           summarise(!! this.envir$vars := list(!! rlang::sym(this.envir$vars)))
