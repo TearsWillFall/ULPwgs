@@ -1119,7 +1119,7 @@ tabulate_vcf=function(
 
     }
   
-     envirs=run_envir(envirs=this.envir$envirs)
+     envirs=run_envir(envirs=envirs)
 
       
 }

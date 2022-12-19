@@ -210,8 +210,7 @@ new_sort_and_index_bam_samtools=function(
 
   }
 
-   envirs=run_envir(envirs=this.envir$envirs)
-
+  envirs=run_envir(envirs=envirs)
 
 
 }
@@ -425,8 +424,7 @@ new_sort_bam_samtools=function(
     }
 
 
-     envirs=run_envir(envirs=this.envir$envirs)
-
+    envirs=run_envir(envirs=envirs)
 
   
 
@@ -610,8 +608,7 @@ new_index_bam_samtools=function(
   }
 
 
-   envirs=run_envir(envirs=this.envir$envirs)
-
+  envirs=run_envir(envirs=envirs)
 
 }
 
@@ -786,8 +783,7 @@ new_stats_bam_samtools=function(
   }
 
   
-   envirs=run_envir(envirs=this.envir$envirs)
-
+  envirs=run_envir(envirs=envirs)
 }
 
 
@@ -949,8 +945,7 @@ new_flag_stats_samtools=function(
   }
 
 
-  envirs=run_envir(envirs=this.envir$envirs)
-
+ envirs=run_envir(envirs=envirs)
   
   
 }
@@ -1112,8 +1107,7 @@ new_index_stats_samtools=function(
 
   }
 
-  envirs=run_envir(envirs=this.envir$envirs)
-
+ envirs=run_envir(envirs=envirs)
 
 }
 
