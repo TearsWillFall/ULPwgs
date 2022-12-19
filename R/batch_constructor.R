@@ -286,33 +286,30 @@ run_self=function(
   .env=environment()
 ){  
 
-    .this.env=environment()
-    append_env(to=.this.env,from=.env)
-
 
     ### Create RData object to inherit vars
 
-    build_rdata_object(.env=.this.env)
+    build_rdata_object(.env=.env)
 
     build_exec_innit(
-            .env=.this.env
+            .env=.env
     )
 
 
     if(mode=="batch"){
         build_batch_exec_innit(
-              .env=.this.env
+              .env=.env
         )
     }
 
     if(verbose){
           print_verbose(job=job_id,
-            arg=as.list(.this.env),
+            arg=as.list(.env),
             exec_code=exec_code
           )
     }
 
-    .env$error=execute_job(exec_code=exec_code)
+    .env$error=execute_job(exec_code=.env$exec_code)
 
     if(.env$error!=0){
         stop(err_msg)
@@ -405,7 +402,7 @@ set_envir_vars=function(
     }
 
     if (!is.null(sheet)){
-         .base.env$envs=set_ss_envir()
+         .env$envs=set_ss_envir()
         return()
     }
 
