@@ -34,7 +34,7 @@ realign_circlemap=function(
         bin_samtools=build_default_tool_binary_list()$bin_samtools,
         ref_genome=build_default_reference_list()$HG19$reference$genome,
         bam=NULL,
-        output_dir=".",
+        output_dir="./realign_reports",
         output_name=NULL,
         verbose=FALSE,
         batch_config=build_default_preprocess_config(),
@@ -56,9 +56,7 @@ realign_circlemap=function(
     this.envir=environment()
     set_envir_vars(
         envir=this.envir,
-        vars="bam",
-        executor_id = executor_id,
-        dir_name="realign_reports"
+        vars="bam"
     )
 
 
@@ -74,7 +72,7 @@ realign_circlemap=function(
         steps[[fn]] <- append(steps[[fn]],new_sort_and_index_bam_samtools(
             bin_samtools=bin_samtools,
             bam=input,
-            output_dir=out_file_dir_tmp,
+            output_dir=paste0(out_file_dir_tmp,"/sort_and_index"),
             verbose=verbose,
             batch_config=batch_config,
             threads=threads,
@@ -89,7 +87,7 @@ realign_circlemap=function(
                 env_circlemap=env_circlemap,
                 bin_samtools=bin_samtools,
                 bam=steps$new_sort_and_index_bam_samtools$out_file,
-                output_dir=out_file_dir_tmp,
+                output_dir=paste0(out_file_dir_tmp,"/read_extractor"),
                 verbose=verbose,
                 batch_config=batch_config,
                 threads=threads,ram=ram,
@@ -168,7 +166,7 @@ read_extractor_circlemap=function(
     env_circlemap=build_default_python_enviroment_list()$env_circlemap,
     bin_samtools=build_default_tool_binary_list()$bin_samtools,
     bam=NULL,
-    output_dir=".",
+    output_dir="./read_extractor",
     output_name=NULL,
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
@@ -196,9 +194,7 @@ read_extractor_circlemap=function(
     this.envir=environment()
     set_envir_vars(
         envir=this.envir,
-        vars="bam",
-        executor_id = executor_id,
-        dir_name="read_extractor"
+        vars="bam"
     )
 
 
@@ -212,7 +208,7 @@ read_extractor_circlemap=function(
         set_steps_vars(envir=this.envir)
     
         steps[[fn]]$out_file=paste0(
-            out_file_dir,"/",input_id,".circular_read_candidates.bam"
+            out_file_dir_tmp,"/",input_id,".circular_read_candidates.bam"
         )
 
         steps[[fn]]$exec_code=paste(
@@ -291,7 +287,7 @@ read_extractor_circlemap=function(
 repeat_caller_circlemap=function(
     env_circlemap=build_default_python_enviroment_list()$env_circlemap,
     bam=NULL,
-    output_dir=".",
+    output_dir="./repeat_reports",
     output_name=NULL,
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
@@ -312,9 +308,7 @@ repeat_caller_circlemap=function(
     this.envir=environment()
     set_envir_vars(
         envir=this.envir,
-        vars="bam",
-        executor_id = executor_id,
-        dir_name="repeat_reports"
+        vars="bam"
     )
 
 
@@ -385,7 +379,7 @@ circdna_circlemap=function(
         bin_samtools=build_default_tool_binary_list()$bin_samtools,
         ref_genome=build_default_reference_list()$HG19$reference$genome,
         bam=NULL,
-        output_dir=".",
+        output_dir="./circdna_reports",
         output_name=NULL,
         verbose=FALSE,
         batch_config=build_default_preprocess_config(),
@@ -406,9 +400,7 @@ circdna_circlemap=function(
     this.envir=environment()
     set_envir_vars(
         envir=this.envir,
-        vars="bam",
-        executor_id = executor_id,
-        dir_name="repeat_reports"
+        vars="bam"
     )
 
 
@@ -426,7 +418,7 @@ circdna_circlemap=function(
             bin_samtools=bin_samtools,
             bam=normalizePath(input),
             ref_genome=normalizePath(ref_genome),
-            output_dir=out_file_dir,
+            output_dir=paste0(out_file_dir,"/realign_reports"),
             verbose=verbose,
             tmp_dir=out_file_dir_tmp,
             batch_config=batch_config,
@@ -439,7 +431,7 @@ circdna_circlemap=function(
         steps[[fn]] <- append(steps[[fn]],repeat_caller_circlemap(
             env_circlemap=env_circlemap,
             bam=normalizePath(input),
-            output_dir=out_file_dir,
+            output_dir=paste0(out_file_dir,"/repeat_reports"),
             verbose=verbose,
             batch_config=batch_config,
             threads=threads,ram=ram,
@@ -565,8 +557,7 @@ annotate_bed_circlemap=function(
     this.envir=environment()
     set_envir_vars(
         envir=this.envir,
-        vars="bed",
-        executor_id = executor_id
+        vars="bed"
     )
 
     run_main=function(

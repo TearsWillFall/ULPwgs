@@ -40,7 +40,7 @@ call_variants_strelka=function(
     normal=NULL,
     patient_id=NULL,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
-    output_dir=".",
+    output_dir="./strelka_reports",
     output_name=NULL,
     annotate=TRUE,
     tabulate=TRUE,
@@ -66,9 +66,7 @@ call_variants_strelka=function(
 
     set_envir_vars(
         envir=this.envir,
-        vars=ifelse(tumour,"tumour","normal"),
-        executor_id = executor_id,
-        dir_name = patient_id
+        vars=ifelse(tumour,"tumour","normal")
     )
 
     main=function(
@@ -96,7 +94,11 @@ call_variants_strelka=function(
                 annotate=annotate,
                 tabulate=tabulate,
                 ref_genome=ref_genome,
-                output_dir=out_file_dir,
+                output_dir=paste0(
+                  out_file_dir,
+                  "/",patient_id,"/",
+                  input_id,"/strelka_reports"
+                ),
                 targeted=targeted,
                 verbose=verbose,
                 threads=threads,
@@ -123,7 +125,11 @@ call_variants_strelka=function(
               tumour=ifelse(tumour,input,NULL),
               normal=ifelse(tumour,normal,input),
               ref_genome=ref_genome,
-              output_dir=out_file_dir,
+              output_dir=paste0(
+                out_file_dir,
+                "/",patient_id,"/",
+                input_id,"/strelka_reports"
+                ),
               targeted=targeted,
               verbose=verbose,
               threads=threads,
@@ -178,7 +184,7 @@ call_somatic_sv_manta=function(
     targeted=TRUE,
     annotate=TRUE,
     tabulate=TRUE,
-    output_dir=".",
+    output_dir="./somatic/sv",
     output_name=NULL,
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
@@ -248,8 +254,8 @@ call_somatic_sv_manta=function(
           add_af_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf_snv=steps[[fn]]$out_file$variants$snv,
-            vcf_indel=steps[[fn]]$out_file$variants$indel,
+            vcf_sv=steps[[fn]]$out_file$variants$sv,
+            output_dir=paste0(out_file_dir,"/results"),
             verbose=verbose, 
             executor_id=task_id,
             threads=threads,ram=ram
@@ -262,7 +268,7 @@ call_somatic_sv_manta=function(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
             vcf_sv=steps[[fn]]$add_af_strelka_vcf$out_file$variants$sv,
-            output_dir=out_file_dir,
+            output_dir=paste0(out_file_dir,"/results"),
             verbose=verbose,
             threads=threads,
             ram=ram,
@@ -279,6 +285,7 @@ call_somatic_sv_manta=function(
                 bin_tabix=bin_tabix,
                 cache_vep=cache_vep,
                 vcf_sv=steps[[fn]]$extract_pass_variants_strelka_vcf$out_file$variants$sv,
+                output_dir=paste0(out_file_dir,"/results"),
                 verbose=verbose,
                 threads=threads,
                 ram=ram,
@@ -292,6 +299,7 @@ call_somatic_sv_manta=function(
                 steps[[fn]],
                 tabulate_strelka_vcf(
                   vcf_sv=steps[[fn]]$annotate_strelka_vep$out_file$variants$sv,
+                  output_dir=paste0(out_file_dir,"/results"),
                   threads=threads,
                   ram=ram,
                   verbose=verbose,
@@ -347,7 +355,7 @@ call_germline_sv_manta=function(
     targeted=TRUE,
     annotate=TRUE,
     tabulate=TRUE,
-    output_dir=".",
+    output_dir="./germline/sv",
     output_name=NULL,
     verbose=FALSE,
     batch_config=build_default_preprocess_config(),
@@ -364,9 +372,7 @@ call_germline_sv_manta=function(
    this.envir=environment()
     set_envir_vars(
         envir=this.envir,
-        vars="normal",
-        executor_id = executor_id,
-        dir_name="germline"
+        vars="normal"
     )
 
     run_main=function(
@@ -396,8 +402,6 @@ call_germline_sv_manta=function(
               xml=paste0(out_file_dir,"/results/stats/runStats.xml")
         )
         steps[[fn]]$out_file$variants=list(
-              sv=paste0(out_file_dir,"/results/variants/somaticSV.vcf.gz"),
-              sv_idx=paste0(out_file_dir,"/results/variants/somaticSV.vcf.gz"),
               indel_candidate=paste0(out_file_dir,"/results/variants/candidateSmallIndels.vcf.gz"),
               indel_candidate_idx=paste0(out_file_dir,"/results/variants/candidateSmallIndels.vcf.gz.tbi"),
               diploid_sv=paste0(out_file_dir,"/results/variants/diploidSV.vcf.gz"),
@@ -415,8 +419,8 @@ call_germline_sv_manta=function(
           add_af_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf_snv=steps[[fn]]$out_file$variants$snv,
-            vcf_indel=steps[[fn]]$out_file$variants$indel,
+            vcf_sv=steps[[fn]]$out_file$variants$diploid_sv,
+            output_dir=paste0(out_file_dir,"/results"),
             verbose=verbose, 
             executor_id=task_id,
             threads=threads,ram=ram
@@ -429,7 +433,7 @@ call_germline_sv_manta=function(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
             vcf_sv=steps[[fn]]$add_af_strelka_vcf$out_file$variants$sv,
-            output_dir=out_file_dir,
+            output_dir=paste0(out_file_dir,"/results"),
             verbose=verbose,
             threads=threads,
             ram=ram,
@@ -446,6 +450,7 @@ call_germline_sv_manta=function(
                 bin_tabix=bin_tabix,
                 cache_vep=cache_vep,
                 vcf_sv=steps[[fn]]$extract_pass_variants_strelka_vcf$out_file$variants$sv,
+                output_dir=paste0(out_file_dir,"/results"),
                 verbose=verbose,
                 threads=threads,
                 ram=ram,
@@ -459,6 +464,7 @@ call_germline_sv_manta=function(
                 steps[[fn]],
                 tabulate_strelka_vcf(
                   vcf_sv=steps[[fn]]$annotate_strelka_vep$out_file$variants$sv,
+                  output_dir=paste0(out_file_dir,"/results"),
                   threads=threads,
                   ram=ram,
                   verbose=verbose,
@@ -524,7 +530,7 @@ call_snvs_strelka=function(
     tumour=NULL,
     normal=NULL,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
-    output_dir=".",
+    output_dir="./strelka_reports",
     output_name=NULL,
     indel_candidates=NULL,
     targeted=TRUE,
@@ -579,7 +585,7 @@ call_snvs_strelka=function(
                 annotate=annotate,
                 tabulate=tabulate,
                 ref_genome=ref_genome,
-                output_dir=out_file_dir,
+                output_dir=paste0(out_file_dir,"/somatic/snvs_indels"),
                 indel_candidates=indel_candidates,
                 targeted=targeted,
                 verbose=verbose,
@@ -606,7 +612,7 @@ call_snvs_strelka=function(
                 annotate=annotate,
                 tabulate=tabulate,
                 ref_genome=ref_genome,
-                output_dir=out_file_dir,
+                output_dir=paste0(out_file_dir,"/germline/snvs_indels"),
                 indel_candidates=indel_candidates,
                 targeted=targeted,
                 verbose=verbose,
@@ -666,7 +672,7 @@ call_sv_strelka=function(
     tumour=NULL,
     normal=NULL,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
-    output_dir=".",
+    output_dir="./strelka_reports",
     output_name=NULL,
     targeted=TRUE,
     verbose=TRUE,
@@ -687,9 +693,7 @@ call_sv_strelka=function(
  this.envir=environment()
     set_envir_vars(
         envir=this.envir,
-        vars="tumour",
-        executor_id = executor_id,
-        dir_name="sv"
+        vars="tumour"
     )
 
     run_main=function(
@@ -720,7 +724,7 @@ call_sv_strelka=function(
                 annotate=annotate,
                 tabulate=tabulate,
                 ref_genome=ref_genome,
-                output_dir=out_file_dir,
+                output_dir=paste0(out_file_dir,"/somatic/sv"),
                 targeted=targeted,
                 verbose=verbose,
                 threads=threads,
@@ -746,7 +750,7 @@ call_sv_strelka=function(
                 annotate=annotate,
                 tabulate=tabulate,
                 ref_genome=ref_genome,
-                output_dir=out_file_dir,
+                output_dir=paste0(out_file_dir,"/germline/sv"),
                 targeted=targeted,
                 verbose=verbose,
                 threads=threads,
@@ -805,7 +809,7 @@ call_somatic_snvs_strelka=function(
     tumour=NULL,
     normal=NULL,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
-    output_dir=".",
+    output_dir="./somatic/snv",
     output_name=NULL,
     indel_candidates=NULL,
     annotate=TRUE,
@@ -828,8 +832,7 @@ call_somatic_snvs_strelka=function(
     set_envir_vars(
         envir=this.envir,
         vars="tumour",
-        executor_id = executor_id,
-        dir_name="somatic"
+        executor_id = executor_id
     )
 
     run_main=function(
@@ -872,15 +875,18 @@ call_somatic_snvs_strelka=function(
         )
 
 
-        steps[[fn]] <- append(steps[[fn]], add_af_strelka_vcf(
-          bin_bgzip=bin_bgzip,
-          bin_tabix=bin_tabix,
-          vcf_snv=steps[[fn]]$out_file$variants$snv,
-          vcf_indel=steps[[fn]]$out_file$variants$indel,
-          verbose=verbose, 
-          executor_id=task_id,
-          threads=threads,ram=ram
-          )
+        steps[[fn]] <- append(steps[[fn]], 
+          add_af_strelka_vcf(
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            vcf_snv=steps[[fn]]$out_file$variants$snv,
+            vcf_indel=steps[[fn]]$out_file$variants$indel,
+            output_dir=out_file_dir,
+            verbose=verbose, 
+            executor_id=task_id,
+            threads=threads,
+            ram=ram
+            )
         )
       
         steps[[fn]] <-append(
@@ -908,6 +914,7 @@ call_somatic_snvs_strelka=function(
                 cache_vep=cache_vep,
                 vcf_snv=steps[[fn]]$extract_pass_variants_strelka_vcf$out_file$variants$snv,
                 vcf_indel=steps[[fn]]$extract_pass_variants_strelka_vcf$out_file$variants$indel,
+                output_dir=out_file_dir,
                 verbose=verbose,
                 threads=threads,
                 ram=ram,
@@ -922,6 +929,7 @@ call_somatic_snvs_strelka=function(
                 tabulate_strelka_vcf(
                   vcf_snv=steps[[fn]]$annotate_strelka_vep$out_file$variants$snv,
                   vcf_indel=steps[[fn]]$annotate_strelka_vep$out_file$variants$ndel,
+                  output_dir=out_file_dir,
                   threads=threads,
                   ram=ram,
                   verbose=verbose,
@@ -978,7 +986,7 @@ call_germline_snvs_strelka=function(
     bin_strelka=build_default_tool_binary_list()$bin_strelka$germline,
     normal=NULL,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
-    output_dir=".",
+    output_dir="./germline/snv",
     output_name=NULL,
     indel_candidates=NULL,
     extract_pass=TRUE,
@@ -1001,9 +1009,7 @@ call_germline_snvs_strelka=function(
     this.envir=environment()
     set_envir_vars(
         envir=this.envir,
-        vars="normal",
-        executor_id = executor_id,
-        dir_name="germline"
+        vars="normal"
     )
 
     run_main=function(
