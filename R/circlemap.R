@@ -186,7 +186,7 @@ read_extractor_circlemap=function(
   ){
 
 
-
+    
     set_envir_vars(
         vars="bam"
     )
@@ -197,7 +197,7 @@ read_extractor_circlemap=function(
         envir
     ){
     
-        append_envir(from=envir)
+        append_envir(to=,from=envir)
         set_steps_vars()
     
         steps[[fn]]$out_file=paste0(
@@ -210,7 +210,7 @@ read_extractor_circlemap=function(
             " -o ", steps[[fn]]$out_file," -dir /"
         )
 
-        run_job(envir=envir)
+        run_job(.envir=envir)
 
         steps[[fn]]<-append(
             steps[[fn]],

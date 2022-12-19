@@ -205,8 +205,8 @@ build_rdata_object=function(
 
           .this.env=environment()
           append_envir(to=.this.env,from=.envir)
-          envir$rdata_file=paste0(out_file_dir_tmp,"/",job_id,".RData")
-          saveRDS(envir,file = envir$rdata_file)
+          .envir$rdata_file=paste0(out_file_dir_tmp,"/",job_id,".RData")
+          saveRDS(.envir,file = .envir$rdata_file)
   }
       
 
@@ -298,7 +298,6 @@ run_self=function(
 
     .this.env=environment()
     append_envir(to=.this.env,from=.envir)
-
 
 
     ### Create RData object to inherit vars
