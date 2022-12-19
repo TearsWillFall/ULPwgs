@@ -233,13 +233,13 @@ build_exec_innit=function(
         
         if(mode=="local"){
              
-              envir$exec_code=paste0("Rscript -e \" lapply(1:",n_inputs,
+              .envir$exec_code=paste0("Rscript -e \" lapply(1:",n_inputs,
               ",FUN=function(select){",ns,"::",fn,"(inherit=\\\"",
               rdata_file,"\\\",select=select)})\"")
         
         }else if(mode=="batch"){
     
-              envir$exec_code=paste0("Rscript -e \" ",
+              .envir$exec_code=paste0("Rscript -e \" ",
               ns,"::",fn,"(inherit=\\\"",rdata_file,
               "\\\",select=$SGE_TASK_ID)\"")
 
@@ -265,21 +265,22 @@ build_batch_exec_innit=function(
   .envir=environment()
 ){  
 
-    if(is.null(envir$exec_code)){
-      stop("exec_code: Invalid argument type NULL")
-    }
 
-    envir$out_file_dir_batch=set_dir(dir=envir$out_file_dir_tmp,name="batch")
+    .this.env=environment()
+    append_envir(to=.this.env,from=.envir)
 
-    envir$batch_code=build_job_exec(
-      job=envir$job_id,time=envir$time,ram=envir$ram,
-      threads=envir$threads,wd=getwd(),
-      output_dir=envir$out_file_dir_batch,
-      hold=envir$hold,array=length(envir$input)
+  
+    .envir$out_file_dir_batch=set_dir(dir=out_file_dir_tmp,name="batch")
+
+    .envir$batch_code=build_job_exec(
+      job=job_id,time=time,ram=ram,
+      threads=threads,wd=getwd(),
+      output_dir=out_file_dir_batch,
+      hold=hold,array=length(input)
     )
 
-    envir$exec_code=paste0("echo '. $HOME/.bashrc;",envir$batch_config,
-    ";",envir$exec_code,"'|",envir$batch_code)
+    .envir$exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
+    ";",exec_code,"'|",.envir$batch_code)
 
 }
 
