@@ -380,7 +380,7 @@ set_envir_vars=function(
       this.envir$fn <- sub(".*::","",sub("\\(.*","",
           paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=","))
         )
-      }else{
+    }else{
       this.envir$fn <- fn
     }
       
@@ -429,7 +429,7 @@ set_envir_vars=function(
 
       this.envir$out_file_dir_tmp <- set_dir(dir=this.envir$out_file_dir,name="tmp")
 
-      envir$envirs<-this.envir
+      envir$envirs[[1]]<-this.envir
     }
 
  
@@ -498,7 +498,7 @@ run_envir=function(envir){
       runs=lapply(
           1:length(this.envir$envirs),FUN=function(n){
                   run_self(
-                      envir=this.envir$envirs[n]
+                      envir=this.envir$envirs[[n]]
                   )
               }   
           )
