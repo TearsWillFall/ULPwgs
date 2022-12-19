@@ -382,7 +382,7 @@ set_envir_vars=function(
     }
 
     if(is.null(executor_id)){
-      executor_id <- make_unique_id(this.envir$fn)
+      executor_id <- make_unique_id(fn)
     }
 
     task_id <- make_unique_id(fn)
@@ -425,9 +425,11 @@ set_envir_vars=function(
         dir=out_file_dir,
         name="tmp"
       )
+      envir$envirs[[1]] <- this.envir
+      return()
     }
-    envir$envirs[[1]] <- this.envir
- 
+    
+   
 }
 
 
