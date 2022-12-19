@@ -247,8 +247,6 @@ build_exec_innit=function(
 
           stop("Unkown mode type")
         }
-
-
 }
 
 
@@ -279,7 +277,7 @@ build_batch_exec_innit=function(
       hold=hold,array=length(input)
     )
 
-    .envir$exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
+    .envir$exec_code=paste0("ecenivrho '. $HOME/.bashrc;",batch_config,
     ";",exec_code,"'|",.envir$batch_code)
 
 }
@@ -348,7 +346,7 @@ run_self=function(
 
       if(verbose){
         print_verbose(
-          job=job_id,arg=as.list(environment()),
+          job=job_id,arg=as.list(.this.env),
           exec_code=steps[[fn]]$exec_code
         )
       }
@@ -361,7 +359,7 @@ run_self=function(
       if(steps[[fn]]$error!=0){
           stop(err_mssg)
       }
-      envir$steps <- steps
+      .envir$steps <- steps
  }
    
 
