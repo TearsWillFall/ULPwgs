@@ -522,10 +522,6 @@ run_envir=function(envirs){
 
 
 
-
-
-
-
 #' Set steps enviroment for use
 #' 
 #' @param envir Environment
