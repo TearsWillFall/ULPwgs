@@ -202,9 +202,7 @@ call_somatic_sv_manta=function(
    this.envir=environment()
     set_envir_vars(
         envir=this.envir,
-        vars="tumour",
-        executor_id = executor_id,
-        dir_name="somatic"
+        vars="tumour"
     )
 
     run_main=function(
@@ -554,9 +552,7 @@ call_snvs_strelka=function(
  this.envir=environment()
     set_envir_vars(
         envir=this.envir,
-        vars="tumour",
-        executor_id = executor_id,
-        dir_name="snv_indel"
+        vars="tumour"
     )
 
     run_main=function(
@@ -833,8 +829,7 @@ call_somatic_snvs_strelka=function(
     this.envir=environment()
     set_envir_vars(
         envir=this.envir,
-        vars="tumour",
-        executor_id = executor_id
+        vars="tumour"
     )
 
     run_main=function(

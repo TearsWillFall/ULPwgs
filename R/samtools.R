@@ -739,7 +739,7 @@ new_stats_bam_samtools=function(
   this.envir=environment()
   set_envir_vars(
     envir=this.envir,
-    vars="bam",
+    vars="bam"
   )
 
 
