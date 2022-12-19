@@ -368,8 +368,7 @@ set_envir_vars=function(
   err_mssg=NULL
 ){
 
-    this.envir <-environment()
-    append_envir(this.envir,envir)
+    append_envir(environment(),envir)
     
     if(is.null(fn)){
         ## GET CALLER FUNCTION NAME IF NOT GIVEN
@@ -395,7 +394,7 @@ set_envir_vars=function(
     }
 
     if (!is.null(sheet)){
-        envir$envirs=set_ss_envir(envir=this.envir)
+        envir$envirs=set_ss_envir(envir=environment())
         return()
     }
 
@@ -404,12 +403,12 @@ set_envir_vars=function(
         if(!is.environment(inherit)){
           inherit <-readRDS(file=inherit)
         }
-        append_envir(this.envir,inherit)
-        envir$envirs[[1]] <- this.envir
+        append_envir(environment(),inherit)
+        envir$envirs[[1]] <- environment()
         return()
     }else{
       if(!is.null(vars)){
-        inputs <- this.envir[[vars]]
+        inputs <- environment()[[vars]]
         n_inputs <- length(inputs)
         inputs_id <- set_input_id(
           inputs=inputs,
@@ -426,8 +425,7 @@ set_envir_vars=function(
         dir=out_file_dir,
         name="tmp"
       )
-      envir$envirs[[1]] <- this.envir
-      print(as.list(this.envir))
+      envir$envirs[[1]] <- environment()
       return()
     }
     
@@ -457,20 +455,20 @@ set_ss_envir=function(envir){
 
           envirs=lapply(seq(1,nrow(dat_filt)),
             FUN=function(row){
-              this.envir=environment()
-              append_envir(this.envir,envir)
-              this.envir$sheet <- NULL
+             
+              append_envir(environment(),envir)
+              sheet <- NULL
 
               ### ASSIGN VARS IN SHEET TO ENVIROMENT
               invisible(lapply(seq(1,nrows(dat_row)),FUN=function(col){
                     this.envir[[col]] <- dat_row[row,col]
                     set_envir_vars(
-                        envir=this.envir,
-                        vars=this.envir$vars
+                        envir=environment(),
+                        vars=environment()$vars
                     )
               }))
 
-              return(this.envir)
+              return(environment())
             }
           )
           return(envirs)
