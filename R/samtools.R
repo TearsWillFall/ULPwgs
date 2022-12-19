@@ -1070,13 +1070,11 @@ new_index_stats_samtools=function(
 ){
 
 
-
-  
+  this.envir=environment()
   set_envir_vars(
-    envir=environment(),
+    envir=this.envir,
     vars="bam"
   )
-
 
 
   run_main=function(
@@ -1085,9 +1083,9 @@ new_index_stats_samtools=function(
 
     
     this.envir=environment()
-    append_envir(environment(),envir)
+    append_envir(this.envir,envir)
 
-    steps=set_steps_vars(environment())
+    steps=set_steps_vars(this.envir)
 
     steps[[fn]]$out_file=paste0(
       out_file_dir,"/",input_id,".idxstats.txt"
@@ -1099,7 +1097,7 @@ new_index_stats_samtools=function(
 
 
     run_job(
-          envir=environment()
+          envir=this.envir
     )
 
      envir$steps <-steps
@@ -1107,7 +1105,7 @@ new_index_stats_samtools=function(
 
   }
 
- envirs=run_envir(envirs=envirs)
+ envirs=run_envir(envirs=this.envir$envirs)
 
 }
 
