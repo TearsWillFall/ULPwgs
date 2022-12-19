@@ -95,9 +95,10 @@ call_variants_strelka=function(
                 tabulate=tabulate,
                 ref_genome=ref_genome,
                 output_dir=paste0(
-                  out_file_dir,
-                  "/",patient_id,"/",
-                  input_id,"/strelka_reports"
+                  out_file_dir,"/",
+                  patient_id,"/",
+                  input_id,"/",
+                  "strelka_reports"
                 ),
                 targeted=targeted,
                 verbose=verbose,
@@ -126,10 +127,11 @@ call_variants_strelka=function(
               normal=ifelse(tumour,normal,input),
               ref_genome=ref_genome,
               output_dir=paste0(
-                out_file_dir,
-                "/",patient_id,"/",
-                input_id,"/strelka_reports"
-                ),
+                  out_file_dir,"/",
+                  patient_id,"/",
+                  input_id,"/",
+                  "strelka_reports"
+              ),
               targeted=targeted,
               verbose=verbose,
               threads=threads,

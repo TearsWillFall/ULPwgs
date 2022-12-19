@@ -17,7 +17,7 @@ call_variants_strelka(
   normal = NULL,
   patient_id = NULL,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
-  output_dir = ".",
+  output_dir = "./strelka_reports",
   output_name = NULL,
   annotate = TRUE,
   tabulate = TRUE,

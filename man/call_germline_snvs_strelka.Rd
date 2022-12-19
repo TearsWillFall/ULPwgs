@@ -13,7 +13,7 @@ call_germline_snvs_strelka(
   bin_strelka = build_default_tool_binary_list()$bin_strelka$germline,
   normal = NULL,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
-  output_dir = ".",
+  output_dir = "./germline/snv",
   output_name = NULL,
   indel_candidates = NULL,
   extract_pass = TRUE,

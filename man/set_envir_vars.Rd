@@ -5,15 +5,7 @@
 \title{Set default enviromental variables based on input for all
 functions in package.}
 \usage{
-set_envir_vars(
-  envir = environment(),
-  vars = NULL,
-  fn = NULL,
-  executor_id = NULL,
-  err_mssg = NULL,
-  ns = "ULPwgs",
-  dir_name = ""
-)
+set_envir_vars(envir = environment(), vars = NULL, dir_name = "")
 }
 \arguments{
 \item{envir}{Inherit current enviroment.}

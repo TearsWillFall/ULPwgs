@@ -9,7 +9,7 @@ realign_circlemap(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   bam = NULL,
-  output_dir = ".",
+  output_dir = "./realign_reports",
   output_name = NULL,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),

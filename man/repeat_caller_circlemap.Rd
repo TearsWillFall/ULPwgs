@@ -7,7 +7,7 @@
 repeat_caller_circlemap(
   env_circlemap = build_default_python_enviroment_list()$env_circlemap,
   bam = NULL,
-  output_dir = ".",
+  output_dir = "./repeat_reports",
   output_name = NULL,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),

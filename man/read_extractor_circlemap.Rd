@@ -8,7 +8,7 @@ read_extractor_circlemap(
   env_circlemap = build_default_python_enviroment_list()$env_circlemap,
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = NULL,
-  output_dir = ".",
+  output_dir = "./read_extractor",
   output_name = NULL,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),

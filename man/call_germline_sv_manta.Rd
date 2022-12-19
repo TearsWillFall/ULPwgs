@@ -16,7 +16,7 @@ call_germline_sv_manta(
   targeted = TRUE,
   annotate = TRUE,
   tabulate = TRUE,
-  output_dir = ".",
+  output_dir = "./germline/sv",
   output_name = NULL,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),

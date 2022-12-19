@@ -12,7 +12,7 @@ new_sort_and_index_bam_samtools(
   index = TRUE,
   stats = TRUE,
   clean = FALSE,
-  output_dir = ".",
+  output_dir = "./sort_and_index",
   output_name = NULL,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),

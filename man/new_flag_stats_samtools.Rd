@@ -7,7 +7,7 @@
 new_flag_stats_samtools(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = NULL,
-  output_dir = ".",
+  output_dir = "./stats",
   output_name = NULL,
   verbose = FALSE,
   batch_config = build_default_preprocess_config(),

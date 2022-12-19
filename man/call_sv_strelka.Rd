@@ -14,7 +14,7 @@ call_sv_strelka(
   tumour = NULL,
   normal = NULL,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
-  output_dir = ".",
+  output_dir = "./strelka_reports",
   output_name = NULL,
   targeted = TRUE,
   verbose = TRUE,

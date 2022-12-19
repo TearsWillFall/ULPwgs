@@ -14,7 +14,7 @@ call_somatic_snvs_strelka(
   tumour = NULL,
   normal = NULL,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
-  output_dir = ".",
+  output_dir = "./somatic/snv",
   output_name = NULL,
   indel_candidates = NULL,
   annotate = TRUE,
