@@ -4,10 +4,10 @@
 \alias{build_batch_exec_innit}
 \title{Build execution innit for batch}
 \usage{
-build_batch_exec_innit(envir = environment())
+build_batch_exec_innit(.env = environment())
 }
 \arguments{
-\item{envir}{Inherit enviroment variables}
+\item{env}{Inherit envoment variables}
 
 \item{exec_code}{Execution code}
 }

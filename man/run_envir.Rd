@@ -4,7 +4,7 @@
 \alias{run_envir}
 \title{Run enviroment}
 \usage{
-run_envir(envir)
+run_envir(envirs)
 }
 \arguments{
 \item{envir}{Environment}

@@ -4,7 +4,7 @@
 \alias{set_envir_inputs}
 \title{Set inputs withib enviroment from input list}
 \usage{
-set_envir_inputs(envir)
+set_envir_inputs(.env)
 }
 \arguments{
 \item{envir}{Enviroment to work within}

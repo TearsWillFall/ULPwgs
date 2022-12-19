@@ -4,7 +4,7 @@
 \alias{set_steps_vars}
 \title{Set steps enviroment for use}
 \usage{
-set_steps_vars(envir = environment())
+set_steps_vars(.env = environment())
 }
 \arguments{
 \item{envir}{Environment}

@@ -4,7 +4,7 @@
 \alias{set_ss_envir}
 \title{Set steps enviroment for use}
 \usage{
-set_ss_envir(envir)
+set_ss_envir(.env)
 }
 \arguments{
 \item{envir}{Environment}
