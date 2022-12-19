@@ -397,9 +397,9 @@ set_envir_vars=function(
     this.envir$job_id <- build_job(executor_id=this.envir$executor_id,task_id=this.envir$task_id)
 
     if(is.null(err_mssg)){
-        this.envir$err_msg <- paste0("CRITICAL ERROR: ",fn," -> ")
+        this.envir$err_msg <- paste0("CRITICAL ERROR: ",this.envir$fn," -> ")
     }else{
-      this.envir$err_msg <- paste0(this.envir$err_msg ,fn," -> ")
+      this.envir$err_msg <- paste0(this.envir$err_msg ,this.envir$fn," -> ")
     }
 
     if (!is.null(sheet)){
@@ -452,7 +452,6 @@ set_envir_vars=function(
 
 set_ss_envir=function(envir){
 
-
           dat=read.delim(envir$sheet,header=TRUE)
           dat_filt=dat %>% dplyr::distinct()
           nrows_dup=nrow(dat)-nrow(dat_filt)
@@ -463,7 +462,6 @@ set_ss_envir=function(envir){
           dat_filt=dat_filt %>% 
           dplyr::group_by(dplyr::across(-c(this.envir$vars))) %>%
           summarise(!! this.envir$vars := list(!! rlang::sym(this.envir$vars)))
-
 
           envirs=lapply(seq(1,nrow(dat_filt)),
             FUN=function(row){
