@@ -1091,7 +1091,7 @@ new_index_stats_samtools=function(
     
     this.envir=environment()
     append_envir(this.envir,envir)
-
+    
     steps=set_steps_vars(this.envir)
 
     steps[[fn]]$out_file=paste0(

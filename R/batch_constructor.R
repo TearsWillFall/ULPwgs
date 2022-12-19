@@ -419,7 +419,10 @@ set_envir_vars=function(
       if(!is.null(vars)){
         this.envir$inputs <- this.envir[[vars]]
         this.envir$n_inputs <- length(this.envir$inputs)
-        this.envir$inputs_id <- set_input_id(inputs=this.envir$inputs,ids=this.envir$output_name)
+        this.envir$inputs_id <- set_input_id(
+          inputs=this.envir$inputs,
+          ids=this.envir$output_name
+        )
         this.envir$inputs_ext <- Vectorize(get_file_ext)(this.envir$inputs)
       }
 
@@ -427,9 +430,12 @@ set_envir_vars=function(
             dir=this.envir$output_dir
       )
 
-      this.envir$out_file_dir_tmp <- set_dir(dir=this.envir$out_file_dir,name="tmp")
+      this.envir$out_file_dir_tmp <- set_dir(
+        dir=this.envir$out_file_dir,
+        name="tmp"
+      )
 
-      envir$envirs[[1]]<-this.envir
+      envir$envirs <- this.envir
     }
 
  
