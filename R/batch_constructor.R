@@ -523,7 +523,7 @@ run_envir=function(envirs){
 set_steps_vars=function(
   envir=environment()
 ){      
-      append_envir(environment(),envir)
+      append_envir(from=envir)
       steps=list()
       steps[[fn]]$job_id=job_id
       steps[[fn]]$executor_id=executor_id
@@ -552,7 +552,7 @@ append_envir = function(to=environment(), from=NULL) {
       from_list = ls(from)
       for(var in from_list) {
 
-        if(is.null(to[[var]])){
+        if(to[[var]]){
            to[[var]]<-NULL
         }
        
