@@ -1066,41 +1066,35 @@ tabulate_vcf=function(
   task_name="tabVCF",
   hold=NULL
 ){
-    envir=environment()
-    set_envir_vars(envir=envir,input=vcf,id=output_name)
 
-    main_tabulate_vcf=function(
-        vcf=NULL,
-        output_dir=".",
-        output_name=NULL,
-        executor_id=make_unique_id("main"),
-        task_name="main"
+    this.envir=environment()
+
+    
+
+    set_envir_vars(
+        envir=this.envir,
+        vars="vcf"
+    )
+
+    run_main=function(
+        envir
       ){
 
-        argg <- as.list(environment())
-        task_id=make_unique_id(task_name)
-        out_file_dir=set_dir(dir=output_dir)
-        
-        job=build_job(executor_id=executor_id,task_id=task_id)
+        this.envir=environment()
+        append_envir(this.envir,envir)
+        steps=set_steps_vars(this.envir)
 
+      
+      
+      
 
-        id=""
-        if(!is.null(output_name)){ 
-          id=output_name
-        }else{
-          id=get_file_name(vcf)
-        }
-
-
-        out_file=paste0(out_file_dir,"/",id,".tabulated.tsv")
+        steps[[fn]]$out_file=paste0(out_file_dir,"/",input_id,".tabulated.tsv")
 
         ignore=TRUE
         #### Catch empty VCF 
         tryCatch({vcf=read_vcf(vcf);ignore=FALSE},error=function(error){
             warning("No variants detected in VCF. Ignoring input VCF.")
         })
-
-
 
 
         if(ignore){
@@ -1118,26 +1112,14 @@ tabulate_vcf=function(
             tidyr::pivot_wider(values_from=VALUE,names_from=c(SAMPLE,FORMAT))
             write.table(vcf_body,file=out_file,sep="\t",quote=FALSE,
             row.names=FALSE,col.names=TRUE)
-
         }
+
+        envir$steps <- steps
       
 
     }
   
-    if(!is.null(selected)){
-        main_tabulate_vcf(
-          vcf=input[selected],
-          output_dir=out_file_dir,
-          output_name=input_id[selected],
-          executor_id=task_id
-        )
-        
-    }else{
-
-      envir=environment()  
-      run_job(envir=envir)
-     
-    }
+    run_envir(envir=this.envir)
 
       
 }

@@ -69,7 +69,7 @@ call_variants_strelka=function(
         vars=ifelse(tumour,"tumour","normal")
     )
 
-    main=function(
+    run_main=function(
       envir
     ){
 
