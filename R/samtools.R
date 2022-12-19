@@ -554,20 +554,20 @@ new_index_bam_samtools=function(
   hold=NULL
 ){
  
-  base.env=environment()
+  .base.env=environment()
   set_envir_vars(
-    envir=base.env,
+    .envir=.base.env,
     vars="bam"
   )
 
   run_main=function(
-    envir
+    .envir
   ){
 
-    this.env=environment()
-    append_envir(to=this.env,from=envir)
+    .this.env=environment()
+    append_envir(to=.this.env,from=.envir)
 
-    set_steps_vars(this.env)
+    set_steps_vars(.this.env)
 
     steps[[fn]]$out_file=paste0(input,".bai")
     steps[[fn]]$exec_code=paste(
@@ -593,7 +593,7 @@ new_index_bam_samtools=function(
 
     }
 
-    envir$steps <-steps
+    .envir$steps <-steps
 
   }
 
