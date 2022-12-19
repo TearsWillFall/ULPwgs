@@ -302,13 +302,13 @@ run_self=function(
 
     if(mode=="batch"){
         build_batch_exec_innit(
-              .envir=.envir
+              .envir=.this.envir
         )
     }
 
     if(verbose){
           print_verbose(job=job_id,
-            arg=as.list(.envir),
+            arg=as.list(.this.envir),
             exec_code=exec_code
           )
     }
@@ -471,7 +471,7 @@ set_ss_envir=function(.envir){
           envirs=lapply(seq(1,nrow(dat_filt)),
             FUN=function(row){
               .this.envir=environment()
-              append_envir(.this.envir,.envir)
+              append_envir(to=.this.envir,from=.envir)
               sheet <- NULL
 
               ### ASSIGN VARS IN SHEET TO ENVIROMENT
