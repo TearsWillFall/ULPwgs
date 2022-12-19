@@ -308,7 +308,7 @@ run_self=function(
     if(verbose){
           print_verbose(job=job_id,
             arg=as.list(.env),
-            exec_code=exec_code
+            exec_code=.env$exec_code
           )
     }
 
