@@ -413,7 +413,7 @@ set_envir_vars=function(
         if(!is.environment(inherit)){
           inherit <-readRDS(file=inherit)
         }
-        append_envir(.this.env,inherit)
+        append_envir(to=.this.env,from=inherit)
         .envir$envirs[[1]] <- .this.env
         return()
     }else{

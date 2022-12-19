@@ -567,7 +567,7 @@ new_index_bam_samtools=function(
     .this.env=environment()
     append_envir(to=.this.env,from=.envir)
 
-    set_steps_vars(.this.env)
+    set_steps_vars(.envir=.this.env)
 
     steps[[fn]]$out_file=paste0(input,".bai")
     steps[[fn]]$exec_code=paste(
@@ -575,7 +575,7 @@ new_index_bam_samtools=function(
       input," -@ ",threads
     )
    
-    run_job()
+    run_job(.envir=.this.envir)
 
     if(stats){
       steps[[fn]] <-append(
