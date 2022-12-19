@@ -365,15 +365,6 @@ run_self=function(
 
 set_envir_vars=function(
   envir=environment(),
-  vars=NULL,
-  fn=NULL,
-  executor_id=NULL,
-  err_mssg=NULL,
-  sheet=NULL,
-  inherit=NULL,
-  select=NULL,
-  hold=NULL,
-  ns="ULPwgs",
   dir_name=""
 ){
 
@@ -570,7 +561,7 @@ append_envir = function(to=environment(), from=NULL) {
       
       from_list = ls(from)
       for(var in from_list) {
-           if(!is.null(from[[var]])&!is.environment(from[[var]])){
+           if(!is.environment(from[[var]])){
               to[[var]] = from[[var]]
            }
       }
