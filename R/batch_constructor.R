@@ -405,8 +405,8 @@ set_envir_vars=function(
     }
 
     if (!is.null(sheet)){
-        envs=set_ss_envir()
-        return(envs)
+         .base.env$envs=set_ss_envir()
+        return()
     }
 
     
@@ -415,7 +415,7 @@ set_envir_vars=function(
           inherit <-readRDS(file=inherit)
         }
         append_env(to=.this.env,from=inherit)
-        .env$envs[[1]] <- .this.env
+        .base.env$envs[[1]] <- .this.env
     
     }else{
       if(!is.null(vars)){
@@ -438,7 +438,7 @@ set_envir_vars=function(
       )
 
      
-      .env$envs[[1]] <- .this.env
+      this.env$.base.env$envs[[1]] <- .this.env
     
     }
 
@@ -567,9 +567,10 @@ append_env = function(to=environment(), from=NULL) {
       
       from_list = ls(from)
       for(var in from_list) {
-        if(is.null(to[[var]])){
+        if(is.null(from[[var]])){
             to[[var]] <- NULL
         }
+        
         if(!is.null(from[[var]])){
            to[[var]] <- from[[var]]
         }
