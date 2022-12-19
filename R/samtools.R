@@ -1050,9 +1050,9 @@ new_index_stats_samtools=function(
   hold=NULL
 ){
 
-
+  base.env=environment()
   set_envir_vars(
-    envir=environment(),
+    envir=base.env,
     vars="bam"
   )
 
@@ -1062,8 +1062,8 @@ new_index_stats_samtools=function(
   ){
 
     
- 
-    append_envir(from=envir)
+    this.env=environment()
+    append_envir(to=this.env,from=envir)
 
     set_steps_vars()
 

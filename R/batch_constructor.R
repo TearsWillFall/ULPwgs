@@ -365,11 +365,13 @@ set_envir_vars=function(
   vars=NULL,
   fn=NULL,
   err_mssg=NULL
-){
+){  
 
-    append_envir(to=environment(),from=envir)
+    this.env=environment()
 
-    print(as.list(environment()))
+    append_envir(to=this.env,from=envir)
+
+    print(as.list(this.env))
     
     if(is.null(fn)){
         ## GET CALLER FUNCTION NAME IF NOT GIVEN
@@ -399,13 +401,14 @@ set_envir_vars=function(
         return()
     }
 
+
     
     if(!is.null(inherit)){
         if(!is.environment(inherit)){
           inherit <-readRDS(file=inherit)
         }
-        append_envir(environment(),inherit)
-        envir$envirs[[1]] <- environment()
+        append_envir(this.env,inherit)
+        envir$envirs[[1]] <- this.env
         return()
     }else{
       if(!is.null(vars)){
@@ -426,9 +429,12 @@ set_envir_vars=function(
         dir=out_file_dir,
         name="tmp"
       )
-      envir$envirs[[1]] <- environment()
+
+     
+      envir$envirs[[1]] <- this.env
       return()
     }
+
     
    
 }
@@ -458,20 +464,20 @@ set_ss_envir=function(envir){
 
           envirs=lapply(seq(1,nrow(dat_filt)),
             FUN=function(row){
-             
-              append_envir(environment(),envir)
+              this.envir=environment()
+              append_envir(this.envir,envir)
               sheet <- NULL
 
               ### ASSIGN VARS IN SHEET TO ENVIROMENT
               invisible(lapply(seq(1,nrows(dat_row)),FUN=function(col){
                     envir[[col]] <- dat_row[row,col]
                     set_envir_vars(
-                        envir=environment(),
-                        vars=environment()$vars
+                        envir=this.envir,
+                        vars=this.envir$vars
                     )
               }))
 
-              return(environment())
+              return(this.envir)
             }
           )
           return(envirs)
@@ -524,8 +530,9 @@ run_envir=function(envirs){
 
 set_steps_vars=function(
   envir=environment()
-){      
-      append_envir(from=envir)
+){     
+      this.env=environment()
+      append_envir(to=this.env,from=envir)
       steps=list()
       steps[[fn]]$job_id=job_id
       steps[[fn]]$executor_id=executor_id
