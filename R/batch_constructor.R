@@ -393,7 +393,10 @@ set_envir_vars=function(
 
     task_id <- make_unique_id(fn)
 
-    job_id <- build_job(executor_id=executor_id,task_id=task_id)
+    job_id <- build_job(
+      executor_id=executor_id,
+      task_id=task_id
+    )
 
     if(is.null(err_mssg)){
         err_msg <- paste0("CRITICAL ERROR: ",fn," -> ")
@@ -405,7 +408,6 @@ set_envir_vars=function(
         envirs=set_ss_envir()
         return(envirs)
     }
-
 
     
     if(!is.null(inherit)){

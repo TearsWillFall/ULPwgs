@@ -555,7 +555,7 @@ new_index_bam_samtools=function(
 ){
  
   .base.env=environment()
-  set_envir_vars(
+  envs=set_envir_vars(
     .env=.base.env,
     vars="bam"
   )
@@ -597,7 +597,7 @@ new_index_bam_samtools=function(
   }
 
 
-  envirs=run_envir(envirs=envirs)
+  run_envir(envirs=envs)
 
 }
 
