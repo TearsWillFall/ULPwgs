@@ -496,20 +496,20 @@ run_envir=function(envir){
 
   if(is.null(select)){
       runs=lapply(
-          1:length(this.envir$envirs),FUN=function(n){
+          seq(1,length(this.envir$envirs)),FUN=function(n){
                   run_self(
                       envir=this.envir$envirs[[n]]
                   )
               }   
           )
           envir$runs <- runs
-      }else{
-          set_envir_inputs(envir=this.envir)
+  }else{
+          set_envir_inputs(envir=this.envir$envirs[[1]])
           run_main(
-                  envir=this.envir
+                  envir=this.envir$envirs[[1]]
           )
           envir$steps <- steps
-      }
+  }
 }
 
 
