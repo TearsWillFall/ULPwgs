@@ -929,7 +929,6 @@ new_flag_stats_samtools=function(
 
   }
 
-
  envirs=run_envir(envirs=envirs)
   
   

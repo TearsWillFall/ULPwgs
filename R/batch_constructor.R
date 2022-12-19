@@ -451,8 +451,8 @@ set_ss_envir=function(envir){
 
 
           dat_filt=dat_filt %>% 
-          dplyr::group_by(dplyr::across(-c(envir$$vars))) %>%
-          summarise(!! envir$$vars := list(!! rlang::sym(envir$$vars)))
+          dplyr::group_by(dplyr::across(-c(envir$vars))) %>%
+          summarise(!! envir$vars := list(!! rlang::sym(envir$vars)))
 
           envirs=lapply(seq(1,nrow(dat_filt)),
             FUN=function(row){
