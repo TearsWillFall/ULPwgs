@@ -499,7 +499,6 @@ run_envir=function(envirs){
               if(is.null(envirs[[n]]$select)){
                     run_self(
                       envir=envirs[[n]]
-                    
                     )
               }else{
                     set_envir_inputs(
