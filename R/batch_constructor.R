@@ -371,6 +371,7 @@ set_envir_vars=function(
   err_mssg=NULL,
   sheet=NULL,
   inherit=NULL,
+  select=NULL,
   hold=NULL,
   ns="ULPwgs",
   dir_name=""
