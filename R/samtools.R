@@ -772,7 +772,7 @@ new_stats_bam_samtools=function(
   }
 
   
-  envirs=run_envir(envirs=envirs)
+  run_envir(envirs=envirs)
 }
 
 
