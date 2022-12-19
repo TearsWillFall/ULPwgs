@@ -435,7 +435,6 @@ set_envir_vars=function(
       )
 
       envir$envirs[[1]] <- this.envir
-      envir
     }
 
  
