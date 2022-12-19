@@ -366,6 +366,7 @@ run_self=function(
 set_envir_vars=function(
   envir=environment(),
   vars=NULL,
+  fn=NULL,
   dir_name=""
 ){
 
