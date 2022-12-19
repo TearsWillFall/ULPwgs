@@ -327,13 +327,12 @@ run_self=function(
   envir=environment()
  ){
 
-      this.envir=environment()
-      append_envir(this.envir,envir)
+      append_envir(from=envir)
 
 
       if(verbose){
         print_verbose(
-          job=job_id,arg=as.list(this.envir),
+          job=job_id,arg=as.list(environment()),
           exec_code=steps[[fn]]$exec_code
         )
       }
@@ -368,7 +367,7 @@ set_envir_vars=function(
   err_mssg=NULL
 ){
 
-    append_envir(environment(),envir)
+    append_envir(from=envir)
     
     if(is.null(fn)){
         ## GET CALLER FUNCTION NAME IF NOT GIVEN
@@ -449,9 +448,11 @@ set_ss_envir=function(envir){
             warning(paste0(nrows_dup, " were duplicated in sheet"))
           }
           
+
+
           dat_filt=dat_filt %>% 
-          dplyr::group_by(dplyr::across(-c(this.envir$vars))) %>%
-          summarise(!! this.envir$vars := list(!! rlang::sym(this.envir$vars)))
+          dplyr::group_by(dplyr::across(-c(envir$$vars))) %>%
+          summarise(!! envir$$vars := list(!! rlang::sym(envir$$vars)))
 
           envirs=lapply(seq(1,nrow(dat_filt)),
             FUN=function(row){
@@ -461,7 +462,7 @@ set_ss_envir=function(envir){
 
               ### ASSIGN VARS IN SHEET TO ENVIROMENT
               invisible(lapply(seq(1,nrows(dat_row)),FUN=function(col){
-                    this.envir[[col]] <- dat_row[row,col]
+                    envir[[col]] <- dat_row[row,col]
                     set_envir_vars(
                         envir=environment(),
                         vars=environment()$vars
@@ -522,8 +523,7 @@ run_envir=function(envirs){
 set_steps_vars=function(
   envir=environment()
 ){      
-      this.envir=environment()
-      append_envir(this.envir,envir)
+      append_envir(environment(),envir)
       steps=list()
       steps[[fn]]$job_id=job_id
       steps[[fn]]$executor_id=executor_id
@@ -535,7 +535,8 @@ set_steps_vars=function(
       steps[[fn]]$error=0
       steps[[fn]]$output_dir=out_file_dir
       steps[[fn]]$out_file=""
-      return(steps)
+      
+      envir$steps=steps
   }
 
 

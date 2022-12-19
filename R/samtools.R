@@ -157,10 +157,7 @@ new_sort_and_index_bam_samtools=function(
   hold=NULL
 ){
 
-
-   this.envir=environment()
    set_envir_vars(
-    envir=this.envir,
     vars="bam"
   )
 
@@ -169,9 +166,8 @@ new_sort_and_index_bam_samtools=function(
   run_main=function(
     envir
   ){
-    this.envir=environment()
-    append_envir(this.envir,envir)
-    steps=set_steps_vars(this.envir)
+    append_envir(from=envir)
+    set_steps_vars()
 
   
     if(sort){
@@ -210,7 +206,7 @@ new_sort_and_index_bam_samtools=function(
 
   }
 
-  envirs=run_envir(envirs=this.envir$envirs)
+  envirs=run_envir(envirs=envirs)
 
 
 }
@@ -348,9 +344,8 @@ new_sort_bam_samtools=function(
   hold=NULL
 ){
 
-    this.envir=environment()
+  
     set_envir_vars(
-      envir=this.envir,
       vars="bam"
     )
 
@@ -359,9 +354,9 @@ new_sort_bam_samtools=function(
     ){
       
 
-      this.envir=environment()
-      append_envir(this.envir,envir)
-      steps=set_steps_vars(this.envir)
+    
+      append_envir(from=envir)
+      set_steps_vars()
 
       sort_type=""
 
@@ -385,7 +380,7 @@ new_sort_bam_samtools=function(
       }
 
 
-      run_job(envir=this.envir)
+      run_job()
 
       if(index & coord_sort){
 
@@ -424,7 +419,7 @@ new_sort_bam_samtools=function(
     }
 
 
-    envirs=run_envir(envirs=this.envir$envirs)
+    envirs=run_envir(envirs=envirs)
 
   
 
@@ -561,9 +556,8 @@ new_index_bam_samtools=function(
 
 
 
-  this.envir=environment()
+ 
   set_envir_vars(
-    envir=this.envir,
     vars="bam"
   )
 
@@ -573,11 +567,9 @@ new_index_bam_samtools=function(
     envir
   ){
 
+    append_envir(from=envir)
 
-    this.envir=environment()
-    append_envir(this.envir,envir)
-
-    steps=set_steps_vars(this.envir)
+    set_steps_vars()
 
     steps[[fn]]$out_file=paste0(input,".bai")
     steps[[fn]]$exec_code=paste(
@@ -585,7 +577,7 @@ new_index_bam_samtools=function(
       input," -@ ",threads
     )
    
-    run_job(envir=this.envir)
+    run_job()
 
     if(stats){
       steps[[fn]] <-append(
@@ -608,7 +600,7 @@ new_index_bam_samtools=function(
   }
 
 
-  envirs=run_envir(envirs=this.envir$envirs)
+  envirs=run_envir(envirs=envirs)
 
 }
 
@@ -733,9 +725,8 @@ new_stats_bam_samtools=function(
 
 ){
 
-  this.envir=environment()
+
   set_envir_vars(
-    envir=this.envir,
     vars="bam"
   )
 
@@ -745,9 +736,8 @@ new_stats_bam_samtools=function(
   ){
 
 
-    this.envir=environment()
-    append_envir(this.envir,envir)
-    steps=set_steps_vars(this.envir)
+    append_envir(from=envir)
+    set_steps_vars()
 
 
     if(stats=="all"|stats=="flag"){
@@ -783,7 +773,7 @@ new_stats_bam_samtools=function(
   }
 
   
-  envirs=run_envir(envirs=this.envir$envirs)
+  envirs=run_envir(envirs=envirs)
 }
 
 
@@ -904,9 +894,8 @@ new_flag_stats_samtools=function(
   hold=NULL
 ){
 
-  this.envir=environment()
+ 
   set_envir_vars(
-    envir=this.envir,
     vars="bam"
   )
 
@@ -916,10 +905,8 @@ new_flag_stats_samtools=function(
     envir
   ){
 
-    
-    this.envir=environment()
-    append_envir(this.envir,envir)
-    steps=set_steps_vars(this.envir)
+    append_envir(from=envir)
+    set_steps_vars()
 
    
 
@@ -934,9 +921,7 @@ new_flag_stats_samtools=function(
       out_file
     )
 
-     run_job(
-        envir=this.envir
-     )
+     run_job()
 
 
      envir$steps <-steps
@@ -945,7 +930,7 @@ new_flag_stats_samtools=function(
   }
 
 
- envirs=run_envir(envirs=this.envir$envirs)
+ envirs=run_envir(envirs=envirs)
   
   
 }
@@ -1070,9 +1055,7 @@ new_index_stats_samtools=function(
 ){
 
 
-  this.envir=environment()
   set_envir_vars(
-    envir=this.envir,
     vars="bam"
   )
 
@@ -1082,10 +1065,10 @@ new_index_stats_samtools=function(
   ){
 
     
-    this.envir=environment()
-    append_envir(this.envir,envir)
+ 
+    append_envir(from=envir)
 
-    steps=set_steps_vars(this.envir)
+    set_steps_vars()
 
     steps[[fn]]$out_file=paste0(
       out_file_dir,"/",input_id,".idxstats.txt"
@@ -1096,16 +1079,14 @@ new_index_stats_samtools=function(
     )
 
 
-    run_job(
-          envir=this.envir
-    )
+    run_job()
 
      envir$steps <-steps
 
 
   }
 
- envirs=run_envir(envirs=this.envir$envirs)
+ envirs=run_envir(envirs=envirs)
 
 }
 

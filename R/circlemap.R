@@ -53,20 +53,16 @@ realign_circlemap=function(
 
 ){
 
-    this.envir=environment()
+
     set_envir_vars(
-        envir=this.envir,
         vars="bam"
     )
 
 
     run_main=function(envir){
 
-
-
-        this.envir=environment()
-        append_envir(this.envir,envir)
-        set_steps_vars(envir=this.envir)
+        append_envir(from=envir)
+        set_steps_vars()
     
          
         steps[[fn]] <- append(steps[[fn]],new_sort_and_index_bam_samtools(
@@ -114,13 +110,13 @@ realign_circlemap=function(
         )
         
 
-        run_job(envir=this.envir)
+        run_job()
 
         envir$steps <- steps
 
     }
 
-  envirs=run_envir(envirs=this.envir$envirs)
+  envirs=run_envir(envirs=envirs)
 }
 
 
@@ -191,9 +187,7 @@ read_extractor_circlemap=function(
 
 
 
-    this.envir=environment()
     set_envir_vars(
-        envir=this.envir,
         vars="bam"
     )
 
@@ -203,9 +197,8 @@ read_extractor_circlemap=function(
         envir
     ){
     
-        this.envir=environment()
-        append_envir(this.envir,envir)
-        set_steps_vars(envir=this.envir)
+        append_envir(from=envir)
+        set_steps_vars()
     
         steps[[fn]]$out_file=paste0(
             out_file_dir_tmp,"/",input_id,".circular_read_candidates.bam"
@@ -217,7 +210,7 @@ read_extractor_circlemap=function(
             " -o ", steps[[fn]]$out_file," -dir /"
         )
 
-        run_job(envir=this.envir)
+        run_job(envir=envir)
 
         steps[[fn]]<-append(
             steps[[fn]],
@@ -243,7 +236,7 @@ read_extractor_circlemap=function(
 
 
 
-  envirs=run_envir(envirs=this.envir$envirs)
+  envirs=run_envir(envirs=envirs)
 
  
     
@@ -305,9 +298,8 @@ repeat_caller_circlemap=function(
 ){
 
   
-    this.envir=environment()
+  
     set_envir_vars(
-        envir=this.envir,
         vars="bam"
     )
 
@@ -316,9 +308,9 @@ repeat_caller_circlemap=function(
     run_main=function(
         envir
     ){
-            this.envir=environment()
-            append_envir(this.envir,envir)
-            set_steps_vars(envir=this.envir)
+        
+            append_envir(from=envir)
+            set_steps_vars()
           
             steps[[fn]]$out_file=paste0(
                 out_file_dir,"/",input_id,".circular_repeat_candidates.bed"
@@ -329,12 +321,12 @@ repeat_caller_circlemap=function(
                 steps[[fn]]$out_file, " -dir /"
             )
 
-            run_job(envir=this.envir)
+            run_job()
 
             envir$steps <- steps
     }
 
-  envirs=run_envir(envirs=this.envir$envirs)
+  envirs=run_envir(envirs=envirs)
 
 
 
@@ -397,9 +389,7 @@ circdna_circlemap=function(
 ){
 
  
-    this.envir=environment()
     set_envir_vars(
-        envir=this.envir,
         vars="bam"
     )
 
@@ -408,9 +398,8 @@ circdna_circlemap=function(
         envir
     ){
 
-        this.envir=environment()
-        append_envir(this.envir,envir)
-        set_steps_vars(envir=this.envir)
+        append_envir(from=envir)
+        set_steps_vars()
 
   
         steps[[fn]] <- append(steps[[fn]],realign_circlemap(
@@ -442,7 +431,7 @@ circdna_circlemap=function(
         
     }
 
-  envirs=run_envir(envirs=this.envir$envirs)
+  envirs=run_envir(envirs=envirs)
 
 }
 
@@ -553,19 +542,17 @@ annotate_bed_circlemap=function(
     executor_id=NULL,
     hold=NULL
 ){
-    
-    this.envir=environment()
+  
     set_envir_vars(
-        envir=this.envir,
         vars="bed"
     )
 
     run_main=function(
         envir
     ){
-        this.envir=environment()
-        append_envir(this.envir,envir)
-        set_steps_vars(envir=this.envir)
+   
+        append_envir(from=envir)
+        set_steps_vars()
 
 
         dat=read_bed_circlemap(bed=input,id=output_name,type=type,sep="\t")
@@ -644,7 +631,7 @@ annotate_bed_circlemap=function(
     }
 
 
-  envirs=run_envir(envirs=this.envir$envirs)
+  envirs=run_envir(envirs=envirs)
   
 
 }

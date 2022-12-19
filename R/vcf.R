@@ -1067,12 +1067,8 @@ tabulate_vcf=function(
   hold=NULL
 ){
 
-    this.envir=environment()
-
-    
-
+ 
     set_envir_vars(
-        envir=this.envir,
         vars="vcf"
     )
 
@@ -1080,9 +1076,9 @@ tabulate_vcf=function(
         envir
       ){
 
-        this.envir=environment()
-        append_envir(this.envir,envir)
-        steps=set_steps_vars(this.envir)
+      
+        append_envir(from=envir)
+        set_steps_vars()
 
       
       
@@ -1119,7 +1115,7 @@ tabulate_vcf=function(
 
     }
   
-     envirs=run_envir(envirs=this.envir$envirs)
+     envirs=run_envir(envirs=envirs)
 
       
 }
