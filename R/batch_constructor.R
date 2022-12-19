@@ -424,7 +424,7 @@ set_envir_vars=function(
           inherit <-readRDS(file=inherit)
         }
         append_envir(.this.env,inherit)
-        base.env$envirs[[1]] <- .this.env
+        .envir$envirs[[1]] <- .this.env
         return()
     }else{
       if(!is.null(vars)){
@@ -447,7 +447,7 @@ set_envir_vars=function(
       )
 
      
-      envirs[[1]] <- .this.env
+      .envir$envirs[[1]] <- .this.env
       return()
     }
 
