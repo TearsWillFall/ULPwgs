@@ -364,13 +364,7 @@ run_self=function(
 
 set_envir_vars=function(
   envir=environment(),
-  vars=NULL,
-  fn=NULL,
-  sheet=NULL,
-  inherit=NULL,
-  select=NULL,
-  executor_id=NULL,
-  err_mssg=NULL
+  vars=NULL
 ){
 
     this.envir=environment()
@@ -552,9 +546,14 @@ append_envir = function(to=environment(), from=NULL) {
       
       from_list = ls(from)
       for(var in from_list) {
+
+        if(is.null(to[[var]])){
+           to[[var]]<-NULL
+        }
+       
         if(!is.null(from[[var]])){
-           to[[var]] = from[[var]]
-        }   
+           to[[var]] <- from[[var]]
+        }
       }
 }
 
