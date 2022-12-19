@@ -509,7 +509,7 @@ run_envir=function(envir){
           )
           envir$runs <- runs
   }else{
-          set_envir_inputs(envir=this.envir$envirs[[1]])
+          set_envir_inputs(envir=this.envir$envirs[1])
           run_main(
                   envir=this.envir$envirs[1]
           )
