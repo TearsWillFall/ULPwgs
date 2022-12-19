@@ -217,9 +217,8 @@ build_rdata_object=function(
 
 
 build_exec_innit=function(
-        envir=NULL
-      ){
-
+        envir=environment()
+){
         ### Create RData object to inherit vars
 
         build_rdata_object(envir=envir)
@@ -369,7 +368,7 @@ set_envir_vars=function(
   err_mssg=NULL
 ){
 
-    this.envir=environment()
+    this.envir <-environment()
     append_envir(this.envir,envir)
     
     if(is.null(fn)){
