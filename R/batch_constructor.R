@@ -370,10 +370,10 @@ set_envir_vars=function(
     this.env=environment()
 
     append_envir(to=this.env,from=envir)
-
-    print(as.list(this.env))
+    
     
     if(is.null(fn)){
+
         ## GET CALLER FUNCTION NAME IF NOT GIVEN
         
    
@@ -560,10 +560,9 @@ append_envir = function(to=environment(), from=NULL) {
       
       from_list = ls(from)
       for(var in from_list) {
-
-           to[[var]] <- NULL
-      
-       
+        if(is.null(to[[var]])){
+            to[[var]] <- NULL
+        }
         if(!is.null(from[[var]])){
            to[[var]] <- from[[var]]
         }
