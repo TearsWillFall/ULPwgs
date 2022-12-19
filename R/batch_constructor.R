@@ -364,7 +364,9 @@ run_self=function(
 
 set_envir_vars=function(
   envir=environment(),
-  vars=NULL
+  vars=NULL,
+  fn=NULL,
+  err_mssg=NULL
 ){
 
     this.envir=environment()
