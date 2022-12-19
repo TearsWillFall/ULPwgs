@@ -366,7 +366,6 @@ set_envir_vars=function(
   envir=environment(),
   vars=NULL,
   fn=NULL,
-  executor_id=NULL,
   err_mssg=NULL
 ){
 
@@ -407,6 +406,8 @@ set_envir_vars=function(
           inherit <-readRDS(file=inherit)
         }
         append_envir(this.envir,inherit)
+        envir$envirs[[1]] <- this.envir
+        return()
     }else{
       if(!is.null(vars)){
         inputs <- this.envir[[vars]]
@@ -427,6 +428,7 @@ set_envir_vars=function(
         name="tmp"
       )
       envir$envirs[[1]] <- this.envir
+      print(this.envir)
       return()
     }
     
