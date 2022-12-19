@@ -368,6 +368,8 @@ set_envir_vars=function(
 ){
 
     append_envir(from=envir)
+
+    print(as.list(environment()))
     
     if(is.null(fn)){
         ## GET CALLER FUNCTION NAME IF NOT GIVEN
