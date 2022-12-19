@@ -552,9 +552,8 @@ append_envir = function(to=environment(), from=NULL) {
       from_list = ls(from)
       for(var in from_list) {
 
-        if(to[[var]]){
            to[[var]]<-NULL
-        }
+      
        
         if(!is.null(from[[var]])){
            to[[var]] <- from[[var]]

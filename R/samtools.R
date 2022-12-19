@@ -553,9 +553,6 @@ new_index_bam_samtools=function(
   executor_id=NULL,
   hold=NULL
 ){
-
-
-
  
   set_envir_vars(
     vars="bam"
