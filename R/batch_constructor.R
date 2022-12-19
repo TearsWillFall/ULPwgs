@@ -368,6 +368,7 @@ set_envir_vars=function(
   fn=NULL,
   sheet=NULL,
   inherit=NULL,
+  select=NULL,
   executor_id=NULL,
   err_mssg=NULL
 ){
