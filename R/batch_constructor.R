@@ -287,6 +287,9 @@ run_self=function(
 ){  
 
 
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+
     ### Create RData object to inherit vars
 
     build_rdata_object(.env=.env)
