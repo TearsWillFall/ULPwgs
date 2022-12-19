@@ -367,7 +367,7 @@ set_envir_vars=function(
   err_mssg=NULL
 ){
 
-    append_envir(from=envir)
+    append_envir(to=environment(),from=envir)
 
     print(as.list(environment()))
     

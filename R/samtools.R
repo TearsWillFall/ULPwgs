@@ -1052,6 +1052,7 @@ new_index_stats_samtools=function(
 
 
   set_envir_vars(
+    envir=environment(),
     vars="bam"
   )
 
