@@ -367,8 +367,7 @@ set_envir_vars=function(
   envir=environment(),
   vars=NULL,
   fn=NULL,
-  err_mssg=NULL,
-  dir_name=""
+  err_mssg=NULL
 ){
 
     this.envir=environment()
@@ -425,8 +424,7 @@ set_envir_vars=function(
       }
 
       this.envir$out_file_dir <- set_dir(
-            dir=this.envir$output_dir,
-            name=dir_name
+            dir=this.envir$output_dir
       )
 
       this.envir$out_file_dir_tmp <- set_dir(dir=this.envir$out_file_dir,name="tmp")

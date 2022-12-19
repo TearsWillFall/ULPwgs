@@ -1099,7 +1099,7 @@ tabulate_vcf=function(
 
         if(ignore){
 
-            write.table("No variants detected in input VCF.",file=out_file)
+            write.table("No variants detected in input VCF.",file=steps[[fn]]$out_file)
           
 
         }else{
@@ -1110,7 +1110,7 @@ tabulate_vcf=function(
             vcf_body=vcf$body %>% tidyr::unnest(cols=Allele:TRANSCRIPTION_FACTORS)
             vcf_body=vcf_body %>% unnest_vcf_body(full=TRUE) %>% 
             tidyr::pivot_wider(values_from=VALUE,names_from=c(SAMPLE,FORMAT))
-            write.table(vcf_body,file=out_file,sep="\t",quote=FALSE,
+            write.table(vcf_body,file=steps[[fn]]$out_file,sep="\t",quote=FALSE,
             row.names=FALSE,col.names=TRUE)
         }
 
