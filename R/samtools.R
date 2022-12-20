@@ -556,7 +556,6 @@ new_index_bam_samtools=function(
  
 
 
-
   run_main=function(
     .env
   ){
