@@ -377,11 +377,6 @@ set_envir_vars=function(
     
     
   
-    if (!is.null(sheet)){
-        set_ss_envir(.this.env)
-        .env$.envs <- .envs
-        return()
-    }
 
     
     if(!is.null(inherit)){
@@ -436,6 +431,14 @@ set_envir_vars=function(
         err_msg <- paste0("CRITICAL ERROR: ",fn," -> ")
     }else{
         err_msg <- paste0(err_msg ,fn," -> ")
+    }
+
+
+    
+    if (!is.null(sheet)){
+        set_ss_envir(.this.env)
+        .env$.envs <- .envs
+        return()
     }
 
 
@@ -567,7 +570,10 @@ append_env = function(to=environment(), from=NULL) {
       from_list = ls(from)
       for(var in from_list) {
         if(!grepl("\\.",var)){
-            to[[var]] <- NULL
+          if(!is.null(to[[var]])){
+             to[[var]] <- NULL
+          }
+           
         }
 
         if(!is.null(from[[var]])){
