@@ -423,6 +423,7 @@ new_sort_bam_samtools=function(
       }
 
       .env$steps <- steps
+      return()
     }
 
 
@@ -603,6 +604,7 @@ new_index_bam_samtools=function(
     }
 
     .env$steps <-steps
+    return()
 
   }
   
@@ -784,6 +786,7 @@ new_stats_bam_samtools=function(
       }
 
     .env$steps <- steps
+    return()
 
   }
 
@@ -946,7 +949,7 @@ new_flag_stats_samtools=function(
 
      .env$steps <-steps
 
-
+    return()
   }
 
 
@@ -1106,7 +1109,7 @@ new_index_stats_samtools=function(
     run_job(.env=.this.env)
 
     .env$steps <-steps
-
+    return()
 
   }
 
