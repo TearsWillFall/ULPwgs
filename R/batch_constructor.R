@@ -565,6 +565,7 @@ append_env = function(to=environment(), from=NULL) {
       from_list = ls(from)
       for(var in from_list) {
         if(!grepl("\\.",var)){
+      
             to[[var]] <- NULL
         }
 
