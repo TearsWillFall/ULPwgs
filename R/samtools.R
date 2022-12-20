@@ -597,7 +597,7 @@ new_index_bam_samtools=function(
   }
 
 
-  run_envir(envirs=envs)
+  run_envir(.envs)
 
 }
 

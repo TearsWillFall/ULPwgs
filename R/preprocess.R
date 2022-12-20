@@ -45,7 +45,8 @@ preprocess_seq=function(
     batch_config=build_default_preprocess_config(),
     time="48:0:0",
     update_time=60,wait=FALSE,hold=NULL,
-    verbose=FALSE){
+    verbose=FALSE
+){
           
     argg <- as.list(environment())
 

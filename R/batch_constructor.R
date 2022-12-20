@@ -405,7 +405,7 @@ set_envir_vars=function(
 
     if (!is.null(sheet)){
         set_ss_envir(.this.env)
-        .env$envs<-envs
+        .env$.envs <- .envs
         return()
     }
 
@@ -415,7 +415,6 @@ set_envir_vars=function(
           inherit <-readRDS(file=inherit)
         }
         append_env(to=.this.env,from=inherit)
-
     }else{
       if(!is.null(vars)){
         inputs <- get(vars)
@@ -424,7 +423,7 @@ set_envir_vars=function(
           inputs=inputs,
           ids=output_name
         )
-        inputs_ext <- Vectorize(get_file_ext)(inputs)
+        inputs_ext <- unname(Vectorize(get_file_ext)(inputs))
       }
 
       out_file_dir <- set_dir(
@@ -438,7 +437,7 @@ set_envir_vars=function(
 
     }
 
-    .env$envs[[1]] <- .this.env
+    .env$.envs[[1]] <- .this.env
 
     return()
    
@@ -475,14 +474,14 @@ set_ss_envir=function(.env){
 
               ### ASSIGN VARS IN SHEET TO ENVIROMENT
               invisible(lapply(seq(1,nrows(dat_row)),FUN=function(col){
-                    .env[[col]] <- dat_row[row,col]
+                    .this.env[[col]] <- dat_row[row,col]
                     set_envir_vars(
                         .env=.this.env,
                         vars=.this.env$vars
                     )
               }))
 
-              .env$envs[[row]]<.this.env
+              .env$.envs[[row]]<.this.env
             }
           )
           
@@ -496,21 +495,21 @@ set_ss_envir=function(.env){
 #' @export
 
 
-run_envir=function(envirs){
+run_envir=function(.envs){
 
       lapply(
-          seq(1,length(envirs)),FUN=function(n){
-              if(is.null(envirs[[n]]$select)){
+          seq(1,length(.envs)),FUN=function(n){
+              if(is.null(.envs[[n]]$select)){
                     run_self(
-                      .env=envirs[[n]]
+                      .env=.envs[[n]]
                     )
               }else{
                     set_envir_inputs(
-                      .env=envirs[[n]]
+                      .env=.envs[[n]]
                     )
 
                     run_main(
-                      .env=envirs[[n]]
+                      .env=.envs[[n]]
                     )
       
               }
@@ -566,9 +565,7 @@ append_env = function(to=environment(), from=NULL) {
       from_list = ls(from)
       for(var in from_list) {
         if(!grepl("\\.",var)){
-          if(is.null(to[[var]])){
             to[[var]] <- NULL
-          }
         }
 
         if(!is.null(from[[var]])){
@@ -589,7 +586,7 @@ set_input_id=function(inputs,ids=NULL){
       if(!is.null(ids)){
         my_id=ids
       }else{
-        my_id=Vectorize(get_file_name)(inputs)
+        my_id=unname(Vectorize(get_file_name)(inputs))
       }
       return(my_id)
 }
@@ -605,9 +602,6 @@ set_envir_inputs=function(.env){
       .env$input_id<-.env$inputs_id[.env$select]
       .env$input_ext<-.env$inputs_ext[.env$select]
   }
-
-
-
 
 
 #' @export
