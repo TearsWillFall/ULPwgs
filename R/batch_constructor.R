@@ -365,7 +365,7 @@ run_self=function(
 #' @param name Name of output file directory
 #' @export
 
-set_envir_vars=function(
+set_env_vars=function(
   .env=environment(),
   vars=NULL,
   fn=NULL,
@@ -432,7 +432,7 @@ set_envir_vars=function(
 
     
     if (!is.null(sheet)){
-        set_ss_envir(.this.env)
+        set_ss_env(.this.env)
         .env$.envs <- .envs
         return()
     }
@@ -452,7 +452,7 @@ set_envir_vars=function(
 #' @export
 
 
-set_ss_envir=function(.env){
+set_ss_env=function(.env){
 
           dat=read.delim(.env$sheet,header=TRUE)
           dat_filt=dat %>% dplyr::distinct()
@@ -476,7 +476,7 @@ set_ss_envir=function(.env){
               ### ASSIGN VARS IN SHEET TO ENVIROMENT
               invisible(lapply(seq(1,nrows(dat_row)),FUN=function(col){
                     .this.env[[col]] <- dat_row[row,col]
-                    set_envir_vars(
+                    set_env_vars(
                         .env=.this.env,
                         vars=.this.env$vars
                     )
@@ -496,7 +496,7 @@ set_ss_envir=function(.env){
 #' @export
 
 
-run_envir=function(.envs){
+run_env=function(.envs){
 
       lapply(
           seq(1,length(.envs)),FUN=function(n){
@@ -505,7 +505,7 @@ run_envir=function(.envs){
                       .env=.envs[[n]]
                     )
               }else{
-                    set_envir_inputs(
+                    set_env_inputs(
                       .env=.envs[[n]]
                     )
 
@@ -599,7 +599,7 @@ set_input_id=function(inputs,ids=NULL){
 #' @export
 
 
-set_envir_inputs=function(.env){
+set_env_inputs=function(.env){
       .env$input<-.env$inputs[.env$select]
       .env$input_id<-.env$inputs_id[.env$select]
       .env$input_ext<-.env$inputs_ext[.env$select]

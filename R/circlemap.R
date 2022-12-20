@@ -54,7 +54,7 @@ realign_circlemap=function(
 ){
 
 
-    set_envir_vars(
+    set_env_vars(
         vars="bam"
     )
 
@@ -187,7 +187,7 @@ read_extractor_circlemap=function(
 
 
     
-    set_envir_vars(
+    set_env_vars(
         vars="bam"
     )
 
@@ -299,7 +299,7 @@ repeat_caller_circlemap=function(
 
   
   
-    set_envir_vars(
+    set_env_vars(
         vars="bam"
     )
 
@@ -389,7 +389,7 @@ circdna_circlemap=function(
 ){
 
  
-    set_envir_vars(
+    set_env_vars(
         vars="bam"
     )
 
@@ -543,7 +543,7 @@ annotate_bed_circlemap=function(
     hold=NULL
 ){
   
-    set_envir_vars(
+    set_env_vars(
         vars="bed"
     )
 

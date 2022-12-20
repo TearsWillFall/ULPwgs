@@ -1068,7 +1068,7 @@ tabulate_vcf=function(
 ){
 
  
-    set_envir_vars(
+    set_env_vars(
         vars="vcf"
     )
 
