@@ -212,8 +212,10 @@ new_sort_and_index_bam_samtools=function(
   )
 
 
-  run_env(.base.env)
+  runs=run_env(.envs)
+
   return(runs)
+ 
 
 }
 
@@ -433,8 +435,10 @@ new_sort_bam_samtools=function(
     )
 
 
-    run_env(.base.env)
+    runs=run_env(.envs)
+
     return(runs)
+  
 
 }
 
@@ -614,9 +618,9 @@ new_index_bam_samtools=function(
   )
 
 
-  run_env(.base.env)
-  return(runs)
+  runs=run_env(.envs)
 
+  return(runs)
 }
 
 
@@ -792,10 +796,9 @@ new_stats_bam_samtools=function(
     vars="bam"
   )
 
-  run_env(.base.env)
+  runs=run_env(.envs)
+
   return(runs)
-
-
 
 }
 
@@ -955,9 +958,11 @@ new_flag_stats_samtools=function(
     vars="bam"
   )
 
-  run_env(.base.env)
+  runs=run_env(.envs)
 
   return(runs)
+
+
  
   
   
@@ -1115,8 +1120,10 @@ new_index_stats_samtools=function(
   )
 
    
-  run_env(.base.env)
+  runs=run_env(.envs)
+
   return(runs)
+
 
 }
 
