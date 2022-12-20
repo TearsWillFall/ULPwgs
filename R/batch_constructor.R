@@ -373,7 +373,6 @@ set_envir_vars=function(
 ){  
 
     .this.env=environment()
-
     append_env(to=.this.env,from=.env)
     
     
@@ -415,9 +414,7 @@ set_envir_vars=function(
           inherit <-readRDS(file=inherit)
         }
         append_env(to=.this.env,from=inherit)
-        .env$envs[[1]] <- .this.env
-        print(as.list(.this.env))
-    
+
     }else{
       if(!is.null(vars)){
         inputs <- get(vars)
@@ -438,10 +435,9 @@ set_envir_vars=function(
         name="tmp"
       )
 
-     
-        .env$envs[[1]] <- .this.env
-    
     }
+
+    .env$envs[[1]] <- .this.env
 
     return()
    
@@ -568,7 +564,7 @@ append_env = function(to=environment(), from=NULL) {
       
       from_list = ls(from)
       for(var in from_list) {
-        if(is.null(to[[var]])&is.null(from[[var]])){
+        if(!grepl("\\.",var)){
             to[[var]] <- NULL
         }
 
