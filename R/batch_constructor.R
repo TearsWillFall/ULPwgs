@@ -375,13 +375,11 @@ set_envir_vars=function(
     .this.env=environment()
     append_env(to=.this.env,from=.env)
     
-    print(as.list(.this.env))
     if(!is.null(inherit)){
         if(!is.environment(inherit)){
           inherit <-readRDS(file=inherit)
         }
         append_env(to=.this.env,from=inherit)
-        print(as.list(.this.env))
     }else{
       if(!is.null(vars)){
         inputs <- get(vars)
@@ -511,10 +509,9 @@ run_envir=function(.envs){
                       .env=.envs[[n]]
                     )
 
-                    run_main(
+                    .envs[[n]]$run_main(
                       .env=.envs[[n]]
                     )
-      
               }
 
           }
