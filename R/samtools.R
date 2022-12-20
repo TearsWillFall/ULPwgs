@@ -591,8 +591,8 @@ new_index_bam_samtools=function(
     run_job(.env=.this.env)
 
     if(stats){
-      steps[[fn]] <-append(
-        steps[[fn]],
+      steps[[fn]]$steps <-append(
+        steps[[fn]]$steps,
         new_stats_bam_samtools(
                   bin_samtools=bin_samtools,
                   bam=input,
@@ -756,8 +756,8 @@ new_stats_bam_samtools=function(
     set_steps_vars(.env=.this.env)
 
     if(stats=="all"|stats=="flag"){
-        steps[[fn]]<-append(
-          steps[[fn]],
+        steps[[fn]]$steps<-append(
+          steps[[fn]]$steps,
             new_flag_stats_samtools(
               bin_samtools=bin_samtools,
               bam=input,
@@ -770,8 +770,8 @@ new_stats_bam_samtools=function(
     } 
 
     if(stats=="all"|stats=="index"){
-      steps[[fn]]<-append(
-        steps[[fn]],
+      steps[[fn]]$steps<-append(
+        steps[[fn]]$steps,
           new_index_stats_samtools(
             bin_samtools=bin_samtools,
             bam=input,
@@ -962,8 +962,6 @@ new_flag_stats_samtools=function(
 
   return(runs)
 
-
- 
   
   
 }
