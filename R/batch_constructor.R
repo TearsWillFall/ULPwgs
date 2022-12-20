@@ -416,6 +416,7 @@ set_envir_vars=function(
         }
         append_env(to=.this.env,from=inherit)
         .env$envs[[1]] <- .this.env
+        print(as.list(.this.env))
     
     }else{
       if(!is.null(vars)){
