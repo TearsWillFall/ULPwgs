@@ -376,33 +376,7 @@ set_envir_vars=function(
     append_env(to=.this.env,from=.env)
     
     
-    if(is.null(fn)){
-
-        ## GET CALLER FUNCTION NAME IF NOT GIVEN
-        
-   
-      fn <- sub(".*::","",sub("\\(.*","",
-          paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=","))
-        )
-    }
-
-    if(is.null(executor_id)){
-      executor_id <- make_unique_id(fn)
-    }
-
-    task_id <- make_unique_id(fn)
-
-    job_id <- build_job(
-      executor_id=executor_id,
-      task_id=task_id
-    )
-
-    if(is.null(err_mssg)){
-        err_msg <- paste0("CRITICAL ERROR: ",fn," -> ")
-    }else{
-        err_msg <- paste0(err_msg ,fn," -> ")
-    }
-
+  
     if (!is.null(sheet)){
         set_ss_envir(.this.env)
         .env$.envs <- .envs
@@ -436,6 +410,34 @@ set_envir_vars=function(
       )
 
     }
+
+
+    if(is.null(fn)){
+
+      ## GET CALLER FUNCTION NAME IF NOT GIVEN
+  
+    fn <- sub(".*::","",sub("\\(.*","",
+        paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=","))
+      )
+    }
+
+    if(is.null(executor_id)){
+      executor_id <- make_unique_id(fn)
+    }
+
+    task_id <- make_unique_id(fn)
+
+    job_id <- build_job(
+      executor_id=executor_id,
+      task_id=task_id
+    )
+
+    if(is.null(err_mssg)){
+        err_msg <- paste0("CRITICAL ERROR: ",fn," -> ")
+    }else{
+        err_msg <- paste0(err_msg ,fn," -> ")
+    }
+
 
     .env$.envs[[1]] <- .this.env
 
@@ -568,7 +570,7 @@ append_env = function(to=environment(), from=NULL) {
             to[[var]] <- NULL
         }
 
-        if(!is.null(from[[var]])&is.environment(from[[var]])){
+        if(!is.null(from[[var]])){
            to[[var]] <- from[[var]]
         }
       }
