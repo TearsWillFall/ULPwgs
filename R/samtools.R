@@ -213,9 +213,7 @@ new_sort_and_index_bam_samtools=function(
 
 
   run_env(.envs)
-
- 
-
+  print(as.list(envs))
 
 }
 
@@ -799,6 +797,7 @@ new_stats_bam_samtools=function(
   )
 
   run_env(.envs)
+  return()
 
 
 
