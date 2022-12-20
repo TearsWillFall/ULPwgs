@@ -568,7 +568,7 @@ append_env = function(to=environment(), from=NULL) {
             to[[var]] <- NULL
         }
 
-        if(!is.null(from[[var]])){
+        if(!is.null(from[[var]])&is.environment(from[[var]])){
            to[[var]] <- from[[var]]
         }
       }
