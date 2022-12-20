@@ -549,7 +549,7 @@ set_steps_vars=function(
       steps[[fn]]$output_dir=out_file_dir
       steps[[fn]]$out_file=""
       
-      envir$steps=steps
+      .env$steps=steps
   }
 
 
