@@ -496,31 +496,27 @@ set_ss_env=function(.env){
 #' @export
 
 
-run_env=function(.envs){
+run_env=function(.env){
 
-      lapply(
-          seq(1,length(.envs)),FUN=function(n){
-              if(is.null(.envs[[n]]$select)){
+      runs=lapply(
+          seq(1,length(.env$.envs)),FUN=function(n){
+              if(is.null(.env$.envs[[n]]$select)){
                     run_self(
-                      .env=.envs[[n]]
+                      .env=.env$.envs[[n]]
                     )
               }else{
                     set_env_inputs(
-                      .env=.envs[[n]]
+                      .env=.env$.envs[[n]]
                     )
 
                     .envs[[n]]$run_main(
-                      .env=.envs[[n]]
+                      .env=.env$.envs[[n]]
                     )
               }
-          
-          
-          print(as.list(.envs[[n]]))
-
+            .env$.envs[[n]]$steps
           }
       )
-                  
-            
+      .env$steps <- runs                
 }
 
 
