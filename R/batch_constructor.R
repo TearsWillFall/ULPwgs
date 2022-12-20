@@ -200,7 +200,7 @@ build_rdata_object=function(
           .this.env=environment()
           append_env(to=.this.env,from=.env)
           .env$rdata_file=paste0(out_file_dir_tmp,"/",job_id,".RData")
-          saveRDS(.env,file = .env$rdata_file)
+          saveRDS(.this.env,file = .env$rdata_file)
   }
       
 
