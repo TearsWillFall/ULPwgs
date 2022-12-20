@@ -157,14 +157,7 @@ new_sort_and_index_bam_samtools=function(
   hold=NULL
 ){
 
-  .base.env=environment()
-  set_env_vars(
-    .env= .base.env,
-    vars="bam"
-  )
 
-
-  run_env(.envs)
 
 
   run_main=function(
@@ -211,6 +204,15 @@ new_sort_and_index_bam_samtools=function(
     .env$steps <-steps
 
   }
+
+  .base.env=environment()
+  set_env_vars(
+    .env= .base.env,
+    vars="bam"
+  )
+
+
+  run_env(.envs)
 
  
 
@@ -350,15 +352,7 @@ new_sort_bam_samtools=function(
   hold=NULL
 ){
 
-  
-    .base.env=environment()
-    set_env_vars(
-      .env= .base.env,
-      vars="bam"
-    )
 
-
-    run_env(.envs)
 
     run_main=function(
       .env
@@ -432,6 +426,15 @@ new_sort_bam_samtools=function(
     }
 
 
+      
+    .base.env=environment()
+    set_env_vars(
+      .env= .base.env,
+      vars="bam"
+    )
+
+
+    run_env(.envs)
   
 
 }
@@ -564,19 +567,10 @@ new_index_bam_samtools=function(
   executor_id=NULL,
   hold=NULL
 ){
-  
-  
-  .base.env=environment()
-  set_env_vars(
-    .env= .base.env,
-    vars="bam"
-  )
 
 
-  run_env(.envs)
 
-
-  run_main=function(
+    run_main=function(
     .env
   ){
 
@@ -611,6 +605,19 @@ new_index_bam_samtools=function(
     .env$steps <-steps
 
   }
+  
+  
+  .base.env=environment()
+  set_env_vars(
+    .env= .base.env,
+    vars="bam"
+  )
+
+
+  run_env(.envs)
+
+
+
 
 
 
@@ -738,16 +745,6 @@ new_stats_bam_samtools=function(
 ){
 
 
-  .base.env=environment()
-  set_env_vars(
-    .env=.base.env,
-    vars="bam"
-  )
-
-  run_env(.envs)
-
-
-
   run_main=function(
     .env
   ){
@@ -789,6 +786,17 @@ new_stats_bam_samtools=function(
     .env$steps <- steps
 
   }
+
+
+
+  .base.env=environment()
+  set_env_vars(
+    .env=.base.env,
+    vars="bam"
+  )
+
+  run_env(.envs)
+
 
 
 }
