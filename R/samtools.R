@@ -600,7 +600,7 @@ new_index_bam_samtools=function(
   )
 
 
-  run_envir(.envs)
+  run_env(.envs)
 
 }
 
@@ -726,21 +726,15 @@ new_stats_bam_samtools=function(
 ){
 
 
-  base.env=environment()
-  set_envir_vars(
-    envir=base.env,
-    vars="bam"
-  )
-
-
-  run_main=function(
-    envir
+   run_main=function(
+    .env
   ){
 
 
-    append_env(from=envir)
-    set_steps_vars()
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
 
+    set_steps_vars(.env=.this.env)
 
     if(stats=="all"|stats=="flag"){
         steps[[fn]]<-append(
@@ -770,12 +764,17 @@ new_stats_bam_samtools=function(
         )
       }
 
-    envir$steps <- steps
+    .env$steps <- steps
 
   }
 
-  
-  run_envir(envirs=envirs)
+  .base.env=environment()
+  set_envir_vars(
+    .env=.base.env,
+    vars="bam"
+  )
+
+  run_env(.envs)
 }
 
 
@@ -897,22 +896,20 @@ new_flag_stats_samtools=function(
 ){
 
  
-  base.env=environment()
+  .base.env=environment()
   set_envir_vars(
-    envir=base.env,
+    .env=.base.env,
     vars="bam"
   )
 
-
-
-
   run_main=function(
-    envir
+    .env
   ){
 
-    append_env(from=envir)
-    set_steps_vars()
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
 
+    set_steps_vars(.env=.this.env)
    
 
     steps[[fn]]$out_file=paste0(
@@ -926,15 +923,15 @@ new_flag_stats_samtools=function(
       out_file
     )
 
-     run_job()
+     run_job(.this.env)
 
 
-     envir$steps <-steps
+     .env$steps <-steps
 
 
   }
 
- envirs=run_envir(envirs=envirs)
+  run_env(.envs)
   
   
 }
@@ -1056,23 +1053,16 @@ new_index_stats_samtools=function(
   select=NULL,
   executor_id=NULL,
   hold=NULL
-){
-
-  .base.env=environment()
-  set_envir_vars(
-    envir=.base.env,
-    vars="bam"
-  )
+){  
 
 
-  run_main=function(
-    envir
+   run_main=function(
+    .env
   ){
 
     
     .this.env=environment()
     append_env(to=.this.env,from=.env)
-
     set_steps_vars(.env=.this.env)
 
     steps[[fn]]$out_file=paste0(
@@ -1086,12 +1076,21 @@ new_index_stats_samtools=function(
 
     run_job(.env=.this.env)
 
-    envir$steps <-steps
+    .env$steps <-steps
 
 
   }
 
- envirs=run_envir(envirs=envirs)
+
+  .base.env=environment()
+  set_envir_vars(
+    envir=.base.env,
+    vars="bam"
+  )
+
+
+ 
+ run_env(.envs)
 
 }
 
