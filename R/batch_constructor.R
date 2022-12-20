@@ -513,6 +513,9 @@ run_env=function(.envs){
                       .env=.envs[[n]]
                     )
               }
+          
+          
+          print(as.list(.envs[[n]]))
 
           }
       )
