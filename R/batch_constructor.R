@@ -404,7 +404,8 @@ set_envir_vars=function(
     }
 
     if (!is.null(sheet)){
-         .env$envs=set_ss_envir()
+        set_ss_envir(.this.env)
+        .env$envs<-envs
         return()
     }
 
@@ -466,7 +467,7 @@ set_ss_envir=function(.env){
           dplyr::group_by(dplyr::across(-c(.env$vars))) %>%
           summarise(!! .env$vars := list(!! rlang::sym(.env$vars)))
 
-          envirs=lapply(seq(1,nrow(dat_filt)),
+          lapply(seq(1,nrow(dat_filt)),
             FUN=function(row){
               .this.env=environment()
               append_env(to=.this.env,from=.env)
@@ -481,10 +482,10 @@ set_ss_envir=function(.env){
                     )
               }))
 
-              return(.this.env)
+              .env$envs[[row]]<.this.env
             }
           )
-          return(envirs)
+          
 }
 
 
