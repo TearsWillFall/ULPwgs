@@ -1080,7 +1080,7 @@ new_index_stats_samtools=function(
 ){  
 
 
-   _main=function(
+   build_main=function(
     .env
   ){
 
