@@ -438,9 +438,8 @@ set_env_vars=function(
     }
 
 
-    .env$.envs[[1]] <- .this.env
+    .env$.envs[[1]] <- run_main(.this.env)
 
-    return()
    
 }
 
@@ -453,7 +452,6 @@ set_env_vars=function(
 
 
 set_ss_env=function(.env){
-
           dat=read.delim(.env$sheet,header=TRUE)
           dat_filt=dat %>% dplyr::distinct()
           nrows_dup=nrow(dat)-nrow(dat_filt)
@@ -482,7 +480,7 @@ set_ss_env=function(.env){
                     )
               }))
 
-              .env$.envs[[row]]<.this.env
+              .env$.envs[[row]]<-run_main(.this.env)
             }
           )
           
@@ -490,35 +488,7 @@ set_ss_env=function(.env){
 
 
 
-#' Run enviroment
-#' 
-#' @param envir Environment
-#' @export
 
-
-run_env=function(.envs){
-
-      runs=lapply(
-          seq(1,length(.envs)),FUN=function(n){
-              if(is.null(.envs[[n]]$select)){
-                    run_self(
-                      .env=.envs[[n]]
-                    )
-              }else{
-                    set_env_inputs(
-                      .env=.envs[[n]]
-                    )
-
-                    .envs[[n]]$run_main(
-                      .env=.envs[[n]]
-                    )
-              }
-            .envs[[n]]$steps
-          }
-      )
-
-      return(runs)                 
-}
 
 
 

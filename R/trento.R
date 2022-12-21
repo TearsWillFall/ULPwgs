@@ -267,7 +267,7 @@ clonet_trento=function(
     argg <- as.list(environment())
 
     if(!is.na(version)){
-        sif_path=build_default_sif_list()$sif_clonet[version]
+        sif_clonet=build_default_sif_list()$sif_clonet[version]
         if(is.null(sif_clonet)){
             stop(paste0(ver, " is not a valid PCF Select panel version"))
         }

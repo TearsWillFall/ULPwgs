@@ -160,7 +160,7 @@ new_sort_and_index_bam_samtools=function(
 
 
 
-  run_main=function(
+  build_main=function(
     .env
   ){
     .this.env=environment()
@@ -354,7 +354,7 @@ new_sort_bam_samtools=function(
 
 
 
-    run_main=function(
+    build_main=function(
       .env
     ){
       
@@ -572,8 +572,7 @@ new_index_bam_samtools=function(
 ){
 
 
-
-    run_main=function(
+  build_main=function(
     .env
   ){
 
@@ -606,8 +605,6 @@ new_index_bam_samtools=function(
     }
 
     .env$steps <-steps
-    return()
-
   }
   
   
@@ -617,10 +614,7 @@ new_index_bam_samtools=function(
     vars="bam"
   )
 
-
-  runs=run_env(.envs)
-
-  return(runs)
+  
 }
 
 
@@ -745,7 +739,7 @@ new_stats_bam_samtools=function(
 ){
 
 
-  run_main=function(
+  build_main=function(
     .env
   ){
 
@@ -921,7 +915,7 @@ new_flag_stats_samtools=function(
 ){
 
   
-  run_main=function(
+  build_main=function(
     .env
   ){
 
@@ -1086,11 +1080,10 @@ new_index_stats_samtools=function(
 ){  
 
 
-   run_main=function(
+   _main=function(
     .env
   ){
 
-    
     .this.env=environment()
     append_env(to=.this.env,from=.env)
     set_steps_vars(.env=.this.env)
@@ -1103,9 +1096,6 @@ new_index_stats_samtools=function(
         input," > ",steps[[fn]]$out_file
     )
 
-
-    run_job(.env=.this.env)
-
     .env$steps <-steps
     return()
 
@@ -1117,10 +1107,9 @@ new_index_stats_samtools=function(
     vars="bam"
   )
 
-   
-  runs=run_env(.envs)
+  
 
-  return(runs)
+  run_self()
 
 
 }
