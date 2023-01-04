@@ -615,6 +615,7 @@ new_index_bam_samtools=function(
   )
 
   
+  
 }
 
 
@@ -940,8 +941,7 @@ new_flag_stats_samtools=function(
 
 
      .env$steps <-steps
-
-    return()
+     return()
   }
 
 
@@ -1095,6 +1095,8 @@ new_index_stats_samtools=function(
         bin_samtools," idxstats ",
         input," > ",steps[[fn]]$out_file
     )
+
+    run_job(.this.env)
 
     .env$steps <-steps
     return()

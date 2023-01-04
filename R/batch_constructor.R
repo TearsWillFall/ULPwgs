@@ -193,16 +193,34 @@ execute_job=function(exec_code){
 #' @export
 
 
-build_rdata_object=function(
+build_env_object=function(
   .env=environment()
 ){        
 
           .this.env=environment()
           append_env(to=.this.env,from=.env)
-          .env$rdata_file=paste0(out_file_dir_tmp,"/",job_id,".RData")
-          saveRDS(.this.env,file = .env$rdata_file)
+          .env$env_file=paste0(out_file_dir_tmp,"/",job_id,".env.RData")
+          saveRDS(.this.env,file = .env$env_file)
   }
       
+
+
+
+#' Build execution innit for function to execute
+#' 
+#' @param env List of objects to save in RData object
+#' @export
+
+build_connector=function(){
+  .env=environment()
+}(
+   .this.env=environment()
+   append_env(to=.this.env,from=.env)
+   .env$connector_file=paste0(out_file_dir_tmp,"/",job_id,".connector.RData")
+   .env$connector_code=paste0("saveRDS(steps,file=",connector_file,")")
+)
+
+
 
 
 
@@ -216,7 +234,6 @@ build_rdata_object=function(
 build_exec_innit=function(
         .env=environment()
 ){
-
         .this.env=environment()
         append_env(to=.this.env,from=.env)
 
@@ -226,16 +243,13 @@ build_exec_innit=function(
              
               .env$exec_code=paste0("Rscript -e \" lapply(1:",n_inputs,
               ",FUN=function(select){",ns,"::",fn,"(inherit=\\\"",
-              rdata_file,"\\\",select=select)})\"")
+              env_file,"\\\",select=select)})"\"")
         
         }else if(mode=="batch"){
-    
               .env$exec_code=paste0("Rscript -e \" ",
-              ns,"::",fn,"(inherit=\\\"",rdata_file,
-              "\\\",select=$SGE_TASK_ID)\"")
-
+              ",ns,"::",fn,"(inherit=\\\"",env_file,
+              "\\\",select=$SGE_TASK_ID)"\"")
         }else{
-
           stop("Unkown mode type")
         }
 }
@@ -290,9 +304,13 @@ run_self=function(
     .this.env=environment()
     append_env(to=.this.env,from=.env)
 
+    
+
     ### Create RData object to inherit vars
 
-    build_rdata_object(.env=.env)
+    build_env_object(.env=.env)
+
+    build_connector(.env=.env)
 
     build_exec_innit(
             .env=.env
@@ -313,6 +331,7 @@ run_self=function(
     }
 
     .env$error=execute_job(exec_code=.env$exec_code)
+  
 
     if(.env$error!=0){
         stop(err_msg)
@@ -334,7 +353,6 @@ run_self=function(
       .this.env=environment()
       append_env(to=.this.env,from=.env)
 
-
       if(verbose){
         print_verbose(
           job=job_id,arg=as.list(.this.env),
@@ -350,6 +368,7 @@ run_self=function(
       if(steps[[fn]]$error!=0){
           stop(err_mssg)
       }
+
       .env$steps <- steps
  }
    

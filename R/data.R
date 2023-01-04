@@ -6,13 +6,40 @@
 #' @export
 
 build_instrument_id = function(instruments=list(
-  instrument=c("MiSeq","Genome Analyzer IIx",
-  "MiSeq","HiSeq 1500","HiSeq 1500","HiSeq 2500","HiSeq 2500","HiSeq 3000",
-  "HiSeq 3000","HiSeq 4000","HiSeq X","NextSeq","NextSeq","MiniSeq","NovaSeq 6000"),
-  pattern=c("HWI-M[0-9]{4}$","HWUSI","M[0-9]{5}$","HWI-C[0-9]{5}$",
-  "C[0-9]{5}$","HWI-D[0-9]{5}$","D[0-9]{5}$","J[0-9]{5}$","K[0-9]{5}$",
-  "K[0-9]{5}$","E[0-9]{5}$","NB[0-9]{6}$","NS[0-9]{6}$","MN[0-9]{5}$","A[0-9]{5}$"
-  ))){
+  instrument=c("MiSeq",
+  "Genome Analyzer IIx",
+  "MiSeq",
+  "HiSeq 1500",
+  "HiSeq 1500",
+  "HiSeq 2500",
+  "HiSeq 2500",
+  "HiSeq 3000",
+  "HiSeq 3000",
+  "HiSeq 4000",
+  "HiSeq X",
+  "NextSeq",
+  "NextSeq",
+  "MiniSeq",
+  "NovaSeq 6000"
+),
+  pattern=c(
+    "HWI-M[0-9]{4}$",
+    "HWUSI",
+    "M[0-9]{5}$",
+    "HWI-C[0-9]{5}$",
+    "C[0-9]{5}$",
+    "HWI-D[0-9]{5}$",
+    "D[0-9]{5}$",
+    "J[0-9]{5}$",
+    "K[0-9]{5}$",
+    "K[0-9]{5}$",
+    "E[0-9]{5}$",
+    "NB[0-9]{6}$",
+    "NS[0-9]{6}$",
+    "MN[0-9]{5}$",
+    "A[0-9]{5}$"
+  )
+)){
     data.frame(instruments,stringsAsFactors = FALSE)
   }
 
@@ -125,10 +152,10 @@ build_flowcell_id=function(flowcells=list(
       "H[A-Z,0-9]{4}BGXY$",
       "H[A-Z,0-9]{4}BGX2$",
       "H[A-Z,0-9]{4}AFXX$",
-      "A[A-Z,0-9]{4}$",
-      "B[A-Z,0-9]{4}$",
-      "D[A-Z,0-9]{4}$",
-      "G[A-Z,0-9]{4}$",
+      "A[A-Z,0-9]{4}[A-Z][A-Z][A-Z][A-Z]$",
+      "B[A-Z,0-9]{4}[A-Z][A-Z][A-Z][A-Z]$",
+      "D[A-Z,0-9]{4}[A-Z][A-Z][A-Z][A-Z]$",
+      "G[A-Z,0-9]{4}[A-Z][A-Z][A-Z][A-Z]$",
       "H[A-Z,0-9]{4}DMXX$",
       "H[A-Z,0-9]{4}DMXY$",
       "H[A-Z,0-9]{4}DSXX$",
