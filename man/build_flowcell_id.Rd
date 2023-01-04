@@ -34,11 +34,13 @@ build_flowcell_id(
     "H[A-Z,0-9]{4}BCXY$", "H[A-Z,0-9]{4}BBXX$", "H[A-Z,0-9]{4}BBXY$",
     "H[A-Z,0-9]{4}CCXX$", "H[A-Z,0-9]{4}CCXY$", "H[A-Z,0-9]{4}ALXX$",
     "H[A-Z,0-9]{4}BGXX$", "H[A-Z,0-9]{4}BGXY$", "H[A-Z,0-9]{4}BGX2$",
-    "H[A-Z,0-9]{4}AFXX$", "A[A-Z,0-9]{4}$", "B[A-Z,0-9]{4}$", "D[A-Z,0-9]{4}$",
-    "G[A-Z,0-9]{4}$", "H[A-Z,0-9]{4}DMXX$", "H[A-Z,0-9]{4}DMXY$", "H[A-Z,0-9]{4}DSXX$",
-    "H[A-Z,0-9]{4}DSX[1-9]$", 
-     "H[A-Z,0-9]{4}DSXY$", "H[A-Z,0-9]{4}DRXX$",
-    "H[A-Z,0-9]{4}DRX2$", "H[A-Z,0-9]{4}DRXY$"))
+    "H[A-Z,0-9]{4}AFXX$", "A[A-Z,0-9]{4}[A-Z][A-Z][A-Z][A-Z]$",
+    "B[A-Z,0-9]{4}[A-Z][A-Z][A-Z][A-Z]$", "D[A-Z,0-9]{4}[A-Z][A-Z][A-Z][A-Z]$",
+    "G[A-Z,0-9]{4}[A-Z][A-Z][A-Z][A-Z]$", 
+     "H[A-Z,0-9]{4}DMXX$",
+    "H[A-Z,0-9]{4}DMXY$", "H[A-Z,0-9]{4}DSXX$", "H[A-Z,0-9]{4}DSX[1-9]$",
+    "H[A-Z,0-9]{4}DSXY$", "H[A-Z,0-9]{4}DRXX$", "H[A-Z,0-9]{4}DRX2$",
+    "H[A-Z,0-9]{4}DRXY$"))
 )
 }
 \arguments{

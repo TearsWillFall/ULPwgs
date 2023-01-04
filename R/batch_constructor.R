@@ -206,23 +206,6 @@ build_env_object=function(
 
 
 
-#' Build execution innit for function to execute
-#' 
-#' @param env List of objects to save in RData object
-#' @export
-
-build_connector=function(){
-  .env=environment()
-}(
-   .this.env=environment()
-   append_env(to=.this.env,from=.env)
-   .env$connector_file=paste0(out_file_dir_tmp,"/",job_id,".connector.RData")
-   .env$connector_code=paste0("saveRDS(steps,file=",connector_file,")")
-)
-
-
-
-
 
 
 #' Build execution innit for function to execute
@@ -243,12 +226,13 @@ build_exec_innit=function(
              
               .env$exec_code=paste0("Rscript -e \" lapply(1:",n_inputs,
               ",FUN=function(select){",ns,"::",fn,"(inherit=\\\"",
-              env_file,"\\\",select=select)})"\"")
-        
+              env_file,"\\\",select=select)})\"")
+
         }else if(mode=="batch"){
-              .env$exec_code=paste0("Rscript -e \" ",
-              ",ns,"::",fn,"(inherit=\\\"",env_file,
-              "\\\",select=$SGE_TASK_ID)"\"")
+          
+              .env$exec_code=paste0("Rscript -e \" "
+              ,ns,"::",fn,"(inherit=\\\"",env_file,
+              "\\\",select=$SGE_TASK_ID) \"")
         }else{
           stop("Unkown mode type")
         }
@@ -288,13 +272,43 @@ build_batch_exec_innit=function(
 }
 
 
-#' Run job from batch constructor
+#' Set vars for self run
 #' 
 #' @param env Inherit current enviroment.
 #' 
 #' 
 #' @export
 
+
+set_self=function(
+  .env
+){
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+    self=list()
+    self$job_id=job_id
+    self$executor_id=executor_id
+    self$task_id=task_id
+    self$input=input
+    self$input_id=input_id
+    self$exec_code=""
+    self$error=0
+    self$output_dir=out_file_dir
+    self$out_file=""
+    .env$.self=self
+
+}
+
+
+
+
+
+#' Run job from batch constructor
+#' 
+#' @param env Inherit current enviroment.
+#' 
+#' 
+#' @export
 
 run_self=function(
   .env=environment()
@@ -304,13 +318,12 @@ run_self=function(
     .this.env=environment()
     append_env(to=.this.env,from=.env)
 
-    
+    set_self(.env=.env)
 
     ### Create RData object to inherit vars
 
     build_env_object(.env=.env)
 
-    build_connector(.env=.env)
 
     build_exec_innit(
             .env=.env
