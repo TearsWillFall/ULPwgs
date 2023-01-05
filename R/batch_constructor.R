@@ -532,7 +532,7 @@ set_env_vars=function(
 
 
 run=function(.env){
-  if(!select){
+  if(!is.null(select)){
     run_self(.env=.env)
     return(.self)
   }else{
