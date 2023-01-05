@@ -200,6 +200,7 @@ build_env_object=function(
           append_env(to=.this.env,from=.env)
           env_file=paste0(out_file_dir_tmp,"/",job_id,".env.RData")
           saveRDS(.this.env,file = env_file)
+          .env<-.this.env
   }
       
 
@@ -219,6 +220,8 @@ build_connector=function(){
   connector_file=paste0(out_file_dir_tmp,"/",job_id,".connector.RData")
 
   connector_code=paste0("saveRDS(steps,file=",connector_file,")")
+  
+  .env<-.this.env
 
 }
 
@@ -253,6 +256,8 @@ build_exec_innit=function(
         }else{
           stop("Unkown mode type")
         }
+
+        .env<-.this.env
 }
 
 
@@ -286,6 +291,7 @@ build_batch_exec_innit=function(
     exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
     ";",exec_code,"'|",batch_code)
 
+    .env<-.this.env
 }
 
 
@@ -396,7 +402,7 @@ run_self=function(
         )
       
       if(.env$error!=0){
-          stop(err_mssg)
+          stop(err_msg)
       }
       
       main=new.env()
@@ -420,7 +426,7 @@ set_env_vars=function(
   .env=environment(),
   vars=NULL,
   fn=NULL,
-  err_mssg=NULL
+  err_msg=NULL
 ){  
 
     .this.env=environment()
@@ -476,7 +482,7 @@ set_env_vars=function(
       executor_id <- make_unique_id(fn)
     }
 
-    if(is.null(err_mssg)){
+    if(is.null(err_msg)){
         err_msg <- paste0("CRITICAL ERROR: ",fn," -> ")
     }else{
         err_msg <- paste0(err_msg ,fn," -> ")
@@ -523,7 +529,6 @@ set_env_vars=function(
       },.env=.this.env
     )
     
-    print(as.list(.this.env))
     .env$.self.env <- .this.env
     return()
 }
