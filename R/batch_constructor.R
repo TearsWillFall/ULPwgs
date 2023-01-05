@@ -334,7 +334,7 @@ run_self=function(
     append_env(to=.this.env,from=.env)
     set_self(.env=.env)
     
-    .self=.env.self
+    .self=.env$.self
 
     ### Create RData object to inherit vars
 
