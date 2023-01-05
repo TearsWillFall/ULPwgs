@@ -436,7 +436,7 @@ set_env_vars=function(
           inherit <-readRDS(file=inherit)
         }
         append_env(to=.this.env,from=inherit)
-        .envs<-inherit$.envs
+        envs<-inherit$envs
         .env$.self.env <- .this.env
         return()
     }else{
@@ -494,7 +494,7 @@ set_env_vars=function(
     }
 
 
-    .envs<-new.env()
+    envs<-new.env()
 
     lapply(1:n_inputs,function(n,.env){
 
@@ -523,7 +523,7 @@ set_env_vars=function(
           name=inputs_id
         )
 
-        .envs[[inputs_id]]<-environment()
+        envs[[inputs_id]]<-environment()
 
       },.env=.this.env
     )
@@ -547,7 +547,7 @@ run=function(.env){
     run_self(.env=.env)
     return(.self)
   }else{
-    run_main(.env$.envs[[inputs_id[[select]]]])
+    run_main(.env$envs[[inputs_id[[select]]]])
     return(.main)
   }
 }
@@ -590,7 +590,7 @@ set_ss_env=function(.env){
                     )
               }))
 
-              .env$.envs[[row]]<-run_main(.this.env)
+              .env$envs[[row]]<-run_main(.this.env)
             }
           )
           
