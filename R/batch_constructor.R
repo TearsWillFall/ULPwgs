@@ -196,13 +196,31 @@ execute_job=function(exec_code){
 build_env_object=function(
   .env=environment()
 ){        
-
           .this.env=environment()
           append_env(to=.this.env,from=.env)
-          .env$env_file=paste0(out_file_dir_tmp,"/",job_id,".env.RData")
-          saveRDS(.this.env,file = .env$env_file)
+          env_file=paste0(out_file_dir_tmp,"/",job_id,".env.RData")
+          saveRDS(.this.env,file = env_file)
   }
       
+
+
+
+#' Build execution innit for function to execute
+#' 
+#' @param env List of objects to save in RData object
+#' @export
+
+build_connector=function(){
+  .env=environment()
+
+  .this.env=environment()
+  append_env(to=.this.env,from=.env)
+
+  connector_file=paste0(out_file_dir_tmp,"/",job_id,".connector.RData")
+
+  connector_code=paste0("saveRDS(steps,file=",connector_file,")")
+
+}
 
 
 
@@ -224,15 +242,14 @@ build_exec_innit=function(
         
         if(mode=="local"){
              
-              .env$exec_code=paste0("Rscript -e \" lapply(1:",n_inputs,
+              exec_code=paste0("Rscript -e \" lapply(1:",n_inputs,
               ",FUN=function(select){",ns,"::",fn,"(inherit=\\\"",
               env_file,"\\\",select=select)})\"")
-
+        
         }else if(mode=="batch"){
-          
-              .env$exec_code=paste0("Rscript -e \" "
-              ,ns,"::",fn,"(inherit=\\\"",env_file,
-              "\\\",select=$SGE_TASK_ID) \"")
+              exec_code=paste0("Rscript -e \" ",
+              ns,"::",fn,"(inherit=\\\"",env_file,
+              "\\\",select=$SGE_TASK_ID)\"")
         }else{
           stop("Unkown mode type")
         }
@@ -257,17 +274,17 @@ build_batch_exec_innit=function(
     append_env(to=.this.env,from=.env)
 
   
-    .env$out_file_dir_batch=set_dir(dir=out_file_dir_tmp,name="batch")
+    out_file_dir_batch=set_dir(dir=out_file_dir_tmp,name="batch")
 
-    .env$batch_code=build_job_exec(
+    batch_code=build_job_exec(
       job=job_id,time=time,ram=ram,
       threads=threads,wd=getwd(),
       output_dir=out_file_dir_batch,
-      hold=hold,array=length(input)
+      hold=hold,array=n_inputs
     )
 
-    .env$exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
-    ";",exec_code,"'|",.env$batch_code)
+    exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
+    ";",exec_code,"'|",batch_code)
 
 }
 
@@ -285,17 +302,15 @@ set_self=function(
 ){
     .this.env=environment()
     append_env(to=.this.env,from=.env)
-    self=list()
-    self$job_id=job_id
-    self$executor_id=executor_id
-    self$task_id=task_id
-    self$input=input
-    self$input_id=input_id
-    self$exec_code=""
-    self$error=0
-    self$output_dir=out_file_dir
-    self$out_file=""
-    .env$.self=self
+
+    error=0
+    env_file=""
+    connector_file=""
+    connector_code=""
+    exec_code=""
+    batch_code=""
+    .env$.self=environment()
+    return()
 
 }
 
@@ -317,37 +332,39 @@ run_self=function(
 
     .this.env=environment()
     append_env(to=.this.env,from=.env)
-
     set_self(.env=.env)
+    
+    .self=.env.self
 
     ### Create RData object to inherit vars
 
-    build_env_object(.env=.env)
-
+    build_env_object(.env=.self)
 
     build_exec_innit(
-            .env=.env
+            .env=.self
     )
 
 
     if(mode=="batch"){
         build_batch_exec_innit(
-              .env=.env
+              .env=.self
         )
     }
 
+
+
     if(verbose){
-          print_verbose(job=job_id,
-            arg=as.list(.env),
-            exec_code=.env$exec_code
+          print_verbose(job=.self$job_id,
+            arg=as.list(.self),
+            exec_code=.self$exec_code
           )
     }
 
-    .env$error=execute_job(exec_code=.env$exec_code)
+    .self$error=execute_job(exec_code=.self$exec_code)
   
 
-    if(.env$error!=0){
-        stop(err_msg)
+    if(.self$error!=0){
+        stop(.self$err_msg)
     }
 
 }
@@ -369,20 +386,22 @@ run_self=function(
       if(verbose){
         print_verbose(
           job=job_id,arg=as.list(.this.env),
-          exec_code=steps[[fn]]$exec_code
+          exec_code=exec_code
         )
       }
 
 
-      steps[[fn]]$error=execute_job(
-          exec_code=steps[[fn]]$exec_code
+      .env$error=execute_job(
+          exec_code=exec_code
         )
       
-      if(steps[[fn]]$error!=0){
+      if(.env$error!=0){
           stop(err_mssg)
       }
-
-      .env$steps <- steps
+      
+      main=new.env()
+      main[[fn]]=.env
+      .env=main
  }
    
 
@@ -422,16 +441,6 @@ set_env_vars=function(
         )
         inputs_ext <- unname(Vectorize(get_file_ext)(inputs))
       }
-
-      out_file_dir <- set_dir(
-            dir=output_dir
-      )
-
-      out_file_dir_tmp <- set_dir(
-        dir=out_file_dir,
-        name="tmp"
-      )
-
     }
 
 
@@ -448,13 +457,6 @@ set_env_vars=function(
       executor_id <- make_unique_id(fn)
     }
 
-    task_id <- make_unique_id(fn)
-
-    job_id <- build_job(
-      executor_id=executor_id,
-      task_id=task_id
-    )
-
     if(is.null(err_mssg)){
         err_msg <- paste0("CRITICAL ERROR: ",fn," -> ")
     }else{
@@ -462,6 +464,7 @@ set_env_vars=function(
     }
 
 
+   
     
     if (!is.null(sheet)){
         set_ss_env(.this.env)
@@ -470,10 +473,58 @@ set_env_vars=function(
     }
 
 
-    .env$.envs[[1]] <- run_main(.this.env)
+    .envs<-new.env()
 
-   
+    invisible(
+      lapply(1:n_inputs,function(n,.env){
+
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+        inputs<-inputs[n]
+        n_inputs<-1
+        inputs_id<-inputs_id[n]
+        inputs_ext<-inputs_ext[n]
+
+
+        task_id <- make_unique_id(fn)
+
+        job_id <- build_job(
+          executor_id=executor_id,
+          task_id=task_id
+        )
+        
+        out_file_dir <- set_dir(
+              dir=output_dir
+        )
+
+        out_file_dir_tmp <- set_dir(
+          dir=out_file_dir,
+          name="tmp"
+        )
+
+        .envs[[inputs_id]]<-environment()
+
+      },.env=.this.env
+      )
+    )
+    .env$.envs<-.envs
 }
+
+
+#' Set steps enviroment for use
+#' 
+#' @param .env Environment
+#' @export
+
+
+run=function(.env){
+  if(!select){
+    run_self(.env=.env)
+  }else{
+    run_main(.envs[[inputs_id[[select]]]])
+  }
+}
+
 
 
 
@@ -534,24 +585,17 @@ set_ss_env=function(.env){
 
 
 
-set_steps_vars=function(
+set_main=function(
   .env=environment()
 ){     
       .this.env=environment()
       append_env(to=.this.env,from=.env)
+      exec_code=""
+      error=0
+      out_file=""
       steps=list()
-      steps[[fn]]$job_id=job_id
-      steps[[fn]]$executor_id=executor_id
-      steps[[fn]]$task_id=task_id
-      steps[[fn]]$select=select
-      steps[[fn]]$input=input
-      steps[[fn]]$input_id=input_id
-      steps[[fn]]$exec_code=""
-      steps[[fn]]$error=0
-      steps[[fn]]$output_dir=out_file_dir
-      steps[[fn]]$out_file=""
-      steps[[fn]]$steps=list()
-      .env$steps=steps
+      .env$.main=environment()
+      return()
   }
 
 

@@ -160,7 +160,7 @@ new_sort_and_index_bam_samtools=function(
 
 
 
-  build_main=function(
+  run_main=function(
     .env
   ){
     .this.env=environment()
@@ -354,7 +354,7 @@ new_sort_bam_samtools=function(
 
 
 
-    build_main=function(
+    run_main=function(
       .env
     ){
       
@@ -362,40 +362,38 @@ new_sort_bam_samtools=function(
       .this.env=environment()
       append_env(to=.this.env,from=.env)
 
-      set_steps_vars(.env=.this.env)
+      set_main(.env=.this.env)
 
 
-      sort_type=""
-
-      steps[[fn]]$out_file=paste0(out_file_dir,"/",input_id,".sorted.",input_ext)
+      .main$out_file=paste0(out_file_dir,"/",input_id,".sorted.",input_ext)
       
     
-      steps[[fn]]$exec_code=paste0(
+      .main$exec_code=paste0(
         bin_samtools," sort ",
         ifelse(coord_sort,""," -n "), 
         input,
         " -@ ",threads,
         " -m ",ram,
         "G"," -o ",
-        steps[[fn]]$out_file
+        .main$out_file
       )
     
       if(clean){
-        steps[[fn]]$exec_code=paste(
-          steps[[fn]]$exec_code," && rm",paste(input,collapse=" ")
+        .main$exec_code=paste(
+          .main$exec_code," && rm",paste(input,collapse=" ")
         )
       }
 
 
-      run_job(.this.env)
+      run_job(.main)
 
       if(index & coord_sort){
 
-          steps[[fn]]<-append(
-            steps[[fn]],
+          .main <-append(
+            .main ,
               new_index_bam_samtools(
                   bin_samtools=bin_samtools,
-                  bam=steps[[fn]]$out_file,
+                  bam=.main[[fn]]$out_file,
                   stats=stats,
                   verbose=verbose,
                   threads=threads,
@@ -407,11 +405,11 @@ new_sort_bam_samtools=function(
       }
 
       if(stats){
-          steps[[fn]] <-append(
-            steps[[fn]],
+          .main <-append(
+            .main ,
               new_stats_bam_samtools(
                   bin_samtools=bin_samtools,
-                  bam=steps[[fn]]$out_file,
+                  bam=.main[[fn]]$out_file,
                   stats="flag",
                   verbose=verbose,
                   threads=threads,
@@ -422,7 +420,7 @@ new_sort_bam_samtools=function(
             )
       }
 
-      .env$steps <- steps
+      .env$.main <- .main
       return()
     }
 
@@ -434,10 +432,6 @@ new_sort_bam_samtools=function(
       vars="bam"
     )
 
-
-    runs=run_env(.envs)
-
-    return(runs)
   
 
 }
@@ -572,26 +566,26 @@ new_index_bam_samtools=function(
 ){
 
 
-  build_main=function(
+  run_main=function(
     .env
   ){
 
     .this.env=environment()
     append_env(to=.this.env,from=.env)
 
-    set_steps_vars(.env=.this.env)
+    set_main(.env=.this.env)
 
-    steps[[fn]]$out_file=paste0(input,".bai")
-    steps[[fn]]$exec_code=paste(
+    .main$out_file=paste0(input,".bai")
+    .main$exec_code=paste(
       bin_samtools," index",
       input," -@ ",threads
     )
    
-    run_job(.env=.this.env)
+    run_job(.env=.main)
 
     if(stats){
-      steps[[fn]]$steps <-append(
-        steps[[fn]]$steps,
+      .main[[fn]]$steps <-append(
+        .main[[fn]]$steps,
         new_stats_bam_samtools(
                   bin_samtools=bin_samtools,
                   bam=input,
@@ -604,7 +598,7 @@ new_index_bam_samtools=function(
       )
     }
 
-    .env$steps <-steps
+    .env$.main <-.main
   }
   
   
@@ -613,6 +607,7 @@ new_index_bam_samtools=function(
     .env= .base.env,
     vars="bam"
   )
+ 
 
   
   
@@ -740,7 +735,7 @@ new_stats_bam_samtools=function(
 ){
 
 
-  build_main=function(
+  run_main=function(
     .env
   ){
 
@@ -916,7 +911,7 @@ new_flag_stats_samtools=function(
 ){
 
   
-  build_main=function(
+  run_main=function(
     .env
   ){
 
@@ -1080,25 +1075,25 @@ new_index_stats_samtools=function(
 ){  
 
 
-   build_main=function(
+   run_main=function(
     .env
   ){
 
     .this.env=environment()
     append_env(to=.this.env,from=.env)
-    set_steps_vars(.env=.this.env)
+    set_main(.env=.this.env)
 
-    steps[[fn]]$out_file=paste0(
+    .main$out_file=paste0(
       out_file_dir,"/",input_id,".idxstats.txt"
     )
-    steps[[fn]]$exec_code=paste0(
+    .main$exec_code=paste0(
         bin_samtools," idxstats ",
-        input," > ",steps[[fn]]$out_file
+        input," > ",.main$out_file
     )
 
-    run_job(.this.env)
+    run_job(.main)
 
-    .env$steps <-steps
+    .env$.main <- .main
     return()
 
   }
@@ -1109,9 +1104,7 @@ new_index_stats_samtools=function(
     vars="bam"
   )
 
-  
 
-  run_self()
 
 
 }
