@@ -541,8 +541,9 @@ set_env_vars=function(
 
 run=function(.env){
 
-  print(as.list(.env))
-  if(is.null(.env$select)){
+  .this.env=environment()
+  append_env(to=.this.env,from=.env)
+  if(is.null(select)){
     run_self(.env=.env)
     return(.self)
   }else{
