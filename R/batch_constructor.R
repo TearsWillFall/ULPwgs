@@ -534,8 +534,10 @@ set_env_vars=function(
 run=function(.env){
   if(!select){
     run_self(.env=.env)
+    return(.self)
   }else{
     run_main(.env$.envs[[inputs_id[[select]]]])
+    return(.main)
   }
 }
 
