@@ -441,6 +441,22 @@ set_env_vars=function(
         )
         inputs_ext <- unname(Vectorize(get_file_ext)(inputs))
       }
+
+      task_id <- make_unique_id(fn)
+
+      job_id <- build_job(
+        executor_id=executor_id,
+        task_id=task_id
+      )
+
+      out_file_dir <- set_dir(
+            dir=output_dir
+      )
+
+      out_file_dir_tmp <- set_dir(
+        dir=out_file_dir,
+        name="tmp"
+      )
     }
 
 
@@ -463,12 +479,9 @@ set_env_vars=function(
         err_msg <- paste0(err_msg ,fn," -> ")
     }
 
-
-   
-    
     if (!is.null(sheet)){
         set_ss_env(.this.env)
-        .env$.envs <- .envs
+        .env=.this.env
         return()
     }
 
@@ -494,12 +507,13 @@ set_env_vars=function(
         )
         
         out_file_dir <- set_dir(
-              dir=output_dir
+              dir=out_file_dir,
+              name=inputs_id
         )
 
         out_file_dir_tmp <- set_dir(
-          dir=out_file_dir,
-          name="tmp"
+          dir=out_file_dir_tmp,
+          name=inputs_id
         )
 
         .envs[[inputs_id]]<-environment()
@@ -507,7 +521,7 @@ set_env_vars=function(
       },.env=.this.env
       )
     )
-    .env$.envs<-.envs
+    .env=.this.env
 }
 
 
@@ -521,7 +535,7 @@ run=function(.env){
   if(!select){
     run_self(.env=.env)
   }else{
-    run_main(.envs[[inputs_id[[select]]]])
+    run_main(.env$.envs[[inputs_id[[select]]]])
   }
 }
 
