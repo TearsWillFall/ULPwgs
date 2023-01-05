@@ -200,7 +200,7 @@ build_env_object=function(
           append_env(to=.this.env,from=.env)
           env_file=paste0(out_file_dir_tmp,"/",job_id,".env.RData")
           saveRDS(.this.env,file = env_file)
-          .env<-.this.env
+          append_env(to=.env,from=.this.env)
   }
       
 
@@ -221,7 +221,7 @@ build_connector=function(){
 
   connector_code=paste0("saveRDS(steps,file=",connector_file,")")
   
-  .env<-.this.env
+  append_env(to=.env,from=.this.env)
 
 }
 
@@ -257,8 +257,7 @@ build_exec_innit=function(
           stop("Unkown mode type")
         }
 
-        .env<-.this.env
-}
+        append_env(to=.env,from=.this.env)
 
 
 
@@ -291,7 +290,7 @@ build_batch_exec_innit=function(
     exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
     ";",exec_code,"'|",batch_code)
 
-    .env<-.this.env
+    append_env(to=.env,from=.this.env)
 }
 
 
@@ -407,7 +406,7 @@ run_self=function(
       
       main=new.env()
       main[[fn]]=.env
-      .env=main
+      .env$.main=main
  }
    
 
