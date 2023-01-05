@@ -431,6 +431,9 @@ set_env_vars=function(
           inherit <-readRDS(file=inherit)
         }
         append_env(to=.this.env,from=inherit)
+        .envs<-inherit$.envs
+        .env<-.this.env
+        return()
     }else{
       if(!is.null(vars)){
         inputs <- get(vars)
@@ -464,11 +467,11 @@ set_env_vars=function(
 
       ## GET CALLER FUNCTION NAME IF NOT GIVEN
   
-    fn <- sub(".*::","",sub("\\(.*","",
-        paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=","))
-      )
+      fn <- sub(".*::","",sub("\\(.*","",
+          paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=","))
+        )
     }
-
+    
     if(is.null(executor_id)){
       executor_id <- make_unique_id(fn)
     }
@@ -521,7 +524,9 @@ set_env_vars=function(
       },.env=.this.env
       )
     )
+
     .env=.this.env
+    return()
 }
 
 
