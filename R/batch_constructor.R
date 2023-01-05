@@ -491,8 +491,7 @@ set_env_vars=function(
 
     .envs<-new.env()
 
-    invisible(
-      lapply(1:n_inputs,function(n,.env){
+    lapply(1:n_inputs,function(n,.env){
 
         .this.env=environment()
         append_env(to=.this.env,from=.env)
@@ -522,10 +521,10 @@ set_env_vars=function(
         .envs[[inputs_id]]<-environment()
 
       },.env=.this.env
-      )
     )
-
-    .env=.this.env
+    
+    print(.this.env)
+    .env <- .this.env
     return()
 }
 
