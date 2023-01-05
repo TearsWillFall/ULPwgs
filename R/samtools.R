@@ -608,8 +608,7 @@ new_index_bam_samtools=function(
     vars="bam"
   )
  
-  run(.env=.base.env)
-  
+  run(.env=.self.env)
   
 }
 

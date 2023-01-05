@@ -432,7 +432,7 @@ set_env_vars=function(
         }
         append_env(to=.this.env,from=inherit)
         .envs<-inherit$.envs
-        .env<-.this.env
+        .env$.self.env <- .this.env
         return()
     }else{
       if(!is.null(vars)){
@@ -484,7 +484,7 @@ set_env_vars=function(
 
     if (!is.null(sheet)){
         set_ss_env(.this.env)
-        .env=.this.env
+        .env$.self.env <- .this.env
         return()
     }
 
@@ -523,8 +523,8 @@ set_env_vars=function(
       },.env=.this.env
     )
     
-    print(.this.env)
-    .env <- .this.env
+    print(as.list(.this.env))
+    .env$.self.env <- .this.env
     return()
 }
 
