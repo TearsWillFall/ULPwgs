@@ -563,15 +563,6 @@ set_env_vars=function(
           task_id=task_id
         )
         
-        out_file_dir <- set_dir(
-              dir=out_file_dir,
-              name=inputs_id
-        )
-
-        out_file_dir_tmp <- set_dir(
-          dir=out_file_dir_tmp,
-          name=inputs_id
-        )
         
         build_connector(.env=.this.env)
     
