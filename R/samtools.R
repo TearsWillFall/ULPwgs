@@ -578,7 +578,7 @@ new_index_bam_samtools=function(
       input," -@ ",threads
     )
    
-    run_job(.env=.main)
+    run_job(.env=.this.env)
 
     if(stats){
       .main[[fn]]$steps <-append(

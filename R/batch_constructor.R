@@ -436,6 +436,7 @@ run_self=function(
  ){
       .this.env=environment()
       append_env(to=.this.env,from=.env)
+      .main=.env$.main
 
       if(verbose){
         print_verbose(
@@ -444,18 +445,15 @@ run_self=function(
         )
       }
 
-
-      .env$error=execute_job(
+      .main$error=execute_job(
           exec_code=exec_code
         )
       
-      if(.env$error!=0){
+      if(.main$error!=0){
           stop(err_msg)
       }
       
-      main=new.env()
-      main[[fn]]=.env
-      .env$.main=main
+      .env$.main$steps[[fn]] <- .main
  }
    
 
