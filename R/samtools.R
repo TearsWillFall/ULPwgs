@@ -170,8 +170,8 @@ new_sort_and_index_bam_samtools=function(
 
   
     if(sort){
-        .main$steps<-append(
-          .main$steps,
+        .main$steps[[fn]]$steps <-append(
+          .main$steps[[fn]]$steps ,
             new_sort_bam_samtools(
               bin_samtools=bin_samtools,
               bam=input,
@@ -188,8 +188,8 @@ new_sort_and_index_bam_samtools=function(
       )
 
     }else{
-        .main$steps <-append(
-          .main$steps,
+        .main$steps[[fn]]$steps  <-append(
+          .main$steps[[fn]]$steps ,
             new_index_bam_samtools(
               bin_samtools=bin_samtools,
               bam=input,
@@ -385,13 +385,16 @@ new_sort_bam_samtools=function(
 
       run_job(.env=.this.env)
 
+
+      .this.step=.main$steps[[fn]]
+
       if(index & coord_sort){
 
           .main$steps[[fn]]$steps <-append(
             .main$steps[[fn]]$steps ,
               new_index_bam_samtools(
                   bin_samtools=bin_samtools,
-                  bam=.main$steps[[fn]]$out_file,
+                  bam=.this.step$out_file,
                   stats=stats,
                   verbose=verbose,
                   threads=threads,
@@ -400,14 +403,17 @@ new_sort_bam_samtools=function(
                 )
             )
 
+          .this.step=.main$steps[[fn]]$steps$new_index_bam_samtools
+
       }
 
       if(stats){
+        
           .main$steps[[fn]]$steps <-append(
            .main$steps[[fn]]$steps ,
               new_stats_bam_samtools(
                   bin_samtools=bin_samtools,
-                  bam=.main$steps[[fn]]$out_file,
+                  bam=.this.step$out_file,
                   stats="flag",
                   verbose=verbose,
                   threads=threads,
