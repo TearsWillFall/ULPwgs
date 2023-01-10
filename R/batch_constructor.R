@@ -530,7 +530,6 @@ set_env_vars=function(
     )
     
     .env$.self.env <- .this.env
-    return()
 }
 
 
