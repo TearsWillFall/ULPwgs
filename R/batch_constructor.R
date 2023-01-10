@@ -262,7 +262,7 @@ read_connectors=function(
         env=readRDS(envs[[inputs_id[[n]]]]$connector_file)
       })
   }else{
-    envs=readRDS(envs[[inputs_id[[n]]]]$connector_file)
+    envs=readRDS(envs[[inputs_id[[1]]]]$connector_file)
   }
  
 
