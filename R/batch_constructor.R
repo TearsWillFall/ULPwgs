@@ -500,10 +500,10 @@ set_env_vars=function(
 
         .this.env=environment()
         append_env(to=.this.env,from=.env)
-        inputs<-inputs[n]
+        input<-inputs[n]
         n_inputs<-1
-        inputs_id<-inputs_id[n]
-        inputs_ext<-inputs_ext[n]
+        input_id<-inputs_id[n]
+        input_ext<-inputs_ext[n]
 
 
         task_id <- make_unique_id(fn)
