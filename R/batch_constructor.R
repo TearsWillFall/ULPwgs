@@ -265,7 +265,8 @@ read_connectors=function(
   }else{
     envs=readRDS(envs[[inputs_id[[1]]]]$connector_file)
   }
-   return(.this.env) 
+  
+  return(envs)
 }
 
 
