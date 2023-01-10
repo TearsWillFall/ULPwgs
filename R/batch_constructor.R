@@ -455,7 +455,7 @@ run_self=function(
           stop(err_msg)
       }
       
-      .env$.main$steps[[fn]] <- .this.env
+      .env$steps[[fn]] <- .this.env
  }
    
 
