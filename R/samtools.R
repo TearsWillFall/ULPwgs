@@ -772,22 +772,18 @@ new_stats_bam_samtools=function(
         )
       }
 
-    .env$steps <- steps
-    return()
+    .env$.main <-.main
 
   }
 
 
-
   .base.env=environment()
   set_env_vars(
-    .env=.base.env,
+    .env= .base.env,
     vars="bam"
   )
-
-  runs=run_env(.envs)
-
-  return(runs)
+ 
+  run(.env=.self.env)
 
 }
 
@@ -933,22 +929,19 @@ new_flag_stats_samtools=function(
 
      run_job(.this.env)
 
+    .env$.main <-.main
 
-     .env$steps <-steps
-     return()
   }
 
 
-  
   .base.env=environment()
   set_env_vars(
-    .env=.base.env,
+    .env= .base.env,
     vars="bam"
   )
+ 
+  run(.env=.self.env)
 
-  runs=run_env(.envs)
-
-  return(runs)
 
   
   
@@ -1093,7 +1086,6 @@ new_index_stats_samtools=function(
     run_job(.main)
 
     .env$.main <- .main
-    return()
 
   }
 
@@ -1103,6 +1095,7 @@ new_index_stats_samtools=function(
     vars="bam"
   )
 
+  run(.env=.self.env)
 
 
 
