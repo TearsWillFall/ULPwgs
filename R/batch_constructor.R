@@ -265,7 +265,7 @@ read_connectors=function(
   }else{
     envs=readRDS(envs[[inputs_id[[1]]]]$connector_file)
   }
-  .env$envs<- envs
+   return(.this.env) 
 }
 
 
@@ -594,10 +594,10 @@ run=function(.env){
   .this.env=environment()
   append_env(to=.this.env,from=.env)
   .self.env=.env$.self.env
+  .envs=.self.env$.envs
   if(is.null(select)){
     run_self(.env=.self.env)
     read_connectors(.env=.self.env)
-    return(.self.env$envs)
   }else{
     .renv=.self.env$.renv
     run_main(.env=.renv)
