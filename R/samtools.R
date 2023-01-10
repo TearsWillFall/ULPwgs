@@ -170,8 +170,8 @@ new_sort_and_index_bam_samtools=function(
 
   
     if(sort){
-        .main[[fn]]$steps<-append(
-          .main[[fn]]$steps,
+        .main$steps<-append(
+          .main$steps,
             new_sort_bam_samtools(
               bin_samtools=bin_samtools,
               bam=input,
@@ -188,8 +188,8 @@ new_sort_and_index_bam_samtools=function(
       )
 
     }else{
-        .main[[fn]]$steps <-append(
-          .main[[fn]]$steps,
+        .main$steps <-append(
+          .main$steps,
             new_index_bam_samtools(
               bin_samtools=bin_samtools,
               bam=input,
@@ -387,11 +387,11 @@ new_sort_bam_samtools=function(
 
       if(index & coord_sort){
 
-          .main[[fn]]$steps <-append(
-            .main[[fn]]$steps ,
+          .main$steps <-append(
+            .main$steps ,
               new_index_bam_samtools(
                   bin_samtools=bin_samtools,
-                  bam=.main[[fn]]$out_file,
+                  bam=.main$steps[[fn]]$out_file,
                   stats=stats,
                   verbose=verbose,
                   threads=threads,
@@ -403,11 +403,11 @@ new_sort_bam_samtools=function(
       }
 
       if(stats){
-          .main[[fn]]$steps <-append(
-            .main[[fn]]$steps ,
+          .main$steps <-append(
+            .main$steps ,
               new_stats_bam_samtools(
                   bin_samtools=bin_samtools,
-                  bam=.main[[fn]]$out_file,
+                  bam=.main$steps[[fn]]$out_file,
                   stats="flag",
                   verbose=verbose,
                   threads=threads,
@@ -581,8 +581,8 @@ new_index_bam_samtools=function(
     run_job(.env=.this.env)
 
     if(stats){
-      .main[[fn]]$steps <-append(
-        .main[[fn]]$steps,
+      .main$steps <-append(
+        .main$steps,
         new_stats_bam_samtools(
                   bin_samtools=bin_samtools,
                   bam=input,
@@ -742,8 +742,8 @@ new_stats_bam_samtools=function(
     set_main(.env=.this.env)
 
     if(stats=="all"|stats=="flag"){
-         .main[[fn]]$steps<-append(
-           .main[[fn]]$steps,
+         .main$steps<-append(
+           .main$steps,
             new_flag_stats_samtools(
               bin_samtools=bin_samtools,
               bam=input,
@@ -756,8 +756,8 @@ new_stats_bam_samtools=function(
     } 
 
     if(stats=="all"|stats=="index"){
-       .main[[fn]]$steps<-append(
-         .main[[fn]]$steps,
+       .main$steps<-append(
+         .main$steps,
           new_index_stats_samtools(
             bin_samtools=bin_samtools,
             bam=input,
@@ -913,11 +913,11 @@ new_flag_stats_samtools=function(
     set_main(.env=.this.env)
    
 
-    .main[[fn]]$out_file=paste0(
+    .main$out_file=paste0(
       out_file_dir,"/",
       input_id,".flagstat.txt"
     )
-    .main[[fn]]$exec_code=paste0(
+    .main$exec_code=paste0(
       bin_samtools," flagstat ",
       input," -@ ",
       threads," > ",
