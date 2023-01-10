@@ -207,7 +207,7 @@ build_connector=function(
   .this.env=environment()
   append_env(to=.this.env,from=.env)
   connector_file=paste0(out_file_dir_tmp,"/",job_id,".connector.RData")
-  saveRDS(.this.env,file=connector_file)
+  saveRDS(.env$steps,file=connector_file)
   append_env(to=.env,from=.this.env)
 }
 
@@ -455,7 +455,7 @@ run_self=function(
           stop(err_msg)
       }
       
-      .env$steps[[fn]] <- .this.env
+      .env$.main$steps[[fn]] <- .this.env
  }
    
 
