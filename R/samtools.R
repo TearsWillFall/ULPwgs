@@ -387,8 +387,8 @@ new_sort_bam_samtools=function(
 
       if(index & coord_sort){
 
-          .main$steps <-append(
-            .main$steps ,
+          .main$steps[[fn]]$steps <-append(
+            .main$steps[[fn]]$steps ,
               new_index_bam_samtools(
                   bin_samtools=bin_samtools,
                   bam=.main$steps[[fn]]$out_file,
@@ -403,8 +403,8 @@ new_sort_bam_samtools=function(
       }
 
       if(stats){
-          .main$steps <-append(
-            .main$steps ,
+          .main$steps[[fn]]$steps <-append(
+           .main$steps[[fn]]$steps ,
               new_stats_bam_samtools(
                   bin_samtools=bin_samtools,
                   bam=.main$steps[[fn]]$out_file,
@@ -567,6 +567,7 @@ new_index_bam_samtools=function(
     .env
   ){
 
+
     .this.env=environment()
     append_env(to=.this.env,from=.env)
 
@@ -581,8 +582,8 @@ new_index_bam_samtools=function(
     run_job(.env=.this.env)
 
     if(stats){
-      .main$steps<-append(
-       .main$steps,
+      .main$steps[[fn]]$steps<-append(
+       .main$steps[[fn]]$steps,
         new_stats_bam_samtools(
                   bin_samtools=bin_samtools,
                   bam=input,
@@ -745,8 +746,8 @@ new_stats_bam_samtools=function(
     .main$steps[[fn]]<-.this.env
 
     if(stats=="all"|stats=="flag"){
-         .main$steps<-append(
-           .main$steps,
+         .main$steps[[fn]]$steps<-append(
+           .main$steps[[fn]]$steps,
             new_flag_stats_samtools(
               bin_samtools=bin_samtools,
               bam=input,
@@ -760,8 +761,8 @@ new_stats_bam_samtools=function(
     } 
 
     if(stats=="all"|stats=="index"){
-       .main$steps<-append(
-         .main$steps,
+       .main$steps[[fn]]$steps<-append(
+         .main$steps[[fn]]$steps,
           new_index_stats_samtools(
             bin_samtools=bin_samtools,
             bam=input,
@@ -1083,7 +1084,7 @@ new_index_stats_samtools=function(
     .main$out_file=paste0(
       out_file_dir,"/",input_id,".idxstats.txt"
     )
-    
+
     .main$exec_code=paste0(
         bin_samtools," idxstats ",
         input," > ",.main$out_file
