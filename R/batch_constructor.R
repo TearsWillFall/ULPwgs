@@ -544,7 +544,7 @@ run=function(.env){
   .this.env=environment()
   append_env(to=.this.env,from=.env)
   if(is.null(select)){
-    run_self(.env=.env)
+    run_self(.env=.this.env)
     return(.self)
   }else{
     run_main(.env=.env$.renv)
