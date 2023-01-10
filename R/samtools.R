@@ -742,11 +742,11 @@ new_stats_bam_samtools=function(
     .this.env=environment()
     append_env(to=.this.env,from=.env)
 
-    set_steps_vars(.env=.this.env)
+    set_main(.env=.this.env)
 
     if(stats=="all"|stats=="flag"){
-        steps[[fn]]$steps<-append(
-          steps[[fn]]$steps,
+         .main[[fn]]$steps<-append(
+           .main[[fn]]$steps,
             new_flag_stats_samtools(
               bin_samtools=bin_samtools,
               bam=input,
@@ -759,8 +759,8 @@ new_stats_bam_samtools=function(
     } 
 
     if(stats=="all"|stats=="index"){
-      steps[[fn]]$steps<-append(
-        steps[[fn]]$steps,
+       .main[[fn]]$steps<-append(
+         .main[[fn]]$steps,
           new_index_stats_samtools(
             bin_samtools=bin_samtools,
             bam=input,
@@ -913,7 +913,7 @@ new_flag_stats_samtools=function(
     .this.env=environment()
     append_env(to=.this.env,from=.env)
 
-    set_steps_vars(.env=.this.env)
+    set_main(.env=.this.env)
    
 
     steps[[fn]]$out_file=paste0(
