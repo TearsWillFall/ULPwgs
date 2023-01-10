@@ -547,8 +547,7 @@ run=function(.env){
     run_self(.env=.env)
     return(.self)
   }else{
-    .renv=.env$envs[[inputs_id[[select]]]]
-    run_main(.renv)
+    run_main(.env=.renv)
     return(.renv$.main)
   }
 }
