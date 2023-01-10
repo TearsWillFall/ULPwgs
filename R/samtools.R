@@ -608,7 +608,7 @@ new_index_bam_samtools=function(
     vars="bam"
   )
  
-  run(.env=.self.env)
+   run(.env=.base.env)
   
 }
 
@@ -783,7 +783,7 @@ new_stats_bam_samtools=function(
     vars="bam"
   )
  
-  run(.env=.self.env)
+   run(.env=.base.env)
 
 }
 
@@ -940,10 +940,9 @@ new_flag_stats_samtools=function(
     vars="bam"
   )
  
-  run(.env=.self.env)
+   run(.env=.base.env)
 
 
-  
   
 }
 
@@ -1095,7 +1094,7 @@ new_index_stats_samtools=function(
     vars="bam"
   )
 
-  run(.env=.self.env)
+  run(.env=.base.env)
 
 
 
