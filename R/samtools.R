@@ -166,12 +166,12 @@ new_sort_and_index_bam_samtools=function(
     .this.env=environment()
     append_env(to=.this.env,from=.env)
 
-    set_steps_vars(.env=.this.env)
+    set_main(.env=.this.env)
 
   
     if(sort){
-        steps[[fn]]<-append(
-          steps[[fn]],
+        .main[[fn]]$steps<-append(
+          .main[[fn]]$steps,
             new_sort_bam_samtools(
               bin_samtools=bin_samtools,
               bam=input,
@@ -188,8 +188,8 @@ new_sort_and_index_bam_samtools=function(
       )
 
     }else{
-        steps[[fn]] <-append(
-          steps[[fn]],
+        .main[[fn]]$steps <-append(
+          .main[[fn]]$steps,
             new_index_bam_samtools(
               bin_samtools=bin_samtools,
               bam=input,
@@ -201,20 +201,18 @@ new_sort_and_index_bam_samtools=function(
       )
     }
 
-    .env$steps <-steps
-
+    .env$.main <- .main
   }
 
+  
   .base.env=environment()
   set_env_vars(
     .env= .base.env,
     vars="bam"
   )
 
+  run(.env=.base.env)
 
-  runs=run_env(.envs)
-
-  return(runs)
  
 
 }

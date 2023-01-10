@@ -172,16 +172,6 @@ execute_job=function(exec_code){
 }
 
 
-#' Execute job with delay if job limit in Myriad SGE reached
-#' 
-#' @param exec_code Execution code
-#' @param delay Time to wait for job limit checks in seconds
-#' @export
-
-execute_job=function(exec_code){
-  error=system(exec_code)
-  return(error)
-}
 
 
 
@@ -211,18 +201,67 @@ build_env_object=function(
 #' @param env List of objects to save in RData object
 #' @export
 
-build_connector=function(){
+build_connector=function(
   .env=environment()
+  ){
+  .this.env=environment()
+  append_env(to=.this.env,from=.env)
+  connector_file=paste0(out_file_dir_tmp,"/",job_id,".connector.RData")
+  saveRDS(.this.env)
+  append_env(to=.env,from=.this.env)
+}
 
+
+#' Build execution innit for function to execute
+#' 
+#' @param .env List of objects to save in RData object
+#' @export
+
+wait_scheduler=function(.env){
+
+   check=TRUE
+
+    job_ids=lapply(1:n_inputs,function(n){
+      readRDS(envs[[inputs_id[[n]]]]$job_id)
+    })
+
+    while(check){
+      Sys.sleep(60)
+      jobs_in_queue=system("qstat -r | grep  \"jobname\"",intern=TRUE)
+      jobs_in_queue=gsub(".* ","",jobs_in_queue)
+      if(!any(jobs_in_queue %in% job_ids)){
+        check=FALSE
+      }
+    }
+
+}
+
+
+
+
+#' Build execution innit for function to execute
+#' 
+#' @param env List of objects to save in RData object
+#' @export
+
+read_connectors=function(
+  .env=environment()
+  ){
+    
   .this.env=environment()
   append_env(to=.this.env,from=.env)
 
-  connector_file=paste0(out_file_dir_tmp,"/",job_id,".connector.RData")
-
-  connector_code=paste0("saveRDS(steps,file=",connector_file,")")
+  if(mode=="batch"){
+    wait_scheduler(.env=.this.env)
+  }
   
-  append_env(to=.env,from=.this.env)
+  ### Reads connectors and updates values for enviroments with data
 
+  envs=lapply(1:n_inputs,function(n){
+    env=readRDS(envs[[inputs_id[[n]]]]$connector_file)
+  })
+
+  .env$envs<- envs
 }
 
 
@@ -366,8 +405,14 @@ run_self=function(
     }
 
     .self$error=execute_job(exec_code=.self$exec_code)
-  
 
+    if(mode=="local"){
+      .self$envs=lapply(1:n_inputs,function(n){
+        readRDS(.self$envs[[inputs_id[[n]]]]$connector_file)
+      }
+
+     )
+    }
     if(.self$error!=0){
         stop(.self$err_msg)
     }
@@ -523,7 +568,9 @@ set_env_vars=function(
           dir=out_file_dir_tmp,
           name=inputs_id
         )
-
+        
+        build_connector(.env=.this.env)
+    
         envs[[inputs_id]]<-environment()
 
       },.env=.this.env
@@ -545,11 +592,12 @@ run=function(.env){
   .self.env=.env$.self.env
   if(is.null(select)){
     run_self(.env=.self.env)
-    return(.self.env$.self)
+    read_connectors(.env=.self.env)
+    return(.self.env$envs)
   }else{
     .renv=.self.env$.renv
     run_main(.env=.renv)
-    return(.renv$.main)
+    build_connector(.env=.renv$.main)
   }
 }
 
