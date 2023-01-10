@@ -435,25 +435,26 @@ run_self=function(
   .env=environment()
  ){
       .this.env=environment()
-      append_env(to=.this.env,from=.env)
-      .main=.env$.main
+      append_env(to=.this.env,from=.env$.main)
+
 
       if(verbose){
         print_verbose(
-          job=job_id,arg=as.list(.this.env),
+          job=job_id,
+          arg=as.list(.this.env),
           exec_code=exec_code
         )
       }
 
-      .main$error=execute_job(
+      error=execute_job(
           exec_code=exec_code
         )
       
-      if(.main$error!=0){
+      if(error!=0){
           stop(err_msg)
       }
       
-      .env$.main$steps[[fn]] <- .main
+      .env$.main$steps[[fn]] <- .this.env
  }
    
 
