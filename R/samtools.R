@@ -403,8 +403,6 @@ new_sort_bam_samtools=function(
                 )
             )
 
-          .this.step=.main$steps[[fn]]$steps$new_index_bam_samtools
-
       }
 
       if(stats){
