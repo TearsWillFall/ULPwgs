@@ -547,8 +547,8 @@ run=function(.env){
     run_self(.env=.env)
     return(.self)
   }else{
-    run_main(.env=.renv)
-    return(.renv$.main)
+    run_main(.env=.env$.renv)
+    return(.env$.renv$.main)
   }
 }
 
