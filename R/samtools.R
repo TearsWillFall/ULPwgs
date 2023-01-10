@@ -383,7 +383,7 @@ new_sort_bam_samtools=function(
       }
 
 
-      run_job(.main)
+      run_job(.env=.this.env)
 
       if(index & coord_sort){
 
@@ -924,7 +924,7 @@ new_flag_stats_samtools=function(
       out_file
     )
 
-     run_job(.this.env)
+     run_job(.env=.this.env)
 
     .env$.main <-.main
 
@@ -1079,7 +1079,7 @@ new_index_stats_samtools=function(
         input," > ",.main$out_file
     )
 
-    run_job(.main)
+    run_job(.env=.this.env)
 
     .env$.main <- .main
 
