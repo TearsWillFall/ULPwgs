@@ -543,12 +543,14 @@ set_env_vars=function(
 run=function(.env){
   .this.env=environment()
   append_env(to=.this.env,from=.env)
+  .self.env=.env$.self.env
   if(is.null(select)){
-    run_self(.env=.this.env)
-    return(.self)
+    run_self(.env=.self.env)
+    return(.self.env$.self)
   }else{
-    run_main(.env=.env$.renv)
-    return(.env$.renv$.main)
+    .renv=.self.env$.renv
+    run_main(.env=.renv)
+    return(.renv$.main)
   }
 }
 
