@@ -569,14 +569,8 @@ new_index_bam_samtools=function(
 
     .this.env=environment()
     append_env(to=.this.env,from=.env)
-    
-    steps<-list()
-    steps[[fn]]<-.this.env
-
 
     set_main(.env=.this.env)
-
-    
 
     .main$out_file=paste0(input,".bai")
     .main$exec_code=paste(
@@ -745,11 +739,10 @@ new_stats_bam_samtools=function(
     .this.env=environment()
     append_env(to=.this.env,from=.env)
  
-    steps<-list()
-    steps[[fn]]<-.this.env
-
-    
     set_main(.env=.this.env)
+
+    .main$steps<-list()
+    .main$steps[[fn]]<-.this.env
 
     if(stats=="all"|stats=="flag"){
          .main$steps<-append(
@@ -760,7 +753,8 @@ new_stats_bam_samtools=function(
               output_dir=out_file_dir,
               verbose=verbose,
               threads=threads,
-              ram=ram
+              ram=ram,
+              executor=task_id
           )
         )
     } 
@@ -774,12 +768,13 @@ new_stats_bam_samtools=function(
             output_dir=out_file_dir,
             verbose=verbose,
             threads=threads,
-            ram=ram
+            ram=ram,
+            executor=task_id
           )
         )
       }
 
-    .env$.main <- .main
+    .env$.main <-.main
 
   }
 
@@ -790,7 +785,7 @@ new_stats_bam_samtools=function(
     vars="bam"
   )
  
-   run(.env=.base.env)
+  run(.env=.base.env)
 
 }
 
@@ -920,10 +915,7 @@ new_flag_stats_samtools=function(
     .this.env=environment()
     append_env(to=.this.env,from=.env)
 
-    steps<-list()
-    steps[[fn]]<-.this.env
 
-    
     set_main(.env=.this.env)
    
 
@@ -1084,8 +1076,6 @@ new_index_stats_samtools=function(
     .this.env=environment()
     append_env(to=.this.env,from=.env)
     
-    steps<-list()
-    steps[[fn]]<-.this.env
     
     set_main(.env=.this.env)
   
@@ -1093,6 +1083,7 @@ new_index_stats_samtools=function(
     .main$out_file=paste0(
       out_file_dir,"/",input_id,".idxstats.txt"
     )
+    
     .main$exec_code=paste0(
         bin_samtools," idxstats ",
         input," > ",.main$out_file
