@@ -257,11 +257,16 @@ read_connectors=function(
   
   ### Reads connectors and updates values for enviroments with data
 
-  envs=lapply(1:n_inputs,function(n){
-    env=readRDS(envs[[inputs_id[[n]]]]$connector_file)
-  })
+  if(n_inputs>1){
+    envs=lapply(1:n_inputs,function(n){
+        env=readRDS(envs[[inputs_id[[n]]]]$connector_file)
+      })
+  }else{
+    envs=readRDS(envs[[inputs_id[[n]]]]$connector_file)
+  }
+ 
 
-  .env$envs<- envs
+  .env$envs<- unlist(envs)
 }
 
 
