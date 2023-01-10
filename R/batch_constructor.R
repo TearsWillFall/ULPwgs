@@ -437,6 +437,7 @@ set_env_vars=function(
         }
         append_env(to=.this.env,from=inherit)
         envs<-inherit$envs
+        .renv=envs[[inputs_id[[select]]]]
         .env$.self.env <- .this.env
         return()
     }else{
@@ -540,15 +541,15 @@ set_env_vars=function(
 
 
 run=function(.env){
-
   .this.env=environment()
   append_env(to=.this.env,from=.env)
   if(is.null(select)){
     run_self(.env=.env)
     return(.self)
   }else{
-    run_main(.env$envs[[inputs_id[[select]]]])
-    return(.main)
+    .renv=.env$envs[[inputs_id[[select]]]]
+    run_main(.renv)
+    return(.renv$.main)
   }
 }
 
