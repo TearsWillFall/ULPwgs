@@ -934,7 +934,7 @@ new_flag_stats_samtools=function(
       bin_samtools," flagstat ",
       input," -@ ",
       threads," > ",
-      out_file
+      .main$out_file
     )
 
      run_job(.env=.this.env)
