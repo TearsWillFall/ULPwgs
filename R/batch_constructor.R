@@ -259,11 +259,11 @@ read_connectors=function(
 
   if(n_inputs>1){
     envs=lapply(1:n_inputs,function(n){
-        env=readRDS(envs[[inputs_id[[n]]]]$connector_file)$.main
+        env=readRDS(envs[[inputs_id[[n]]]]$connector_file)
        
       })
   }else{
-    envs=readRDS(envs[[inputs_id[[1]]]]$connector_file)$.main
+    envs=readRDS(envs[[inputs_id[[1]]]]$connector_file)
   }
   .env$envs<- envs
 }
