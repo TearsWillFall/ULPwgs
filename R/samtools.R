@@ -167,6 +167,9 @@ new_sort_and_index_bam_samtools=function(
 
     set_main(.env=.this.env)
 
+
+    .main$steps[[fn]]<-.this.env
+    .main.step=.main$steps[[fn]]
   
     if(sort){
         .main$steps[[fn]]$steps <-append(
@@ -186,6 +189,8 @@ new_sort_and_index_bam_samtools=function(
               executor_id=task_id
         )
       )
+          .this.step=.main.step$steps$new_sort_bam_samtools
+          .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
 
     }else{
         .main$steps[[fn]]$steps  <-append(
@@ -200,6 +205,8 @@ new_sort_and_index_bam_samtools=function(
               executor_id=task_id
           )
       )
+        .this.step=.main.step$steps$new_index_bam_samtools
+        .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
     }
 
     .env$.main <- .main
@@ -764,7 +771,6 @@ new_stats_bam_samtools=function(
  
     set_main(.env=.this.env)
 
-    .main$steps<-list()
     .main$steps[[fn]]<-.this.env
     .main.step=.main$steps[[fn]]
     
