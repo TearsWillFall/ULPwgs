@@ -532,10 +532,10 @@ set_env_vars=function(
       task_id=task_id,
     )
 
-  
-    err_msg <- paste0("CRITICAL ERROR: ",fn," (",job_id,") "," -> ")
-
-    
+    if(is.null(err_msg)){
+       err_msg <- paste0("CRITICAL ERROR: ",fn," (",job_id,") "," -> ")
+    }
+   
 
     if (!is.null(sheet)){
         set_ss_env(.this.env)
