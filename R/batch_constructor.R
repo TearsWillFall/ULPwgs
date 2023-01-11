@@ -191,7 +191,7 @@ build_env_object=function(
           env_file=paste0(out_file_dir_tmp,"/",job_id,".env.RData")
           saveRDS(.this.env,file = env_file)
           append_env(to=.env,from=.this.env)
-  }
+}
       
 
 
@@ -500,12 +500,6 @@ set_env_vars=function(
         inputs_ext <- unname(Vectorize(get_file_ext)(inputs))
       }
 
-      task_id <- make_unique_id(fn)
-
-      job_id <- build_job(
-        executor_id=executor_id,
-        task_id=task_id
-      )
 
       out_file_dir <- set_dir(
             dir=output_dir
@@ -531,11 +525,17 @@ set_env_vars=function(
       executor_id <- make_unique_id(fn)
     }
 
-    if(is.null(err_msg)){
-        err_msg <- paste0("CRITICAL ERROR: ",fn," -> ")
-    }else{
-        err_msg <- paste0(err_msg ,fn," -> ")
-    }
+    task_id <- make_unique_id(fn)
+
+    job_id <- build_job(
+      executor_id=executor_id,
+      task_id=task_id,
+    )
+
+  
+    err_msg <- paste0("CRITICAL ERROR: ",fn," (",job_id,")"," -> ")
+
+    
 
     if (!is.null(sheet)){
         set_ss_env(.this.env)
@@ -555,13 +555,14 @@ set_env_vars=function(
         input_id<-inputs_id[n]
         input_ext<-inputs_ext[n]
 
-
         task_id <- make_unique_id(fn)
 
         job_id <- build_job(
           executor_id=executor_id,
           task_id=task_id
         )
+
+        err_msg <- paste0(err_msg ,fn,," (",job_id,") "," -> ")
         
         
         build_connector(.env=.this.env)
