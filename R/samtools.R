@@ -364,9 +364,9 @@ new_sort_bam_samtools=function(
 
       set_main(.env=.this.env)
       
-
+     
       .main$out_file=paste0(out_file_dir,"/",input_id,".sorted.",input_ext)
-      
+
     
       .main$exec_code=paste0(
         bin_samtools," sort ",
@@ -387,8 +387,9 @@ new_sort_bam_samtools=function(
 
       run_job(.env=.this.env)
 
-
-      .this.step=.main$steps[[fn]]
+      .main.step=.main$steps[[fn]]
+      .main.step$out_files$sorted_bam=.main.step$out_file
+      
 
       if(index & coord_sort){
 
@@ -396,7 +397,7 @@ new_sort_bam_samtools=function(
             .main$steps[[fn]]$steps ,
               new_index_bam_samtools(
                   bin_samtools=bin_samtools,
-                  bam=.this.step$out_file,
+                  bam=.main$out_file,
                   stats=stats,
                   verbose=verbose,
                   threads=threads,
@@ -406,15 +407,16 @@ new_sort_bam_samtools=function(
                 )
             )
 
+          .this.step=.main.step$steps$new_index_bam_samtools
+          .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
       }
 
       if(stats){
-        
           .main$steps[[fn]]$steps <-append(
            .main$steps[[fn]]$steps ,
               new_stats_bam_samtools(
                   bin_samtools=bin_samtools,
-                  bam=.this.step$out_file,
+                  bam=.main$out_file,
                   stats="flag",
                   verbose=verbose,
                   threads=threads,
@@ -424,6 +426,9 @@ new_sort_bam_samtools=function(
                   output_dir=paste0(out_file_dir,"/stats")
                 )
             )
+
+          .this.step=.main.step$steps$new_stats_bam_samtools
+          .main.step$out_files=append(.main.step$out_files,.this.step$out_files) 
       }
 
       .env$.main <- .main
@@ -590,6 +595,9 @@ new_index_bam_samtools=function(
    
     run_job(.env=.this.env)
 
+    .main.step=.main$steps[[fn]]
+    .main.step$out_files$index_bam=.main.step$out_file
+
     if(stats){
       .main$steps[[fn]]$steps<-append(
        .main$steps[[fn]]$steps,
@@ -604,7 +612,10 @@ new_index_bam_samtools=function(
                   executor_id=task_id
         )
       )
-    }
+      
+      .this.step=.main.step$steps$new_stats_bam_samtools
+      .main.step$out_files=append(.main.step$out_files,.this.step$out_files) 
+    } 
 
     .env$.main <- .main
   }
@@ -755,6 +766,8 @@ new_stats_bam_samtools=function(
 
     .main$steps<-list()
     .main$steps[[fn]]<-.this.env
+    .main.step=.main$steps[[fn]]
+    
 
     if(stats=="all"|stats=="flag"){
          .main$steps[[fn]]$steps<-append(
@@ -770,6 +783,8 @@ new_stats_bam_samtools=function(
               executor=task_id
           )
         )
+        .this.step=.main.step$steps$new_flag_stats_samtools
+        .main.step$out_files=append(.main.step$out_files,.this.step$out_files) 
     } 
 
     if(stats=="all"|stats=="index"){
@@ -786,6 +801,8 @@ new_stats_bam_samtools=function(
             executor=task_id
           )
         )
+        .this.step=.main.step$steps$new_index_stats_samtools
+        .main.step$out_files=append(.main.step$out_files,.this.step$out_files) 
       }
 
     .env$.main <-.main
@@ -945,7 +962,11 @@ new_flag_stats_samtools=function(
       .main$out_file
     )
 
-     run_job(.env=.this.env)
+    run_job(.env=.this.env)
+
+    .this.step=.main$steps[[fn]]
+
+    .this.step$out_files$flag_stats <- .main$out_file
 
     .env$.main <- .main
 
@@ -1106,6 +1127,10 @@ new_index_stats_samtools=function(
     )
 
     run_job(.env=.this.env)
+
+    .this.step=.main$steps[[fn]]
+    
+    .this.step$out_files$index_stats <- .main$out_file
 
     .env$.main <- .main
 

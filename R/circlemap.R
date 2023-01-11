@@ -34,7 +34,7 @@ realign_circlemap=function(
         bin_samtools=build_default_tool_binary_list()$bin_samtools,
         ref_genome=build_default_reference_list()$HG19$reference$genome,
         bam=NULL,
-        output_dir="./realign_reports",
+        output_dir=".",
         output_name=NULL,
         verbose=FALSE,
         batch_config=build_default_preprocess_config(),
@@ -42,75 +42,76 @@ realign_circlemap=function(
         ram=1,
         ns="ULPwgs",
         mode="local",
-        tmp_dir=NULL,
         time="48:0:0",
-        err_mssg="realign failed to run",
         sheet=NULL,
         inherit=NULL,
         select=NULL,
+        err_msg=NULL,
         executor_id=NULL,
         hold=NULL
 
 ){
 
-
-    set_env_vars(
-        vars="bam"
-    )
-
-
     run_main=function(envir){
 
-        append_env(from=envir)
-        set_steps_vars()
-    
-         
-        steps[[fn]] <- append(steps[[fn]],new_sort_and_index_bam_samtools(
-            bin_samtools=bin_samtools,
-            bam=input,
-            output_dir=paste0(out_file_dir_tmp,"/sort_and_index"),
-            verbose=verbose,
-            batch_config=batch_config,
-            threads=threads,
-            ram=ram,
-            coord_sort=FALSE,
-            index=FALSE,
-            clean=FALSE,
-            executor_id=task_id
-        ))
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
 
-        steps[[fn]] <- append(steps[[fn]],read_extractor_circlemap(
+        set_main(.env=.this.env)
+            
+        .main$steps[[fn]]$steps <- append(.main$steps[[fn]]$steps,
+            new_sort_and_index_bam_samtools(
+                bin_samtools=bin_samtools,
+                bam=input,
+                output_dir=paste0(out_file_dir_tmp,"/sort_and_index"),
+                verbose=verbose,
+                batch_config=batch_config,
+                threads=threads,
+                ram=ram,
+                err_msg=err_msg,
+                coord_sort=FALSE,
+                index=FALSE,
+                clean=FALSE,
+                executor_id=task_id
+            ))
+    
+        .this.step=.main$steps[[fn]]$steps$new_sort_and_index_bam_samtools$steps$new_sort_bam_samtools
+
+         .main$steps[[fn]]$steps <- append(.main$steps[[fn]]$steps,
+            read_extractor_circlemap(
                 env_circlemap=env_circlemap,
                 bin_samtools=bin_samtools,
-                bam=steps$new_sort_and_index_bam_samtools$out_file,
+                bam=.this.step$out_file,
                 output_dir=paste0(out_file_dir_tmp,"/read_extractor"),
                 verbose=verbose,
                 batch_config=batch_config,
-                threads=threads,ram=ram,
+                threads=threads,
+                ram=ram,
                 sort=TRUE,
                 coord_sort=TRUE,
-                index=TRUE,stats="all", 
+                index=TRUE,
+                stats="all", 
                 clean=TRUE,
                 executor_id=task_id
             )
         )
+        
+        .this.step=.main$steps[[fn]]$steps$read_extractor_circlemap
 
+        .main$steps[[fn]]$out_file=paste0(out_file_dir,"/",input_id,".circular_candidates.bed")
 
-        steps[[fn]]$out_file=paste0(out_file_dir,"/",input_id,".circular_candidates.bed")
-
-        steps[[fn]]$exec_code <- paste(
+        .main$steps[[fn]]$exec_code <- paste(
             set_conda_envir(env_circlemap),
             " Circle-Map Realign -sbam ",normalizePath(input),
-            " -qbam ", steps[[fn]]$new_sort_and_index_bam_samtools$sort$out_file,
+            " -qbam ", .this.step$out_file,
             " -i ",steps[[fn]]$new_sort_and_index_bam_samtools$sort$out_file,
-            " -o ",steps[[fn]]$out_file,
+            " -o ",.this.step$out_file,
             " -t ",threads," -dir /", 
             " -fasta ",normalizePath(ref_genome), 
             " -tdir ",out_file_dir_tmp
         )
         
 
-        run_job()
 
         envir$steps <- steps
 

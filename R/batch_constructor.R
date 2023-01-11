@@ -666,6 +666,7 @@ set_main=function(
       error=0
       out_file=""
       steps=list()
+      out_files=list()
       .env$.main=environment()
       return()
   }
