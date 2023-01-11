@@ -529,7 +529,7 @@ set_env_vars=function(
 
     job_id <- build_job(
       executor_id=executor_id,
-      task_id=task_id,
+      task_id=task_id
     )
 
     if(is.null(err_msg)){
