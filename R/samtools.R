@@ -154,10 +154,9 @@ new_sort_and_index_bam_samtools=function(
   inherit=NULL,
   select=NULL,
   executor_id=NULL,
+  err_msg=NULL,
   hold=NULL
 ){
-
-
 
 
   run_main=function(
@@ -182,6 +181,7 @@ new_sort_and_index_bam_samtools=function(
               verbose=verbose,
               threads=threads,
               coord_sort=coord_sort,
+              err_msg=err_msg,
               clean=clean,
               executor_id=task_id
         )
@@ -195,6 +195,7 @@ new_sort_and_index_bam_samtools=function(
               bam=input,
               stats=stats,
               verbose=verbose,
+              err_msg=err_msg,
               threads=threads,
               executor_id=task_id
           )
@@ -398,6 +399,7 @@ new_sort_bam_samtools=function(
                   stats=stats,
                   verbose=verbose,
                   threads=threads,
+                  err_msg=err_msg,
                   ram=ram,
                   executor_id=task_id
                 )
@@ -415,6 +417,7 @@ new_sort_bam_samtools=function(
                   stats="flag",
                   verbose=verbose,
                   threads=threads,
+                  err_msg=err_msg,
                   ram=ram,
                   executor_id=task_id,
                   output_dir=paste0(out_file_dir,"/stats")
@@ -594,6 +597,7 @@ new_index_bam_samtools=function(
                   output_dir=paste0(dirname(input),"/stats"),
                   verbose=verbose,
                   threads=threads,
+                  err_msg=err_msg,
                   stats="index",
                   executor_id=task_id
         )
@@ -758,6 +762,7 @@ new_stats_bam_samtools=function(
               output_dir=out_file_dir,
               verbose=verbose,
               threads=threads,
+              err_msg=err_msg,
               ram=ram,
               executor=task_id
           )
@@ -773,6 +778,7 @@ new_stats_bam_samtools=function(
             output_dir=out_file_dir,
             verbose=verbose,
             threads=threads,
+            err_msg=err_msg,
             ram=ram,
             executor=task_id
           )
