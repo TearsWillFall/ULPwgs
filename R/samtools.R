@@ -347,6 +347,7 @@ new_sort_bam_samtools=function(
   sheet=NULL,
   inherit=NULL,
   select=NULL,
+  err_msg=NULL,
   executor_id=NULL,
   hold=NULL
 ){
@@ -565,6 +566,7 @@ new_index_bam_samtools=function(
   sheet=NULL,
   inherit=NULL,
   select=NULL,
+  err_msg=NULL,
   executor_id=NULL,
   hold=NULL
 ){
@@ -734,6 +736,7 @@ new_stats_bam_samtools=function(
   sheet=NULL,
   inherit=NULL,
   select=NULL,
+  err_msg=NULL,
   executor_id=NULL,
   hold=NULL
 
@@ -914,6 +917,7 @@ new_flag_stats_samtools=function(
   sheet=NULL,
   inherit=NULL,
   select=NULL,
+  err_msg=NULL,
   executor_id=NULL,
   hold=NULL
 ){
@@ -1075,6 +1079,7 @@ new_index_stats_samtools=function(
   sheet=NULL,
   inherit=NULL,
   select=NULL,
+  err_msg=NULL,
   executor_id=NULL,
   hold=NULL
 ){  
