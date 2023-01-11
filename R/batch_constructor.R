@@ -533,7 +533,7 @@ set_env_vars=function(
     )
 
   
-    err_msg <- paste0("CRITICAL ERROR: ",fn," (",job_id,")"," -> ")
+    err_msg <- paste0("CRITICAL ERROR: ",fn," (",job_id,") "," -> ")
 
     
 
@@ -562,7 +562,7 @@ set_env_vars=function(
           task_id=task_id
         )
 
-        err_msg <- paste0(err_msg ,fn,," (",job_id,") "," -> ")
+        err_msg <- paste0(err_msg ,fn," (",job_id,") "," -> ")
         
         
         build_connector(.env=.this.env)
