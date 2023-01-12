@@ -225,11 +225,16 @@ wait_scheduler=function(.env){
 
     while(check){
       Sys.sleep(60)
-      jobs_in_queue=system("qstat -r | grep  \"jobname\"",intern=TRUE)
-      jobs_in_queue=gsub(".* ","",jobs_in_queue)
-      if(!any(jobs_in_queue %in% job_id)){
+      jobs_in_queue=suppressWarnings(system("qstat -r | grep  \"jobname\"",intern=TRUE))
+      if(length(jobs_in_queue)>1){
+         jobs_in_queue=gsub(".* ","",jobs_in_queue)
+         if(!any(jobs_in_queue %in% job_id)){
+            check=FALSE
+         }
+      }else{
         check=FALSE
       }
+     
     }
 
 }
