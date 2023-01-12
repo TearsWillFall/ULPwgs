@@ -593,11 +593,11 @@ launch=function(.env){
       append_env(to=.this.env,from=.env)
 
       if(n_jobs>1){
-        report=lapply(1:n_jobs,function(n){
+        reports=lapply(1:n_jobs,function(n){
             run(.env=self.envs[[n]])
         })
       }else{
-          report=run(.env=self.envs)
+          reports=run(.env=self.envs)
       }
       return(report)
   }
