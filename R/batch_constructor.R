@@ -600,13 +600,12 @@ set_env_vars=function(
 run=function(.env){
   .this.env=environment()
   append_env(to=.this.env,from=.env)
-  .self.env=.env$.self.env
-  .envs=.self.env$.envs
+
   if(is.null(select)){
-    run_self(.env=.self.env)
-    read_connectors(.env=.self.env)
+    run_self(.env=.env)
+    read_connectors(.env=.env)
   }else{
-    .renv=.self.env$.renv
+    .renv=.env$.renv
     run_main(.env=.renv)
     build_connector(.env=.renv$.main)
   }
