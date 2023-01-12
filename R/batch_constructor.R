@@ -415,10 +415,10 @@ run_self=function(
     .self$error=execute_job(exec_code=.self$exec_code)
 
     if(mode=="local"){
-      .self$main.envs=lapply(1:n_inputs,function(n){
-        readRDS(.self$main.envs[[n]]$connector_file)
-      }
-
+      .self$main.envs=lapply(
+        1:n_inputs,function(n){
+          readRDS(.self$main.envs[[n]]$connector_file)
+        }
      )
     }
     if(.self$error!=0){
@@ -497,6 +497,11 @@ set_env_vars=function(
     .this.env=environment()
     append_env(to=.this.env,from=.env)
     .env$n_jobs <- 1
+
+    if (!is.null(sheet)){
+        set_ss_env(.env=.this.env)
+        return()
+    }
     
     if(!is.null(inherit)){
         if(!is.environment(inherit)){
@@ -505,7 +510,7 @@ set_env_vars=function(
         append_env(to=.this.env,from=inherit)
         main.envs<-inherit$main.envs
         .renv=main.envs[[select]]
-        .env$.self.env <- .this.env
+        .env$self.envs <- .this.env
         return()
     }else{
       if(!is.null(vars)){
@@ -555,12 +560,7 @@ set_env_vars=function(
     }
    
 
-    if (!is.null(sheet)){
-        set_ss_env(.env=.this.env)
-        .env$self.envs <- .this.env
-        .env$n_jobs<-length(.env$self.envs)
-        return()
-    }
+  
 
 
 
@@ -602,6 +602,7 @@ set_env_vars=function(
 
 
 run=function(.env){
+
   .this.env=environment()
   append_env(to=.this.env,from=.env)
 
@@ -626,9 +627,9 @@ launch=function(.env){
       append_env(to=.this.env,from=.env)
 
       if(n_jobs>1){
-      report=lapply(1:n_jobs,function(n){
-          run(.env=self.envs[[n]])
-      })
+        report=lapply(1:n_jobs,function(n){
+            run(.env=self.envs[[n]])
+        })
       }else{
           report=run(.env=self.envs)
       }
@@ -645,51 +646,44 @@ launch=function(.env){
 
 set_ss_env=function(.env){
 
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
 
-          .this.env=environment()
-          append_env(to=.this.env,from=.env)
+    dat=read.delim(sheet,header=TRUE)
+    dat_filt=dat %>% dplyr::distinct()
+    nrows_dup=nrow(dat)-nrow(dat_filt)
+    
+    if(nrows_dup>0){
+      warning(paste0(nrows_dup, " were duplicated in sheet"))
+    }
+    
 
-          dat=read.delim(sheet,header=TRUE)
-          dat_filt=dat %>% dplyr::distinct()
-          nrows_dup=nrow(dat)-nrow(dat_filt)
-          
-          if(nrows_dup>0){
-            warning(paste0(nrows_dup, " were duplicated in sheet"))
-          }
-          
+    dat_filt=dat_filt %>% 
+    dplyr::group_by(dplyr::across(-c(vars))) %>%
+    summarise(!! vars := list(!! rlang::sym(vars)))
 
-          dat_filt=dat_filt %>% 
-          dplyr::group_by(dplyr::across(-c(vars))) %>%
-          summarise(!! vars := list(!! rlang::sym(vars)))
+    lapply(seq(1,nrow(dat_filt)),
+      FUN=function(row,.env){
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+        sheet <- NULL
 
-          lapply(seq(1,nrow(dat_filt)),
-            FUN=function(row){
-              .this.env=environment()
-              append_env(to=.this.env,from=.env)
-              sheet <- NULL
+        ### ASSIGN VARS IN SHEET TO ENVIROMENT
+        invisible(
+            lapply(seq(1,ncol(dat_filt[row,])),FUN=function(col){
+              .this.env[[col]] <- dat_filt[row,col]
+        
+        }))
 
-              ### ASSIGN VARS IN SHEET TO ENVIROMENT
-              invisible(
-                  lapply(seq(1,ncol(dat_filt[row,])),FUN=function(col){
-                    .this.env[[col]] <- dat_filt[row,col]
-              
-              }))
+        set_env_vars(
+            .env=.this.env,
+            vars=vars
+        )
 
-              set_env_vars(
-                  .env=.this.env,
-                  vars=vars
-              )
-
-              .env$self.envs[[row]] <- .this.env$.self.env
-            }
-          )
-        .env$n_jobs <- nrow(dat_filt)        
+        .env$self.envs[[row]] <- .this.env$self.envs
+      },.env=.this.env
+    )        
 }
-
-
-
-
-
 
 
 
