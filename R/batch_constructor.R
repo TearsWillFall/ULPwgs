@@ -266,7 +266,7 @@ read_connectors=function(
        
       })
   }else{
-    main.envs=readRDS(main.envs[[n]]$connector_file)
+    main.envs=readRDS(main.envs$connector_file)
   }
   
   return(main.envs)
