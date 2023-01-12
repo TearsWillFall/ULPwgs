@@ -289,14 +289,14 @@ build_exec_innit=function(
         
         if(mode=="local"){
              
-              exec_code=paste0("Rscript -e \" lapply(1:",n_inputs,
+              exec_code=paste0("Rscript -e \" invisible(lapply(1:",n_inputs,
               ",FUN=function(select){",ns,"::",fn,"(inherit=\\\"",
-              env_file,"\\\",select=select)})\"")
+              env_file,"\\\",select=select)}))\"")
         
         }else if(mode=="batch"){
-              exec_code=paste0("Rscript -e \" ",
+              exec_code=paste0("Rscript -e \" invisible(",
               ns,"::",fn,"(inherit=\\\"",env_file,
-              "\\\",select=$SGE_TASK_ID)\"")
+              "\\\",select=$SGE_TASK_ID))\"")
         }else{
           stop("Unkown mode type")
         }
