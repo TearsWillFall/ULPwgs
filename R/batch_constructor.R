@@ -475,8 +475,8 @@ run_self=function(
 
 set_env_vars=function(
   .env=environment(),
-  n_jobs=1,
   vars=NULL,
+  n_jobs=1,
   fn=NULL,
   output_dir=".",
   output_name=NULL,
@@ -559,7 +559,8 @@ set_env_vars=function(
     if (!is.null(sheet)){
         set_ss_env(.env=.this.env)
         .env$self.envs <- .this.env
-        .env$n_jobs <- n_jobs
+        .env$n_jobs<-length(.env$self.envs)
+        return()
     }
 
 
@@ -624,6 +625,7 @@ run=function(.env){
 launch=function(.env){
       .this.env=environment()
       append_env(to=.this.env,from=.env)
+
       if(n_jobs>1){
       report=lapply(1:n_jobs,function(n){
           run(.env=self.envs[[n]])
