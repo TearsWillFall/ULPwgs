@@ -303,7 +303,7 @@ repeat_caller_circlemap=function(
             .main$exec_code=paste(
                 set_conda_envir(env_circlemap),
                 " Circle-Map Repeats -i ",normalizePath(input), " -o ",
-                .main$$out_file, " -dir /"
+                .main$out_file, " -dir /"
             )
 
             run_job(.env=.this.env)
