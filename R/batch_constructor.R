@@ -415,6 +415,8 @@ run_self=function(
     if(.self$error!=0){
         stop(.self$err_msg)
     }
+
+    read_connectors(.env=.self)
   
 }
 
@@ -572,13 +574,10 @@ run=function(.env){
 
   if(is.null(select)){
     run_self(.env=.env)
-    .self=.env$.self
-    read_connectors(.env=.self)
   }else{
     .renv=.env$.renv
     run_main(.env=.renv)
-    .main=.renv$.main
-    build_connector(.env=.main)
+    build_connector(.env=.renv$.main)
   }
 }
 
