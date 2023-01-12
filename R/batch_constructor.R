@@ -503,7 +503,7 @@ set_env_vars=function(
           inherit <-readRDS(file=inherit)
         }
         append_env(to=.this.env,from=inherit)
-        envs<-inherit$main.envs
+        main.envs<-inherit$main.envs
         .renv=main.envs[[select]]
         .env$.self.env <- .this.env
         return()
