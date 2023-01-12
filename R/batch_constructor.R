@@ -223,15 +223,11 @@ wait_scheduler=function(.env){
     append_env(to=.this.env,from=.env)
     check=TRUE
 
-    job_ids=lapply(1:n_inputs,function(n){
-      readRDS(main.envs[[n]]$job_id)
-    })
-
     while(check){
       Sys.sleep(60)
       jobs_in_queue=system("qstat -r | grep  \"jobname\"",intern=TRUE)
       jobs_in_queue=gsub(".* ","",jobs_in_queue)
-      if(!any(jobs_in_queue %in% job_ids)){
+      if(!any(jobs_in_queue %in% job_id)){
         check=FALSE
       }
     }
@@ -254,7 +250,7 @@ read_connectors=function(
   append_env(to=.this.env,from=.env)
 
   if(mode=="batch"){
-    wait_scheduler(.env=.this.env)
+    wait_scheduler(.env=.env)
   }
   
   ### Reads connectors and updates values for enviroments with data
@@ -414,7 +410,7 @@ run_self=function(
         stop(.self$err_msg)
     }
 
-    read_connectors(.env=.env)
+    read_connectors(.env=.self)
 
 }
 
