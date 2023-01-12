@@ -219,7 +219,6 @@ build_connector=function(
 
 wait_scheduler=function(.env){
 
-    
     .this.env=environment()
     append_env(to=.this.env,from=.env)
     check=TRUE
@@ -368,8 +367,6 @@ set_self=function(
 
 
 
-
-
 #' Run job from batch constructor
 #' 
 #' @param env Inherit current enviroment.
@@ -404,7 +401,6 @@ run_self=function(
     }
 
 
-
     if(verbose){
           print_verbose(job=.self$job_id,
             arg=as.list(.self),
@@ -414,16 +410,11 @@ run_self=function(
 
     .self$error=execute_job(exec_code=.self$exec_code)
 
-    if(mode=="local"){
-      .self$main.envs=lapply(
-        1:n_inputs,function(n){
-          readRDS(.self$main.envs[[n]]$connector_file)
-        }
-     )
-    }
     if(.self$error!=0){
         stop(.self$err_msg)
     }
+
+    read_connectors(.env=.env)
 
 }
 
@@ -581,11 +572,10 @@ run=function(.env){
 
   if(is.null(select)){
     run_self(.env=.env)
-    read_connectors(.env=.env)
+    
   }else{
     .renv=.env$.renv
     run_main(.env=.renv)
-    build_connector(.env=.renv$.main)
   }
 }
 
