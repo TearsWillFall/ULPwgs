@@ -563,9 +563,8 @@ set_env_vars=function(
     }
 
 
-    main.envs<-list()
 
-    lapply(1:n_inputs,function(n,.env){
+    main.envs=lapply(1:n_inputs,function(n,.env){
 
         .this.env=environment()
         append_env(to=.this.env,from=.env)
@@ -586,7 +585,7 @@ set_env_vars=function(
         
         build_connector(.env=.this.env)
     
-        main.envs[[n]]<-environment()
+        environment()
 
       },.env=.this.env
     )
