@@ -699,7 +699,7 @@ set_main_env=function(.env){
           
           build_connector(.env=.this.env)
         
-          .env$main.envs[[n]]<-.main.env
+          .env$main.envs[[n]]<-.this.env
         },
         .env=.this.env
     )
