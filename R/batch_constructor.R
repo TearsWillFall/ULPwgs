@@ -499,23 +499,7 @@ set_env_vars=function(
     .env$n_jobs <- 1
 
     if (!is.null(sheet)){
-
-        sheet=read.delim(sheet,header=TRUE)
-        sheet=sheet %>% dplyr::distinct()
-  
-        nrows_dup=nrow(dat)-nrow(dat_filt)
-        
-        if(nrows_dup>0){
-          warning(paste0(nrows_dup, " were duplicated in sheet"))
-        }
-    
-        sheet=sheet %>% 
-          dplyr::group_by(dplyr::across(-c(vars))) %>%
-          summarise(!! vars := list(!! rlang::sym(vars)))
-
-        .env$n_jobs<-nrow(dat_filt)
-        .env$sheet<-sheet
-
+        read_sheet(.env=.env)
         set_ss_env(.env=.env)
         return()
     }
@@ -626,6 +610,40 @@ launch=function(.env){
   }
 
 
+#' Set steps enviroment for use
+#' 
+#' @param .env Environment
+#' @export
+
+
+read_sheet=function(.env){
+
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+
+
+    sheet=read.delim(sheet,header=TRUE)
+    sheet=sheet %>% dplyr::distinct()
+
+    nrows_dup=nrow(dat)-nrow(dat_filt)
+    
+    if(nrows_dup>0){
+      warning(paste0(nrows_dup, " were duplicated in sheet"))
+    }
+
+    sheet=sheet %>% 
+      dplyr::group_by(dplyr::across(-c(vars))) %>%
+      summarise(!! vars := list(!! rlang::sym(vars)))
+
+    .env$n_jobs<-nrow(dat_filt)
+    .env$sheet<-sheet
+
+}
+
+
+
+
+
 
 #' Set steps enviroment for use
 #' 
@@ -659,7 +677,8 @@ set_ss_env=function(.env){
 
         .env$self.envs[[row]] <- .this.env$self.envs
       },.env=.this.env
-    )        
+    )
+    .env$self.envs<-self.envs      
 }
 
 
@@ -703,6 +722,7 @@ set_main_env=function(.env){
         },
         .env=.this.env
     )
+  .env$main.envs<-main.envs
 }
 
 
