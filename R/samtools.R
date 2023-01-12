@@ -141,21 +141,7 @@ new_sort_and_index_bam_samtools=function(
   index=TRUE,
   stats=TRUE, 
   clean=FALSE,
-  output_dir="./sort_and_index",
-  output_name=NULL,
-  verbose=FALSE,
-  batch_config=build_default_preprocess_config(),
-  threads=3,
-  ram=1,
-  ns="ULPwgs",
-  mode="local",
-  time="48:0:0",
-  sheet=NULL,
-  inherit=NULL,
-  select=NULL,
-  executor_id=NULL,
-  err_msg=NULL,
-  hold=NULL
+  ...
 ){
 
 
@@ -214,6 +200,7 @@ new_sort_and_index_bam_samtools=function(
 
   
   .base.env=environment()
+  list2env(list(...),env=.base.env)
   set_env_vars(
     .env= .base.env,
     vars="bam"
@@ -342,21 +329,7 @@ new_sort_bam_samtools=function(
   stats=TRUE,
   coord_sort=TRUE,
   clean=FALSE,
-  output_dir=".",
-  output_name=NULL,
-  threads=3,
-  ram=1,
-  verbose=FALSE,
-  batch_config=build_default_preprocess_config(),
-  ns="ULPwgs",
-  mode="local",
-  time="48:0:0",
-  sheet=NULL,
-  inherit=NULL,
-  select=NULL,
-  err_msg=NULL,
-  executor_id=NULL,
-  hold=NULL
+  ...
 ){
 
 
@@ -444,6 +417,7 @@ new_sort_bam_samtools=function(
 
       
     .base.env=environment()
+    list2env(list(...),env=.base.env)
     set_env_vars(
       .env= .base.env,
       vars="bam"
@@ -566,21 +540,7 @@ new_index_bam_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam=NULL,
   stats=TRUE,
-  output_dir=".",
-  output_name=NULL,
-  verbose=FALSE,
-  batch_config=build_default_preprocess_config(),
-  threads=3,
-  ram=4,
-  ns="ULPwgs",
-  mode="local",
-  time="48:0:0",
-  sheet=NULL,
-  inherit=NULL,
-  select=NULL,
-  err_msg=NULL,
-  executor_id=NULL,
-  hold=NULL
+  ...
 ){
 
 
@@ -629,6 +589,7 @@ new_index_bam_samtools=function(
   
   
   .base.env=environment()
+  list2env(list(...),env=.base.env)
   set_env_vars(
     .env= .base.env,
     vars="bam"
@@ -742,24 +703,8 @@ new_stats_bam_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam=NULL,
   stats="all",
-  output_dir="./stats",
-  output_name=NULL,
-  verbose=FALSE,
-  batch_config=build_default_preprocess_config(),
-  threads=3,
-  ram=4,
-  ns="ULPwgs",
-  mode="local",
-  time="48:0:0",
-  sheet=NULL,
-  inherit=NULL,
-  select=NULL,
-  err_msg=NULL,
-  executor_id=NULL,
-  hold=NULL
-
+  ...
 ){
-
 
   run_main=function(
     .env
@@ -817,6 +762,7 @@ new_stats_bam_samtools=function(
 
 
   .base.env=environment()
+  list2env(list(...),env=.base.env)
   set_env_vars(
     .env= .base.env,
     vars="bam"
@@ -928,21 +874,7 @@ stats_flag_samtools=function(
 new_flag_stats_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam=NULL,
-  output_dir="./stats",
-  output_name=NULL,
-  verbose=FALSE,
-  batch_config=build_default_preprocess_config(),
-  threads=3,
-  ram=4,
-  ns="ULPwgs",
-  mode="local",
-  time="48:0:0",
-  sheet=NULL,
-  inherit=NULL,
-  select=NULL,
-  err_msg=NULL,
-  executor_id=NULL,
-  hold=NULL
+  ...
 ){
 
   
@@ -980,6 +912,7 @@ new_flag_stats_samtools=function(
 
 
   .base.env=environment()
+  list2env(list(...),env=.base.env)
   set_env_vars(
     .env= .base.env,
     vars="bam"
@@ -1094,21 +1027,7 @@ stats_index_samtools=function(
 new_index_stats_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam=NULL,
-  output_dir="./stats",
-  output_name=NULL,
-  verbose=FALSE,
-  batch_config=build_default_preprocess_config(),
-  threads=3,
-  ram=4,
-  ns="ULPwgs",
-  mode="local",
-  time="48:0:0",
-  sheet=NULL,
-  inherit=NULL,
-  select=NULL,
-  err_msg=NULL,
-  executor_id=NULL,
-  hold=NULL
+  ...
 ){  
 
 
@@ -1143,6 +1062,7 @@ new_index_stats_samtools=function(
   }
 
   .base.env=environment()
+  list2env(list(...),env=.base.env)
   set_env_vars(
     .env=.base.env,
     vars="bam"

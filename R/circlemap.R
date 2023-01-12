@@ -34,32 +34,25 @@ realign_circlemap=function(
         bin_samtools=build_default_tool_binary_list()$bin_samtools,
         ref_genome=build_default_reference_list()$HG19$reference$genome,
         bam=NULL,
-        output_dir=".",
-        output_name=NULL,
-        verbose=FALSE,
-        batch_config=build_default_preprocess_config(),
-        threads=3,
-        ram=1,
-        ns="ULPwgs",
-        mode="local",
-        time="48:0:0",
-        sheet=NULL,
-        inherit=NULL,
-        select=NULL,
-        err_msg=NULL,
-        executor_id=NULL,
-        hold=NULL
+        ...
 
 ){
 
-    run_main=function(envir){
+    run_main=function(
+        .env
+    ){
 
         .this.env=environment()
         append_env(to=.this.env,from=.env)
 
         set_main(.env=.this.env)
+
+
+        .main$out_file=paste0(out_file_dir,"/",input_id,".realign.circ_candidates.bed")
+
+    
             
-        .main$steps[[fn]]$steps <- append(.main$steps[[fn]]$steps,
+        .main$steps <- append(.main$steps,
             new_sort_and_index_bam_samtools(
                 bin_samtools=bin_samtools,
                 bam=input,
@@ -70,14 +63,17 @@ realign_circlemap=function(
                 ram=ram,
                 err_msg=err_msg,
                 coord_sort=FALSE,
+                stats=FALSE,
                 index=FALSE,
                 clean=FALSE,
                 executor_id=task_id
-            ))
-    
-        .this.step=.main$steps[[fn]]$steps$new_sort_and_index_bam_samtools$steps$new_sort_bam_samtools
+            )
+        )
 
-         .main$steps[[fn]]$steps <- append(.main$steps[[fn]]$steps,
+        .this.step=.main.step$steps$new_sort_and_index_bam_samtools
+        .main.step$out_files$srt_qbam=.this.step$out_files$srt_bam
+       
+        .main$steps <- append(.main$steps,
             read_extractor_circlemap(
                 env_circlemap=env_circlemap,
                 bin_samtools=bin_samtools,
@@ -87,6 +83,7 @@ realign_circlemap=function(
                 batch_config=batch_config,
                 threads=threads,
                 ram=ram,
+                err_msg=err_msg,
                 sort=TRUE,
                 coord_sort=TRUE,
                 index=TRUE,
@@ -96,28 +93,41 @@ realign_circlemap=function(
             )
         )
         
-        .this.step=.main$steps[[fn]]$steps$read_extractor_circlemap
+        .this.step=.main.step$steps$read_extractor_circlemap
+        .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
+        
 
-        .main$steps[[fn]]$out_file=paste0(out_file_dir,"/",input_id,".circular_candidates.bed")
-
-        .main$steps[[fn]]$exec_code <- paste(
+        .main$exec_code <- paste(
             set_conda_envir(env_circlemap),
             " Circle-Map Realign -sbam ",normalizePath(input),
-            " -qbam ", .this.step$out_file,
-            " -i ",steps[[fn]]$new_sort_and_index_bam_samtools$sort$out_file,
-            " -o ",.this.step$out_file,
+            " -qbam ", .main.step$out_files$srt_qbam,
+            " -i ",.main.step$out_files$srt_cbam,
+            " -o ",.main.step$out_file,
             " -t ",threads," -dir /", 
             " -fasta ",normalizePath(ref_genome), 
             " -tdir ",out_file_dir_tmp
         )
+
         
+        run_job(.env=.this.env)
 
+        .main.step=.main$steps[[fn]]
+        .main.step$out_files$realign_bed=.main.step$out_file
 
-        envir$steps <- steps
+        
+        .env$.main <- .main
 
     }
 
-  envirs=run_envir(envirs=envirs)
+    .base.env=environment()
+    list2env(list(...),env=.base.env)
+    set_env_vars(
+        .env= .base.env,
+        vars="bam"
+    )
+
+    run(.env=.base.env)
+
 }
 
 
@@ -163,81 +173,73 @@ read_extractor_circlemap=function(
     env_circlemap=build_default_python_enviroment_list()$env_circlemap,
     bin_samtools=build_default_tool_binary_list()$bin_samtools,
     bam=NULL,
-    output_dir="./read_extractor",
-    output_name=NULL,
-    verbose=FALSE,
-    batch_config=build_default_preprocess_config(),
-    threads=3,
-    ram=1,
-    sort=TRUE,
-    coord_sort=FALSE,
-    index=FALSE,
-    stats="all",
-    clean=FALSE,
-    ns="ULPwgs",
-    mode="local",
-    time="48:0:0",
-    err_mssg="read_extractor",
-    sheet=NULL,
-    inherit=NULL,
-    select=NULL,
-    executor_id=NULL,
-    hold=NULL
-
+    ...
   ){
 
 
     
-    set_env_vars(
-        vars="bam"
-    )
-
-
 
     run_main=function(
-        envir
+       .env
     ){
     
-        append_env(to=,from=envir)
-        set_steps_vars()
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+
+        set_main(.env=.this.env)
     
-        steps[[fn]]$out_file=paste0(
+        .main$out_file=paste0(
             out_file_dir_tmp,"/",input_id,".circular_read_candidates.bam"
         )
 
-        steps[[fn]]$exec_code=paste(
+       .main$exec_code=paste(
             set_conda_envir(env_circlemap),
             "Circle-Map ReadExtractor -i ",normalizePath(input), 
-            " -o ", steps[[fn]]$out_file," -dir /"
+            " -o ", .main$out_file," -dir /"
         )
 
         run_job(.envir=envir)
 
-        steps[[fn]]<-append(
-            steps[[fn]],
+        .main.step=.main$steps[[fn]]
+        .main.step$out_files$unsrt_cbam=.main.step$out_file
+
+        .main$steps[[fn]]$steps<-append(
+           .main$steps[[fn]]$steps,
                 new_sort_and_index_bam_samtools(
                     bin_samtools=bin_samtools,
-                    bam=steps[[fn]]$out_file,
+                    bam=.main$out_file,
                     output_dir=out_file_dir,
                     verbose=verbose,
                     batch_config=batch_config,
                     threads=threads,
                     ram=ram,
+                    err_msg=err_msg,
+                    stats=FALSE,
                     sort=TRUE,
-                    coord_sort=FALSE,
                     index=TRUE,
                     clean=FALSE,
                     executor_id=task_id
             )
         )
 
-        envir$steps <- steps
-        
+        .this.step=.main.step$steps$new_sort_and_index_bam_samtools
+        .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
+        names(.main.step$out_files)[-1]<-c("srt_cbam","index_cbam")
+         
+        .env$.main <- .main   
     }
 
 
 
-  envirs=run_envir(envirs=envirs)
+       
+    .base.env=environment()
+    list2env(list(...),env=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="bam"
+    )
+
+    run(.env=.base.env)
 
  
     
@@ -281,53 +283,46 @@ read_extractor_circlemap=function(
 repeat_caller_circlemap=function(
     env_circlemap=build_default_python_enviroment_list()$env_circlemap,
     bam=NULL,
-    output_dir="./repeat_reports",
-    output_name=NULL,
-    verbose=FALSE,
-    batch_config=build_default_preprocess_config(),
-    threads=1,
-    ram=1,
-    ns="ULPwgs",
-    mode="local",
-    time="48:0:0",
-    err_mssg="repeat_caller failed to run",
-    sheet=NULL,
-    inherit=NULL,
-    select=NULL,
-    executor_id=NULL,
-    hold=NULL
+    ...
 ){
 
   
-  
-    set_env_vars(
-        vars="bam"
-    )
-
-
-
     run_main=function(
-        envir
+        .env
     ){
         
-            append_env(from=envir)
-            set_steps_vars()
+            .this.env=environment()
+            append_env(to=.this.env,from=.env)
+
+            set_main(.env=.this.env)
+    
           
-            steps[[fn]]$out_file=paste0(
-                out_file_dir,"/",input_id,".circular_repeat_candidates.bed"
+            .main$out_file=paste0(
+                out_file_dir,"/",input_id,".repeat.circ_candidates.bed"
             )
-            steps[[fn]]$exec_code=paste(
+            .main$exec_code=paste(
                 set_conda_envir(env_circlemap),
                 " Circle-Map Repeats -i ",normalizePath(input), " -o ",
-                steps[[fn]]$out_file, " -dir /"
+                .main$$out_file, " -dir /"
             )
 
-            run_job()
+            run_job(.env=.this.env)
 
-            envir$steps <- steps
+            .main.step=.main$steps[[fn]]
+            .main.step$out_files$realign_bed=.main.step$out_file
+            .env$.main <- .main   
     }
 
-  envirs=run_envir(envirs=envirs)
+         
+    .base.env=environment()
+    list2env(list(...),env=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="bam"
+    )
+
+    run(.env=.base.env)
+
 
 
 
@@ -372,67 +367,79 @@ circdna_circlemap=function(
         bin_samtools=build_default_tool_binary_list()$bin_samtools,
         ref_genome=build_default_reference_list()$HG19$reference$genome,
         bam=NULL,
-        output_dir="./circdna_reports",
-        output_name=NULL,
-        verbose=FALSE,
-        batch_config=build_default_preprocess_config(),
-        threads=3,
-        ram=1,
-        mode="local",
-        ns="ULPwgs",
-        time="48:0:0",
-        err_mssg="circdna failed to run",
-        sheet=NULL,
-        inherit=NULL,
-        select=NULL,
-        executor_id=NULL,
-        hold=NULL
+        ...
 ){
 
- 
-    set_env_vars(
-        vars="bam"
-    )
 
+    
 
     run_main=function(
-        envir
+       .env
     ){
 
-        append_env(from=envir)
-        set_steps_vars()
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
 
+        set_main(.env=.this.env)
+
+        .main$steps[[fn]]<-.this.env
+        .main.step=.main$steps[[fn]]
+    
   
-        steps[[fn]] <- append(steps[[fn]],realign_circlemap(
-            env_circlemap=env_circlemap,
-            bin_samtools=bin_samtools,
-            bam=normalizePath(input),
-            ref_genome=normalizePath(ref_genome),
-            output_dir=paste0(out_file_dir,"/realign_reports"),
-            verbose=verbose,
-            tmp_dir=out_file_dir_tmp,
-            batch_config=batch_config,
-            threads=threads,
-            ram=ram,
-            executor_id=task_id,
-        ))
+        .main$steps[[fn]]$steps <- append(
+            .main$steps[[fn]]$steps,realign_circlemap(
+                env_circlemap=env_circlemap,
+                bin_samtools=bin_samtools,
+                bam=normalizePath(input),
+                ref_genome=normalizePath(ref_genome),
+                output_dir=paste0(out_file_dir,"/realign_reports"),
+                verbose=verbose,
+                tmp_dir=out_file_dir_tmp,
+                batch_config=batch_config,
+                threads=threads,
+                err_msg=err_msg,
+                ram=ram,
+                executor_id=task_id
+            )
+        )
+
+        .this.step=.main.step$steps$realign_circlemap
+        .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
 
 
-        steps[[fn]] <- append(steps[[fn]],repeat_caller_circlemap(
-            env_circlemap=env_circlemap,
-            bam=normalizePath(input),
-            output_dir=paste0(out_file_dir,"/repeat_reports"),
-            verbose=verbose,
-            batch_config=batch_config,
-            threads=threads,ram=ram,
-            executor_id=task_id
-        ))
 
-        envir$steps<-steps
+        .main$steps[[fn]]$steps  <- append(
+            .main$steps[[fn]]$steps,
+            repeat_caller_circlemap(
+                env_circlemap=env_circlemap,
+                bam=normalizePath(input),
+                output_dir=paste0(out_file_dir,"/repeat_reports"),
+                verbose=verbose,
+                batch_config=batch_config,
+                threads=threads,
+                ram=ram,
+                err_msg=err_msg,
+                executor_id=task_id
+            )
+        )
+
+        .this.step=.main.step$steps$repeat_caller_circlemap
+        .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
+
+
+        .env$.main <- .main   
         
     }
 
-  envirs=run_envir(envirs=envirs)
+    .base.env=environment()
+    list2env(list(...),env=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="bam"
+    )
+
+    run(.env=.base.env)
+
 
 }
 
@@ -478,7 +485,6 @@ read_bed_circlemap=function(
         ### Redundant column for repeat data
         dat$circ_score=NULL
     }else if (type=="align"){
-
         dat=read.table(file=bed,sep=sep)
         names(dat)=c("chr","start","end","disc_reads","split_reads",
         "circ_score","mean_cov","sd_cov","cov_incr_start",
@@ -525,40 +531,24 @@ read_bed_circlemap=function(
 annotate_bed_circlemap=function(
     annotation_ref=build_default_reference_list()$HG19$panel$PCF_V3$annotation$genes,
     bed=NULL,
-    output_dir=".",
-    output_name=NULL,
     type="repeat",
-    write=TRUE,
-    ns="ULPwgs",
-    mode="local",
-    time="48:0:0",
-    threads=8,
-    ram=1,
-    verbose=FALSE,
-    batch_config=build_default_preprocess_config(),
-    err_mssg="annotate_bed failed to run",
-    sheet=NULL,
-    inherit=NULL,
-    select=NULL,
-    executor_id=NULL,
-    hold=NULL
+    ...
 ){
   
-    set_env_vars(
-        vars="bed"
-    )
+  
 
     run_main=function(
-        envir
+        .env
     ){
    
-        append_env(from=envir)
-        set_steps_vars()
-
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+        set_main(.env=.this.env)
+  
 
         dat=read_bed_circlemap(bed=input,id=output_name,type=type,sep="\t")
         annotation=read.table(annotation_ref,sep="\t",header=TRUE) %>% 
-        dplyr::select(chr,start,end,gene_id)
+            dplyr::select(chr,start,end,gene_id)
 
 
         summarised_dat=parallel::mclapply(unique(dat$chr),function(chrom){
@@ -615,24 +605,39 @@ annotate_bed_circlemap=function(
         summarised_dat=dplyr::bind_rows(summarised_dat) %>% 
         dplyr::arrange(gtools::mixedsort(chr))
 
-        if(write){
-            steps[[fn]]$out_file=paste0(out_file_dir,"/",input_id,".circular_",type,".annotated.bed")
-            write.table(
-                file=steps[[fn]]$out_file,
-                summarised_dat,
-                sep="\t",
-                col.names=TRUE,
-                row.names=FALSE,
-                quote=FALSE
-            )
-        }
+        
+        .main$out_file=paste0(
+            out_file_dir,"/",input_id,
+            ".circular_",type,".annotated.bed")
 
-        envir$steps<-steps
-       
+
+        
+        write.table(
+            file=.main$steps$out_file,
+            summarised_dat,
+            sep="\t",
+            col.names=TRUE,
+            row.names=FALSE,
+            quote=FALSE
+        )
+
+        .main$steps[[fn]]<-.this.env
+        .main.step=.main$steps[[fn]]
+        .main.step$out_files$annot_circ_bed=.main.step$out_file
+
+
+        .env$.main <-.main
     }
 
 
-  envirs=run_envir(envirs=envirs)
+    .base.env=environment()
+    list2env(list(...),env=.base.env)
+    set_env_vars(
+        .env=.base.env,
+        vars="bam"
+    )
+
+    run(.env=.base.env)
   
 
 }
