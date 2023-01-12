@@ -585,7 +585,7 @@ set_env_vars=function(
         
         build_connector(.env=.this.env)
     
-        environment()
+        return(.this.env)
 
       },.env=.this.env
     )
