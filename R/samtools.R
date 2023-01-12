@@ -368,7 +368,7 @@ new_sort_bam_samtools=function(
       run_job(.env=.this.env)
 
       .main.step=.main$steps[[fn]]
-      .main.step$out_files$sorted_bam=.main.step$out_file
+      .main.step$out_files$srt_bam=.main.step$out_file
       
 
       if(index & coord_sort){

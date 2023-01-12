@@ -49,7 +49,7 @@ realign_circlemap=function(
 
 
         .main$out_file=paste0(out_file_dir,"/",input_id,".realign.circ_candidates.bed")
-
+        .main$out_files$realign_bed <- .main$out_file
     
             
         .main$steps <- append(.main$steps,
@@ -71,7 +71,7 @@ realign_circlemap=function(
         )
 
         .this.step=.main.step$steps$new_sort_and_index_bam_samtools
-        .main.step$out_files$srt_qbam=.this.step$out_files$srt_bam
+        .main$out_files$srt_qbam=.this.step$out_files$srt_bam
        
         .main$steps <- append(.main$steps,
             read_extractor_circlemap(
@@ -110,11 +110,7 @@ realign_circlemap=function(
 
         
         run_job(.env=.this.env)
-
-        .main.step=.main$steps[[fn]]
-        .main.step$out_files$realign_bed=.main.step$out_file
-
-        
+           
         .env$.main <- .main
 
     }
@@ -383,6 +379,7 @@ circdna_circlemap=function(
         set_main(.env=.this.env)
 
         .main$steps[[fn]]<-.this.env
+        
         .main.step=.main$steps[[fn]]
     
   
