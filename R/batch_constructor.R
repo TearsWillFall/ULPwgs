@@ -572,11 +572,13 @@ run=function(.env){
 
   if(is.null(select)){
     run_self(.env=.env)
-    read_connectors(.env=.env)
+    .self=.env$.self
+    read_connectors(.env=.self)
   }else{
     .renv=.env$.renv
     run_main(.env=.renv)
-    build_connector(.env=.renv)
+    .main=.renv$.main
+    build_connector(.env=.main)
   }
 }
 
