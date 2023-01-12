@@ -507,6 +507,7 @@ set_env_vars=function(
         envs<-inherit$main.envs
         .renv=main.envs[[select]]
         .env$.self.env <- .this.env
+        .env$n_jobs <- 1
         return()
     }else{
       if(!is.null(vars)){
@@ -593,6 +594,7 @@ set_env_vars=function(
     )
     
     .env$self.envs <- .this.env
+    
 }
 
 
