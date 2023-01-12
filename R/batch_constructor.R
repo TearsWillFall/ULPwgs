@@ -599,7 +599,7 @@ launch=function(.env){
       }else{
           reports=run(.env=self.envs)
       }
-      return(report)
+      return(reports)
   }
 
 
