@@ -266,7 +266,7 @@ read_connectors=function(
        
       })
   }else{
-    main.envs=readRDS(main.envs$connector_file)
+    main.envs=readRDS(main.envs[[1]]$connector_file)
   }
   
   return(main.envs)
@@ -499,7 +499,24 @@ set_env_vars=function(
     .env$n_jobs <- 1
 
     if (!is.null(sheet)){
-        set_ss_env(.env=.this.env)
+
+        sheet=read.delim(sheet,header=TRUE)
+        sheet=sheet %>% dplyr::distinct()
+  
+        nrows_dup=nrow(dat)-nrow(dat_filt)
+        
+        if(nrows_dup>0){
+          warning(paste0(nrows_dup, " were duplicated in sheet"))
+        }
+    
+        sheet=sheet %>% 
+          dplyr::group_by(dplyr::across(-c(vars))) %>%
+          summarise(!! vars := list(!! rlang::sym(vars)))
+
+        .env$n_jobs<-nrow(dat_filt)
+        .env$sheet<-sheet
+
+        set_ss_env(.env=.env)
         return()
     }
     
@@ -559,39 +576,11 @@ set_env_vars=function(
        err_msg <- paste0("CRITICAL ERROR: ",fn," (",job_id,") "," -> ")
     }
    
+    set_main_env(.env=.this.env)
+
+    .env$self.envs<-.this.env
 
   
-
-
-
-    main.envs=lapply(1:n_inputs,function(n,.env){
-
-        .this.env=environment()
-        append_env(to=.this.env,from=.env)
-        input<-inputs[n]
-        n_inputs<-1
-        input_id<-inputs_id[n]
-        input_ext<-inputs_ext[n]
-
-        task_id <- make_unique_id(fn)
-
-        job_id <- build_job(
-          executor_id=executor_id,
-          task_id=task_id
-        )
-
-        err_msg <- paste0(err_msg ,fn," (",job_id,") "," -> ")
-        
-        
-        build_connector(.env=.this.env)
-    
-        return(.this.env)
-
-      },.env=.this.env
-    )
-    
-    .env$self.envs <- .this.env
-    
 }
 
 
@@ -640,7 +629,7 @@ launch=function(.env){
 
 #' Set steps enviroment for use
 #' 
-#' @param envir Environment
+#' @param .env Environment
 #' @export
 
 
@@ -648,21 +637,9 @@ set_ss_env=function(.env){
 
     .this.env=environment()
     append_env(to=.this.env,from=.env)
+    this.sheet=sheet
 
-    dat=read.delim(sheet,header=TRUE)
-    dat_filt=dat %>% dplyr::distinct()
-    nrows_dup=nrow(dat)-nrow(dat_filt)
-    
-    if(nrows_dup>0){
-      warning(paste0(nrows_dup, " were duplicated in sheet"))
-    }
-    
-
-    dat_filt=dat_filt %>% 
-    dplyr::group_by(dplyr::across(-c(vars))) %>%
-    summarise(!! vars := list(!! rlang::sym(vars)))
-
-    lapply(seq(1,nrow(dat_filt)),
+    lapply(seq(1,n_jobs),
       FUN=function(row,.env){
         .this.env=environment()
         append_env(to=.this.env,from=.env)
@@ -670,8 +647,8 @@ set_ss_env=function(.env){
 
         ### ASSIGN VARS IN SHEET TO ENVIROMENT
         invisible(
-            lapply(seq(1,ncol(dat_filt[row,])),FUN=function(col){
-              .this.env[[col]] <- dat_filt[row,col]
+            lapply(seq(1,ncol(this.sheet[row,])),FUN=function(col){
+              .this.env[[col]] <- this.sheet[row,col]
         
         }))
 
@@ -685,6 +662,48 @@ set_ss_env=function(.env){
     )        
 }
 
+
+
+
+#' Set steps enviroment for use
+#' 
+#' @param .env Environment
+#' @export
+
+
+set_main_env=function(.env){
+   
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+    lapply(
+        1:n_inputs,
+        function(n,.env){
+          .this.env=environment()
+          append_env(to=.this.env,from=.env)
+
+          .env$self.envs <- .this.env
+          input<-inputs[n]
+          n_inputs<-1
+          input_id<-inputs_id[n]
+          input_ext<-inputs_ext[n]
+
+          task_id <- make_unique_id(fn)
+
+          job_id <- build_job(
+            executor_id=executor_id,
+            task_id=task_id
+          )
+
+          err_msg <- paste0(err_msg ,fn," (",job_id,") "," -> ")
+          
+          
+          build_connector(.env=.this.env)
+        
+          .env$main.envs[[n]]<-.main.env
+        },
+        .env=.this.env
+    )
+}
 
 
 
