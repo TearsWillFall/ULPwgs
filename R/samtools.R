@@ -206,7 +206,7 @@ new_sort_and_index_bam_samtools=function(
     vars="bam"
   )
 
-  run(.env=.self.env)
+ launch(.env=.base.env)
 
  
 
@@ -422,8 +422,10 @@ new_sort_bam_samtools=function(
       .env= .base.env,
       vars="bam"
     )
+    
 
-     run(.env=.self.env)
+    launch(.env=.base.env)
+ 
 
 }
 
@@ -595,7 +597,7 @@ new_index_bam_samtools=function(
     vars="bam"
   )
  
-    run(.env=.self.env)
+   launch(.env=.base.env)
   
 }
 
@@ -768,7 +770,7 @@ new_stats_bam_samtools=function(
     vars="bam"
   )
  
-   run(.env=.self.env)
+  launch(.env=.base.env)
 
 }
 
@@ -918,7 +920,7 @@ new_flag_stats_samtools=function(
     vars="bam"
   )
  
-    run(.env=.self.env)
+   launch(.env=.base.env)
 
 
   
@@ -1068,7 +1070,7 @@ new_index_stats_samtools=function(
     vars="bam"
   )
 
-   run(.env=.self.env)
+  launch(.env=.base.env)
 
 
 

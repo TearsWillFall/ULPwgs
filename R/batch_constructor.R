@@ -219,10 +219,13 @@ build_connector=function(
 
 wait_scheduler=function(.env){
 
-   check=TRUE
+    
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+    check=TRUE
 
     job_ids=lapply(1:n_inputs,function(n){
-      readRDS(envs[[inputs_id[[n]]]]$job_id)
+      readRDS(main.envs[[n]]$job_id)
     })
 
     while(check){
@@ -258,15 +261,15 @@ read_connectors=function(
   ### Reads connectors and updates values for enviroments with data
 
   if(n_inputs>1){
-    envs=lapply(1:n_inputs,function(n){
-        env=readRDS(envs[[inputs_id[[n]]]]$connector_file)
+    main.envs=lapply(1:n_inputs,function(n){
+        main.env=readRDS(main.envs[[n]]$connector_file)
        
       })
   }else{
-    envs=readRDS(envs[[inputs_id[[1]]]]$connector_file)
+    main.envs=readRDS(main.envs[[n]]$connector_file)
   }
   
-  return(envs)
+  return(main.envs)
 }
 
 
@@ -412,8 +415,8 @@ run_self=function(
     .self$error=execute_job(exec_code=.self$exec_code)
 
     if(mode=="local"){
-      .self$envs=lapply(1:n_inputs,function(n){
-        readRDS(.self$envs[[inputs_id[[n]]]]$connector_file)
+      .self$main.envs=lapply(1:n_inputs,function(n){
+        readRDS(.self$main.envs[[n]]$connector_file)
       }
 
      )
@@ -472,6 +475,7 @@ run_self=function(
 
 set_env_vars=function(
   .env=environment(),
+  n_jobs=1,
   vars=NULL,
   fn=NULL,
   output_dir=".",
@@ -500,8 +504,8 @@ set_env_vars=function(
           inherit <-readRDS(file=inherit)
         }
         append_env(to=.this.env,from=inherit)
-        envs<-inherit$envs
-        .renv=envs[[inputs_id[[select]]]]
+        envs<-inherit$main.envs
+        .renv=main.envs[[select]]
         .env$.self.env <- .this.env
         return()
     }else{
@@ -553,13 +557,13 @@ set_env_vars=function(
    
 
     if (!is.null(sheet)){
-        set_ss_env(.this.env)
-        .env$.self.env <- .this.env
-        return()
+        set_ss_env(.env=.this.env)
+        .env$self.envs <- .this.env
+        .env$n_jobs <- n_jobs
     }
 
 
-    envs<-new.env()
+    main.envs<-list()
 
     lapply(1:n_inputs,function(n,.env){
 
@@ -582,12 +586,12 @@ set_env_vars=function(
         
         build_connector(.env=.this.env)
     
-        envs[[inputs_id]]<-environment()
+        main.envs[[n]]<-environment()
 
       },.env=.this.env
     )
     
-    .env$.self.env <- .this.env
+    .env$self.envs <- .this.env
 }
 
 
@@ -612,6 +616,24 @@ run=function(.env){
 }
 
 
+#' Set steps enviroment for use
+#' 
+#' @param .env Environment
+#' @export
+
+launch=function(.env){
+      .this.env=environment()
+      append_env(to=.this.env,from=.env)
+      if(n_jobs>1){
+      report=lapply(1:n_jobs,function(n){
+          run(.env=self.envs[[n]])
+      })
+      }else{
+          report=run(.env=self.envs)
+      }
+      return(report)
+  }
+
 
 
 #' Set steps enviroment for use
@@ -621,18 +643,23 @@ run=function(.env){
 
 
 set_ss_env=function(.env){
-          dat=read.delim(.env$sheet,header=TRUE)
+
+
+          .this.env=environment()
+          append_env(to=.this.env,from=.env)
+
+          dat=read.delim(sheet,header=TRUE)
           dat_filt=dat %>% dplyr::distinct()
           nrows_dup=nrow(dat)-nrow(dat_filt)
+          
           if(nrows_dup>0){
             warning(paste0(nrows_dup, " were duplicated in sheet"))
           }
           
 
-
           dat_filt=dat_filt %>% 
-          dplyr::group_by(dplyr::across(-c(.env$vars))) %>%
-          summarise(!! .env$vars := list(!! rlang::sym(.env$vars)))
+          dplyr::group_by(dplyr::across(-c(vars))) %>%
+          summarise(!! vars := list(!! rlang::sym(vars)))
 
           lapply(seq(1,nrow(dat_filt)),
             FUN=function(row){
@@ -641,18 +668,21 @@ set_ss_env=function(.env){
               sheet <- NULL
 
               ### ASSIGN VARS IN SHEET TO ENVIROMENT
-              invisible(lapply(seq(1,nrows(dat_row)),FUN=function(col){
-                    .this.env[[col]] <- dat_row[row,col]
-                    set_env_vars(
-                        .env=.this.env,
-                        vars=.this.env$vars
-                    )
+              invisible(
+                  lapply(seq(1,ncol(dat_filt[row,])),FUN=function(col){
+                    .this.env[[col]] <- dat_filt[row,col]
+              
               }))
 
-              .env$envs[[row]]<-run_main(.this.env)
+              set_env_vars(
+                  .env=.this.env,
+                  vars=vars
+              )
+
+              .env$self.envs[[row]] <- .this.env$.self.env
             }
           )
-          
+        .env$n_jobs <- nrow(dat_filt)        
 }
 
 
