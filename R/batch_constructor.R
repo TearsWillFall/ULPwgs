@@ -270,7 +270,7 @@ read_connectors=function(
     main.envs=readRDS(main.envs[[1]]$connector_file)
   }
   
-  .env$main.envs <- main.envs
+  return(main.envs)
 }
 
 
