@@ -417,7 +417,7 @@ run_self=function(
     }
 
     read_connectors(.env=.self)
-    .env$.self=.self
+  
 }
 
 #' Run job from batch constructor
