@@ -615,20 +615,21 @@ read_sheet=function(.env){
 
 
     sheet=read.delim(sheet,header=TRUE)
+    n_total<-nrow(sheet)
     sheet=sheet %>% dplyr::distinct()
-
-    nrows_dup=nrow(dat)-nrow(dat_filt)
+    n_jobs<-nrow(sheet)
+    n_dup=n_total-n_jobs
     
-    if(nrows_dup>0){
-      warning(paste0(nrows_dup, " were duplicated in sheet"))
+    if(n_dup>0){
+      warning(paste0(n_dup, " were duplicated in sheet"))
     }
 
     sheet=sheet %>% 
       dplyr::group_by(dplyr::across(-c(vars))) %>%
       summarise(!! vars := list(!! rlang::sym(vars)))
 
-    .env$n_jobs<-nrow(dat_filt)
-    .env$sheet<-sheet
+    .env$n_jobs<- n_jobs
+    .env$sheet<- sheet
 
 }
 

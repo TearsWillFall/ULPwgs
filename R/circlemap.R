@@ -94,7 +94,7 @@ realign_circlemap=function(
         )
         
         .this.step=.main.step$steps$read_extractor_circlemap
-        .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
+        .main$out_files=append(.main$out_files,.this.step$out_files)
         
 
         .main$exec_code <- paste(
@@ -110,7 +110,7 @@ realign_circlemap=function(
 
         
         run_job(.env=.this.env)
-           
+
         .env$.main <- .main
 
     }
