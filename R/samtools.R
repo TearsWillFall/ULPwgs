@@ -200,7 +200,7 @@ new_sort_and_index_bam_samtools=function(
 
   
   .base.env=environment()
-  list2env(list(...),env=.base.env)
+  list2env(list(...),envir=.base.env)
   set_env_vars(
     .env= .base.env,
     vars="bam"
@@ -417,7 +417,7 @@ new_sort_bam_samtools=function(
 
       
     .base.env=environment()
-    list2env(list(...),env=.base.env)
+    list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
       vars="bam"
@@ -589,7 +589,7 @@ new_index_bam_samtools=function(
   
   
   .base.env=environment()
-  list2env(list(...),env=.base.env)
+  list2env(list(...),envir=.base.env)
   set_env_vars(
     .env= .base.env,
     vars="bam"
@@ -762,7 +762,7 @@ new_stats_bam_samtools=function(
 
 
   .base.env=environment()
-  list2env(list(...),env=.base.env)
+  list2env(list(...),envir=.base.env)
   set_env_vars(
     .env= .base.env,
     vars="bam"
@@ -912,7 +912,7 @@ new_flag_stats_samtools=function(
 
 
   .base.env=environment()
-  list2env(list(...),env=.base.env)
+  list2env(list(...),envir=.base.env)
   set_env_vars(
     .env= .base.env,
     vars="bam"
@@ -1062,7 +1062,7 @@ new_index_stats_samtools=function(
   }
 
   .base.env=environment()
-  list2env(list(...),env=.base.env)
+  list2env(list(...),envir=.base.env)
   set_env_vars(
     .env=.base.env,
     vars="bam"

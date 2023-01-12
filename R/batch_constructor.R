@@ -494,7 +494,6 @@ set_env_vars=function(
     .this.env=environment()
     append_env(to=.this.env,from=.env)
 
-    .env$...
     
     if(!is.null(inherit)){
         if(!is.environment(inherit)){

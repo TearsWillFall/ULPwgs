@@ -233,7 +233,7 @@ read_extractor_circlemap=function(
 
        
     .base.env=environment()
-    list2env(list(...),env=.base.env)
+    list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
       vars="bam"
@@ -315,7 +315,7 @@ repeat_caller_circlemap=function(
 
          
     .base.env=environment()
-    list2env(list(...),env=.base.env)
+    list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
       vars="bam"
@@ -432,7 +432,7 @@ circdna_circlemap=function(
     }
 
     .base.env=environment()
-    list2env(list(...),env=.base.env)
+    list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
       vars="bam"
@@ -631,7 +631,7 @@ annotate_bed_circlemap=function(
 
 
     .base.env=environment()
-    list2env(list(...),env=.base.env)
+    list2env(list(...),envir=.base.env)
     set_env_vars(
         .env=.base.env,
         vars="bam"
