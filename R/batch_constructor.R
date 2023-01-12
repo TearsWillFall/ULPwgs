@@ -236,6 +236,7 @@ wait_scheduler=function(.env){
       }
      
     }
+    return()
 
 }
 
@@ -269,7 +270,7 @@ read_connectors=function(
     main.envs=readRDS(main.envs[[1]]$connector_file)
   }
   
-  return(main.envs)
+  .env$main.envs <- main.envs
 }
 
 
@@ -416,7 +417,7 @@ run_self=function(
     }
 
     read_connectors(.env=.self)
-
+    .env$.self=.self
 }
 
 #' Run job from batch constructor
@@ -573,7 +574,8 @@ run=function(.env){
 
   if(is.null(select)){
     run_self(.env=.env)
-    
+    .self=.env$.self
+    return(.self)
   }else{
     .renv=.env$.renv
     run_main(.env=.renv)
