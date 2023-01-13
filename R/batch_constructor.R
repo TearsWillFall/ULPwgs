@@ -492,8 +492,9 @@ set_env_vars=function(
     .env$n_jobs <- 1
 
     if (!is.null(sheet)){
-        read_sheet(.env=.env)
-        set_ss_env(.env=.env)
+        read_sheet(.env=.this.env)
+        set_ss_env(.env=.this.env)
+       
         return()
     }
     
@@ -671,7 +672,7 @@ set_ss_env=function(.env){
         .env$self.envs[[row]] <- .this.env$self.envs
       },.env=.this.env
     )
-    .env$self.envs<-self.envs      
+    .env$.env$self.envs<-self.envs      
 }
 
 
