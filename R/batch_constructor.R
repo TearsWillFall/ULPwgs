@@ -619,6 +619,7 @@ read_sheet=function(.env){
     n_total<-nrow(sheet)
     sheet=sheet %>% dplyr::distinct()
     n_jobs<-nrow(sheet)
+    n_vars<-ncol(sheet)
     n_dup=n_total-n_jobs
     
     if(n_dup>0){
@@ -630,6 +631,7 @@ read_sheet=function(.env){
       dplyr::summarise(!! vars := list(!! rlang::sym(vars)))
 
     .env$n_jobs<- n_jobs
+    .env$n_vars<- n_vars
     .env$sheet<- sheet
 
 }
@@ -650,6 +652,7 @@ set_ss_env=function(.env){
     .this.env=environment()
     append_env(to=.this.env,from=.env)
     this.sheet=sheet
+    vars_sheet=colnames(this.sheet)
 
     lapply(seq(1,n_jobs),
       FUN=function(row,.env){
@@ -658,11 +661,15 @@ set_ss_env=function(.env){
         sheet <- NULL
 
         ### ASSIGN VARS IN SHEET TO ENVIROMENT
+      
         invisible(
-            lapply(seq(1,ncol(this.sheet[row,])),FUN=function(col){
-              .this.env[[col]] <- this.sheet[row,col]
-        
-        }))
+            lapply(seq(1,n_vars),
+              FUN=function(col)
+            {
+              .this.env[[vars_sheet[col]]] <- this.sheet[row,col]
+            }
+          )
+        )
 
         set_env_vars(
             .env=.this.env,
