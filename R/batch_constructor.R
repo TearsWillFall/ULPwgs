@@ -492,9 +492,9 @@ set_env_vars=function(
     .env$n_jobs <- 1
 
     if (!is.null(sheet)){
-        read_sheet(.env=.this.env)
+        read_sheet(.env=.env)
+        append_env(to=.this.env,from=.env)
         set_ss_env(.env=.this.env)
-       
         return()
     }
     
@@ -614,7 +614,6 @@ read_sheet=function(.env){
     .this.env=environment()
     append_env(to=.this.env,from=.env)
 
-
     sheet=read.delim(sheet,header=TRUE)
     n_total<-nrow(sheet)
     sheet=sheet %>% dplyr::distinct()
@@ -633,7 +632,6 @@ read_sheet=function(.env){
     .env$n_jobs<- n_jobs
     .env$n_vars<- n_vars
     .env$sheet<- sheet
-
 }
 
 
