@@ -493,7 +493,6 @@ set_env_vars=function(
 
     if (!is.null(sheet)){
         read_sheet(.env=.this.env)
-        .env$n_jobs<- n_jobs
         set_ss_env(.env=.this.env)
         return()
     }
@@ -613,6 +612,7 @@ read_sheet=function(.env){
 
     .this.env=environment()
     append_env(to=.this.env,from=.env)
+    .base.env=.env$.env
 
     sheet=read.delim(sheet,header=TRUE)
     n_total<-nrow(sheet)
@@ -629,9 +629,9 @@ read_sheet=function(.env){
       dplyr::group_by(dplyr::across(-c(vars))) %>%
       dplyr::summarise(!! vars := list(!! rlang::sym(vars)))
 
-    .env$n_jobs<- n_jobs
-    .env$n_vars<- n_vars
-    .env$sheet<- sheet
+    .env$n_jobs<- .base.env <- n_jobs
+    .env$n_vars<- .base.env <- n_vars
+    .env$sheet<- .base.env <- sheet
 }
 
 
@@ -649,6 +649,7 @@ set_ss_env=function(.env){
 
     .this.env=environment()
     append_env(to=.this.env,from=.env)
+    .base.env <- .env$.env
     this.sheet=sheet
     vars_sheet=colnames(this.sheet)
 
@@ -676,7 +677,7 @@ set_ss_env=function(.env){
         .env$self.envs[[row]] <- self.envs
       },.env=.this.env
     )
-    .env$.env$self.envs<-self.envs      
+    .base.env$self.envs<-self.envs      
 }
 
 
