@@ -666,15 +666,13 @@ set_ss_env=function(.env){
             lapply(seq(1,n_vars),
               FUN=function(col)
             {
-              .this.env[[vars_sheet[col]]] <- this.sheet[row,col]
+              .this.env[[vars_sheet[col]]] <- this.sheet[[row,col]]
             }
           )
         )
-        print(as.list(.this.env))
-
+        
         set_env_vars(
-            .env=.this.env,
-            vars=vars
+            .env=.this.env
         )
 
         .env$self.envs[[row]] <- self.envs
