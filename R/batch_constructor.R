@@ -670,7 +670,7 @@ set_ss_env=function(.env){
             }
           )
         )
-        print(list(.this.env))
+        print(as.list(.this.env))
 
         set_env_vars(
             .env=.this.env,
