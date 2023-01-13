@@ -492,8 +492,8 @@ set_env_vars=function(
     .env$n_jobs <- 1
 
     if (!is.null(sheet)){
-        read_sheet(.env=.env)
-        append_env(to=.this.env,from=.env)
+        read_sheet(.env=.this.env)
+        .env$n_jobs<- n_jobs
         set_ss_env(.env=.this.env)
         return()
     }
