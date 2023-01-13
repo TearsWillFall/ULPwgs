@@ -670,13 +670,14 @@ set_ss_env=function(.env){
             }
           )
         )
+        print(list(.this.env))
 
         set_env_vars(
             .env=.this.env,
             vars=vars
         )
 
-        .env$self.envs[[row]] <- .this.env$self.envs
+        .env$self.envs[[row]] <- self.envs
       },.env=.this.env
     )
     .env$.env$self.envs<-self.envs      
