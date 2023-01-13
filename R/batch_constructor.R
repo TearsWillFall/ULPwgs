@@ -491,12 +491,7 @@ set_env_vars=function(
     append_env(to=.this.env,from=.env)
     .env$n_jobs <- 1
 
-    if (!is.null(sheet)){
-        read_sheet(.env=.this.env)
-        set_ss_env(.env=.this.env)
-        return()
-    }
-    
+       
     if(!is.null(inherit)){
         if(!is.environment(inherit)){
           inherit <-readRDS(file=inherit)
@@ -506,42 +501,48 @@ set_env_vars=function(
         .renv=main.envs[[select]]
         .env$self.envs <- .this.env
         return()
-    }else{
-      if(!is.null(vars)){
-        inputs <- get(vars)
-        n_inputs <- length(inputs)
-        inputs_id <- set_input_id(
-          inputs=inputs,
-          ids=output_name
-        )
-        inputs_ext <- unname(Vectorize(get_file_ext)(inputs))
-      }
-
-
-      out_file_dir <- set_dir(
-            dir=output_dir
-      )
-
-      out_file_dir_tmp <- set_dir(
-        dir=out_file_dir,
-        name="tmp"
-      )
     }
-
-
+    
     if(is.null(fn)){
 
       ## GET CALLER FUNCTION NAME IF NOT GIVEN
-  
+
       fn <- sub(".*::","",sub("\\(.*","",
           paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=","))
         )
     }
-    
+
+
     if(is.null(executor_id)){
       executor_id <- make_unique_id(fn)
     }
 
+    if (!is.null(sheet)){
+        read_sheet(.env=.this.env)
+        set_ss_env(.env=.this.env)
+        return()
+    }
+
+
+    if(!is.null(vars)){
+      inputs <- get(vars)
+      n_inputs <- length(inputs)
+      inputs_id <- set_input_id(
+        inputs=inputs,
+        ids=output_name
+      )
+      inputs_ext <- unname(Vectorize(get_file_ext)(inputs))
+    }
+
+
+    out_file_dir <- set_dir(
+          dir=output_dir
+    )
+
+    out_file_dir_tmp <- set_dir(
+      dir=out_file_dir,
+      name="tmp"
+    )
     task_id <- make_unique_id(fn)
 
     job_id <- build_job(
@@ -550,9 +551,9 @@ set_env_vars=function(
     )
 
     if(is.null(err_msg)){
-       err_msg <- paste0("CRITICAL ERROR: ",fn," (",job_id,") "," -> ")
+        err_msg <- paste0("CRITICAL ERROR: ",fn," (",job_id,") "," -> ")
     }
-   
+    
     set_main_env(.env=.this.env)
 
     .env$self.envs<-.this.env
