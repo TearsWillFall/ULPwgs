@@ -9,20 +9,9 @@ add an entry for AF within the VCF file}
 add_af_strelka_vcf(
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
-  vcf_snv = NULL,
-  vcf_indel = NULL,
-  vcf_sv = NULL,
-  verbose = FALSE,
-  executor_id = make_unique_id("addAFStrelka"),
-  task_name = "addAFStrelka",
-  batch_config = build_default_preprocess_config(),
-  mode = "local",
-  time = "48:0:0",
-  threads = 1,
-  ram = 4,
-  update_time = 60,
-  wait = FALSE,
-  hold = NULL
+  vcf = NULL,
+  type = "snv",
+  ...
 )
 }
 \arguments{
@@ -33,6 +22,18 @@ add_af_strelka_vcf(
 \item{vcf_snv}{Path to VCF file with snv}
 
 \item{vcf_indel}{Path to VCF file with snv}
+
+\item{compress}{Compress VCF file. Default TRUE.}
+
+\item{index}{Index VCF file. Default TRUE.}
+
+\item{index_format}{VCF index format. Default tbi. Options \link{tbi,cbi}.}
+
+\item{bgzip_index}{Create BGZIP index for compressed file. Default FALSE}
+
+\item{output_dir}{Path to the output directory.}
+
+\item{clean}{Remove input VCF after completion. Default FALSE.}
 
 \item{verbose}{Enables progress messages. Default False.}
 
@@ -53,18 +54,6 @@ add_af_strelka_vcf(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
-
-\item{compress}{Compress VCF file. Default TRUE.}
-
-\item{index}{Index VCF file. Default TRUE.}
-
-\item{index_format}{VCF index format. Default tbi. Options \link{tbi,cbi}.}
-
-\item{bgzip_index}{Create BGZIP index for compressed file. Default FALSE}
-
-\item{output_dir}{Path to the output directory.}
-
-\item{clean}{Remove input VCF after completion. Default FALSE.}
 }
 \description{
 Add AF information to Strelka VCF file

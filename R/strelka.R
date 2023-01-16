@@ -217,8 +217,7 @@ call_somatic_sv_manta=function(
             vcf_sv=.main.step$out_files$variants$sv,
             output_dir=paste0(out_file_dir,"/results"),
             verbose=verbose, 
-            executor_id=task_id,
-            threads=threads,ram=ram
+            executor_id=task_id
           )
         )
         .this.step=.main.step$steps$add_af_strelka_vcf
@@ -229,12 +228,10 @@ call_somatic_sv_manta=function(
           extract_pass_variants_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf_sv=.main$out_files$,
+            vcf_sv=.main$out_files$vcf_sv_af,
             output_dir=paste0(out_file_dir,"/results"),
             verbose=verbose,
-            threads=threads,
-            ram=ram,
-            executor_id=task_id,
+            executor_id=task_id
           )
         )
 
@@ -252,8 +249,6 @@ call_somatic_sv_manta=function(
                 vcf_sv=steps[[fn]]$out_file$variants$sv,
                 output_dir=paste0(out_file_dir,"/results"),
                 verbose=verbose,
-                threads=threads,
-                ram=ram,
                 executor_id=task_id
             )
           )

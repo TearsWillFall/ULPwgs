@@ -17,22 +17,11 @@ call_variants_strelka(
   normal = NULL,
   patient_id = NULL,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
-  output_dir = "./strelka_reports",
-  output_name = NULL,
   annotate = TRUE,
   tabulate = TRUE,
   targeted = TRUE,
   verbose = FALSE,
-  batch_config = build_default_preprocess_config(),
-  threads = 1,
-  ram = 4,
-  mode = "local",
-  time = "48:0:0",
-  sheet = NULL,
-  inherit = NULL,
-  select = NULL,
-  executor_id = NULL,
-  hold = NULL
+  ...
 )
 }
 \arguments{
@@ -48,35 +37,35 @@ call_variants_strelka(
 
 \item{ref_genome}{\link{REQUIRED} Path to reference genome FASTA}
 
-\item{output_dir}{\link{OPTIONAL} Path to the output directory. Default current directory}
-
 \item{targeted}{\link{REQUIRED} Remove coverage filtering for exome/targeted data. Default TRUE}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
-
-\item{batch_config}{\link{OPTIONAL} Default configuration for job submission in batch.}
-
-\item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
-
-\item{ram}{\link{OPTIONAL} RAM memory to asing to each thread. Default 4}
-
-\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
-
-\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
-
-\item{executor_id}{Task EXECUTOR ID. Default "recalCovariates"}
-
-\item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
 
 \item{variants}{\link{REQUIRED} Variants types to call. Default all. Options \link{"snv","sv","all"}}
 
 \item{indel_cnds}{\link{REQUIRED} Use indel candidates to correct SNV calls. Default TRUE}
 
+\item{output_dir}{\link{OPTIONAL} Path to the output directory. Default current directory}
+
+\item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
+
+\item{batch_config}{\link{OPTIONAL} Default configuration for job submission in batch.}
+
+\item{ram}{\link{OPTIONAL} RAM memory to asing to each thread. Default 4}
+
+\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
+\item{executor_id}{Task EXECUTOR ID. Default "recalCovariates"}
+
 \item{task_name}{Task name. Default "recalCovariates"}
+
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 
 \item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
 
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
+
+\item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
 }
 \description{
 This function wraps the functions for variant calling with Strelka and Manta

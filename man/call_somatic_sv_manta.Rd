@@ -17,18 +17,7 @@ call_somatic_sv_manta(
   targeted = TRUE,
   annotate = TRUE,
   tabulate = TRUE,
-  output_dir = "./somatic/sv",
-  output_name = NULL,
-  verbose = FALSE,
-  batch_config = build_default_preprocess_config(),
-  threads = 1,
-  ram = 4,
-  mode = "local",
-  time = "48:0:0",
-  sheet = NULL,
-  executor_id = NULL,
-  inherit = NULL,
-  hold = NULL
+  ...
 )
 }
 \arguments{
@@ -41,30 +30,6 @@ call_somatic_sv_manta(
 \item{ref_genome}{\link{REQUIRED} Path to reference genome FASTA}
 
 \item{targeted}{\link{REQUIRED} Remove coverage filtering for exome/targeted data. Default TRUE}
-
-\item{output_dir}{\link{OPTIONAL} Path to the output directory. Default current directory}
-
-\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
-
-\item{batch_config}{\link{OPTIONAL} Default configuration for job submission in batch.}
-
-\item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
-
-\item{ram}{\link{OPTIONAL} RAM memory to asing to each thread. Default 4}
-
-\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
-
-\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
-
-\item{executor_id}{Task EXECUTOR ID. Default "recalCovariates"}
-
-\item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
-
-\item{task_name}{Task name. Default "recalCovariates"}
-
-\item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
-
-\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 }
 \description{
 This function wraps the Manta workflow functions for structural variant calling

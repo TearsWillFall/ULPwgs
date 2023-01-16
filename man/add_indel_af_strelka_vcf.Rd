@@ -9,24 +9,8 @@ add an entry for AF within the VCF file}
 add_indel_af_strelka_vcf(
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
-  vcf,
-  overwrite = FALSE,
-  compress = TRUE,
-  index = TRUE,
-  index_format = "tbi",
-  bgzip_index = FALSE,
-  clean = TRUE,
-  verbose = FALSE,
-  executor_id = make_unique_id("addAFindelStrelka"),
-  task_name = "addAFindelStrelka",
-  batch_config = build_default_preprocess_config(),
-  mode = "local",
-  time = "48:0:0",
-  threads = 1,
-  ram = 4,
-  update_time = 60,
-  wait = FALSE,
-  hold = NULL
+  vcf = NULL,
+  ...
 )
 }
 \arguments{
@@ -43,6 +27,8 @@ add_indel_af_strelka_vcf(
 \item{index_format}{VCF index format. Default tbi. Options \link{tbi,cbi}.}
 
 \item{bgzip_index}{Create BGZIP index for compressed file. Default FALSE}
+
+\item{output_dir}{Path to the output directory.}
 
 \item{clean}{Remove input VCF after completion. Default FALSE.}
 
@@ -65,8 +51,6 @@ add_indel_af_strelka_vcf(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
-
-\item{output_dir}{Path to the output directory.}
 }
 \description{
 Add indel AF information to Strelka VCF file
