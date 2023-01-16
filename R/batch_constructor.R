@@ -584,9 +584,9 @@ set_env_vars=function(
 
       ## GET CALLER FUNCTION NAME IF NOT GIVEN
 
-      fn <- sub(".*::","",sub("\\(.*","",
-          paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=","))
-        )
+    fn <- sub(".*::","",sub("\\(.*","",
+        paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=","))
+      )
     }
 
 
@@ -783,6 +783,7 @@ set_main_env=function(.env){
           input_id<-inputs_id[n]
           input_ext<-inputs_ext[n]
 
+          executor_id <- task_id
           task_id <- make_unique_id(fn)
 
           job_id <- build_job(

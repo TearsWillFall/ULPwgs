@@ -328,7 +328,6 @@ new_sort_bam_samtools=function(
   index=TRUE,
   stats=TRUE,
   coord_sort=TRUE,
-  clean=FALSE,
   ...
 ){
 
@@ -358,13 +357,6 @@ new_sort_bam_samtools=function(
         .main$out_file
       )
     
-      if(clean){
-        .main$exec_code=paste(
-          .main$exec_code," && rm",paste(input,collapse=" ")
-        )
-      }
-
-
       run_job(.env=.this.env)
 
       .main.step=.main$steps[[fn]]
@@ -905,9 +897,9 @@ new_flag_stats_samtools=function(
 
     run_job(.env=.this.env)
 
-    .this.step=.main$steps[[fn]]
+    .main.step=.main$steps[[fn]]
 
-    .this.step$out_files$flag_stats <- .main$out_file
+    .main.step$out_files$flag_stats <- .main$out_file
 
     .env$.main <- .main
 
