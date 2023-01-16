@@ -707,7 +707,7 @@ read_sheet=function(.env){
       dplyr::summarise(!! vars := list(!! rlang::sym(vars)))
     
     .env$.env$n_jobs <- n_jobs
-    .env$.env$n_vars <- n_vars
+    .env$.env$n_vars <-.env$n_vars <- n_vars
     .env$sheet <- sheet
 }
 
