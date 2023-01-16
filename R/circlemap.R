@@ -50,7 +50,7 @@ realign_circlemap=function(
 
         .main$out_file=paste0(out_file_dir,"/",input_id,".realign.circ_candidates.bed")
         .main$out_files$realign_bed <- .main$out_file
-    
+
             
         .main$steps <- append(.main$steps,
             new_sort_and_index_bam_samtools(
@@ -70,7 +70,7 @@ realign_circlemap=function(
             )
         )
 
-        .this.step=.main.step$steps$new_sort_and_index_bam_samtools
+        .this.step=.main$step$new_sort_and_index_bam_samtools
         .main$out_files$srt_qbam=.this.step$out_files$srt_bam
        
         .main$steps <- append(.main$steps,
@@ -93,22 +93,21 @@ realign_circlemap=function(
             )
         )
         
-        .this.step=.main.step$steps$read_extractor_circlemap
+        .this.step=.main$step$read_extractor_circlemap
         .main$out_files=append(.main$out_files,.this.step$out_files)
         
 
         .main$exec_code <- paste(
             set_conda_envir(env_circlemap),
             " Circle-Map Realign -sbam ",normalizePath(input),
-            " -qbam ", .main.step$out_files$srt_qbam,
-            " -i ",.main.step$out_files$srt_cbam,
-            " -o ",.main.step$out_file,
+            " -qbam ", .main$out_files$srt_qbam,
+            " -i ",.main$out_files$srt_cbam,
+            " -o ",.main$out_files$realign_bed,
             " -t ",threads," -dir /", 
             " -fasta ",normalizePath(ref_genome), 
             " -tdir ",out_file_dir_tmp
         )
 
-        
         run_job(.env=.this.env)
 
         .env$.main <- .main
