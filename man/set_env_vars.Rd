@@ -23,7 +23,7 @@ set_env_vars(
   select = NULL,
   err_msg = NULL,
   executor_id = NULL,
-  wait = NULL,
+  wait = TRUE,
   hold = NULL
 )
 }

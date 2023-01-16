@@ -8,8 +8,6 @@ build_batch_exec_innit(.env = environment())
 }
 \arguments{
 \item{.env}{Inherit envoment variables}
-
-\item{exec_code}{Execution code}
 }
 \description{
 Build execution innit for batch
