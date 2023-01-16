@@ -349,12 +349,11 @@ build_batch_exec_innit=function(
     .this.env=environment()
     append_env(to=.this.env,from=.env)
 
-    out_file_dir_batch=set_dir(dir=tmp_dir,name="batch")
 
     batch_code=build_job_exec(
       job=job_id,time=time,ram=ram,
       threads=threads,wd=getwd(),
-      output_dir=out_file_dir_batch,
+      output_dir=batch_dir,
       hold=hold,array=n_inputs
     )
 
@@ -546,6 +545,7 @@ set_env_vars=function(
   output_dir=".",
   tmp_dir=NULL,
   env_dir=NULL,
+  batch_dur=NULL,
   output_name=NULL,
   verbose=FALSE,
   bgzip_index=FALSE,
@@ -632,6 +632,13 @@ set_env_vars=function(
             name="env"
         )
       }
+
+    if(!is.null(batch_dir)){
+        batch_dir<- set_dir(
+          dir=out_file_dir,
+          name="batch"
+      )
+    }
   
     task_id <- make_unique_id(fn)
 

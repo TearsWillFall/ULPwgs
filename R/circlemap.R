@@ -59,6 +59,7 @@ realign_circlemap=function(
                 output_dir=paste0(out_file_dir,"/sorted"),
                 tmp_dir=tmp_dir,
                 env_dir=env_dir,
+                batch_dir=batch_dir,
                 verbose=verbose,
                 threads=threads,
                 ram=ram,
@@ -82,6 +83,7 @@ realign_circlemap=function(
                 output_dir=paste0(out_file_dir,"/read_extractor"),
                 tmp_dir=tmp_dir,
                 env_dir=env_dir,
+                batch_dir=batch_dir,
                 verbose=verbose,
                 threads=threads,
                 ram=ram,
@@ -207,6 +209,7 @@ read_extractor_circlemap=function(
                     output_dir=out_file_dir,
                     tmp_dir=tmp_dir,
                     env_dir=env_dir,
+                    batch_dir=batch_dir,
                     verbose=verbose,
                     threads=threads,
                     ram=ram,
@@ -392,6 +395,7 @@ circdna_circlemap=function(
                 output_dir=paste0(out_file_dir,"/realign_reports"),
                 tmp_dir=tmp_dir,
                 env_dir=env_dir,
+                batch_dir=batch_dir,
                 verbose=verbose,
                 threads=threads,
                 err_msg=err_msg,
@@ -399,6 +403,7 @@ circdna_circlemap=function(
                 executor_id=task_id
             )
         )
+        
 
         .this.step=.main.step$steps$realign_circlemap
         .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
@@ -413,6 +418,7 @@ circdna_circlemap=function(
                 output_dir=paste0(out_file_dir,"/repeat_reports"),
                 tmp_dir=tmp_dir,
                 env_dir=env_dir,
+                batch_dir=batch_dir,
                 verbose=verbose,
                 batch_config=batch_config,
                 threads=threads,
@@ -426,7 +432,7 @@ circdna_circlemap=function(
         .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
 
 
-        .env$.main <- .main   
+        .env$.main <- .main
         
     }
 
