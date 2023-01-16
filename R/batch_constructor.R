@@ -448,7 +448,7 @@ run_self=function(
     if(mode=="batch"){
       if(wait){
          wait_scheduler(.env=.self)
-         read_mains(.env=.self)
+         read_main(.env=.self)
       }
     }
 
