@@ -191,7 +191,7 @@ read_extractor_circlemap=function(
             " -o ", .main$out_file," -dir /"
         )
 
-        run_job(.envir=envir)
+        run_job(.env=.this.env)
 
         .main.step=.main$steps[[fn]]
         .main.step$out_files$unsrt_cbam=.main.step$out_file
