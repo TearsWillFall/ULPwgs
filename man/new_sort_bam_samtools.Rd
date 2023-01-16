@@ -10,7 +10,6 @@ new_sort_bam_samtools(
   index = TRUE,
   stats = TRUE,
   coord_sort = TRUE,
-  clean = FALSE,
   ...
 )
 }
@@ -18,8 +17,6 @@ new_sort_bam_samtools(
 \item{bam}{Path to the input file with the sequence.}
 
 \item{coord_sort}{Generate a coord sorted file. Otherwise queryname sorted. Default TRUE}
-
-\item{clean}{Remove input files. Default FALSE}
 
 \item{bin_samtols}{Path to samtools executable. Default path tools/samtools/samtools.}
 
@@ -30,6 +27,8 @@ new_sort_bam_samtools(
 \item{ram}{Ram memory to use per thread in GB. Default 1GB}
 
 \item{output_dir}{Path to the output directory.}
+
+\item{clean}{Remove input files. Default FALSE}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
