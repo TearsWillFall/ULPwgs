@@ -5,31 +5,12 @@
 \title{Removes variants with from VCF file vased on the values in the FILTER column}
 \usage{
 variants_by_filters_vcf(
-  rdata = NULL,
-  selected = NULL,
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
-  vcf = "",
+  vcf = NULL,
   filters = "PASS",
-  output_name = "",
   exclusive = TRUE,
-  compress = TRUE,
-  index = TRUE,
-  index_format = "tbi",
-  bgzip_index = FALSE,
-  clean = TRUE,
-  verbose = FALSE,
-  sep = "\\t",
-  batch_config = build_default_preprocess_config(),
-  threads = 4,
-  ram = 4,
-  mode = "local",
-  executor_id = make_unique_id("variantsByFiltersVCF"),
-  task_name = "variantsByFiltersVCF",
-  time = "48:0:0",
-  update_time = 60,
-  wait = FALSE,
-  hold = NULL
+  ...
 )
 }
 \arguments{
@@ -41,9 +22,9 @@ variants_by_filters_vcf(
 
 \item{filters}{Filters to filter VCF by. Default PASS}
 
-\item{output_name}{Output file name.}
-
 \item{exclusive}{Only keep variants with exactly these filters. Default TRUE.}
+
+\item{output_name}{Output file name.}
 
 \item{compress}{Compress VCF file. Default TRUE.}
 
@@ -53,29 +34,29 @@ variants_by_filters_vcf(
 
 \item{bgzip_index}{Create BGZIP index for compressed file. Default FALSE}
 
+\item{output_dir}{Path to the output directory.}
+
 \item{clean}{Remove input VCF after completion. Default FALSE.}
 
 \item{verbose}{Enables progress messages. Default False.}
-
-\item{threads}{Number of threads to split the work. Default 3}
-
-\item{ram}{\link{OPTIONAL} If batch mode. RAM memory in GB per job. Default 1}
-
-\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
 \item{executor_id}{Task EXECUTOR ID. Default "gatherBQSR"}
 
 \item{task_name}{Task name. Default "gatherBQSR"}
 
+\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+
+\item{threads}{Number of threads to split the work. Default 3}
+
+\item{ram}{\link{OPTIONAL} If batch mode. RAM memory in GB per job. Default 1}
 
 \item{update_time}{\link{OPTIONAL} If batch mode. Show job updates every update time. Default 60}
 
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
-
-\item{output_dir}{Path to the output directory.}
 }
 \description{
 VCF datastructure is in list format and contains a header, a body and

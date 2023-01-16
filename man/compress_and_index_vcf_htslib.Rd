@@ -7,25 +7,9 @@
 compress_and_index_vcf_htslib(
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
-  vcf = "",
+  vcf = NULL,
   compress = TRUE,
-  index = TRUE,
-  index_format = "tbi",
-  bgzip_index = FALSE,
-  output_dir = ".",
-  output_name = "",
-  clean = FALSE,
-  verbose = FALSE,
-  batch_config = build_default_preprocess_config(),
-  threads = 1,
-  ram = 4,
-  mode = "local",
-  executor_id = make_unique_id("CompressAndIndexVCF"),
-  task_name = "CompressAndIndexVCF",
-  time = "48:0:0",
-  update_time = 60,
-  wait = FALSE,
-  hold = NULL
+  ...
 )
 }
 \arguments{
@@ -43,9 +27,9 @@ compress_and_index_vcf_htslib(
 
 \item{bgzip_index}{Create BGZIP index for compressed file. Default FALSE}
 
-\item{output_dir}{Path to the output directory.}
-
 \item{output_name}{Output file name.}
+
+\item{output_dir}{Path to the output directory.}
 
 \item{clean}{Remove input VCF after completion. Default FALSE.}
 
@@ -54,6 +38,8 @@ compress_and_index_vcf_htslib(
 \item{batch_config}{Default config to use in BATCH mode.}
 
 \item{ram}{RAM memory to use in GB. Default 4.}
+
+\item{tmp_dir}{Path to TMP directory. Default .}
 
 \item{executor_id}{\link{OPTIONAL} Task executor name. Default "compressVCF}
 
@@ -66,8 +52,6 @@ compress_and_index_vcf_htslib(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
-
-\item{tmp_dir}{Path to TMP directory. Default .}
 }
 \description{
 Compress VCF using BGZIP from HTSLIB

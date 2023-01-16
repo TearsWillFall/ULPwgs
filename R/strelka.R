@@ -169,7 +169,8 @@ call_somatic_sv_manta=function(
    
     run_main=function(
         .env
-    ){
+    ){  
+      
         .this.env=environment()
         append_env(to=.this.env,from=.env)
         set_main(.env=.this.env)
@@ -322,36 +323,19 @@ call_germline_sv_manta=function(
     targeted=TRUE,
     annotate=TRUE,
     tabulate=TRUE,
-    output_dir="./germline/sv",
-    output_name=NULL,
-    verbose=FALSE,
-    batch_config=build_default_preprocess_config(),
-    threads=1,
-    ram=4,
-    mode="local",
-    time="48:0:0",
-    sheet=NULL,
-    executor_id=NULL,
-    inherit=NULL,
-    select=NULL,
-    hold=NULL
+    ...
 ){
-   this.envir=environment()
-    set_envir_vars(
-        envir=this.envir,
-        vars="normal"
-    )
 
     run_main=function(
         envir
     ){
-        this.envir=environment()
-        append_envir(this.envir,envir)
-        set_steps_vars(envir=this.envir)
+          .this.env=environment()
+          append_env(to=.this.env,from=.env)
+      
+          set_main(.env=.this.env)
 
 
-
-         steps[[fn]]$exec_code=paste0(
+         .main$exec_code=paste0(
           bin_strelka,
           " --bam ",input,
           " --referenceFasta ", ref_genome ,
@@ -363,12 +347,12 @@ call_germline_sv_manta=function(
             threads)
           )
 
-        steps[[fn]]$out_file$workflow=paste0(out_file_dir,"/runWorkflow.py")
-        steps[[fn]]$out_file$stats=list(
+        .main$out_files$workflow=paste0(out_file_dir,"/runWorkflow.py")
+        .main$out_files$stats=list(
               tsv=paste0(out_file_dir,"/results/stats/runStats.tsv"),
               xml=paste0(out_file_dir,"/results/stats/runStats.xml")
         )
-        steps[[fn]]$out_file$variants=list(
+        .main$out_files$variants=list(
               indel_candidate=paste0(out_file_dir,"/results/variants/candidateSmallIndels.vcf.gz"),
               indel_candidate_idx=paste0(out_file_dir,"/results/variants/candidateSmallIndels.vcf.gz.tbi"),
               diploid_sv=paste0(out_file_dir,"/results/variants/diploidSV.vcf.gz"),
@@ -376,35 +360,38 @@ call_germline_sv_manta=function(
         )
 
         run_job(
-            envir=this.envir
+            .env=.this.env
         )
 
+        .main.step=.main$steps[[fn]]
 
     
-        steps[[fn]] <- append(
-          steps[[fn]], 
+        .main[[fn]]$steps <- append(
+          .main[[fn]]$steps, 
           add_af_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf_sv=steps[[fn]]$out_file$variants$diploid_sv,
+            vcf= .main.step$out_files$variants$diploid_sv,
             output_dir=paste0(out_file_dir,"/results"),
             verbose=verbose, 
             executor_id=task_id,
-            threads=threads,ram=ram
+            threads=threads,
+            ram=ram
           )
         )
       
-        steps[[fn]] <-append(
-          steps[[fn]], 
+        .main[[fn]]$steps <-append(
+          .main[[fn]]$steps, 
           extract_pass_variants_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf_sv=steps[[fn]]$add_af_strelka_vcf$out_file$variants$sv,
+            vcf=.main.step$out_files$variants$diploid_sv,
             output_dir=paste0(out_file_dir,"/results"),
             verbose=verbose,
-            threads=threads,
-            ram=ram,
             executor_id=task_id,
+            threads=threads,
+            ram=ram
+    
           )
         )
 
@@ -419,9 +406,9 @@ call_germline_sv_manta=function(
                 vcf_sv=steps[[fn]]$extract_pass_variants_strelka_vcf$out_file$variants$sv,
                 output_dir=paste0(out_file_dir,"/results"),
                 verbose=verbose,
+                executor_id=task_id,
                 threads=threads,
-                ram=ram,
-                executor_id=task_id
+                ram=ram
             )
           )
 
@@ -441,11 +428,18 @@ call_germline_sv_manta=function(
           }
         }
 
-        envir$steps <- steps
+        envir$.main <- .main
     }
 
 
-     envirs=run_envir(envirs=this.envir$envirs)
+  .base.env=environment()
+  list2env(list(...),envir=.base.env)
+  set_env_vars(
+    .env= .base.env,
+    vars="normal"
+  )
+
+  launch(.env=.base.env)
 
 
 }

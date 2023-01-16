@@ -7,22 +7,8 @@
 extract_pass_variants_strelks_vcf(
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
-  vcf_snv = NULL,
-  vcf_indel = NULL,
-  vcf_sv = NULL,
-  output_dir = ".",
-  verbose = FALSE,
-  sep = "\\t",
-  batch_config = build_default_preprocess_config(),
-  threads = 4,
-  ram = 4,
-  mode = "local",
-  executor_id = make_unique_id("extractPASStrelka"),
-  task_name = "extractPASStrelka",
-  time = "48:0:0",
-  update_time = 60,
-  wait = FALSE,
-  hold = NULL
+  vcf = NULL,
+  ...
 )
 }
 \arguments{
@@ -30,29 +16,29 @@ extract_pass_variants_strelks_vcf(
 
 \item{bin_tabix}{Path to TABIX executable.}
 
+\item{vcf}{Path to the input VCF file.}
+
 \item{output_dir}{Path to the output directory.}
 
 \item{verbose}{Enables progress messages. Default False.}
-
-\item{threads}{Number of threads to split the work. Default 3}
-
-\item{ram}{\link{OPTIONAL} If batch mode. RAM memory in GB per job. Default 1}
-
-\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
 \item{executor_id}{Task EXECUTOR ID. Default "gatherBQSR"}
 
 \item{task_name}{Task name. Default "gatherBQSR"}
 
+\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
 \item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+
+\item{threads}{Number of threads to split the work. Default 3}
+
+\item{ram}{\link{OPTIONAL} If batch mode. RAM memory in GB per job. Default 1}
 
 \item{update_time}{\link{OPTIONAL} If batch mode. Show job updates every update time. Default 60}
 
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
-
-\item{vcf}{Path to the input VCF file.}
 }
 \description{
 VCF datastructure is in list format and contains a header, a body and

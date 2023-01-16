@@ -314,6 +314,25 @@ build_exec_innit=function(
 
 
 
+
+
+#' Run job from batch constructor
+#' 
+#' @param .env Inherit current enviroment.
+#' 
+#' 
+#' @export
+
+
+
+build_clean_exec=function(
+  .env
+){
+  .env$exec_code<- paste0(.env$exec_code," && rm",paste(input))
+}
+
+
+
 #' Build execution innit for batch
 #' 
 #' @param .env Inherit envoment variables
@@ -455,6 +474,9 @@ run_self=function(
       .this.env=environment()
       append_env(to=.this.env,from=.env$.main)
 
+      if(clean){
+        build_clean_exec(.env=.this.env)
+      }
 
       if(verbose){
         print_verbose(
@@ -475,6 +497,12 @@ run_self=function(
       .env$.main$steps[[fn]] <- .this.env
  }
    
+
+
+
+
+
+
 
 #' Wrapper around qstat call for SGE
 #' 
@@ -520,6 +548,10 @@ set_env_vars=function(
   output_dir=".",
   output_name=NULL,
   verbose=FALSE,
+  bgzip_index=FALSE,
+  index=TRUE,
+  index_format="tbi",
+  clean=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=1,
   ram=4,

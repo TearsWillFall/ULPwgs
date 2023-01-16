@@ -6,22 +6,8 @@
 \usage{
 compress_vcf_htslib(
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
-  vcf = "",
-  output_name = "",
-  output_dir = ".",
-  bgzip_index = FALSE,
-  clean = FALSE,
-  verbose = FALSE,
-  batch_config = build_default_preprocess_config(),
-  threads = 1,
-  ram = 4,
-  mode = "local",
-  executor_id = make_unique_id("compressVCF"),
-  task_name = "compressVCF",
-  time = "48:0:0",
-  update_time = 60,
-  wait = FALSE,
-  hold = NULL
+  vcf = NULL,
+  ...
 )
 }
 \arguments{
@@ -43,6 +29,8 @@ compress_vcf_htslib(
 
 \item{ram}{RAM memory to use in GB. Default 4.}
 
+\item{tmp_dir}{Path to TMP directory. Default .}
+
 \item{executor_id}{\link{OPTIONAL} Task executor name. Default "compressVCF}
 
 \item{task_name}{\link{OPTIONAL} Task name. Default "compressVCF"}
@@ -54,8 +42,6 @@ compress_vcf_htslib(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
-
-\item{tmp_dir}{Path to TMP directory. Default .}
 }
 \description{
 Compress VCF using BGZIP from HTSLIB

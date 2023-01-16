@@ -22,83 +22,65 @@
 
 compress_vcf_htslib=function(
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
-    vcf="",output_name="",output_dir=".",bgzip_index=FALSE,
-    clean=FALSE,verbose=FALSE,
-    batch_config=build_default_preprocess_config(),
-    threads=1,ram=4,mode="local",
-    executor_id=make_unique_id("compressVCF"),
-    task_name="compressVCF",time="48:0:0",
-    update_time=60,wait=FALSE,hold=NULL
+    vcf=NULL,
+    ...
 ){
-    argg <- as.list(environment())
-    task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir)
-    job=build_job(executor_id=executor_id,task_id=task_id)
+   
+    build_main=function(.env){
 
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+        set_main(.env=.this.env)
 
-    id=""
-    if(output_name!=""){
-        id=output_name
-    }else{
-        id=get_file_name(vcf)
-    }
+        .main$out_files$bgzip_vcf=paste0(out_file_dir,"/",input_id,".vcf.gz")
 
-     out_file=paste0(out_file_dir,"/",id,".vcf.gz")
+        idx=""
+        
+        if(bgzip_index){
+            idx=" -i "
+            .main$out_files$bgzip_vcf_idx=paste0(.main$out_files$bgzip_vcf,".gzi")
+        }
 
-    idx=""
-    out_index=""
-    if(bgzip_index){
-        idx=" -i "
-        out_index=paste0(out_file,".gzi")
-    }
+        .main$exec_code=paste(
+            bin_bgzip,idx," -f -@ ",threads,
+            " -c",input,">",.main$out_files$bgzip_vcf)
+
+        run_job(.env=.this.env)
+        .main.step=.main$steps[[fn]]
     
-    exec_code=paste(bin_bgzip, idx," -f -@ ",threads," -c",vcf,">",out_file)
 
 
-    if(clean){
-        exec_code=paste(exec_code," && rm",vcf)
+        if(index){
+            .main$steps[[fn]]$steps<-append(
+                .main$steps[[fn]]$steps,
+                    index_vcf_htslib(
+                    bin_tabix=bin_tabix,
+                    vcf=.main.step$out_files$bgzip_vcf,
+                    index_format=index_format,
+                    verbose=verbose,
+                    threads=threads,ram=ram,
+                    executor_id=task_id
+                )
+            )
+
+            .this.step=.main.step$steps$index_vcf_htslib
+            .main.step$out_files=append(.main.step$out_files,.this.step$out_files) 
+
+        }
+
+        .env$.main <- .main
+        
     }
 
-    if(mode=="batch"){
-        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
-        threads=threads,output_dir=out_file_dir2)
-        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
-    }
-
-    if(verbose){
-        print_verbose(job=job,arg=argg,exec_code=exec_code)
-    }
-
-    error=execute_job(exec_code=exec_code)
-    
-    if(error!=0){
-        stop("htslib failed to run due to unknown error.
-        Check std error for more information.")
-    }
-
-    job_report=build_job_report(
-        job_id=job,
-        executor_id=executor_id,
-        exec_code=exec_code, 
-        task_id=task_id,
-        input_args = argg,
-        out_file_dir=out_file_dir,
-        out_files=list(
-            compressed_vcf=out_file,
-            compression_idx=out_index)
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="vcf"
     )
-
-
-    if(wait&&mode=="batch"){
-        job_validator(job=job_report$job_id,time=update_time,
-        verbose=verbose,threads=threads)
-    }
-
-    return(job_report)
-
-
-
+  
+    launch(.env=.base.env)
+    
 }
 
 #' Uncompress VCF using BGZIP from HTSLIB
@@ -125,73 +107,38 @@ compress_vcf_htslib=function(
 
 uncompress_vcf_htslib=function(
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
-    vcf="",output_name="",output_dir=".",
-    clean=FALSE,verbose=FALSE,
-    batch_config=build_default_preprocess_config(),
-    threads=1,ram=4,mode="local",
-    executor_id=make_unique_id("uncompressVCF"),
-    task_name="uncompressVCF",time="48:0:0",
-    update_time=60,wait=FALSE,hold=NULL
+    vcf=NULL,
+    ...
 ){
-    argg <- as.list(environment())
-    task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir)
-    job=build_job(executor_id=executor_id,task_id=task_id)
+
+    build_main=function(.env){
+
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+        set_main(.env=.this.env)
+
+        .main$out_files$vcf=paste0(out_file_dir,"/",input_id,".vcf")
+
+        .main$exec_code=paste(bin_bgzip," -f -d -@ ",threads,
+            " -c ",vcf," > ",.main$out_files$vcf
+        )
 
 
-    id=""
-    if(output_name!=""){
-        id=output_name
-    }else{
-        id=get_file_name(vcf)
+        run_job(.env=.this.env)
+
+        .env$.main <- .main
+
     }
 
-    out_file=paste0(out_file_dir,"/",id,".vcf")
-
-    exec_code=paste(bin_bgzip," -f -d -@ ",threads," -c ",vcf," > ",out_file)
-
-
-    if(clean){
-        exec_code=paste(exec_code," && rm",vcf)
-    }
-
-    if(mode=="batch"){
-        out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
-        threads=threads,output_dir=out_file_dir2)
-        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
-    }
-
-    if(verbose){
-        print_verbose(job=job,arg=argg,exec_code=exec_code)
-    }
-
-    error=execute_job(exec_code=exec_code)
-    
-    if(error!=0){
-        stop("htslib failed to run due to unknown error.
-        Check std error for more information.")
-    }
-
-    job_report=build_job_report(
-        job_id=job,
-        executor_id=executor_id,
-        exec_code=exec_code, 
-        task_id=task_id,
-        input_args = argg,
-        out_file_dir=out_file_dir,
-        out_files=list(
-            uncompressed_vcf=out_file)
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="vcf"
     )
-
-
-    if(wait&&mode=="batch"){
-        job_validator(job=job_report$job_id,time=update_time,
-        verbose=verbose,threads=threads)
-    }
-
-    return(job_report)
-
+  
+    launch(.env=.base.env)
+  
 
 }
 
@@ -218,67 +165,44 @@ uncompress_vcf_htslib=function(
 
 index_vcf_htslib=function(
     bin_tabix=build_default_tool_binary_list()$bin_tabix,
-    vcf="",index_format="tbi",verbose=FALSE,
-    batch_config=build_default_preprocess_config(),
-    threads=1,ram=4,mode="local",
-    executor_id=make_unique_id("indexVCF"),
-    task_name="indexVCF",time="48:0:0",
-    update_time=60,wait=FALSE,hold=NULL
+    vcf=NULL,
+    ...
 ){
-    argg <- as.list(environment())
-    task_id=make_unique_id(task_name)
-    job=build_job(executor_id=executor_id,task_id=task_id)
-
     
-    if(index_format=="csi"){
-        fmt=" -C "
-        out_file=paste0(vcf,".csi")
-    }else if(index_format=="tbi"){
-        fmt=""
-        out_file=paste0(vcf,".tbi")
-    }else{
-        stop("Non valid index format provided. Valid formats are tbi/csi.")
-    }
-    
-    exec_code=paste0(bin_tabix, fmt," -f ",vcf)
 
-    if(mode=="batch"){
-        out_file_dir2=set_dir(dir=dirname(vcf),name="batch")
-        batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
-        threads=threads,output_dir=out_file_dir2)
-        exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
-    }
+    build_main=function(.env){
+        
 
-    if(verbose){
-        print_verbose(job=job,arg=argg,exec_code=exec_code)
-    }
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+        set_main(.env=.this.env)
 
-    error=execute_job(exec_code=exec_code)
-    
-    if(error!=0){
-        stop("htslib failed to run due to unknown error.
-        Check std error for more information.")
+        if(index_format=="csi"){
+            fmt=" -C "
+            .main$out_files$bgzip_vcf_idx=paste0(vcf,".csi")
+        }else if(index_format=="tbi"){
+            fmt=""
+            .main$out_files$vcf_idx_tbi=paste0(vcf,".tbi")
+        }else{
+            stop("Non valid index format provided. Valid formats are tbi/csi.")
+        }
+        
+        .main$exec_code=paste0(bin_tabix, fmt," -f ",vcf)
+
+
+        run_job(.env=.this.env)
+
+        .env$.main<-.main
     }
 
-    job_report=build_job_report(
-        job_id=job,
-        executor_id=executor_id,
-        exec_code=exec_code, 
-        task_id=task_id,
-        input_args = argg,
-        out_file_dir=list(),
-        out_files=list(
-            vcf_idx=out_file)
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="vcf"
     )
-
-
-    if(wait&&mode=="batch"){
-        job_validator(job=job_report$job_id,time=update_time,
-        verbose=verbose,threads=threads)
-    }
-
-    return(job_report)
-
+  
+    launch(.env=.base.env)
 
 
 }
@@ -314,71 +238,81 @@ index_vcf_htslib=function(
 compress_and_index_vcf_htslib=function(
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
     bin_tabix=build_default_tool_binary_list()$bin_tabix,
-    vcf="",compress=TRUE,index=TRUE,index_format="tbi",
-    bgzip_index=FALSE,output_dir=".",output_name="",
-    clean=FALSE,verbose=FALSE,
-    batch_config=build_default_preprocess_config(),
-    threads=1,ram=4,mode="local",
-    executor_id=make_unique_id("CompressAndIndexVCF"),
-    task_name="CompressAndIndexVCF",time="48:0:0",
-    update_time=60,wait=FALSE,hold=NULL
-
+    vcf=NULL,
+    compress=TRUE,
+    ...
 ){
-    argg <- as.list(environment())
-    task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir)
-    job=build_job(executor_id=executor_id,task=task_id)
-    
-    job_report=build_job_report(
-        job_id=job,
-        executor_id=executor_id, 
-        exec_code=list(), 
-        task_id=task_id,
-        input_args=argg,
-        out_file_dir=out_file_dir,
-        out_files=list()
+
+
+    build_main=function(.env){
+
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+        set_main(.env=.this.env)
+        .main$steps[[fn]]<-.this.env
+        .main.step=.main$steps[[fn]]
+
+        if(compress){
+            .main$steps[[fn]]$steps<- append(
+                .main$steps[[fn]]$steps,
+                compress_vcf_htslib(
+                    bin_bgzip=bin_bgzip,
+                    vcf=vcf,
+                    index=index,
+                    index_format=index_format,
+                    bgzip_index=bgzip_index,
+                    output_dir=out_file_dir,
+                    clean=clean,
+                    verbose=verbose,
+                    output_name=output_name,
+                    threads=threads,ram=ram,
+                    executor_id=task_id
+                )
+            ) 
+        }else{
+
+                if(index){
+                .main$steps[[fn]]$steps<-append(
+                    .main$steps[[fn]]$steps,
+                        index_vcf_htslib(
+                        bin_tabix=bin_tabix,
+                        vcf=vcf,
+                        index_format=index_format,
+                        verbose=verbose,
+                        threads=threads,ram=ram,
+                        executor_id=task_id
+                    )
+                )
+            }
+
+            
+            .this.step=.main.step$steps$index_vcf_htslib
+            .main.step$out_files=append(.main.step$out_files,.this.step$out_files) 
+
+            
+
+        }
+
+        
+
+        .env$.main<-.main
+
+
+    }
+
+
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="vcf"
     )
+  
+    launch(.env=.base.env)
 
-    if(!index&!compress){
-        stop("No action has been performed as neither compress and/or index arguments are set to TRUE.")
-    }
-
-    if(compress){
-        job_report[["step"]][["compressVCF"]]<-compress_vcf_htslib(
-            bin_bgzip=bin_bgzip,
-            vcf=vcf,bgzip_index=bgzip_index,output_dir=out_file_dir,
-            clean=clean,verbose=verbose,output_name=output_name,
-            batch_config=batch_config,
-            threads=threads,ram=ram,mode=mode,
-            executor_id=task_id,
-            time=time,
-            hold=hold
-        )
-        vcf=job_report[["step"]][["compressVCF"]]$out_files$compressed_vcf
-    }
-
-    if(index){
-        job_report[["step"]][["indexVCF"]]<-index_vcf_htslib(
-            bin_tabix=bin_tabix,
-            vcf=vcf,
-            index_format=index_format,verbose=verbose,
-            batch_config=batch_config,
-            threads=threads,ram=ram,
-            mode=mode,
-            executor_id=task_id,
-            time=time,
-            hold=hold
-        )
-    }
+   
 
  
-
-    if(wait&&mode=="batch"){
-        job_validator(job=job_report$job_id,time=update_time,
-        verbose=verbose,threads=threads)
-    }
-
-    return(job_report)
 
 }
 

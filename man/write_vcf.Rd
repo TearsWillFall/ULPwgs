@@ -7,25 +7,14 @@
 write_vcf(
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
-  vcf = "",
-  output_name = "",
+  output_name = NULL,
+  vcf = NULL,
   compress = TRUE,
   index = TRUE,
   index_format = "tbi",
   bgzip_index = FALSE,
   clean = TRUE,
-  output_dir = ".",
-  verbose = FALSE,
-  executor_id = make_unique_id("writeVCF"),
-  task_name = "writeVCF",
-  batch_config = build_default_preprocess_config(),
-  mode = "local",
-  time = "48:0:0",
-  threads = 1,
-  ram = 4,
-  update_time = 60,
-  wait = FALSE,
-  hold = NULL
+  ...
 )
 }
 \arguments{
@@ -33,9 +22,9 @@ write_vcf(
 
 \item{bin_tabix}{Path to TABIX executable.}
 
-\item{vcf}{Path to the input VCF file.}
-
 \item{output_name}{Output file name.}
+
+\item{vcf}{Path to the input VCF file.}
 
 \item{compress}{Compress VCF file. Default TRUE.}
 

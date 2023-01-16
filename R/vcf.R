@@ -116,74 +116,71 @@ extract_body_vcf=function(vcf_body,vcf_samples){
 add_snv_af_strelka_vcf=function(
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  vcf,overwrite=FALSE,
-  compress=TRUE,index=TRUE,
-  index_format="tbi",bgzip_index=FALSE,
-  clean=TRUE,verbose=FALSE, 
-  executor_id=make_unique_id("addAFsnvsStrelka"),
-  task_name="addAFsnvsStrelka",
-  batch_config=build_default_preprocess_config(),
-  mode="local",time="48:0:0",
-  threads=1,ram=4,update_time=60,
-  wait=FALSE,hold=NULL){
+  vcf=NULL,
+  ...
+  ){
     
-    argg <- as.list(environment())
-    task_id=make_unique_id(task_name)
-    out_file=paste0(get_file_name(vcf),".snvs")
-    out_file_dir=dirname(vcf)
-    job=build_job(executor_id=executor_id,task_id=task_id)
+    build_main=function(.env){
 
-    job_report=build_job_report(
-      job_id=job,
-      executor_id=executor_id,
-      exec_code=list(),
-      task_id=task_id,
-      input_args = argg,
-      out_file_dir=out_file_dir,
-      out_files=list()
-    )
-
-    vcf_dat=read_vcf(vcf)
-    vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
-    vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
-    dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
-    ##Extract Tier1 read information for REF and ALT
-    vcf_dat$body=vcf_dat$body %>% dplyr::mutate(
-      UREF=strsplit(VALUE[FORMAT==paste0(REF,"U")],split=",")[[1]][1],
-      UALT=strsplit(VALUE[FORMAT==paste0(ALT,"U")],split=",")[[1]][1]) %>%
-      dplyr::mutate(VALUE=ifelse(FORMAT=="AF",
-      as.numeric(UALT)/(as.numeric(UREF)+as.numeric(UALT)),VALUE))%>% dplyr::select(-c(UALT,UREF))
-    vcf_dat$body=vcf_dat$body %>% 
-    dplyr::mutate(VALUE=ifelse(is.na(VALUE),"",VALUE)) %>% nest_vcf_body()
-   
-
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
     
-    add_af_descriptor<-function(){
-        list(Number="1",Type="Float",Description="\"Variant allelic frequency for tier 1 reads\"")
-    }
+        set_main(.env=.this.env)
 
-    vcf_dat$descriptors$FORMAT[["AF"]]<-add_af_descriptor()
-    
-    if(!overwrite){
-      out_file=paste0(out_file,".af")
-    }
+        vcf_dat=read_vcf(input)
+        vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
+        vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
+        dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
+        ##Extract Tier1 read information for REF and ALT
+        vcf_dat$body=vcf_dat$body %>% dplyr::mutate(
+          UREF=strsplit(VALUE[FORMAT==paste0(REF,"U")],split=",")[[1]][1],
+          UALT=strsplit(VALUE[FORMAT==paste0(ALT,"U")],split=",")[[1]][1]) %>%
+          dplyr::mutate(VALUE=ifelse(FORMAT=="AF",
+          as.numeric(UALT)/(as.numeric(UREF)+as.numeric(UALT)),VALUE))%>% dplyr::select(-c(UALT,UREF))
+        vcf_dat$body=vcf_dat$body %>% 
+        dplyr::mutate(VALUE=ifelse(is.na(VALUE),"",VALUE)) %>% nest_vcf_body()
+      
 
-    job_report[["steps"]][["writeVCF"]]<-write_vcf(
-      vcf=vcf_dat,
-      output_name=out_file,
-      output_dir=out_file_dir,
-      bin_bgzip=bin_bgzip,
-      bin_tabix=bin_tabix,
-      compress=compress,
-      index=index,index_format=index_format,
-      bgzip_index=bgzip_index,
-      clean=clean,verbose=verbose,mode=mode,
-      batch_config=batch_config,
-      time=time,threads=threads,
-      ram=ram,hold=hold
+        
+        add_af_descriptor<-function(){
+            list(Number="1",Type="Float",Description="\"Variant allelic frequency for tier 1 reads\"")
+        }
+
+        vcf_dat$descriptors$FORMAT[["AF"]]<-add_af_descriptor()
+        
+      
+        .main$steps[[fn]]<-.this.env
+        .main.step=.main$steps[[fn]]
+
+        .main$steps[[fn]]$steps <- append(
+          .main$steps[[fn]]$steps,
+          write_vcf(
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            vcf=vcf_dat,
+            output_name=paste0(input_id,".af"),
+            output_dir=out_file_dir,
+            compress=TRUE,
+            clean=TRUE
+          )
+        )
+        
+        .this.step=.main.step$steps$write_vcf
+        .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
+        .env$.main<-.main
+  }
+
+  
+     .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="vcf"
     )
   
+    launch(.env=.base.env)
     return(job_report)
+
 }
 
 
@@ -274,7 +271,7 @@ add_indel_af_strelka_vcf=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
-      vars="bam"
+      vars="vcf"
     )
   
     launch(.env=.base.env)
@@ -389,7 +386,7 @@ add_sv_af_strelka_vcf=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
-      vars="bam"
+      vars="vcf"
     )
   
     launch(.env=.base.env)
@@ -464,6 +461,8 @@ add_sv_af_strelka_vcf=function(
                     index_format="tbi",
                     bgzip_index=FALSE,
                     clean=TRUE,
+                    threads=threads,
+                    ram=ram,
                     verbose=verbose, 
                     executor_id=task_id
                   )
@@ -485,6 +484,8 @@ add_sv_af_strelka_vcf=function(
                   index_format="tbi",
                   bgzip_index=FALSE,
                   clean=TRUE,
+                  threads=threads,
+                  ram=ram,
                   verbose=verbose, 
                   executor_id=task_id
                 )
@@ -506,6 +507,8 @@ add_sv_af_strelka_vcf=function(
                   index_format="tbi",
                   bgzip_index=FALSE,
                   clean=TRUE,
+                  threads=threads,
+                  ram=ram,
                   verbose=verbose, 
                   executor_id=task_id
                 )
@@ -519,7 +522,6 @@ add_sv_af_strelka_vcf=function(
 
           .env$.main<-.main
         }
-
 
             .base.env=environment()
             list2env(list(...),envir=.base.env)
@@ -605,242 +607,63 @@ unnest_to_column_vcf=function(vcf_body,column="INFO"){
 #' 
 
 variants_by_filters_vcf=function(
-  rdata=NULL,
-  selected=NULL,
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  vcf="",filters="PASS",
-  output_name="",
+  vcf=NULL,
+  filters="PASS",
   exclusive=TRUE,
-  compress=TRUE,index=TRUE,
-  index_format="tbi",
-  bgzip_index=FALSE,
-  clean=TRUE,
-  verbose=FALSE,sep="\t",
-  batch_config=build_default_preprocess_config(),
-  threads=4,ram=4,mode="local",
-  executor_id=make_unique_id("variantsByFiltersVCF"),
-  task_name="variantsByFiltersVCF",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  ...
 ){
 
-  if(!is.null(rdata)){
-    load(rdata)
-  if(!is.null(selected)){
-      vcf=vcf_list[selected]
+  build_main=function(.env){
+
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+
+    set_main(.env=.this.env)
+
+    .main$steps[[fn]]<-.this.env
+
+    vcf_dat=read_vcf(vcf=input,sep=sep)
+    if(exclusive){
+      vcf_dat$body=vcf$body %>% dplyr::filter(lengths(FILTER)==length(filters))
     }
-  }
 
+    vcf_dat$body=vcf_dat$body %>% dplyr::filter(eval(parse(text=paste0(lapply(
+      filters,FUN=function(x){paste0("grepl(\"",x,"\",FILTER)")}),collapse="&"))))
 
-  id=""
-  if(output_name!=""){ 
-    id=output_name
-  }else{
-    id=paste0(get_file_name(vcf),".",paste0(filters,collapse="."))
-  }
+    vcf_dat$descriptors$variants_by_filters<-paste0(filters,collapse=";")
 
-
-  argg <- as.list(environment())
-  task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=dirname(vcf))
-  job=build_job(executor_id=executor_id,task_id=task_id)
-
-
-
-  job_report=build_job_report(
-    job_id=job,
-    executor_id=executor_id,
-    exec_code=list(),
-    task_id=task_id,
-    input_args = argg,
-    out_file_dir=out_file_dir,
-    out_files=list()
-  )
-
-
-  
-
-  vcf=read_vcf(vcf=vcf,sep=sep)
-
-  
-  if(exclusive){
-    vcf$body=vcf$body %>% dplyr::filter(lengths(FILTER)==length(filters))
-  }
-
-  vcf$body=vcf$body %>% dplyr::filter(eval(parse(text=paste0(lapply(
-    filters,FUN=function(x){paste0("grepl(\"",x,"\",FILTER)")}),collapse="&"))))
-
-  vcf$descriptors$variants_by_filters<-paste0(filters,collapse=";")
-  
-  job_report[["steps"]][["writeVCF"]]<-write_vcf(
-    bin_bgzip=bin_bgzip,
-    bin_tabix=bin_tabix,
-    compress=compress,index=index,
-    index_format=index_format,
-    verbose=verbose,
-    bgzip_index=bgzip_index,clean=clean,
-    output_dir=out_file_dir,executor_id=task_id,
-    mode=mode,time=time,threads=threads,ram=ram,
-    hold=hold,
-    vcf=vcf,output_name=id
-  )
-  return(job_report)
-}
-
-
-
-
-
-#' Removes variants from VCF file based on the values in the FILTER column across multiple VCFS in parallel
-#'
-#' VCF datastructure is in list format and contains a header, a body and
-#' the corresponding col_names
-#'
-#' @param bin_bgzip Path to bgzip executable.
-#' @param bin_tabix Path to TABIX executable.
-#' @param vcf Path to the input VCF file.
-#' @param filters Filters to filter VCF by. Default PASS
-#' @param exclusive Only keep variants with exactly these filters. Default TRUE.
-#' @param output_name Output file name.
-#' @param compress Compress VCF file. Default TRUE.
-#' @param index Index VCF file. Default TRUE.
-#' @param index_format VCF index format. Default tbi. Options [tbi,cbi].
-#' @param bgzip_index Create BGZIP index for compressed file. Default FALSE
-#' @param output_dir Path to the output directory.
-#' @param clean Remove input VCF after completion. Default FALSE.
-#' @param verbose Enables progress messages. Default False.
-#' @param executor_id Task EXECUTOR ID. Default "gatherBQSR"
-#' @param task_name Task name. Default "gatherBQSR"
-#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
-#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
-#' @param threads Number of threads to split the work. Default 3
-#' @param ram [OPTIONAL] If batch mode. RAM memory in GB per job. Default 1
-#' @param update_time [OPTIONAL] If batch mode. Show job updates every update time. Default 60
-#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
-#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
-#' @export
-#' 
-
-
-parallel_vcfs_variants_by_filters_vcf=function(
-  bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
-  bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  vcf="",filters="PASS",
-  exclusive=TRUE,
-  compress=TRUE,index=TRUE,
-  index_format="tbi",
-  bgzip_index=FALSE,
-  clean=TRUE,
-  output_dir=".",verbose=FALSE,sep="\t",
-  batch_config=build_default_preprocess_config(),
-  threads=4,ram=4,mode="local",
-  executor_id=make_unique_id("parVCFvariantsByFiltersVCF"),
-  task_name="parVCFvariantsByFiltersVCF",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
-){
-
-  argg <- as.list(environment())
-  task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir)
-  tmp_dir=set_dir(dir=out_file_dir,name="tmp")
- 
-
-  job=build_job(executor_id=executor_id,task_id=task_id)
-
-
-  jobs_report=build_job_report(
-    job_id=job,
-    executor_id=executor_id,
-    exec_code=list(), 
-    task_id=task_id,
-    input_args=argg,
-    out_file_dir=out_file_dir,
-    out_files=list(
+    .main$steps[[fn]]$steps <- append(
+      .main$steps[[fn]]$steps,
+      write_vcf(
+        bin_bgzip=bin_bgzip,
+        bin_tabix=bin_tabix,
+        vcf=vcf_dat,
+        output_name=paste0(input_id,".",paste0(filter,collapse=".")),
+        output_dir=out_file_dir,
+        compress=TRUE,
+        clean=FALSE
       )
     )
 
 
-
-    vcf_list=vcf
-    names(vcf_list)=Vectorize(get_file_name)(vcf)
-
-    if(mode=="local"){
-      jobs_report[["steps"]][["par_vcf_filter_variants"]]<-
-      parallel::mclapply(vcf_list,FUN=function(vcf){
-        job_report <- variants_by_filters_vcf(
-              bin_bgzip=bin_bgzip,
-              bin_tabix=bin_tabix,
-              vcf=vcf,
-              filters=filters,
-              exclusive=exclusive,
-              compress=compress,
-              index=index,
-              index_format=index_format,
-              bgzip_index=bgzip_index,
-              sep=sep,
-              clean=clean,
-              verbose=verbose,
-              threads=threads,
-              executor_id=task_id)
-      },mc.cores=threads)
-    }else if(mode=="batch"){
-            rdata_file=paste0(tmp_dir,"/",job,".vcfs.RData")
-            output_dir=out_file_dir
-            executor_id=task_id
-            save(vcf_list,
-              bin_bgzip,
-              bin_tabix,
-              filters,
-              exclusive,
-              compress,
-              index,
-              sep,
-              index_format,
-              bgzip_index,
-              executor_id,
-              output_dir,
-              clean,
-              verbose,file = rdata_file)
-            exec_code=paste0("Rscript -e \"ULPwgs::variants_by_filters_vcf(rdata=\\\"",
-            rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
-            out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-            batch_code=build_job_exec(job=job,time=time,ram=ram,
-            threads=1,output_dir=out_file_dir2,
-            hold=hold,array=length(vcf_list))
-            exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
-
-            if(verbose){
-                print_verbose(job=job,arg=argg,exec_code=exec_code)
-            }
-            error=execute_job(exec_code=exec_code)
-            if(error!=0){
-                stop("vcf_process failed to run due to unknown error.
-                Check std error for more information.")
-            }
- 
-          jobs_report[["steps"]][["par_vcf_filter_variants"]]<- build_job_report(
-                job_id=job,
-                executor_id=executor_id,
-                exec_code=exec_code, 
-                task_id=task_id,
-                input_args=argg,
-                out_file_dir=out_file_dir,
-                out_files=list(
-                  extract_vcf=paste0(out_file_dir,"/",
-                  names(vcf_list),".",paste0(filters,collapse="."),".vcf")
-                )
-          )
-             }
-  
-
-  if(wait&&mode=="batch"){
-    job_validator(job=unlist_lvl(jobs_report[["steps"]],var="job_id"),time=update_time,
-    verbose=verbose,threads=threads)
   }
 
-  return(jobs_report)
+     
+  .base.env=environment()
+  list2env(list(...),envir=.base.env)
+  set_env_vars(
+    .env= .base.env,
+    vars="vcf"
+  )
+
+  launch(.env=.base.env)
 
 }
+
+
+
 
 
 
@@ -872,106 +695,106 @@ parallel_vcfs_variants_by_filters_vcf=function(
 extract_pass_variants_strelks_vcf=function(
       bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
       bin_tabix=build_default_tool_binary_list()$bin_tabix,
-      vcf_snv=NULL,
-      vcf_indel=NULL,
-      vcf_sv=NULL,
-      output_dir=".",verbose=FALSE,sep="\t",
-      batch_config=build_default_preprocess_config(),
-      threads=4,ram=4,mode="local",
-      executor_id=make_unique_id("extractPASStrelka"),
-      task_name="extractPASStrelka",time="48:0:0",
-      update_time=60,wait=FALSE,hold=NULL
+      vcf=NULL,
+      ...
     ){
 
-      argg <- as.list(environment())
-      task_id=make_unique_id(task_name)
-      out_file_dir=set_dir(dir=output_dir)
-      job=build_job(executor_id=executor_id,task_id=task_id)
+  
 
-      jobs_report=build_job_report(
-        job_id=job,
-        executor_id=executor_id,
-        exec_code=list(), 
-        task_id=task_id,
-        input_args=argg,
-        out_file_dir=out_file_dir,
-        out_files=list(
+    build_main=function(.env){
+
+
+      .this.env=environment()
+      append_env(to=.this.env,from=.env)
+  
+      set_main(.env=.this.env)
+
+      .main$steps[[fn]]<-.this.env
+      .main.step=.main$steps[[fn]]
+      output_name=paste0("somatic.",type)
+
+      if(type=="snv"){
+
+        .main$steps[[fn]]$steps<-append(
+          .main$steps[[fn]]$steps,
+            variants_by_filters_vcf(
+              bin_bgzip=bin_bgzip,
+              bin_tabix=bin_tabix,
+              vcf=vcf,
+              filters="PASS",
+              output_name=output_name,
+              exclusive=TRUE,
+              compress=TRUE,
+              clean=TRUE,
+              verbose=verbose,
+              threads=1,
+              ram=1,
+              executor_id=task_id,
+            )
+        )
+        .this.step=.main.step$steps$add_snv_af_strelka_vcf
+        .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
+
+      }else if(type=="indel"){
+
+          .main$steps[[fn]]$steps<-append(
+            .main$steps[[fn]]$steps,
+              variants_by_filters_vcf(
+                bin_bgzip=bin_bgzip,
+                bin_tabix=bin_tabix,
+                vcf=vcf,
+                filters="PASS",
+                output_name=output_name,
+                exclusive=TRUE,
+                compress=TRUE,
+                clean=TRUE,
+                verbose=verbose,
+                batch_config=batch_config,
+                threads=1,ram=1,mode=mode,
+                executor_id=task_id,
+                time=time,
+                hold=hold
+            )
           )
-        )
+        }else if(type=="indel"){
 
-   if(!is.null(vcf_snv)){
+          .main$steps[[fn]]$steps<-append(
+            .main$steps[[fn]]$steps,
+              variants_by_filters_vcf(
+                bin_bgzip=bin_bgzip,
+                bin_tabix=bin_tabix,
+                vcf=vcf,
+                filters="PASS",
+                output_name=output_name,
+                exclusive=TRUE,
+                compress=TRUE,
+                clean=TRUE,
+                verbose=verbose,
+                threads=1,
+                ram=1,
+                executor_id=task_id
+            )
+          )
 
-    jobs_report[["steps"]][["extractPASSsnvVCF"]]<-
-        variants_by_filters_vcf(
-          bin_bgzip=bin_bgzip,
-          bin_tabix=bin_tabix,
-          vcf=vcf_snv,
-          filters="PASS",
-          output_name="somatic.snvs.af.PASS",
-          exclusive=TRUE,
-          compress=TRUE,
-          clean=TRUE,
-          verbose=verbose,
-          batch_config=batch_config,
-          threads=1,ram=1,mode=mode,
-          executor_id=task_id,
-          time=time,
-          hold=hold
-        )
+      }
 
-   }
+      .env$.main<-.main
 
-    if(!is.null(vcf_indel)){
 
-    jobs_report[["steps"]][["extractPASSindelVCF"]]<-
-        variants_by_filters_vcf(
-          bin_bgzip=bin_bgzip,
-          bin_tabix=bin_tabix,
-          vcf=vcf_indel,
-          filters="PASS",
-          output_name="somatic.indel.af.PASS",
-          exclusive=TRUE,
-          compress=TRUE,
-          clean=TRUE,
-          verbose=verbose,
-          batch_config=batch_config,
-          threads=1,ram=1,mode=mode,
-          executor_id=task_id,
-          time=time,
-          hold=hold
-       )
     }
 
-  if(!is.null(vcf_sv)){
-
-    jobs_report[["steps"]][["extractPASSsvVCF"]]<-
-        variants_by_filters_vcf(
-          bin_bgzip=bin_bgzip,
-          bin_tabix=bin_tabix,
-          vcf=vcf_sv,
-          filters="PASS",
-          output_name="somaticSV.af.PASS",
-          exclusive=TRUE,
-          compress=TRUE,
-          clean=TRUE,
-          verbose=verbose,
-          batch_config=batch_config,
-          threads=1,ram=1,mode=mode,
-          executor_id=task_id,
-          time=time,
-          hold=hold
-       )
-
-  }
-
-    jobs_report$out_files=list(
-        vcf_snv=unlist_lvl( jobs_report[["steps"]][["extractPASSsnvVCF"]],var="compressed_vcf"),
-        vcf_indel=unlist_lvl(jobs_report[["steps"]][["extractPASSindelVCF"]],var="compressed_vcf"),
-        vcf_sv=unlist_lvl(jobs_report[["steps"]][["extractPASSsvVCF"]],var="compressed_vcf")
+    
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="vcf"
     )
+  
+    launch(.env=.base.env)
 
 
-      return(jobs_report)
+
   }
 
 
@@ -1277,23 +1100,19 @@ extract_descriptors_vcf=function(vcf_header){
 write_vcf=function(
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  vcf="",
-  output_name="",
-  compress=TRUE,index=TRUE,
-  index_format="tbi",bgzip_index=FALSE,
-  clean=TRUE,output_dir=".",
-  verbose=FALSE, 
-  executor_id=make_unique_id("writeVCF"),
-  task_name="writeVCF",
-  batch_config=build_default_preprocess_config(),
-  mode="local",time="48:0:0",
-  threads=1,ram=4,update_time=60,
-  wait=FALSE,hold=NULL
+  output_name=NULL,
+  vcf=NULL,
+  compress=TRUE,
+  index=TRUE,
+  index_format="tbi",
+  bgzip_index=FALSE,
+  clean=TRUE,
+  ...
 ){  
-    argg <- as.list(environment())
-    task_id=make_unique_id(task_name)
-    out_file_dir=set_dir(dir=output_dir)
-    job=build_job(executor_id=executor_id,task_id=task_id)
+
+
+
+  build_main=function(.env){
 
     build_header_vcf=function(vcf){
       header=unlist(lapply(names(vcf$descriptors),
@@ -1303,7 +1122,8 @@ write_vcf=function(
           if(length(val)>1){
             ids=names(val)
             lapply(ids,FUN=function(id){
-                paste0(paste0("##",col,"=<ID=",id),",",paste0(names(val[[id]]),"=",val[[id]],collapse=","),">")
+                paste0(paste0("##",col,"=<ID=",id),
+                ",",paste0(names(val[[id]]),"=",val[[id]],collapse=","),">")
             })
           }else{
             paste0("##",col,"=",val)      }
@@ -1313,57 +1133,46 @@ write_vcf=function(
 
     build_body_vcf=function(vcf){
 
-      to_nest=c("FORMAT",vcf$samples)
-      names(to_nest)=to_nest
-      vcf_body=vcf$body %>% unnest_vcf_body() %>% 
-      tidyr::pivot_wider(names_from=SAMPLE,values_from=VALUE) %>%
-      dplyr::group_by(dplyr::across(-to_nest)) %>% 
-      dplyr::summarise(dplyr::across(to_nest,list))
+    to_nest=c("FORMAT",vcf$samples)
+    names(to_nest)=to_nest
+    vcf_body=vcf$body %>% unnest_vcf_body() %>% 
+    tidyr::pivot_wider(names_from=SAMPLE,values_from=VALUE) %>%
+    dplyr::group_by(dplyr::across(-to_nest)) %>% 
+    dplyr::summarise(dplyr::across(to_nest,list))
 
-      vcf_body=vcf_body%>% dplyr::rowwise() %>%
-       dplyr::mutate(across(c("FORMAT",all_of(vcf$samples)),
-       function(x) paste0(unlist(x),collapse=":")))%>%
-       dplyr::mutate(FILTER=paste0(FILTER,collapse=";"),
-       INFO=paste0(paste0(names(unlist(INFO)),
-       ifelse(unlist(INFO)!="","=",""),unlist(INFO)),collapse=";"))
-     
-      sort_vcf_body=function(vcf_body,vcf_descriptors){
-          chrom=data.frame(CHROM=names(vcf_descriptors$contig),
-          order=seq(1,length(vcf_descriptors$contig)))
-          vcf_body=dplyr::left_join(vcf_body,chrom) %>% 
-          dplyr::arrange(order,POS) %>% dplyr::select(-order)
-          
-          return(vcf_body)
-       }
+    vcf_body=vcf_body%>% dplyr::rowwise() %>%
+      dplyr::mutate(across(c("FORMAT",all_of(vcf$samples)),
+      function(x) paste0(unlist(x),collapse=":")))%>%
+      dplyr::mutate(FILTER=paste0(FILTER,collapse=";"),
+      INFO=paste0(paste0(names(unlist(INFO)),
+      ifelse(unlist(INFO)!="","=",""),unlist(INFO)),collapse=";"))
     
-      return(sort_vcf_body(vcf_body,vcf$descriptors))
-    }
+    sort_vcf_body=function(vcf_body,vcf_descriptors){
+        chrom=data.frame(CHROM=names(vcf_descriptors$contig),
+        order=seq(1,length(vcf_descriptors$contig)))
+        vcf_body=dplyr::left_join(vcf_body,chrom) %>% 
+        dplyr::arrange(order,POS) %>% 
+        dplyr::select(-order)
+        
+        return(vcf_body)
+      }
+  
+    return(sort_vcf_body(vcf_body,vcf$descriptors))
+  }
 
+    .main$out_file=paste0(out_file_dir,"/",input_id,".vcf")
 
-    out_file=paste0(out_file_dir,"/",output_name,".vcf")
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
 
-    job_report=build_job_report(
-      job_id=job,
-      executor_id=executor_id,
-      exec_code=list(),
-      task_id=task_id,
-      input_args = argg,
-      out_file_dir=out_file_dir,
-      out_files=list(
-        vcf=out_file)
-    )
+    set_main(.env=.this.env)
 
-
-    if(output_name==""){
-      stop("File output name can't be empty.")
-    }
-    
     ###Construct VCF header
     vcf_header=build_header_vcf(vcf)
 
     ###Construct VCF body
     if(nrow(vcf$body)>1){
-      vcf_body=build_body_vcf(vcf=vcf)
+      vcf_body=build_body_vcf(vcf)
       colnames=paste0("#",paste0(names(vcf_body),collapse="\t"))
     }else{
       vcf_body=""
@@ -1372,11 +1181,10 @@ write_vcf=function(
        vcf$samples),collapse="\t"))
     }
     
-    
 
     write.table(
       x=vcf_header,
-      file=out_file,
+      file=.main$out_file,
       sep="\t",
       quote=FALSE,
       row.names=FALSE,
@@ -1385,7 +1193,7 @@ write_vcf=function(
 
     write.table(
       x=colnames,
-      file=out_file,
+      file=.main$out_file,
       sep="\t",
       quote=FALSE,
       row.names=FALSE,
@@ -1395,7 +1203,7 @@ write_vcf=function(
 
     write.table(
       x=vcf_body,
-      file=out_file,
+      file=.main$out_file,
       sep="\t",
       quote=FALSE,
       row.names=FALSE,
@@ -1403,22 +1211,47 @@ write_vcf=function(
       append=TRUE
     )
 
-    if(compress){
-      job_report[["steps"]][["CompressAndIndexVCF"]]<-compress_and_index_vcf_htslib(
-        bin_bgzip=bin_bgzip,
-        bin_tabix=bin_tabix,
-        vcf=out_file,compress=compress,
-        index=index,index_format=index_format,
-        bgzip_index=bgzip_index,
-        output_dir=out_file_dir,output_name=output_name,
-        clean=clean,verbose=verbose,mode=mode,
-        batch_config=batch_config,
-        time=time,threads=threads,
-        ram=ram,hold=hold
-    )
 
+    .main$steps[[fn]]<-.this.env
+    .main.step=.main$steps[[fn]]
+    .main.step$out_files$vcf<-.main$steps[[fn]]$out_file
+
+     if(compress){
+      .main$steps[[fn]]$steps<-append(
+        .main$steps[[fn]]$steps,
+        compress_and_index_vcf_htslib(
+          bin_bgzip=bin_bgzip,
+          bin_tabix=bin_tabix,
+          vcf=.main.step$out_files,
+          compress=compress,
+          index=index,index_format=index_format,
+          bgzip_index=bgzip_index,
+          output_dir=out_file_dir,
+          output_name=input_id,
+          clean=clean,
+          verbose=verbose,
+          threads=threads,
+          ram=ram
+        ) 
+      )
+     .this.step=.main$steps[[fn]]$steps$compress_and_index_vcf_htslib
+
+     .main.step$out_files <- .main.step$out_files=append(
+      .main.step$out_files,
+      .this.step$out_files
+      )
+    }
+    .env$.main<-.main
   }
-  return(job_report)
+
+  .base.env=environment()
+  list2env(list(...),envir=.base.env)
+  set_env_vars(
+    .env= .base.env,
+    vars="output_name"
+  )
+ 
+  launch(.env=.base.env)
 
 }
 
