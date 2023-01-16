@@ -783,7 +783,6 @@ set_main_env=function(.env){
           input_id<-inputs_id[n]
           input_ext<-inputs_ext[n]
 
-          executor_id <- task_id
           task_id <- make_unique_id(fn)
 
           job_id <- build_job(
