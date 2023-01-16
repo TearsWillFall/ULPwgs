@@ -670,7 +670,7 @@ launch=function(.env){
       append_env(to=.this.env,from=.env)
 
       if(n_jobs>1){
-        reports=lapply(1:n_jobs,function(n){
+        reports=lapply(seq(1,n_jobs),function(n){
             run(.env=self.envs[[n]])
         })
       }else{
@@ -726,7 +726,7 @@ set_ss_env=function(.env){
 
     .this.env=environment()
     append_env(to=.this.env,from=.env)
-    .base.env <- .env$.env
+
     this.sheet=sheet
     vars_sheet=colnames(this.sheet)
 
@@ -751,7 +751,8 @@ set_ss_env=function(.env){
         set_env_vars(
             .env=.this.env
         )
-
+        
+        print(as.list(self.envs))
         .env$self.envs[[row]] <- self.envs
       },.env=.this.env
     )
