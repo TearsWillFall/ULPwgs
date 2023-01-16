@@ -255,9 +255,6 @@ read_main=function(
   .env=environment()
   ){
     
-    if(!is.environment(.env)){
-      .env=readRDS(.env)
-    }
     .this.env=environment()
     append_env(to=.this.env,from=.env)
 
@@ -452,10 +449,10 @@ run_self=function(
 
     build_self(.env=.self)
     
-    if(is.null(main.envs)){
+    if(is.null(.self$main.envs)){
       return(.self)
     }else{
-      return(main.envs)
+      return(.self$main.envs)
     }
   
 }
