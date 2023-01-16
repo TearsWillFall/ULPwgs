@@ -425,10 +425,10 @@ run_self=function(
     if(mode=="batch"){
       if(wait){
          wait_scheduler(.env=.self)
-         read_main(.env=.env)
+         read_main(.env=.self)
       }
     }else{
-      read_main(.env=.env)
+      read_main(.env=.self)
     }
 
     build_self(.env=.self)

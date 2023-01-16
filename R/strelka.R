@@ -205,6 +205,7 @@ call_somatic_sv_manta=function(
         )
 
         run_job(.env=.this.env)
+  
         .main.step=.main$steps[[fn]]
 
     
@@ -220,13 +221,15 @@ call_somatic_sv_manta=function(
             threads=threads,ram=ram
           )
         )
+        .this.step=.main.step$steps$add_af_strelka_vcf
+        .main.step$out_files$annotated=append(.main.step$out_files$annotated,.this.step$out_files) 
       
        .main$steps[[fn]]$steps <-append(
           .main$steps[[fn]]$steps, 
           extract_pass_variants_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf_sv=steps[[fn]]$add_af_strelka_vcf$out_file$variants$sv,
+            vcf_sv=.main$out_files$,
             output_dir=paste0(out_file_dir,"/results"),
             verbose=verbose,
             threads=threads,
@@ -234,6 +237,9 @@ call_somatic_sv_manta=function(
             executor_id=task_id,
           )
         )
+
+        .this.step=.main.step$steps$extract_pass_variants_strelka_vcf
+        .main.step$out_files$annotated=append(.main.step$out_files,.this.step$out_files) 
 
         if(annotate){
             .main$steps[[fn]]$steps<-append(
@@ -243,7 +249,7 @@ call_somatic_sv_manta=function(
                 bin_bgzip=bin_bgzip,
                 bin_tabix=bin_tabix,
                 cache_vep=cache_vep,
-                vcf_sv=steps[[fn]]$extract_pass_variants_strelka_vcf$out_file$variants$sv,
+                vcf_sv=steps[[fn]]$out_file$variants$sv,
                 output_dir=paste0(out_file_dir,"/results"),
                 verbose=verbose,
                 threads=threads,
@@ -268,7 +274,7 @@ call_somatic_sv_manta=function(
           }
         }
 
-        envir$steps <- steps
+        .env$.main <- .main
     }
 
     .base.env=environment()

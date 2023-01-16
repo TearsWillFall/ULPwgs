@@ -10,7 +10,11 @@
 
 read_vcf=function(vcf="",sep="\t"){
   cols=c("CHROM","POS","ID","REF","ALT","QUAL","FILTER","INFO","FORMAT")
-  if(check_if_compressed(vcf)){
+
+  
+  if(is.null(vcf)){
+    stop("vcf arguments is of type NULL")
+  }else if(check_if_compressed(vcf)){
       read=system(paste0("gunzip -c ",vcf),intern=TRUE)
   }else{
       read=readLines(vcf)
@@ -213,74 +217,67 @@ add_snv_af_strelka_vcf=function(
 add_indel_af_strelka_vcf=function(
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  vcf,overwrite=FALSE,
-  compress=TRUE,index=TRUE,
-  index_format="tbi",bgzip_index=FALSE,
-  clean=TRUE,verbose=FALSE, 
-  executor_id=make_unique_id("addAFindelStrelka"),
-  task_name="addAFindelStrelka",
-  batch_config=build_default_preprocess_config(),
-  mode="local",time="48:0:0",
-  threads=1,ram=4,update_time=60,
-  wait=FALSE,hold=NULL){
+  vcf=NULL,
+  ...
+  ){
     
-    argg <- as.list(environment())
-    task_id=make_unique_id(task_name)
-    out_file=paste0(get_file_name(vcf),".indel")
-    out_file_dir=dirname(vcf)
-    job=build_job(executor_id=executor_id,task_id=task_id)
+    build_main=function(.env){
 
-
-    job_report=build_job_report(
-      job_id=job,
-      executor_id=executor_id,
-      exec_code=list(),
-      task_id=task_id,
-      input_args = argg,
-      out_file_dir=out_file_dir,
-      out_files=list()
-    )
-
-
-    vcf_dat=read_vcf(vcf)
-    vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
-    vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
-    dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
-    ##Extract Tier1 read information for REF and ALT
-    vcf_dat$body=vcf_dat$body %>% dplyr::mutate(
-      UREF=strsplit(VALUE[FORMAT=="TAR"],split=",")[[1]][1],
-      UALT=strsplit(VALUE[FORMAT=="TIR"],split=",")[[1]][1]) %>%
-      dplyr::mutate(VALUE=ifelse(FORMAT=="AF",
-      as.numeric(UALT)/(as.numeric(UREF)+as.numeric(UALT)),VALUE))%>% dplyr::select(-c(UALT,UREF))
-    vcf_dat$body=vcf_dat$body %>% 
-    dplyr::mutate(VALUE=ifelse(is.na(VALUE),"",VALUE)) %>% nest_vcf_body()
-
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
     
-    add_af_descriptor<-function(){
-        list(Number="1",Type="Float",Description="\"Variant allelic frequency for tier 1 reads\"")
-    }
+        set_main(.env=.this.env)
 
-    vcf_dat$descriptors$FORMAT[["AF"]]<-add_af_descriptor()
-    
-    if(!overwrite){
-      out_file=paste0(out_file,".af")
-    }
+        vcf_dat=read_vcf(input)
+        vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
+        vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
+        dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
+        ##Extract Tier1 read information for REF and ALT
+        vcf_dat$body=vcf_dat$body %>% dplyr::mutate(
+          UREF=strsplit(VALUE[FORMAT=="TAR"],split=",")[[1]][1],
+          UALT=strsplit(VALUE[FORMAT=="TIR"],split=",")[[1]][1]) %>%
+          dplyr::mutate(VALUE=ifelse(FORMAT=="AF",
+          as.numeric(UALT)/(as.numeric(UREF)+as.numeric(UALT)),VALUE))%>% dplyr::select(-c(UALT,UREF))
+        vcf_dat$body=vcf_dat$body %>% 
+        dplyr::mutate(VALUE=ifelse(is.na(VALUE),"",VALUE)) %>% nest_vcf_body()
 
-    job_report[["steps"]][["writeVCF"]]<-write_vcf(
-      vcf=vcf_dat,
-      output_name=out_file,
-      output_dir=out_file_dir,
-      bin_bgzip=bin_bgzip,
-      bin_tabix=bin_tabix,
-      compress=compress,
-      index=index,index_format=index_format,
-      bgzip_index=bgzip_index,
-      clean=clean,verbose=verbose,mode=mode,
-      batch_config=batch_config,
-      time=time,threads=threads,
-      ram=ram,hold=hold
+        
+        add_af_descriptor<-function(){
+            list(Number="1",Type="Float",Description="\"Variant allelic frequency for tier 1 reads\"")
+        }
+
+        vcf_dat$descriptors$FORMAT[["AF"]]<-add_af_descriptor()
+      
+        .main$steps[[fn]]<-.this.env
+        .main.step=.main$steps[[fn]]
+
+        .main$steps[[fn]]$steps <- append(
+          .main$steps[[fn]]$steps,
+          write_vcf(
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            vcf=vcf_dat,
+            output_name=paste0(input_id,".af"),
+            output_dir=out_file_dir,
+            compress=TRUE,
+            clean=TRUE
+          )
+        )
+        
+        .this.step=.main.step$steps$write_vcf
+        .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
+        .env$.main<-.main
+  }
+
+  
+     .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="bam"
     )
   
+    launch(.env=.base.env)
     return(job_report)
 }
 
@@ -317,85 +314,85 @@ add_indel_af_strelka_vcf=function(
 add_sv_af_strelka_vcf=function(
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  vcf,overwrite=FALSE,
-  compress=TRUE,index=TRUE,
-  index_format="tbi",bgzip_index=FALSE,
-  clean=TRUE,verbose=FALSE, 
-  executor_id=make_unique_id("addAFindelStrelka"),
-  task_name="addAFindelStrelka",
-  batch_config=build_default_preprocess_config(),
-  mode="local",time="48:0:0",
-  threads=1,ram=4,update_time=60,
-  wait=FALSE,hold=NULL){
+  vcf=NULL,
+  ...
+){
     
-    argg <- as.list(environment())
-    task_id=make_unique_id(task_name)
-    out_file=get_file_name(vcf)
-    out_file_dir=dirname(vcf)
-    job=build_job(executor_id=executor_id,task_id=task_id)
+    build_main=function(.env){
 
-
-    job_report=build_job_report(
-      job_id=job,
-      executor_id=executor_id,
-      exec_code=list(),
-      task_id=task_id,
-      input_args = argg,
-      out_file_dir=out_file_dir,
-      out_files=list()
-    )
-
-
-    vcf_dat=read_vcf(vcf)
-    vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
-    vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
-    dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AFP")) %>% 
-    dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AFS"))
-    ##Extract Tier1 read information for REF and ALT
-    vcf_dat$body=vcf_dat$body %>% dplyr::mutate(
-      PREF=tryCatch({strsplit(VALUE[FORMAT=="PR"],split=",")[[1]][1]},error=function(e){NA}),
-      PALT=tryCatch({strsplit(VALUE[FORMAT=="PR"],split=",")[[1]][2]},error=function(e){NA}),
-      SREF=tryCatch({strsplit(VALUE[FORMAT=="SR"],split=",")[[1]][1]},error=function(e){NA}),
-      SALT=tryCatch({strsplit(VALUE[FORMAT=="SR"],split=",")[[1]][2]},error=function(e){NA})) %>%
-      dplyr::mutate(VALUE=ifelse(FORMAT=="AFP",
-      as.numeric(PALT)/(as.numeric(PREF)+as.numeric(PALT)),VALUE))%>% 
-      dplyr::mutate(VALUE=ifelse(FORMAT=="AFS",
-      as.numeric(SALT)/(as.numeric(SREF)+as.numeric(SALT)),VALUE)) %>% 
-      dplyr::select(-c(PALT,PREF,SALT,SREF))
-    vcf_dat$body=vcf_dat$body %>% dplyr::filter(!is.na(VALUE)) %>% nest_vcf_body()
-
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
     
-    add_afp_descriptor<-function(){
-        list(Number="1",Type="Float",Description="\"Variant allelic frequency by paired reads spanning the region.\"")
+        set_main(.env=.this.env)
+
+        vcf_dat=read_vcf(input)
+        vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
+        vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
+        dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AFP")) %>% 
+        dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AFS"))
+        ##Extract Tier1 read information for REF and ALT
+        vcf_dat$body=vcf_dat$body %>% dplyr::mutate(
+          PREF=tryCatch({strsplit(VALUE[FORMAT=="PR"],split=",")[[1]][1]},error=function(e){NA}),
+          PALT=tryCatch({strsplit(VALUE[FORMAT=="PR"],split=",")[[1]][2]},error=function(e){NA}),
+          SREF=tryCatch({strsplit(VALUE[FORMAT=="SR"],split=",")[[1]][1]},error=function(e){NA}),
+          SALT=tryCatch({strsplit(VALUE[FORMAT=="SR"],split=",")[[1]][2]},error=function(e){NA})) %>%
+          dplyr::mutate(VALUE=ifelse(FORMAT=="AFP",
+          as.numeric(PALT)/(as.numeric(PREF)+as.numeric(PALT)),VALUE))%>% 
+          dplyr::mutate(VALUE=ifelse(FORMAT=="AFS",
+          as.numeric(SALT)/(as.numeric(SREF)+as.numeric(SALT)),VALUE)) %>% 
+          dplyr::select(-c(PALT,PREF,SALT,SREF))
+        vcf_dat$body=vcf_dat$body %>% dplyr::filter(!is.na(VALUE)) %>% nest_vcf_body()
+
+  
+        add_afp_descriptor<-function(){
+            list(
+              Number="1",
+              Type="Float",
+              Description="\"Variant allelic frequency by paired reads spanning the region.\"")
+        }
+
+        add_afs_descriptor<-function(){
+            list(
+              Number="1",
+              Type="Float",
+              Description="\"Variant allelic frequency by split-reads spanning the region.\"")
+        }
+
+        vcf_dat$descriptors$FORMAT[["AFP"]]<-add_afp_descriptor()
+        vcf_dat$descriptors$FORMAT[["AFS"]]<-add_afs_descriptor()
+        
+      
+        .main$steps[[fn]]<-.this.env
+        .main.step=.main$steps[[fn]]
+
+        .main$steps[[fn]]$steps <- append(
+          .main$steps[[fn]]$steps,
+          write_vcf(
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            vcf=vcf_dat,
+            output_name=paste0(input_id,".af"),
+            output_dir=out_file_dir,
+            compress=TRUE,
+            clean=TRUE
+          )
+        )
+        
+        .this.step=.main.step$steps$write_vcf
+        .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
+        .env$.main<-.main
+
     }
 
-    add_afs_descriptor<-function(){
-        list(Number="1",Type="Float",Description="\"Variant allelic frequency by split-reads spanning the region.\"")
-    }
-
-    vcf_dat$descriptors$FORMAT[["AFP"]]<-add_afp_descriptor()
-    vcf_dat$descriptors$FORMAT[["AFS"]]<-add_afs_descriptor()
-    
-    if(!overwrite){
-      out_file=paste0(out_file,".af")
-    }
-
-    job_report[["steps"]][["writeVCF"]]<-write_vcf(
-      vcf=vcf_dat,
-      output_name=out_file,
-      output_dir=out_file_dir,
-      bin_bgzip=bin_bgzip,
-      bin_tabix=bin_tabix,
-      compress=compress,
-      index=index,index_format=index_format,
-      bgzip_index=bgzip_index,
-      clean=clean,verbose=verbose,mode=mode,
-      batch_config=batch_config,
-      time=time,threads=threads,
-      ram=ram,hold=hold
+   
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="bam"
     )
   
-    return(job_report)
+    launch(.env=.base.env)
 }
 
 
@@ -439,90 +436,99 @@ add_sv_af_strelka_vcf=function(
   add_af_strelka_vcf=function(
       bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
       bin_tabix=build_default_tool_binary_list()$bin_tabix,
-      vcf_snv=NULL,
-      vcf_indel=NULL,
-      vcf_sv=NULL,
-      verbose=FALSE, 
-      executor_id=make_unique_id("addAFStrelka"),
-      task_name="addAFStrelka",
-      batch_config=build_default_preprocess_config(),
-      mode="local",time="48:0:0",
-      threads=1,ram=4,update_time=60,
-      wait=FALSE,hold=NULL){
+      vcf=NULL,
+      type="snv",
+      ...
+      ){
 
-          argg <- as.list(environment())
-          task_id=make_unique_id(task_name)
-          job=build_job(executor_id=executor_id,task_id=task_id)
+        build_main=function(.env){
 
-          jobs_report=build_job_report(
-            job_id=job,
-            executor_id=executor_id,
-            exec_code=list(), 
-            task_id=task_id,
-            input_args=argg,
-            out_files=list(
-              )
-            )
-          if(!is.null(vcf_snv)){
-              jobs_report[["steps"]][["annotateAFsnvStrelka"]]<-add_snv_af_strelka_vcf(
+            .this.env=environment()
+            append_env(to=.this.env,from=.env)
+        
+            set_main(.env=.this.env)
+
+            .main$steps[[fn]]<-.this.env
+            .main.step=.main$steps[[fn]]
+    
+
+            if(type=="snv"){
+                .main$steps[[fn]]$steps<-append(
+                  .main$steps[[fn]]$steps,
+                  add_snv_af_strelka_vcf(
+                    bin_bgzip=bin_bgzip,
+                    bin_tabix=bin_tabix,
+                    vcf=vcf,
+                    compress=TRUE,
+                    index=TRUE,
+                    index_format="tbi",
+                    bgzip_index=FALSE,
+                    clean=TRUE,
+                    verbose=verbose, 
+                    executor_id=task_id
+                  )
+                )
+            
+            .this.step=.main.step$steps$add_snv_af_strelka_vcf
+            .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
+
+            }else if(type=="indel"){
+
+                .main$steps[[fn]]$steps<-append(
+                .main$steps[[fn]]$steps,
+                add_indel_af_strelka_vcf(
                   bin_bgzip=bin_bgzip,
                   bin_tabix=bin_tabix,
-                  vcf=vcf_snv,
-                  compress=TRUE,index=TRUE,
-                  index_format="tbi",bgzip_index=FALSE,
-                  clean=TRUE,verbose=verbose, 
-                  executor_id=task_id,
-                  batch_config=batch_config,
-                  mode=mode,time=time,
-                  threads=1,ram=1,
-                  hold=hold
+                  vcf=vcf,
+                  compress=TRUE,
+                  index=TRUE,
+                  index_format="tbi",
+                  bgzip_index=FALSE,
+                  clean=TRUE,
+                  verbose=verbose, 
+                  executor_id=task_id
+                )
               )
-          }
             
-        
+            .this.step=.main.step$steps$add_indel_af_strelka_vcf
+            .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
 
-        if(!is.null(vcf_indel)){
-          jobs_report[["steps"]][["annotateAFindelStrelka"]]<-add_indel_af_strelka_vcf(
-            bin_bgzip=bin_bgzip,
-            bin_tabix=bin_tabix,
-            vcf=vcf_indel,
-            compress=TRUE,index=TRUE,
-            index_format="tbi",
-            bgzip_index=FALSE,
-            clean=TRUE,verbose=verbose, 
-            executor_id=task_id,
-            batch_config=batch_config,
-            mode=mode,time=time,
-            threads=threads,ram=ram,
-            hold=hold
-        )
+            }else if(type=="sv"){
+
+                .main$steps[[fn]]$steps<-append(
+                .main$steps[[fn]]$steps,
+                add_sv_af_strelka_vcf(
+                  bin_bgzip=bin_bgzip,
+                  bin_tabix=bin_tabix,
+                  vcf=vcf,
+                  compress=TRUE,
+                  index=TRUE,
+                  index_format="tbi",
+                  bgzip_index=FALSE,
+                  clean=TRUE,
+                  verbose=verbose, 
+                  executor_id=task_id
+                )
+              )
+            .this.step=.main.step$steps$add_sv_af_strelka_vcf
+            .main.step$out_files=append(.main.step$out_files,.this.step$out_files) 
+
+            }else{
+              stop("Wrong argument type")
+            }
+
+          .env$.main<-.main
         }
 
-     if(!is.null(vcf_sv)){
-        jobs_report[["steps"]][["annotateAFsvStrelka"]]<-add_sv_af_strelka_vcf(
-            bin_bgzip=bin_bgzip,
-            bin_tabix=bin_tabix,
-            vcf=vcf_sv,
-            compress=TRUE,index=TRUE,
-            index_format="tbi",
-            bgzip_index=FALSE,
-            clean=TRUE,verbose=verbose, 
-            executor_id=task_id,
-            batch_config=batch_config,
-            mode=mode,time=time,
-            threads=threads,ram=ram,
-            hold=hold
-        )
-     }
 
-
-    jobs_report$out_files=list(
-        vcf_snv=unlist_lvl(jobs_report[["steps"]][["annotateAFsnvStrelka"]],var="compressed_vcf"),
-        vcf_indel=unlist_lvl(jobs_report[["steps"]][["annotateAFindelStrelka"]],var="compressed_vcf"),
-        vcf_sv=unlist_lvl(jobs_report[["steps"]][["annotateAFsvStrelka"]],var="compressed_vcf")
-    )
-
-  return(jobs_report)
+            .base.env=environment()
+            list2env(list(...),envir=.base.env)
+            set_env_vars(
+              .env= .base.env,
+              vars="vcf"
+            )
+          
+            launch(.env=.base.env)
 
     }
 
