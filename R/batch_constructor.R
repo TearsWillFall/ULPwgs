@@ -477,6 +477,32 @@ run_self=function(
  }
    
 
+#' Wrapper around qstat call for SGE
+#' 
+#' 
+#' @export
+
+
+qstat=function(){
+  system("qstat")
+}
+
+#' Wrapper around qdel call for SGE
+#' 
+#' @param jobs Inherit current enviroment.
+#' 
+#' 
+#' @export
+
+qdel=function(jobs){
+  system("qdel ",paste(jobs,collapse=" "))
+}
+
+
+
+
+
+
 
 
 
@@ -506,7 +532,7 @@ set_env_vars=function(
   select=NULL,
   err_msg=NULL,
   executor_id=NULL,
-  wait=NULL,
+  wait=TRUE,
   hold=NULL
 ){  
 
