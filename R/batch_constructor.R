@@ -325,6 +325,8 @@ build_exec_innit=function(
 build_clean_exec=function(
   .env
 ){
+  .this.env=environment()
+  append_env(to=.this.env,from=.env)
   .env$exec_code<- paste0(.env$exec_code," && rm",paste(input))
 }
 
