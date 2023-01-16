@@ -706,7 +706,7 @@ read_sheet=function(.env){
       dplyr::group_by(dplyr::across(-c(vars))) %>%
       dplyr::summarise(!! vars := list(!! rlang::sym(vars)))
     
-    .env$.env$n_jobs <- n_jobs
+    .env$.env$n_jobs <-.env$n_vars <- n_jobs
     .env$.env$n_vars <-.env$n_vars <- n_vars
     .env$sheet <- sheet
 }
@@ -735,6 +735,7 @@ set_ss_env=function(.env){
         .this.env=environment()
         append_env(to=.this.env,from=.env)
         sheet <- NULL
+    
 
         ### ASSIGN VARS IN SHEET TO ENVIROMENT
       
