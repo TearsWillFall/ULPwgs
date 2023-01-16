@@ -868,17 +868,7 @@ set_input_id=function(inputs,ids=NULL){
       return(my_id)
 }
 
-#' Set inputs withib enviroment from input list 
-#' 
-#' @param envir Enviroment to work within
-#' @export
 
-
-set_env_inputs=function(.env){
-      .env$input<-.env$inputs[.env$select]
-      .env$input_id<-.env$inputs_id[.env$select]
-      .env$input_ext<-.env$inputs_ext[.env$select]
-  }
 
 
 #' @export

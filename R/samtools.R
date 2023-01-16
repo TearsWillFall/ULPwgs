@@ -708,7 +708,6 @@ new_stats_bam_samtools=function(
 
     .this.env=environment()
     append_env(to=.this.env,from=.env)
- 
     set_main(.env=.this.env)
 
     .main$steps[[fn]]<-.this.env
@@ -726,7 +725,7 @@ new_stats_bam_samtools=function(
               threads=threads,
               err_msg=err_msg,
               ram=ram,
-              executor=task_id
+              executor_id=task_id
           )
         )
         .this.step=.main.step$steps$new_flag_stats_samtools
@@ -744,7 +743,7 @@ new_stats_bam_samtools=function(
             threads=threads,
             err_msg=err_msg,
             ram=ram,
-            executor=task_id
+            executor_id=task_id
           )
         )
         .this.step=.main.step$steps$new_index_stats_samtools
