@@ -56,9 +56,8 @@ realign_circlemap=function(
             new_sort_and_index_bam_samtools(
                 bin_samtools=bin_samtools,
                 bam=input,
-                output_dir=paste0(out_file_dir_tmp,"/sort_and_index"),
+                output_dir=paste0(out_file_dir_tmp,"/sorted"),
                 verbose=verbose,
-                batch_config=batch_config,
                 threads=threads,
                 ram=ram,
                 err_msg=err_msg,
@@ -70,17 +69,16 @@ realign_circlemap=function(
             )
         )
 
-        .this.step=.main$step$new_sort_and_index_bam_samtools
+        .this.step=.main$steps$new_sort_and_index_bam_samtools
         .main$out_files$srt_qbam=.this.step$out_files$srt_bam
        
         .main$steps <- append(.main$steps,
             read_extractor_circlemap(
                 env_circlemap=env_circlemap,
                 bin_samtools=bin_samtools,
-                bam=.this.step$out_file,
+                bam=.main$out_files$srt_qbam,
                 output_dir=paste0(out_file_dir_tmp,"/read_extractor"),
                 verbose=verbose,
-                batch_config=batch_config,
                 threads=threads,
                 ram=ram,
                 err_msg=err_msg,
@@ -93,7 +91,7 @@ realign_circlemap=function(
             )
         )
         
-        .this.step=.main$step$read_extractor_circlemap
+        .this.step=.main$steps$read_extractor_circlemap
         .main$out_files=append(.main$out_files,.this.step$out_files)
         
 
@@ -205,7 +203,6 @@ read_extractor_circlemap=function(
                     bam=.main$out_file,
                     output_dir=out_file_dir,
                     verbose=verbose,
-                    batch_config=batch_config,
                     threads=threads,
                     ram=ram,
                     err_msg=err_msg,
