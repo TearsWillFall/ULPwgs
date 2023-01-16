@@ -85,8 +85,7 @@ realign_circlemap=function(
                 sort=TRUE,
                 coord_sort=TRUE,
                 index=TRUE,
-                stats="all", 
-                clean=TRUE,
+                stats="all",
                 executor_id=task_id
             )
         )
@@ -209,7 +208,6 @@ read_extractor_circlemap=function(
                     stats=FALSE,
                     sort=TRUE,
                     index=TRUE,
-                    clean=FALSE,
                     executor_id=task_id
             )
         )
