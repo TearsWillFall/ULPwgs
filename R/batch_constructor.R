@@ -174,27 +174,6 @@ execute_job=function(exec_code){
 
 
 
-
-#' Build RData object to inherit in main_function
-#' 
-#' @param objects List of objects to save in RData object
-#' @param job_id Job Identifier
-#' @param output_dir Path to output directory 
-#' @export
-
-
-build_env_object=function(
-  .env=environment()
-){        
-          .this.env=environment()
-          append_env(to=.this.env,from=.env)
-          env_file=paste0(out_file_dir_tmp,"/",job_id,".env.RData")
-          saveRDS(.this.env,file = env_file)
-          append_env(to=.env,from=.this.env)
-}
-
-
-
 #' Build RData object to inherit in main_function
 #' 
 #' @param objects List of objects to save in RData object
@@ -320,11 +299,11 @@ build_exec_innit=function(
              
               exec_code=paste0("Rscript -e \" invisible(lapply(1:",n_inputs,
               ",FUN=function(select){",ns,"::",fn,"(inherit=\\\"",
-              env_file,"\\\",select=select)}))\"")
+              self_file,"\\\",select=select)}))\"")
         
         }else if(mode=="batch"){
               exec_code=paste0("Rscript -e \" invisible(",
-              ns,"::",fn,"(inherit=\\\"",env_file,
+              ns,"::",fn,"(inherit=\\\"",self_file,
               "\\\",select=$SGE_TASK_ID))\"")
         }else{
           stop("Unkown mode type")
@@ -385,7 +364,7 @@ set_self=function(
     append_env(to=.this.env,from=.env)
 
     error=0
-    env_file=""
+    self_file=""
     main_file=""
     main_code=""
     exec_code=""
@@ -417,7 +396,7 @@ run_self=function(
 
     ### Create RData object to inherit vars
 
-    build_env_object(.env=.self)
+    build_self(.env=.self)
 
     build_exec_innit(
             .env=.self
@@ -450,11 +429,18 @@ run_self=function(
          wait_scheduler(.env=.self)
          read_main(.env=.self)
       }
+    }else{
+      read_main(.env=.self)
     }
 
     build_self(.env=.self)
-
-    return(main_envs)
+    
+    if(is.null(main_envs)){
+      return(.self)
+    }else{
+      return(main_envs)
+    }
+  
 }
 
 #' Run job from batch constructor
