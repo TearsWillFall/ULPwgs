@@ -450,8 +450,9 @@ run_self=function(
          wait_scheduler(.env=.self)
          read_mains(.env=.self)
       }
-      build_self(.env=.self)
     }
+
+    build_self(.env=.self)
 
     return(main_envs)
 }
