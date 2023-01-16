@@ -690,7 +690,6 @@ read_sheet=function(.env){
 
     .this.env=environment()
     append_env(to=.this.env,from=.env)
-    .base.env=.env$.env
 
     sheet=read.delim(sheet,header=TRUE)
     n_total<-nrow(sheet)
@@ -707,8 +706,8 @@ read_sheet=function(.env){
       dplyr::group_by(dplyr::across(-c(vars))) %>%
       dplyr::summarise(!! vars := list(!! rlang::sym(vars)))
     
-    .env$n_jobs<- .base.env <- n_jobs
-    .env$n_vars<- .base.env <- n_vars
+    .env$.env$n_jobs <- n_jobs
+    .env$.env$n_vars <- n_vars
     .env$sheet <- sheet
 }
 
