@@ -707,10 +707,9 @@ read_sheet=function(.env){
       dplyr::group_by(dplyr::across(-c(vars))) %>%
       dplyr::summarise(!! vars := list(!! rlang::sym(vars)))
     
-    print(sheet)
     .env$n_jobs<- .base.env <- n_jobs
     .env$n_vars<- .base.env <- n_vars
-    .env$sheet<- .base.env <- sheet
+    .env$sheet <- sheet
 }
 
 
