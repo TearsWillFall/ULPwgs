@@ -138,9 +138,7 @@ new_sort_and_index_bam_samtools=function(
   bam=NULL,
   sort=TRUE,
   coord_sort=TRUE,
-  index=TRUE,
-  stats=TRUE, 
-  clean=FALSE,
+  stats=TRUE,
   ...
 ){
 
@@ -409,8 +407,8 @@ new_sort_bam_samtools=function(
 
       
     .base.env=environment()
-    print(as.list(.base.env))
     list2env(list(...),envir=.base.env)
+    print(as.list(.base.env))
     set_env_vars(
       .env= .base.env,
       vars="bam"
