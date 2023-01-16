@@ -40,48 +40,31 @@ call_variants_strelka=function(
     normal=NULL,
     patient_id=NULL,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
-    output_dir="./strelka_reports",
-    output_name=NULL,
     annotate=TRUE,
     tabulate=TRUE,
     targeted=TRUE,
     verbose=FALSE,
-    batch_config=build_default_preprocess_config(),
-    threads=1,
-    ram=4,
-    mode="local",
-    time="48:0:0",
-    sheet=NULL,
-    inherit=NULL,
-    select=NULL,
-    executor_id=NULL,
-    hold=NULL
+    ...
 ){
 
 
 
-    this.envir=environment()
-
-    
-
-    set_envir_vars(
-        envir=this.envir,
-        vars=ifelse(tumour,"tumour","normal")
-    )
 
     run_main=function(
-      envir
+      .env
     ){
 
-      this.envir=environment()
-      append_envir(this.envir,envir)
-      #### Overide envir vars
+      .this.env=environment()
+      append_env(to=.this.env,from=.env)
+  
+      set_main(.env=.this.env)
 
-      set_steps_vars(envir=this.envir)
-
-
-      steps[[fn]] <-append(
-            steps[[fn]],
+      .main$steps[[fn]]<-.this.env
+      tumour<-ifelse(is.null(tumour),input,NULL)
+      normal<-ifelse(is.null(tumour),normal,input)
+    
+      .main$steps[[fn]]$steps <-append(
+            .main$steps[[fn]]$steps,
             call_sv_manta(
                 bin_bcftools=bin_bcftools,
                 bin_bgzip=bin_bgzip,
@@ -89,16 +72,15 @@ call_variants_strelka=function(
                 bin_manta=bin_manta,
                 bin_vep=bin_vep,
                 cache_vep=cache_vep,
-                tumour=ifelse(tumour,input,NULL),
-                normal=ifelse(tumour,normal,input),
+                tumour=tumour,
+                normal=normal,
                 annotate=annotate,
                 tabulate=tabulate,
                 ref_genome=ref_genome,
                 output_dir=paste0(
                   out_file_dir,"/",
-                  patient_id,"/",
-                  input_id,"/",
-                  "strelka_reports"
+                  input_id,
+                  "/strelka_reports"
                 ),
                 targeted=targeted,
                 verbose=verbose,
@@ -107,11 +89,12 @@ call_variants_strelka=function(
                 executor_id=task_id
         )
     )
-        
+      .this.step=.main.step$steps$call_sv_manta
+      .main.step$out_files=append(.main.step$out_files,.this.step$out_files) 
 
-
-      steps[[fn]] <-append(
-          steps[[fn]],
+      
+      .main$steps[[fn]]$steps <-append(
+        .main$steps[[fn]]$steps,
             call_snvs_strelka(
               bin_bcftools=bin_bcftools,
               bin_bgzip=bin_bgzip,
@@ -122,15 +105,14 @@ call_variants_strelka=function(
               cache_vep=cache_vep,
               annotate=annotate,
               tabulate=tabulate,
-              indel_candidates=steps[[fn]]$call_sv_manta$variants$out_file$indel_candidates,
-              tumour=ifelse(tumour,input,NULL),
-              normal=ifelse(tumour,normal,input),
+              indel_candidates=.main.step$out_files$indel_candidates,
+              tumour=tumour,
+              normal=normal,
               ref_genome=ref_genome,
               output_dir=paste0(
                   out_file_dir,"/",
-                  patient_id,"/",
-                  input_id,"/",
-                  "strelka_reports"
+                  input_id,
+                  "/strelka_reports"
               ),
               targeted=targeted,
               verbose=verbose,
@@ -139,9 +121,17 @@ call_variants_strelka=function(
               executor_id=task_id
         )
       )
-}
+      .env$.main <-.main
+    }
 
-    envirs=run_envir(envirs=this.envir$envirs)
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars=ifelse(is.null(tumour),"normal","tumour")
+    )
+  
+    launch(.env=.base.env)
     
     
 }
@@ -186,25 +176,9 @@ call_somatic_sv_manta=function(
     targeted=TRUE,
     annotate=TRUE,
     tabulate=TRUE,
-    output_dir="./somatic/sv",
-    output_name=NULL,
-    verbose=FALSE,
-    batch_config=build_default_preprocess_config(),
-    threads=1,
-    ram=4,
-    mode="local",
-    time="48:0:0",
-    sheet=NULL,
-    executor_id=NULL,
-    inherit=NULL,
-    hold=NULL
+    ...
 ){
-   this.envir=environment()
-    set_envir_vars(
-        envir=this.envir,
-        vars="tumour"
-    )
-
+   
     run_main=function(
         envir
     ){
@@ -312,7 +286,14 @@ call_somatic_sv_manta=function(
         envir$steps <- steps
     }
 
-   envirs=run_envir(envirs=this.envir$envirs)
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars=ifelse(is.null(tumour),"normal","tumour")
+    )
+  
+    launch(.env=.base.env)
 
 
 }

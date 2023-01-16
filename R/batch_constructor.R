@@ -273,7 +273,7 @@ read_main=function(
       main.envs=readRDS(main.envs[[1]]$main_file)
     }
     
-    .env$main_envs<-main_envs
+    .env$main.envs<-main.envs
 }
 
 
@@ -364,7 +364,6 @@ set_self=function(
 
     error=0
     self_file=""
-    main_file=""
     main_code=""
     exec_code=""
     batch_code=""
@@ -426,18 +425,18 @@ run_self=function(
     if(mode=="batch"){
       if(wait){
          wait_scheduler(.env=.self)
-         read_main(.env=.self)
+         read_main(.env=.env)
       }
     }else{
-      read_main(.env=.self)
+      read_main(.env=.env)
     }
 
     build_self(.env=.self)
     
-    if(is.null(main_envs)){
+    if(is.null(main.envs)){
       return(.self)
     }else{
-      return(main_envs)
+      return(main.envs)
     }
   
 }

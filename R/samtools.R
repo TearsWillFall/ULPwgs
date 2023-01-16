@@ -417,6 +417,7 @@ new_sort_bam_samtools=function(
 
       
     .base.env=environment()
+    print(as.list(.base.env))
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
