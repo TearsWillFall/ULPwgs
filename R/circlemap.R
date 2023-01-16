@@ -56,7 +56,9 @@ realign_circlemap=function(
             new_sort_and_index_bam_samtools(
                 bin_samtools=bin_samtools,
                 bam=input,
-                output_dir=paste0(out_file_dir_tmp,"/sorted"),
+                output_dir=paste0(out_file_dir,"/sorted"),
+                tmp_dir=tmp_dir,
+                env_dir=env_dir,
                 verbose=verbose,
                 threads=threads,
                 ram=ram,
@@ -77,7 +79,9 @@ realign_circlemap=function(
                 env_circlemap=env_circlemap,
                 bin_samtools=bin_samtools,
                 bam=.main$out_files$srt_qbam,
-                output_dir=paste0(out_file_dir_tmp,"/read_extractor"),
+                output_dir=paste0(out_file_dir,"/read_extractor"),
+                tmp_dir=tmp_dir,
+                env_dir=env_dir,
                 verbose=verbose,
                 threads=threads,
                 ram=ram,
@@ -102,7 +106,7 @@ realign_circlemap=function(
             " -o ",.main$out_files$realign_bed,
             " -t ",threads," -dir /", 
             " -fasta ",normalizePath(ref_genome), 
-            " -tdir ",out_file_dir_tmp
+            " -tdir ",out_file_dir
         )
 
         run_job(.env=.this.env)
@@ -181,7 +185,7 @@ read_extractor_circlemap=function(
         set_main(.env=.this.env)
     
         .main$out_file=paste0(
-            out_file_dir_tmp,"/",input_id,".circular_read_candidates.bam"
+            out_file_dir,"/",input_id,".circular_read_candidates.bam"
         )
 
        .main$exec_code=paste(
@@ -201,6 +205,8 @@ read_extractor_circlemap=function(
                     bin_samtools=bin_samtools,
                     bam=.main$out_file,
                     output_dir=out_file_dir,
+                    tmp_dir=tmp_dir,
+                    env_dir=env_dir,
                     verbose=verbose,
                     threads=threads,
                     ram=ram,
@@ -384,9 +390,9 @@ circdna_circlemap=function(
                 bam=normalizePath(input),
                 ref_genome=normalizePath(ref_genome),
                 output_dir=paste0(out_file_dir,"/realign_reports"),
+                tmp_dir=tmp_dir,
+                env_dir=env_dir,
                 verbose=verbose,
-                tmp_dir=out_file_dir_tmp,
-                batch_config=batch_config,
                 threads=threads,
                 err_msg=err_msg,
                 ram=ram,
@@ -405,6 +411,8 @@ circdna_circlemap=function(
                 env_circlemap=env_circlemap,
                 bam=normalizePath(input),
                 output_dir=paste0(out_file_dir,"/repeat_reports"),
+                tmp_dir=tmp_dir,
+                env_dir=env_dir,
                 verbose=verbose,
                 batch_config=batch_config,
                 threads=threads,
