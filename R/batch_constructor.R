@@ -192,6 +192,30 @@ build_env_object=function(
           saveRDS(.this.env,file = env_file)
           append_env(to=.env,from=.this.env)
 }
+
+
+
+#' Build RData object to inherit in main_function
+#' 
+#' @param objects List of objects to save in RData object
+#' @param job_id Job Identifier
+#' @param output_dir Path to output directory 
+#' @export
+
+
+build_self=function(
+  .env=environment()
+){        
+      .this.env=environment()
+      append_env(to=.this.env,from=.env)
+      self_file=paste0(out_file_dir_tmp,"/",job_id,".self.RData")
+      saveRDS(.this.env,file = self_file)
+      append_env(to=.env,from=.this.env)
+}
+
+
+
+
       
 
 
@@ -201,13 +225,13 @@ build_env_object=function(
 #' @param env List of objects to save in RData object
 #' @export
 
-build_connector=function(
+build_main=function(
   .env=environment()
   ){
   .this.env=environment()
   append_env(to=.this.env,from=.env)
-  connector_file=paste0(out_file_dir_tmp,"/",job_id,".connector.RData")
-  saveRDS(.env$steps,file=connector_file)
+  main_file=paste0(out_file_dir_tmp,"/",job_id,".main.RData")
+  saveRDS(.env$steps,file=main_file)
   append_env(to=.env,from=.this.env)
 }
 
@@ -245,32 +269,32 @@ wait_scheduler=function(.env){
 
 #' Build execution innit for function to execute
 #' 
-#' @param env List of objects to save in RData object
+#' @param .env List of objects to save in RData object
 #' @export
 
-read_connectors=function(
+read_main=function(
   .env=environment()
   ){
     
-  .this.env=environment()
-  append_env(to=.this.env,from=.env)
+    if(!is.environment(.env)){
+      .env=readRDS(.env)
+    }
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
 
-  if(mode=="batch"){
-    wait_scheduler(.env=.env)
-  }
-  
-  ### Reads connectors and updates values for enviroments with data
+ 
+    ### Reads mains and updates values for enviroments with data
 
-  if(n_inputs>1){
-    main.envs=lapply(1:n_inputs,function(n){
-        main.env=readRDS(main.envs[[n]]$connector_file)
-       
-      })
-  }else{
-    main.envs=readRDS(main.envs[[1]]$connector_file)
-  }
-  
-  return(main.envs)
+    if(n_inputs>1){
+      main.envs=lapply(1:n_inputs,function(n){
+          main.env=readRDS(main.envs[[n]]$main_file)
+        
+        })
+    }else{
+      main.envs=readRDS(main.envs[[1]]$main_file)
+    }
+    
+    .env$main_envs<-main_envs
 }
 
 
@@ -281,6 +305,7 @@ read_connectors=function(
 #' 
 #' @param env List of objects to save in RData object
 #' @export
+
 
 
 build_exec_innit=function(
@@ -317,11 +342,14 @@ build_exec_innit=function(
 #' @export
 
 
+
+
+
+
 build_batch_exec_innit=function(
   .env=environment()
 ){  
-
-
+    n_inputs<-1
     .this.env=environment()
     append_env(to=.this.env,from=.env)
 
@@ -358,8 +386,8 @@ set_self=function(
 
     error=0
     env_file=""
-    connector_file=""
-    connector_code=""
+    main_file=""
+    main_code=""
     exec_code=""
     batch_code=""
     .env$.self=environment()
@@ -416,8 +444,16 @@ run_self=function(
         stop(.self$err_msg)
     }
 
-    read_connectors(.env=.self)
-  
+
+    if(mode=="batch"){
+      if(wait){
+         wait_scheduler(.env=.self)
+         read_mains(.env=.self)
+      }
+      build_self(.env=.self)
+    }
+
+    return(main_envs)
 }
 
 #' Run job from batch constructor
@@ -484,6 +520,7 @@ set_env_vars=function(
   select=NULL,
   err_msg=NULL,
   executor_id=NULL,
+  wait=NULL,
   hold=NULL
 ){  
 
@@ -578,7 +615,7 @@ run=function(.env){
   }else{
     .renv=.env$.renv
     run_main(.env=.renv)
-    build_connector(.env=.renv$.main)
+    build_main(.env=.renv$.main)
   }
 }
 
@@ -716,7 +753,7 @@ set_main_env=function(.env){
           err_msg <- paste0(err_msg ,fn," (",job_id,") "," -> ")
           
           
-          build_connector(.env=.this.env)
+          build_main(.env=.this.env)
         
           .env$main.envs[[n]]<-.this.env
         },
