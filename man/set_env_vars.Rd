@@ -5,7 +5,27 @@
 \title{Set default enviromental variables based on input for all
 functions in package.}
 \usage{
-set_env_vars(.env = environment(), vars = NULL, fn = NULL, err_msg = NULL)
+set_env_vars(
+  .env = environment(),
+  vars = NULL,
+  fn = NULL,
+  output_dir = ".",
+  output_name = NULL,
+  verbose = FALSE,
+  batch_config = build_default_preprocess_config(),
+  threads = 1,
+  ram = 4,
+  ns = "ULPwgs",
+  mode = "local",
+  time = "48:0:0",
+  sheet = NULL,
+  inherit = NULL,
+  select = NULL,
+  err_msg = NULL,
+  executor_id = NULL,
+  wait = NULL,
+  hold = NULL
+)
 }
 \arguments{
 \item{envir}{Inherit current enviroment.}

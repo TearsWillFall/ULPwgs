@@ -7,7 +7,7 @@
 build_exec_innit(.env = environment())
 }
 \arguments{
-\item{env}{List of objects to save in RData object}
+\item{.env}{List of objects to save in RData object}
 }
 \description{
 Build execution innit for function to execute

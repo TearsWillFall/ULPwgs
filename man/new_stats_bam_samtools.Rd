@@ -8,20 +8,7 @@ new_stats_bam_samtools(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = NULL,
   stats = "all",
-  output_dir = "./stats",
-  output_name = NULL,
-  verbose = FALSE,
-  batch_config = build_default_preprocess_config(),
-  threads = 3,
-  ram = 4,
-  ns = "ULPwgs",
-  mode = "local",
-  time = "48:0:0",
-  sheet = NULL,
-  inherit = NULL,
-  select = NULL,
-  executor_id = NULL,
-  hold = NULL
+  ...
 )
 }
 \arguments{
@@ -41,17 +28,17 @@ new_stats_bam_samtools(
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
-\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
-
 \item{executor_id}{Task EXECUTOR ID. Default "mardupsGATK"}
 
-\item{hold}{\link{OPTIONAL} Hold job until job is finished. Job ID.}
-
 \item{task_name}{Name of the task. Default "mardupsGATK"}
+
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 
 \item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
 
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
+
+\item{hold}{\link{OPTIONAL} Hold job until job is finished. Job ID.}
 }
 \description{
 Generate BAM file flag and index stats

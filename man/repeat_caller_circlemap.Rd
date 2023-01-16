@@ -7,21 +7,7 @@
 repeat_caller_circlemap(
   env_circlemap = build_default_python_enviroment_list()$env_circlemap,
   bam = NULL,
-  output_dir = "./repeat_reports",
-  output_name = NULL,
-  verbose = FALSE,
-  batch_config = build_default_preprocess_config(),
-  threads = 1,
-  ram = 1,
-  ns = "ULPwgs",
-  mode = "local",
-  time = "48:0:0",
-  err_mssg = "repeat_caller failed to run",
-  sheet = NULL,
-  inherit = NULL,
-  select = NULL,
-  executor_id = NULL,
-  hold = NULL
+  ...
 )
 }
 \arguments{
@@ -29,31 +15,31 @@ repeat_caller_circlemap(
 
 \item{bam}{\link{OPTIONAL} Path to BAM file}
 
-\item{output_dir}{\link{OPTIONAL} Path to the output directory.}
-
 \item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
 
-\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
-
-\item{batch_config}{\link{REQUIRED} Additional batch configuration if batch mode selected.}
+\item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
 
 \item{ram}{\link{OPTIONAL} RAM memory to asing to each thread. Default 4}
 
+\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
+
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
-\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+\item{batch_config}{\link{REQUIRED} Additional batch configuration if batch mode selected.}
 
 \item{executor_id}{Task EXECUTOR ID. Default "recalCovariates"}
 
-\item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
-
 \item{task_name}{Task name. Default "recalCovariates"}
+
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 
 \item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
 
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
+
+\item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
 }
 \description{
 This function generates a BED file with circular DNA repeat candidates

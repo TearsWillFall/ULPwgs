@@ -7,23 +7,8 @@
 annotate_bed_circlemap(
   annotation_ref = build_default_reference_list()$HG19$panel$PCF_V3$annotation$genes,
   bed = NULL,
-  output_dir = ".",
-  output_name = NULL,
   type = "repeat",
-  write = TRUE,
-  ns = "ULPwgs",
-  mode = "local",
-  time = "48:0:0",
-  threads = 8,
-  ram = 1,
-  verbose = FALSE,
-  batch_config = build_default_preprocess_config(),
-  err_mssg = "annotate_bed failed to run",
-  sheet = NULL,
-  inherit = NULL,
-  select = NULL,
-  executor_id = NULL,
-  hold = NULL
+  ...
 )
 }
 \arguments{
@@ -31,13 +16,11 @@ annotate_bed_circlemap(
 
 \item{bed}{\link{REQUIRED} Path to bed file.}
 
-\item{output_dir}{Path to the output directory.}
-
 \item{type}{\link{REQUIRED} circleMap output type. Default \link{"repeat"}.}
 
-\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+\item{id}{\link{OPTIONAL} Sample identifier. If not given the name of the first tumour sample of the samples will be used.}
 
-\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+\item{output_dir}{Path to the output directory.}
 
 \item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
 
@@ -45,13 +28,15 @@ annotate_bed_circlemap(
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
+\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
 \item{executor_id}{Task EXECUTOR ID. Default "recalCovariates"}
 
-\item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
-
-\item{id}{\link{OPTIONAL} Sample identifier. If not given the name of the first tumour sample of the samples will be used.}
-
 \item{task_name}{Task name. Default "recalCovariates"}
+
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+
+\item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
 }
 \description{
 This function reads the circle-map circDNA output file

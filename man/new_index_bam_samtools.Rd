@@ -8,26 +8,13 @@ new_index_bam_samtools(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = NULL,
   stats = TRUE,
-  output_dir = ".",
-  output_name = NULL,
-  verbose = FALSE,
-  batch_config = build_default_preprocess_config(),
-  threads = 3,
-  ram = 4,
-  ns = "ULPwgs",
-  mode = "local",
-  time = "48:0:0",
-  sheet = NULL,
-  inherit = NULL,
-  select = NULL,
-  executor_id = NULL,
-  hold = NULL
+  ...
 )
 }
 \arguments{
 \item{bam}{Path to the input file with the sequence.}
 
-\item{output_dir}{Path to the output directory.}
+\item{bin_samtols}{Path to samtools executable. Default path tools/samtools/samtools.}
 
 \item{verbose}{Enables progress messages. Default False.}
 
@@ -35,25 +22,25 @@ new_index_bam_samtools(
 
 \item{ram}{Ram memory to use per thread in GB. Default 1GB}
 
-\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
-
-\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
-
-\item{executor_id}{Task EXECUTOR ID. Default "mardupsGATK"}
-
-\item{hold}{\link{OPTIONAL} Hold job until job is finished. Job ID.}
-
-\item{bin_samtols}{Path to samtools executable. Default path tools/samtools/samtools.}
+\item{output_dir}{Path to the output directory.}
 
 \item{coord_sort}{Generate a coord sorted file. Otherwise queryname sorted. Default TRUE}
 
 \item{clean}{Remove input files. Default FALSE}
 
+\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
+\item{executor_id}{Task EXECUTOR ID. Default "mardupsGATK"}
+
 \item{task_name}{Name of the task. Default "mardupsGATK"}
+
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 
 \item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
 
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
+
+\item{hold}{\link{OPTIONAL} Hold job until job is finished. Job ID.}
 }
 \description{
 This function sorts a genome sequence file (BAM/SAM)

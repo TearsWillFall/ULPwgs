@@ -282,7 +282,7 @@ read_main=function(
 
 #' Build execution innit for function to execute
 #' 
-#' @param env List of objects to save in RData object
+#' @param .env List of objects to save in RData object
 #' @export
 
 
@@ -316,8 +316,7 @@ build_exec_innit=function(
 
 #' Build execution innit for batch
 #' 
-#' @param env Inherit envoment variables
-#' @param exec_code Execution code
+#' @param .env Inherit envoment variables
 #' @export
 
 
