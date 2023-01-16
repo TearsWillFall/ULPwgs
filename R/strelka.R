@@ -147,18 +147,6 @@ call_variants_strelka=function(
 #' @param normal [REQUIRED] Path to tumour BAM file.
 #' @param ref_genome [REQUIRED] Path to reference genome FASTA
 #' @param targeted [REQUIRED] Remove coverage filtering for exome/targeted data. Default TRUE
-#' @param output_dir [OPTIONAL] Path to the output directory. Default current directory
-#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
-#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
-#' @param verbose [OPTIONAL] Enables progress messages. Default False.
-#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
-#' @param batch_config [OPTIONAL] Default configuration for job submission in batch.
-#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
-#' @param task_name Task name. Default "recalCovariates"
-#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
-#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
-#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
-#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 
 
@@ -180,15 +168,14 @@ call_somatic_sv_manta=function(
 ){
    
     run_main=function(
-        envir
+        .env
     ){
-        this.envir=environment()
-        append_envir(this.envir,envir)
-        set_steps_vars(envir=this.envir)
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+        set_main(.env=.this.env)
 
 
-
-         steps[[fn]]$exec_code=paste0(
+         .main$exec_code=paste0(
           bin_strelka,
           " --tumorBam ",input,
           " --normalBam ",normal,
@@ -201,34 +188,32 @@ call_somatic_sv_manta=function(
             threads)
           )
 
-        steps[[fn]]$out_file$workflow=paste0(out_file_dir,"/runWorkflow.py")
-        steps[[fn]]$out_file$stats=list(
+        .main$out_files$workflow=paste0(out_file_dir,"/runWorkflow.py")
+        .main$out_files$stats=list(
               tsv=paste0(out_file_dir,"/results/stats/runStats.tsv"),
               xml=paste0(out_file_dir,"/results/stats/runStats.xml")
         )
-        steps[[fn]]$out_file$variants=list(
+       .main$out_files$variants=list(
               sv=paste0(out_file_dir,"/results/variants/somaticSV.vcf.gz"),
               sv_idx=paste0(out_file_dir,"/results/variants/somaticSV.vcf.gz"),
-              indel_candidate=paste0(out_file_dir,"/results/variants/candidateSmallIndels.vcf.gz"),
-              indel_candidate_idx=paste0(out_file_dir,"/results/variants/candidateSmallIndels.vcf.gz.tbi"),
+              indel_candidates=paste0(out_file_dir,"/results/variants/candidateSmallIndels.vcf.gz"),
+              indel_candidates_idx=paste0(out_file_dir,"/results/variants/candidateSmallIndels.vcf.gz.tbi"),
               sv_candidate=paste0(out_file_dir,"/results/variants/candidateSV.vcf.gz"),
               sv_candidate_index=paste0(out_file_dir,"/results/variants/candidateSV.vcf.gz.tbi"),
               diploid_sv=paste0(out_file_dir,"/results/variants/diploidSV.vcf.gz"),
               diploid_sv_idx=paste0(out_file_dir,"/results/variants/diploidSV.vcf.gz.tbi"),
         )
 
-        run_job(
-            envir=this.envir
-        )
-
+        run_job(.env=.this.env)
+        .main.step=.main$steps[[fn]]
 
     
-        steps[[fn]] <- append(
-          steps[[fn]], 
+        .main$steps[[fn]]$steps <- append(
+          .main$steps[[fn]]$steps, 
           add_af_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf_sv=steps[[fn]]$out_file$variants$sv,
+            vcf_sv=.main.step$out_files$variants$sv,
             output_dir=paste0(out_file_dir,"/results"),
             verbose=verbose, 
             executor_id=task_id,
@@ -236,8 +221,8 @@ call_somatic_sv_manta=function(
           )
         )
       
-        steps[[fn]] <-append(
-          steps[[fn]], 
+       .main$steps[[fn]]$steps <-append(
+          .main$steps[[fn]]$steps, 
           extract_pass_variants_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
@@ -251,8 +236,8 @@ call_somatic_sv_manta=function(
         )
 
         if(annotate){
-            steps[[fn]]<-append(
-              steps[[fn]],
+            .main$steps[[fn]]$steps<-append(
+              .main$steps[[fn]]$steps,
               annotate_strelka_vep(
                 bin_vep=bin_vep,
                 bin_bgzip=bin_bgzip,
