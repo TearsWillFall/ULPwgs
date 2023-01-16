@@ -187,7 +187,7 @@ build_self=function(
 ){        
       .this.env=environment()
       append_env(to=.this.env,from=.env)
-      self_file=paste0(out_file_dir_tmp,"/",job_id,".self.RData")
+      self_file=paste0(env_dir,"/",job_id,".self.RData")
       saveRDS(.this.env,file = self_file)
       append_env(to=.env,from=.this.env)
 }
@@ -209,7 +209,7 @@ build_main=function(
   ){
   .this.env=environment()
   append_env(to=.this.env,from=.env)
-  main_file=paste0(out_file_dir_tmp,"/",job_id,".main.RData")
+  main_file=paste0(env_dir,"/",job_id,".main.RData")
   saveRDS(.env$steps,file=main_file)
   append_env(to=.env,from=.this.env)
 }
@@ -349,8 +349,7 @@ build_batch_exec_innit=function(
     .this.env=environment()
     append_env(to=.this.env,from=.env)
 
-  
-    out_file_dir_batch=set_dir(dir=out_file_dir_tmp,name="batch")
+    out_file_dir_batch=set_dir(dir=tmp_dir,name="batch")
 
     batch_code=build_job_exec(
       job=job_id,time=time,ram=ram,
@@ -545,6 +544,8 @@ set_env_vars=function(
   vars=NULL,
   fn=NULL,
   output_dir=".",
+  tmp_dir=NULL,
+  env_dir=NULL,
   output_name=NULL,
   verbose=FALSE,
   bgzip_index=FALSE,
@@ -618,10 +619,20 @@ set_env_vars=function(
           dir=output_dir
     )
 
-    out_file_dir_tmp <- set_dir(
-      dir=out_file_dir,
-      name="tmp"
-    )
+    if(!is.null(tmp_dir)){
+        tmp_dir <- set_dir(
+          dir=out_file_dir,
+          name="tmp"
+      )
+    }
+
+    if(!is.null(env_dir)){
+          env_dir<- set_dir(
+            dir=out_file_dir,
+            name="env"
+        )
+      }
+  
     task_id <- make_unique_id(fn)
 
     job_id <- build_job(
