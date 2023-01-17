@@ -30,12 +30,13 @@
 
 
 realign_circlemap=function(
+        annotation_ref=build_default_reference_list()$HG19$panel$PCF_V3$annotation$genes,
         env_circlemap=build_default_python_enviroment_list()$env_circlemap,
         bin_samtools=build_default_tool_binary_list()$bin_samtools,
         ref_genome=build_default_reference_list()$HG19$reference$genome,
         bam=NULL,
+        annotate=TRUE,
         ...
-
 ){
 
     run_main=function(
@@ -112,6 +113,28 @@ realign_circlemap=function(
         )
 
         run_job(.env=.this.env)
+
+        .main.step<-.main$steps[[fn]]
+
+        if(annotate){
+                .main$steps[[fn]]$steps<-append(
+                    .main$steps[[fn]]$steps,
+                    annotate_bed_circlemap(
+                        annotation_ref=annotation_ref,
+                        bed=.main.step$out_files$realign_bed,
+                        type="realign",
+                        output_dir=paste0(out_file_dir,"/annotated"),
+                        tmp_dir=tmp_dir,
+                        env_dir=env_dir,
+                        batch_dir=batch_dir,
+                        verbose=verbose,
+                        threads=threads,
+                        ram=ram,
+                        err_msg=err_msg,
+                        executor_id=task_id
+                )
+            )
+            }
 
         .env$.main <- .main
 
@@ -280,8 +303,10 @@ read_extractor_circlemap=function(
 
 
 repeat_caller_circlemap=function(
+    annotation_ref=build_default_reference_list()$HG19$panel$PCF_V3$annotation$genes,
     env_circlemap=build_default_python_enviroment_list()$env_circlemap,
     bam=NULL,
+    annotate=TRUE,
     ...
 ){
 
@@ -306,6 +331,27 @@ repeat_caller_circlemap=function(
             )
 
             run_job(.env=.this.env)
+
+
+            if(annotate){
+                
+                annotate_bed_circlemap(
+                    annotation_ref=annotation_ref,
+                    bed=input,
+                    type="repeat",
+                    output_dir=out_file_dir,
+                    tmp_dir=tmp_dir,
+                    env_dir=env_dir,
+                    batch_dir=batch_dir,
+                    verbose=verbose,
+                    threads=threads,
+                    ram=ram,
+                    err_msg=err_msg,
+                    executor_id=task_id
+                )
+
+
+            }
 
             .env$.main <- .main   
     }
@@ -388,6 +434,7 @@ circdna_circlemap=function(
                 bin_samtools=bin_samtools,
                 bam=normalizePath(input),
                 ref_genome=normalizePath(ref_genome),
+                annotate=annotate,
                 output_dir=paste0(out_file_dir,"/realign_reports"),
                 tmp_dir=tmp_dir,
                 env_dir=env_dir,
@@ -411,6 +458,7 @@ circdna_circlemap=function(
             repeat_caller_circlemap(
                 env_circlemap=env_circlemap,
                 bam=normalizePath(input),
+                annotate=annotate,
                 output_dir=paste0(out_file_dir,"/repeat_reports"),
                 tmp_dir=tmp_dir,
                 env_dir=env_dir,
@@ -546,6 +594,7 @@ annotate_bed_circlemap=function(
         set_main(.env=.this.env)
 
         .main$steps[[fn]]<-.this.env
+        .main.step<- .main$steps[[fn]]
   
         dat=read_bed_circlemap(bed=input,id=output_name,type=type,sep="\t")
         annotation=read.table(annotation_ref,sep="\t",header=TRUE) %>% 
@@ -614,7 +663,7 @@ annotate_bed_circlemap=function(
 
         
         write.table(
-            file=.main$out_files$annot_circ_bed,
+            file=.main.step$out_files$annot_circ_bed,
             summarised_dat,
             sep="\t",
             col.names=TRUE,
