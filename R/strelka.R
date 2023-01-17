@@ -127,7 +127,7 @@ call_variants_strelka=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
-      vars=ifelse(is.null(tumour),"normal","tumour")
+      vars="tumour"
     )
   
     launch(.env=.base.env)
@@ -302,7 +302,7 @@ call_somatic_sv_manta=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
-      vars=ifelse(is.null(tumour),"normal","tumour")
+      vars="tumour"
     )
   
     launch(.env=.base.env)
@@ -636,7 +636,7 @@ call_snvs_strelka=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
-      vars=ifelse(is.null(tumour),"normal","tumour")
+      vars="tumour"
     )
 
     launch(.env=.base.env)
@@ -775,7 +775,7 @@ call_sv_strelka=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
-      vars=ifelse(is.null(tumour),"normal","tumour")
+      vars="tumour"
     )
 
     launch(.env=.base.env)
@@ -1101,7 +1101,7 @@ call_somatic_snvs_strelka=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
-      vars=ifelse(is.null(tumour),"normal","tumour")
+      vars="tumour"
     )
 
     launch(.env=.base.env)
@@ -1424,7 +1424,7 @@ call_germline_snvs_strelka=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
-      vars=ifelse(is.null(tumour),"normal","tumour")
+      vars="tumour"
     )
 
     launch(.env=.base.env)
