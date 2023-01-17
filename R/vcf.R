@@ -120,7 +120,7 @@ add_snv_af_strelka_vcf=function(
   ...
   ){
     
-    build_main=function(.env){
+    run_main=function(.env){
 
         .this.env=environment()
         append_env(to=.this.env,from=.env)
@@ -219,7 +219,7 @@ add_indel_af_strelka_vcf=function(
   ...
   ){
     
-    build_main=function(.env){
+    run_main=function(.env){
 
         .this.env=environment()
         append_env(to=.this.env,from=.env)
@@ -317,7 +317,7 @@ add_sv_af_strelka_vcf=function(
   ...
 ){
     
-    build_main=function(.env){
+    run_main=function(.env){
 
         .this.env=environment()
         append_env(to=.this.env,from=.env)
@@ -606,7 +606,7 @@ variants_by_filters_vcf=function(
   ...
 ){
 
-  build_main=function(.env){
+  run_main=function(.env){
 
     .this.env=environment()
     append_env(to=.this.env,from=.env)
@@ -704,7 +704,7 @@ extract_pass_variants_strelka_vcf=function(
       ...
     ){
 
-    build_main=function(.env){
+    run_main=function(.env){
 
 
       .this.env=environment()
@@ -1062,7 +1062,7 @@ write_vcf=function(
 
 
 
-  build_main=function(.env){
+  run_main=function(.env){
 
 
     .this.env=environment()
