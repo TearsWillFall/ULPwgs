@@ -623,10 +623,13 @@ variants_by_filters_vcf=function(
 
     set_main(.env=.this.env)
 
-    .main$steps[[fn]]<-.this.env
-    output_name=paste0(input_id,".",paste0(filter,collapse="."))
+     output_name=paste0(input_id,".",paste0(filters,collapse="."))
 
-    vcf_dat=read_vcf(vcf=input,sep=sep)
+    .main$steps[[fn]]<-.this.env
+    .main.step<-.main$steps[[fn]]
+   
+
+    vcf_dat=read_vcf(vcf=input)
 
     if(exclusive){
       vcf_dat$body=vcf$body %>% dplyr::filter(lengths(FILTER)==length(filters))
@@ -637,8 +640,8 @@ variants_by_filters_vcf=function(
 
     vcf_dat$descriptors$variants_by_filters<-paste0(filters,collapse=";")
 
-    .main$steps[[fn]]$steps <- append(
-      .main$steps[[fn]]$steps,
+    .main.step$steps <- append(
+      .main.step$steps,
       write_vcf(
         bin_bgzip=bin_bgzip,
         bin_tabix=bin_tabix,
@@ -647,13 +650,14 @@ variants_by_filters_vcf=function(
         output_dir=out_file_dir,
         tmp_dir=tmp_dir,
         env_dir=env_dir,
-        batch_dir=batch_dir
+        batch_dir=batch_dir,
+        err_msg=err_msg
       )
     )
 
-    .this.step=.main$steps[[fn]]$steps$write_vcf
-    .main$steps[[fn]]$out_files=append(
-      .main$steps[[fn]]$out_files,
+    .this.step=.main.step$steps$write_vcf
+    .main.step$out_files=append(
+      .main.step$out_files,
       .this.step$out_files
     )
     .env$.main<-main
@@ -667,7 +671,6 @@ variants_by_filters_vcf=function(
     .env= .base.env,
     vars="vcf"
   )
-
   launch(.env=.base.env)
 
 }
