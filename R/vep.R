@@ -49,10 +49,10 @@ annotate_vep=function(
 
       set_main(.env=.this.env)
 
-      .main$out_files$annotated_vcf=paste0(out_file_dir,"/",id,".annotated.vcf")
+      .main$out_files$vep_vcf=paste0(out_file_dir,"/",input_id,".vep.vcf")
 
       .main$exec_code=paste(bin_vep," -format ",fmt,
-        "-i",vcf,"-o", .main$out_files$annotated_vcf,
+        "-i",vcf,"-o", .main$out_files$vep_vcf,
         "--cache --port 3337 --everything --force_overwrite --vcf --fork ",
         threads," --dir ",cache_vep
       )
@@ -178,7 +178,7 @@ annotate_strelka_vep=function(
       append_env(to=.this.env,from=.env)
 
       set_main(.env=.this.env)
-      output_name=paste0(input_id,".vep.",type)
+      output_name=paste0(input_id,".",type)
       fn=paste0(fn,".",type)
 
       .main$steps[[fn]]<-.this.env
