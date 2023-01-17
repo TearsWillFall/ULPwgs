@@ -725,7 +725,7 @@ extract_pass_variants_strelka_vcf=function(
   
       set_main(.env=.this.env)
 
-      output_name=paste0(input_id,"PASS.",type)
+      output_name=paste0(input_id,".",type)
       fn=paste0(fn,".",type)
 
 
