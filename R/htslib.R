@@ -27,7 +27,7 @@ compress_vcf_htslib=function(
     ...
 ){
    
-    build_main=function(.env){
+    run_main=function(.env){
 
         .this.env=environment()
         append_env(to=.this.env,from=.env)
@@ -112,7 +112,7 @@ uncompress_vcf_htslib=function(
     ...
 ){
 
-    build_main=function(.env){
+    run_main=function(.env){
 
         .this.env=environment()
         append_env(to=.this.env,from=.env)
@@ -171,7 +171,7 @@ index_vcf_htslib=function(
 ){
     
 
-    build_main=function(.env){
+    run_main=function(.env){
         
 
         .this.env=environment()
@@ -245,7 +245,7 @@ compress_and_index_vcf_htslib=function(
 ){
 
 
-    build_main=function(.env){
+    run_main=function(.env){
 
         .this.env=environment()
         append_env(to=.this.env,from=.env)
