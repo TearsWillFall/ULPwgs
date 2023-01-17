@@ -444,7 +444,7 @@ add_af_strelka_vcf=function(
   
       set_main(.env=.this.env)
 
-      output_name=paste0(input_id,".af.",type)
+      output_name=paste0(input_id,".",type)
       fn=paste0(fn,".",type)
 
 
@@ -1192,7 +1192,7 @@ write_vcf=function(
             ram=ram
           ) 
         )
-     .this.step=.main$steps[[fn]]$steps$compress_and_index_vcf_htslib
+     .this.step=.main.step$steps$compress_and_index_vcf_htslib
 
      .main.step$out_files <- .main.step$out_files=append(
       .main.step$out_files,
