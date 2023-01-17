@@ -1149,6 +1149,7 @@ write_vcf=function(
         vcf_body=build_body_vcf(vcf)
         colnames=paste0("#",paste0(names(vcf_body),collapse="\t"))
       }else{
+        index=FALSE
         vcf_body=""
         colnames=paste0("#",paste0(c("CHROM","POS","ID",
         "REF","ALT","QUAL","FILTER","INFO","FORMAT",
@@ -1185,7 +1186,7 @@ write_vcf=function(
         append=TRUE
       )
 
-    
+   
 
       if(compress){
         .main.step$steps<-append(
