@@ -127,6 +127,10 @@ add_snv_af_strelka_vcf=function(
     
         set_main(.env=.this.env)
 
+
+        .main$steps[[fn]]<-.this.env
+        .main.step=.main$steps[[fn]]
+
         vcf_dat=read_vcf(input)
         vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
         vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
@@ -149,8 +153,7 @@ add_snv_af_strelka_vcf=function(
         vcf_dat$descriptors$FORMAT[["AF"]]<-add_af_descriptor()
         
       
-        .main$steps[[fn]]<-.this.env
-        .main.step=.main$steps[[fn]]
+      
 
         .main$steps[[fn]]$steps <- append(
           .main$steps[[fn]]$steps,
@@ -226,6 +229,9 @@ add_indel_af_strelka_vcf=function(
     
         set_main(.env=.this.env)
 
+        .main$steps[[fn]]<-.this.env
+        .main.step=.main$steps[[fn]]
+
         vcf_dat=read_vcf(input)
         vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
         vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
@@ -246,8 +252,7 @@ add_indel_af_strelka_vcf=function(
 
         vcf_dat$descriptors$FORMAT[["AF"]]<-add_af_descriptor()
       
-        .main$steps[[fn]]<-.this.env
-        .main.step=.main$steps[[fn]]
+      
 
         .main$steps[[fn]]$steps <- append(
           .main$steps[[fn]]$steps,
@@ -324,6 +329,9 @@ add_sv_af_strelka_vcf=function(
     
         set_main(.env=.this.env)
 
+        .main$steps[[fn]]<-.this.env
+        .main.step=.main$steps[[fn]]
+
         vcf_dat=read_vcf(input)
         vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
         vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
@@ -361,8 +369,7 @@ add_sv_af_strelka_vcf=function(
         vcf_dat$descriptors$FORMAT[["AFS"]]<-add_afs_descriptor()
         
       
-        .main$steps[[fn]]<-.this.env
-        .main.step=.main$steps[[fn]]
+      
 
         .main$steps[[fn]]$steps <- append(
           .main$steps[[fn]]$steps,
@@ -471,6 +478,8 @@ add_af_strelka_vcf=function(
             executor_id=task_id
           )
         )
+        .this.step=.main.step$steps$add_indel_af_strelka_vcf
+        .main.step$out_files[[type]]=.this.step$out_files
       }else if(type=="indel"){
         .main$steps[[fn]]$steps<-append(
         .main$steps[[fn]]$steps,
@@ -489,6 +498,8 @@ add_af_strelka_vcf=function(
             executor_id=task_id
           )
         )
+        .this.step=.main.step$steps$add_indel_af_strelka_vcf
+        .main.step$out_files[[type]]=.this.step$out_files
       }else if(type=="sv"){
         .main$steps[[fn]]$steps<-append(
         .main$steps[[fn]]$steps,
@@ -507,12 +518,13 @@ add_af_strelka_vcf=function(
             executor_id=task_id
           )
         )
+      .this.step=.main.step$steps$add_sv_af_strelka_vcf
+      .main.step$out_files[[type]]=.this.step$out_files 
       }else{
         stop("Wrong type argument")
       }
 
-      .this.step=.main.step$steps$variants_by_filters_vcf
-      .main.step$out_files[[type]]=.this.step$out_files 
+   
 
       .env$.main<-.main
 
