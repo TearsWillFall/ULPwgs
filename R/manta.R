@@ -50,7 +50,9 @@ call_sv_manta=function(
       .this.env=environment()
       append_env(to=.this.env,from=.env)
       set_main(.env=.this.env)
-      
+    
+      .main$steps[[fn]]<-.this.env
+      .main.step<-.main$steps[[fn]]
 
       if(!is.null(normal)){
 
@@ -214,7 +216,7 @@ call_germline_sv_manta=function(
             .env=.this.env
         )
 
-        .main.step=.main.step
+        .main.step=.main$steps[[fn]]
 
     
         .main.step$steps <- append(
