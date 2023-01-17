@@ -188,7 +188,7 @@ call_germline_sv_manta=function(
 
 
          .main$exec_code=paste0(
-          bin_strelka,
+          bin_manta,
           " --bam ",normalizePath(input),
           " --referenceFasta ", normalizePath(ref_genome) ,
           " --runDir ", out_file_dir, 
@@ -367,7 +367,7 @@ call_somatic_sv_manta=function(
 
 
          .main$exec_code=paste0(
-          bin_strelka,
+          bin_manta,
           " --tumorBam ",input,
           " --normalBam ",normal,
           " --referenceFasta ", ref_genome ,
