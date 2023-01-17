@@ -5,8 +5,10 @@
 \title{Extract Circular DNA Repeat Candidates using Circlemap tool}
 \usage{
 repeat_caller_circlemap(
+  annotation_ref = build_default_reference_list()$HG19$panel$PCF_V3$annotation$genes,
   env_circlemap = build_default_python_enviroment_list()$env_circlemap,
   bam = NULL,
+  annotate = TRUE,
   ...
 )
 }

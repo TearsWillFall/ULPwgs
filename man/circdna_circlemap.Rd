@@ -5,6 +5,7 @@
 \title{Extract Circular DNA Candidates using Circlemap tool}
 \usage{
 circdna_circlemap(
+  annotation_ref = build_default_reference_list()$HG19$panel$PCF_V3$annotation$genes,
   env_circlemap = build_default_python_enviroment_list()$env_circlemap,
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
