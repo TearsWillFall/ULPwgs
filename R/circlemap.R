@@ -667,7 +667,7 @@ annotate_bed_circlemap=function(
         
         write.table(
             file=.main.step$out_files$annot_circ_bed,
-            summarised_dat,
+            x=summarised_dat,
             sep="\t",
             col.names=TRUE,
             row.names=FALSE,

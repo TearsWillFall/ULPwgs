@@ -59,8 +59,6 @@ call_variants_strelka=function(
       set_main(.env=.this.env)
 
       .main$steps[[fn]]<-.this.env
-      tumour<-ifelse(is.null(tumour),input,NULL)
-      normal<-ifelse(is.null(tumour),normal,input)
     
       .main$steps[[fn]]$steps <-append(
             .main$steps[[fn]]$steps,
@@ -71,7 +69,7 @@ call_variants_strelka=function(
                 bin_manta=bin_manta,
                 bin_vep=bin_vep,
                 cache_vep=cache_vep,
-                tumour=tumour,
+                tumour=input,
                 normal=normal,
                 annotate=annotate,
                 tabulate=tabulate,
