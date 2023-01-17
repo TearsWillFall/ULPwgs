@@ -229,7 +229,7 @@ call_somatic_sv_manta=function(
           extract_pass_variants_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf_sv=.main$out_files$vcf_sv_af,
+            vcf=.main.step$out_files$annotated$,
             output_dir=paste0(out_file_dir,"/results"),
             verbose=verbose,
             executor_id=task_id
@@ -237,7 +237,7 @@ call_somatic_sv_manta=function(
         )
 
         .this.step=.main.step$steps$extract_pass_variants_strelka_vcf
-        .main.step$out_files$annotated=append(.main.step$out_files,.this.step$out_files) 
+        .main.step$out_files$annotated=append(.main.step$out_files$annotated,.this.step$out_files) 
 
         if(annotate){
             .main$steps[[fn]]$steps<-append(
@@ -247,17 +247,19 @@ call_somatic_sv_manta=function(
                 bin_bgzip=bin_bgzip,
                 bin_tabix=bin_tabix,
                 cache_vep=cache_vep,
-                vcf_sv=steps[[fn]]$out_file$variants$sv,
+                vcf_sv=steps[[fn]]$out_files,
                 output_dir=paste0(out_file_dir,"/results"),
                 verbose=verbose,
                 executor_id=task_id
             )
           )
+           .this.step=.main.step$steps$annotate_strelka_vep
+          .main.step$out_files$annotated=append(.main.step$out_files$annotated,.this.step$out_files) 
 
         
           if(tabulate){
-              steps[[fn]]<-append(
-                steps[[fn]],
+              steps[[fn]]$steps<-append(
+                steps[[fn]]$steps,
                 tabulate_strelka_vcf(
                   vcf_sv=steps[[fn]]$annotate_strelka_vep$out_file$variants$sv,
                   output_dir=paste0(out_file_dir,"/results"),

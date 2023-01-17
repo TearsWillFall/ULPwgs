@@ -296,7 +296,7 @@ repeat_caller_circlemap=function(
             set_main(.env=.this.env)
     
           
-            .main$out_file=paste0(
+            .main$out_files$realign_bed=paste0(
                 out_file_dir,"/",input_id,".repeat.circ_candidates.bed"
             )
             .main$exec_code=paste(
@@ -307,8 +307,6 @@ repeat_caller_circlemap=function(
 
             run_job(.env=.this.env)
 
-            .main.step=.main$steps[[fn]]
-            .main.step$out_files$realign_bed=.main.step$out_file
             .env$.main <- .main   
     }
 
@@ -368,9 +366,6 @@ circdna_circlemap=function(
         bam=NULL,
         ...
 ){
-
-
-    
 
     run_main=function(
        .env
@@ -541,7 +536,6 @@ annotate_bed_circlemap=function(
 ){
   
   
-
     run_main=function(
         .env
     ){
@@ -629,9 +623,8 @@ annotate_bed_circlemap=function(
         .main$steps[[fn]]<-.this.env
         .main.step=.main$steps[[fn]]
         .main.step$out_files$annot_circ_bed=.main.step$out_file
-
-
         .env$.main <-.main
+
     }
 
 
@@ -639,11 +632,11 @@ annotate_bed_circlemap=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
         .env=.base.env,
-        vars="bam"
+        vars="bed"
     )
 
     launch(.env=.base.env)
-  
+
 
 }
 

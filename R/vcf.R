@@ -160,8 +160,9 @@ add_snv_af_strelka_vcf=function(
             vcf=vcf_dat,
             output_name=paste0(input_id,".af"),
             output_dir=out_file_dir,
-            compress=TRUE,
-            clean=TRUE
+            tmp_dir=tmp_dir,
+            env_dir=env_dir,
+            batch_dir=batch_dir
           )
         )
         
@@ -256,8 +257,9 @@ add_indel_af_strelka_vcf=function(
             vcf=vcf_dat,
             output_name=paste0(input_id,".af"),
             output_dir=out_file_dir,
-            compress=TRUE,
-            clean=TRUE
+            tmp_dir=tmp_dir,
+            env_dir=env_dir,
+            batch_dir=batch_dir
           )
         )
         
@@ -370,8 +372,9 @@ add_sv_af_strelka_vcf=function(
             vcf=vcf_dat,
             output_name=paste0(input_id,".af"),
             output_dir=out_file_dir,
-            compress=TRUE,
-            clean=TRUE
+            tmp_dir=tmp_dir,
+            env_dir=env_dir,
+            batch_dir=batch_dir
           )
         )
         
@@ -455,12 +458,11 @@ add_sv_af_strelka_vcf=function(
                   add_snv_af_strelka_vcf(
                     bin_bgzip=bin_bgzip,
                     bin_tabix=bin_tabix,
-                    vcf=vcf,
-                    compress=TRUE,
-                    index=TRUE,
-                    index_format="tbi",
-                    bgzip_index=FALSE,
-                    clean=TRUE,
+                    vcf=input,
+                    output_dir=out_file_dir,
+                    tmp_dir=tmp_dir,
+                    env_dir=env_dir,
+                    batch_dir=batch_dir,
                     threads=threads,
                     ram=ram,
                     verbose=verbose, 
@@ -478,12 +480,11 @@ add_sv_af_strelka_vcf=function(
                 add_indel_af_strelka_vcf(
                   bin_bgzip=bin_bgzip,
                   bin_tabix=bin_tabix,
-                  vcf=vcf,
-                  compress=TRUE,
-                  index=TRUE,
-                  index_format="tbi",
-                  bgzip_index=FALSE,
-                  clean=TRUE,
+                  vcf=input,
+                  output_dir=out_file_dir,
+                  tmp_dir=tmp_dir,
+                  env_dir=env_dir,
+                  batch_dir=batch_dir,
                   threads=threads,
                   ram=ram,
                   verbose=verbose, 
@@ -501,12 +502,11 @@ add_sv_af_strelka_vcf=function(
                 add_sv_af_strelka_vcf(
                   bin_bgzip=bin_bgzip,
                   bin_tabix=bin_tabix,
-                  vcf=vcf,
-                  compress=TRUE,
-                  index=TRUE,
-                  index_format="tbi",
-                  bgzip_index=FALSE,
-                  clean=TRUE,
+                  vcf=input,
+                  output_dir=out_file_dir,
+                  tmp_dir=tmp_dir,
+                  env_dir=env_dir,
+                  batch_dir=batch_dir,
                   threads=threads,
                   ram=ram,
                   verbose=verbose, 
@@ -623,8 +623,10 @@ variants_by_filters_vcf=function(
     set_main(.env=.this.env)
 
     .main$steps[[fn]]<-.this.env
+    output_name=paste0(input_id,".",paste0(filter,collapse="."))
 
     vcf_dat=read_vcf(vcf=input,sep=sep)
+
     if(exclusive){
       vcf_dat$body=vcf$body %>% dplyr::filter(lengths(FILTER)==length(filters))
     }
@@ -640,13 +642,20 @@ variants_by_filters_vcf=function(
         bin_bgzip=bin_bgzip,
         bin_tabix=bin_tabix,
         vcf=vcf_dat,
-        output_name=paste0(input_id,".",paste0(filter,collapse=".")),
+        output_name=output_name,
         output_dir=out_file_dir,
-        compress=TRUE,
-        clean=FALSE
+        tmp_dir=tmp_dir,
+        env_dir=env_dir,
+        batch_dir=batch_dir
       )
     )
 
+    .this.step=.main$steps[[fn]]$steps$write_vcf
+    .main$steps[[fn]]$out_files=append(
+      .main$steps[[fn]]$out_files,
+      .this.step$out_files
+    )
+    .env$.main<-main
 
   }
 
@@ -720,20 +729,21 @@ extract_pass_variants_strelks_vcf=function(
             variants_by_filters_vcf(
               bin_bgzip=bin_bgzip,
               bin_tabix=bin_tabix,
-              vcf=vcf,
+              vcf=input,
               filters="PASS",
-              output_name=output_name,
               exclusive=TRUE,
               compress=TRUE,
-              clean=TRUE,
+              output_dir=out_file_dir,
+              tmp_dir=tmp_dir,
+              env_dir=env_dir,
+              batch_dir=batch_dir,
               verbose=verbose,
               threads=1,
               ram=1,
               executor_id=task_id,
             )
         )
-        .this.step=.main.step$steps$add_snv_af_strelka_vcf
-        .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
+       
 
       }else if(type=="indel"){
 
@@ -742,20 +752,20 @@ extract_pass_variants_strelks_vcf=function(
               variants_by_filters_vcf(
                 bin_bgzip=bin_bgzip,
                 bin_tabix=bin_tabix,
-                vcf=vcf,
+                vcf=input,
                 filters="PASS",
-                output_name=output_name,
                 exclusive=TRUE,
-                compress=TRUE,
-                clean=TRUE,
+                output_dir=out_file_dir,
+                tmp_dir=tmp_dir,
+                env_dir=env_dir,
                 verbose=verbose,
                 batch_config=batch_config,
-                threads=1,ram=1,mode=mode,
-                executor_id=task_id,
-                time=time,
-                hold=hold
+                threads=1,
+                ram=1,
+                executor_id=task_id
             )
           )
+
         }else if(type=="indel"){
 
           .main$steps[[fn]]$steps<-append(
@@ -763,23 +773,24 @@ extract_pass_variants_strelks_vcf=function(
               variants_by_filters_vcf(
                 bin_bgzip=bin_bgzip,
                 bin_tabix=bin_tabix,
-                vcf=vcf,
+                vcf=input,
                 filters="PASS",
-                output_name=output_name,
                 exclusive=TRUE,
-                compress=TRUE,
-                clean=TRUE,
+                output_dir=out_file_dir,
+                tmp_dir=tmp_dir,
+                env_dir=env_dir,
                 verbose=verbose,
                 threads=1,
                 ram=1,
                 executor_id=task_id
             )
           )
-
       }
 
-      .env$.main<-.main
+      .this.step=.main.step$steps$variants_by_filters_vcf
+      .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
 
+      .env$.main<-.main
 
     }
 
@@ -1098,9 +1109,6 @@ write_vcf=function(
   vcf=NULL,
   compress=TRUE,
   index=TRUE,
-  index_format="tbi",
-  bgzip_index=FALSE,
-  clean=TRUE,
   ...
 ){  
 
@@ -1219,18 +1227,20 @@ write_vcf=function(
           bin_tabix=bin_tabix,
           vcf=.main.step$out_files,
           compress=compress,
-          index=index,index_format=index_format,
+          index=index,
+          index_format=index_format,
           bgzip_index=bgzip_index,
           output_dir=out_file_dir,
+          tmp_dir=tmp_dir,
+          env_dir=env_dir,
           output_name=input_id,
-          clean=clean,
           verbose=verbose,
           threads=threads,
           ram=ram
         ) 
       )
      .this.step=.main$steps[[fn]]$steps$compress_and_index_vcf_htslib
-     
+
      .main.step$out_files <- .main.step$out_files=append(
       .main.step$out_files,
       .this.step$out_files
