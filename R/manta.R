@@ -208,7 +208,7 @@ call_germline_sv_manta=function(
               indel_candidate=paste0(out_file_dir,"/results/variants/candidateSmallIndels.vcf.gz"),
               indel_candidate_idx=paste0(out_file_dir,"/results/variants/candidateSmallIndels.vcf.gz.tbi"),
               diploid_sv=paste0(out_file_dir,"/results/variants/diploidSV.vcf.gz"),
-              diploid_sv_idx=paste0(out_file_dir,"/results/variants/diploidSV.vcf.gz.tbi"),
+              diploid_sv_idx=paste0(out_file_dir,"/results/variants/diploidSV.vcf.gz.tbi")
         )
 
         run_job(
@@ -392,7 +392,7 @@ call_somatic_sv_manta=function(
               sv_candidate=paste0(out_file_dir,"/results/variants/candidateSV.vcf.gz"),
               sv_candidate_index=paste0(out_file_dir,"/results/variants/candidateSV.vcf.gz.tbi"),
               diploid_sv=paste0(out_file_dir,"/results/variants/diploidSV.vcf.gz"),
-              diploid_sv_idx=paste0(out_file_dir,"/results/variants/diploidSV.vcf.gz.tbi"),
+              diploid_sv_idx=paste0(out_file_dir,"/results/variants/diploidSV.vcf.gz.tbi")
         )
 
         run_job(
