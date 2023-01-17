@@ -593,6 +593,12 @@ annotate_bed_circlemap=function(
         append_env(to=.this.env,from=.env)
         set_main(.env=.this.env)
 
+
+        .main$out_files$annot_circ_bed=paste0(
+            out_file_dir,"/",input_id,".",type,
+            ".circ_candidates.annotated.bed"
+        )
+
         .main$steps[[fn]]<-.this.env
         .main.step<- .main$steps[[fn]]
   
@@ -654,12 +660,6 @@ annotate_bed_circlemap=function(
 
         summarised_dat=dplyr::bind_rows(summarised_dat) %>% 
         dplyr::arrange(gtools::mixedsort(chr))
-
-        
-        .main$out_files$annot_circ_bed=paste0(
-            out_file_dir,"/",input_id,".",type,
-            ".circ_candidates.annotated.bed")
-
 
         
         write.table(
