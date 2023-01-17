@@ -22,6 +22,7 @@
 
 compress_vcf_htslib=function(
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+    bin_tabix=build_default_tool_binary_list()$bin_tabix,
     vcf=NULL,
     ...
 ){
@@ -54,12 +55,12 @@ compress_vcf_htslib=function(
             .main$steps[[fn]]$steps<-append(
                 .main$steps[[fn]]$steps,
                     index_vcf_htslib(
-                    bin_tabix=bin_tabix,
-                    vcf=.main.step$out_files$bgzip_vcf,
-                    index_format=index_format,
-                    verbose=verbose,
-                    threads=threads,ram=ram,
-                    executor_id=task_id
+                        bin_tabix=bin_tabix,
+                        vcf=.main.step$out_files$bgzip_vcf,
+                        index_format=index_format,
+                        verbose=verbose,
+                        threads=threads,ram=ram,
+                        executor_id=task_id
                 )
             )
 
@@ -289,8 +290,6 @@ compress_and_index_vcf_htslib=function(
             .this.step=.main.step$steps$index_vcf_htslib
             .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
         }
-
-        
 
         .env$.main<-.main
 
