@@ -1064,6 +1064,18 @@ write_vcf=function(
 
   build_main=function(.env){
 
+
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+
+    set_main(.env=.this.env)
+
+
+    .main$steps[[fn]] <- .this.env
+    .main.step=.main$steps[[fn]]
+
+    .main.step$out_files$vcf <- paste0(out_file_dir,"/",input_id,".vcf")
+
       build_header_vcf=function(vcf){
         header=unlist(lapply(names(vcf$descriptors),
           FUN=function(col){
@@ -1076,117 +1088,110 @@ write_vcf=function(
                   ",",paste0(names(val[[id]]),"=",val[[id]],collapse=","),">")
               })
             }else{
-              paste0("##",col,"=",val)      }
+              paste0("##",col,"=",val) }
           }
         )) 
       }
 
       build_body_vcf=function(vcf){
 
-      to_nest=c("FORMAT",vcf$samples)
-      names(to_nest)=to_nest
-      vcf_body=vcf$body %>% unnest_vcf_body() %>% 
-      tidyr::pivot_wider(names_from=SAMPLE,values_from=VALUE) %>%
-      dplyr::group_by(dplyr::across(-to_nest)) %>% 
-      dplyr::summarise(dplyr::across(to_nest,list))
+        to_nest=c("FORMAT",vcf$samples)
+        names(to_nest)=to_nest
+        vcf_body=vcf$body %>% unnest_vcf_body() %>% 
+        tidyr::pivot_wider(names_from=SAMPLE,values_from=VALUE) %>%
+        dplyr::group_by(dplyr::across(-to_nest)) %>% 
+        dplyr::summarise(dplyr::across(to_nest,list))
 
-      vcf_body=vcf_body%>% dplyr::rowwise() %>%
-        dplyr::mutate(across(c("FORMAT",all_of(vcf$samples)),
-        function(x) paste0(unlist(x),collapse=":")))%>%
-        dplyr::mutate(FILTER=paste0(FILTER,collapse=";"),
-        INFO=paste0(paste0(names(unlist(INFO)),
-        ifelse(unlist(INFO)!="","=",""),unlist(INFO)),collapse=";"))
+        vcf_body=vcf_body%>% dplyr::rowwise() %>%
+          dplyr::mutate(across(c("FORMAT",all_of(vcf$samples)),
+          function(x) paste0(unlist(x),collapse=":")))%>%
+          dplyr::mutate(FILTER=paste0(FILTER,collapse=";"),
+          INFO=paste0(paste0(names(unlist(INFO)),
+          ifelse(unlist(INFO)!="","=",""),unlist(INFO)),collapse=";"))
+        
+        sort_vcf_body=function(vcf_body,vcf_descriptors){
+            chrom=data.frame(CHROM=names(vcf_descriptors$contig),
+            order=seq(1,length(vcf_descriptors$contig)))
+            vcf_body=dplyr::left_join(vcf_body,chrom) %>% 
+            dplyr::arrange(order,POS) %>% 
+            dplyr::select(-order)
+            
+            return(vcf_body)
+          }
       
-      sort_vcf_body=function(vcf_body,vcf_descriptors){
-          chrom=data.frame(CHROM=names(vcf_descriptors$contig),
-          order=seq(1,length(vcf_descriptors$contig)))
-          vcf_body=dplyr::left_join(vcf_body,chrom) %>% 
-          dplyr::arrange(order,POS) %>% 
-          dplyr::select(-order)
-          
-          return(vcf_body)
-        }
-    
-      return(sort_vcf_body(vcf_body,vcf$descriptors))
+        return(sort_vcf_body(vcf_body,vcf$descriptors))
     }
 
 
 
-    .this.env=environment()
-    append_env(to=.this.env,from=.env)
-
-    set_main(.env=.this.env)
-
-    .main$out_files$vcf<=paste0(out_file_dir,"/",input_id,".vcf")
-
-    ###Construct VCF header
-    vcf_header=build_header_vcf(vcf)
-
-    ###Construct VCF body
-    if(nrow(vcf$body)>1){
-      vcf_body=build_body_vcf(vcf)
-      colnames=paste0("#",paste0(names(vcf_body),collapse="\t"))
-    }else{
-      vcf_body=""
-      colnames=paste0("#",paste0(c("CHROM","POS","ID",
-      "REF","ALT","QUAL","FILTER","INFO","FORMAT",
-       vcf$samples),collapse="\t"))
-    }
     
 
-    write.table(
-      x=vcf_header,
-      file=.main$out_file,
-      sep="\t",
-      quote=FALSE,
-      row.names=FALSE,
-      col.names=FALSE,
-    )
+      ###Construct VCF header
+      vcf_header=build_header_vcf(vcf)
 
-    write.table(
-      x=colnames,
-      file=.main$out_file,
-      sep="\t",
-      quote=FALSE,
-      row.names=FALSE,
-      col.names=FALSE,
-      append=TRUE
-    )
+      ###Construct VCF body
+      if(nrow(vcf$body)>1){
+        vcf_body=build_body_vcf(vcf)
+        colnames=paste0("#",paste0(names(vcf_body),collapse="\t"))
+      }else{
+        vcf_body=""
+        colnames=paste0("#",paste0(c("CHROM","POS","ID",
+        "REF","ALT","QUAL","FILTER","INFO","FORMAT",
+        vcf$samples),collapse="\t"))
+      }
+      
 
-    write.table(
-      x=vcf_body,
-      file=.main$out_file,
-      sep="\t",
-      quote=FALSE,
-      row.names=FALSE,
-      col.names=FALSE,
-      append=TRUE
-    )
-
-
-    .main$steps[[fn]]<-.this.env
-    .main.step=.main$steps[[fn]]
-
-     if(compress){
-      .main$steps[[fn]]$steps<-append(
-        .main$steps[[fn]]$steps,
-        compress_and_index_vcf_htslib(
-          bin_bgzip=bin_bgzip,
-          bin_tabix=bin_tabix,
-          vcf=.main.step$out_files,
-          compress=compress,
-          index=index,
-          index_format=index_format,
-          bgzip_index=bgzip_index,
-          output_dir=out_file_dir,
-          tmp_dir=tmp_dir,
-          env_dir=env_dir,
-          output_name=input_id,
-          verbose=verbose,
-          threads=threads,
-          ram=ram
-        ) 
+      write.table(
+        x=vcf_header,
+        file=.main.step$out_files$vcf,
+        sep="\t",
+        quote=FALSE,
+        row.names=FALSE,
+        col.names=FALSE,
       )
+
+      write.table(
+        x=colnames,
+        file=.main.step$out_files$vcf,
+        sep="\t",
+        quote=FALSE,
+        row.names=FALSE,
+        col.names=FALSE,
+        append=TRUE
+      )
+
+      write.table(
+        x=vcf_body,
+        file=.main.step$out_files$vcf,
+        sep="\t",
+        quote=FALSE,
+        row.names=FALSE,
+        col.names=FALSE,
+        append=TRUE
+      )
+
+    
+
+      if(compress){
+        .main$steps[[fn]]$steps<-append(
+          .main$steps[[fn]]$steps,
+          compress_and_index_vcf_htslib(
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            vcf=.main.step$out_files,
+            compress=compress,
+            index=index,
+            index_format=index_format,
+            bgzip_index=bgzip_index,
+            output_dir=out_file_dir,
+            tmp_dir=tmp_dir,
+            env_dir=env_dir,
+            output_name=input_id,
+            verbose=verbose,
+            threads=threads,
+            ram=ram
+          ) 
+        )
      .this.step=.main$steps[[fn]]$steps$compress_and_index_vcf_htslib
 
      .main.step$out_files <- .main.step$out_files=append(
