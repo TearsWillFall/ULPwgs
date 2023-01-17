@@ -478,7 +478,7 @@ add_af_strelka_vcf=function(
             executor_id=task_id
           )
         )
-        .this.step=.main.step$steps$add_indel_af_strelka_vcf
+        .this.step=.main.step$steps$add_snv_af_strelka_vcf
         .main.step$out_files[[type]]=.this.step$out_files
       }else if(type=="indel"){
         .main$steps[[fn]]$steps<-append(
