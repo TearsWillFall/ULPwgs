@@ -30,6 +30,7 @@ annotate_vep=function(
     bin_tabix=build_default_tool_binary_list()$bin_tabix,
     cache_vep=build_default_cache_list()$cache_vep,
     vcf=NULL,
+    tabulate=TRUE,
     fmt="vcf",
     ...
 ){
@@ -57,28 +58,55 @@ annotate_vep=function(
 
 
       run_job(.this.env)
+      .main.step=.main$steps[[fn]]
 
-     if(compress){
-      .main$steps[[fn]]$steps<-append(
-        .main$steps[[fn]]$steps,
-        compress_and_index_vcf_htslib(
-          bin_bgzip=bin_bgzip,
-          bin_tabix=bin_tabix,
-          vcf=.main.step$out_files,
-          compress=compress,
-          index=index,
-          index_format=index_format,
-          bgzip_index=bgzip_index,
-          output_dir=out_file_dir,
-          tmp_dir=tmp_dir,
-          env_dir=env_dir,
-          output_name=input_id,
-          verbose=verbose,
-          threads=threads,
-          ram=ram
-        ) 
-      )
-     .this.step=.main$steps[[fn]]$steps$compress_and_index_vcf_htslib
+
+      if(tabulate){
+              .main.step$steps<-append(
+                .main.step$steps,
+                tabulate_vcf(
+                  vcf=.main.step$out_files,
+                  output_dir=out_file_dir,
+                  tmp_dir=tmp_dir,
+                  env_dir=env_dir,
+                  batch_dir=batch_dir,
+                  err_msg=err_msg,
+                  threads=threads,
+                  ram=ram,
+                  verbose=verbose,
+                  executor_id=task_id
+              )
+            )
+
+          .this.step=.main.step$steps$tabulate_vcf
+          .main.step$out_files <- append(
+            .main.step$out_files,
+            .this.step$out_files
+          )
+      }
+
+      if(compress){
+          .main.step$steps<-append(
+            .main.step$steps,
+            compress_and_index_vcf_htslib(
+              bin_bgzip=bin_bgzip,
+              bin_tabix=bin_tabix,
+              vcf=.main.step$out_files,
+              compress=compress,
+              index=index,
+              index_format=index_format,
+              bgzip_index=bgzip_index,
+              output_dir=out_file_dir,
+              tmp_dir=tmp_dir,
+              env_dir=env_dir,
+              batch_dir=batch_dir,
+              output_name=input_id,
+              verbose=verbose,
+              threads=threads,
+              ram=ram
+            ) 
+        )
+     .this.step=.main.step$steps$compress_and_index_vcf_htslib
      .main.step$out_files <- append(
       .main.step$out_files,
       .this.step$out_files
@@ -87,6 +115,17 @@ annotate_vep=function(
     .env$.main<-.main
 
   }
+
+
+  .base.env=environment()
+  list2env(list(...),envir=.base.env)
+  set_env_vars(
+      .env=.base.env,
+      vars="vcf"
+  )
+
+  launch(.env=.base.env)
+
 
 
 }
@@ -125,6 +164,7 @@ annotate_strelka_vep=function(
     cache_vep=build_default_cache_list()$cache_vep,
     vcf=NULL,
     fmt="vcf",
+    tabulate=TRUE,
     type="snv",
     ...
 ){
@@ -153,6 +193,7 @@ annotate_strelka_vep=function(
           bin_vep=bin_vep,
           cache_vep=cache_vep,
           vcf=input,
+          tabulate=tabulate,
           compress=compress,
           index=index,
           index_format=index_format,
@@ -161,6 +202,7 @@ annotate_strelka_vep=function(
           output_name=output_name,
           tmp_dir=tmp_dir,
           env_dir=env_dir,
+          batch_dir=batch_dir,
           verbose=verbose,
           threads=threads,
           ram=ram
@@ -168,7 +210,7 @@ annotate_strelka_vep=function(
       )
 
      .this.step=.main$steps$annotate_vep
-     .main.step$out_files[[type]] <-.this.step$out_files
+     .main.step$out_files[[type]] <- .this.step$out_files
      .env$.main<-.main
 
    }

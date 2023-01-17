@@ -898,7 +898,6 @@ tabulate_vcf=function(
 
         .main$steps[[fn]]<-.this.env
     
-
         .env$.main<- .main 
 
     }
