@@ -88,10 +88,6 @@ annotate_vep=function(
 
   }
 
-  
-
-
-
 
 }
 
@@ -174,7 +170,7 @@ annotate_strelka_vep=function(
      .this.step=.main$steps$annotate_vep
      .main.step$out_files[[type]] <-.this.step$out_files
      .env$.main<-.main
-     
+
    }
 
 

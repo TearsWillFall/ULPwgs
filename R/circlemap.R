@@ -544,7 +544,6 @@ annotate_bed_circlemap=function(
         append_env(to=.this.env,from=.env)
         set_main(.env=.this.env)
   
-
         dat=read_bed_circlemap(bed=input,id=output_name,type=type,sep="\t")
         annotation=read.table(annotation_ref,sep="\t",header=TRUE) %>% 
             dplyr::select(chr,start,end,gene_id)
@@ -605,14 +604,14 @@ annotate_bed_circlemap=function(
         dplyr::arrange(gtools::mixedsort(chr))
 
         
-        .main$out_file=paste0(
+        .main$out_files$annot_circ_bed=paste0(
             out_file_dir,"/",input_id,
             ".circular_",type,".annotated.bed")
 
 
         
         write.table(
-            file=.main$steps$out_file,
+            file=.main$out_files$annot_circ_bed,
             summarised_dat,
             sep="\t",
             col.names=TRUE,
@@ -621,8 +620,6 @@ annotate_bed_circlemap=function(
         )
 
         .main$steps[[fn]]<-.this.env
-        .main.step=.main$steps[[fn]]
-        .main.step$out_files$annot_circ_bed=.main.step$out_file
         .env$.main <-.main
 
     }
