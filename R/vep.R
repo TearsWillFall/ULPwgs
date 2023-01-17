@@ -31,6 +31,7 @@ annotate_vep=function(
     cache_vep=build_default_cache_list()$cache_vep,
     vcf=NULL,
     tabulate=TRUE,
+    compress=TRUE,
     fmt="vcf",
     ...
 ){
@@ -194,7 +195,6 @@ annotate_strelka_vep=function(
           cache_vep=cache_vep,
           vcf=input,
           tabulate=tabulate,
-          compress=compress,
           index=index,
           index_format=index_format,
           bgzip_index=bgzip_index,
