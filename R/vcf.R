@@ -527,15 +527,15 @@ add_af_strelka_vcf=function(
       .env$.main<-.main
 
 
-  }
-  .base.env=environment()
-  list2env(list(...),envir=.base.env)
-  set_env_vars(
-    .env= .base.env,
-    vars="vcf"
-  )
+    }
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="vcf"
+    )
 
-  launch(.env=.base.env)
+    launch(.env=.base.env)
 
 }
 
