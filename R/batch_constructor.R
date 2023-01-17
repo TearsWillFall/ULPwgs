@@ -619,21 +619,21 @@ set_env_vars=function(
           dir=output_dir
     )
 
-    if(!is.null(tmp_dir)){
+    if(is.null(tmp_dir)){
         tmp_dir <- set_dir(
           dir=out_file_dir,
           name="tmp"
       )
     }
 
-    if(!is.null(env_dir)){
+    if(is.null(env_dir)){
           env_dir<- set_dir(
             dir=out_file_dir,
             name="env"
         )
       }
 
-    if(!is.null(batch_dir)){
+    if(is.null(batch_dir)){
         batch_dir<- set_dir(
           dir=out_file_dir,
           name="batch"
