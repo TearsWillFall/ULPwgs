@@ -549,7 +549,6 @@ set_env_vars=function(
   output_name=NULL,
   verbose=FALSE,
   bgzip_index=FALSE,
-  index=TRUE,
   index_format="tbi",
   clean=FALSE,
   batch_config=build_default_preprocess_config(),

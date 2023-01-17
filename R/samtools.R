@@ -137,6 +137,7 @@ new_sort_and_index_bam_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam=NULL,
   sort=TRUE,
+  index=TRUE,
   coord_sort=TRUE,
   stats=TRUE,
   ...
