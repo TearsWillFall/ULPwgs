@@ -24,6 +24,7 @@ compress_vcf_htslib=function(
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
     bin_tabix=build_default_tool_binary_list()$bin_tabix,
     vcf=NULL,
+    index=TRUE,
     ...
 ){
    
@@ -245,6 +246,7 @@ compress_and_index_vcf_htslib=function(
     bin_tabix=build_default_tool_binary_list()$bin_tabix,
     vcf=NULL,
     compress=TRUE,
+    index=TRUE,
     ...
 ){
 
