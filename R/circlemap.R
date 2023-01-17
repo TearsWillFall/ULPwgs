@@ -49,8 +49,9 @@ realign_circlemap=function(
         set_main(.env=.this.env)
 
 
-        .main$out_file=paste0(out_file_dir,"/",input_id,".realign.circ_candidates.bed")
-        .main$out_files$realign_bed <- .main$out_file
+        .main$out_files$realign_bed=paste0(
+            out_file_dir,"/",input_id,".realign.circ_candidates.bed"
+        )
 
             
         .main$steps <- append(.main$steps,
@@ -117,8 +118,8 @@ realign_circlemap=function(
         .main.step<-.main$steps[[fn]]
 
         if(annotate){
-                .main$steps[[fn]]$steps<-append(
-                    .main$steps[[fn]]$steps,
+                .main.step$steps<-append(
+                    .main.step$steps,
                     annotate_bed_circlemap(
                         annotation_ref=annotation_ref,
                         bed=.main.step$out_files$realign_bed,
@@ -209,26 +210,26 @@ read_extractor_circlemap=function(
 
         set_main(.env=.this.env)
     
-        .main$out_file=paste0(
+        .main$out_files$unsrt_cbam=paste0(
             out_file_dir,"/",input_id,".circular_read_candidates.bam"
         )
 
        .main$exec_code=paste(
             set_conda_envir(env_circlemap),
             "Circle-Map ReadExtractor -i ",normalizePath(input), 
-            " -o ", .main$out_file," -dir /"
+            " -o ", .main$out_files$unsrt_cbam," -dir /"
         )
 
         run_job(.env=.this.env)
 
         .main.step=.main$steps[[fn]]
-        .main.step$out_files$unsrt_cbam=.main.step$out_file
+    
 
-        .main$steps[[fn]]$steps<-append(
-           .main$steps[[fn]]$steps,
+        .main.step$steps<-append(
+           .main.step$steps,
                 new_sort_and_index_bam_samtools(
                     bin_samtools=bin_samtools,
-                    bam=.main$out_file,
+                    bam=.main.step$out_files$unsrt_cbam,
                     output_dir=out_file_dir,
                     tmp_dir=tmp_dir,
                     env_dir=env_dir,
@@ -331,23 +332,27 @@ repeat_caller_circlemap=function(
             )
 
             run_job(.env=.this.env)
+            .main.step=.main$steps[[fn]]
+    
 
 
             if(annotate){
-                
-                annotate_bed_circlemap(
-                    annotation_ref=annotation_ref,
-                    bed=input,
-                    type="repeat",
-                    output_dir=paste0(out_file_dir,"/annotated"),
-                    tmp_dir=tmp_dir,
-                    env_dir=env_dir,
-                    batch_dir=batch_dir,
-                    verbose=verbose,
-                    threads=threads,
-                    ram=ram,
-                    err_msg=err_msg,
-                    executor_id=task_id
+                .main.step$steps<-append(
+                    .main.step$steps,
+                    annotate_bed_circlemap(
+                        annotation_ref=annotation_ref,
+                        bed=input,
+                        type="repeat",
+                        output_dir=paste0(out_file_dir,"/annotated"),
+                        tmp_dir=tmp_dir,
+                        env_dir=env_dir,
+                        batch_dir=batch_dir,
+                        verbose=verbose,
+                        threads=threads,
+                        ram=ram,
+                        err_msg=err_msg,
+                        executor_id=task_id
+                    )
                 )
 
 
@@ -452,8 +457,8 @@ circdna_circlemap=function(
         .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
 
 
-        .main$steps[[fn]]$steps  <- append(
-            .main$steps[[fn]]$steps,
+        .main.step$steps  <- append(
+            .main.step$steps,
             repeat_caller_circlemap(
                 env_circlemap=env_circlemap,
                 bam=normalizePath(input),

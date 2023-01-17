@@ -461,8 +461,8 @@ add_af_strelka_vcf=function(
       if(type=="snv"){
 
 
-        .main$steps[[fn]]$steps<-append(
-        .main$steps[[fn]]$steps,
+        .main.step$steps<-append(
+        .main.step$steps,
           add_snv_af_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
@@ -481,8 +481,8 @@ add_af_strelka_vcf=function(
         .this.step=.main.step$steps$add_snv_af_strelka_vcf
         .main.step$out_files[[type]]=.this.step$out_files
       }else if(type=="indel"){
-        .main$steps[[fn]]$steps<-append(
-        .main$steps[[fn]]$steps,
+        .main.step$steps<-append(
+        .main.step$steps,
           add_indel_af_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
@@ -501,8 +501,8 @@ add_af_strelka_vcf=function(
         .this.step=.main.step$steps$add_indel_af_strelka_vcf
         .main.step$out_files[[type]]=.this.step$out_files
       }else if(type=="sv"){
-        .main$steps[[fn]]$steps<-append(
-        .main$steps[[fn]]$steps,
+        .main.step$steps<-append(
+        .main.step$steps,
           add_sv_af_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
@@ -612,18 +612,20 @@ variants_by_filters_vcf=function(
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
   vcf=NULL,
   filters="PASS",
-  exclusive=TRUE,
+  exclusive=FALSE,
   ...
 ){
 
-  run_main=function(.env){
+  run_main=function(
+    .env
+  ){
 
     .this.env=environment()
     append_env(to=.this.env,from=.env)
 
     set_main(.env=.this.env)
 
-     output_name=paste0(input_id,".",paste0(filters,collapse="."))
+    output_name=paste0(input_id,".",paste0(filters,collapse="."))
 
     .main$steps[[fn]]<-.this.env
     .main.step<-.main$steps[[fn]]
@@ -660,7 +662,7 @@ variants_by_filters_vcf=function(
       .main.step$out_files,
       .this.step$out_files
     )
-    .env$.main<-main
+    .env$.main<-.main
 
   }
 
@@ -734,8 +736,8 @@ extract_pass_variants_strelka_vcf=function(
  
      
 
-     .main$steps[[fn]]$steps<-append(
-        .main$steps[[fn]]$steps,
+     .main.step$steps<-append(
+        .main.step$steps,
           variants_by_filters_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,

@@ -157,8 +157,8 @@ new_sort_and_index_bam_samtools=function(
     .main.step=.main$steps[[fn]]
   
     if(sort){
-        .main$steps[[fn]]$steps <-append(
-          .main$steps[[fn]]$steps ,
+        .main.step$steps <-append(
+          .main.step$steps ,
             new_sort_bam_samtools(
               bin_samtools=bin_samtools,
               bam=input,
@@ -181,8 +181,8 @@ new_sort_and_index_bam_samtools=function(
           .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
 
     }else{
-        .main$steps[[fn]]$steps  <-append(
-          .main$steps[[fn]]$steps ,
+        .main.step$steps  <-append(
+          .main.step$steps ,
             new_index_bam_samtools(
               bin_samtools=bin_samtools,
               bam=input,
@@ -370,8 +370,8 @@ new_sort_bam_samtools=function(
 
       if(index & coord_sort){
 
-          .main$steps[[fn]]$steps <-append(
-            .main$steps[[fn]]$steps ,
+          .main.step$steps <-append(
+            .main.step$steps ,
               new_index_bam_samtools(
                   bin_samtools=bin_samtools,
                   bam=.main$out_file,
@@ -392,8 +392,8 @@ new_sort_bam_samtools=function(
       }
 
       if(stats){
-          .main$steps[[fn]]$steps <-append(
-           .main$steps[[fn]]$steps ,
+          .main.step$steps <-append(
+           .main.step$steps ,
               new_stats_bam_samtools(
                   bin_samtools=bin_samtools,
                   bam=.main$out_file,
@@ -572,8 +572,8 @@ new_index_bam_samtools=function(
     .main.step$out_files$index_bam=.main.step$out_file
 
     if(stats){
-      .main$steps[[fn]]$steps<-append(
-       .main$steps[[fn]]$steps,
+      .main.step$steps<-append(
+       .main.step$steps,
         new_stats_bam_samtools(
                   bin_samtools=bin_samtools,
                   bam=input,
@@ -729,8 +729,8 @@ new_stats_bam_samtools=function(
     
 
     if(stats=="all"|stats=="flag"){
-         .main$steps[[fn]]$steps<-append(
-           .main$steps[[fn]]$steps,
+         .main.step$steps<-append(
+           .main.step$steps,
             new_flag_stats_samtools(
               bin_samtools=bin_samtools,
               bam=input,
@@ -750,8 +750,8 @@ new_stats_bam_samtools=function(
     } 
 
     if(stats=="all"|stats=="index"){
-       .main$steps[[fn]]$steps<-append(
-         .main$steps[[fn]]$steps,
+       .main.step$steps<-append(
+         .main.step$steps,
           new_index_stats_samtools(
             bin_samtools=bin_samtools,
             bam=input,
