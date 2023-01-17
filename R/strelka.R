@@ -47,8 +47,6 @@ call_variants_strelka=function(
 ){
 
 
-
-
     run_main=function(
       .env
     ){
@@ -103,7 +101,7 @@ call_variants_strelka=function(
               annotate=annotate,
               tabulate=tabulate,
               indel_candidates=.main.step$out_files$indel_candidates,
-              tumour=tumour,
+              tumour=input,
               normal=normal,
               ref_genome=ref_genome,
               output_dir=paste0(
@@ -559,10 +557,8 @@ call_snvs_strelka=function(
       set_main(.env=.this.env)
 
       .main$steps[[fn]]<-.this.env
-      tumour<-ifelse(is.null(tumour),input,NULL)
-      normal<-ifelse(is.null(tumour),normal,input)
-    
-
+   
+  
       if(!is.null(normal)){
 
         if(!is.null(tumour)){
@@ -576,7 +572,7 @@ call_snvs_strelka=function(
                 bin_tabix=bin_tabix,
                 bin_vep=bin_vep,
                 cache_vep=cache_vep,
-                tumour=tumour,
+                tumour=input,
                 normal=normal,
                 annotate=annotate,
                 tabulate=tabulate,
@@ -703,8 +699,7 @@ call_sv_strelka=function(
       .this.env=environment()
       append_env(to=.this.env,from=.env)
       set_main(.env=.this.env)
-      tumour<-ifelse(is.null(tumour),input,NULL)
-      normal<-ifelse(is.null(tumour),normal,input)
+      
 
       if(!is.null(normal)){
 
