@@ -452,7 +452,6 @@ circdna_circlemap=function(
         .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
 
 
-
         .main$steps[[fn]]$steps  <- append(
             .main$steps[[fn]]$steps,
             repeat_caller_circlemap(

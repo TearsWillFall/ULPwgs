@@ -42,7 +42,6 @@ call_sv_manta=function(
     tabulate=TRUE,
     ...
 ){
-  
 
 
     run_main=function(

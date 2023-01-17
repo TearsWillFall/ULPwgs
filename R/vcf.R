@@ -167,7 +167,7 @@ add_snv_af_strelka_vcf=function(
         )
         
         .this.step=.main.step$steps$write_vcf
-        .main.step$out_files$snv=.this.step$out_files
+        .main.step$out_files=.this.step$out_files
         .env$.main<-.main
   }
 
@@ -264,7 +264,7 @@ add_indel_af_strelka_vcf=function(
         )
         
         .this.step=.main.step$steps$write_vcf
-        .main.step$out_files$indel=.this.step$out_files
+        .main.step$out_files=.this.step$out_files
         .env$.main<-.main
   }
 
@@ -379,7 +379,7 @@ add_sv_af_strelka_vcf=function(
         )
         
         .this.step=.main.step$steps$write_vcf
-        .main.step$out_files$sv=.this.step$out_files
+        .main.step$out_files=.this.step$out_files
         .env$.main<-.main
 
     }
