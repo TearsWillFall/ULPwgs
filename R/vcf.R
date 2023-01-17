@@ -1194,7 +1194,7 @@ write_vcf=function(
         )
      .this.step=.main.step$steps$compress_and_index_vcf_htslib
 
-     .main.step$out_files <- .main.step$out_files=append(
+     .main.step$out_files <- append(
       .main.step$out_files,
       .this.step$out_files
       )

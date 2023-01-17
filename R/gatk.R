@@ -3938,7 +3938,7 @@ multisample_haplotypecaller_gatk=function(
                     file_info[[col]]<<-get(col)
                 }
 
-           
+      
             })
         
             job_report<-parallel_samples_haplotypecaller_gatk(
