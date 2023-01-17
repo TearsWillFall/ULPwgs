@@ -62,11 +62,42 @@ annotate_vep=function(
       .main.step=.main$steps[[fn]]
 
 
-      if(tabulate){
+   
+
+      if(compress){
+          .main.step$steps<-append(
+            .main.step$steps,
+            compress_and_index_vcf_htslib(
+              bin_bgzip=bin_bgzip,
+              bin_tabix=bin_tabix,
+              vcf=.main$out_files$vep_vcf,
+              compress=compress,
+              index_format=index_format,
+              bgzip_index=bgzip_index,
+              output_dir=out_file_dir,
+              tmp_dir=tmp_dir,
+              env_dir=env_dir,
+              batch_dir=batch_dir,
+              output_name=input_id,
+              verbose=verbose,
+              threads=threads,
+              ram=ram
+            ) 
+        )
+        .this.step=.main.step$steps$compress_and_index_vcf_htslib
+        .main.step$out_files <- append(
+          .main.step$out_files,
+          .this.step$out_files
+          )
+    }
+
+
+
+       if(tabulate){
               .main.step$steps<-append(
                 .main.step$steps,
                 tabulate_vcf(
-                  vcf=.main.step$out_files,
+                  vcf=.main$out_files$vep_vcf,
                   output_dir=out_file_dir,
                   tmp_dir=tmp_dir,
                   env_dir=env_dir,
@@ -85,33 +116,6 @@ annotate_vep=function(
             .this.step$out_files
           )
       }
-
-      if(compress){
-          .main.step$steps<-append(
-            .main.step$steps,
-            compress_and_index_vcf_htslib(
-              bin_bgzip=bin_bgzip,
-              bin_tabix=bin_tabix,
-              vcf=.main.step$out_files,
-              compress=compress,
-              index_format=index_format,
-              bgzip_index=bgzip_index,
-              output_dir=out_file_dir,
-              tmp_dir=tmp_dir,
-              env_dir=env_dir,
-              batch_dir=batch_dir,
-              output_name=input_id,
-              verbose=verbose,
-              threads=threads,
-              ram=ram
-            ) 
-        )
-     .this.step=.main.step$steps$compress_and_index_vcf_htslib
-     .main.step$out_files <- append(
-      .main.step$out_files,
-      .this.step$out_files
-      )
-    }
     .env$.main<-.main
 
   }
