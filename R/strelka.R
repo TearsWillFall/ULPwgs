@@ -89,7 +89,7 @@ call_variants_strelka=function(
         )
     )
       .this.step=.main.step$steps$call_sv_manta
-      .main.step$out_files=append(.main.step$out_files,.this.step$out_files) 
+      .main.step$out_files$sv=.this.step$out_files
 
       
       .main$steps[[fn]]$steps <-append(
@@ -120,6 +120,10 @@ call_variants_strelka=function(
               executor_id=task_id
         )
       )
+
+      .this.step=.main.step$steps$call_snvs_manta
+      .main.step$out_files$snvs=.this.step$out_files
+
       .env$.main <-.main
     }
 
@@ -217,6 +221,7 @@ call_somatic_sv_manta=function(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
             vcf_sv=.main.step$out_files$strelka$variants$sv,
+            type="sv",
             output_dir=paste0(out_file_dir,"/annotated"),
             tmp_dir=tmp_dir,
             env_dir=env_dir,
@@ -226,7 +231,7 @@ call_somatic_sv_manta=function(
             executor_id=task_id
           )
         )
-        .this.step=.main.step$steps$add_af_strelka_vcf
+        .this.step=.main.step$steps$add_af_strelka_vcf.sv
         .main.step$out_files$annotated$af=.this.step$out_files
       
        .main$steps[[fn]]$steps <-append(
@@ -235,6 +240,7 @@ call_somatic_sv_manta=function(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
             vcf=.main.step$out_files$annotated$af$bgzip_vcf,
+            type="sv",
             output_dir=paste0(out_file_dir,"/annotated"),
             tmp_dir=tmp_dir,
             env_dir=env_dir,
@@ -245,7 +251,7 @@ call_somatic_sv_manta=function(
           )
         )
 
-        .this.step=.main.step$steps$extract_pass_variants_strelka_vcf
+        .this.step=.main.step$steps$extract_pass_variants_strelka_vcf.sv
         .main.step$out_files$annotated$filter=.this.step$out_files
 
         if(annotate){
@@ -257,6 +263,7 @@ call_somatic_sv_manta=function(
                 bin_tabix=bin_tabix,
                 cache_vep=cache_vep,
                 vcf=.main.step$out_files$annotated$filter$bgzip_vcf,
+                type="sv",
                 output_dir=paste0(out_file_dir,"/annotated"),
                 tmp_dir=tmp_dir,
                 env_dir=env_dir,
@@ -266,7 +273,7 @@ call_somatic_sv_manta=function(
                 executor_id=task_id
             )
           )
-           .this.step=.main.step$steps$annotate_strelka_vep
+           .this.step=.main.step$steps$annotate_strelka_vep.sv
           .main.step$out_files$annotated$vep=.this.step$out_files
 
         
@@ -274,7 +281,8 @@ call_somatic_sv_manta=function(
               steps[[fn]]$steps<-append(
                 steps[[fn]]$steps,
                 tabulate_strelka_vcf(
-                  vcf_sv=.main.step$out_files$annotated$vep,
+                  vcf=.main.step$out_files$annotated$vep,
+                  type="sv",
                   output_dir=paste0(out_file_dir,"/annotated"),
                   tmp_dir=tmp_dir,
                   env_dir=env_dir,
@@ -286,7 +294,7 @@ call_somatic_sv_manta=function(
                   executor_id=task_id
               )
             )
-            .this.step=.main.step$steps$annotate_strelka_vep
+            .this.step=.main.step$steps$annotate_strelka_vep.sv
             .main.step$out_files$annotated$tabulate=.this.step$out_files
           }
         }
@@ -413,6 +421,7 @@ call_germline_sv_manta=function(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
             vcf=.main.step$out_files$annotated$af$bgzip_vcf,
+            type="sv",
             output_dir=paste0(out_file_dir,"/annotated"),
             tmp_dir=tmp_dir,
             env_dir=env_dir,
@@ -426,7 +435,7 @@ call_germline_sv_manta=function(
           )
         )
 
-        .this.step=.main.step$steps$extract_pass_variants_strelka_vcf
+        .this.step=.main.step$steps$extract_pass_variants_strelka_vcf.sv
         .main.step$out_files$annotated$filter=.this.step$out_files
       
         if(annotate){
@@ -437,7 +446,8 @@ call_germline_sv_manta=function(
                 bin_bgzip=bin_bgzip,
                 bin_tabix=bin_tabix,
                 cache_vep=cache_vep,
-                vcf=.main.step$out_files$annotated$filter$bgzip_vcf,
+                vcf=.main.step$out_files$annotated$filter$sv$bgzip_vcf,
+                type="sv",
                 output_dir=paste0(out_file_dir,"/annotated"),
                 tmp_dir=tmp_dir,
                 env_dir=env_dir,
@@ -450,14 +460,15 @@ call_germline_sv_manta=function(
             )
           )
 
-        .this.step=.main.step$steps$annotate_strelka_vep
+        .this.step=.main.step$steps$annotate_strelka_vep.sv
         .main.step$out_files$annotated$vep=.this.step$out_files
         
           if(tabulate){
               .main$steps[[fn]]$steps<-append(
                 .main$steps[[fn]]$steps,
                 tabulate_strelka_vcf(
-                  vcf=.main.step$out_files$annotated$vep$bgzip_vcf,
+                  vcf=.main.step$out_files$annotated$vep$sv$bgzip_vcf,
+                  type="sv",
                   output_dir=paste0(out_file_dir,"/annotated"),
                   tmp_dir=tmp_dir,
                   env_dir=env_dir,
@@ -470,7 +481,7 @@ call_germline_sv_manta=function(
               )
             )
 
-            .this.step=.main.step$steps$tabulate_strelka_vcf
+            .this.step=.main.step$steps$tabulate_strelka_vcf.sv
             .main.step$out_files$annotated$tabulate=.this.step$out_files
           }
         }
@@ -588,7 +599,7 @@ call_snvs_strelka=function(
             )
 
           .this.step=.main.step$steps$call_somatic_snvs_strelka
-          .main.step$out_files$somatic=.this.step$out_files
+          .main.step$out_files$snvs$somatic=.this.step$out_files
 
         }
        
@@ -620,7 +631,7 @@ call_snvs_strelka=function(
             )
            )
           .this.step=.main.step$steps$call_germline_snvs_strelka
-          .main.step$out_files$germline=.this.step$out_files
+          .main.step$out_files$snvs$germline=.this.step$out_files
       }
       .env$.main<-.main
 
@@ -877,11 +888,12 @@ call_somatic_snvs_strelka=function(
 
          .main$steps[[fn]]$steps <- append(
           .main$steps[[fn]]$steps,
-           add_snv_af_strelka_vcf(
+           add_af_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
             vcf=.main$steps$out_files$strelka$snv,
-            output_dir=out_file_dir,
+            type="snv",
+            output_dir=paste0(out_file_dir,"/annotated"),
             tmp_dir=tmp_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
@@ -893,17 +905,18 @@ call_somatic_snvs_strelka=function(
           )
          )
 
-        .this.step=.main.step$steps$add_snv_af_strelka_vcf
+        .this.step=.main.step$steps$add_snv_af_strelka_vcf.snv
         .main.step$out_files$annotated$af=.this.step$out_files
 
 
         ### ADD AF for INDELS
         .main$steps[[fn]]$steps <- append(.main$steps[[fn]]$steps,
-            add_indel_af_strelka_vcf(
+            add_af_strelka_vcf(
               bin_bgzip=bin_bgzip,
               bin_tabix=bin_tabix,
               vcf=.main$steps$out_files$strelka$indel,
-              output_dir=out_file_dir,
+              type="indel",
+              output_dir=paste0(out_file_dir,"/annotated"),
               tmp_dir=tmp_dir,
               env_dir=env_dir,
               batch_dir=batch_dir,
@@ -914,10 +927,8 @@ call_somatic_snvs_strelka=function(
               ram=ram
           )
         )
-
-
-            
-        .this.step=.main.step$steps$add_indel_af_strelka_vcf
+  
+        .this.step=.main.step$steps$add_indel_af_strelka_vcf.indel
         .main.step$out_files$annotated$af=append(
           .main.step$out_files$annotated$af,
           .this.step$out_files
@@ -928,11 +939,12 @@ call_somatic_snvs_strelka=function(
          
         .main$steps[[fn]]$steps <-append(
           .main$steps[[fn]]$steps, 
-          extract_pass_snv_variants_strelka_vcf(
+          extract_pass_variants_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf=.main$steps$out_files$annotated$snv$af$bgzip_vcf
-            output_dir=out_file_dir,
+            vcf=.main$steps$out_files$annotated$af$snv$bgzip_vcf,
+            type="snv",
+            output_dir=paste0(out_file_dir,"/annotated"),
             tmp_dir=tmp_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
@@ -944,7 +956,7 @@ call_somatic_snvs_strelka=function(
           )
         )
 
-        .this.step=.main.step$steps$extract_pass_snv_variants_strelka_vcf
+        .this.step=.main.step$steps$extract_pass_variants_strelka_vcf.snv
         .main.step$out_files$annotated$filter=.this.step$out_files
 
 
@@ -954,11 +966,12 @@ call_somatic_snvs_strelka=function(
       
         .main$steps[[fn]]$steps<-append(
           .main$steps[[fn]]$steps, 
-          extract_pass_indel_variants_strelka_vcf(
+          extract_pass_variants_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf=.main$steps$out_files$annotated$indel$af$bgzip_vcf,
-            output_dir=out_file_dir,
+            vcf=.main$steps$out_files$annotated$af$indel$bgzip_vcf,
+            type="indel",
+            output_dir=paste0(out_file_dir,"/annotated"),
             tmp_dir=tmp_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
@@ -970,7 +983,7 @@ call_somatic_snvs_strelka=function(
           )
         )
 
-        .this.step=.main.step$steps$extract_pass_indel_variants_strelka_vcf
+        .this.step=.main.step$steps$extract_pass_variants_strelka_vcf.indel
         .main.step$out_files$annotated$filter=append(
           .main.step$out_files$annotated$filter,
           .this.step$out_files
@@ -983,13 +996,14 @@ call_somatic_snvs_strelka=function(
             ### ANNOTATE SNV USING VEP
             .main$steps[[fn]]$steps <-append(
               .main$steps[[fn]]$steps ,
-              annotate_snv_strelka_vep(
+              annotate_strelka_vep(
                 bin_vep=bin_vep,
                 bin_bgzip=bin_bgzip,
                 bin_tabix=bin_tabix,
                 cache_vep=cache_vep,
-                vcf=.main.step$out_files$annotated$snv$filter$bgzip_vcf,
-                output_dir=out_file_dir,
+                vcf=.main.step$out_files$annotated$filter$snv$bgzip_vcf,
+                type="snv",
+                output_dir=paste0(out_file_dir,"/annotated"),
                 tmp_dir=tmp_dir,
                 env_dir=env_dir,
                 batch_dir=batch_dir,
@@ -1001,20 +1015,22 @@ call_somatic_snvs_strelka=function(
             )
           )
 
-          .this.step=.main.step$steps$annotate_snv_strelka_vep
+          .this.step=.main.step$steps$annotate_snv_strelka_vep.snv
           .main.step$out_files$annotated$vep=.this.step$out_files
 
 
           ### ANNOTATE INDEL USING VEP
+
           .main$steps[[fn]]$steps <-append(
               .main$steps[[fn]]$steps ,
-              annotate_indel_strelka_vep(
+              annotate_strelka_vep(
                 bin_vep=bin_vep,
                 bin_bgzip=bin_bgzip,
                 bin_tabix=bin_tabix,
                 cache_vep=cache_vep,
-                vcf=.main.step$out_files$annotated$indel$filter$bgzip_vcf,
-                output_dir=out_file_dir,
+                vcf=.main.step$out_files$annotated$filter$indel$bgzip_vcf,
+                type="indel",
+                output_dir=paste0(out_file_dir,"/annotated"),
                 tmp_dir=tmp_dir,
                 env_dir=env_dir,
                 batch_dir=batch_dir,
@@ -1026,7 +1042,7 @@ call_somatic_snvs_strelka=function(
             )
           )
 
-          .this.step=.main.step$steps$annotate_indel_strelka_vep
+          .this.step=.main.step$steps$annotate_indel_strelka_vep.indel
           .main.step$out_files$annotated$vep=append(
             .main.step$out_files$annotated$vep,
             .this.step$out_files
@@ -1036,9 +1052,10 @@ call_somatic_snvs_strelka=function(
           if(tabulate){
               .main$steps[[fn]]$steps <-append(
                 .main$steps[[fn]]$steps ,
-                tabulate_indel_strelka_vcf(
-                  vcf=
-                  output_dir=out_file_dir,
+                tabulate_strelka_vcf(
+                  vcf=.main.step$out_files$annotated$vep$snv$bgzip_vcf,
+                  type="snv",
+                  output_dir=paste0(out_file_dir,"/annotated"),
                   tmp_dir=tmp_dir,
                   env_dir=env_dir,
                   batch_dir=batch_dir,
@@ -1049,6 +1066,35 @@ call_somatic_snvs_strelka=function(
                   executor_id=task_id
               )
             )
+
+          .this.step=.main.step$steps$tabulate_strelka_vcf.snv
+          .main.step$out_files$annotated$tabulate=.this.step$out_files
+
+
+              .main$steps[[fn]]$steps <-append(
+                .main$steps[[fn]]$steps ,
+                tabulate_strelka_vcf(
+                  vcf=.main.step$out_files$annotated$vep$indel$bgzip_vcf,
+                  type="indel",
+                  output_dir=paste0(out_file_dir,"/annotated"),
+                  tmp_dir=tmp_dir,
+                  env_dir=env_dir,
+                  batch_dir=batch_dir,
+                  err_msg=err_msg,
+                  threads=threads,
+                  ram=ram,
+                  verbose=verbose,
+                  executor_id=task_id
+              )
+            )
+
+
+          .this.step=.main.step$steps$tabulate_strelka_vcf.indel
+            .main.step$out_files$annotated$tabulate=append(
+            .main.step$out_files$annotated$tabulate,
+              .this.step$out_files
+            )
+
           }
         }
 
@@ -1058,7 +1104,7 @@ call_somatic_snvs_strelka=function(
 
 
     
-         .base.env=environment()
+    .base.env=environment()
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
@@ -1106,58 +1152,45 @@ call_germline_snvs_strelka=function(
     bin_strelka=build_default_tool_binary_list()$bin_strelka$germline,
     normal=NULL,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
-    output_dir="./germline/snv",
-    output_name=NULL,
     indel_candidates=NULL,
     extract_pass=TRUE,
     annotate=TRUE,
     tabulate=TRUE,
     targeted=TRUE,
-    verbose=TRUE,
-    batch_config=build_default_preprocess_config(),
-    mode="local",
-    threads=1,
-    ram=4,
-    time="48:0:0",
-    sheet=NULL,
-    inherit=NULL,
-    select=NULL,
-    executor_id=NULL,
-    hold=NULL
+    ...
 ){
   
-    this.envir=environment()
-    set_envir_vars(
-        envir=this.envir,
-        vars="normal"
-    )
-
+ 
     run_main=function(
-        envir
+        .env
     ){
-        this.envir=environment()
-        append_envir(this.envir,envir)
-        set_steps_vars(envir=this.envir)
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+        set_main(.env=.this.env)
 
-        steps[[fn]]$exec_code=paste0(
+
+          
+
+        .main$exec_code=paste0(
           bin_strelka,
-          " --bam ",input,
-          " --referenceFasta ", ref_genome ,
+          " --bam ",normalizePath(input),
+          " --referenceFasta ", normalizePath(ref_genome),
           " --runDir ", out_file_dir, 
           ifelse(targeted," --exome ",""),
-          ifelse(indel_candidates,paste0("--indelCandidates ",indel_candidates),""), "; ",
-          paste0(
-            out_file_dir,
-            "/runWorkflow.py -m local -j ",
-            threads)
+          ifelse(indel_candidates,
+            paste0("--indelCandidates ",indel_candidates),""), "; ",
+              paste0(
+                out_file_dir,
+                "/runWorkflow.py -m local -j ",
+                threads)
           )
 
-        steps[[fn]]$out_file$workflow=paste0(out_file_dir,"/runWorkflow.py")
-        steps[[fn]]$out_file$stats=list(
+        .main$out_files$strelka$workflow=paste0(out_file_dir,"/runWorkflow.py")
+        .main$out_files$strelka$stats=list(
               tsv=paste0(out_file_dir,"/results/stats/runStats.tsv"),
               xml=paste0(out_file_dir,"/results/stats/runStats.xml")
         )
-        steps[[fn]]$out_file$variants=list(
+       .main$out_files$strelka$variants=list(
               indel=paste0(out_file_dir,"/results/variants/somatic.indels.vcf.gz"),
               indel_idx=paste0(out_file_dir,"/results/variants/somatic.indels.vcf.gz.tbi"),
               snv=paste0(out_file_dir,"/results/variants/somatic.snvs.vcf.gz"),
@@ -1165,12 +1198,243 @@ call_germline_snvs_strelka=function(
         )
       
         run_job(
-              envir=this.envir
+              .env=.this.env
         )
 
-        envir$steps <-steps
+
+        .main.step=.main$steps[[fn]]
+
+
+
+         
+        ### ADD AF for SNVS
+
+         .main$steps[[fn]]$steps <- append(
+          .main$steps[[fn]]$steps,
+           add_af_strelka_vcf(
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            vcf=.main$steps$out_files$strelka$snv,
+            type="snv",
+            output_dir=paste0(out_file_dir,"/annotated"),
+            tmp_dir=tmp_dir,
+            env_dir=env_dir,
+            batch_dir=batch_dir,
+            err_msg=err_msg,
+            verbose=verbose, 
+            executor_id=task_id,
+            threads=threads,
+            ram=ram
+          )
+         )
+
+        .this.step=.main.step$steps$add_snv_af_strelka_vcf.snv
+        .main.step$out_files$annotated$af=.this.step$out_files
+
+
+        ### ADD AF for INDELS
+        .main$steps[[fn]]$steps <- append(.main$steps[[fn]]$steps,
+            add_af_strelka_vcf(
+              bin_bgzip=bin_bgzip,
+              bin_tabix=bin_tabix,
+              vcf=.main$steps$out_files$strelka$indel,
+              type="indel",
+              output_dir=paste0(out_file_dir,"/annotated"),
+              tmp_dir=tmp_dir,
+              env_dir=env_dir,
+              batch_dir=batch_dir,
+              err_msg=err_msg,
+              verbose=verbose, 
+              executor_id=task_id,
+              threads=threads,
+              ram=ram
+          )
+        )
+  
+        .this.step=.main.step$steps$add_indel_af_strelka_vcf.indel
+        .main.step$out_files$annotated$af=append(
+          .main.step$out_files$annotated$af,
+          .this.step$out_files
+        )
+
+
+        ### FILTER SNV BY FILTERS
+         
+        .main$steps[[fn]]$steps <-append(
+          .main$steps[[fn]]$steps, 
+          extract_pass_variants_strelka_vcf(
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            vcf=.main$steps$out_files$annotated$af$snv$bgzip_vcf,
+            type="snv",
+            output_dir=paste0(out_file_dir,"/annotated"),
+            tmp_dir=tmp_dir,
+            env_dir=env_dir,
+            batch_dir=batch_dir,
+            err_msg=err_msg,
+            verbose=verbose,
+            threads=threads,
+            ram=ram,
+            executor_id=task_id
+          )
+        )
+
+        .this.step=.main.step$steps$extract_pass_variants_strelka_vcf.snv
+        .main.step$out_files$annotated$filter=.this.step$out_files
+
+
+
+        ### FILTER INDELS BY FILTERS
+
+      
+        .main$steps[[fn]]$steps<-append(
+          .main$steps[[fn]]$steps, 
+          extract_pass_variants_strelka_vcf(
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            vcf=.main$steps$out_files$annotated$af$indel$bgzip_vcf,
+            type="indel",
+            output_dir=paste0(out_file_dir,"/annotated"),
+            tmp_dir=tmp_dir,
+            env_dir=env_dir,
+            batch_dir=batch_dir,
+            err_msg=err_msg,
+            verbose=verbose,
+            threads=threads,
+            ram=ram,
+            executor_id=task_id
+          )
+        )
+
+        .this.step=.main.step$steps$extract_pass_variants_strelka_vcf.indel
+        .main.step$out_files$annotated$filter=append(
+          .main.step$out_files$annotated$filter,
+          .this.step$out_files
+        )
+
+
+
+        if(annotate){
+
+            ### ANNOTATE SNV USING VEP
+            .main$steps[[fn]]$steps <-append(
+              .main$steps[[fn]]$steps ,
+              annotate_strelka_vep(
+                bin_vep=bin_vep,
+                bin_bgzip=bin_bgzip,
+                bin_tabix=bin_tabix,
+                cache_vep=cache_vep,
+                vcf=.main.step$out_files$annotated$filter$snv$bgzip_vcf,
+                type="snv",
+                output_dir=paste0(out_file_dir,"/annotated"),
+                tmp_dir=tmp_dir,
+                env_dir=env_dir,
+                batch_dir=batch_dir,
+                err_msg=err_msg,
+                verbose=verbose,
+                threads=threads,
+                ram=ram,
+                executor_id=task_id
+            )
+          )
+
+          .this.step=.main.step$steps$annotate_snv_strelka_vep.snv
+          .main.step$out_files$annotated$vep=.this.step$out_files
+
+
+          ### ANNOTATE INDEL USING VEP
+
+          .main$steps[[fn]]$steps <-append(
+              .main$steps[[fn]]$steps ,
+              annotate_strelka_vep(
+                bin_vep=bin_vep,
+                bin_bgzip=bin_bgzip,
+                bin_tabix=bin_tabix,
+                cache_vep=cache_vep,
+                vcf=.main.step$out_files$annotated$filter$indel$bgzip_vcf,
+                type="indel",
+                output_dir=paste0(out_file_dir,"/annotated"),
+                tmp_dir=tmp_dir,
+                env_dir=env_dir,
+                batch_dir=batch_dir,
+                err_msg=err_msg,
+                verbose=verbose,
+                threads=threads,
+                ram=ram,
+                executor_id=task_id
+            )
+          )
+
+          .this.step=.main.step$steps$annotate_indel_strelka_vep.indel
+          .main.step$out_files$annotated$vep=append(
+            .main.step$out_files$annotated$vep,
+            .this.step$out_files
+          )
+
+        
+          if(tabulate){
+              .main$steps[[fn]]$steps <-append(
+                .main$steps[[fn]]$steps ,
+                tabulate_strelka_vcf(
+                  vcf=.main.step$out_files$annotated$vep$snv$bgzip_vcf,
+                  type="snv",
+                  output_dir=paste0(out_file_dir,"/annotated"),
+                  tmp_dir=tmp_dir,
+                  env_dir=env_dir,
+                  batch_dir=batch_dir,
+                  err_msg=err_msg,
+                  threads=threads,
+                  ram=ram,
+                  verbose=verbose,
+                  executor_id=task_id
+              )
+            )
+
+          .this.step=.main.step$steps$tabulate_strelka_vcf.snv
+          .main.step$out_files$annotated$tabulate=.this.step$out_files
+
+
+              .main$steps[[fn]]$steps <-append(
+                .main$steps[[fn]]$steps ,
+                tabulate_strelka_vcf(
+                  vcf=.main.step$out_files$annotated$vep$indel$bgzip_vcf,
+                  type="indel",
+                  output_dir=paste0(out_file_dir,"/annotated"),
+                  tmp_dir=tmp_dir,
+                  env_dir=env_dir,
+                  batch_dir=batch_dir,
+                  err_msg=err_msg,
+                  threads=threads,
+                  ram=ram,
+                  verbose=verbose,
+                  executor_id=task_id
+              )
+            )
+
+
+          .this.step=.main.step$steps$tabulate_strelka_vcf.indel
+            .main.step$out_files$annotated$tabulate=append(
+            .main.step$out_files$annotated$tabulate,
+              .this.step$out_files
+            )
+
+          }
+        }
+
+
+          .env$.main<-.main
 
       }
-       envirs=run_envir(envirs=this.envir$envirs)
+
+
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars=ifelse(is.null(tumour),"normal","tumour")
+    )
+
+    launch(.env=.base.env)
+      
 
 }

@@ -167,7 +167,7 @@ add_snv_af_strelka_vcf=function(
         )
         
         .this.step=.main.step$steps$write_vcf
-        .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
+        .main.step$out_files$snv=.this.step$out_files
         .env$.main<-.main
   }
 
@@ -264,7 +264,7 @@ add_indel_af_strelka_vcf=function(
         )
         
         .this.step=.main.step$steps$write_vcf
-        .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
+        .main.step$out_files$indel=.this.step$out_files
         .env$.main<-.main
   }
 
@@ -379,7 +379,7 @@ add_sv_af_strelka_vcf=function(
         )
         
         .this.step=.main.step$steps$write_vcf
-        .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
+        .main.step$out_files$sv=.this.step$out_files
         .env$.main<-.main
 
     }
@@ -399,21 +399,13 @@ add_sv_af_strelka_vcf=function(
 
 
 
-
-
-
-
-
-
-
-#' Add AF information to Strelka VCF file
+#' Add structural variant AF information to Strelka VCF file
 #' This function reads and modifies Strelka produced VCF files to 
 #' add an entry for AF within the VCF file
 #' 
 #' @param bin_bgzip Path to bgzip executable.
 #' @param bin_tabix Path to TABIX executable.
-#' @param vcf_snv Path to VCF file with snv
-#' @param vcf_indel Path to VCF file with snv
+#' @param vcf Path to VCF file
 #' @param compress Compress VCF file. Default TRUE.
 #' @param index Index VCF file. Default TRUE.
 #' @param index_format VCF index format. Default tbi. Options [tbi,cbi].
@@ -433,110 +425,106 @@ add_sv_af_strelka_vcf=function(
 #' @export
 
 
-  add_af_strelka_vcf=function(
-      bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
-      bin_tabix=build_default_tool_binary_list()$bin_tabix,
-      vcf=NULL,
-      type="snv",
-      ...
-      ){
 
-        build_main=function(.env){
-
-            .this.env=environment()
-            append_env(to=.this.env,from=.env)
-        
-            set_main(.env=.this.env)
-
-            .main$steps[[fn]]<-.this.env
-            .main.step=.main$steps[[fn]]
-    
-
-            if(type=="snv"){
-                .main$steps[[fn]]$steps<-append(
-                  .main$steps[[fn]]$steps,
-                  add_snv_af_strelka_vcf(
-                    bin_bgzip=bin_bgzip,
-                    bin_tabix=bin_tabix,
-                    vcf=input,
-                    output_dir=out_file_dir,
-                    tmp_dir=tmp_dir,
-                    env_dir=env_dir,
-                    batch_dir=batch_dir,
-                    threads=threads,
-                    ram=ram,
-                    verbose=verbose, 
-                    executor_id=task_id
-                  )
-                )
-            
-            .this.step=.main.step$steps$add_snv_af_strelka_vcf
-            .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
-
-            }else if(type=="indel"){
-
-                .main$steps[[fn]]$steps<-append(
-                .main$steps[[fn]]$steps,
-                add_indel_af_strelka_vcf(
-                  bin_bgzip=bin_bgzip,
-                  bin_tabix=bin_tabix,
-                  vcf=input,
-                  output_dir=out_file_dir,
-                  tmp_dir=tmp_dir,
-                  env_dir=env_dir,
-                  batch_dir=batch_dir,
-                  threads=threads,
-                  ram=ram,
-                  verbose=verbose, 
-                  executor_id=task_id
-                )
-              )
-            
-            .this.step=.main.step$steps$add_indel_af_strelka_vcf
-            .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
-
-            }else if(type=="sv"){
-
-                .main$steps[[fn]]$steps<-append(
-                .main$steps[[fn]]$steps,
-                add_sv_af_strelka_vcf(
-                  bin_bgzip=bin_bgzip,
-                  bin_tabix=bin_tabix,
-                  vcf=input,
-                  output_dir=out_file_dir,
-                  tmp_dir=tmp_dir,
-                  env_dir=env_dir,
-                  batch_dir=batch_dir,
-                  threads=threads,
-                  ram=ram,
-                  verbose=verbose, 
-                  executor_id=task_id
-                )
-              )
-            .this.step=.main.step$steps$add_sv_af_strelka_vcf
-            .main.step$out_files=append(.main.step$out_files,.this.step$out_files) 
-
-            }else{
-              stop("Wrong argument type")
-            }
-
-          .env$.main<-.main
-        }
-
-            .base.env=environment()
-            list2env(list(...),envir=.base.env)
-            set_env_vars(
-              .env= .base.env,
-              vars="vcf"
-            )
-          
-            launch(.env=.base.env)
-
-    }
+add_af_strelka_vcf=function(
+  bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+  bin_tabix=build_default_tool_binary_list()$bin_tabix,
+  vcf=NULL,
+  type="snv",
+  ...
+){
+  
+  run_main=function(
+    .env
+  ){
 
 
+      .this.env=environment()
+      append_env(to=.this.env,from=.env)
+  
+      set_main(.env=.this.env)
+
+      output_name=paste0("somatic.af.",type)
+      fn=paste0(fn,".",type)
 
 
+      .main$steps[[fn]]<-.this.env
+      .main.step=.main$steps[[fn]]
+
+      if(type=="snv"){
+
+
+        .main$steps[[fn]]$steps<-append(
+        .main$steps[[fn]]$steps,
+          add_snv_af_strelka_vcf(
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            vcf=input,
+            output_dir=out_file_dir,
+            tmp_dir=tmp_dir,
+            env_dir=env_dir,
+            batch_dir=batch_dir,
+            verbose=verbose,
+            threads=threads,
+            ram=ram,
+            executor_id=task_id
+          )
+        )
+      }else if(type=="indel"){
+        .main$steps[[fn]]$steps<-append(
+        .main$steps[[fn]]$steps,
+          add_indel_af_strelka_vcf(
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            vcf=input,
+            output_dir=out_file_dir,
+            tmp_dir=tmp_dir,
+            env_dir=env_dir,
+            batch_dir=batch_dir,
+            verbose=verbose,
+            threads=threads,
+            ram=ram,
+            executor_id=task_id
+          )
+        )
+      }else if(type=="sv"){
+        .main$steps[[fn]]$steps<-append(
+        .main$steps[[fn]]$steps,
+          add_sv_af_strelka_vcf(
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            vcf=input,
+            output_dir=out_file_dir,
+            tmp_dir=tmp_dir,
+            env_dir=env_dir,
+            batch_dir=batch_dir,
+            verbose=verbose,
+            threads=threads,
+            ram=ram,
+            executor_id=task_id
+          )
+        )
+      }else{
+        stop("Wrong type argument")
+      }
+
+      .this.step=.main.step$steps$variants_by_filters_vcf
+      .main.step$out_files[[type]]=.this.step$out_files 
+
+      .env$.main<-.main
+
+
+  }
+  .base.env=environment()
+  list2env(list(...),envir=.base.env)
+  set_env_vars(
+    .env= .base.env,
+    vars="vcf"
+  )
+
+  launch(.env=.base.env)
+
+}
 
 
 
@@ -677,6 +665,10 @@ variants_by_filters_vcf=function(
 
 
 
+
+
+
+
 #' Extract PASS variants in VCF file
 #'
 #' VCF datastructure is in list format and contains a header, a body and
@@ -709,7 +701,6 @@ extract_pass_variants_strelka_vcf=function(
       ...
     ){
 
-  
     build_main=function(.env){
 
 
@@ -718,91 +709,14 @@ extract_pass_variants_strelka_vcf=function(
   
       set_main(.env=.this.env)
 
-      .main$steps[[fn]]<-.this.env
-      .main.step=.main$steps[[fn]]
-      output_name=paste0("somatic.",type)
+      output_name=paste0("somatic.PASS.",type)
+      fn=paste0(fn,".",type)
 
-      .main$steps[[fn]]$steps<-append(
-        .main$steps[[fn]]$steps,
-          variants_by_filters_vcf(
-            bin_bgzip=bin_bgzip,
-            bin_tabix=bin_tabix,
-            vcf=input,
-            filters="PASS",
-            output_dir=out_file_dir,
-            tmp_dir=tmp_dir,
-            env_dir=env_dir,
-            batch_dir=batch_dir,
-            verbose=verbose,
-            threads=threads,
-            ram=ram,
-            executor_id=task_id
-          )
-        )
-       
-      .this.step=.main.step$steps$variants_by_filters_vcf
-      .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
-
-      .env$.main<-.main
-
-    }
-
-    .base.env=environment()
-    list2env(list(...),envir=.base.env)
-    set_env_vars(
-      .env= .base.env,
-      vars="vcf"
-    )
-  
-    launch(.env=.base.env)
-
-  }
-
-
-
-#' Extract PASS variants in VCF file
-#'
-#' VCF datastructure is in list format and contains a header, a body and
-#' the corresponding col_names
-#'
-#' @param bin_bgzip Path to bgzip executable.
-#' @param bin_tabix Path to TABIX executable.
-#' @param vcf Path to the input VCF file.
-#' @param output_dir Path to the output directory.
-#' @param verbose Enables progress messages. Default False.
-#' @param executor_id Task EXECUTOR ID. Default "gatherBQSR"
-#' @param task_name Task name. Default "gatherBQSR"
-#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
-#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
-#' @param threads Number of threads to split the work. Default 3
-#' @param ram [OPTIONAL] If batch mode. RAM memory in GB per job. Default 1
-#' @param update_time [OPTIONAL] If batch mode. Show job updates every update time. Default 60
-#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
-#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
-#' @export
-#' 
-
-
-
-extract_pass_indel_variants_strelka_vcf=function(
-      bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
-      bin_tabix=build_default_tool_binary_list()$bin_tabix,
-      vcf=NULL,
-      ...
-    ){
-
-    build_main=function(.env){
-
-
-      .this.env=environment()
-      append_env(to=.this.env,from=.env)
-  
-      set_main(.env=.this.env)
 
       .main$steps[[fn]]<-.this.env
       .main.step=.main$steps[[fn]]
  
-      output_name=paste0("somatic.indel")
+     
 
      .main$steps[[fn]]$steps<-append(
         .main$steps[[fn]]$steps,
@@ -822,13 +736,12 @@ extract_pass_indel_variants_strelka_vcf=function(
           )
         )
       .this.step=.main.step$steps$variants_by_filters_vcf
-      .main.step$out_files$indel=append(.main.step$out_files,.this.step$out_files)
+      .main.step$out_files[[type]]=.this.step$out_files
 
       .env$.main<-.main
 
     }
 
-    
     .base.env=environment()
     list2env(list(...),envir=.base.env)
     set_env_vars(
@@ -841,167 +754,6 @@ extract_pass_indel_variants_strelka_vcf=function(
   }
 
 
-#' Extract PASS variants in VCF file
-#'
-#' VCF datastructure is in list format and contains a header, a body and
-#' the corresponding col_names
-#'
-#' @param bin_bgzip Path to bgzip executable.
-#' @param bin_tabix Path to TABIX executable.
-#' @param vcf Path to the input VCF file.
-#' @param output_dir Path to the output directory.
-#' @param verbose Enables progress messages. Default False.
-#' @param executor_id Task EXECUTOR ID. Default "gatherBQSR"
-#' @param task_name Task name. Default "gatherBQSR"
-#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
-#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
-#' @param threads Number of threads to split the work. Default 3
-#' @param ram [OPTIONAL] If batch mode. RAM memory in GB per job. Default 1
-#' @param update_time [OPTIONAL] If batch mode. Show job updates every update time. Default 60
-#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
-#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
-#' @export
-#' 
-
-
-
-extract_pass_snv_variants_strelka_vcf=function(
-      bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
-      bin_tabix=build_default_tool_binary_list()$bin_tabix,
-      vcf=NULL,
-      ...
-    ){
-
-    build_main=function(.env){
-
-
-      .this.env=environment()
-      append_env(to=.this.env,from=.env)
-  
-      set_main(.env=.this.env)
-
-      .main$steps[[fn]]<-.this.env
-      .main.step=.main$steps[[fn]]
- 
-      output_name=paste0("somatic.snv")
-
-     .main$steps[[fn]]$steps<-append(
-        .main$steps[[fn]]$steps,
-          variants_by_filters_vcf(
-            bin_bgzip=bin_bgzip,
-            bin_tabix=bin_tabix,
-            vcf=input,
-            filters="PASS",
-            output_dir=out_file_dir,
-            tmp_dir=tmp_dir,
-            env_dir=env_dir,
-            batch_dir=batch_dir,
-            verbose=verbose,
-            threads=threads,
-            ram=ram,
-            executor_id=task_id
-          )
-        )
-      .this.step=.main.step$steps$variants_by_filters_vcf
-      .main.step$out_files$indel=append(.main.step$out_files,.this.step$out_files)
-
-      .env$.main<-.main
-
-    }
-
-    
-    .base.env=environment()
-    list2env(list(...),envir=.base.env)
-    set_env_vars(
-      .env= .base.env,
-      vars="vcf"
-    )
-  
-    launch(.env=.base.env)
-
-  }
-
-
-
-
-#' Extract PASS variants in VCF file
-#'
-#' VCF datastructure is in list format and contains a header, a body and
-#' the corresponding col_names
-#'
-#' @param bin_bgzip Path to bgzip executable.
-#' @param bin_tabix Path to TABIX executable.
-#' @param vcf Path to the input VCF file.
-#' @param output_dir Path to the output directory.
-#' @param verbose Enables progress messages. Default False.
-#' @param executor_id Task EXECUTOR ID. Default "gatherBQSR"
-#' @param task_name Task name. Default "gatherBQSR"
-#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
-#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
-#' @param threads Number of threads to split the work. Default 3
-#' @param ram [OPTIONAL] If batch mode. RAM memory in GB per job. Default 1
-#' @param update_time [OPTIONAL] If batch mode. Show job updates every update time. Default 60
-#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
-#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
-#' @export
-#' 
-
-
-extract_pass_sv_variants_strelka_vcf=function(
-      bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
-      bin_tabix=build_default_tool_binary_list()$bin_tabix,
-      vcf=NULL,
-      ...
-    ){
-
-    build_main=function(.env){
-
-
-      .this.env=environment()
-      append_env(to=.this.env,from=.env)
-  
-      set_main(.env=.this.env)
-
-      .main$steps[[fn]]<-.this.env
-      .main.step=.main$steps[[fn]]
- 
-      output_name=paste0("somatic.sv")
-
-     .main$steps[[fn]]$steps<-append(
-        .main$steps[[fn]]$steps,
-          variants_by_filters_vcf(
-            bin_bgzip=bin_bgzip,
-            bin_tabix=bin_tabix,
-            vcf=input,
-            filters="PASS",
-            output_dir=out_file_dir,
-            tmp_dir=tmp_dir,
-            env_dir=env_dir,
-            batch_dir=batch_dir,
-            verbose=verbose,
-            threads=threads,
-            ram=ram,
-            executor_id=task_id
-          )
-        )
-      .this.step=.main.step$steps$variants_by_filters_vcf
-      .main.step$out_files$indel=append(.main.step$out_files,.this.step$out_files)
-
-      .env$.main<-.main
-
-    }
-
-    
-    .base.env=environment()
-    list2env(list(...),envir=.base.env)
-    set_env_vars(
-      .env= .base.env,
-      vars="vcf"
-    )
-  
-    launch(.env=.base.env)
-
-  }
 
 
 

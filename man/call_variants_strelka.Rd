@@ -20,7 +20,6 @@ call_variants_strelka(
   annotate = TRUE,
   tabulate = TRUE,
   targeted = TRUE,
-  verbose = FALSE,
   ...
 )
 }
@@ -39,8 +38,6 @@ call_variants_strelka(
 
 \item{targeted}{\link{REQUIRED} Remove coverage filtering for exome/targeted data. Default TRUE}
 
-\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
-
 \item{variants}{\link{REQUIRED} Variants types to call. Default all. Options \link{"snv","sv","all"}}
 
 \item{indel_cnds}{\link{REQUIRED} Use indel candidates to correct SNV calls. Default TRUE}
@@ -52,6 +49,8 @@ call_variants_strelka(
 \item{batch_config}{\link{OPTIONAL} Default configuration for job submission in batch.}
 
 \item{ram}{\link{OPTIONAL} RAM memory to asing to each thread. Default 4}
+
+\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 

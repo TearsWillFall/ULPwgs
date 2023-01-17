@@ -8,10 +8,9 @@ new_sort_and_index_bam_samtools(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = NULL,
   sort = TRUE,
-  coord_sort = TRUE,
   index = TRUE,
+  coord_sort = TRUE,
   stats = TRUE,
-  clean = FALSE,
   ...
 )
 }
@@ -22,13 +21,11 @@ new_sort_and_index_bam_samtools(
 
 \item{sort}{Sort BAM file. Default TRUE.}
 
-\item{coord_sort}{Generate a coord sorted file. Otherwise queryname sorted. Default TRUE}
-
 \item{index}{Generate an index file for sorted BAM. Default TRUE}
 
-\item{stats}{Generate BAM stats. Default all. Options \link{"all","flag","index",""}}
+\item{coord_sort}{Generate a coord sorted file. Otherwise queryname sorted. Default TRUE}
 
-\item{clean}{Remove input files. Default FALSE}
+\item{stats}{Generate BAM stats. Default all. Options \link{"all","flag","index",""}}
 
 \item{output_dir}{Path to the output directory.}
 
@@ -37,6 +34,8 @@ new_sort_and_index_bam_samtools(
 \item{threads}{Number of threads. Default 3}
 
 \item{ram}{Ram memory to use per thread in GB. Default 1GB}
+
+\item{clean}{Remove input files. Default FALSE}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 

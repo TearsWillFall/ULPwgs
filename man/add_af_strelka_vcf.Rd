@@ -2,7 +2,7 @@
 % Please edit documentation in R/vcf.R
 \name{add_af_strelka_vcf}
 \alias{add_af_strelka_vcf}
-\title{Add AF information to Strelka VCF file
+\title{Add structural variant AF information to Strelka VCF file
 This function reads and modifies Strelka produced VCF files to
 add an entry for AF within the VCF file}
 \usage{
@@ -19,9 +19,7 @@ add_af_strelka_vcf(
 
 \item{bin_tabix}{Path to TABIX executable.}
 
-\item{vcf_snv}{Path to VCF file with snv}
-
-\item{vcf_indel}{Path to VCF file with snv}
+\item{vcf}{Path to VCF file}
 
 \item{compress}{Compress VCF file. Default TRUE.}
 
@@ -56,7 +54,7 @@ add_af_strelka_vcf(
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
 }
 \description{
-Add AF information to Strelka VCF file
+Add structural variant AF information to Strelka VCF file
 This function reads and modifies Strelka produced VCF files to
 add an entry for AF within the VCF file
 }

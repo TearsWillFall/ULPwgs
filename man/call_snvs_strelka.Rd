@@ -14,24 +14,13 @@ call_snvs_strelka(
   cache_vep = build_default_cache_list()$cache_vep,
   tumour = NULL,
   normal = NULL,
-  ref_genome = build_default_reference_list()$HG19$reference$genome,
-  output_dir = "./strelka_reports",
-  output_name = NULL,
   indel_candidates = NULL,
+  ref_genome = build_default_reference_list()$HG19$reference$genome,
   targeted = TRUE,
   verbose = TRUE,
   annotate = TRUE,
   tabulate = TRUE,
-  batch_config = build_default_preprocess_config(),
-  threads = 1,
-  ram = 4,
-  mode = "local",
-  time = "48:0:0",
-  sheet = NULL,
-  inherit = NULL,
-  select = NULL,
-  executor_id = NULL,
-  hold = NULL
+  ...
 )
 }
 \arguments{
@@ -43,37 +32,37 @@ call_snvs_strelka(
 
 \item{normal}{\link{REQUIRED} Path to tumour BAM file.}
 
-\item{ref_genome}{\link{REQUIRED} Path to reference genome FASTA}
-
-\item{output_dir}{\link{OPTIONAL} Path to the output directory. Default current directory}
-
 \item{indel_candidates}{\link{OPTIONAL} Path to indel candidates file produced by MANTA.}
+
+\item{ref_genome}{\link{REQUIRED} Path to reference genome FASTA}
 
 \item{targeted}{\link{REQUIRED} Remove coverage filtering for exome/targeted data. Default TRUE}
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
-\item{batch_config}{\link{OPTIONAL} Default configuration for job submission in batch.}
+\item{variants}{\link{REQUIRED} Variants types to call. Default all. Options \link{"snv","sv","all"}}
+
+\item{output_dir}{\link{OPTIONAL} Path to the output directory. Default current directory}
 
 \item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
+
+\item{batch_config}{\link{OPTIONAL} Default configuration for job submission in batch.}
 
 \item{ram}{\link{OPTIONAL} RAM memory to asing to each thread. Default 4}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
-\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
-
 \item{executor_id}{Task EXECUTOR ID. Default "recalCovariates"}
 
-\item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
-
-\item{variants}{\link{REQUIRED} Variants types to call. Default all. Options \link{"snv","sv","all"}}
-
 \item{task_name}{Task name. Default "recalCovariates"}
+
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 
 \item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
 
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
+
+\item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
 }
 \description{
 This function wraps the STRELKA functions for variant calling

@@ -4,30 +4,12 @@
 \alias{tabulate_vcf}
 \title{Generate tabulated table from annotate VCF}
 \usage{
-tabulate_vcf(
-  envir = NULL,
-  vcf = NULL,
-  output_name = NULL,
-  output_dir = ".",
-  mode = "local",
-  time = "48:0:0",
-  threads = 1,
-  ram = 1,
-  verbose = FALSE,
-  batch_config = build_default_preprocess_config(),
-  executor_id = make_unique_id("tabVCF"),
-  task_name = "tabVCF",
-  hold = NULL
-)
+tabulate_vcf(vcf = NULL, ...)
 }
 \arguments{
 \item{vcf}{Path to VCF file}
 
 \item{output_dir}{Path to the output directory.}
-
-\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
-
-\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 
 \item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
 
@@ -35,9 +17,13 @@ tabulate_vcf(
 
 \item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
+\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
 \item{executor_id}{Task EXECUTOR ID. Default "recalCovariates"}
 
 \item{task_name}{Task name. Default "recalCovariates"}
+
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
 }

@@ -122,13 +122,14 @@ annotate_vep=function(
 #' @export
 
 
-annotate_snv_strelka_vep=function(
+annotate_strelka_vep=function(
     bin_vep=build_default_tool_binary_list()$bin_vep,
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
     bin_tabix=build_default_tool_binary_list()$bin_tabix,
     cache_vep=build_default_cache_list()$cache_vep,
     vcf=NULL,
     fmt="vcf",
+    type="snv",
     ...
 ){
 
@@ -141,10 +142,12 @@ annotate_snv_strelka_vep=function(
       append_env(to=.this.env,from=.env)
 
       set_main(.env=.this.env)
+      output_name=paste0(input_id,".vep.",type)
+      fn=paste0(fn,".",type)
 
       .main$steps[[fn]]<-.this.env
       .main.step=.main$steps[[fn]]
-      output_name=paste0(input_id,".snv.vep")
+     
 
       .main$steps[[fn]]$steps<-append(
         .main$steps[[fn]]$steps,
@@ -168,10 +171,11 @@ annotate_snv_strelka_vep=function(
         ) 
       )
 
-     .this.step=.main$steps[[fn]]$steps$annotate_vep
-     .main.step$out_files$snv <-.this.step$out_files
-      .env$.main<-.main
-    }
+     .this.step=.main$steps$annotate_vep
+     .main.step$out_files[[type]] <-.this.step$out_files
+     .env$.main<-.main
+     
+   }
 
 
     .base.env=environment()
@@ -187,190 +191,3 @@ annotate_snv_strelka_vep=function(
 }
 
 
-
-
-#' Create Read Orientation Model for Mutect2 Filter
-#'
-#' This function creates read orientation model for mutect2 filtering
-#'
-#' @param bin_vep [REQUIRED] Path to VEP binary.
-#' @param bin_bgzip [REQUIRED] Path to bgzip binary.
-#' @param bin_tabix [REQUIRED] Path to tabix binary.
-#' @param vep_cache [REQUIRED] Path to vep cache location.
-#' @param vcf [REQUIRED] Path to VCF file.
-#' @param compress [OPTIONAL] Generate a compressed VCF
-#' @param output_name [OPTIONAL] Name of output file
-#' @param clean [OPTIONAL]Remove extra files.
-#' @param output_dir [OPTIONAL] Path to the output directory.
-#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
-#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
-#' @param verbose [OPTIONAL] Enables progress messages. Default False.
-#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
-#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
-#' @param task_name Task name. Default "recalCovariates"
-#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
-#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
-#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
-#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
-#' @export
-
-
-annotate_indel_strelka_vep=function(
-    bin_vep=build_default_tool_binary_list()$bin_vep,
-    bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
-    bin_tabix=build_default_tool_binary_list()$bin_tabix,
-    cache_vep=build_default_cache_list()$cache_vep,
-    vcf=NULL,
-    fmt="vcf",
-    ...
-){
-
-    run_main=function(
-      .env
-    ){
-
-
-      .this.env=environment()
-      append_env(to=.this.env,from=.env)
-
-      set_main(.env=.this.env)
-
-      .main$steps[[fn]]<-.this.env
-      .main.step=.main$steps[[fn]]
-      output_name=paste0(input_id,".snv.vep")
-
-      .main$steps[[fn]]$steps<-append(
-        .main$steps[[fn]]$steps,
-        annotate_vep(
-          bin_bgzip=bin_bgzip,
-          bin_tabix=bin_tabix,
-          bin_vep=bin_vep,
-          cache_vep=cache_vep,
-          vcf=input,
-          compress=compress,
-          index=index,
-          index_format=index_format,
-          bgzip_index=bgzip_index,
-          output_dir=out_file_dir,
-          output_name=output_name,
-          tmp_dir=tmp_dir,
-          env_dir=env_dir,
-          verbose=verbose,
-          threads=threads,
-          ram=ram
-        ) 
-      )
-
-     .this.step=.main$steps[[fn]]$steps$annotate_vep
-     .main.step$out_files$indel <-.this.step$out_files
-
-      .env$.main<-.main
-    }
-
-
-    .base.env=environment()
-    list2env(list(...),envir=.base.env)
-    set_env_vars(
-        .env=.base.env,
-        vars="vcf"
-    )
-
-    launch(.env=.base.env)
-
-
-}
-
-
-
-
-#' Create Read Orientation Model for Mutect2 Filter
-#'
-#' This function creates read orientation model for mutect2 filtering
-#'
-#' @param bin_vep [REQUIRED] Path to VEP binary.
-#' @param bin_bgzip [REQUIRED] Path to bgzip binary.
-#' @param bin_tabix [REQUIRED] Path to tabix binary.
-#' @param vep_cache [REQUIRED] Path to vep cache location.
-#' @param vcf [REQUIRED] Path to VCF file.
-#' @param compress [OPTIONAL] Generate a compressed VCF
-#' @param output_name [OPTIONAL] Name of output file
-#' @param clean [OPTIONAL]Remove extra files.
-#' @param output_dir [OPTIONAL] Path to the output directory.
-#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
-#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
-#' @param verbose [OPTIONAL] Enables progress messages. Default False.
-#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
-#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
-#' @param task_name Task name. Default "recalCovariates"
-#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
-#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
-#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
-#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
-#' @export
-
-
-annotate_sv_manta_vep=function(
-    bin_vep=build_default_tool_binary_list()$bin_vep,
-    bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
-    bin_tabix=build_default_tool_binary_list()$bin_tabix,
-    cache_vep=build_default_cache_list()$cache_vep,
-    vcf=NULL,
-    fmt="vcf",
-    ...
-){
-
-    run_main=function(
-      .env
-    ){
-
-
-      .this.env=environment()
-      append_env(to=.this.env,from=.env)
-
-      set_main(.env=.this.env)
-
-      .main$steps[[fn]]<-.this.env
-      .main.step=.main$steps[[fn]]
-      output_name=paste0(input_id,".sv.vep")
-
-      .main$steps[[fn]]$steps<-append(
-        .main$steps[[fn]]$steps,
-        annotate_vep(
-          bin_bgzip=bin_bgzip,
-          bin_tabix=bin_tabix,
-          bin_vep=bin_vep,
-          cache_vep=cache_vep,
-          vcf=input,
-          compress=compress,
-          index=index,
-          index_format=index_format,
-          bgzip_index=bgzip_index,
-          output_dir=out_file_dir,
-          output_name=output_name,
-          tmp_dir=tmp_dir,
-          env_dir=env_dir,
-          verbose=verbose,
-          threads=threads,
-          ram=ram
-        ) 
-      )
-
-     .this.step=.main$steps[[fn]]$steps$annotate_vep
-     .main.step$out_files$sv <-.this.step$out_files
-      
-
-      .env$.main<-.main
-    }
-
-
-    .base.env=environment()
-    list2env(list(...),envir=.base.env)
-    set_env_vars(
-        .env=.base.env,
-        vars="vcf"
-    )
-
-    launch(.env=.base.env)
-
-
-}

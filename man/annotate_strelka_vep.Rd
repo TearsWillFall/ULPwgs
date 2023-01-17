@@ -2,29 +2,17 @@
 % Please edit documentation in R/vep.R
 \name{annotate_strelka_vep}
 \alias{annotate_strelka_vep}
-\title{Annotate Strelka VCF files with VEP annotation tool}
+\title{Create Read Orientation Model for Mutect2 Filter}
 \usage{
 annotate_strelka_vep(
   bin_vep = build_default_tool_binary_list()$bin_vep,
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
   cache_vep = build_default_cache_list()$cache_vep,
-  vcf_snv = NULL,
-  vcf_indel = NULL,
-  vcf_sv = NULL,
-  extract_pass = TRUE,
-  output_dir = ".",
-  verbose = FALSE,
-  batch_config = build_default_preprocess_config(),
-  threads = 1,
-  ram = 1,
-  mode = "local",
-  executor_id = make_unique_id("callVEP"),
-  task_name = "callVEP",
-  time = "48:0:0",
-  update_time = 60,
-  wait = FALSE,
-  hold = NULL
+  vcf = NULL,
+  fmt = "vcf",
+  type = "snv",
+  ...
 )
 }
 \arguments{
@@ -34,15 +22,23 @@ annotate_strelka_vep(
 
 \item{bin_tabix}{\link{REQUIRED} Path to tabix binary.}
 
-\item{vcf_snv}{\link{REQUIRED} Path to VCF file.}
+\item{vcf}{\link{REQUIRED} Path to VCF file.}
+
+\item{vep_cache}{\link{REQUIRED} Path to vep cache location.}
+
+\item{compress}{\link{OPTIONAL} Generate a compressed VCF}
+
+\item{output_name}{\link{OPTIONAL} Name of output file}
+
+\item{clean}{\link{OPTIONAL}Remove extra files.}
 
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
-
-\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
 \item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
 
 \item{ram}{\link{OPTIONAL} RAM memory to asing to each thread. Default 4}
+
+\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
@@ -57,17 +53,7 @@ annotate_strelka_vep(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
-
-\item{vep_cache}{\link{REQUIRED} Path to vep cache location.}
-
-\item{vcf_in}{\link{REQUIRED} Path to VCF file.}
-
-\item{compress}{\link{OPTIONAL} Generate a compressed VCF}
-
-\item{output_name}{\link{OPTIONAL} Name of output file}
-
-\item{clean}{\link{OPTIONAL}Remove extra files.}
 }
 \description{
-This function annotates Strelka VCF file using VEP
+This function creates read orientation model for mutect2 filtering
 }

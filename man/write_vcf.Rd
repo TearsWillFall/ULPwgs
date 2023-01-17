@@ -11,9 +11,6 @@ write_vcf(
   vcf = NULL,
   compress = TRUE,
   index = TRUE,
-  index_format = "tbi",
-  bgzip_index = FALSE,
-  clean = TRUE,
   ...
 )
 }
@@ -34,9 +31,9 @@ write_vcf(
 
 \item{bgzip_index}{Create BGZIP index for compressed file. Default FALSE}
 
-\item{clean}{Remove input VCF after completion. Default FALSE.}
-
 \item{output_dir}{Path to the output directory.}
+
+\item{clean}{Remove input VCF after completion. Default FALSE.}
 
 \item{verbose}{Enables progress messages. Default False.}
 
