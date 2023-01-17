@@ -360,6 +360,7 @@ repeat_caller_circlemap=function(
 
 
 circdna_circlemap=function(
+        annotation_ref=build_default_reference_list()$HG19$panel$PCF_V3$annotation$genes,
         env_circlemap=build_default_python_enviroment_list()$env_circlemap,
         bin_samtools=build_default_tool_binary_list()$bin_samtools,
         ref_genome=build_default_reference_list()$HG19$reference$genome,
@@ -543,6 +544,8 @@ annotate_bed_circlemap=function(
         .this.env=environment()
         append_env(to=.this.env,from=.env)
         set_main(.env=.this.env)
+
+        .main$steps[[fn]]<-.this.env
   
         dat=read_bed_circlemap(bed=input,id=output_name,type=type,sep="\t")
         annotation=read.table(annotation_ref,sep="\t",header=TRUE) %>% 
@@ -605,8 +608,8 @@ annotate_bed_circlemap=function(
 
         
         .main$out_files$annot_circ_bed=paste0(
-            out_file_dir,"/",input_id,
-            ".circular_",type,".annotated.bed")
+            out_file_dir,"/",input_id,".",type,
+            ".circ_candidates.annotated.bed")
 
 
         
@@ -618,8 +621,7 @@ annotate_bed_circlemap=function(
             row.names=FALSE,
             quote=FALSE
         )
-
-        .main$steps[[fn]]<-.this.env
+   
         .env$.main <-.main
 
     }
