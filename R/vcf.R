@@ -371,8 +371,8 @@ add_sv_af_strelka_vcf=function(
       
       
 
-        .main$steps[[fn]]$steps <- append(
-          .main$steps[[fn]]$steps,
+        .main.step$steps <- append(
+          .main.step$steps,
           write_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
@@ -523,8 +523,6 @@ add_af_strelka_vcf=function(
       }else{
         stop("Wrong type argument")
       }
-
-   
 
       .env$.main<-.main
 
@@ -1185,8 +1183,8 @@ write_vcf=function(
     
 
       if(compress){
-        .main$steps[[fn]]$steps<-append(
-          .main$steps[[fn]]$steps,
+        .main.step$steps<-append(
+          .main.step$steps,
           compress_and_index_vcf_htslib(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
@@ -1205,7 +1203,6 @@ write_vcf=function(
           ) 
         )
      .this.step=.main.step$steps$compress_and_index_vcf_htslib
-
      .main.step$out_files <- append(
       .main.step$out_files,
       .this.step$out_files

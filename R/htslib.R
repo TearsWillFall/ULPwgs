@@ -47,17 +47,21 @@ compress_vcf_htslib=function(
             " -c",input,">",.main$out_files$bgzip_vcf)
 
         run_job(.env=.this.env)
+
         .main.step=.main$steps[[fn]]
     
-
-
         if(index){
-            .main$steps[[fn]]$steps<-append(
-                .main$steps[[fn]]$steps,
+            .main.step$steps<-append(
+                .main.step,
                     index_vcf_htslib(
                         bin_tabix=bin_tabix,
                         vcf=.main.step$out_files$bgzip_vcf,
                         index_format=index_format,
+                        output_dir=out_file_dir,
+                        tmp_dir=tmp_dir,
+                        env_dir=env_dir,
+                        batch_dir=batch_dir,
+                        err_msg=err_msg,
                         verbose=verbose,
                         threads=threads,ram=ram,
                         executor_id=task_id
@@ -254,7 +258,7 @@ compress_and_index_vcf_htslib=function(
         .main.step=.main$steps[[fn]]
 
         if(compress){
-            .main$steps[[fn]]$steps<- append(
+            .main.step$steps<- append(
                 .main$steps[[fn]]$steps,
                 compress_vcf_htslib(
                     bin_bgzip=bin_bgzip,
@@ -263,21 +267,33 @@ compress_and_index_vcf_htslib=function(
                     index_format=index_format,
                     bgzip_index=bgzip_index,
                     output_dir=out_file_dir,
+                    tmp_dir=tmp_dir,
+                    env_dir=env_dir,
+                    batch_dir=batch_dir,
+                    err_msg=err_msg,
                     clean=clean,
                     verbose=verbose,
                     output_name=output_name,
-                    threads=threads,ram=ram,
+                    threads=threads,
+                    ram=ram,
                     executor_id=task_id
                 )
             ) 
+              .this.step=.main.step$steps$compress_vcf_htslib
+              .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
         }else{
 
                 if(index){
-                .main$steps[[fn]]$steps<-append(
-                    .main$steps[[fn]]$steps,
+                .main.step$steps<-append(
+                    .main.step$steps,
                         index_vcf_htslib(
                         bin_tabix=bin_tabix,
                         vcf=vcf,
+                        output_dir=out_file_dir,
+                        tmp_dir=tmp_dir,
+                        env_dir=env_dir,
+                        batch_dir=batch_dir,
+                        err_msg=err_msg,
                         index_format=index_format,
                         verbose=verbose,
                         threads=threads,ram=ram,
