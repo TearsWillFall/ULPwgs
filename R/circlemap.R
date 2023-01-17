@@ -594,13 +594,16 @@ annotate_bed_circlemap=function(
         set_main(.env=.this.env)
 
 
-        .main$out_files$annot_circ_bed=paste0(
+      
+        .main$steps[[fn]]<-.this.env
+        .main.step<- .main$steps[[fn]]
+
+
+        .main.step$out_files$annot_circ_bed=paste0(
             out_file_dir,"/",input_id,".",type,
             ".circ_candidates.annotated.bed"
         )
 
-        .main$steps[[fn]]<-.this.env
-        .main.step<- .main$steps[[fn]]
   
         dat=read_bed_circlemap(bed=input,id=output_name,type=type,sep="\t")
         annotation=read.table(annotation_ref,sep="\t",header=TRUE) %>% 
