@@ -56,8 +56,8 @@ call_sv_manta=function(
 
         if(!is.null(tumour)){
 
-            .main$steps[[fn]]$steps<-append(
-              .main$steps[[fn]]$steps,
+            .main.step$steps<-append(
+              .main.step$steps,
               call_somatic_sv_manta(
                 bin_manta=bin_manta,
                 bin_bcftools=bin_bcftools,
@@ -89,8 +89,8 @@ call_sv_manta=function(
         }
 
       }else{
-           .main$steps[[fn]]$steps<-append(
-              .main$steps[[fn]]$steps,
+           .main.step$steps<-append(
+              .main.step$steps,
               call_germline_sv_manta(
                 bin_manta=bin_manta,
                 bin_bcftools=bin_bcftools,
@@ -214,11 +214,11 @@ call_germline_sv_manta=function(
             .env=.this.env
         )
 
-        .main.step=.main$steps[[fn]]
+        .main.step=.main.step
 
     
-        .main$steps[[fn]]$steps <- append(
-          .main$steps[[fn]]$steps, 
+        .main.step$steps <- append(
+          .main.step$steps, 
           add_af_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
@@ -237,12 +237,12 @@ call_germline_sv_manta=function(
         .this.step=.main.step$steps$add_af_strelka_vcf
         .main.step$out_files$annotated$af=.this.step$out_files
       
-        .main$steps[[fn]]$steps <-append(
-          .main$steps[[fn]]$steps, 
+        .main.step$steps <-append(
+          .main.step$steps, 
           extract_pass_variants_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf=.main.step$out_files$annotated$af$bgzip_vcf,
+            vcf=.main.step$out_files$annotated$af$sv$bgzip_vcf,
             type="sv",
             output_dir=paste0(out_file_dir,"/annotated"),
             tmp_dir=tmp_dir,
@@ -261,8 +261,8 @@ call_germline_sv_manta=function(
         .main.step$out_files$annotated$filter=.this.step$out_files
       
         if(annotate){
-            .main$steps[[fn]]$steps<-append(
-              .main$steps[[fn]]$steps,
+            .main.step$steps<-append(
+              .main.step$steps,
               annotate_strelka_vep(
                 bin_vep=bin_vep,
                 bin_bgzip=bin_bgzip,
@@ -286,8 +286,8 @@ call_germline_sv_manta=function(
         .main.step$out_files$annotated$vep=.this.step$out_files
         
           if(tabulate){
-              .main$steps[[fn]]$steps<-append(
-                .main$steps[[fn]]$steps,
+              .main.step$steps<-append(
+                .main.step$steps,
                 tabulate_strelka_vcf(
                   vcf=.main.step$out_files$annotated$vep$sv$bgzip_vcf,
                   type="sv",
@@ -401,8 +401,8 @@ call_somatic_sv_manta=function(
         .main.step=.main$steps[[fn]]
 
     
-        .main$steps[[fn]]$steps <- append(
-          .main$steps[[fn]]$steps, 
+        .main.step$steps <- append(
+          .main.step$steps, 
           add_af_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
@@ -420,8 +420,8 @@ call_somatic_sv_manta=function(
         .this.step=.main.step$steps$add_af_strelka_vcf.sv
         .main.step$out_files$annotated$af=.this.step$out_files
       
-       .main$steps[[fn]]$steps <-append(
-          .main$steps[[fn]]$steps, 
+       .main.step$steps <-append(
+          .main.step$steps, 
           extract_pass_variants_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
@@ -441,8 +441,8 @@ call_somatic_sv_manta=function(
         .main.step$out_files$annotated$filter=.this.step$out_files
 
         if(annotate){
-            .main$steps[[fn]]$steps<-append(
-              .main$steps[[fn]]$steps,
+            .main.step$steps<-append(
+              .main.step$steps,
               annotate_strelka_vep(
                 bin_vep=bin_vep,
                 bin_bgzip=bin_bgzip,
@@ -464,8 +464,8 @@ call_somatic_sv_manta=function(
 
         
           if(tabulate){
-              steps[[fn]]$steps<-append(
-                steps[[fn]]$steps,
+              .main.step$steps<-append(
+                .main.step$steps,
                 tabulate_strelka_vcf(
                   vcf=.main.step$out_files$annotated$vep$sv$bgzip_vcf,
                   type="sv",
@@ -480,7 +480,7 @@ call_somatic_sv_manta=function(
                   executor_id=task_id
               )
             )
-            .this.step=.main.step$steps$annotate_strelka_vep.sv
+            .this.step=.main.step$steps$tabulate_strelka_vep.sv
             .main.step$out_files$annotated$tabulate=.this.step$out_files
           }
         }
