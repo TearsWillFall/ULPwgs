@@ -4024,8 +4024,6 @@ multisample_haplotypecaller_gatk=function(
 
 
 
-
-
 #' Variant Trench Filtering using GATK
 #'
 #' This function filters variant tranches calls generated using CNNScoreVariants method
