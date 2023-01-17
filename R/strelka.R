@@ -229,7 +229,7 @@ call_somatic_sv_manta=function(
           extract_pass_variants_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf=.main.step$out_files$annotated$,
+            vcf=.main.step$out_files$annotated,
             output_dir=paste0(out_file_dir,"/results"),
             verbose=verbose,
             executor_id=task_id
