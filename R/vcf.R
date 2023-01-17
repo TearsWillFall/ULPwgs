@@ -444,7 +444,7 @@ add_af_strelka_vcf=function(
   
       set_main(.env=.this.env)
 
-      output_name=paste0("somatic.af.",type)
+      output_name=paste0(input_id,".af.",type)
       fn=paste0(fn,".",type)
 
 
@@ -464,6 +464,7 @@ add_af_strelka_vcf=function(
             tmp_dir=tmp_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
+            output_name=output_name,
             verbose=verbose,
             threads=threads,
             ram=ram,
@@ -481,6 +482,7 @@ add_af_strelka_vcf=function(
             tmp_dir=tmp_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
+            output_name=output_name,
             verbose=verbose,
             threads=threads,
             ram=ram,
@@ -498,6 +500,7 @@ add_af_strelka_vcf=function(
             tmp_dir=tmp_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
+            output_name=output_name,
             verbose=verbose,
             threads=threads,
             ram=ram,
@@ -709,7 +712,7 @@ extract_pass_variants_strelka_vcf=function(
   
       set_main(.env=.this.env)
 
-      output_name=paste0("somatic.PASS.",type)
+      output_name=paste0(input_id,"PASS.",type)
       fn=paste0(fn,".",type)
 
 
@@ -725,6 +728,7 @@ extract_pass_variants_strelka_vcf=function(
             bin_tabix=bin_tabix,
             vcf=input,
             filters="PASS",
+            output_name=output_name
             output_dir=out_file_dir,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
