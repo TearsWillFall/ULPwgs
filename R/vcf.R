@@ -179,7 +179,7 @@ add_snv_af_strelka_vcf=function(
   }
 
   
-     .base.env=environment()
+    .base.env=environment()
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
@@ -187,7 +187,6 @@ add_snv_af_strelka_vcf=function(
     )
   
     launch(.env=.base.env)
-    return(job_report)
 
 }
 
