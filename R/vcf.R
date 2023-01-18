@@ -882,7 +882,7 @@ tabulate_vcf=function(
 
         if(ignore){
 
-            write.table("No variants detected in input VCF.",file=.main$out_files)
+            cat(x="No variants detected in input VCF.",file=.main$out_files$tab_vcf,sep="\n")
     
         }else{
             vcf=extract_csq_info_vcf(vcf)
@@ -892,7 +892,7 @@ tabulate_vcf=function(
             vcf_body=vcf$body %>% tidyr::unnest(cols=Allele:TRANSCRIPTION_FACTORS)
             vcf_body=vcf_body %>% unnest_vcf_body(full=TRUE) %>% 
             tidyr::pivot_wider(values_from=VALUE,names_from=c(SAMPLE,FORMAT))
-            write.table(vcf_body,file=steps$out_files,sep="\t",quote=FALSE,
+            write.table(x=vcf_body,file=.main$out_files$tab_vcf,sep="\t",quote=FALSE,
             row.names=FALSE,col.names=TRUE)
         }
 
