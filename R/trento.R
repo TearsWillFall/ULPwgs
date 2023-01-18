@@ -382,8 +382,6 @@ new_clonet_trento=function(
     ...
 ){
 
-
-
     run_main=function(
         .env
     ){
@@ -448,8 +446,6 @@ new_clonet_trento=function(
 
 
     }
-
-
     
     .base.env=environment()
     list2env(list(...),envir=.base.env)
@@ -460,8 +456,6 @@ new_clonet_trento=function(
 
     launch(.env=.base.env)
     
-  
- 
 }
 
 
