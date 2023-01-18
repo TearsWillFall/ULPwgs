@@ -10,6 +10,8 @@ annotate_vep(
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
   cache_vep = build_default_cache_list()$cache_vep,
   vcf = NULL,
+  tabulate = TRUE,
+  compress = TRUE,
   fmt = "vcf",
   ...
 )
@@ -23,9 +25,9 @@ annotate_vep(
 
 \item{vcf}{\link{REQUIRED} Path to VCF file.}
 
-\item{vep_cache}{\link{REQUIRED} Path to vep cache location.}
-
 \item{compress}{\link{OPTIONAL} Generate a compressed VCF}
+
+\item{vep_cache}{\link{REQUIRED} Path to vep cache location.}
 
 \item{output_name}{\link{OPTIONAL} Name of output file}
 

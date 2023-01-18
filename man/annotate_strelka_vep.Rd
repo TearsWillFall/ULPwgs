@@ -11,6 +11,7 @@ annotate_strelka_vep(
   cache_vep = build_default_cache_list()$cache_vep,
   vcf = NULL,
   fmt = "vcf",
+  tabulate = TRUE,
   type = "snv",
   ...
 )

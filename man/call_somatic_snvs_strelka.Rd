@@ -13,6 +13,7 @@ call_somatic_snvs_strelka(
   cache_vep = build_default_cache_list()$cache_vep,
   tumour = NULL,
   normal = NULL,
+  patient_id = NULL,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   indel_candidates = NULL,
   annotate = TRUE,

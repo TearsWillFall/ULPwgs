@@ -396,7 +396,7 @@ call_somatic_snvs_strelka=function(
            add_af_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf=.main.step$steps$out_files$strelka$snv,
+            vcf=.main.step$out_files$strelka$snv,
             type="snv",
             output_dir=paste0(out_file_dir,"/annotated"),
             tmp_dir=tmp_dir,
@@ -420,7 +420,7 @@ call_somatic_snvs_strelka=function(
             add_af_strelka_vcf(
               bin_bgzip=bin_bgzip,
               bin_tabix=bin_tabix,
-              vcf=.main.step$steps$out_files$strelka$indel,
+              vcf=.main.step$out_files$strelka$indel,
               type="indel",
               output_dir=paste0(out_file_dir,"/annotated"),
               tmp_dir=tmp_dir,
@@ -449,7 +449,7 @@ call_somatic_snvs_strelka=function(
           extract_pass_variants_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf=.main.step$steps$out_files$annotated$af$snv$bgzip_vcf,
+            vcf=.main.step$out_files$annotated$af$snv$bgzip_vcf,
             type="snv",
             output_dir=paste0(out_file_dir,"/annotated"),
             tmp_dir=tmp_dir,
@@ -476,7 +476,7 @@ call_somatic_snvs_strelka=function(
           extract_pass_variants_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf=.main.step$steps$out_files$annotated$af$indel$bgzip_vcf,
+            vcf=.main.step$out_files$annotated$af$indel$bgzip_vcf,
             type="indel",
             output_dir=paste0(out_file_dir,"/annotated"),
             tmp_dir=tmp_dir,

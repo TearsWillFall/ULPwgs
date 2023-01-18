@@ -6,7 +6,9 @@
 \usage{
 compress_vcf_htslib(
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
+  bin_tabix = build_default_tool_binary_list()$bin_tabix,
   vcf = NULL,
+  index = TRUE,
   ...
 )
 }

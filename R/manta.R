@@ -358,12 +358,12 @@ call_somatic_sv_manta=function(
             threads)
           )
 
-        .main$out_files$strelka$workflow=paste0(out_file_dir,"/runWorkflow.py")
-        .main$out_files$strelka$stats=list(
+        .main$out_files$manta$workflow=paste0(out_file_dir,"/runWorkflow.py")
+        .main$out_files$manta$stats=list(
               tsv=paste0(out_file_dir,"/results/stats/runStats.tsv"),
               xml=paste0(out_file_dir,"/results/stats/runStats.xml")
         )
-       .main$out_files$strelka$variants=list(
+       .main$out_files$manta$variants=list(
               sv=paste0(out_file_dir,"/results/variants/somaticSV.vcf.gz"),
               sv_idx=paste0(out_file_dir,"/results/variants/somaticSV.vcf.gz"),
               indel_candidates=paste0(out_file_dir,"/results/variants/candidateSmallIndels.vcf.gz"),
@@ -386,7 +386,7 @@ call_somatic_sv_manta=function(
           add_af_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf=.main.step$out_files$strelka$variants$sv,
+            vcf=.main.step$out_files$manta$variants$sv,
             type="sv",
             output_dir=paste0(out_file_dir,"/annotated"),
             tmp_dir=tmp_dir,
