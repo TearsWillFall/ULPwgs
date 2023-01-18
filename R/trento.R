@@ -340,6 +340,133 @@ clonet_trento=function(
 }
 
 
+
+
+
+#' Process a pair of tumour-normal samples using CLONET
+#'
+#' This function takes a pair of tumour and 
+#' normal BAMS and applies the CLONET pipeline
+#'
+#'
+#' @param sif_path Path to singularity image file
+#' @param version PCF Select panel version to use
+#' @param tumour Path to tumour BAM file 
+#' @param normal Path to normal BAM file
+#' @param patient_id Patient id. 
+#' @param tc Pre-computed tumour content. Default NULL.
+#' @param ploidy Pre-computed ploidy. Default NULL.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Executor ID. Default "clonet"
+#' @param task_name Name of the task. Default "clonet"
+#' @param threads Number of CPU cores to use. Default 3.
+#' @param ram RAM memory for batched job. Default 4
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param output_dir Path to the output directory.
+#' @param tmp_dir Path to temporary file directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param hold Job to hold on in batched mode.
+#' @export
+
+
+new_clonet_trento=function(
+    sif_clonet=build_default_sif_list()$sif_clonet$V3,
+    version="V3",
+    tumour=NULL,
+    normal=NULL,
+    patient_id=NULL,
+    tc=NULL,
+    ploidy=NULL,
+    ...
+){
+
+
+
+    run_main=function(
+        .env
+    ){
+
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+
+        out_file_dir=set_dir(dir=out_file_dir,name=patient_id)
+        out_file_dir=set_dir(dir=out_file_dir,name="clonet_reports")
+        out_file_dir=set_dir(dir=out_file_dir,name=input_id)
+
+        set_main(.env=.this.env)
+      
+        .main$out_files$sample_info=paste0(
+            tmp_dir,"/",patient_id,"_",input_id,"_tmp.txt"
+        )
+
+    
+
+        if(!is.null(version)){
+            sif_clonet=build_default_sif_list()$sif_clonet[version]
+            if(is.null(sif_clonet)){
+                stop(paste0(version, " is not a valid PCF Select panel version"))
+            }
+        }
+
+
+        if(!is.null(tc)){
+            tc=paste(" -c ",tc)
+        }
+
+        if(!is.null(ploidy)){
+            ploidy=paste(" -p ",ploidy)
+        }
+        
+        file_info=data.frame(
+            Patient=patient_id,
+            Tumour=normalizePath(input),
+            Normal=normalizePath(normal)
+        )
+
+        write.table(
+            file_info,
+            file=.main$out_files$sample_info,
+            quote=FALSE,
+            row.names=FALSE,
+            col.names=TRUE,
+            sep="\t"
+        )
+
+
+
+        .main$exec_code=paste(" singularity run -H /:/home", " --app pcfs ",
+            sif_clonet, " -s ", .main$out_files$sample_info ," -o ", out_file_dir, " -t ", 
+            tmp_dir, " -n " , threads, tc, ploidy
+        )
+
+
+        run_job(.env=.this.env)
+
+        .main$.main<-.main
+
+
+    }
+
+
+    
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+        .env= .base.env,
+        vars="tumour"
+    )
+
+    launch(.env=.base.env)
+    
+  
+ 
+}
+
+
+
+
 #' View CLONET output
 #'
 #' Allows to visualize CLONET output files
