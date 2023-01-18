@@ -231,9 +231,9 @@ call_germline_sv_manta=function(
             batch_dir=batch_dir,
             err_msg=err_msg,
             verbose=verbose, 
-            executor_id=task_id,
             threads=threads,
-            ram=ram
+            ram=ram,
+            executor_id=task_id
           )
         )
         .this.step=.main.step$steps$add_af_strelka_vcf
@@ -252,9 +252,9 @@ call_germline_sv_manta=function(
             batch_dir=batch_dir,
             err_msg=err_msg,
             verbose=verbose,
-            executor_id=task_id,
             threads=threads,
-            ram=ram
+            ram=ram,
+            executor_id=task_id
     
           )
         )
@@ -278,9 +278,9 @@ call_germline_sv_manta=function(
                 batch_dir=batch_dir,
                 err_msg=err_msg,
                 verbose=verbose,
-                executor_id=task_id,
                 threads=threads,
-                ram=ram
+                ram=ram,
+                executor_id=task_id
             )
           )
 
@@ -394,6 +394,8 @@ call_somatic_sv_manta=function(
             batch_dir=batch_dir,
             err_msg=err_msg,
             verbose=verbose, 
+            threads=threads,
+            ram=ram,
             executor_id=task_id
           )
         )
@@ -413,6 +415,8 @@ call_somatic_sv_manta=function(
             batch_dir=batch_dir,
             err_msg=err_msg,
             verbose=verbose,
+            threads=threads,
+            ram=ram,
             executor_id=task_id
           )
         )
@@ -437,6 +441,8 @@ call_somatic_sv_manta=function(
                 batch_dir=batch_dir,
                 err_msg=err_msg,
                 verbose=verbose,
+                threads=threads,
+                ram=ram,
                 executor_id=task_id
             )
           )

@@ -397,9 +397,9 @@ call_somatic_snvs_strelka=function(
             batch_dir=batch_dir,
             err_msg=err_msg,
             verbose=verbose, 
-            executor_id=task_id,
             threads=threads,
-            ram=ram
+            ram=ram,
+            executor_id=task_id,
           )
          )
 
@@ -420,10 +420,11 @@ call_somatic_snvs_strelka=function(
               env_dir=env_dir,
               batch_dir=batch_dir,
               err_msg=err_msg,
-              verbose=verbose, 
-              executor_id=task_id,
+              verbose=verbose,
               threads=threads,
-              ram=ram
+              ram=ram,
+              executor_id=task_id
+
           )
         )
   
@@ -451,7 +452,7 @@ call_somatic_snvs_strelka=function(
             verbose=verbose,
             threads=threads,
             ram=ram,
-            executor_id=task_id,
+            executor_id=task_id
           )
         )
 
@@ -673,9 +674,10 @@ call_germline_snvs_strelka=function(
             batch_dir=batch_dir,
             err_msg=err_msg,
             verbose=verbose, 
-            executor_id=task_id,
             threads=threads,
-            ram=ram
+            ram=ram,
+            executor_id=task_id
+  
           )
          )
 
@@ -697,9 +699,10 @@ call_germline_snvs_strelka=function(
               batch_dir=batch_dir,
               err_msg=err_msg,
               verbose=verbose, 
-              executor_id=task_id,
               threads=threads,
-              ram=ram
+              ram=ram,
+              executor_id=task_id
+
           )
         )
   
