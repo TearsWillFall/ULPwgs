@@ -57,9 +57,10 @@ call_variants_strelka=function(
       set_main(.env=.this.env)
 
       .main$steps[[fn]]<-.this.env
+      .main.step<-.main$steps[[fn]]
     
-      .main$steps[[fn]]$steps <-append(
-            .main$steps[[fn]]$steps,
+      .main.stepsteps <-append(
+            .main.step$steps,
             call_sv_manta(
                 bin_bcftools=bin_bcftools,
                 bin_bgzip=bin_bgzip,
@@ -88,8 +89,8 @@ call_variants_strelka=function(
       .main.step$out_files$sv=.this.step$out_files
 
       
-      .main$steps[[fn]]$steps <-append(
-        .main$steps[[fn]]$steps,
+      .main.step$steps <-append(
+        .main.step$steps,
             call_snvs_strelka(
               bin_bcftools=bin_bcftools,
               bin_bgzip=bin_bgzip,
@@ -195,14 +196,15 @@ call_snvs_strelka=function(
       set_main(.env=.this.env)
 
       .main$steps[[fn]]<-.this.env
+      .main.step<-.main$steps[[fn]]
    
   
       if(!is.null(normal)){
 
         if(!is.null(tumour)){
 
-            .main$steps[[fn]]$steps<-append(
-              .main$steps[[fn]]$steps,
+            .main.step$steps<-append(
+              .main.step$steps,
               call_somatic_snvs_strelka(
                 bin_strelka=bin_strelka_somatic,
                 bin_bcftools=bin_bcftools,
@@ -236,8 +238,8 @@ call_snvs_strelka=function(
         }
        
       }else{
-            .main$steps[[fn]]$steps<-append(
-              .main$steps[[fn]]$steps,
+            .main.step$steps<-append(
+              .main.step$steps,
               call_germline_snvs_strelka(
                 bin_strelka=bin_strelka_germline,
                 bin_bcftools=bin_bcftools,
@@ -376,14 +378,14 @@ call_somatic_snvs_strelka=function(
             .env=.this.env
         )
 
-        .main.step=.main$steps[[fn]]
+        .main.step<-.main$steps[[fn]]
 
 
         
         ### ADD AF for SNVS
 
-         .main$steps[[fn]]$steps <- append(
-          .main$steps[[fn]]$steps,
+         .main.step$steps <- append(
+          .main.step$steps,
            add_af_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
@@ -406,7 +408,8 @@ call_somatic_snvs_strelka=function(
 
 
         ### ADD AF for INDELS
-        .main$steps[[fn]]$steps <- append(.main$steps[[fn]]$steps,
+        .main.step$steps <- append(
+          .main.step$steps,
             add_af_strelka_vcf(
               bin_bgzip=bin_bgzip,
               bin_tabix=bin_tabix,
@@ -433,8 +436,8 @@ call_somatic_snvs_strelka=function(
 
         ### FILTER SNV BY FILTERS
          
-        .main$steps[[fn]]$steps <-append(
-          .main$steps[[fn]]$steps, 
+        .main.step$steps<-append(
+          .main.step$steps, 
           extract_pass_variants_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
@@ -460,8 +463,8 @@ call_somatic_snvs_strelka=function(
         ### FILTER INDELS BY FILTERS
 
       
-        .main$steps[[fn]]$steps<-append(
-          .main$steps[[fn]]$steps, 
+        .main.step$steps<-append(
+          .main.step$steps, 
           extract_pass_variants_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
@@ -490,8 +493,8 @@ call_somatic_snvs_strelka=function(
         if(annotate){
 
             ### ANNOTATE SNV USING VEP
-            .main$steps[[fn]]$steps <-append(
-              .main$steps[[fn]]$steps ,
+            .main.step$steps <-append(
+              .main.step$steps ,
               annotate_strelka_vep(
                 bin_vep=bin_vep,
                 bin_bgzip=bin_bgzip,
@@ -517,8 +520,8 @@ call_somatic_snvs_strelka=function(
 
           ### ANNOTATE INDEL USING VEP
 
-          .main$steps[[fn]]$steps <-append(
-              .main$steps[[fn]]$steps ,
+          .main.step$steps <-append(
+              .main.step$steps ,
               annotate_strelka_vep(
                 bin_vep=bin_vep,
                 bin_bgzip=bin_bgzip,
@@ -650,15 +653,15 @@ call_germline_snvs_strelka=function(
         )
 
 
-        .main.step=.main$steps[[fn]]
+        .main.step<-.main$steps[[fn]]
 
 
 
          
         ### ADD AF for SNVS
 
-         .main$steps[[fn]]$steps <- append(
-          .main$steps[[fn]]$steps,
+        .main.step$steps<- append(
+         .main.step$steps,
            add_af_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
@@ -681,7 +684,8 @@ call_germline_snvs_strelka=function(
 
 
         ### ADD AF for INDELS
-        .main$steps[[fn]]$steps <- append(.main$steps[[fn]]$steps,
+        .main.step$steps <- append(
+          .main.step$steps,
             add_af_strelka_vcf(
               bin_bgzip=bin_bgzip,
               bin_tabix=bin_tabix,
@@ -708,8 +712,8 @@ call_germline_snvs_strelka=function(
 
         ### FILTER SNV BY FILTERS
          
-        .main$steps[[fn]]$steps <-append(
-          .main$steps[[fn]]$steps, 
+        .main.step$steps <-append(
+          .main.step$steps, 
           extract_pass_variants_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
@@ -735,8 +739,8 @@ call_germline_snvs_strelka=function(
         ### FILTER INDELS BY FILTERS
 
       
-        .main$steps[[fn]]$steps<-append(
-          .main$steps[[fn]]$steps, 
+        .main.step$steps<-append(
+          .main.step$steps, 
           extract_pass_variants_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
@@ -765,8 +769,8 @@ call_germline_snvs_strelka=function(
         if(annotate){
 
             ### ANNOTATE SNV USING VEP
-            .main$steps[[fn]]$steps <-append(
-              .main$steps[[fn]]$steps ,
+            .main.step$steps <-append(
+              .main.step$steps ,
               annotate_strelka_vep(
                 bin_vep=bin_vep,
                 bin_bgzip=bin_bgzip,
@@ -792,8 +796,8 @@ call_germline_snvs_strelka=function(
 
           ### ANNOTATE INDEL USING VEP
 
-          .main$steps[[fn]]$steps <-append(
-              .main$steps[[fn]]$steps ,
+          .main.step$steps <-append(
+              .main.step$steps ,
               annotate_strelka_vep(
                 bin_vep=bin_vep,
                 bin_bgzip=bin_bgzip,

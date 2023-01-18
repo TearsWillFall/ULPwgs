@@ -878,7 +878,7 @@ tabulate_vcf=function(
         set_main(.env=.this.env)
 
         .main$out_files$tab_vcf=paste0(out_file_dir,"/",input_id,".tabulated.tsv")
-
+    
 
         ignore=TRUE
         #### Catch empty VCF 
