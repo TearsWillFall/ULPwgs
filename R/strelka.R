@@ -399,7 +399,7 @@ call_somatic_snvs_strelka=function(
             verbose=verbose, 
             threads=threads,
             ram=ram,
-            executor_id=task_id,
+            executor_id=task_id
           )
          )
 
