@@ -166,7 +166,10 @@ add_snv_af_strelka_vcf=function(
             tmp_dir=tmp_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
-            err_msg=err_msg
+            err_msg=err_msg,
+            threads=threads,
+            ram=ram,
+            executor=task_id
           )
         )
         
@@ -266,7 +269,10 @@ add_indel_af_strelka_vcf=function(
             tmp_dir=tmp_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
-            err_msg=err_msg
+            err_msg=err_msg,
+            threads=threads,
+            ram=ram,
+            executor=task_id
           )
         )
         
@@ -384,7 +390,10 @@ add_sv_af_strelka_vcf=function(
             tmp_dir=tmp_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
-            err_msg=err_msg
+            err_msg=err_msg,
+            threads=threads,
+            ram=ram,
+            executor=task_id
           )
         )
         

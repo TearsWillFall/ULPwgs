@@ -328,6 +328,7 @@ call_somatic_snvs_strelka=function(
     cache_vep=build_default_cache_list()$cache_vep,
     tumour=NULL,
     normal=NULL,
+    patient_id=NULL,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     indel_candidates=NULL,
     annotate=TRUE,
@@ -343,6 +344,11 @@ call_somatic_snvs_strelka=function(
     ){
          .this.env=environment()
         append_env(to=.this.env,from=.env)
+
+        out_file_dir=set_dir(dir=out_file_dir,name=patient_id)
+        out_file_dir=set_dir(dir=out_file_dir,name="clonet_reports")
+        out_file_dir=set_dir(dir=out_file_dir,name=input_id)
+
         set_main(.env=.this.env)
 
 
@@ -359,7 +365,8 @@ call_somatic_snvs_strelka=function(
           paste0(
             out_file_dir,
             "/runWorkflow.py -m local -j ",
-            threads)
+            threads
+            )
           )
         
         .main$out_files$strelka$workflow=paste0(out_file_dir,"/runWorkflow.py")
@@ -403,7 +410,7 @@ call_somatic_snvs_strelka=function(
           )
          )
 
-        .this.step=.main.step$steps$add_snv_af_strelka_vcf.snv
+        .this.step=.main.step$steps$add_af_strelka_vcf.snv
         .main.step$out_files$annotated$af=.this.step$out_files
 
 
@@ -428,7 +435,7 @@ call_somatic_snvs_strelka=function(
           )
         )
   
-        .this.step=.main.step$steps$add_indel_af_strelka_vcf.indel
+        .this.step=.main.step$steps$add_af_strelka_vcf.indel
         .main.step$out_files$annotated$af=append(
           .main.step$out_files$annotated$af,
           .this.step$out_files
@@ -515,7 +522,7 @@ call_somatic_snvs_strelka=function(
             )
           )
 
-          .this.step=.main.step$steps$annotate_snv_strelka_vep.snv
+          .this.step=.main.step$steps$annotate_strelka_vep.snv
           .main.step$out_files$annotated$vep=.this.step$out_files
 
 
@@ -542,7 +549,7 @@ call_somatic_snvs_strelka=function(
             )
           )
 
-          .this.step=.main.step$steps$annotate_indel_strelka_vep.indel
+          .this.step=.main.step$steps$annotate_strelka_vep.indel
           .main.step$out_files$annotated$vep=append(
             .main.step$out_files$annotated$vep,
             .this.step$out_files
