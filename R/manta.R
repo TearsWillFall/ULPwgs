@@ -430,6 +430,7 @@ call_somatic_sv_manta=function(
                 cache_vep=cache_vep,
                 vcf=.main.step$out_files$annotated$filter$sv$bgzip_vcf,
                 type="sv",
+                tabulate=tabulate,
                 output_dir=paste0(out_file_dir,"/annotated"),
                 tmp_dir=tmp_dir,
                 env_dir=env_dir,
@@ -441,28 +442,6 @@ call_somatic_sv_manta=function(
           )
            .this.step=.main.step$steps$annotate_strelka_vep.sv
           .main.step$out_files$annotated$vep=.this.step$out_files
-
-        
-          if(tabulate){
-              .main.step$steps<-append(
-                .main.step$steps,
-                tabulate_strelka_vcf(
-                  vcf=.main.step$out_files$annotated$vep$sv$bgzip_vcf,
-                  type="sv",
-                  output_dir=paste0(out_file_dir,"/annotated"),
-                  tmp_dir=tmp_dir,
-                  env_dir=env_dir,
-                  batch_dir=batch_dir,
-                  err_msg=err_msg,
-                  threads=threads,
-                  ram=ram,
-                  verbose=verbose,
-                  executor_id=task_id
-              )
-            )
-            .this.step=.main.step$steps$tabulate_strelka_vep.sv
-            .main.step$out_files$annotated$tabulate=.this.step$out_files
-          }
         }
 
         .env$.main <- .main

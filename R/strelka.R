@@ -544,54 +544,6 @@ call_somatic_snvs_strelka=function(
             .this.step$out_files
           )
 
-        
-          if(tabulate){
-              .main$steps[[fn]]$steps <-append(
-                .main$steps[[fn]]$steps ,
-                tabulate_strelka_vcf(
-                  vcf=.main.step$out_files$annotated$vep$snv$bgzip_vcf,
-                  type="snv",
-                  output_dir=paste0(out_file_dir,"/annotated"),
-                  tmp_dir=tmp_dir,
-                  env_dir=env_dir,
-                  batch_dir=batch_dir,
-                  err_msg=err_msg,
-                  threads=threads,
-                  ram=ram,
-                  verbose=verbose,
-                  executor_id=task_id
-              )
-            )
-
-          .this.step=.main.step$steps$tabulate_strelka_vcf.snv
-          .main.step$out_files$annotated$tabulate=.this.step$out_files
-
-
-              .main$steps[[fn]]$steps <-append(
-                .main$steps[[fn]]$steps ,
-                tabulate_strelka_vcf(
-                  vcf=.main.step$out_files$annotated$vep$indel$bgzip_vcf,
-                  type="indel",
-                  output_dir=paste0(out_file_dir,"/annotated"),
-                  tmp_dir=tmp_dir,
-                  env_dir=env_dir,
-                  batch_dir=batch_dir,
-                  err_msg=err_msg,
-                  threads=threads,
-                  ram=ram,
-                  verbose=verbose,
-                  executor_id=task_id
-              )
-            )
-
-
-          .this.step=.main.step$steps$tabulate_strelka_vcf.indel
-            .main.step$out_files$annotated$tabulate=append(
-            .main.step$out_files$annotated$tabulate,
-              .this.step$out_files
-            )
-
-          }
         }
 
 
@@ -867,54 +819,6 @@ call_germline_snvs_strelka=function(
             .this.step$out_files
           )
 
-        
-          if(tabulate){
-              .main$steps[[fn]]$steps <-append(
-                .main$steps[[fn]]$steps ,
-                tabulate_strelka_vcf(
-                  vcf=.main.step$out_files$annotated$vep$snv$bgzip_vcf,
-                  type="snv",
-                  output_dir=paste0(out_file_dir,"/annotated"),
-                  tmp_dir=tmp_dir,
-                  env_dir=env_dir,
-                  batch_dir=batch_dir,
-                  err_msg=err_msg,
-                  threads=threads,
-                  ram=ram,
-                  verbose=verbose,
-                  executor_id=task_id
-              )
-            )
-
-          .this.step=.main.step$steps$tabulate_strelka_vcf.snv
-          .main.step$out_files$annotated$tabulate=.this.step$out_files
-
-
-              .main$steps[[fn]]$steps <-append(
-                .main$steps[[fn]]$steps ,
-                tabulate_strelka_vcf(
-                  vcf=.main.step$out_files$annotated$vep$indel$bgzip_vcf,
-                  type="indel",
-                  output_dir=paste0(out_file_dir,"/annotated"),
-                  tmp_dir=tmp_dir,
-                  env_dir=env_dir,
-                  batch_dir=batch_dir,
-                  err_msg=err_msg,
-                  threads=threads,
-                  ram=ram,
-                  verbose=verbose,
-                  executor_id=task_id
-              )
-            )
-
-
-          .this.step=.main.step$steps$tabulate_strelka_vcf.indel
-            .main.step$out_files$annotated$tabulate=append(
-            .main.step$out_files$annotated$tabulate,
-              .this.step$out_files
-            )
-
-          }
         }
 
 
