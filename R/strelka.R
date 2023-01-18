@@ -344,11 +344,6 @@ call_somatic_snvs_strelka=function(
     ){
          .this.env=environment()
         append_env(to=.this.env,from=.env)
-
-        out_file_dir=set_dir(dir=out_file_dir,name=patient_id)
-        out_file_dir=set_dir(dir=out_file_dir,name="clonet_reports")
-        out_file_dir=set_dir(dir=out_file_dir,name=input_id)
-
         set_main(.env=.this.env)
 
 
@@ -396,7 +391,7 @@ call_somatic_snvs_strelka=function(
            add_af_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf=.main.step$out_files$strelka$snv,
+            vcf=.main.step$out_files$strelka$variants$snv,
             type="snv",
             output_dir=paste0(out_file_dir,"/annotated"),
             tmp_dir=tmp_dir,
@@ -420,7 +415,7 @@ call_somatic_snvs_strelka=function(
             add_af_strelka_vcf(
               bin_bgzip=bin_bgzip,
               bin_tabix=bin_tabix,
-              vcf=.main.step$out_files$strelka$indel,
+              vcf=.main.step$out_files$strelka$variants$indel,
               type="indel",
               output_dir=paste0(out_file_dir,"/annotated"),
               tmp_dir=tmp_dir,
