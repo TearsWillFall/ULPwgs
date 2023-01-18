@@ -165,7 +165,8 @@ add_snv_af_strelka_vcf=function(
             output_dir=out_file_dir,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
-            batch_dir=batch_dir
+            batch_dir=batch_dir,
+            err_msg=err_msg
           )
         )
         
@@ -264,7 +265,8 @@ add_indel_af_strelka_vcf=function(
             output_dir=out_file_dir,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
-            batch_dir=batch_dir
+            batch_dir=batch_dir,
+            err_msg=err_msg
           )
         )
         
@@ -381,7 +383,8 @@ add_sv_af_strelka_vcf=function(
             output_dir=out_file_dir,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
-            batch_dir=batch_dir
+            batch_dir=batch_dir,
+            err_msg=err_msg
           )
         )
         
@@ -471,6 +474,7 @@ add_af_strelka_vcf=function(
             tmp_dir=tmp_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
+            err_msg=err_msg,
             output_name=output_name,
             verbose=verbose,
             threads=threads,
@@ -491,6 +495,7 @@ add_af_strelka_vcf=function(
             tmp_dir=tmp_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
+            err_msg=err_msg,
             output_name=output_name,
             verbose=verbose,
             threads=threads,
@@ -511,6 +516,7 @@ add_af_strelka_vcf=function(
             tmp_dir=tmp_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
+            err_msg=err_msg,
             output_name=output_name,
             verbose=verbose,
             threads=threads,
@@ -748,6 +754,7 @@ extract_pass_variants_strelka_vcf=function(
             tmp_dir=tmp_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
+            err_msg=err_msg,
             verbose=verbose,
             threads=threads,
             ram=ram,
@@ -1201,6 +1208,7 @@ write_vcf=function(
             output_dir=out_file_dir,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
+            err_msg=err_msg,
             output_name=input_id,
             verbose=verbose,
             threads=threads,
