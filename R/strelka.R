@@ -74,7 +74,7 @@ call_variants_strelka=function(
                 tabulate=tabulate,
                 ref_genome=ref_genome,
                 output_dir=paste0(
-                  out_file_dir,"/",
+                  out_file_dir,"/",patient_id,
                   "/strelka_reports/",input_id
                 ),
                 targeted=targeted,
@@ -105,7 +105,7 @@ call_variants_strelka=function(
               normal=normal,
               ref_genome=ref_genome,
               output_dir=paste0(
-                  out_file_dir,
+                  out_file_dir,"/",patient_id,
                   "/strelka_reports",input_id
               ),
               targeted=targeted,
