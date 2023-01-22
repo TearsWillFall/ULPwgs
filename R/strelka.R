@@ -75,8 +75,7 @@ call_variants_strelka=function(
                 ref_genome=ref_genome,
                 output_dir=paste0(
                   out_file_dir,"/",
-                  input_id,
-                  "/strelka_reports"
+                  "/strelka_reports/",input_id
                 ),
                 targeted=targeted,
                 verbose=verbose,
@@ -106,9 +105,8 @@ call_variants_strelka=function(
               normal=normal,
               ref_genome=ref_genome,
               output_dir=paste0(
-                  out_file_dir,"/",
-                  input_id,
-                  "/strelka_reports"
+                  out_file_dir,
+                  "/strelka_reports",input_id
               ),
               targeted=targeted,
               verbose=verbose,
