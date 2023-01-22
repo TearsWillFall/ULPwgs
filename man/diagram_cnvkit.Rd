@@ -5,31 +5,17 @@
 \title{Wrapper around reference scatter from CNVkit}
 \usage{
 diagram_cnvkit(
-  rdata = NULL,
-  selected = NULL,
   chrs = build_default_chr_list()$canonical,
   sif_cnvkit = build_default_sif_list()$sif_cnvkit,
-  cnr = "",
-  cns = "",
-  output_name = "",
-  output_dir = ".",
+  cnr = NULL,
+  cns = NULL,
   cn_thr = 0.5,
   min_probes = 3,
   male_reference = FALSE,
   gender = "male",
   shift = TRUE,
   title = NULL,
-  verbose = FALSE,
-  batch_config = build_default_preprocess_config(),
-  threads = 1,
-  ram = 1,
-  mode = "local",
-  executor_id = make_unique_id("diagramCNVkit"),
-  task_name = "diagramCNVkit",
-  time = "48:0:0",
-  update_time = 60,
-  wait = FALSE,
-  hold = NULL
+  ...
 )
 }
 \arguments{
@@ -38,10 +24,6 @@ diagram_cnvkit(
 \item{cnr}{\link{REQUIRED} Path to CNR as produced by fix_cnvkit command.}
 
 \item{cns}{\link{OPTIONAL} Path to CNS as produced by segment_cnvkit command.}
-
-\item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
-
-\item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{cn_thr}{\link{OPTIONAL} Copy number threshold. Default 0.5}
 
@@ -55,11 +37,15 @@ diagram_cnvkit(
 
 \item{title}{\link{OPTIONAL} Sample ID. Default NULL.}
 
-\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
+\item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
+
+\item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
 
 \item{ram}{\link{OPTIONAL} RAM memory to asing to each thread. Default 4}
+
+\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 

@@ -7,12 +7,8 @@
 reference_cnvkit(
   sif_cnvkit = build_default_sif_list()$sif_cnvkit,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
-  cnn = "",
-  output_name = "reference",
-  output_dir = ".",
+  cnn = NULL,
   gender = "male",
-  target = "",
-  antitarget = "",
   gc = TRUE,
   edge = TRUE,
   rmask = TRUE,
@@ -20,16 +16,9 @@ reference_cnvkit(
   cluster = FALSE,
   min_cluster_size = 10,
   male_reference = FALSE,
-  batch_config = build_default_preprocess_config(),
   threads = 1,
   ram = 1,
-  mode = "local",
-  executor_id = make_unique_id("referenceCNVkit"),
-  task_name = "referenceCNVkit",
-  time = "48:0:0",
-  update_time = 60,
-  wait = FALSE,
-  hold = NULL
+  ...
 )
 }
 \arguments{
@@ -37,15 +26,7 @@ reference_cnvkit(
 
 \item{cnn}{\link{REQUIRED} Path to normal coverage profiles. Default none}
 
-\item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
-
-\item{output_dir}{\link{OPTIONAL} Path to the output directory.}
-
 \item{gender}{\link{OPTIONAL} Sample gender. Default male.}
-
-\item{target}{\link{OPTIONAL} Path to BED file with target regions. Default none.}
-
-\item{antitarget}{\link{OPTIONAL} Path to BED file with target regions. Default none.}
 
 \item{gc}{\link{OPTIONAL} Disble GC bias correction. Default FALSE.}
 
@@ -65,6 +46,16 @@ reference_cnvkit(
 
 \item{ram}{\link{OPTIONAL} RAM memory to asing to each thread. Default 4}
 
+\item{ref_genoma}{\link{REQUIRED} Path to reference genoms.}
+
+\item{target}{\link{OPTIONAL} Path to BED file with target regions. Default none.}
+
+\item{antitarget}{\link{OPTIONAL} Path to BED file with target regions. Default none.}
+
+\item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
+
+\item{output_dir}{\link{OPTIONAL} Path to the output directory.}
+
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
 \item{executor_id}{Task EXECUTOR ID. Default "recalCovariates"}
@@ -78,8 +69,6 @@ reference_cnvkit(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
-
-\item{ref_genoma}{\link{REQUIRED} Path to reference genoms.}
 }
 \description{
 This function wraps around target function for CNVkit

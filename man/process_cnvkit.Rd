@@ -2,25 +2,24 @@
 % Please edit documentation in R/cnvkit.R
 \name{process_cnvkit}
 \alias{process_cnvkit}
-\title{Variant Calling using Mutect2}
+\title{This function functions calls Mutect2 for variant calling.
+If a vector of tumour samples are provided these will be processed in multi-sample mode.
+To run in tumour-normal mode suppply a single tumour and normal sample.
+If no normal is supplied this will run in tumour only.
+TO DO// Implement mitochondrial mode feature}
 \usage{
 process_cnvkit(
-  rdata = NULL,
-  selected = FALSE,
   target = build_default_reference_list()$HG19$panel$PCF_V3$binned$target,
   antitarget = build_default_reference_list()$HG19$panel$PCF_V3$binned$antitarget,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   access = build_default_reference_list()$HG19$reference$access_5k,
   sif_cnvkit = build_default_sif_list()$sif_cnvkit,
   pon = build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn_male,
-  tumour = "",
+  tumour = NULL,
   seg_method = "cbs",
   seq_method = "hybrid",
-  output_name = "",
-  output_dir = ".",
   diagram = TRUE,
   scatter = TRUE,
-  verbose = FALSE,
   read_count = FALSE,
   min_mapq = 0,
   gc = TRUE,
@@ -29,9 +28,9 @@ process_cnvkit(
   smooth = FALSE,
   drop_low_coverage = TRUE,
   drop_outliers = 10,
-  range_scatter = "",
-  range_list_scatter = "",
-  genes_scatter = "",
+  range_scatter = NULL,
+  range_list_scatter = NULL,
+  genes_scatter = NULL,
   margin_width_scatter = 1e+06,
   plot_by_bin_scatter = FALSE,
   trend_scatter = FALSE,
@@ -44,23 +43,10 @@ process_cnvkit(
   male_reference_diagram = FALSE,
   gender_diagram = "male",
   shift_diagram = TRUE,
-  batch_config = build_default_preprocess_config(),
-  threads = 4,
-  ram = 4,
-  mode = "local",
-  executor_id = make_unique_id("processCNVkit"),
-  task_name = "processCNVkit",
-  time = "48:0:0",
-  update_time = 60,
-  wait = FALSE,
-  hold = NULL
+  ...
 )
 }
 \arguments{
-\item{rdata}{\link{OPTIONAL} Import R data information with list of BAM.}
-
-\item{selected}{\link{OPTIONAL} Select BAM from list.}
-
 \item{ref_genome}{\link{REQUIRED} Path to reference genome fasta file.}
 
 \item{access}{\link{OPTIONAL} Path to reference genome accessibility. Default none}
@@ -74,12 +60,6 @@ process_cnvkit(
 \item{seg_method}{\link{OPTIONAL} Method to use to generate segmentation calls.Default  cbs. Options \link{"cbs","flasso","haar","none","hmm","hmm-tumor","hmm-germline"}}
 
 \item{seq_method}{\link{OPTIONAL} Sequenced methods used. Default hybrid. Options \link{"hybrid","amplicon","wgs"}}
-
-\item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
-
-\item{output_dir}{\link{OPTIONAL} Path to the output directory.}
-
-\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
 \item{range_scatter}{\link{OPTIONAL} Range to show in chr:start-end format. Default none}
 
@@ -111,25 +91,15 @@ process_cnvkit(
 
 \item{shift_diagram}{\link{OPTIONAL} Adjust the X and Y chromosomes according to sample sex. Default TRUE}
 
-\item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
-
-\item{ram}{\link{OPTIONAL} RAM memory to asing to each thread. Default 4}
-
-\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
-
-\item{executor_id}{Task EXECUTOR ID. Default "recalCovariates"}
-
-\item{task_name}{Task name. Default "recalCovariates"}
-
-\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
-
-\item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
-
-\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
-
-\item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
-
 \item{normal}{\link{OPTIONAL} Path to normal BAM file.}
+
+\item{rdata}{\link{OPTIONAL} Import R data information with list of BAM.}
+
+\item{selected}{\link{OPTIONAL} Select BAM from list.}
+
+\item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
+
+\item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{normal_ichor}{\link{OPTIONAL} Path to normal samples. Default c(0.5,0.6,0.7,0.8,0.9)}
 
@@ -168,15 +138,28 @@ process_cnvkit(
 \item{plotFileType_ichor}{\link{OPTIONAL} File format for output plots. Default pdf}
 
 \item{plotYLim_ichor}{\link{OPTIONAL} ylim to use for chromosome plots. Default: \link{c(-2,2)}}
+
+\item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
+
+\item{ram}{\link{OPTIONAL} RAM memory to asing to each thread. Default 4}
+
+\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
+
+\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+
+\item{executor_id}{Task EXECUTOR ID. Default "recalCovariates"}
+
+\item{task_name}{Task name. Default "recalCovariates"}
+
+\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+
+\item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
+
+\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
+
+\item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
 }
 \description{
-This function functions calls Mutect2 for variant calling.
-If a vector of tumour samples are provided these will be processed in multi-sample mode.
-To run in tumour-normal mode suppply a single tumour and normal sample.
-If no normal is supplied this will run in tumour only.
-TO DO// Implement mitochondrial mode feature
-}
-\details{
 For more information read:
 https://cnvkit.readthedocs.io/en/stable/pipeline.html
 }

@@ -192,8 +192,6 @@ sort_vcf=function(
   }
 
 
-  
-
 if(format=="vcf"){
     out_type=" v "
     out_file=paste0(out_file_dir,"/",id,".sorted.vcf")

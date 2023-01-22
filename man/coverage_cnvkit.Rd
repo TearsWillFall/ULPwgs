@@ -5,49 +5,37 @@
 \title{Wrapper around autobin function from CNVkit}
 \usage{
 coverage_cnvkit(
-  rdata = NULL,
-  selected = NULL,
   sif_cnvkit = build_default_sif_list()$sif_cnvkit,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
-  bed = "",
-  bam = "",
-  output_name = "",
-  output_dir = ".",
+  bam = NULL,
+  bed = NULL,
   read_count = FALSE,
   min_mapq = 0,
-  verbose = FALSE,
-  batch_config = build_default_preprocess_config(),
-  threads = 1,
-  ram = 1,
-  mode = "local",
-  executor_id = make_unique_id("coverageCNVkit"),
-  task_name = "coverageCNVkit",
-  time = "48:0:0",
-  update_time = 60,
-  wait = FALSE,
-  hold = NULL
+  ...
 )
 }
 \arguments{
 \item{sif_cnvkit}{\link{REQUIRED} Path to cnvkit sif file.}
 
-\item{bed}{\link{REQUIRED} Path to input BED file with target regions. Default none}
-
 \item{bam}{\link{REQUIRED} Path to BAM files. Default none}
 
-\item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
-
-\item{output_dir}{\link{OPTIONAL} Path to the output directory.}
+\item{bed}{\link{REQUIRED} Path to input BED file with target regions. Default none}
 
 \item{read_count}{\link{OPTIONAL} Alternative method for coverage. Default FALSE}
 
 \item{min_mapq}{\link{OPTIONAL} Minimum mapping quality to count a read for coverage. Default 0.}
 
-\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
+\item{ref_genoma}{\link{REQUIRED} Path to reference genoms.}
+
+\item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
+
+\item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
 
 \item{ram}{\link{OPTIONAL} RAM memory to asing to each thread. Default 4}
+
+\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
@@ -62,8 +50,6 @@ coverage_cnvkit(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
-
-\item{ref_genoma}{\link{REQUIRED} Path to reference genoms.}
 }
 \description{
 This function wraps around target function for CNVkit

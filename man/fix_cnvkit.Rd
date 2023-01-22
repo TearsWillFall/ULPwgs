@@ -5,28 +5,15 @@
 \title{Wrapper around reference function from CNVkit}
 \usage{
 fix_cnvkit(
-  rdata = NULL,
-  selected = NULL,
   sif_cnvkit = build_default_sif_list()$sif_cnvkit,
   pon = build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn_male,
-  target = "",
-  antitarget = "",
-  output_name = "",
-  output_dir = ".",
+  target = NULL,
+  antitarget = NULL,
+  output_name = NULL,
   gc = TRUE,
   edge = TRUE,
   rmask = TRUE,
-  verbose = FALSE,
-  batch_config = build_default_preprocess_config(),
-  threads = 1,
-  ram = 1,
-  mode = "local",
-  executor_id = make_unique_id("fixCNVkit"),
-  task_name = "fixCNVkit",
-  time = "48:0:0",
-  update_time = 60,
-  wait = FALSE,
-  hold = NULL
+  ...
 )
 }
 \arguments{
@@ -38,19 +25,19 @@ fix_cnvkit(
 
 \item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
 
-\item{output_dir}{\link{OPTIONAL} Path to the output directory.}
-
 \item{gc}{\link{OPTIONAL} Disble GC bias correction. Default FALSE.}
 
 \item{edge}{\link{OPTIONAL} Disble edge correction. Default FALSE.}
 
 \item{rmask}{\link{OPTIONAL} Disble repeat mask correction. Default FALSE.}
 
-\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
+\item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
 
 \item{ram}{\link{OPTIONAL} RAM memory to asing to each thread. Default 4}
+
+\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 

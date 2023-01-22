@@ -5,17 +5,13 @@
 \title{Wrapper around reference scatter from CNVkit}
 \usage{
 scatter_cnvkit(
-  rdata = NULL,
-  selected = NULL,
   sif_cnvkit = build_default_sif_list()$sif_cnvkit,
   chrs = build_default_chr_list()$canonical,
-  cnr = "",
-  cns = "",
-  output_name = "",
-  output_dir = ".",
-  range = "",
-  range_list = "",
-  genes = "",
+  cnr = NULL,
+  cns = NULL,
+  range = NULL,
+  range_list = NULL,
+  genes = NULL,
   margin_width = 1e+06,
   plot_by_bin = FALSE,
   trend = TRUE,
@@ -24,25 +20,11 @@ scatter_cnvkit(
   title = NULL,
   y_max = NULL,
   y_min = NULL,
-  verbose = FALSE,
-  batch_config = build_default_preprocess_config(),
-  threads = 1,
-  ram = 1,
-  mode = "local",
-  executor_id = make_unique_id("scatterCNVkit"),
-  task_name = "scatterCNVkit",
-  time = "48:0:0",
-  update_time = 60,
-  wait = FALSE,
-  hold = NULL
+  ...
 )
 }
 \arguments{
 \item{sif_cnvkit}{\link{REQUIRED} Path to cnvkit sif file.oms.}
-
-\item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
-
-\item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{range}{\link{OPTIONAL} Range to show in chr:start-end format. Default none}
 
@@ -64,11 +46,17 @@ scatter_cnvkit(
 
 \item{y_max}{\link{OPTIONAL} Y max range. Default NULL.}
 
-\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
+\item{y_min[OPTIONAL]}{Y min range. Default NULL.}
+
+\item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
+
+\item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
 \item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
 
 \item{ram}{\link{OPTIONAL} RAM memory to asing to each thread. Default 4}
+
+\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
@@ -83,8 +71,6 @@ scatter_cnvkit(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
-
-\item{y_min[OPTIONAL]}{Y min range. Default NULL.}
 }
 \description{
 This function wraps around target function for CNVkit
