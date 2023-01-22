@@ -416,6 +416,7 @@ circdna_circlemap=function(
         bin_samtools=build_default_tool_binary_list()$bin_samtools,
         ref_genome=build_default_reference_list()$HG19$reference$genome,
         bam=NULL,
+        patient_id=NULL,
         ...
 ){
 
@@ -440,7 +441,7 @@ circdna_circlemap=function(
                 bam=normalizePath(input),
                 ref_genome=normalizePath(ref_genome),
                 annotate=annotate,
-                output_dir=paste0(out_file_dir,"/realign_reports"),
+                output_dir=paste0(out_file_dir,"/",patient_id,"/realign_reports/",input_id),
                 tmp_dir=tmp_dir,
                 env_dir=env_dir,
                 batch_dir=batch_dir,
@@ -463,7 +464,7 @@ circdna_circlemap=function(
                 env_circlemap=env_circlemap,
                 bam=normalizePath(input),
                 annotate=annotate,
-                output_dir=paste0(out_file_dir,"/repeat_reports"),
+                output_dir=paste0(out_file_dir,"/",patient_id,"/repeat_reports",input_id),
                 tmp_dir=tmp_dir,
                 env_dir=env_dir,
                 batch_dir=batch_dir,

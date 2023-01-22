@@ -106,7 +106,7 @@ call_variants_strelka=function(
               ref_genome=ref_genome,
               output_dir=paste0(
                   out_file_dir,"/",patient_id,
-                  "/strelka_reports",input_id
+                  "/strelka_reports/",input_id
               ),
               targeted=targeted,
               verbose=verbose,
