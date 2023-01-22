@@ -71,6 +71,7 @@ annotate_vep=function(
               bin_bgzip=bin_bgzip,
               bin_tabix=bin_tabix,
               vcf=.main$out_files$vep_vcf,
+              output_name=output_name,
               compress=compress,
               index_format=index_format,
               bgzip_index=bgzip_index,
@@ -100,6 +101,7 @@ annotate_vep=function(
                 tabulate_vcf(
                   vcf=.main$out_files$vep_vcf,
                   output_dir=out_file_dir,
+                  output_name=output_name,
                   tmp_dir=tmp_dir,
                   env_dir=env_dir,
                   batch_dir=batch_dir,
