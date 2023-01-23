@@ -10,6 +10,8 @@ circdna_circlemap(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   bam = NULL,
+  patient_id = NULL,
+  annotate = TRUE,
   ...
 )
 }
