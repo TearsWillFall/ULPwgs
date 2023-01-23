@@ -122,7 +122,7 @@ realign_circlemap=function(
                     .main.step$steps,
                     annotate_bed_circlemap(
                         annotation_ref=annotation_ref,
-                        bed=.main.step$out_files$realign_bed,
+                        bed=.main$out_files$realign_bed,
                         type="realign",
                         output_dir=paste0(out_file_dir,"/annotated"),
                         tmp_dir=tmp_dir,
@@ -322,7 +322,7 @@ repeat_caller_circlemap=function(
             set_main(.env=.this.env)
     
           
-            .main$out_files$realign_bed=paste0(
+            .main$out_files$repeat_bed=paste0(
                 out_file_dir,"/",input_id,".repeat.circ_candidates.bed"
             )
             .main$exec_code=paste(
@@ -341,7 +341,7 @@ repeat_caller_circlemap=function(
                     .main.step$steps,
                     annotate_bed_circlemap(
                         annotation_ref=annotation_ref,
-                        bed=input,
+                        bed=.main$out_files$repeat_bed,
                         type="repeat",
                         output_dir=paste0(out_file_dir,"/annotated"),
                         tmp_dir=tmp_dir,
