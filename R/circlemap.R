@@ -328,7 +328,7 @@ repeat_caller_circlemap=function(
             .main$exec_code=paste(
                 set_conda_envir(env_circlemap),
                 " Circle-Map Repeats -i ",normalizePath(input), " -o ",
-                .main$out_file, " -dir /"
+                .main$out_files$repeat_bed, " -dir /"
             )
 
             run_job(.env=.this.env)
@@ -465,7 +465,7 @@ circdna_circlemap=function(
                 env_circlemap=env_circlemap,
                 bam=normalizePath(input),
                 annotate=annotate,
-                output_dir=paste0(out_file_dir,"/",patient_id,"/repeat_reports",input_id),
+                output_dir=paste0(out_file_dir,"/",patient_id,"/repeat_reports/",input_id),
                 tmp_dir=tmp_dir,
                 env_dir=env_dir,
                 batch_dir=batch_dir,

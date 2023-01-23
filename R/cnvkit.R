@@ -171,7 +171,7 @@ process_cnvkit=function(
         )
       )
 
-      .this.step=.main.step$coverage_cnvkit.antitarget
+      .this.step=.main.step$call_coverage_cnvkit.antitarget
       .main.step$out_files$cnn=append(.main.step$out_files$cnn,.this.step$out_files)
 
 
