@@ -721,13 +721,7 @@ read_sheet=function(.env){
     
     n_jobs<-nrow(sheet)
     n_vars<-ncol(sheet)
-    n_dup=n_total-n_jobs
-    
-    if(n_dup>0){
-      warning(paste0(n_dup, " were duplicated in sheet"))
-    }
-
-
+ 
     
     .env$.env$n_jobs <- .env$n_jobs <- n_jobs
     .env$.env$n_vars <- .env$n_vars <- n_vars
@@ -778,7 +772,7 @@ set_ss_env=function(.env){
         .env$self.envs[[row]] <- self.envs
       },.env=.this.env
     )
-    .base.env$self.envs<-self.envs      
+    .env$.env$self.envs<-self.envs      
 }
 
 
