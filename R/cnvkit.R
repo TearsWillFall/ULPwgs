@@ -1127,12 +1127,12 @@ coverage_cnvkit=function(
     append_env(to=.this.env,from=.env)
     set_main(.env=.this.env)
 
-    .main$out_files[[type]]=paste0(out_file_dir,"/",input_id,".cnn")
+    .main$out_files$cnn=paste0(out_file_dir,"/",input_id,".cnn")
 
     .main$exec_code=paste(
       "singularity exec -H /:/home ",sif_cnvkit,
       " cnvkit.py coverage -p ",threads, "-q ",min_mapq,
-      " -f ", normalizePath(ref_genome)," -o ",.main$out_files,
+      " -f ", normalizePath(ref_genome)," -o ",.main$out_files$cnn,
       add, normalizePath(input), bed
     )
 
@@ -1246,7 +1246,7 @@ call_coverage_cnvkit=function(
     )
 
     .this.step=.main.step$steps$variants_by_filters_vcf
-    .main.step$out_files[[type]]=.this.step$out_files
+    .main.step$out_files[[type]]=.this.step$out_files$cnn
 
 
   }
