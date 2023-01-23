@@ -1129,11 +1129,16 @@ coverage_cnvkit=function(
 
     .main$out_files$cnn=paste0(out_file_dir,"/",input_id,".cnn")
 
+    add=""
+    if(read_count){
+      add=" -c "
+    }
+
     .main$exec_code=paste(
       "singularity exec -H /:/home ",sif_cnvkit,
       " cnvkit.py coverage -p ",threads, "-q ",min_mapq,
       " -f ", normalizePath(ref_genome)," -o ",.main$out_files$cnn,
-      add, normalizePath(input), bed
+      add,normalizePath(input), bed
     )
 
     
