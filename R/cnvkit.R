@@ -1253,106 +1253,7 @@ call_coverage_cnvkit=function(
     .this.step=.main.step$steps$variants_by_filters_vcf
     .main.step$out_files[[type]]=.this.step$out_files$cnn
 
-
-  }
-
-  .base.env=environment()
-  list2env(list(...),envir=.base.env)
-  set_env_vars(
-    .env= .base.env,
-    vars="bam"
-  )
-
-  launch(.env=.base.env)
-  
-
-}
-
-
-
-
-  #' Wrapper around autobin function from CNVkit
-#'
-#' This function wraps around target function for CNVkit
-#' This function generates an target BED file from an input target file. 
-#' Additional parameters can be used to exclude regions and modify the average bin size
-#' 
-#' 
-#' For more information read:
-#' https://cnvkit.readthedocs.io/en/stable/pipeline.html
-#'
-#' @param sif_cnvkit [REQUIRED] Path to cnvkit sif file.
-#' @param ref_genoma [REQUIRED] Path to reference genoms.
-#' @param bed [REQUIRED] Path to input BED file with target regions. Default none
-#' @param bam [REQUIRED] Path to BAM files. Default none
-#' @param read_count [OPTIONAL] Alternative method for coverage. Default FALSE
-#' @param min_mapq [OPTIONAL] Minimum mapping quality to count a read for coverage. Default 0.
-#' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
-#' @param output_dir [OPTIONAL] Path to the output directory.
-#' @param output_dir [OPTIONAL] Path to the output directory.
-#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
-#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
-#' @param verbose [OPTIONAL] Enables progress messages. Default False.
-#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
-#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
-#' @param task_name Task name. Default "recalCovariates"
-#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
-#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
-#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
-#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
-#' @export
-
-
-extract_coverage_cnvkit=function(
-  sif_cnvkit=build_default_sif_list()$sif_cnvkit,
-  ref_genome=build_default_reference_list()$HG19$reference$genome,
-  bam=NULL,
-  bed=NULL,
-  type="target",
-  read_count=FALSE,
-  min_mapq=0,
-  ...
-){
-  
-  run_main=function(
-    .env
-  ){
-
-    .this.env=environment()
-    append_env(to=.this.env,from=.env)
-
-    output_name=paste0(input_id,".",type)
-    fn=paste0(fn,".",type)
-
-    set_main(.env=.this.env)
-
-          .main$steps[[fn]]<-.this.env
-      .main.step=.main$steps[[fn]]
-
-    
-    .main.step$steps=append(
-      .main.step$steps,
-      create_antitarget_cnvkit(
-        sif_cnvkit=sif_cnvkit,
-        access=access,
-        bed=bed,
-        output_name=output_name,
-        output_dir=out_file_dir,
-        tmp_dir=tmp_dir,
-        batch_dir=batch_dir,
-        env_dir=env_dir,
-        err_msg=err_msg,
-        bin_size=bin_size_antitarget,
-        min_bin_size=min_bin_size_antitarget,
-        verbose=verbose,
-        threads=threads,
-        ram=ram,
-        executor_id=task_id
-      )
-
-    )
-
-
+    .env$.main<-.main
 
 
   }
@@ -1368,6 +1269,8 @@ extract_coverage_cnvkit=function(
   
 
 }
+
+
 
 
 

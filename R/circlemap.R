@@ -520,7 +520,8 @@ circdna_circlemap=function(
 
 
 read_bed_circlemap=function(
-    bed=NULL,type="repeat",
+    bed=NULL,
+    type="repeat",
     id=NULL,
     sep="\t"
 ){
@@ -539,7 +540,7 @@ read_bed_circlemap=function(
         dat$`NA`=NULL
         ### Redundant column for repeat data
         dat$circ_score=NULL
-    }else if (type=="align"){
+    }else if (type=="realign"){
         dat=read.table(file=bed,sep=sep)
         names(dat)=c("chr","start","end","disc_reads","split_reads",
         "circ_score","mean_cov","sd_cov","cov_incr_start",
