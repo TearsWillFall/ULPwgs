@@ -713,6 +713,12 @@ read_sheet=function(.env){
     sheet=read.delim(sheet,header=TRUE)
     n_total<-nrow(sheet)
     sheet=sheet %>% dplyr::distinct()
+    
+    sheet=sheet %>% 
+      dplyr::group_by(dplyr::across(-c(vars))) %>%
+      dplyr::summarise(!! vars := list(!! rlang::sym(vars))) %>% 
+      dplyr::ungroup()
+    
     n_jobs<-nrow(sheet)
     n_vars<-ncol(sheet)
     n_dup=n_total-n_jobs
@@ -721,10 +727,7 @@ read_sheet=function(.env){
       warning(paste0(n_dup, " were duplicated in sheet"))
     }
 
-    sheet=sheet %>% 
-      dplyr::group_by(dplyr::across(-c(vars))) %>%
-      dplyr::summarise(!! vars := list(!! rlang::sym(vars))) %>% 
-      dplyr::ungroup()
+
     
     .env$.env$n_jobs <- .env$n_jobs <- n_jobs
     .env$.env$n_vars <- .env$n_vars <- n_vars
