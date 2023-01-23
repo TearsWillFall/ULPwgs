@@ -135,7 +135,7 @@ realign_circlemap=function(
                         executor_id=task_id
                 )
             )
-            }
+        }
 
         .env$.main <- .main
 
@@ -417,6 +417,7 @@ circdna_circlemap=function(
         ref_genome=build_default_reference_list()$HG19$reference$genome,
         bam=NULL,
         patient_id=NULL,
+        annotate=TRUE,
         ...
 ){
 

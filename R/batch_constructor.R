@@ -562,7 +562,7 @@ set_env_vars=function(
   select=NULL,
   err_msg=NULL,
   executor_id=NULL,
-  wait=TRUE,
+  wait=FALSE,
   hold=NULL
 ){  
 
