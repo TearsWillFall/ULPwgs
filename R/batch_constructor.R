@@ -771,7 +771,7 @@ set_ss_env=function(.env){
         .env$self.envs[[row]] <- self.envs
       },.env=.this.env
     )
-    .base.env$self.envs<-self.envs      
+    .env$.env$self.envs<-self.envs      
 }
 
 
