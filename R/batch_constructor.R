@@ -599,7 +599,6 @@ set_env_vars=function(
     if (!is.null(sheet)){
         read_sheet(.env=.this.env)
         set_ss_env(.env=.this.env)
-        .env$self.envs<-self.envs
         return()
     }
 
@@ -715,15 +714,14 @@ read_sheet=function(.env){
     n_total<-nrow(sheet)
     sheet=sheet %>% dplyr::distinct()
     
-    sheet=sheet %>% 
-      dplyr::group_by(dplyr::across(-c(vars))) %>%
-      dplyr::summarise(!! vars := list(!! rlang::sym(vars))) %>% 
-      dplyr::ungroup()
-    
     n_jobs<-nrow(sheet)
     n_vars<-ncol(sheet)
- 
+    n_dup=n_total-n_jobs
     
+    if(n_dup>0){
+      warning(paste0(n_dup, " were duplicated in sheet"))
+    }
+
     .env$.env$n_jobs <- .env$n_jobs <- n_jobs
     .env$.env$n_vars <- .env$n_vars <- n_vars
     .env$sheet <- sheet
@@ -773,7 +771,7 @@ set_ss_env=function(.env){
         .env$self.envs[[row]] <- self.envs
       },.env=.this.env
     )
-    .env$self.envs<-self.envs      
+    .base.env$self.envs<-self.envs      
 }
 
 
