@@ -599,6 +599,7 @@ set_env_vars=function(
     if (!is.null(sheet)){
         read_sheet(.env=.this.env)
         set_ss_env(.env=.this.env)
+        .env$self.envs<-self.envs
         return()
     }
 
@@ -772,7 +773,7 @@ set_ss_env=function(.env){
         .env$self.envs[[row]] <- self.envs
       },.env=.this.env
     )
-    .env$.env$self.envs<-self.envs      
+    .env$self.envs<-self.envs      
 }
 
 
