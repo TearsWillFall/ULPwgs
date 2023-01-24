@@ -1250,7 +1250,7 @@ call_coverage_cnvkit=function(
       )
     )
 
-    .this.step=.main.step$steps$variants_by_filters_vcf
+    .this.step=.main.step$steps$coverage_cnvkit
     .main.step$out_files[[type]]=.this.step$out_files$cnn
 
     .env$.main<-.main
