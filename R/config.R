@@ -770,11 +770,6 @@ build_default_cache_list=function(
 
 
 
-
-
-
-
-
 #' Build default references
 #' 
 #'

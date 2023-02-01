@@ -146,7 +146,7 @@ process_cnvkit=function(
       )
     )
 
-      .this.step=.main.step$call_coverage_cnvkit.target
+      .this.step=.main.step$steps$call_coverage_cnvkit.target
       .main.step$out_files$cnn=.this.step$out_files
 
       .main.step$steps <-append(
@@ -171,7 +171,7 @@ process_cnvkit=function(
         )
       )
 
-      .this.step=.main.step$call_coverage_cnvkit.antitarget
+      .this.step=.main.step$steps$call_coverage_cnvkit.antitarget
       .main.step$out_files$cnn=append(.main.step$out_files$cnn,.this.step$out_files)
 
 
@@ -223,7 +223,7 @@ process_cnvkit=function(
           )
         )
 
-      .this.step=.main.step$segment_cnvkit
+      .this.step=.main.step$steps$segment_cnvkit
       .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
 
     if(scatter){
@@ -255,7 +255,7 @@ process_cnvkit=function(
                 executor_id=task_id
            )
         )
-          .this.step=.main.step$scatter_cnvkit
+          .this.step=.main.step$steps$scatter_cnvkit
           .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
 
 
@@ -288,7 +288,7 @@ process_cnvkit=function(
         )
       )
 
-        .this.step=.main.step$scatter_cnvkit
+        .this.step=.main.step$steps$scatter_cnvkit
         .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
     }
     
@@ -1601,7 +1601,9 @@ segment_cnvkit=function(
     ...
   ){
 
-    run_main=function(.env){
+    run_main=function(
+      .env
+    ){
 
       .this.env=environment()
       append_env(to=.this.env,from=.env)
