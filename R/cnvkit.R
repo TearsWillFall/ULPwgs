@@ -198,7 +198,7 @@ process_cnvkit=function(
           )
        )
 
-      .this.step=.main.step$fix_cnvkit
+      .this.step=.main.step$steps$fix_cnvkit
       .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
           
       .main.step$steps <-append(
@@ -1221,15 +1221,15 @@ call_coverage_cnvkit=function(
 
 
     .main$steps[[fn]]<-.this.env
-    .main.step=.main$steps[[fn]]
+    .main.step<-.main$steps[[fn]]
     
     if(type!="target" && type != "antitarget"){
       stop("Valid values for type are : target / antitarget")
     }
 
 
-    .main.step=append(
-      .main.step,
+    .main.step$steps<-append(
+      .main.step$steps,
       coverage_cnvkit(
         sif_cnvkit=sif_cnvkit,
         ref_genome=ref_genome,
@@ -1536,6 +1536,9 @@ segment_cnvkit=function(
           cnr_tmp,cns_tmp
         )
 
+        
+        run_job(.env=.this.env)
+
         .env$.main <- .main
       }
 
@@ -1629,10 +1632,10 @@ segment_cnvkit=function(
       .main$exec_code=paste(
         "singularity exec -H /:/home ",sif_cnvkit,
         " cnvkit.py fix -o ",.main$out_files$cnr, 
-        add, target, antitarget, pon
+        add, normalizePath(input), normalizePath(antitarget), pon
       )
 
-      run_job(.env=this.env)
+      run_job(.env=.this.env)
 
       .env$.main<-.main
 
@@ -1648,7 +1651,6 @@ segment_cnvkit=function(
 
     launch(.env=.base.env)
 
-    
 
    
   }
