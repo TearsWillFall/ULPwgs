@@ -81,6 +81,7 @@ process_cnvkit=function(
     sif_cnvkit=build_default_sif_list()$sif_cnvkit,
     pon=build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn_male,
     tumour=NULL,
+    patient_id=NULL,
     seg_method="cbs",
     seq_method="hybrid",
     diagram=TRUE,
@@ -119,7 +120,13 @@ process_cnvkit=function(
 
       .this.env=environment()
       append_env(to=.this.env,from=.env)
+      out_file_dir=set_dir(
+        out_File_dir,
+        name=paste0(patient_id,"/cnvkit_reports/",input_id)
+      )
+
       set_main(.env=.this.env)
+
 
       .main$steps[[fn]]<-.this.env
       .main.step=.main$steps[[fn]]
