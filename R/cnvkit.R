@@ -1717,6 +1717,13 @@ segment_cnvkit=function(
     ){
 
 
+
+      .this.env=environment()
+      append_env(to=.this.env,from=.env)
+      set_main(.env=.this.env)
+
+      .main$out_files$diagram=paste0(out_file_dir,"/",input_id,".diagram.pdf")
+
       if(!is.null(gender)){
         gender=paste0(" -x ",gender)
       }
@@ -1752,7 +1759,7 @@ segment_cnvkit=function(
       tmp_cns=paste0(cns,".tmp")
       tmp_cnr=paste0(cnr,".tmp")
 
-      .main$out_files$diagram=paste0(out_file_dir,"/",input_id,".diagram.pdf")
+
       cnr_tmp=paste0(cnr,".tmp")
       cns_tmp=""
       .main$exec_code=paste0("cat ",cnr," | head -n 1 > ",cnr_tmp," && cat ",cnr," | grep \"",
