@@ -274,8 +274,8 @@ process_cnvkit=function(
         .main.step$steps,
           diagram_cnvkit(
             sif_cnvkit=sif_cnvkit,
-            cnr=jobs_report[["steps"]][["fixCNVkit"]]$out_files$cnr,
-            cns=jobs_report[["steps"]][["segmentCNVkit"]]$out_files$cns,
+            cnr=.main.step$out_files$cnr,
+            cns=.main.step$out_files$cns,
             output_name=input_id,
             output_dir=out_file_dir,
             tmp_dir=tmp_dir,
@@ -295,7 +295,7 @@ process_cnvkit=function(
         )
       )
 
-        .this.step=.main.step$steps$scatter_cnvkit
+        .this.step=.main.step$steps$diagram_cnvkit
         .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
     }
     
