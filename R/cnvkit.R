@@ -1511,6 +1511,7 @@ segment_cnvkit=function(
 
         cnr_tmp=paste0(cnr,".tmp")
         cns_tmp=""
+        cns_code=""
         .main$exec_code=paste0("cat ",cnr," | head -n 1 > ",
           cnr_tmp," && cat ",cnr," | grep \"",
           paste0(paste0("^",chrs),collapse="\\|"),"\" >> ",cnr_tmp
@@ -1762,9 +1763,10 @@ segment_cnvkit=function(
 
       cnr_tmp=paste0(cnr,".tmp")
       cns_tmp=""
+      cns_code=""
       .main$exec_code=paste0("cat ",cnr," | head -n 1 > ",cnr_tmp," && cat ",cnr," | grep \"",
       paste0(paste0("^",chrs),collapse="\\|"),"\" >> ",cnr_tmp)
-      if(is.null(cns)){
+      if(!is.null(cns)){
         cns_tmp=paste0(cns,".tmp")
         cns_code=paste(" -s ",cns_tmp)
         .main$exec_code=paste0(.main$exec_code," && cat ",
