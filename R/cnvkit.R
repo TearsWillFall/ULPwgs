@@ -121,7 +121,7 @@ process_cnvkit=function(
       .this.env=environment()
       append_env(to=.this.env,from=.env)
       out_file_dir=set_dir(
-        out_File_dir,
+        out_file_dir,
         name=paste0(patient_id,"/cnvkit_reports/",input_id)
       )
 
