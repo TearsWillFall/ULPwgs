@@ -1354,7 +1354,7 @@ segment_cnvkit=function(
         " cnvkit.py segment -p ",
         threads,drop_outliers," -o ",
         .main$out_files$cns,
-        add,cnr
+        add,normalizePath(input)
       )
 
 
@@ -1368,7 +1368,7 @@ segment_cnvkit=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
-      vars="bam"
+      vars="cnr"
     )
 
     launch(.env=.base.env)
