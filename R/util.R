@@ -882,12 +882,12 @@ concat_file_list=function(
   dat=lapply(seq(1,length(files)),FUN=function(x){
     dat=data.table::fread(files[x],sep=sep,header=header)
     if(!is.null(names(files[x]))){
-      dat$id=names(files[x])
+      dat$file_id=names(files[x])
     }else{
       if(name){
-        dat$id=get_file_name(files[x])
+        dat$file_id=get_file_name(files[x])
       }else{
-        dat$id=files[x]
+        dat$file_id=files[x]
       }
       
     }
