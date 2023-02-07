@@ -68,8 +68,8 @@ call_variants_strelka=function(
                 bin_manta=bin_manta,
                 bin_vep=bin_vep,
                 cache_vep=cache_vep,
-                tumour=input,
-                normal=normal,
+                tumour=ifelse(!is.null(tumour),input,NULL),
+                normal=ifelse(!is.null(tumour),normal,input),
                 annotate=annotate,
                 tabulate=tabulate,
                 ref_genome=ref_genome,
@@ -101,8 +101,8 @@ call_variants_strelka=function(
               annotate=annotate,
               tabulate=tabulate,
               indel_candidates=.main.step$out_files$indel_candidates,
-              tumour=input,
-              normal=normal,
+              tumour=ifelse(!is.null(tumour),input,NULL),
+              normal=ifelse(!is.null(tumour),normal,input),
               ref_genome=ref_genome,
               output_dir=paste0(
                   out_file_dir,"/",patient_id,
@@ -126,7 +126,7 @@ call_variants_strelka=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
-      vars="tumour"
+      vars=ifelse(!is.null(tumour),tumour,normal)
     )
   
     launch(.env=.base.env)
@@ -245,7 +245,7 @@ call_snvs_strelka=function(
                 bin_tabix=bin_tabix,
                 bin_vep=bin_vep,
                 cache_vep=cache_vep,
-                normal=normal,
+                normal=input,
                 annotate=annotate,
                 tabulate=tabulate,
                 ref_genome=ref_genome,
@@ -274,7 +274,7 @@ call_snvs_strelka=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
-      vars="tumour"
+      vars=ifelse(!is.null(tumour),"tumour","normal")
     )
 
     launch(.env=.base.env)

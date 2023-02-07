@@ -100,7 +100,7 @@ call_sv_manta=function(
                 bin_tabix=bin_tabix,
                 bin_vep=bin_vep,
                 cache_vep=cache_vep,
-                normal=normal,
+                normal=input,
                 annotate=annotate,
                 tabulate=tabulate,
                 ref_genome=ref_genome,
@@ -128,7 +128,7 @@ call_sv_manta=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
-      vars="tumour"
+      vars=ifelse(!is.null(tumour),"tumour","normal")
     )
 
     launch(.env=.base.env)
