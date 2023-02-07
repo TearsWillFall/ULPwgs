@@ -197,12 +197,12 @@ call_germline_sv_manta=function(
             threads)
           )
 
-        .main$out_files$strelka$workflow=paste0(out_file_dir,"/runWorkflow.py")
-        .main$out_files$strelka$stats=list(
+        .main$out_files$manta$workflow=paste0(out_file_dir,"/runWorkflow.py")
+        .main$out_files$manta$stats=list(
               tsv=paste0(out_file_dir,"/results/stats/runStats.tsv"),
               xml=paste0(out_file_dir,"/results/stats/runStats.xml")
         )
-        .main$out_files$strelka$variants=list(
+        .main$out_files$manta$variants=list(
               indel_candidate=paste0(out_file_dir,"/results/variants/candidateSmallIndels.vcf.gz"),
               indel_candidate_idx=paste0(out_file_dir,"/results/variants/candidateSmallIndels.vcf.gz.tbi"),
               diploid_sv=paste0(out_file_dir,"/results/variants/diploidSV.vcf.gz"),
@@ -221,8 +221,9 @@ call_germline_sv_manta=function(
           add_af_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf= .main.step$out_files$variants$diploid_sv,
+            vcf= .main.step$out_files$manta$variants$diploid_sv,
             output_dir=paste0(out_file_dir,"/annotated"),
+            type="sv",
             tmp_dir=tmp_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
@@ -233,7 +234,7 @@ call_germline_sv_manta=function(
             executor_id=task_id
           )
         )
-        .this.step=.main.step$steps$add_af_strelka_vcf
+        .this.step=.main.step$steps$add_af_strelka_vcf.sv
         .main.step$out_files$annotated$af=.this.step$out_files
       
         .main.step$steps <-append(
