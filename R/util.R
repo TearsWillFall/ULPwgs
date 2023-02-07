@@ -869,13 +869,14 @@ concat_file_list=function(
 
   job=build_job(executor_id=executor_id,task_id=task_id)
 
+
   if(is.null(output_name)){
     stop("Output file name is required")
   }
 
 
 
-  out_file=paste0(out_file_dir,output_name,".",get_file_ext(files[1]))
+  out_file=paste0(out_file_dir,"/",output_name,".",get_file_ext(files[1]))
 
   dat=lapply(seq(1,length(files)),FUN=function(x){
     dat=data.table::fread(files[x],sep=sep,header=header)
