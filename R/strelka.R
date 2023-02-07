@@ -126,7 +126,7 @@ call_variants_strelka=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
-      vars=ifelse(!is.null(tumour),tumour,normal)
+      vars=ifelse(!is.null(tumour),"tumour","normal")
     )
   
     launch(.env=.base.env)
