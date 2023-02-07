@@ -665,7 +665,7 @@ call_germline_snvs_strelka=function(
            add_af_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf=.main$steps$out_files$strelka$variants$snv,
+            vcf=.main$steps$out_files$strelka$variants$snv_and_indel,
             type="germline",
             output_dir=paste0(out_file_dir,"/annotated"),
             tmp_dir=tmp_dir,
@@ -687,7 +687,7 @@ call_germline_snvs_strelka=function(
   
 
 
-        ### FILTER INDELS BY FILTERS
+        ### FILTER VARIANTS BY FILTERS
 
       
         .main.step$steps<-append(
@@ -695,7 +695,7 @@ call_germline_snvs_strelka=function(
           extract_pass_variants_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf=.main$steps$out_files$annotated$af$indel$bgzip_vcf,
+            vcf=.main$steps$out_files$annotated$af$germline$bgzip_vcf,
             type="germline",
             output_dir=paste0(out_file_dir,"/annotated"),
             tmp_dir=tmp_dir,
@@ -725,7 +725,7 @@ call_germline_snvs_strelka=function(
                 bin_bgzip=bin_bgzip,
                 bin_tabix=bin_tabix,
                 cache_vep=cache_vep,
-                vcf=.main.step$out_files$annotated$filter$snv$bgzip_vcf,
+                vcf=.main.step$out_files$annotated$filter$germline$bgzip_vcf,
                 type="germline",
                 output_dir=paste0(out_file_dir,"/annotated"),
                 tmp_dir=tmp_dir,
