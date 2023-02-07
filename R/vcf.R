@@ -483,7 +483,7 @@ add_gl_af_strelka_vcf=function(
         }
 
 
-        vcf_dat$descriptors$FORMAT[["AF"]]<-add_afp_descriptor()
+        vcf_dat$descriptors$FORMAT[["AF"]]<-add_af_descriptor()
   
       
 
