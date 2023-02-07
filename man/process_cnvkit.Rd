@@ -15,7 +15,8 @@ process_cnvkit(
   access = build_default_reference_list()$HG19$reference$access_5k,
   sif_cnvkit = build_default_sif_list()$sif_cnvkit,
   pon = build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn_male,
-  tumour = NULL,
+  bam = NULL,
+  patient_id = NULL,
   seg_method = "cbs",
   seq_method = "hybrid",
   diagram = TRUE,
@@ -55,8 +56,6 @@ process_cnvkit(
 
 \item{pon}{\link{OPTIONAL} Path to panel of normal.}
 
-\item{tumour}{\link{REQUIRED} Path to tumour BAM file.}
-
 \item{seg_method}{\link{OPTIONAL} Method to use to generate segmentation calls.Default  cbs. Options \link{"cbs","flasso","haar","none","hmm","hmm-tumor","hmm-germline"}}
 
 \item{seq_method}{\link{OPTIONAL} Sequenced methods used. Default hybrid. Options \link{"hybrid","amplicon","wgs"}}
@@ -90,6 +89,8 @@ process_cnvkit(
 \item{gender_diagram}{\link{OPTIONAL} Assume sample gender. Default male}
 
 \item{shift_diagram}{\link{OPTIONAL} Adjust the X and Y chromosomes according to sample sex. Default TRUE}
+
+\item{tumour}{\link{REQUIRED} Path to tumour BAM file.}
 
 \item{normal}{\link{OPTIONAL} Path to normal BAM file.}
 

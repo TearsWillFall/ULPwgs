@@ -8,6 +8,7 @@ concat_file_list(
   files = "",
   sep = "\\t",
   header = FALSE,
+  name = FALSE,
   output_name = "concat",
   output_dir = ".",
   verbose = FALSE,
