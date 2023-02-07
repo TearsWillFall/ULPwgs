@@ -473,7 +473,7 @@ add_gl_af_strelka_vcf=function(
           REF=tryCatch({strsplit(VALUE[FORMAT=="AD"],split=",")[[1]][1]},error=function(e){NA}),
           ALT=tryCatch({strsplit(VALUE[FORMAT=="AD"],split=",")[[1]][2]},error=function(e){NA})) %>%
           dplyr::mutate(VALUE=ifelse(FORMAT=="AF",
-          as.numeric(ALT)/(as.numeric(PREF)+as.numeric(PALT)),VALUE))%>% 
+          as.numeric(ALT)/(as.numeric(REF)+as.numeric(ALT)),VALUE))%>% 
           dplyr::select(-c(ALT,REF))
         vcf_dat$body=vcf_dat$body %>% dplyr::filter(!is.na(VALUE)) %>% nest_vcf_body()
 
