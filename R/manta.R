@@ -114,7 +114,7 @@ call_sv_manta=function(
                 executor_id=task_id
             )
            )
-          .this.step=.main.step$steps$call_somatic_sv_manta
+          .this.step=.main.step$steps$call_germline_sv_manta
           .main.step$out_files$germline=.this.step$out_files
         }
       }

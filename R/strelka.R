@@ -837,7 +837,7 @@ call_germline_snvs_strelka=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
-      vars="tumour"
+      vars="normal"
     )
 
     launch(.env=.base.env)
