@@ -665,7 +665,7 @@ call_germline_snvs_strelka=function(
            add_af_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf=.main$steps$out_files$strelka$variants$snv_and_indel,
+            vcf=.main.step$out_files$strelka$variants$snv_and_indel,
             type="germline",
             output_dir=paste0(out_file_dir,"/annotated"),
             tmp_dir=tmp_dir,
@@ -695,7 +695,7 @@ call_germline_snvs_strelka=function(
           extract_pass_variants_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf=.main$steps$out_files$annotated$af$germline$bgzip_vcf,
+            vcf=.main.step$out_files$annotated$af$germline$bgzip_vcf,
             type="germline",
             output_dir=paste0(out_file_dir,"/annotated"),
             tmp_dir=tmp_dir,
