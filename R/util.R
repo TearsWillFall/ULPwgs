@@ -853,6 +853,7 @@ concat_file_list=function(
   files="",
   sep="\t",
   header=FALSE,
+  name=FALSE,
   output_name="concat",
   output_dir=".",
   verbose=FALSE,
@@ -883,7 +884,12 @@ concat_file_list=function(
     if(!is.null(names(files[x]))){
       dat$id=names(files[x])
     }else{
-      dat$id=get_file_name(files[x])
+      if(name){
+        dat$id=get_file_name(files[x])
+      }else{
+        dat$id=files[x]
+      }
+      
     }
     return(dat)
   })
