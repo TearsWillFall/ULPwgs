@@ -300,7 +300,7 @@ process_cnvkit=function(
     }
     
 
-    .env.$.main<-.main
+    .env$.main<-.main
 
     }
  

@@ -417,6 +417,113 @@ add_sv_af_strelka_vcf=function(
 
 
 
+
+
+
+#' Add structural variant AF information to Strelka VCF file
+#' This function reads and modifies Strelka produced VCF files to 
+#' add an entry for AF within the VCF file
+#' 
+#' @param bin_bgzip Path to bgzip executable.
+#' @param bin_tabix Path to TABIX executable.
+#' @param vcf Path to VCF file
+#' @param compress Compress VCF file. Default TRUE.
+#' @param index Index VCF file. Default TRUE.
+#' @param index_format VCF index format. Default tbi. Options [tbi,cbi].
+#' @param bgzip_index Create BGZIP index for compressed file. Default FALSE
+#' @param output_dir Path to the output directory.
+#' @param clean Remove input VCF after completion. Default FALSE.
+#' @param verbose Enables progress messages. Default False.
+#' @param executor_id Task EXECUTOR ID. Default "gatherBQSR"
+#' @param task_name Task name. Default "gatherBQSR"
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param threads Number of threads to split the work. Default 3
+#' @param ram [OPTIONAL] If batch mode. RAM memory in GB per job. Default 1
+#' @param update_time [OPTIONAL] If batch mode. Show job updates every update time. Default 60
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+
+add_gl_af_strelka_vcf=function(
+  bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+  bin_tabix=build_default_tool_binary_list()$bin_tabix,
+  vcf=NULL,
+  ...
+){
+    
+    run_main=function(.env){
+
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+    
+        set_main(.env=.this.env)
+
+        .main$steps[[fn]]<-.this.env
+        .main.step=.main$steps[[fn]]
+
+        vcf_dat=read_vcf(input)
+        vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
+        vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
+        dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
+        ##Extract Tier1 read information for REF and ALT
+        vcf_dat$body=vcf_dat$body %>% dplyr::mutate(
+          REF=tryCatch({strsplit(VALUE[FORMAT=="AD"],split=",")[[1]][1]},error=function(e){NA}),
+          ALT=tryCatch({strsplit(VALUE[FORMAT=="AD"],split=",")[[1]][2]},error=function(e){NA})) %>%
+          dplyr::mutate(VALUE=ifelse(FORMAT=="AF",
+          as.numeric(ALT)/(as.numeric(PREF)+as.numeric(PALT)),VALUE))%>% 
+          dplyr::select(-c(ALT,REF))
+        vcf_dat$body=vcf_dat$body %>% dplyr::filter(!is.na(VALUE)) %>% nest_vcf_body()
+
+  
+       add_af_descriptor<-function(){
+            list(Number="1",Type="Float",Description="\"Variant allelic frequency for tier 1 reads\"")
+        }
+
+
+        vcf_dat$descriptors$FORMAT[["AF"]]<-add_afp_descriptor()
+  
+      
+
+        .main.step$steps <- append(
+          .main.step$steps,
+          write_vcf(
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            vcf=vcf_dat,
+            output_name=paste0(input_id,".af"),
+            output_dir=out_file_dir,
+            tmp_dir=tmp_dir,
+            env_dir=env_dir,
+            batch_dir=batch_dir,
+            err_msg=err_msg,
+            threads=threads,
+            ram=ram,
+            executor=task_id
+          )
+        )
+        
+        .this.step=.main.step$steps$write_vcf
+        .main.step$out_files=.this.step$out_files
+        .env$.main<-.main
+
+    }
+
+   
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="vcf"
+    )
+  
+    launch(.env=.base.env)
+}
+
+
+
 #' Add structural variant AF information to Strelka VCF file
 #' This function reads and modifies Strelka produced VCF files to 
 #' add an entry for AF within the VCF file
@@ -532,8 +639,30 @@ add_af_strelka_vcf=function(
             executor_id=task_id
           )
         )
-      .this.step=.main.step$steps$add_sv_af_strelka_vcf
-      .main.step$out_files[[type]]=.this.step$out_files 
+        .this.step=.main.step$steps$add_sv_af_strelka_vcf
+        .main.step$out_files[[type]]=.this.step$out_files
+    
+      }else if(type=="germline"){
+        .main.step$steps<-append(
+        .main.step$steps,
+          add_gl_af_strelka_vcf(
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            vcf=input,
+            output_dir=out_file_dir,
+            tmp_dir=tmp_dir,
+            env_dir=env_dir,
+            batch_dir=batch_dir,
+            err_msg=err_msg,
+            output_name=output_name,
+            verbose=verbose,
+            threads=threads,
+            ram=ram,
+            executor_id=task_id
+          )
+        )
+        .this.step=.main.step$steps$add_gl_af_strelka_vcf
+        .main.step$out_files[[type]]=.this.step$out_files 
       }else{
         stop("Wrong type argument")
       }
