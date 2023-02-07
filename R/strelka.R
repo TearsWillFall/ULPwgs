@@ -69,7 +69,7 @@ call_variants_strelka=function(
                 bin_vep=bin_vep,
                 cache_vep=cache_vep,
                 tumour=ifelse(!is.null(tumour),input,NULL),
-                normal=ifelse(!is.null(tumour),normal,input),
+                normal=normal,
                 annotate=annotate,
                 tabulate=tabulate,
                 ref_genome=ref_genome,
@@ -233,9 +233,7 @@ call_snvs_strelka=function(
           .this.step=.main.step$steps$call_somatic_snvs_strelka
           .main.step$out_files$snvs$somatic=.this.step$out_files
 
-        }
-       
-      }else{
+        }else{
             .main.step$steps<-append(
               .main.step$steps,
               call_germline_snvs_strelka(
@@ -265,10 +263,11 @@ call_snvs_strelka=function(
           .this.step=.main.step$steps$call_germline_snvs_strelka
           .main.step$out_files$snvs$germline=.this.step$out_files
       }
-      .env$.main<-.main
 
     }
+      .env$.main<-.main
 
+  }
     
     .base.env=environment()
     list2env(list(...),envir=.base.env)

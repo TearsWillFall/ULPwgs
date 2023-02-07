@@ -88,9 +88,7 @@ call_sv_manta=function(
 
           .this.step=.main.step$steps$call_somatic_sv_manta
           .main.step$out_files$somatic=.this.step$out_files
-        }
-
-      }else{
+        }else{
            .main.step$steps<-append(
               .main.step$steps,
               call_germline_sv_manta(
@@ -118,12 +116,11 @@ call_sv_manta=function(
            )
           .this.step=.main.step$steps$call_somatic_sv_manta
           .main.step$out_files$germline=.this.step$out_files
+        }
       }
-
       .env$.main <- .main
 
-    }
-        
+    }    
     .base.env=environment()
     list2env(list(...),envir=.base.env)
     set_env_vars(
