@@ -9,6 +9,7 @@
 
 
 read_vcf=function(vcf="",sep="\t"){
+  options(scipen=999)
   cols=c("CHROM","POS","ID","REF","ALT","QUAL","FILTER","INFO","FORMAT")
 
   
@@ -1218,7 +1219,7 @@ write_vcf=function(
   ...
 ){  
 
-
+  options(scipen=999)
 
   run_main=function(.env){
 
