@@ -470,12 +470,13 @@ add_gl_af_strelka_vcf=function(
         dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
         ##Extract Tier1 read information for REF and ALT
         vcf_dat$body=vcf_dat$body %>% dplyr::mutate(
-          REF=tryCatch({strsplit(VALUE[FORMAT=="AD"],split=",")[[1]][1]},error=function(e){NA}),
-          ALT=tryCatch({strsplit(VALUE[FORMAT=="AD"],split=",")[[1]][2]},error=function(e){NA})) %>%
+          UREF=tryCatch({strsplit(VALUE[FORMAT=="AD"],split=",")[[1]][1]},error=function(e){NA}),
+          UALT=tryCatch({strsplit(VALUE[FORMAT=="AD"],split=",")[[1]][2]},error=function(e){NA})) %>%
           dplyr::mutate(VALUE=ifelse(FORMAT=="AF",
-          as.numeric(ALT)/(as.numeric(REF)+as.numeric(ALT)),VALUE))%>% 
-          dplyr::select(-c(ALT,REF))
-        vcf_dat$body=vcf_dat$body %>% dplyr::filter(!is.na(VALUE)) %>% nest_vcf_body()
+          as.numeric(UALT)/(as.numeric(UREF)+as.numeric(UALT)),VALUE))%>% 
+          dplyr::select(-c(UALT,UREF))
+        vcf_dat$body=vcf_dat$body %>% dplyr::filter(!is.na(VALUE)) %>%
+         nest_vcf_body()
 
   
        add_af_descriptor<-function(){

@@ -1809,7 +1809,8 @@ segment_cnvkit=function(
 
 plot_cnvkit=function(
   cnr=NULL,cns=NULL,chromosomes=NULL,
-  genes=NULL,highlights=NULL,weights=0.9,threads=1,
+  genes=NULL,highlights=NULL,
+  weights=NULL,threads=5,
   show_lines=TRUE,
   trend=TRUE,
   save=TRUE,
@@ -1818,8 +1819,7 @@ plot_cnvkit=function(
   plot_height=600
 ){
 
-
-  
+    
 
       cnr_dat=dplyr::bind_rows(mclapply_os(X=cnr,FUN=function(x){dat=read.csv(x,sep="\t");dat$id=ULPwgs::get_file_name(x);dat},mc.cores=threads))
       cnr_dat$bin_type=ifelse(cnr_dat$gene=="Antitarget","Antitarget","Target")
@@ -1865,15 +1865,15 @@ plot_cnvkit=function(
 
     
       plt=ggplot(cnr_dat)+
-      geom_hline(aes(yintercept=0),linetype="dashed",size=0.1,alpha=0.25) +
-      geom_hline(aes(yintercept=0),linetype="longdash",size=0.25)+
-      geom_hline(aes(yintercept=1),linetype="longdash",size=0.1,alpha=0.25)+
-      geom_hline(aes(yintercept=-1),linetype="longdash",size=0.1,alpha=0.25)+
-      geom_hline(aes(yintercept=2),linetype="longdash",size=0.1,alpha=0.25)+
-      geom_hline(aes(yintercept=-2),linetype="longdash",size=0.1,alpha=0.25)+
-      geom_hline(aes(yintercept=3),linetype="longdash",size=0.1,alpha=0.25)+
-      geom_hline(aes(yintercept=-3),linetype="longdash",size=0.1,alpha=0.25)+
-         facet_grid(id~chromosome)
+      geom_hline(aes(yintercept=0),linetype="dashed",size=0.1,alpha=0.25)
+      
+      lapply(1:4,FUN=function(x){
+        plt<<-plt+geom_hline(aes(yintercept=x),linetype="longdash",size=0.1,alpha=0.25)
+        plt<<-plt+geom_hline(aes(yintercept=-x),linetype="longdash",size=0.1,alpha=0.25)
+      
+      })
+     
+      plt=plt+facet_grid(id~chromosome)
 
       if(show_lines){
 
@@ -1936,10 +1936,12 @@ plot_cnvkit=function(
         scale_colour_identity()+facet_grid(id~chromosome,scale="free_x")+
         theme_classic() +
         theme(axis.title.x=element_blank(),
-        panel.spacing = unit(0, "lines"),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank())+
-        ylab("Log2")
+          panel.spacing = unit(0, "lines"),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank(),
+          strip.text.y = element_text(size=3)
+        )+
+        ylab("Log2")+scale_y_continuous(limits=c(-4,4))
       
 
         if(trend){
