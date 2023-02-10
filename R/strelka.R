@@ -75,7 +75,7 @@ call_variants_strelka=function(
                 ref_genome=ref_genome,
                 output_dir=paste0(
                   out_file_dir,"/",patient_id,
-                  "/strelka_reports/",input_id
+                  "/strelka_reports"
                 ),
                 targeted=targeted,
                 verbose=verbose,
@@ -106,7 +106,7 @@ call_variants_strelka=function(
               ref_genome=ref_genome,
               output_dir=paste0(
                   out_file_dir,"/",patient_id,
-                  "/strelka_reports/",input_id
+                  "/strelka_reports"
               ),
               targeted=targeted,
               verbose=verbose,
@@ -116,7 +116,7 @@ call_variants_strelka=function(
         )
       )
 
-      .this.step=.main.step$steps$call_snvs_manta
+      .this.step=.main.step$steps$call_snvs_strelka
       .main.step$out_files$snvs=.this.step$out_files
 
       .env$.main <-.main
@@ -215,7 +215,7 @@ call_snvs_strelka=function(
                 annotate=annotate,
                 tabulate=tabulate,
                 ref_genome=ref_genome,
-                output_dir=paste0(out_file_dir,"/somatic/snvs_indels"),
+                output_dir=paste0(out_file_dir,"/",input_id,"/somatic/snvs_indels"),
                 tmp_dir=tmp_dir,
                 env_dir=env_dir,
                 batch_dir=batch_dir,
@@ -247,7 +247,7 @@ call_snvs_strelka=function(
                 annotate=annotate,
                 tabulate=tabulate,
                 ref_genome=ref_genome,
-                output_dir=paste0(out_file_dir,"/germline/snvs_indels"),
+                output_dir=paste0(out_file_dir,"/",input_id,"/germline/snvs_indels"),
                 tmp_dir=tmp_dir,
                 env_dir=env_dir,
                 batch_dir=batch_dir,
