@@ -2102,16 +2102,16 @@ filter_tabulated_vcf=function(
                 }
 
                 if(!is.null(dp_normal)){
-                    tab_vcf=tab_vcf[tab_vcf[,grepl("_DP$",names(tab_vcf))]>=dp_normal,]
+                    tab_vcf=tab_vcf[tab_vcf[,names(tab_vcf)[grepl("_DP$",names(tab_vcf))]]>=dp_normal,]
                 }
 
                 if(!is.null(min_af_normal)){
-                    tab_vcf_tmp=tab_vcf[tab_vcf[,grepl("_AF$",names(tab_vcf))]>=min_af_normal,]
+                    tab_vcf_tmp=tab_vcf[tab_vcf[,names(tab_vcf)[grepl("_AF$",names(tab_vcf))]]>=min_af_normal,]
                     if(!is.null(max_af_normal)){
-                      tab_vcf=dplyr::bind_rows(tab_vcf_tmp,tab_vcf[tab_vcf[,grepl("_AF$",names(tab_vcf))]<=max_af_normal,])
+                      tab_vcf=dplyr::bind_rows(tab_vcf_tmp,tab_vcf[tab_vcf[,names(tab_vcf)[grepl("_AF$",names(tab_vcf))]]<=max_af_normal,])
                     }
                 }else if(!is.null(max_af_normal)){
-                     tab_vcf=tab_vcf[tab_vcf[,grepl("_AF$",names(tab_vcf))]<=min_af_normal,]
+                     tab_vcf=tab_vcf[tab_vcf[,names(tab_vcf)[grepl("_AF$",names(tab_vcf))]]<=min_af_normal,]
                 }
                  
             }else if(origin=="somatic"){
@@ -2125,31 +2125,31 @@ filter_tabulated_vcf=function(
                 }
 
                 if(!is.null(dp_normal)){
-                    tab_vcf=tab_vcf[tab_vcf[,grepl("NORMAL_DP",names(tab_vcf))]>=dp_normal,]
+                    tab_vcf=tab_vcf[tab_vcf[,names(tab_vcf)[grepl("NORMAL_DP",names(tab_vcf))]]>=dp_normal,]
                 }
 
                 if(!is.null(dp_tumour)){
-                    tab_vcf=tab_vcf[tab_vcf[,grepl("TUMOR_DP",names(tab_vcf))]>=dp_tumour,]
+                    tab_vcf=tab_vcf[tab_vcf[,names(tab_vcf)[grepl("NORMAL_DP",names(tab_vcf))]]>=dp_tumour,]
                 }
 
 
                 if(!is.null(min_af_normal)){
-                    tab_vcf_tmp=tab_vcf[tab_vcf[,grepl("NORMAL_AF",names(tab_vcf))]>=min_af_normal,]
+                    tab_vcf_tmp=tab_vcf[tab_vcf[,names(tab_vcf)[grepl("NORMAL_AF",names(tab_vcf))]]>=min_af_normal,]
                     if(!is.null(max_af_normal)){
-                      tab_vcf=dplyr::bind_rows(tab_vcf_tmp,tab_vcf[tab_vcf[,grepl("NORMAL_AF",names(tab_vcf))]<=max_af_normal,])
+                      tab_vcf=dplyr::bind_rows(tab_vcf_tmp,tab_vcf[tab_vcf[,names(tab_vcf)[grepl("NORMAL_AF",names(tab_vcf))]]<=max_af_normal,])
                     }
                 }else if(!is.null(max_af_normal)){
-                     tab_vcf=tab_vcf[tab_vcf[,grepl("NORMAL_AF",names(tab_vcf))]<=min_af_normal,]
+                     tab_vcf=tab_vcf[tab_vcf[,names(tab_vcf)[grepl("NORMAL_AF",names(tab_vcf))]]<=min_af_normal,]
                 }
 
 
                 if(!is.null(min_af_tumour)){
-                    tab_vcf_tmp=tab_vcf[tab_vcf[,grepl("NORMAL_AF",names(tab_vcf))]>=min_af_tumour,]
+                    tab_vcf_tmp=tab_vcf[tab_vcf[,names(tab_vcf)[grepl("TUMOR_AF",names(tab_vcf))]]>=min_af_tumour,]
                     if(!is.null(max_af_tumour)){
-                      tab_vcf=dplyr::bind_rows(tab_vcf_tmp,tab_vcf[tab_vcf[,grepl("NORMAL_AF",names(tab_vcf))]<=max_af_tumour,])
+                      tab_vcf=dplyr::bind_rows(tab_vcf_tmp,tab_vcf[tab_vcf[,names(tab_vcf)[grepl("TUMOR_AF",names(tab_vcf))]]<=max_af_tumour,])
                     }
                 }else if(!is.null(max_af_tumour)){
-                     tab_vcf=tab_vcf[tab_vcf[,grepl("NORMAL_AF",names(tab_vcf))]<=min_af_tumour,]
+                     tab_vcf=tab_vcf[tab_vcf[,names(tab_vcf)[grepl("TUMOR_AF",names(tab_vcf))]]<=min_af_tumour,]
                 }
 
 
