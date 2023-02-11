@@ -2173,7 +2173,7 @@ filter_tabulated_vcf=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
-      vars="vcf"
+      vars="tab_vcf"
     )
   
     launch(.env=.base.env)
