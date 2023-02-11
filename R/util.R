@@ -2034,3 +2034,151 @@ mclapply_os <- function(X,FUN,mc.cores) {
     }
     
 }
+
+
+
+#' Filter tabulated VCF
+#'
+#'
+#' @param tab_vcf Path to tabulated VCF file
+#' @param canonical Preserve only canonical transcripts.
+#' @param impact Preserve only exonic variants.
+#' @param origin Tabulated vcf origin. Default somatic. Options ["somatic","germline"]
+#' @param dp_normal Preserve variants with normal depth above/equal to. Default 100
+#' @param dp_tumour Preserve variants with tumour depth above/equal to. Default NULL
+#' @param min_af_tumour Preserve variants with tumour AF above/equal to. Default NULL
+#' @param max_af_tumour Preserve variants with tumour AF equal/below to. Default NULL
+#' @param min_af_normal Preserve variants with tumour AF above/equal to. Default NULL
+#' @param max_af_normal Preserve variants with tumour AF equal/below to. Default NULL
+#' @export 
+
+filter_tabulated_vcf=function(
+  tab_vcf=NULL,
+  canonical=TRUE,
+  impact=TRUE,
+  origin="somatic",
+  dp_normal=100,
+  dp_tumour=NULL,
+  min_af_tumour=NULL,
+  max_af_tumour=NULL,
+  min_af_normal=NULL,
+  max_af_normal=NULL,
+  ...
+){
+
+
+    run_main=function(
+        .env
+      ){
+
+
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+
+        set_main(.env=.this.env)
+
+        .main$out_files$tab_vcf=paste0(out_file_dir,"/",input_id,".tabulated.filtered.tsv")
+        
+
+        ignore=TRUE
+        #### Catch empty VCF 
+        tryCatch({tab_vcf=read.csv(tab_vcf,sep="\t");ignore=FALSE},error=function(error){
+            warning("No variants detected in tabulated vcf. Ignoring input.")
+        })
+
+
+        if(ignore){
+
+            cat(x="No variants detected in input tabulated vcf.",file=.main$out_files$tab_vcf,sep="\n")
+    
+        }else{
+            if(origin=="germline"){
+                if(impact){
+                    tab_vcf=tab_vcf %>% dplyr::filter(grepl("LOW|MODERATE|HIGH",IMPACT))
+                }
+
+                if(canonical){
+                    tab_vcf=tab_vcf %>% dplyr::filter(CANONICAL=="YES")
+                }
+
+                if(!is.null(dp_normal)){
+                    tab_vcf=tab_vcf[tab_vcf[,grepl("_DP$",names(tab_vcf))]>=dp_normal,]
+                }
+
+                if(!is.null(min_af_normal)){
+                    tab_vcf_tmp=tab_vcf[tab_vcf[,grepl("_AF$",names(tab_vcf))]>=min_af_normal,]
+                    if(!is.null(max_af_normal)){
+                      tab_vcf=dplyr::bind_rows(tab_vcf_tmp,tab_vcf[tab_vcf[,grepl("_AF$",names(tab_vcf))]<=max_af_normal,])
+                    }
+                }else if(!is.null(max_af_normal)){
+                     tab_vcf=tab_vcf[tab_vcf[,grepl("_AF$",names(tab_vcf))]<=min_af_normal,]
+                }
+                 
+            }else if(origin=="somatic"){
+
+                if(impact){
+                    tab_vcf=tab_vcf %>% dplyr::filter(grepl("LOW|MODERATE|HIGH",IMPACT))
+                }
+
+                if(canonical){
+                    tab_vcf=tab_vcf %>% dplyr::filter(CANONICAL=="YES")
+                }
+
+                if(!is.null(dp_normal)){
+                    tab_vcf=tab_vcf[tab_vcf[,grepl("NORMAL_DP",names(tab_vcf))]>=dp_normal,]
+                }
+
+                if(!is.null(dp_tumour)){
+                    tab_vcf=tab_vcf[tab_vcf[,grepl("TUMOR_DP",names(tab_vcf))]>=dp_tumour,]
+                }
+
+
+                if(!is.null(min_af_normal)){
+                    tab_vcf_tmp=tab_vcf[tab_vcf[,grepl("NORMAL_AF",names(tab_vcf))]>=min_af_normal,]
+                    if(!is.null(max_af_normal)){
+                      tab_vcf=dplyr::bind_rows(tab_vcf_tmp,tab_vcf[tab_vcf[,grepl("NORMAL_AF",names(tab_vcf))]<=max_af_normal,])
+                    }
+                }else if(!is.null(max_af_normal)){
+                     tab_vcf=tab_vcf[tab_vcf[,grepl("NORMAL_AF",names(tab_vcf))]<=min_af_normal,]
+                }
+
+
+                if(!is.null(min_af_tumour)){
+                    tab_vcf_tmp=tab_vcf[tab_vcf[,grepl("NORMAL_AF",names(tab_vcf))]>=min_af_tumour,]
+                    if(!is.null(max_af_tumour)){
+                      tab_vcf=dplyr::bind_rows(tab_vcf_tmp,tab_vcf[tab_vcf[,grepl("NORMAL_AF",names(tab_vcf))]<=max_af_tumour,])
+                    }
+                }else if(!is.null(max_af_tumour)){
+                     tab_vcf=tab_vcf[tab_vcf[,grepl("NORMAL_AF",names(tab_vcf))]<=min_af_tumour,]
+                }
+
+
+            }
+         
+            ##### Extract body information from VCF
+
+
+            write.table(x=tab_vcf,file=.main$out_files$tab_vcf,sep="\t",quote=FALSE,
+            row.names=FALSE,col.names=TRUE)
+        }
+
+        .main$steps[[fn]]<-.this.env
+    
+        .env$.main<- .main 
+
+    }
+  
+        
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="vcf"
+    )
+  
+    launch(.env=.base.env)
+
+
+      
+}
+
