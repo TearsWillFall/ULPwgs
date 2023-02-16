@@ -489,7 +489,7 @@ access_cnvkit=function(
             )
         }
 
-        .main$exec_code=paste("singularity exec -H /:/home ",sif_cnvkit,
+        .main$exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
           " cnvkit.py batch -p ",threads, " -n ",gsub(";"," ",input),
           " --output-reference ",.main$out_files$pon,
           " -f ", ref_genome,access,target,
@@ -608,7 +608,7 @@ access_cnvkit=function(
 
     .main$out_file$reference=paste0(out_file_dir,"/",input_id,".cnn")
 
-    .main$exec_code=paste("singularity exec -H /:/home ",sif_cnvkit,
+    .main$exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
       " cnvkit.py reference ", gender, min_cluster_size,
       " -f ",normalizePath(ref_genome)," -o ",
       .main$out_file$pon, add, gsub(";"," ",cnn)
@@ -707,7 +707,7 @@ access_cnvkit=function(
 
       
       .main$exec_code=paste(
-        "singularity exec -H /:/home ",sif_cnvkit,
+        "singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
         " cnvkit.py target --split -a ",bin_size," -o ",
         .main$out_files$tg_bed, add, input
       )
@@ -802,7 +802,7 @@ access_cnvkit=function(
 
 
         .main$exec_code=paste(
-          "singularity exec -H   /:/home ",sif_cnvkit,
+          "singularity exec -H   ",paste0(getwd(),":/home "),sif_cnvkit,
           " cnvkit.py antitarget -a ",
           bin_size,access,
           " -o ",.main$out_files$atg_bed, add, normalizePath(input)
@@ -1052,7 +1052,7 @@ autobin_cnvkit=function(
             add=paste(add," --short-names ")
           }
 
-          .main$exec_code=paste("singularity exec -H /:/home ",sif_cnvkit,
+          .main$exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
             " cnvkit.py autobin -t ",bed," -f ",ref_genome,
             " -b ",bp_per_bin, " -m ",seq_method,access,
             "  --target-max-size ",max_bin_size_target,
@@ -1142,7 +1142,7 @@ coverage_cnvkit=function(
     }
 
     .main$exec_code=paste(
-      "singularity exec -H /:/home ",sif_cnvkit,
+      "singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
       " cnvkit.py coverage -p ",threads, "-q ",min_mapq,
       " -f ", normalizePath(ref_genome)," -o ",.main$out_files$cnn,
       add,normalizePath(input), bed
@@ -1357,7 +1357,7 @@ segment_cnvkit=function(
       .main$out_files$cns=paste0(out_file_dir,"/",input_id,".cns")
 
       .main$exec_code=paste(
-        "singularity exec -H /:/home ", sif_cnvkit,
+        "singularity exec -H",paste0(getwd(),":/home "),sif_cnvkit,
         " cnvkit.py segment -p ",
         threads,drop_outliers," -o ",
         .main$out_files$cns,
@@ -1529,7 +1529,7 @@ segment_cnvkit=function(
         }
 
         .main$exec_code=paste(
-          .main$exec_code,";singularity exec -H /:/home ",
+          .main$exec_code,";singularity exec -H ",paste0(getwd(),":/home "),
           sif_cnvkit," cnvkit.py scatter -o ",.main$out_files$scatter,
           cns_code,add,
           title,
@@ -1638,7 +1638,7 @@ segment_cnvkit=function(
 
 
       .main$exec_code=paste(
-        "singularity exec -H /:/home ",sif_cnvkit,
+        "singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
         " cnvkit.py fix -o ",.main$out_files$cnr, 
         add, normalizePath(input), normalizePath(antitarget), pon
       )
@@ -1775,7 +1775,7 @@ segment_cnvkit=function(
       }
       
       .main$exec_code=paste(
-        .main$exec_code,"; singularity exec -H /:/home ",sif_cnvkit,
+        .main$exec_code,"; singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
         " cnvkit.py diagram -o ",.main$out_files$diagram,
         cns_code,gender,
         add,title,
@@ -1807,6 +1807,21 @@ segment_cnvkit=function(
 
 
 
+
+#' Plot CNR across bins
+#'
+#' 
+#'
+#' @param cnr [REQUIRED] Path to CNR as produced by fix_cnvkit command.
+#' @param cns [OPTIONAL] Path to CNS as produced by segment_cnvkit command.
+#' @param genes [OPTIONAL] Genes to focus on. Default NULL
+#' @param highlights [OPTIONAL] Highlights genes. Default NULL.
+#' @param weights [OPTIONAL] Filter bins by weight
+#' @param trend [OPTIONAL] Draw trend line across bins
+#' @param save [OPTIONAL] Save image
+#' @export
+
+
 plot_cnvkit=function(
   cnr=NULL,cns=NULL,chromosomes=NULL,
   genes=NULL,highlights=NULL,
@@ -1814,12 +1829,17 @@ plot_cnvkit=function(
   show_lines=TRUE,
   trend=TRUE,
   save=TRUE,
+  limits=5,
+  show="panel",
+  output_dir="img",
   output_name="img.png",
   plot_width=1200,
   plot_height=600
 ){
 
-    
+
+
+      out_file_dir=set_dir(dir=output_dir)
 
       cnr_dat=dplyr::bind_rows(mclapply_os(X=cnr,FUN=function(x){dat=read.csv(x,sep="\t");dat$id=ULPwgs::get_file_name(x);dat},mc.cores=threads))
       cnr_dat$bin_type=ifelse(cnr_dat$gene=="Antitarget","Antitarget","Target")
@@ -1864,99 +1884,179 @@ plot_cnvkit=function(
 
 
     
-      plt=ggplot(cnr_dat)+
-      geom_hline(aes(yintercept=0),linetype="dashed",size=0.1,alpha=0.25)
-      
-      lapply(1:4,FUN=function(x){
-        plt<<-plt+geom_hline(aes(yintercept=x),linetype="longdash",size=0.1,alpha=0.25)
-        plt<<-plt+geom_hline(aes(yintercept=-x),linetype="longdash",size=0.1,alpha=0.25)
-      
-      })
-     
-      plt=plt+facet_grid(id~chromosome)
-
-      if(show_lines){
-
-        line_dat=cnr_dat  %>% dplyr::filter(!grepl("Antitarget|SNP",gene)) %>%
-        dplyr::filter(gene!=".")
-        line_dat$gene=sub(";?[CP][OA][NN][TE].*_GENE;?","",line_dat$gene)
-        line_dat$gene=sub(";","",line_dat$gene)
-        lapply(unique(line_dat$gene),FUN=function(x){
-             
-             tmp=line_dat %>% dplyr::filter(gene==x)
-             tmp_min=tmp[which.min(tmp$bin_id),]
-             tmp_max=tmp[which.max(tmp$bin_id),]
-
-             plt<<-plt+geom_vline(aes(xintercept=tmp_min$bin_id),
-             col="black",size=1,alpha=0.1,linetype="longdash")
-      
-             plt<<-plt+geom_vline(aes(xintercept=tmp_max$bin_id),
-             col="black",size=1,alpha=0.1,linetype="longdash")
-
-        }
-        )
-       
-      }
-
-      
-      if(!is.null(highlights)){
-           lapply(highlights,FUN=function(x){
-                tmp=cnr_dat %>% dplyr::filter(grepl(paste0("^",x,";?$"),gene)|grepl(paste0(";",x,"$"),gene))
-                tmp_outer=cnr_dat %>% 
-                dplyr::filter(!grepl(paste0("^",x,";?$"),gene)|!grepl(paste0(";",x,"$"),gene),
-                chromosome==unique(tmp$chromosome))
-                tmp_outer=tmp_outer %>% group_by(id,chromosome) %>% summarise(medianOUTER=median(log2))
-                tmp=tmp %>% group_by(id,chromosome) %>% 
-                summarise(
-                  medianLog=median(log2),medianGENE=median(log2[origin=="GENE"]),
-                  medianFLANK=median(log2[origin=="SNP"]),
-                  min=min(bin_id),max=max(bin_id),minGENE=min(bin_id[]))
-                tmp=dplyr::left_join(tmp,tmp_outer)
-                plt<<-plt+geom_rect(data=tmp,aes(xmin=min,xmax=max,
-                ymin=-1+medianLog,ymax=1+medianLog),
-                col="black",fill="lightgray",size=0.1,alpha=0.5)
-
-                plt<<-plt+geom_text(data=tmp,aes(x=(min+max)/2,
-                y=1.75+medianLog,label=paste0(x,
-                ";\n GENE LOG2: ",medianGENE,
-                ";\n FLANK LOG2: ",medianFLANK,
-                ";\n ALL LOG2: ",medianLog,
-                ";\n OUTER LOG2: ",medianOUTER
-                )),
-                col="black",size=1)
-              }
-          )  
-
-      }
-
-
-
-        plt=plt+geom_point(data=cnr_dat,aes(x=bin_id,y=log2,
-        col=ifelse(bin_type=="Antitarget","green","red")),size=0.1)+
-        scale_colour_identity()+facet_grid(id~chromosome,scale="free_x")+
-        theme_classic() +
-        theme(axis.title.x=element_blank(),
-          panel.spacing = unit(0, "lines"),
-          axis.text.x=element_blank(),
-          axis.ticks.x=element_blank(),
-          strip.text.y = element_text(size=3)
-        )+
-        ylab("Log2")+scale_y_continuous(limits=c(-4,4))
-      
-
-        if(trend){
-          plt=plt+geom_smooth(aes(x=bin_id,y=log2),col="#7b0b9c",se=FALSE)
-        }
-        
-     
-
-      if(save){
-        ggsave(units="px",limitsize = FALSE,filename=output_name,plot=plt,
-        heigh=length(unique(cnr_dat$id))*plot_height,
-        width=plot_width*length(unique(cnr_dat$chromosome)))
-
-      }
   
-      return(plt)
+
+
+      if(show=="panel"){
+
+
+        plt=ggplot(cnr_dat)+
+        geom_hline(aes(yintercept=0),linetype="dashed",size=0.1,alpha=0.25)
+        
+        lapply(1:limits,FUN=function(x){
+          plt<<-plt+geom_hline(aes(yintercept=x),linetype="longdash",size=0.1,alpha=0.25)
+          plt<<-plt+geom_hline(aes(yintercept=-x),linetype="longdash",size=0.1,alpha=0.25)
+        
+        })
+
+          plt=plt+facet_grid(id~chromosome)
+
+        
+            if(!is.null(highlights)){
+                lapply(highlights,FUN=function(x){
+                      tmp=cnr_dat %>% dplyr::filter(grepl(paste0("^",x,";?$"),gene)|grepl(paste0(";",x,"$"),gene))
+                      tmp_outer=cnr_dat %>% 
+                      dplyr::filter(!grepl(paste0("^",x,";?$"),gene)|!grepl(paste0(";",x,"$"),gene),
+                      chromosome==unique(tmp$chromosome))
+                      tmp_outer=tmp_outer %>% group_by(id,chromosome) %>% summarise(medianOUTER=median(log2))
+                      tmp=tmp %>% group_by(id,chromosome) %>% 
+                      summarise(
+                        medianLog=median(log2),medianGENE=median(log2[origin=="GENE"]),
+                        medianFLANK=median(log2[origin=="SNP"]),
+                        min=min(bin_id),max=max(bin_id),minGENE=min(bin_id[]))
+                      tmp=dplyr::left_join(tmp,tmp_outer)
+                      plt<<-plt+geom_rect(data=tmp,aes(xmin=min,xmax=max,
+                      ymin=-1+medianLog,ymax=1+medianLog),
+                      col="black",fill="lightgray",size=0.1,alpha=0.5)
+
+                      plt<<-plt+geom_text(data=tmp,aes(x=(min+max)/2,
+                      y=1.75+medianLog,label=paste0(x,
+                      ";\nGENE LOG2: ",round(medianGENE,2),
+                      ";\nFLANK LOG2: ",round(medianFLANK,2),
+                      ";\nALL LOG2: ",round(medianLog,2),
+                      ";\nOUTER LOG2: ",round(medianOUTER,2)
+                      )),
+                      col="black",size=1)
+                    }
+                )  
+
+            }
+
+
+
+              plt=plt+geom_point(data=cnr_dat,aes(x=bin_id,y=log2,
+              col=ifelse(bin_type=="Antitarget","green","red")),size=0.1)+
+              scale_colour_identity()+facet_grid(id~chromosome,scale="free_x")+
+              theme_classic() +
+              theme(axis.title.x=element_blank(),
+                panel.spacing = unit(0, "lines"),
+                axis.text.x=element_blank(),
+                axis.ticks.x=element_blank(),
+                strip.text.y = element_text(size=3)
+              )+
+              ylab("Log2")+scale_y_continuous(limits=c(-limits,limits))
+            
+
+              if(trend){
+                plt=plt+geom_smooth(aes(x=bin_id,y=log2),col="#7b0b9c",se=FALSE)
+              }
+              
+          
+
+            if(save){
+              ggsave(units="px",limitsize = FALSE,filename=paste0( out_file_dir,"/",s_id,".",chrom,".",output_name),plot=plt,
+              heigh=length(unique(cnr_dat$id))*plot_height,
+              width=plot_width*length(unique(cnr_dat$chromosome)))
+
+            }else{
+                      return(plt)
+            }
+
+
+
+      }else if (show=="single"){
+
+          
+          mclapply_os(unique(cnr_dat$id),FUN=function(s_id){
+              library(tidyverse)
+              library(ggrepel)
+
+              lapply(unique(cnr_dat$chromosome),FUN=function(chr){
+                out_file_dir=set_dir(out_file_dir,name=chr)
+                cnr_dat=cnr_dat%>% filter(chromosome==chr,id==s_id)
+                plt=ggplot(cnr_dat)+
+                geom_hline(aes(yintercept=0),linetype="dashed",size=0.1,alpha=0.25)
+
+
+                
+                lapply(1:limits,FUN=function(x){
+                  plt<<-plt+geom_hline(aes(yintercept=x),linetype="longdash",size=0.1,alpha=0.25)
+                  plt<<-plt+geom_hline(aes(yintercept=-x),linetype="longdash",size=0.1,alpha=0.25)
+                })
+
+                plt=plt+facet_grid(id~chromosome)
+
+
+
+                plt=plt+geom_point(data=cnr_dat,aes(x=bin_id,y=log2,
+                col=ifelse(bin_type=="Antitarget","green","red")),size=0.1)+
+                scale_colour_identity()+facet_grid(id~chromosome,scale="free_x")+
+                theme_classic() +
+                theme(axis.title.x=element_blank(),
+                  panel.spacing = unit(0, "lines"),
+                  axis.text.x=element_blank(),
+                  axis.ticks.x=element_blank(),
+                  strip.text.y = element_text(size=3)
+                )+
+                ylab("Log2")+scale_y_continuous(limits=c(-limits,limits))
+              
+
+                if(trend){
+                  plt=plt+geom_smooth(aes(x=bin_id,y=log2),col="#7b0b9c",se=FALSE)
+                }
+                
+
+                if(!is.null(highlights)){
+                  lapply(highlights,FUN=function(x){
+                        tmp=cnr_dat  %>% dplyr::filter(grepl(paste0("^",x,";?$"),gene)|grepl(paste0(";",x,"$"),gene))
+                        tmp_outer=cnr_dat %>% 
+                        dplyr::filter(!grepl(paste0("^",x,";?$"),gene)|!grepl(paste0(";",x,"$"),gene),
+                        chromosome==unique(tmp$chromosome))
+                        tmp_outer=tmp_outer %>% group_by(id,chromosome) %>% summarise(medianOUTER=median(log2))
+                        tmp=tmp %>% group_by(id,chromosome) %>% 
+                        summarise(
+                          medianLog=median(log2),medianGENE=median(log2[origin=="GENE"]),
+                          medianFLANK=median(log2[origin=="SNP"]),
+                          min=min(bin_id),max=max(bin_id),minGENE=min(bin_id[]))
+                        tmp=dplyr::left_join(tmp,tmp_outer)
+                        plt<<-plt+geom_rect(data=tmp,aes(xmin=min,xmax=max,
+                        ymin=-0.75+medianLog,ymax=0.75+medianLog),
+                        col="black",fill="lightgray",size=0.1,alpha=0.5)
+
+                        plt<<-plt+geom_text(data=tmp,aes(x=(min+max)/2,
+                        y=ifelse(medianLog>0,medianLog-1.75,medianLog+1.75),label=paste0(x,
+                        ";\nGENE LOG2: ",round(medianGENE,2),
+                        ";\nFLANK LOG2: ",round(medianFLANK,2),
+                        ";\nALL LOG2: ",round(medianLog,2),
+                        ";\nOUTER LOG2: ",round(medianOUTER,2)
+                        )),
+                        col="black",size=0.9)
+                      }
+                    )  
+
+                  } 
+            
+
+              if(save){
+                ggsave(units="px",limitsize = FALSE,filename=paste0( out_file_dir,"/",s_id,".",chr,".",output_name),plot=plt,
+                heigh=length(unique(cnr_dat$id))*plot_height,
+                width=plot_width*length(unique(cnr_dat$chromosome)))
+
+              }else{
+                      return(plt)
+              }
+
+              })
+
+
+
+          },mc.cores=threads)
+
+
+      }
+     
+      
+  
+
     
 }
