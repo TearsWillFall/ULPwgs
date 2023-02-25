@@ -52,17 +52,15 @@ read_gpos=function(
         ### Read VCF file and return body for region information
         if(grepl(".vcf",gpos)){
             origin_file_type="vcf"
-            gpos_origin=normalizePath(gpos)
-            body=read_vcf(gpos)$body[,1:3]
-            names(body)=col_names
+            body=read_vcf(gpos)$body[,1:2]
         }else if(grepl(".bed",gpos)){
              origin_file_type="bed"
-             gpos_origin=normalizePath(gpos)
             ### Read BED file and transform into position based (VCF). 1 Based
             body=bed_to_pos(read_bed(gpos)$body)
         }else{
            stop("Not valid file format. Valid file formats are VCF/BED.") 
         }
+        gpos_origin=normalizePath(gpos)
     }else{
         stop("Not recognized input Genomic Position format")
     }
@@ -70,11 +68,15 @@ read_gpos=function(
 
     names(body)=col_names
 
+    if(sort){
+        body=sort_gpos(body)
+    }
+
     gpos_object=list(
         time=Sys.time(),
         origin_file_type=origin_file_type,
         gpos_origin=gpos_origin,
-        body=ifelse(sort,sort_gpos(body),body)
+        body=body
     )
 
     return(gpos_object)
