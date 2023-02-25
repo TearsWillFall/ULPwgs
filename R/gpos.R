@@ -53,7 +53,7 @@ read_gpos=function(
         if(grepl(".vcf",gpos)){
             origin_file_type="vcf"
             gpos_origin=normalizePath(gpos)
-            body=read_vcf(gpos)$body[,1:2]
+            body=read_vcf(gpos)$body[,1:3]
             names(body)=col_names
         }else if(grepl(".bed",gpos)){
              origin_file_type="bed"
