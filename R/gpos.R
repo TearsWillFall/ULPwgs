@@ -36,7 +36,7 @@ read_gpos=function(
 
 
     sort_gpos=function(gpos=NULL){
-        return(bed_body %>% dplyr::arrange(
+        return(gpos %>% dplyr::arrange(
             gtools::mixedorder(chrom),pos)
         )
     }
