@@ -109,7 +109,8 @@ read_gpos=function(
 get_coverage=function(
     env_cov=build_default_python_enviroment_list()$env_cov,
     bam=NULL,
-    gpos=NULL
+    gpos=NULL,
+    ...
 ){
     
   run_main=function(
