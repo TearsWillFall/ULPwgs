@@ -128,9 +128,9 @@ get_coverage=function(
     .main$out_files$pileup=paste0(
       out_file_dir,"/",input_id,".pileup.txt"
     )
-
-    tmp=write.table(x=gpos$body,
-        file=paste0(tmp_dir,"/",input_id,".tmp"),
+    tmp=paste0(tmp_dir,"/",input_id,".tmp")
+    write.table(x=gpos$body,
+        file=tmp,
         sep="\t",col.names=FALSE,quote=FALSE
     )
 
