@@ -827,6 +827,112 @@ variants_by_filters_vcf=function(
 
 
 
+#' Removes variants with from VCF file vased on the values in the FILTER column
+#'
+#' VCF datastructure is in list format and contains a header, a body and
+#' the corresponding col_names
+#'
+#' @param bin_bgzip Path to bgzip executable.
+#' @param bin_tabix Path to TABIX executable.
+#' @param vcf Path to the input VCF file.
+#' @param filters Filters to filter VCF by. Default PASS
+#' @param exclusive Only keep variants with exactly these filters. Default TRUE.
+#' @param output_name Output file name.
+#' @param compress Compress VCF file. Default TRUE.
+#' @param index Index VCF file. Default TRUE.
+#' @param index_format VCF index format. Default tbi. Options [tbi,cbi].
+#' @param bgzip_index Create BGZIP index for compressed file. Default FALSE
+#' @param output_dir Path to the output directory.
+#' @param clean Remove input VCF after completion. Default FALSE.
+#' @param verbose Enables progress messages. Default False.
+#' @param executor_id Task EXECUTOR ID. Default "gatherBQSR"
+#' @param task_name Task name. Default "gatherBQSR"
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param threads Number of threads to split the work. Default 3
+#' @param ram [OPTIONAL] If batch mode. RAM memory in GB per job. Default 1
+#' @param update_time [OPTIONAL] If batch mode. Show job updates every update time. Default 60
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+#' 
+
+variants_by_type_vcf=function(
+  bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+  bin_tabix=build_default_tool_binary_list()$bin_tabix,
+  vcf=NULL,
+  type="snv",
+  ...
+){
+
+  run_main=function(
+    .env
+  ){
+
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+
+    set_main(.env=.this.env)
+
+    output_name=paste0(input_id,".",paste0(type,collapse="."))
+
+    .main$steps[[fn]]<-.this.env
+    .main.step<-.main$steps[[fn]]
+   
+
+    vcf_dat=read_vcf(vcf=input)
+
+ 
+    if(type=="snv"){
+        vcf_dat$body=vcf_dat$body %>% dplyr::filter(nchar(REF)==1|nchar(ALT)==1)
+    
+    }else if (type=="indel"){
+        vcf_dat$body=vcf_dat$body %>% dplyr::filter(nchar(REF)>1|nchar(ALT)>1)
+    }else{
+      stop("Wrong type supplied")
+    }
+  
+    vcf_dat$descriptors$variants_by_type<-type
+
+    .main.step$steps <- append(
+      .main.step$steps,
+      write_vcf(
+        bin_bgzip=bin_bgzip,
+        bin_tabix=bin_tabix,
+        vcf=vcf_dat,
+        output_name=output_name,
+        output_dir=out_file_dir,
+        tmp_dir=tmp_dir,
+        env_dir=env_dir,
+        batch_dir=batch_dir,
+        err_msg=err_msg
+      )
+    )
+
+    .this.step=.main.step$steps$write_vcf
+    .main.step$out_files=append(
+      .main.step$out_files,
+      .this.step$out_files
+    )
+    .env$.main<-.main
+
+  }
+
+     
+  .base.env=environment()
+  list2env(list(...),envir=.base.env)
+  set_env_vars(
+    .env= .base.env,
+    vars="vcf"
+  )
+  launch(.env=.base.env)
+
+}
+
+
+
+
+
 
 
 
