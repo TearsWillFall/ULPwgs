@@ -124,6 +124,8 @@ get_coverage=function(
     gpos=read_gpos(gpos)
 
     fpath <- system.file("python", paste0(fn,".py"), package=ns)
+    system(paste0("chmod 755 ",fpath))
+    fpath<-paste0("python ",fpath)
 
     .main$out_files$pileup=paste0(
       out_file_dir,"/",input_id,".pileup.txt"
@@ -145,7 +147,7 @@ get_coverage=function(
         " -f True "
     )
   
-    .main$exec_code=paste0(.main$exec_code," && rm",tmp) 
+    .main$exec_code=paste0(.main$exec_code," && rm ",tmp) 
     
     run_job(.env=.this.env)
 
