@@ -43,7 +43,6 @@ call_sv_manta=function(
     ...
 ){
 
-
     run_main=function(
         .env
     ){

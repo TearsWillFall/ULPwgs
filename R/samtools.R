@@ -1885,3 +1885,69 @@ parallel_region_get_insert_size_samtools=function(
 }
 
 
+
+#' Generate mpileup file from BAM file
+#'
+#'
+#' @param bam Path to the input file with the sequence.
+#' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param threads Number of threads. Default 3
+#' @param ram RAM per thread to use. Default 4.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Job EXECUTOR ID. Default "mardupsGATK"
+#' @param task_name Name of the task. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
+#' @export
+
+
+mpileup_samtools=function(
+  bam=NULL,
+  gpos=NULL
+){
+   run_main=function(
+    .env
+  ){
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+   
+    set_main(.env=.this.env)
+    
+    gpos=read_gpos(gpos)
+
+    .main$out_file=paste0(
+      out_file_dir,"/",input_id,".pileup.txt"
+    )
+
+    .main$exec_code=paste0(
+        bin_samtools," mpileup ",
+        input," > ",.main$out_file
+    )
+
+    run_job(.env=.this.env)
+
+    .this.step=.main$steps[[fn]]
+    
+    .this.step$out_files$index_stats <- .main$out_file
+
+    .env$.main <- .main
+
+  }
+
+  .base.env=environment()
+  list2env(list(...),envir=.base.env)
+  set_env_vars(
+    .env=.base.env,
+    vars="bam"
+  )
+
+  launch(.env=.base.env)
+
+
+}
+
+

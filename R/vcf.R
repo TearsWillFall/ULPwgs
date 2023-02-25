@@ -8,7 +8,7 @@
 #' @export
 
 
-read_vcf=function(vcf="",sep="\t"){
+read_vcf=function(vcf=NULL,sep="\t"){
   options(scipen=999)
   cols=c("CHROM","POS","ID","REF","ALT","QUAL","FILTER","INFO","FORMAT")
 
@@ -33,6 +33,7 @@ read_vcf=function(vcf="",sep="\t"){
   body=extract_body_vcf(body,samples)
   body$POS=as.numeric(body$POS)
   vcf_object=list(
+    time=Sys.time(),
     vcf_origin=normalizePath(vcf),
     samples=samples,
     descriptors=descriptors,

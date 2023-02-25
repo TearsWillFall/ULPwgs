@@ -5,7 +5,7 @@
 \title{Read a VCF file
 This function read a VCF file and stores it in a list format}
 \usage{
-read_vcf(vcf = "", sep = "\\t")
+read_vcf(vcf = NULL, sep = "\\t")
 }
 \arguments{
 \item{vcf}{Path to the VCF file}
