@@ -144,6 +144,7 @@ get_coverage=function(
         " -g ",tmp,
         " -t ",threads,
         " -o ",.main$out_files,
+        " -i ",input_id,
         " -f True "
     )
   
