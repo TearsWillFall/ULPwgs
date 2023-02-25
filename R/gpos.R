@@ -123,7 +123,7 @@ get_coverage=function(
     
     gpos=read_gpos(gpos)
 
-    fpath <- system.file("inst/python", paste0(fn,".py"), package=ns)
+    fpath <- system.file("python", paste0(fn,".py"), package=ns)
 
     .main$out_files$pileup=paste0(
       out_file_dir,"/",input_id,".pileup.txt"
