@@ -7,7 +7,7 @@ import numpy as np
 import multiprocessing as mp
 from datetime import datetime
 
-def get_coverage(gpos:None,bam,output:None,force:False):
+def get_coverage(gpos:None,bam,output:None,force:False,id:None):
 
    chr=None
    start=None
@@ -32,13 +32,18 @@ def get_coverage(gpos:None,bam,output:None,force:False):
    if output!=None:
       if not os.path.exists(output) or force:
          f=open(output,"a")
-         f.write("\t".join(map(str,[chr,end,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal]))+"\n")
+         if id!=None:
+            f.write("\t".join(map(str,[chr,end,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,id]))+"\n")
+         else:
+            f.write("\t".join(map(str,[chr,end,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal]))+"\n")
          f.close()
       else:
          raise FileExistsError
    else:
-      print(chr,end,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,sep="\t")
-     
+      if id!=None:
+         print(chr,end,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,id,sep="\t")
+      else:
+         print(chr,end,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,sep="\t")
  
 if __name__ == "__main__":
    bam = None
@@ -49,14 +54,15 @@ if __name__ == "__main__":
    verbose=False
    output=None
    force=False
+   id=None
    try:
-      opts, args = getopt.getopt(sys.argv[1:],"h:b:g:c:p:q:t:v:o:f:",["bam=","gpos=","chr=","pos=","qt=","threads=","verbose=","output=","force="])
+      opts, args = getopt.getopt(sys.argv[1:],"h:b:g:c:p:q:t:v:o:f:i:",["bam=","gpos=","chr=","pos=","qt=","threads=","verbose=","output=","force=","id="])
    except getopt.GetoptError:
-      print ('get_coverage.py -b <bam> -g [gpos] -c [chr] -p [pos] -q [qt] -t [threads] -v [verbose] -o [output] -f [force]')
+      print ('get_coverage.py -b <bam> -g [gpos] -c [chr] -p [pos] -q [qt] -t [threads] -v [verbose] -o [output] -f [force] -i [id]')
       sys.exit(2)
    for opt, arg in opts:
       if opt == '-h':
-         print ('get_coverage.py -b <bam> -g [gpos] -c [chr] -p [pos] -q [qt] -t [threads] -v [verbose] -o [output] -f [force]')
+         print ('get_coverage.py -b <bam> -g [gpos] -c [chr] -p [pos] -q [qt] -t [threads] -v [verbose] -o [output] -f [force] -i [id]')
          sys.exit()
       elif opt in ("-b", "--bam"):
          bam = arg
@@ -77,6 +83,8 @@ if __name__ == "__main__":
          output = arg
       elif opt in ("-f", "--force"):
          force=bool(arg)
+      elif opt in ("-i", "--id"):
+         id=arg
 
    gposcontent = []
    start=datetime.now()
@@ -100,18 +108,24 @@ if __name__ == "__main__":
    if output!=None:
       if not os.path.exists(output) or force:
          f=open(output,"w")
-         f.write("#chr\tpos\tA\tC\tG\tT\tdepth\n")
+         if id!=None:
+            f.write("#chr\tpos\tA\tC\tG\tT\tdepth\tid\n")
+         else:
+            f.write("#chr\tpos\tA\tC\tG\tT\tdepth\n")
          f.close()
       else:
          raise FileExistsError
    else:
-      print("#chr\tpos\tA\tC\tG\tT\tdepth")
+      if id!=None:
+         print("#chr\tpos\tA\tC\tG\tT\tid\tdepth")
+      else:
+         print("#chr\tpos\tA\tC\tG\tT\tdepth")
 
    if jobs==1 or threads==1:
-      list(map(get_coverage,gposcontent,[bam]*jobs,[output]*jobs,[True]*jobs))
+      list(map(get_coverage,gposcontent,[bam]*jobs,[output]*jobs,[True]*jobs,[id]*jobs))
    elif jobs>1:
       with mp.Pool(threads) as thread:
-         list(thread.starmap(get_coverage,zip(gposcontent,[bam]*jobs,[output]*jobs,[True]*jobs)))
+         list(thread.starmap(get_coverage,zip(gposcontent,[bam]*jobs,[output]*jobs,[True]*jobs,[id]*jobs)))
    end=datetime.now()
   
    if verbose:
