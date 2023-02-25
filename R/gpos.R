@@ -131,7 +131,8 @@ get_coverage=function(
     tmp=paste0(tmp_dir,"/",input_id,".tmp")
     write.table(x=gpos$body,
         file=tmp,
-        sep="\t",col.names=FALSE,quote=FALSE
+        sep="\t",col.names=FALSE,
+        row.names=FALSE,quote=FALSE
     )
 
     .main$exec_code=paste0(
