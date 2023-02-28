@@ -825,6 +825,53 @@ variants_by_filters_vcf=function(
 
 
 
+#' @export
+
+only_gt_vcf=function(
+  vcf_body=NULL
+){
+  vcf_body=vcf_body %>% unnest_vcf_body() %>% 
+  dplyr::group_by(CHROM,POS,ID,REF,ALT) %>% 
+  filter(grepl("/|\\|",VALUE[FORMAT=="GT"])) %>% 
+  filter(!grepl("\\.",VALUE[FORMAT=="GT"])) %>%
+  nest_vcf_body()
+  return(vcf_body)
+}
+
+#' @export
+
+no_gt_to_pass_vcf=function(vcf_body=NULL){
+    vcf_body=vcf_body %>% 
+    dplyr::filter(grepl("PASS|NoPassedVariantGTs"))
+    vcf_body$FILTER="PASS"
+    return(vcf_body)
+}
+
+
+#' @export
+
+only_chr_vcf=function(
+  vcf_body=NULL,
+  chr=NULL,
+){
+  vcf_body=vcf_body %>% 
+  dplyr::filter(CHROM==chr)
+  vcf_body$FILTER="PASS"
+  return(vcf_body)
+}
+
+
+
+
+#' @export
+
+only_monoallel_vcf=function(
+  vcf_body=NULL
+){
+  vcf_body=vcf_body %>% dplyr::filter(!grepl(",",REF),!grepl(",",ALT))
+  return(vcf_body)
+}
+
 
 
 #' Removes variants with from VCF file vased on the values in the FILTER column

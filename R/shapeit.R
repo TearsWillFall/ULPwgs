@@ -12,6 +12,9 @@
 
 
 phase_shapeit=function(
+    bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
+    bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+    bin_tabix=build_default_tool_binary_list()$bin_tabix,
     bin_shapeit=build_default_tool_binary_list()$bin_shapeit,
     ref_panel=build_default_reference_list()$HG19$phasing$G1000$new$vcf,
     gmap=build_default_reference_list()$HG19$phasing$G1000$new$gmap,
@@ -20,13 +23,48 @@ phase_shapeit=function(
     scaffold=NULL,
     ...
 ){
+    
     run_main=function(.env){
 
         .this.env=environment()
         append_env(to=.this.env,from=.env)
         set_main(.env=.this.env)
 
-        .main$out_files$phased_vcf=paste0(out_file_dir,"/",input_id,".",chr,".phased.vcf")
+
+        .main$steps[[fn]]<-.this.env
+        .main.step=.main$steps[[fn]]
+
+        vcf=read_vcf(input)
+        vcf$body=vcf$body %>% 
+            only_gt_vcf() %>% 
+            no_gt_to_pass_vcf() %>% 
+            only_monoallel_vcf() %>% 
+            only_chr_vcf(chr=chr)
+        
+     
+        .main.step$steps <- append(
+          .main.step$steps,
+          write_vcf(
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            vcf=vcf,
+            output_name=paste0(input_id,".",chr,".filtered"),
+            output_dir=out_file_dir,
+            tmp_dir=tmp_dir,
+            env_dir=env_dir,
+            batch_dir=batch_dir,
+            err_msg=err_msg,
+            threads=threads,
+            ram=ram,
+            executor=task_id
+          )
+        )
+
+        .this.step=.main.step$steps$write_vcf
+        .main.step$out_files=.this.step$out_files
+
+        .main.step$out_files$phased_vcf=paste0(out_file_dir,"/",input_id,".",chr,".phased.vcf")
+
 
         if(!is.null(ref_panel)){
             add=paste0(" --reference ",ref_panel[grepl(paste0("chr",chr,"."),ref_panel)]) 
@@ -35,17 +73,17 @@ phase_shapeit=function(
         if(!is.null(scaffold)){
             add=paste0(" --scaffold ",scaffold)
         }
-        .main$exec_code=paste(
-            bin_shapeit," --input ",input,
+        .main.step$exec_code=paste(
+            bin_shapeit," --input ",.main.step$out_files$bgzip_vcf,
             " --map ",gmap[grepl(paste0("chr",chr,"."),gmap)],
             add,
             " --region ",chr,
             " --thread ",threads,
-            " --output ",.main$out_files$phased_vcf,
+            " --output ",.main.step$out_files$phased_vcf,
             " --sequencing"
         )
 
-        run_job(.env=.this.env)
+        run_job(.env=.main.step)
 
         .env$.main <- .main
         
