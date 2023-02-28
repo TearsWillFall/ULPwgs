@@ -27,24 +27,20 @@ phase_shapeit=function(
 
         .main$out_files$phased_vcf=paste0(out_file_dir,"/",input_id,".",chr,".phased.vcf")
 
-        if(ref_panel!=NULL){
+        if(!is.null(ref_panel)){
             add=paste0(" --reference ",ref_panel[grepl(paste0("chr",chr,"."),ref_panel)]) 
         }
 
-        if(gmap!=NULL){
-            add=paste0(" --map ",gmap[grepl(paste0("chr",chr,"."),gmap)]) 
-        }
-
-        if(scaffold!=NULL){
+        if(!is.null(scaffold)){
             add=paste0(" --scaffold ",scaffold)
         }
         .main$exec_code=paste(
             bin_shapeit," --input ",input,
+            " --map ",gmap[grepl(paste0("chr",chr,"."),gmap)],
             add,
             " --region ",chr,
             " --thread ",threads,
             " --output ",.main$out_files$phased_vcf,
-            add
             " --sequencing"
         )
 
