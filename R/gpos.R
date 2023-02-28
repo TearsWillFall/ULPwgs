@@ -53,7 +53,7 @@ read_gpos=function(
         ### Read VCF file and return body for region information
         if(grepl(".vcf",gpos)){
             origin_file_type="vcf"
-            body=read_vcf(gpos,sep=sep)$body[,1:3]
+            body=read_vcf(gpos,sep=sep,threads=threads)$body[,1:3]
             names(body)=c("chrom","pos","ref")
         }else if(grepl(".bed",gpos)){
             origin_file_type="bed"

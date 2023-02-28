@@ -23,7 +23,7 @@ phase_shapeit=function(
     scaffold=NULL,
     ...
 ){
-    
+
     run_main=function(.env){
 
         .this.env=environment()
@@ -34,7 +34,7 @@ phase_shapeit=function(
         .main$steps[[fn]]<-.this.env
         .main.step=.main$steps[[fn]]
 
-        vcf=read_vcf(input)
+        vcf=read_vcf(input,threads=threads)
         vcf$body=vcf$body %>% 
             only_gt_vcf() %>% 
             no_gt_to_pass_vcf() %>% 

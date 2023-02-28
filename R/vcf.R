@@ -17,10 +17,10 @@ read_vcf=function(vcf=NULL,sep="\t",threads=1){
     stop("vcf arguments is of type NULL")
   }else if(check_if_compressed(vcf)){
       body=data.table::fread(cmd=paste0("gunzip -c |grep -v ^# ",vcf),nThread=threads)
-      header=readLines(system(paste0("gunzip -c |grep -v # ",vcf),intern=TRUE))
+      header=readLines(system(paste0("gunzip -c |grep  ^# ",vcf),intern=TRUE))
   }else{
       body=data.table::fread(cmd=paste0("grep -v ^# ",vcf),nThread=threads)
-      header=readLines(system(paste0("grep -v # ",vcf),intern=TRUE))
+      header=readLines(system(paste0("grep ^# ",vcf),intern=TRUE))
   }
   col_names=header[length(header)]
   raw_header=header[-length(header)]
@@ -131,7 +131,7 @@ add_snv_af_strelka_vcf=function(
         .main$steps[[fn]]<-.this.env
         .main.step=.main$steps[[fn]]
 
-        vcf_dat=read_vcf(input)
+        vcf_dat=read_vcf(input,threads=threads)
         vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
         vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
         dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
@@ -235,7 +235,7 @@ add_indel_af_strelka_vcf=function(
         .main$steps[[fn]]<-.this.env
         .main.step=.main$steps[[fn]]
 
-        vcf_dat=read_vcf(input)
+        vcf_dat=read_vcf(input,threads=threads)
         vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
         vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
         dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
@@ -339,7 +339,7 @@ add_sv_af_strelka_vcf=function(
         .main$steps[[fn]]<-.this.env
         .main.step=.main$steps[[fn]]
 
-        vcf_dat=read_vcf(input)
+        vcf_dat=read_vcf(input,threads=threads)
         vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
         vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
         dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AFP")) %>% 
@@ -464,7 +464,7 @@ add_gl_af_strelka_vcf=function(
         .main$steps[[fn]]<-.this.env
         .main.step=.main$steps[[fn]]
 
-        vcf_dat=read_vcf(input)
+        vcf_dat=read_vcf(input,threads=threads)
         vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
         vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
         dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
@@ -775,7 +775,7 @@ variants_by_filters_vcf=function(
     .main.step<-.main$steps[[fn]]
    
 
-    vcf_dat=read_vcf(vcf=input)
+    vcf_dat=read_vcf(vcf=input,threads=threads)
 
     if(exclusive){
       vcf_dat$body=vcf$body %>% dplyr::filter(lengths(FILTER)==length(filters))
@@ -926,7 +926,7 @@ variants_by_type_vcf=function(
     .main.step<-.main$steps[[fn]]
    
 
-    vcf_dat=read_vcf(vcf=input)
+    vcf_dat=read_vcf(vcf=input,threads=threads)
 
  
     if(type=="snv"){
@@ -1174,7 +1174,7 @@ tabulate_vcf=function(
 
         ignore=TRUE
         #### Catch empty VCF 
-        tryCatch({vcf=read_vcf(input);ignore=FALSE},error=function(error){
+        tryCatch({vcf=read_vcf(input,threads=threads);ignore=FALSE},error=function(error){
             warning("No variants detected in VCF. Ignoring input VCF.")
         })
 
