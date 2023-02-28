@@ -25,8 +25,8 @@ read_vcf=function(vcf=NULL,sep="\t",threads=1){
   col_names=header[length(header)]
   raw_header=header[-length(header)]
   descriptors=extract_descriptors_vcf(raw_header)
-  names(body)=read.table(text=sub("#","",col_names),
-  stringsAsFactors = FALSE,colClasses="character")
+  names(body)=as.character(read.table(text=sub("#","",col_names),
+  stringsAsFactors = FALSE,colClasses="character"))
   samples=setdiff(names(body),cols)
   body=extract_body_vcf(body,samples)
   body$POS=as.numeric(body$POS)
