@@ -834,6 +834,7 @@ only_gt_vcf=function(
   dplyr::group_by(CHROM,POS,ID,REF,ALT) %>% 
   filter(grepl("/|\\|",VALUE[FORMAT=="GT"])) %>% 
   filter(!grepl("\\.",VALUE[FORMAT=="GT"])) %>%
+  ungroup() %>%
   nest_vcf_body()
   return(vcf_body)
 }
@@ -843,7 +844,7 @@ only_gt_vcf=function(
 no_gt_to_pass_vcf=function(vcf_body=NULL){
     vcf_body=vcf_body %>% 
     dplyr::filter(grepl("PASS|NoPassedVariantGTs"))
-    vcf_body$FILTER="PASS"
+    vcf_body$FILTER=list("PASS")
     return(vcf_body)
 }
 
