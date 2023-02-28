@@ -8,7 +8,7 @@
 #' @export
 
 
-read_vcf=function(vcf=NULL,sep="\t"){
+read_vcf=function(vcf=NULL,sep="\t",threads=1){
   options(scipen=999)
   cols=c("CHROM","POS","ID","REF","ALT","QUAL","FILTER","INFO","FORMAT")
 
@@ -16,17 +16,15 @@ read_vcf=function(vcf=NULL,sep="\t"){
   if(is.null(vcf)){
     stop("vcf arguments is of type NULL")
   }else if(check_if_compressed(vcf)){
-      read=system(paste0("gunzip -c ",vcf),intern=TRUE)
+      body=data.table::fread(cmd=paste0("gunzip -c |grep -v ^# ",vcf),nThread=threads)
+      header=readLines(system(paste0("gunzip -c |grep -v # ",vcf),intern=TRUE))
   }else{
-      read=readLines(vcf)
+      body=data.table::fread(cmd=paste0("grep -v ^# ",vcf),nThread=threads)
+      header=readLines(system(paste0("grep -v # ",vcf),intern=TRUE))
   }
-  header=read[grepl("^#",read)]
-  body=read[!grepl("^#",read)]
   col_names=header[length(header)]
   raw_header=header[-length(header)]
   descriptors=extract_descriptors_vcf(raw_header)
-  body=read.delim(text=body,stringsAsFactors = FALSE,sep=sep,
-  header=FALSE,colClasses="character")
   names(body)=read.table(text=sub("#","",col_names),
   stringsAsFactors = FALSE,colClasses="character")
   samples=setdiff(names(body),cols)
