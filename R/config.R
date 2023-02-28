@@ -795,7 +795,7 @@ build_default_reference_list=function(
                         ),
                         new=list(
                             vcf=paste0("/home/regmova/Scratch/PCF/references/hg19/phasing/ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chr",c(1:22,"X"),".phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz"),
-                            gmap=paste0("/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/old/",c(1:22,"X"),".b37.gmap.gz")
+                            gmap=paste0("/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/new/chr",c(1:22,"X"),".b37.gmap.gz")
                         )
                     )
                 ),
