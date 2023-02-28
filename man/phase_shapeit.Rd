@@ -5,11 +5,15 @@
 \title{Strelka wrapper for SNV variant calling}
 \usage{
 phase_shapeit(
-  bin_shapeit = build_default_binary_list()$bin_shapeit,
+  bin_bcftools = build_default_tool_binary_list()$bin_bcftools,
+  bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
+  bin_tabix = build_default_tool_binary_list()$bin_tabix,
+  bin_shapeit = build_default_tool_binary_list()$bin_shapeit,
   ref_panel = build_default_reference_list()$HG19$phasing$G1000$new$vcf,
   gmap = build_default_reference_list()$HG19$phasing$G1000$new$gmap,
   vcf = NULL,
   chr = NULL,
+  scaffold = NULL,
   ...
 )
 }

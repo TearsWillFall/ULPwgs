@@ -852,7 +852,7 @@ no_gt_to_pass_vcf=function(vcf_body=NULL){
 
 only_chr_vcf=function(
   vcf_body=NULL,
-  chr=NULL,
+  chr=NULL
 ){
   vcf_body=vcf_body %>% 
   dplyr::filter(CHROM==chr)
