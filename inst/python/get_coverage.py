@@ -7,7 +7,7 @@ import numpy as np
 import multiprocessing as mp
 from datetime import datetime
 
-def get_coverage(gpos:None,bam,output:None,force:False,id:None):
+def get_coverage(gpos:None,ccvcvbam,output:None,force:False,id:None):
 
    chr=None
    start=None
@@ -109,17 +109,17 @@ if __name__ == "__main__":
       if not os.path.exists(output) or force:
          f=open(output,"w")
          if id!=None:
-            f.write("#chr\tpos\tA\tC\tG\tT\tdepth\tid\n")
+            f.write("#chr\tpos\tref\tA\tC\tG\tT\tdepth\tid\n")
          else:
-            f.write("#chr\tpos\tA\tC\tG\tT\tdepth\n")
+            f.write("#chr\tpos\tref\tA\tC\tG\tT\tdepth\n")
          f.close()
       else:
          raise FileExistsError
    else:
       if id!=None:
-         print("#chr\tpos\tA\tC\tG\tT\tid\tdepth")
+         print("#chr\tpos\tref\tA\tC\tG\tT\tid\tdepth")
       else:
-         print("#chr\tpos\tA\tC\tG\tT\tdepth")
+         print("#chr\tpos\tref\tA\tC\tG\tT\tdepth")
 
    if jobs==1 or threads==1:
       list(map(get_coverage,gposcontent,[bam]*jobs,[output]*jobs,[True]*jobs,[id]*jobs))

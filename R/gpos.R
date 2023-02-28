@@ -10,7 +10,7 @@
 #'      body: Gpos body
 #'       
 #' 
-#' @param pos Data.frame or Path to BED/VCF style files
+#' @param gpos Data.frame or Path to BED/VCF style files
 #' @param sort Sort genomic positions alphanumerically. Default TRUE
 #' @return A data.frame with genomic position information
 #' @export
@@ -18,12 +18,13 @@
 
 read_gpos=function(
     gpos=NULL,
-    sort=TRUE
+    sort=TRUE,
+    header=TRUE,
+    sep="\t",
+    rename=TRUE
 ){  
     origin_file_type=NULL
     gpos_origin=NULL
-    col_names=c("chrom","pos")
-
 
     bed_to_pos=function(
         bed_body=NULL
@@ -47,16 +48,26 @@ read_gpos=function(
         stop("Pos argument of type NULL")
     }else if (is.data.frame(gpos)){
         body=gpos
-        gpos_origin="data.frame"
+        origin_file_type="data.frame"
     }else if (file.exists(gpos)){
         ### Read VCF file and return body for region information
         if(grepl(".vcf",gpos)){
             origin_file_type="vcf"
-            body=read_vcf(gpos)$body[,1:2]
+            body=read_vcf(gpos,sep=sep)$body[,1:3]
+            names(body)=c("chrom","pos","ref")
         }else if(grepl(".bed",gpos)){
-             origin_file_type="bed"
-            ### Read BED file and transform into position based (VCF). 1 Based
-            body=bed_to_pos(read_bed(gpos)$body)
+            origin_file_type="bed"
+            body=bed_to_pos(
+                read_bed(gpos,
+                header=header,
+                sep=sep,
+                rename=rename,
+                sort=sort)$body
+            )
+        }else if (grepl(".pileup",gpos)){
+            origin_file_type="pileup"
+            body=read_pileup(pileup=gpos,header=header,sep=sep,rename=rename,sort=sort)
+            names(body)=c("chrom","pos","ref","A","C","T","G","depth")
         }else{
            stop("Not valid file format. Valid file formats are VCF/BED.") 
         }
@@ -64,9 +75,6 @@ read_gpos=function(
     }else{
         stop("Not recognized input Genomic Position format")
     }
-
-
-    names(body)=col_names
 
     if(sort){
         body=sort_gpos(body)
@@ -82,6 +90,8 @@ read_gpos=function(
     return(gpos_object)
 
 }
+
+
 
 
 
@@ -128,13 +138,15 @@ get_coverage=function(
     fpath<-paste0("python ",fpath)
 
     .main$out_files$pileup=paste0(
-      out_file_dir,"/",input_id,".pileup.txt"
+      out_file_dir,"/",input_id,".pileup"
     )
     tmp=paste0(tmp_dir,"/",input_id,".tmp")
     write.table(x=gpos$body,
         file=tmp,
-        sep="\t",col.names=FALSE,
-        row.names=FALSE,quote=FALSE
+        sep="\t",
+        col.names=FALSE,
+        row.names=FALSE,
+        quote=FALSE
     )
 
     .main$exec_code=paste0(

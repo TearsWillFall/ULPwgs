@@ -4,12 +4,12 @@
 \alias{read_gpos}
 \title{Read file with Genomic Positions}
 \usage{
-read_gpos(gpos = NULL, sort = TRUE)
+read_gpos(gpos = NULL, sort = TRUE, header = TRUE, sep = "\\t", rename = TRUE)
 }
 \arguments{
-\item{sort}{Sort genomic positions alphanumerically. Default TRUE}
+\item{gpos}{Data.frame or Path to BED/VCF style files}
 
-\item{pos}{Data.frame or Path to BED/VCF style files}
+\item{sort}{Sort genomic positions alphanumerically. Default TRUE}
 }
 \value{
 A data.frame with genomic position information

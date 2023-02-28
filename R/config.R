@@ -551,6 +551,7 @@ build_default_tool_binary_list=function(
                 bin_tabix="/lustre/scratch/scratch/regmova/tools/htslib/bin/tabix",
                 bin_htsfile="/lustre/scratch/scratch/regmova/tools/htslib/bin/htsfile",
                 bin_bwa="/lustre/scratch/scratch/regmova/tools/bwa/bwa",
+                bin_shapeit="/lustre/scratch/scratch/regmova/tools/shapeit4/bin/shapeit",
                 bin_allele_counter="/lustre/scratch/scratch/regmova/tools/alleleCount/bin/alleleCounter",
                 bin_strelka=list(
                     somatic="/lustre/scratch/scratch/regmova/tools/strelka-2.9.10/build/bin/configureStrelkaSomaticWorkflow.py",
@@ -770,7 +771,6 @@ build_default_cache_list=function(
 
 
 
-
 #' Build default references
 #' 
 #'
@@ -784,6 +784,20 @@ build_default_reference_list=function(
                     genome="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.fa",
                     access_5k="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.access-5k-mappable.bed",
                     access_10k="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.access-10k-mappable.bed"
+                ),
+                phasing=list(
+                    G1000=list(
+                        old=list(
+                            haplotype=paste0("/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/old/1000GP_Phase3/1000GP_Phase3_chr",c(1:22,"X"),".hap.gz"),
+                            legend=paste0("/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/old/1000GP_Phase3/1000GP_Phase3_chr",c(1:22,"X"),".legend.gz"),
+                            gmap=paste0("/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/old/1000GP_Phase3/genetic_map_chr",c(1:22,"X"),"_combined_b37.txt"),
+                            sample="/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/old/1000GP_Phase3/1000GP_Phase3.sample"
+                        ),
+                        new=list(
+                            vcf=paste0("/home/regmova/Scratch/PCF/references/hg19/phasing/ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chr",c(1:22,"X"),".phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz"),
+                            gmap=paste0("/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/old/",c(1:22,"X"),".b37.gmap.gz")
+                        )
+                    )
                 ),
                 database=list(
                     all_snps="/lustre/scratch/scratch/regmova/PCF/references/hg19/database/00-All.vcf.gz",

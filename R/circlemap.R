@@ -198,9 +198,6 @@ read_extractor_circlemap=function(
     ...
   ){
 
-
-    
-
     run_main=function(
        .env
     ){
