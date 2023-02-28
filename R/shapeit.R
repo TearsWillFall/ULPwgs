@@ -32,6 +32,7 @@ phase_shapeit=function(
             " --reference ",ref_panel[grepl(paste0("chr",chr,"_"),ref_panel)],
             " --map ",gmap[grepl(paste0("chr",chr,"_"),gmap)],
             " --region ",chr,
+            " --thread ",threads,
             " --output ",.main$out_files$phased_vcf,
             " --sequencing" 
             
