@@ -12,7 +12,7 @@
 
 
 phase_shapeit=function(
-    bin_shapeit=build_default_binary_list()$bin_shapeit,
+    bin_shapeit=build_default_tool_binary_list()$bin_shapeit,
     ref_panel=build_default_reference_list()$HG19$phasing$G1000$new$vcf,
     gmap=build_default_reference_list()$HG19$phasing$G1000$new$gmap,
     vcf=NULL,
@@ -28,7 +28,7 @@ phase_shapeit=function(
         .main$out_files$phased_vcf=paste0(out_file_dir,"/",input_id,".",chr,".phased.vcf")
 
         .main$exec_code=paste(
-            bin_shapeit,"--input ",input,
+            bin_shapeit," --input ",input,
             " --reference ",ref_panel[grepl(paste0("chr",chr,"_"),ref_panel)],
             " --map ",gmap[grepl(paste0("chr",chr,"_"),gmap)],
             " --region ",chr,
