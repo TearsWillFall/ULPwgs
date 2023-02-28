@@ -17,6 +17,7 @@ phase_shapeit=function(
     gmap=build_default_reference_list()$HG19$phasing$G1000$new$gmap,
     vcf=NULL,
     chr=NULL,
+    scaffold=NULL,
     ...
 ){
     run_main=function(.env){
