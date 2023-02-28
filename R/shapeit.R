@@ -73,7 +73,8 @@ phase_shapeit=function(
         if(!is.null(scaffold)){
             add=paste0(" --scaffold ",scaffold)
         }
-        .main.step$exec_code=paste(
+        
+        .main$exec_code=paste(
             bin_shapeit," --input ",.main.step$out_files$bgzip_vcf,
             " --map ",gmap[grepl(paste0("chr",chr,"."),gmap)],
             add,
@@ -83,7 +84,7 @@ phase_shapeit=function(
             " --sequencing"
         )
 
-        run_job(.env=.main.step)
+        run_job(.env=.main)
 
         .env$.main <- .main
         
