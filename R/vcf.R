@@ -830,9 +830,9 @@ only_gt_vcf=function(
 ){
   vcf_body=vcf_body %>% unnest_vcf_body() %>% 
   dplyr::group_by(CHROM,POS,ID,REF,ALT) %>% 
-  filter(grepl("/|\\|",VALUE[FORMAT=="GT"])) %>% 
-  filter(!grepl("\\.",VALUE[FORMAT=="GT"])) %>%
-  ungroup() %>%
+  dplyr::filter(grepl("/|\\|",VALUE[FORMAT=="GT"])) %>% 
+  dplyr::filter(!grepl("\\.",VALUE[FORMAT=="GT"])) %>%
+  dplyr::ungroup() %>%
   nest_vcf_body()
   return(vcf_body)
 }
@@ -855,7 +855,6 @@ only_chr_vcf=function(
 ){
   vcf_body=vcf_body %>% 
   dplyr::filter(CHROM==chr)
-  vcf_body$FILTER="PASS"
   return(vcf_body)
 }
 
