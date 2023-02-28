@@ -841,7 +841,7 @@ only_gt_vcf=function(
 
 no_gt_to_pass_vcf=function(vcf_body=NULL){
     vcf_body=vcf_body %>% 
-    dplyr::filter(grepl("PASS|NoPassedVariantGTs"))
+    dplyr::filter(grepl("PASS|NoPassedVariantGTs",FILTER))
     vcf_body$FILTER=list("PASS")
     return(vcf_body)
 }
