@@ -17,10 +17,10 @@ read_vcf=function(vcf=NULL,sep="\t",threads=1){
     stop("vcf arguments is of type NULL")
   }else if(check_if_compressed(vcf)){
       body=data.table::fread(cmd=paste0("gunzip -c |grep -v ^# ",vcf),nThread=threads)
-      header=readLines(system(paste0("gunzip -c |grep  ^# ",vcf),intern=TRUE))
+      header=system(paste0("gunzip -c |grep  ^# ",vcf),intern=TRUE)
   }else{
       body=data.table::fread(cmd=paste0("grep -v ^# ",vcf),nThread=threads)
-      header=readLines(system(paste0("grep ^# ",vcf),intern=TRUE))
+      header=system(paste0("grep ^# ",vcf),intern=TRUE)
   }
   col_names=header[length(header)]
   raw_header=header[-length(header)]
