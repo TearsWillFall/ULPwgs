@@ -116,7 +116,7 @@ phase_shapeit=function(
 
                         main.step$steps <- append(
                             .main.step$steps,
-                            setNames(write_vcf(
+                            write_vcf(
                                 bin_bgzip=bin_bgzip,
                                 bin_tabix=bin_tabix,
                                 vcf=vcf_tmp,
@@ -131,7 +131,7 @@ phase_shapeit=function(
                                 ram=ram,
                                 executor=task_id
                                 )
-                            ))
+                            )
                   .this.step=.main.step$steps[[paste0("write_vcf.",x)]]
                   .main.step$out_files$split_vcf[[as.character(x)]]=.this.step$out_files
                   
@@ -168,13 +168,13 @@ phase_shapeit=function(
             
         }
 
-                .base.env=environment()
-                list2env(list(...),envir=.base.env)
-                set_env_vars(
-                    .env= .base.env,
-                    vars="vcf"
-                )
-                launch(.env=.base.env)
+        .base.env=environment()
+        list2env(list(...),envir=.base.env)
+        set_env_vars(
+            .env= .base.env,
+            vars="vcf"
+        )
+        launch(.env=.base.env)
 
 
 }
