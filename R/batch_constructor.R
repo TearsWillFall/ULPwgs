@@ -401,7 +401,6 @@ run_self=function(
   .env=environment()
 ){  
 
-
     .this.env=environment()
     append_env(to=.this.env,from=.env)
     set_self(.env=.env)

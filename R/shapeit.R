@@ -24,7 +24,11 @@ phase_shapeit=function(
     output_name=NULL,
     ...
 ){
-  
+    
+
+
+
+
      run_main=function(.env){
 
             .this.env=environment()
@@ -97,75 +101,75 @@ phase_shapeit=function(
             .main$steps[[fn]]<-.this.env
             .main.step=.main$steps[[fn]]
 
-            
-                vcf=read_vcf(vcf=input,threads=threads)
-                vcf$body=vcf$body %>% 
-                    only_gt_vcf() %>% 
-                    no_gt_to_pass_vcf() %>% 
-                    only_monoallel_vcf()
+        
+            vcf=read_vcf(vcf=input,threads=threads)
+            vcf$body=vcf$body %>% 
+                only_gt_vcf() %>% 
+                no_gt_to_pass_vcf() %>% 
+                only_monoallel_vcf()
                 
-                vcf_tmp=vcf
+            vcf_tmp=vcf
 
-                lapply(chr,
-                    FUN=function(x){
-                        
-                        vcf_tmp$body=vcf$body %>% 
-                            only_chr_vcf(chr=x)
+            lapply(chr,
+                FUN=function(x){
+                    
+                    vcf_tmp$body=vcf$body %>% 
+                        only_chr_vcf(chr=x)
 
-                        main.step$steps <- append(
-                            .main.step$steps,
-                            write_vcf(
-                                bin_bgzip=bin_bgzip,
-                                bin_tabix=bin_tabix,
-                                vcf=vcf_tmp,
-                                output_name=paste0(input_id,".",x,".filtered"),
-                                output_dir=out_file_dir,
-                                tmp_dir=tmp_dir,
-                                env_dir=env_dir,
-                                batch_dir=batch_dir,
-                                err_msg=err_msg,
-                                threads=threads,
-                                fn_id=x,
-                                ram=ram,
-                                executor=task_id
-                                )
-                            )
-                  .this.step=.main.step$steps[[paste0("write_vcf.",x)]]
-                  .main.step$out_files$split_vcf[[as.character(x)]]=.this.step$out_files
-                  
-                  .main.step$steps<- append(
-                  .main.step$steps,
-                        phase_chr_shapeit(
-                            bin_bcftools=bin_bcftools,
+                    main.step$steps <- append(
+                        .main.step$steps,
+                        write_vcf(
                             bin_bgzip=bin_bgzip,
                             bin_tabix=bin_tabix,
-                            bin_shapeit=bin_shapeit,
-                            ref_panel=gmap,
-                            gmap=gmap,
-                            vcf=.main.step$out_files$split_vcf[[x]]$bgzip_vcf,
-                            chr=x,
-                            scaffold=scaffold,
+                            vcf=vcf_tmp,
+                            output_name=paste0(input_id,".",x,".filtered"),
                             output_dir=out_file_dir,
                             tmp_dir=tmp_dir,
                             env_dir=env_dir,
-                            fn_id=x,
                             batch_dir=batch_dir,
-                            ram=ram,
-                            verbose=verbose,
-                            threads=threads,
                             err_msg=err_msg,
-                            executor_id=task_id
+                            threads=threads,
+                            fn_id=x,
+                            ram=ram,
+                            executor=task_id
+                            )
                         )
+                .this.step=.main.step$steps[[paste0("write_vcf.",x)]]
+                .main.step$out_files$split_vcf[[as.character(x)]]=.this.step$out_files
+                
+                .main.step$steps<- append(
+                .main.step$steps,
+                    phase_chr_shapeit(
+                        bin_bcftools=bin_bcftools,
+                        bin_bgzip=bin_bgzip,
+                        bin_tabix=bin_tabix,
+                        bin_shapeit=bin_shapeit,
+                        ref_panel=gmap,
+                        gmap=gmap,
+                        vcf=.main.step$out_files$split_vcf[[x]]$bgzip_vcf,
+                        chr=x,
+                        scaffold=scaffold,
+                        output_dir=out_file_dir,
+                        tmp_dir=tmp_dir,
+                        env_dir=env_dir,
+                        fn_id=x,
+                        batch_dir=batch_dir,
+                        ram=ram,
+                        verbose=verbose,
+                        threads=threads,
+                        err_msg=err_msg,
+                        executor_id=task_id
                     )
-                .this.step=.main.step$steps[[paste0("phase_chr_shapeit.",x)]]
-                .main.step$out_files$phased_vcf[[as.character(x)]]=.this.step$out_files
-                return()
-                }
+                )
+            .this.step=.main.step$steps[[paste0("phase_chr_shapeit.",x)]]
+            .main.step$out_files$phased_vcf[[as.character(x)]]=.this.step$out_files
+            return()
+            }
             )
            
             .env$.main <- .main
             
-        }
+     }
 
         .base.env=environment()
         list2env(list(...),envir=.base.env)
