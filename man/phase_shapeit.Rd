@@ -12,8 +12,9 @@ phase_shapeit(
   ref_panel = build_default_reference_list()$HG19$phasing$G1000$new$vcf,
   gmap = build_default_reference_list()$HG19$phasing$G1000$new$gmap,
   vcf = NULL,
-  chr = NULL,
+  chr = c(1:22, "X"),
   scaffold = NULL,
+  output_name = NULL,
   ...
 )
 }

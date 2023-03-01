@@ -592,6 +592,13 @@ set_env_vars=function(
     }
 
 
+    if(is.null(fn_id)){
+      fn_id<-fn
+    }else{
+      fn_id<-paste0(fn,".",fn_id)
+    }
+
+
     if(is.null(executor_id)){
       executor_id <- make_unique_id(fn)
     }
@@ -601,7 +608,6 @@ set_env_vars=function(
         set_ss_env(.env=.this.env)
         return()
     }
-
 
     if(!is.null(vars)){
       inputs <- get(vars)
