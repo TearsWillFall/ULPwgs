@@ -98,20 +98,18 @@ phase_shapeit=function(
             .main.step=.main$steps[[fn]]
 
             
-                vcf=read_vcf(vcf=vcf,threads=threads)
+                vcf=read_vcf(vcf=input,threads=threads)
                 vcf$body=vcf$body %>% 
                     only_gt_vcf() %>% 
                     no_gt_to_pass_vcf() %>% 
                     only_monoallel_vcf()
+                
                 vcf_tmp=vcf
 
                 lapply(chr,
                     FUN=function(x){
                         
                         vcf_tmp$body=vcf$body %>% 
-                            only_gt_vcf() %>% 
-                            no_gt_to_pass_vcf() %>% 
-                            only_monoallel_vcf() %>%
                             only_chr_vcf(chr=x)
 
                         main.step$steps <- append(
@@ -161,6 +159,7 @@ phase_shapeit=function(
                     )
                 .this.step=.main.step$steps[[paste0("phase_chr_shapeit.",x)]]
                 .main.step$out_files$phased_vcf[[as.character(x)]]=.this.step$out_files
+                return()
                 }
             )
            
