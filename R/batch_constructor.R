@@ -542,6 +542,7 @@ set_env_vars=function(
   .env=environment(),
   vars=NULL,
   fn=NULL,
+  fn_id=NULL,
   output_dir=".",
   tmp_dir=NULL,
   env_dir=NULL,
