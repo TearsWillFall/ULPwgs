@@ -48,7 +48,7 @@ phase_shapeit=function(
                 
             vcf_tmp=vcf
 
-            lapply(chr,
+            mclapply_os(chr,
                 FUN=function(x){
 
                     this.chr=as.character(x)
@@ -68,7 +68,7 @@ phase_shapeit=function(
                             env_dir=env_dir,
                             batch_dir=batch_dir,
                             err_msg=err_msg,
-                            threads=threads,
+                            threads=2,
                             fn_id=x,
                             ram=ram,
                             executor=task_id
@@ -98,7 +98,7 @@ phase_shapeit=function(
                         batch_dir=batch_dir,
                         ram=ram,
                         verbose=verbose,
-                        threads=threads,
+                        threads=2,
                         err_msg=err_msg,
                         executor_id=task_id
                     )
@@ -106,8 +106,7 @@ phase_shapeit=function(
             .this.step=.main.step$steps[[paste0("phase_chr_shapeit.",this.chr)]]
             .main.step$out_files$phased_vcf[[this.chr]]=.this.step$out_files
             return()
-            }
-            )
+            },mc.cores=floor(threads/2))
            
             .env$.main <- .main
             
