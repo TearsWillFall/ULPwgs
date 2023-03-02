@@ -160,12 +160,12 @@ phase_chr_shapeit=function(
                         append_env(to=.this.env,from=.env)
                         set_main(.env=.this.env)
 
-                        output_name=paste0(input_id,".",chr)
+                    
 
                         .main$steps[[fn_id]]<-.this.env
                         .main.step=.main$steps[[fn_id]]
 
-                        .main.step$out_files$phased_vcf=paste0(out_file_dir,"/",input_id,".phased.vcf")
+                        .main.step$out_files$phased_vcf=paste0(out_file_dir,"/",input_id,".",chr,".phased.vcf")
 
 
                         if(!is.null(ref_panel)){
