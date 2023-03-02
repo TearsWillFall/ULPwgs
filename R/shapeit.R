@@ -136,7 +136,7 @@ phase_shapeit=function(
                             executor=task_id
                             )
                         )
-                .this.step=.main.step$steps[[paste0("write_vcf."this.chr)]]
+                .this.step=.main.step$steps[[paste0("write_vcf.",this.chr)]]
                 .main.step$out_files$split_vcf[[this.chr]]=.this.step$out_files
                 
       
