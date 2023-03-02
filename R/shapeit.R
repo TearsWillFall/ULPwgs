@@ -169,7 +169,7 @@ phase_chr_shapeit=function(
 
 
                         if(!is.null(ref_panel)){
-                            add=paste0(" --reference ",ref_panel[grepl(paste0("chr",input,"."),ref_panel)]) 
+                            add=paste0(" --reference ",ref_panel[grepl(paste0("chr",input,"\\."),ref_panel)]) 
                         }
 
                         if(!is.null(scaffold)){
@@ -178,7 +178,7 @@ phase_chr_shapeit=function(
 
                         .main$exec_code=paste(
                             bin_shapeit," --input ", vcf,
-                            " --map ",gmap[grepl(paste0("chr",input,"."),gmap)],
+                            " --map ",gmap[grepl(paste0("chr",input,"\\."),gmap)],
                             add,
                             " --region ",input,
                             " --thread ",threads,
