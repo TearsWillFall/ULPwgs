@@ -116,7 +116,7 @@ phase_shapeit=function(
                     vcf_tmp$body=vcf$body %>% 
                         only_chr_vcf(chr=x)
 
-                    main.step$steps <- append(
+                    .main.step$steps <- append(
                         .main.step$steps,
                         write_vcf(
                             bin_bgzip=bin_bgzip,
