@@ -89,6 +89,7 @@ phase_shapeit=function(
                         gmap=gmap,
                         vcf=.main.step$out_files$split_vcf[[this.chr]]$bgzip_vcf,
                         chr=this.chr,
+                        output_name=input_id,
                         scaffold=scaffold,
                         output_dir=out_file_dir,
                         tmp_dir=tmp_dir,
@@ -176,7 +177,7 @@ phase_chr_shapeit=function(
                         }
 
                         .main$exec_code=paste(
-                            bin_shapeit," --input ",.main.step$out_files$bgzip_vcf,
+                            bin_shapeit," --input ", vcf,
                             " --map ",gmap[grepl(paste0("chr",input,"."),gmap)],
                             add,
                             " --region ",input,
