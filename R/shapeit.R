@@ -112,6 +112,8 @@ phase_shapeit=function(
 
             lapply(chr,
                 FUN=function(x){
+
+                    this.chr=as.character(x)
                     
                     vcf_tmp$body=vcf$body %>% 
                         only_chr_vcf(chr=x)
@@ -134,10 +136,10 @@ phase_shapeit=function(
                             executor=task_id
                             )
                         )
-                .this.step=.main.step$steps[[paste0("write_vcf.",x)]]
-                .main.step$out_files$split_vcf[[as.character(x)]]=.this.step$out_files
+                .this.step=.main.step$steps[[paste0("write_vcf."this.chr)]]
+                .main.step$out_files$split_vcf[[this.chr]]=.this.step$out_files
                 
-                print(.main.step$out_files$split_vcf)
+      
                 .main.step$steps<- append(
                 .main.step$steps,
                     phase_chr_shapeit(
@@ -147,8 +149,8 @@ phase_shapeit=function(
                         bin_shapeit=bin_shapeit,
                         ref_panel=ref_panel,
                         gmap=gmap,
-                        vcf=.main.step$out_files$split_vcf[[x]]$bgzip_vcf,
-                        chr=x,
+                        vcf=.main.step$out_files$split_vcf[[this.chr]]$bgzip_vcf,
+                        chr=this.chr,
                         scaffold=scaffold,
                         output_dir=out_file_dir,
                         tmp_dir=tmp_dir,
@@ -162,8 +164,8 @@ phase_shapeit=function(
                         executor_id=task_id
                     )
                 )
-            .this.step=.main.step$steps[[paste0("phase_chr_shapeit.",x)]]
-            .main.step$out_files$phased_vcf[[as.character(x)]]=.this.step$out_files
+            .this.step=.main.step$steps[[paste0("phase_chr_shapeit.",this.chr)]]
+            .main.step$out_files$phased_vcf[[this.chr]]=.this.step$out_files
             return()
             }
             )
