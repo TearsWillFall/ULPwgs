@@ -34,8 +34,9 @@ phase_shapeit=function(
             .this.env=environment()
             append_env(to=.this.env,from=.env)
             set_main(.env=.this.env)
+            
+            out_file_dir=paste0(out_file_dir,"/",input_id,"/shapeit")
 
-        
             .main$steps[[fn_id]]<-.this.env
             .main.step=.main$steps[[fn_id]]
 
