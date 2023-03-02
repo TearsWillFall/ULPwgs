@@ -164,7 +164,7 @@ get_coverage=function(
     
     run_job(.env=.this.env)
 
-    .this.step=.main$steps[[fn]]
+    .this.step=.main$steps[[fn_id]]
     
     .this.step$out_files$index_stats <- .main$out_file
 

@@ -57,8 +57,8 @@ phase_shapeit=function(
 
                         output_name=paste0(input_id,".",chr)
 
-                        .main$steps[[fn]]<-.this.env
-                        .main.step=.main$steps[[fn]]
+                        .main$steps[[fn_id]]<-.this.env
+                        .main.step=.main$steps[[fn_id]]
 
                         .main.step$out_files$phased_vcf=paste0(out_file_dir,"/",input_id,".phased.vcf")
 
@@ -98,8 +98,8 @@ phase_shapeit=function(
 
             }
 
-            .main$steps[[fn]]<-.this.env
-            .main.step=.main$steps[[fn]]
+            .main$steps[[fn_id]]<-.this.env
+            .main.step=.main$steps[[fn_id]]
 
         
             vcf=read_vcf(vcf=input,threads=threads)

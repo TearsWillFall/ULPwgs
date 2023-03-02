@@ -153,8 +153,8 @@ new_sort_and_index_bam_samtools=function(
     set_main(.env=.this.env)
 
 
-    .main$steps[[fn]]<-.this.env
-    .main.step=.main$steps[[fn]]
+    .main$steps[[fn_id]]<-.this.env
+    .main.step=.main$steps[[fn_id]]
   
     if(sort){
         .main.step$steps <-append(
@@ -364,7 +364,7 @@ new_sort_bam_samtools=function(
     
       run_job(.env=.this.env)
 
-      .main.step=.main$steps[[fn]]
+      .main.step=.main$steps[[fn_id]]
       .main.step$out_files$srt_bam=.main.step$out_file
       
 
@@ -568,7 +568,7 @@ new_index_bam_samtools=function(
    
     run_job(.env=.this.env)
 
-    .main.step=.main$steps[[fn]]
+    .main.step=.main$steps[[fn_id]]
     .main.step$out_files$index_bam=.main.step$out_file
 
     if(stats){
@@ -724,8 +724,8 @@ new_stats_bam_samtools=function(
     append_env(to=.this.env,from=.env)
     set_main(.env=.this.env)
 
-    .main$steps[[fn]]<-.this.env
-    .main.step=.main$steps[[fn]]
+    .main$steps[[fn_id]]<-.this.env
+    .main.step=.main$steps[[fn_id]]
     
 
     if(stats=="all"|stats=="flag"){
@@ -916,7 +916,7 @@ new_flag_stats_samtools=function(
 
     run_job(.env=.this.env)
 
-    .main.step=.main$steps[[fn]]
+    .main.step=.main$steps[[fn_id]]
 
     .main.step$out_files$flag_stats <- .main$out_file
 
@@ -1067,7 +1067,7 @@ new_index_stats_samtools=function(
 
     run_job(.env=.this.env)
 
-    .this.step=.main$steps[[fn]]
+    .this.step=.main$steps[[fn_id]]
     
     .this.step$out_files$index_stats <- .main$out_file
 
@@ -1930,7 +1930,7 @@ mpileup_samtools=function(
 
     run_job(.env=.this.env)
 
-    .this.step=.main$steps[[fn]]
+    .this.step=.main$steps[[fn_id]]
     
     .this.step$out_files$index_stats <- .main$out_file
 

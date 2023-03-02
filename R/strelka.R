@@ -56,8 +56,8 @@ call_variants_strelka=function(
   
       set_main(.env=.this.env)
 
-      .main$steps[[fn]]<-.this.env
-      .main.step<-.main$steps[[fn]]
+      .main$steps[[fn_id]]<-.this.env
+      .main.step<-.main$steps[[fn_id]]
     
       .main.step$steps <-append(
             .main.step$steps,
@@ -193,8 +193,8 @@ call_snvs_strelka=function(
       append_env(to=.this.env,from=.env)
       set_main(.env=.this.env)
 
-      .main$steps[[fn]]<-.this.env
-      .main.step<-.main$steps[[fn]]
+      .main$steps[[fn_id]]<-.this.env
+      .main.step<-.main$steps[[fn_id]]
    
   
       if(!is.null(normal)){
@@ -377,7 +377,7 @@ call_somatic_snvs_strelka=function(
             .env=.this.env
         )
 
-        .main.step<-.main$steps[[fn]]
+        .main.step<-.main$steps[[fn_id]]
 
 
         
@@ -653,7 +653,7 @@ call_germline_snvs_strelka=function(
         )
 
 
-        .main.step<-.main$steps[[fn]]
+        .main.step<-.main$steps[[fn_id]]
 
 
 

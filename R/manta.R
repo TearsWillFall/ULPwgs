@@ -50,8 +50,8 @@ call_sv_manta=function(
       append_env(to=.this.env,from=.env)
       set_main(.env=.this.env)
     
-      .main$steps[[fn]]<-.this.env
-      .main.step<-.main$steps[[fn]]
+      .main$steps[[fn_id]]<-.this.env
+      .main.step<-.main$steps[[fn_id]]
 
       if(!is.null(normal)){
 
@@ -212,7 +212,7 @@ call_germline_sv_manta=function(
             .env=.this.env
         )
 
-        .main.step=.main$steps[[fn]]
+        .main.step=.main$steps[[fn_id]]
 
     
         .main.step$steps <- append(
@@ -375,7 +375,7 @@ call_somatic_sv_manta=function(
           .env=.this.env
         )
   
-        .main.step=.main$steps[[fn]]
+        .main.step=.main$steps[[fn_id]]
 
     
         .main.step$steps <- append(

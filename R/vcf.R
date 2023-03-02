@@ -128,8 +128,8 @@ add_snv_af_strelka_vcf=function(
         set_main(.env=.this.env)
 
 
-        .main$steps[[fn]]<-.this.env
-        .main.step=.main$steps[[fn]]
+        .main$steps[[fn_id]]<-.this.env
+        .main.step=.main$steps[[fn_id]]
 
         vcf_dat=read_vcf(input,threads=threads)
         vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
@@ -155,8 +155,8 @@ add_snv_af_strelka_vcf=function(
       
       
 
-        .main$steps[[fn]]$steps <- append(
-          .main$steps[[fn]]$steps,
+        .main$steps[[fn_id]]$steps <- append(
+          .main$steps[[fn_id]]$steps,
           write_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
@@ -232,8 +232,8 @@ add_indel_af_strelka_vcf=function(
     
         set_main(.env=.this.env)
 
-        .main$steps[[fn]]<-.this.env
-        .main.step=.main$steps[[fn]]
+        .main$steps[[fn_id]]<-.this.env
+        .main.step=.main$steps[[fn_id]]
 
         vcf_dat=read_vcf(input,threads=threads)
         vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
@@ -257,8 +257,8 @@ add_indel_af_strelka_vcf=function(
       
       
 
-        .main$steps[[fn]]$steps <- append(
-          .main$steps[[fn]]$steps,
+        .main$steps[[fn_id]]$steps <- append(
+          .main$steps[[fn_id]]$steps,
           write_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
@@ -336,8 +336,8 @@ add_sv_af_strelka_vcf=function(
     
         set_main(.env=.this.env)
 
-        .main$steps[[fn]]<-.this.env
-        .main.step=.main$steps[[fn]]
+        .main$steps[[fn_id]]<-.this.env
+        .main.step=.main$steps[[fn_id]]
 
         vcf_dat=read_vcf(input,threads=threads)
         vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
@@ -461,8 +461,8 @@ add_gl_af_strelka_vcf=function(
     
         set_main(.env=.this.env)
 
-        .main$steps[[fn]]<-.this.env
-        .main.step=.main$steps[[fn]]
+        .main$steps[[fn_id]]<-.this.env
+        .main.step=.main$steps[[fn_id]]
 
         vcf_dat=read_vcf(input,threads=threads)
         vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
@@ -574,8 +574,8 @@ add_af_strelka_vcf=function(
       fn=paste0(fn,".",type)
 
 
-      .main$steps[[fn]]<-.this.env
-      .main.step=.main$steps[[fn]]
+      .main$steps[[fn_id]]<-.this.env
+      .main.step=.main$steps[[fn_id]]
 
       if(type=="snv"){
 
@@ -771,8 +771,8 @@ variants_by_filters_vcf=function(
 
     output_name=paste0(input_id,".",paste0(filters,collapse="."))
 
-    .main$steps[[fn]]<-.this.env
-    .main.step<-.main$steps[[fn]]
+    .main$steps[[fn_id]]<-.this.env
+    .main.step<-.main$steps[[fn_id]]
    
 
     vcf_dat=read_vcf(vcf=input,threads=threads)
@@ -921,8 +921,8 @@ variants_by_type_vcf=function(
 
     output_name=paste0(input_id,".",paste0(type,collapse="."))
 
-    .main$steps[[fn]]<-.this.env
-    .main.step<-.main$steps[[fn]]
+    .main$steps[[fn_id]]<-.this.env
+    .main.step<-.main$steps[[fn_id]]
    
 
     vcf_dat=read_vcf(vcf=input,threads=threads)
@@ -1028,8 +1028,8 @@ extract_pass_variants_strelka_vcf=function(
       fn=paste0(fn,".",type)
 
 
-      .main$steps[[fn]]<-.this.env
-      .main.step=.main$steps[[fn]]
+      .main$steps[[fn_id]]<-.this.env
+      .main.step=.main$steps[[fn_id]]
  
      
 
@@ -1194,7 +1194,7 @@ tabulate_vcf=function(
             row.names=FALSE,col.names=TRUE)
         }
 
-        .main$steps[[fn]]<-.this.env
+        .main$steps[[fn_id]]<-.this.env
     
         .env$.main<- .main 
 
@@ -1382,8 +1382,8 @@ write_vcf=function(
     set_main(.env=.this.env)
 
 
-    .main$steps[[fn]] <- .this.env
-    .main.step=.main$steps[[fn]]
+    .main$steps[[fn_id]] <- .this.env
+    .main.step=.main$steps[[fn_id]]
 
     .main.step$out_files$vcf <- paste0(out_file_dir,"/",input_id,".vcf")
 

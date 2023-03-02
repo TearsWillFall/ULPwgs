@@ -49,7 +49,7 @@ compress_vcf_htslib=function(
 
         run_job(.env=.this.env)
 
-        .main.step=.main$steps[[fn]]
+        .main.step=.main$steps[[fn_id]]
     
         if(index){
             .main.step$steps<-append(
@@ -256,12 +256,12 @@ compress_and_index_vcf_htslib=function(
         .this.env=environment()
         append_env(to=.this.env,from=.env)
         set_main(.env=.this.env)
-        .main$steps[[fn]]<-.this.env
-        .main.step=.main$steps[[fn]]
+        .main$steps[[fn_id]]<-.this.env
+        .main.step=.main$steps[[fn_id]]
 
         if(compress){
             .main.step$steps<- append(
-                .main$steps[[fn]]$steps,
+                .main$steps[[fn_id]]$steps,
                 compress_vcf_htslib(
                     bin_bgzip=bin_bgzip,
                     vcf=vcf,

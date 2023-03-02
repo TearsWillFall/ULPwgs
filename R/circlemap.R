@@ -115,7 +115,7 @@ realign_circlemap=function(
 
         run_job(.env=.this.env)
 
-        .main.step<-.main$steps[[fn]]
+        .main.step<-.main$steps[[fn_id]]
 
         if(annotate){
                 .main.step$steps<-append(
@@ -219,7 +219,7 @@ read_extractor_circlemap=function(
 
         run_job(.env=.this.env)
 
-        .main.step=.main$steps[[fn]]
+        .main.step=.main$steps[[fn_id]]
     
 
         .main.step$steps<-append(
@@ -329,7 +329,7 @@ repeat_caller_circlemap=function(
             )
 
             run_job(.env=.this.env)
-            .main.step=.main$steps[[fn]]
+            .main.step=.main$steps[[fn_id]]
     
 
 
@@ -427,13 +427,13 @@ circdna_circlemap=function(
 
         set_main(.env=.this.env)
 
-        .main$steps[[fn]]<-.this.env
+        .main$steps[[fn_id]]<-.this.env
         
-        .main.step=.main$steps[[fn]]
+        .main.step=.main$steps[[fn_id]]
     
   
-        .main$steps[[fn]]$steps <- append(
-            .main$steps[[fn]]$steps,realign_circlemap(
+        .main$steps[[fn_id]]$steps <- append(
+            .main$steps[[fn_id]]$steps,realign_circlemap(
                 env_circlemap=env_circlemap,
                 bin_samtools=bin_samtools,
                 bam=normalizePath(input),
@@ -599,8 +599,8 @@ annotate_bed_circlemap=function(
 
 
       
-        .main$steps[[fn]]<-.this.env
-        .main.step<- .main$steps[[fn]]
+        .main$steps[[fn_id]]<-.this.env
+        .main.step<- .main$steps[[fn_id]]
 
 
         .main.step$out_files$annot_circ_bed=paste0(

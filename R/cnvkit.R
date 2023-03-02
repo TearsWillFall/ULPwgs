@@ -128,8 +128,8 @@ process_cnvkit=function(
       set_main(.env=.this.env)
 
 
-      .main$steps[[fn]]<-.this.env
-      .main.step=.main$steps[[fn]]
+      .main$steps[[fn_id]]<-.this.env
+      .main.step=.main$steps[[fn_id]]
 
       .main.step$steps <-append(
         .main.step$steps,
@@ -897,8 +897,8 @@ bin_targets_cnvkit=function(
       set_main(.env=.this.env)
     
 
-      .main$steps[[fn]]<-.this.env
-      .main.step=.main$steps[[fn]]
+      .main$steps[[fn_id]]<-.this.env
+      .main.step=.main$steps[[fn_id]]
     
 
       .main.step$steps=append(
@@ -1227,8 +1227,8 @@ call_coverage_cnvkit=function(
     fn=paste0(fn,".",type)
 
 
-    .main$steps[[fn]]<-.this.env
-    .main.step<-.main$steps[[fn]]
+    .main$steps[[fn_id]]<-.this.env
+    .main.step<-.main$steps[[fn_id]]
     
     if(type!="target" && type != "antitarget"){
       stop("Valid values for type are : target / antitarget")
