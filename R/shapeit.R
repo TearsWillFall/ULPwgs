@@ -123,7 +123,7 @@ phase_shapeit=function(
                             bin_tabix=bin_tabix,
                             vcf=vcf_tmp,
                             output_name=paste0(input_id,".",x,".filtered"),
-                            output_dir=out_file_dir,
+                            output_dir=tmp_dir,
                             tmp_dir=tmp_dir,
                             env_dir=env_dir,
                             batch_dir=batch_dir,
@@ -137,6 +137,7 @@ phase_shapeit=function(
                 .this.step=.main.step$steps[[paste0("write_vcf.",x)]]
                 .main.step$out_files$split_vcf[[as.character(x)]]=.this.step$out_files
                 
+                print(.main.step$out_files$split_vcf)
                 .main.step$steps<- append(
                 .main.step$steps,
                     phase_chr_shapeit(
@@ -144,7 +145,7 @@ phase_shapeit=function(
                         bin_bgzip=bin_bgzip,
                         bin_tabix=bin_tabix,
                         bin_shapeit=bin_shapeit,
-                        ref_panel=gmap,
+                        ref_panel=ref_panel,
                         gmap=gmap,
                         vcf=.main.step$out_files$split_vcf[[x]]$bgzip_vcf,
                         chr=x,
