@@ -22,7 +22,8 @@ read_pileup=function(
     header=TRUE,
     sep="\t",
     rename=TRUE,
-    sort=TRUE
+    sort=TRUE,
+    threads=1
 ){
   options(scipen=999)
   col_names=c("chrom","pos","ref","alt","A","C","T","G","depth","af","id")
@@ -41,9 +42,9 @@ read_pileup=function(
         origin_file_type="data.frame"
     }else if(file.exists(pileup)){
         if(grepl(".pileup$",pileup)){
-            body=read.csv(
+            body=data.table::fread(
                 file=pileup,sep=sep,header=header,
-                colClasses="character"
+                colClasses="character",nThreads=threads
             )
             origin_file_type="data.frame"
             

@@ -70,17 +70,17 @@ if __name__ == "__main__":
    try:
       opts, args = getopt.getopt(sys.argv[1:],"h:b:g:c:p:q:t:v:o:f:i:",["bam=","gpos=","chr=","pos=","qt=","threads=","verbose=","output=","force=","id="])
    except getopt.GetoptError:
-      print ('get_coverage.py -b <bam> -g [gpos] -c [chr] -p [pos] -q [qt] -t [threads] -v [verbose] -o [output] -f [force] -i [id]')
+      print ('get_coverage.py -b <bam> -g [gpos] -c [chrom] -p [pos] -q [qt] -t [threads] -v [verbose] -o [output] -f [force] -i [id]')
       sys.exit(2)
    for opt, arg in opts:
       if opt == '-h':
-         print ('get_coverage.py -b <bam> -g [gpos] -c [chr] -p [pos] -q [qt] -t [threads] -v [verbose] -o [output] -f [force] -i [id]')
+         print ('get_coverage.py -b <bam> -g [gpos] -c [chrom] -p [pos] -q [qt] -t [threads] -v [verbose] -o [output] -f [force] -i [id]')
          sys.exit()
       elif opt in ("-b", "--bam"):
          bam = arg
       elif opt in ("-g", "--gpos"):
          gpos = arg
-      elif opt in ("-c", "--chr"):
+      elif opt in ("-c", "--chrom"):
          region[0] = arg
       elif opt in ("-p", "--pos"):
          region[1] = int(arg)
@@ -121,17 +121,17 @@ if __name__ == "__main__":
       if not os.path.exists(output) or force:
          f=open(output,"w")
          if id!=None:
-            f.write("#chr\tpos\tref\talt\tgt\tA\tC\tG\tT\tdepth\taf\tid\n")
+            f.write("chrom\tpos\tref\talt\tgt\tA\tC\tG\tT\tdepth\taf\tid\n")
          else:
-            f.write("#chr\tpos\tref\talt\tgt\tA\tC\tG\tT\tdepth\taf\n")
+            f.write("chrom\tpos\tref\talt\tgt\tA\tC\tG\tT\tdepth\taf\n")
          f.close()
       else:
          raise FileExistsError
    else:
       if id!=None:
-         print("#chr\tpos\tref\talt\tgt\tA\tC\tG\tT\tdepth\taf\tid")
+         print("chrom\tpos\tref\talt\tgt\tA\tC\tG\tT\tdepth\taf\tid")
       else:
-         print("#chr\tpos\tref\talt\tgt\tA\tC\tG\tT\tdepth\taf")
+         print("chrom\tpos\tref\talt\tgt\tA\tC\tG\tT\tdepth\taf")
 
    if jobs==1 or threads==1:
       list(map(get_coverage,gposcontent,[bam]*jobs,[output]*jobs,[True]*jobs,[id]*jobs))
