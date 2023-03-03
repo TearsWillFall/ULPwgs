@@ -18,11 +18,12 @@ plot_phased=function(
     tumours_long$gt_col=ifelse(tumours_long$gt=="1|0","blue","yellow")
     tumours_long_filt=tumours_long %>% 
     dplyr::filter(depth>=normal_cov,af<=normal_af&(1-normal_af)>=af)
-    p1<-ggplot(tumours_long_filt,aes(pos,value,col=gt_col))
+    p1<-ggplot(tumours_long_filt %>% dplyr::arrange(pos) %>% 
+    dplyr::mutate(inorder=as.numeric(as.factor(pos))),aes(pos,value,col=gt_col))
     p1<-p1+geom_hline(aes(yintercept=0.5),linetype="longdash")+
     geom_hline(aes(yintercept=0.25),alpha=0.5,linetype="longdash")+
     geom_hline(aes(yintercept=0.75),alpha=0.5,linetype="longdash")
-    p1<-p1+geom_point(size=0.1)+geom_smooth()+
+    p1<-p1+geom_point(size=0.1)+geom_smooth(se=FALSE)+
     scale_colour_identity()+
     theme_bw()+scale_y_continuous(limits=c(0,1),expand=c(0,0))+
     facet_grid(name~"")
