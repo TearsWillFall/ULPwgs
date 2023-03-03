@@ -38,9 +38,12 @@ def get_coverage(gpos:None,bamfile:None,output:None,force:False,id:None):
    )
 
    baseCount={"A":sum(cov[0]),"C":sum(cov[1]),"G":sum(cov[2]),"T":sum(cov[3])}
-   if not ref=="." and not alt==".":
-      af=baseCount[alt]/(baseCount[ref]+baseCount[alt])
    bTotal=baseCount["A"]+baseCount["C"]+baseCount["G"]+baseCount["T"]
+   if not ref=="." and not alt==".":
+      if bTotal>0:
+         af=baseCount[alt]/(baseCount[ref]+baseCount[alt])
+      else:
+         af=0
    if output!=None:
       if not os.path.exists(output) or force:
          f=open(output,"a")
