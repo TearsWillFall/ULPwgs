@@ -19,7 +19,7 @@ plot_phased=function(
     tumours_long_filt=tumours_long %>% 
     dplyr::filter(depth>=normal_cov,af<=normal_af&(1-normal_af)>=af)
     p1<-ggplot(tumours_long_filt %>% dplyr::arrange(pos) %>% 
-    dplyr::mutate(inorder=as.numeric(as.factor(pos))),aes(pos,value,col=gt_col))
+    dplyr::mutate(inorder=as.numeric(as.factor(pos))),aes(inorder,value,col=gt_col))
     p1<-p1+geom_hline(aes(yintercept=0.5),linetype="longdash")+
     geom_hline(aes(yintercept=0.25),alpha=0.5,linetype="longdash")+
     geom_hline(aes(yintercept=0.75),alpha=0.5,linetype="longdash")
