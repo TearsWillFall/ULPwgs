@@ -53,8 +53,13 @@ read_gpos=function(
         ### Read VCF file and return body for region information
         if(grepl(".vcf",gpos)){
             origin_file_type="vcf"
-            body=read_vcf(gpos,sep=sep,threads=threads)$body[,1:3]
-            names(body)=c("chrom","pos","ref")
+            tmp=read_vcf(gpos,sep=sep,threads=threads)
+            if(!is.null(tmp$descriptors$FORMAT$GT)){
+                body=tmp$body %>% unnest_vcf_body() %>% dplyr::filter(FORMAT=="GT") %>% select(CHROM,POS,REF,ALT,VALUE)
+            }else{
+                body=tmp$body %>% select(CHROM,POS,REF,ALT)
+                body[,"gt"]="."
+            }
         }else if(grepl(".bed",gpos)){
             origin_file_type="bed"
             body=bed_to_pos(
@@ -64,10 +69,10 @@ read_gpos=function(
                 rename=rename,
                 sort=sort)$body
             )
+            body[,c("ref","alt","gt")]="."
         }else if (grepl(".pileup",gpos)){
             origin_file_type="pileup"
-            body=read_pileup(pileup=gpos,header=header,sep=sep,rename=rename,sort=sort)
-            names(body)=c("chrom","pos","ref","A","C","T","G","depth")
+            body=read_pileup(pileup=gpos,header=header,sep=sep,rename=rename,sort=sort)[,c("chrom","pos","ref","alt","gt")]
         }else{
            stop("Not valid file format. Valid file formats are VCF/BED.") 
         }
@@ -75,6 +80,9 @@ read_gpos=function(
     }else{
         stop("Not recognized input Genomic Position format")
     }
+
+
+    names(body)=c("chrom","pos","ref","alt","gt")
 
     if(sort){
         body=sort_gpos(body)
@@ -120,6 +128,7 @@ get_coverage=function(
     env_cov=build_default_python_enviroment_list()$env_cov,
     bam=NULL,
     gpos=NULL,
+    gt="het",
     ...
 ){
     
@@ -132,6 +141,11 @@ get_coverage=function(
     set_main(.env=.this.env)
     
     gpos=read_gpos(gpos)
+    if(gt=="het"){
+        gpos=gpos %>% only_het_gpos()
+    }else if(gt=="hom")(
+        gpos=gpos %>% only_hom_gpos()
+    )
 
     fpath <- system.file("python", paste0(fn,".py"), package=ns)
     system(paste0("chmod 755 ",fpath))
@@ -181,4 +195,20 @@ get_coverage=function(
 
   launch(.env=.base.env)
 
+}
+
+
+
+#' @export
+
+only_het_gpos=function(gpos=NULL){
+    gpos$body=gpos$body %>% dplyr::filter(grepl("0\\|1|1\\|0",gt))
+    return(gpos)
+}
+
+#' @export
+
+only_hol_gpos=function(gpos=NULL){
+    gpos$body=gpos$body %>% dplyr::filter(grepl("1\\|1|0\\|0",gt))
+    return(gpos)
 }

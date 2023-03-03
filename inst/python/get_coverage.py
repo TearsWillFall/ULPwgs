@@ -7,11 +7,14 @@ import numpy as np
 import multiprocessing as mp
 from datetime import datetime
 
-def get_coverage(gpos:None,ccvcvbam,output:None,force:False,id:None):
+def get_coverage(gpos:None,bamfile:None,output:None,force:False,id:None):
 
    chr=None
    start=None
    end=None
+   ref="."
+   alt="."
+   gt="."
 
    bamfile = pysam.AlignmentFile(bam, "rb")
    if gpos!=None:
@@ -19,6 +22,12 @@ def get_coverage(gpos:None,ccvcvbam,output:None,force:False,id:None):
          if gpos[1]!=None:
             start=int(gpos[1])-1
             end=int(gpos[1])
+         if gpos[2]!=None:
+            ref=gpos[2]
+         if gpos[3]!=None:
+            alt=gpos[3]
+         if gpos[4]!=None:
+            gt=gpos[4]
    
    cov=bamfile.count_coverage(
       contig=chr,
@@ -41,9 +50,9 @@ def get_coverage(gpos:None,ccvcvbam,output:None,force:False,id:None):
          raise FileExistsError
    else:
       if id!=None:
-         print(chr,end,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,id,sep="\t")
+         print(chr,end,ref,alt,gt,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,id,sep="\t")
       else:
-         print(chr,end,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,sep="\t")
+         print(chr,end,ref,alt,gt,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,sep="\t")
  
 if __name__ == "__main__":
    bam = None
@@ -109,17 +118,17 @@ if __name__ == "__main__":
       if not os.path.exists(output) or force:
          f=open(output,"w")
          if id!=None:
-            f.write("#chr\tpos\tref\tA\tC\tG\tT\tdepth\tid\n")
+            f.write("#chr\tpos\tref\talt\tgt\tA\tC\tG\tT\tdepth\tid\n")
          else:
-            f.write("#chr\tpos\tref\tA\tC\tG\tT\tdepth\n")
+            f.write("#chr\tpos\tref\talt\tgt\tA\tC\tG\tT\tdepth\n")
          f.close()
       else:
          raise FileExistsError
    else:
       if id!=None:
-         print("#chr\tpos\tref\tA\tC\tG\tT\tid\tdepth")
+         print("#chr\tpos\tref\talt\tgt\tA\tC\tG\tT\tid\tdepth")
       else:
-         print("#chr\tpos\tref\tA\tC\tG\tT\tdepth")
+         print("#chr\tpos\tref\talt\tgt\tA\tC\tG\tT\tdepth")
 
    if jobs==1 or threads==1:
       list(map(get_coverage,gposcontent,[bam]*jobs,[output]*jobs,[True]*jobs,[id]*jobs))
