@@ -60,7 +60,7 @@ read_gpos=function(
                 dplyr::filter(FORMAT=="GT") %>% 
                 select(CHROM,POS,REF,ALT,VALUE)
             }else{
-                body=tmp$body %>% select(CHROM,POS,REF,ALT)
+                body=tmp$body %>% dplyr::select(CHROM,POS,REF,ALT)
                 body[,"gt"]="."
             }
         }else if(grepl(".bed",gpos)){
