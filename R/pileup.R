@@ -25,7 +25,7 @@ read_pileup=function(
     sort=TRUE
 ){
   options(scipen=999)
-  col_names=c("chrom","pos","ref","A","C","T","G","depth")
+  col_names=c("chrom","pos","ref","alt","A","C","T","G","depth","af","id")
    
   sort_pileup=function(pileup=NULL){
         return(pileup_body %>% dplyr::arrange(
@@ -43,8 +43,7 @@ read_pileup=function(
         if(grepl(".pileup$",pileup)){
             body=read.csv(
                 file=pileup,sep=sep,header=header,
-                colClasses="character",
-                stringAsFactors=FALSE
+                colClasses="character"
             )
             origin_file_type="data.frame"
             

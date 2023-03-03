@@ -15,6 +15,7 @@ def get_coverage(gpos:None,bamfile:None,output:None,force:False,id:None):
    ref="."
    alt="."
    gt="."
+   af="."
 
    bamfile = pysam.AlignmentFile(bam, "rb")
    if gpos!=None:
@@ -37,22 +38,24 @@ def get_coverage(gpos:None,bamfile:None,output:None,force:False,id:None):
    )
 
    baseCount={"A":sum(cov[0]),"C":sum(cov[1]),"G":sum(cov[2]),"T":sum(cov[3])}
+   if ref!="."&alt!=".":
+      af=baseCount[alt]/(baseCount[ref]+baseCount[alt])
    bTotal=baseCount["A"]+baseCount["C"]+baseCount["G"]+baseCount["T"]
    if output!=None:
       if not os.path.exists(output) or force:
          f=open(output,"a")
          if id!=None:
-            f.write("\t".join(map(str,[chr,end,ref,alt,gt,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,id]))+"\n")
+            f.write("\t".join(map(str,[chr,end,ref,alt,gt,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,af,id]))+"\n")
          else:
-            f.write("\t".join(map(str,[chr,end,ref,alt,gt,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal]))+"\n")
+            f.write("\t".join(map(str,[chr,end,ref,alt,gt,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,af]))+"\n")
          f.close()
       else:
          raise FileExistsError
    else:
       if id!=None:
-         print(chr,end,ref,alt,gt,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,id,sep="\t")
+         print(chr,end,ref,alt,gt,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,af,id,sep="\t")
       else:
-         print(chr,end,ref,alt,gt,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,sep="\t")
+         print(chr,end,ref,alt,gt,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,af,sep="\t")
  
 if __name__ == "__main__":
    bam = None
@@ -118,17 +121,17 @@ if __name__ == "__main__":
       if not os.path.exists(output) or force:
          f=open(output,"w")
          if id!=None:
-            f.write("#chr\tpos\tref\talt\tgt\tA\tC\tG\tT\tdepth\tid\n")
+            f.write("#chr\tpos\tref\talt\tgt\tA\tC\tG\tT\tdepth\taf\tid\n")
          else:
-            f.write("#chr\tpos\tref\talt\tgt\tA\tC\tG\tT\tdepth\n")
+            f.write("#chr\tpos\tref\talt\tgt\tA\tC\tG\tT\tdepth\taf\n")
          f.close()
       else:
          raise FileExistsError
    else:
       if id!=None:
-         print("#chr\tpos\tref\talt\tgt\tA\tC\tG\tT\tid\tdepth")
+         print("#chr\tpos\tref\talt\tgt\tA\tC\tG\tT\tdepth\taf\tid")
       else:
-         print("#chr\tpos\tref\talt\tgt\tA\tC\tG\tT\tdepth")
+         print("#chr\tpos\tref\talt\tgt\tA\tC\tG\tT\tdepth\taf")
 
    if jobs==1 or threads==1:
       list(map(get_coverage,gposcontent,[bam]*jobs,[output]*jobs,[True]*jobs,[id]*jobs))
