@@ -219,6 +219,7 @@ only_hom_gpos=function(gpos=NULL){
 #' @export
 
 only_snps_gpos=function(gpos=NULL){
-    gpos$body=gpos$body %>% rowwise() %>% dplyr::filter(nchar(ref)==1&nchar(alt)==1)
+    gpos$body=gpos$body %>% dplyr::rowwise() %>% 
+    dplyr::filter(nchar(ref)==1&nchar(alt)==1)
     return(gpos)
 }
