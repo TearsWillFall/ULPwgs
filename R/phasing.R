@@ -13,7 +13,7 @@ plot_phased=function(
     tumours=dplyr::bind_rows(tumours)
     tumours_wider=tumours %>% tidyr::pivot_wider(id_cols=c(chrom,pos),names_from=id,values_from=af)
     tumours_wider=dplyr::left_join(tumours_wider,normal %>% dplyr::select(chrom:gt))
-    tumours_long=tumours_wider %>% tidyr::pivot_longer(ids=!chrom:gt)
+    tumours_long=tumours_wider %>% tidyr::pivot_longer(cols=!chrom:gt)
     tumours_long$gt_col=ifelse(tumours_long$gt=="1|0","blue","yellow")
     tumours_long_filt=tumours_long %>% 
     dplyr::filter(depth>=normal_cov,af<=normal_af&(1-normal_af)>=af)
