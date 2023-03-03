@@ -8,6 +8,7 @@ plot_phased=function(
     format="png"
 ){
     
+    out_file=paste0(get_file_name(normal),".",format)
     normal=read.table(normal,sep="\t",header=TRUE)
     tumours=lapply(tumour,read.table,sep="\t",header=TRUE)
     tumours=dplyr::bind_rows(tumours)
@@ -27,7 +28,7 @@ plot_phased=function(
     facet_grid(name~"")
     if(save){
          ggsave(
-            paste0(get_file_name(normal),".",format),
+             out_file,
             plot=p1,height=length(tumour)*600,
             width=1200,units="px"
         )
