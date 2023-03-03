@@ -21,7 +21,8 @@ read_gpos=function(
     sort=TRUE,
     header=TRUE,
     sep="\t",
-    rename=TRUE
+    rename=TRUE,
+    threads=1
 ){  
     origin_file_type=NULL
     gpos_origin=NULL
@@ -55,7 +56,9 @@ read_gpos=function(
             origin_file_type="vcf"
             tmp=read_vcf(gpos,sep=sep,threads=threads)
             if(!is.null(tmp$descriptors$FORMAT$GT)){
-                body=tmp$body %>% unnest_vcf_body() %>% dplyr::filter(FORMAT=="GT") %>% select(CHROM,POS,REF,ALT,VALUE)
+                body=tmp$body %>% unnest_vcf_body() %>% 
+                dplyr::filter(FORMAT=="GT") %>% 
+                select(CHROM,POS,REF,ALT,VALUE)
             }else{
                 body=tmp$body %>% select(CHROM,POS,REF,ALT)
                 body[,"gt"]="."
