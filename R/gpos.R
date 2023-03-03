@@ -58,7 +58,7 @@ read_gpos=function(
             if(!is.null(tmp$descriptors$FORMAT$GT)){
                 body=tmp$body %>% unnest_vcf_body() %>% 
                 dplyr::filter(FORMAT=="GT") %>% 
-                select(CHROM,POS,REF,ALT,VALUE)
+                dplyr::select(CHROM,POS,REF,ALT,VALUE)
             }else{
                 body=tmp$body %>% dplyr::select(CHROM,POS,REF,ALT)
                 body[,"gt"]="."
