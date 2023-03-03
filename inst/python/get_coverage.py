@@ -38,7 +38,7 @@ def get_coverage(gpos:None,bamfile:None,output:None,force:False,id:None):
    )
 
    baseCount={"A":sum(cov[0]),"C":sum(cov[1]),"G":sum(cov[2]),"T":sum(cov[3])}
-   if ref!="." and alt!=".":
+   if not ref=="." and not alt==".":
       af=baseCount[alt]/(baseCount[ref]+baseCount[alt])
    bTotal=baseCount["A"]+baseCount["C"]+baseCount["G"]+baseCount["T"]
    if output!=None:
