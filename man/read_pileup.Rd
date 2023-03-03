@@ -9,17 +9,18 @@ read_pileup(
   header = TRUE,
   sep = "\\t",
   rename = TRUE,
-  sort = TRUE
+  sort = TRUE,
+  threads = 1
 )
 }
 \arguments{
 \item{sort}{Sort genomic positions alphanumerically. Default TRUE}
 
+\item{threads}{Number of threads to use. Default 1}
+
 \item{fasta}{PATH to FASTA file}
 
 \item{fai}{PATH to FAI file. If not given assumes same directory as fasta file}
-
-\item{threads}{Number of threads to use. Default 1}
 }
 \value{
 A fasta_object
