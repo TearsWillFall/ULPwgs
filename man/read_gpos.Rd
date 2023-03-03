@@ -4,7 +4,14 @@
 \alias{read_gpos}
 \title{Read file with Genomic Positions}
 \usage{
-read_gpos(gpos = NULL, sort = TRUE, header = TRUE, sep = "\\t", rename = TRUE)
+read_gpos(
+  gpos = NULL,
+  sort = TRUE,
+  header = TRUE,
+  sep = "\\t",
+  rename = TRUE,
+  threads = 1
+)
 }
 \arguments{
 \item{gpos}{Data.frame or Path to BED/VCF style files}

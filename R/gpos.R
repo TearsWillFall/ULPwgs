@@ -143,7 +143,7 @@ get_coverage=function(
    
     set_main(.env=.this.env)
     
-    gpos=read_gpos(gpos,threads=threads)
+    gpos=read_gpos(gpos,threads=threads) %>% only_snps_gpos()
     if(gt=="het"){
         gpos=gpos %>% only_het_gpos()
     }else if(gt=="hom")(
@@ -211,7 +211,14 @@ only_het_gpos=function(gpos=NULL){
 
 #' @export
 
-only_hol_gpos=function(gpos=NULL){
+only_hom_gpos=function(gpos=NULL){
     gpos$body=gpos$body %>% dplyr::filter(grepl("1\\|1|0\\|0",gt))
+    return(gpos)
+}
+
+#' @export
+
+only_snps_gpos=function(gpos=NULL){
+    gpos$body=gpos$body %>% dplyr::filter(nchar(ref)==1&&nchar(alt))
     return(gpos)
 }

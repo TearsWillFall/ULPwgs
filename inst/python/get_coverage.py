@@ -42,9 +42,9 @@ def get_coverage(gpos:None,bamfile:None,output:None,force:False,id:None):
       if not os.path.exists(output) or force:
          f=open(output,"a")
          if id!=None:
-            f.write("\t".join(map(str,[chr,end,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,id]))+"\n")
+            f.write("\t".join(map(str,[chr,end,ref,alt,gt,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,id]))+"\n")
          else:
-            f.write("\t".join(map(str,[chr,end,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal]))+"\n")
+            f.write("\t".join(map(str,[chr,end,ref,alt,gt,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal]))+"\n")
          f.close()
       else:
          raise FileExistsError
