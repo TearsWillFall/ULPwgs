@@ -143,7 +143,7 @@ get_coverage=function(
    
     set_main(.env=.this.env)
     
-    gpos=read_gpos(gpos)
+    gpos=read_gpos(gpos,threads=threads)
     if(gt=="het"){
         gpos=gpos %>% only_het_gpos()
     }else if(gt=="hom")(
