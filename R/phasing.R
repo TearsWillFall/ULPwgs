@@ -1,4 +1,5 @@
 #' @export
+
 plot_phased=function(
     normal=NULL,
     tumour=NULL,
@@ -38,8 +39,6 @@ plot_phased=function(
     theme_bw()+scale_y_continuous(limits=c(0,1),expand=c(0,0))+
     facet_grid(name~"")
 
-
-
     p2<-ggplot(tumours_long_cov_filt,aes(as.numeric(as.factor(pos)),log2(value/depth),col=gt_col))
     p1<-p1+geom_hline(aes(yintercept=0.5),linetype="longdash")+
     geom_hline(aes(yintercept=0.25),alpha=0.5,linetype="longdash")+
@@ -50,7 +49,6 @@ plot_phased=function(
     facet_grid(name~"")
 
 
-
     if(save){
          ggsave(
              out_file,
@@ -59,6 +57,4 @@ plot_phased=function(
         )
     }
    
-
-    return(p1|p2)
 }   
