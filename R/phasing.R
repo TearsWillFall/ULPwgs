@@ -10,8 +10,8 @@ plot_phased=function(
     
     library(patchwork)
     out_file=paste0(get_file_name(normal),".",format)
-    normal=read.table(normal,sep="\t",header=TRUE)
-    tumours=lapply(tumour,read.table,sep="\t",header=TRUE)
+    normal=read.table(normal,sep="\t",header=TRUE,stringsAsFactors=FALSE)
+    tumours=lapply(tumour,read.table,sep="\t",header=TRUE,stringsAsFactors=FALSE)
     tumours=dplyr::bind_rows(tumours)
     tumours_wider=tumours %>% tidyr::pivot_wider(id_cols=c(chrom,pos),names_from=id,values_from=af)
     tumours_wider=dplyr::left_join(normal %>% dplyr::select(chrom,pos,ref,alt,gt,af,depth),tumours_wider)
@@ -21,15 +21,11 @@ plot_phased=function(
     dplyr::filter(depth>=normal_cov,af<=normal_af&(1-normal_af)>=af)
 
     tumours_wider_cov=tumours %>% tidyr::pivot_wider(id_cols=c(chrom,pos),names_from=id,values_from=depth)
-    tumours_wider_cov=dplyr::left_join(normal %>% dplyr::select(chrom,pos,ref,alt,gt,af,depth),tumours_wider)
+    tumours_wider_cov=dplyr::left_join(normal %>% dplyr::select(chrom,pos,ref,alt,gt,af,depth),tumours_wider_cov)
     tumours_long_cov=tumours_wider_cov %>% tidyr::pivot_longer(cols=!chrom:depth)
     tumours_long_cov$gt_col=ifelse(tumours_long_cov$gt=="1|0","blue","yellow")
     tumours_long_cov_filt=tumours_long_cov %>% 
     dplyr::filter(depth>=normal_cov,af<=normal_af&(1-normal_af)>=af)
-
-
-
-
 
     p1<-ggplot(tumours_long_filt %>% dplyr::arrange(pos) %>% 
     dplyr::mutate(inorder=as.numeric(as.factor(pos))),aes(inorder,value,col=gt_col))
