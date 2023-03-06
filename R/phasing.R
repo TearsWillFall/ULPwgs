@@ -46,7 +46,7 @@ plot_phased=function(
     geom_hline(aes(yintercept=0.75),alpha=0.5,linetype="longdash")
     p1<-p1+geom_point(size=0.1)+geom_smooth(se=FALSE)+
     scale_colour_identity()+
-    theme_bw()+scale_y_continuous(limits=c(0,1),expand=c(0,0))+
+    theme_bw()+
     facet_grid(name~"")
 
 
