@@ -24,7 +24,7 @@ plot_phased=function(
     tumours_long=tumours_wider %>% tidyr::pivot_longer(cols=!chrom:depth)
     tumours_long$gt_col=ifelse(tumours_long$gt=="1|0","blue","yellow")
     tumours_long_filt=tumours_long %>% dplyr::filter(depth>=normal_cov) %>%
-    dplyr::filter(af<=max_af_het&min_af_het>=af)%>% 
+    dplyr::filter(af<=max_af_het&min_af_het<=af)%>% 
     dplyr::arrange(pos)
 
     tumours_wider_cov=tumours %>% tidyr::pivot_wider(id_cols=c(chrom,pos),names_from=id,values_from=depth)
@@ -32,7 +32,7 @@ plot_phased=function(
     tumours_long_cov=tumours_wider_cov %>% tidyr::pivot_longer(cols=!chrom:depth)
     tumours_long_cov$gt_col=ifelse(tumours_long_cov$gt=="1|0","blue","yellow")
     tumours_long_cov_filt=tumours_long_cov %>% dplyr::filter(depth>=normal_cov) %>%
-    dplyr::filter(af<=max_af_het&min_af_het>=af) %>% 
+    dplyr::filter(af<=max_af_het&min_af_het<=af) %>% 
     dplyr::arrange(pos)
 
 
