@@ -20,7 +20,7 @@ plot_phased=function(
     tumours_long_filt=tumours_long %>% 
     dplyr::filter(depth>=normal_cov,af<=normal_af&(1-normal_af)>=af)
 
-    tumours_wider_cov=tumours %>% tidyr::pivot_wider(id_cols=c(chrom,pos),names_from=id,values_from=log2)
+    tumours_wider_cov=tumours %>% tidyr::pivot_wider(id_cols=c(chrom,pos),names_from=id,values_from=depth)
     tumours_wider_cov=dplyr::left_join(normal %>% dplyr::select(chrom,pos,ref,alt,gt,af,depth),tumours_wider)
     tumours_long_cov=tumours_wider_cov %>% tidyr::pivot_longer(cols=!chrom:depth)
     tumours_long_cov$gt_col=ifelse(tumours_long_cov$gt=="1|0","blue","yellow")
@@ -44,7 +44,7 @@ plot_phased=function(
 
 
     p2<-ggplot(tumours_long_cov_filt %>% dplyr::arrange(pos) %>% 
-    dplyr::mutate(inorder=as.numeric(as.factor(pos))),aes(inorder,value/log2,col=gt_col))
+    dplyr::mutate(inorder=as.numeric(as.factor(pos))),aes(inorder,value/depth,col=gt_col))
     p1<-p1+geom_hline(aes(yintercept=0.5),linetype="longdash")+
     geom_hline(aes(yintercept=0.25),alpha=0.5,linetype="longdash")+
     geom_hline(aes(yintercept=0.75),alpha=0.5,linetype="longdash")
