@@ -60,5 +60,5 @@ plot_phased=function(
     }
    
 
-    return(p1)
+    return(p1|p2)
 }   
