@@ -52,8 +52,8 @@ plot_phased=function(
             p2<-ggplot(tumours_long_cov_filt %>% dplyr::filter(name==id),
             aes(x=as.numeric(as.factor(pos)),y=log2(value/depth),col=gt_col))
             p2<-p2+geom_hline(aes(yintercept=0),linetype="longdash")+
-            geom_hline(aes(yintercept=c(1:3)),alpha=0.5,linetype="longdash")+
-            geom_hline(aes(yintercept=-c(1:3)),alpha=0.5,linetype="longdash")
+            geom_hline(yintercept=c(1:3),alpha=0.5,linetype="longdash")+
+            geom_hline(yintercept=-c(1:3),alpha=0.5,linetype="longdash")
 
             if(plot_type=="point"){
 
