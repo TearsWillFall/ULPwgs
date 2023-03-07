@@ -8,7 +8,7 @@ plot_phased=function(
     save=TRUE,
     format="png",
     method="single",
-    type="bar",
+    plot_type="bar",
     threads=1
 ){
     
@@ -55,7 +55,7 @@ plot_phased=function(
             geom_hline(aes(yintercept=c(1:3)),alpha=0.5,linetype="longdash")+
             geom_hline(aes(yintercept=-c(1:3)),alpha=0.5,linetype="longdash")
 
-            if(type=="point"){
+            if(plot_type=="point"){
 
                 p1<-p1+geom_point(size=0.1)+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
@@ -65,7 +65,7 @@ plot_phased=function(
                 scale_colour_identity()+
                 theme_bw()
 
-            }else if(type=="bar"){
+            }else if(plot_type=="bar"){
                 p1<-p1+geom_bar(stat="identity")+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
                 theme_bw()
@@ -139,7 +139,7 @@ plot_phased=function(
          ggsave(
              out_file,
             plot=p1|p2,height=length(tumour)*600,
-            width=2*1200,units="px"
+            width=2*1200,units="px",limitsize = FALSE
         )
        }
 
