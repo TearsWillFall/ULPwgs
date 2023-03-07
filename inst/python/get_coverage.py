@@ -15,7 +15,7 @@ def get_coverage(gpos:None,bamfile:None,output:None,force:False,id:None):
    ref="."
    alt="."
    gt="."
-   af="."
+   af=0
 
    bamfile = pysam.AlignmentFile(bam, "rb")
    if gpos!=None:
@@ -41,9 +41,9 @@ def get_coverage(gpos:None,bamfile:None,output:None,force:False,id:None):
    bTotal=baseCount["A"]+baseCount["C"]+baseCount["G"]+baseCount["T"]
    if not ref=="." and not alt==".":
       if bTotal>0:
-         af=baseCount[alt]/(baseCount[ref]+baseCount[alt])
-      else:
-         af=0
+         if (baseCount[ref]+baseCount[alt])>0:
+            af=baseCount[alt]/(baseCount[ref]+baseCount[alt])
+      
    if output!=None:
       if not os.path.exists(output) or force:
          f=open(output,"a")
