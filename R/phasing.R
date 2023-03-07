@@ -61,7 +61,7 @@ plot_phased=function(
 
                 p1<-p1+geom_point(size=0.1)+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
-                theme_bw()+scale_y_continuous(limits=c(0,1),expand=c(0,0))
+                theme_bw()+scale_y_continuous(limits=c(0,1))
 
                 p2<-p2+geom_point(size=0.1)+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
@@ -109,7 +109,7 @@ plot_phased=function(
 
                 p1<-p1+geom_point(size=0.1)+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
-                theme_bw()+scale_y_continuous(limits=c(0,1),expand=c(0,0))+
+                theme_bw()+scale_y_continuous(limits=c(0,1))+
                 facet_grid(name~"")
 
                 p2<-p2+geom_point(size=0.1)+geom_smooth(se=FALSE)+
@@ -128,8 +128,6 @@ plot_phased=function(
                 theme_bw()+facet_grid(name~"")
 
             }
-
-
 
 
 
