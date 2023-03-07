@@ -109,19 +109,16 @@ plot_phased=function(
                 scale_colour_identity()+
                 theme_bw()+scale_y_continuous(limits=c(0,1),expand=c(0,0))+facet_grid(names~"")
 
-
-
-
                 p2<-p2+geom_point(size=0.1)+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
                 theme_bw()+facet_grid(names~"")
 
 
             }else if(type=="bar"){
+
                 p1<-p1+geom_bar(stat="identity")+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
                 theme_bw()+facet_grid(names~"")
-
 
                 p2<-p2+geom_bar(stat="identity")+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
