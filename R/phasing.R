@@ -109,14 +109,15 @@ plot_phased=function(
 
                 p1<-p1+geom_point(size=0.1)+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
-                theme_bw()+scale_y_continuous(limits=c(0,1),expand=c(0,0))+facet_grid(names~"")
+                theme_bw()+scale_y_continuous(limits=c(0,1),expand=c(0,0))+
+                facet_grid(name~"")
 
                 p2<-p2+geom_point(size=0.1)+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
-                theme_bw()+facet_grid(names~"")
+                theme_bw()+facet_grid(name~"")
 
 
-            }else if(plot_type=="bar"){
+            }else if(plot_type=="segment"){
 
                 p1<-p1+geom_segment(aes(xend=as.numeric(as.factor(pos)),yend=0.5))+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
