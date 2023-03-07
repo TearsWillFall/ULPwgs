@@ -120,11 +120,11 @@ plot_phased=function(
 
                 p1<-p1+geom_segment(aes(xend=as.numeric(as.factor(pos)),yend=0.5))+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
-                theme_bw()+facet_grid(names~"")
+                theme_bw()+facet_grid(name~"")
 
                 p2<-p2+geom_segment(aes(xend=as.numeric(as.factor(pos)),yend=0.5))+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
-                theme_bw()+facet_grid(names~"")
+                theme_bw()+facet_grid(name~"")
 
             }
 
