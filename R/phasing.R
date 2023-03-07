@@ -72,7 +72,7 @@ plot_phased=function(
                 scale_colour_identity()+
                 theme_bw()
 
-                p2<-p2+geom_bar(aes(xend=as.numeric(as.factor(pos)),yend=0.5))+geom_smooth(se=FALSE)+
+                p2<-p2+geom_segment(aes(xend=as.numeric(as.factor(pos)),yend=0.5))+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
                 theme_bw()
             }
