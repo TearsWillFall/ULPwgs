@@ -17,11 +17,11 @@ plot_phased=function(
     max_af_het=het_af
     min_af_het=1-het_af
 
-    normal=read.table(normal,sep="\t",header=TRUE,stringsAsFactors=FALSE)
+    normals=read.table(normal,sep="\t",header=TRUE,stringsAsFactors=FALSE)
     tumours=lapply(tumour,read.table,sep="\t",header=TRUE,stringsAsFactors=FALSE)
     tumours=dplyr::bind_rows(tumours)
     tumours_wider=tumours %>% tidyr::pivot_wider(id_cols=c(chrom,pos),names_from=id,values_from=af)
-    tumours_wider=dplyr::left_join(normal %>% dplyr::select(chrom,pos,ref,alt,gt,af,depth),tumours_wider)
+    tumours_wider=dplyr::left_join(normals %>% dplyr::select(chrom,pos,ref,alt,gt,af,depth),tumours_wider)
     tumours_long=tumours_wider %>% tidyr::pivot_longer(cols=!chrom:depth)
     tumours_long$gt_col=ifelse(tumours_long$gt=="1|0","blue","yellow")
     tumours_long_filt=tumours_long %>% dplyr::filter(depth>=normal_cov) %>%
@@ -29,7 +29,7 @@ plot_phased=function(
     dplyr::arrange(pos)
 
     tumours_wider_cov=tumours %>% tidyr::pivot_wider(id_cols=c(chrom,pos),names_from=id,values_from=depth)
-    tumours_wider_cov=dplyr::left_join(normal %>% dplyr::select(chrom,pos,ref,alt,gt,af,depth),tumours_wider_cov)
+    tumours_wider_cov=dplyr::left_join(normals %>% dplyr::select(chrom,pos,ref,alt,gt,af,depth),tumours_wider_cov)
     tumours_long_cov=tumours_wider_cov %>% tidyr::pivot_longer(cols=!chrom:depth)
     tumours_long_cov$gt_col=ifelse(tumours_long_cov$gt=="1|0","blue","yellow")
     tumours_long_cov_filt=tumours_long_cov %>% dplyr::filter(depth>=normal_cov) %>%
@@ -60,8 +60,6 @@ plot_phased=function(
                 p1<-p1+geom_point(size=0.1)+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
                 theme_bw()+scale_y_continuous(limits=c(0,1),expand=c(0,0))
-
-
 
                 p2<-p2+geom_point(size=0.1)+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
