@@ -8,6 +8,7 @@ plot_phased=function(
     save=TRUE,
     format="png",
     method="single",
+    type="bar",
     threads=1
 ){
     
@@ -46,20 +47,36 @@ plot_phased=function(
             p1<-p1+geom_hline(aes(yintercept=0.5),linetype="longdash")+
             geom_hline(aes(yintercept=0.25),alpha=0.5,linetype="longdash")+
             geom_hline(aes(yintercept=0.75),alpha=0.5,linetype="longdash")
-            p1<-p1+geom_point(size=0.1)+geom_smooth(se=FALSE)+
-            scale_colour_identity()+
-            theme_bw()+scale_y_continuous(limits=c(0,1),expand=c(0,0))
-
+        
 
             p2<-ggplot(tumours_long_cov_filt %>% dplyr::filter(name==id),
             aes(x=as.numeric(as.factor(pos)),y=log2(value/depth),col=gt_col))
-            p2<-p2+geom_hline(aes(yintercept=0.5),linetype="longdash")+
-            geom_hline(aes(yintercept=0.25),alpha=0.5,linetype="longdash")+
-            geom_hline(aes(yintercept=0.75),alpha=0.5,linetype="longdash")
-            p2<-p2+geom_point(size=0.1)+geom_smooth(se=FALSE)+
-            scale_colour_identity()+
-            theme_bw()
+            p2<-p2+geom_hline(aes(yintercept=0),linetype="longdash")+
+            geom_hline(aes(yintercept=c(1:3)),alpha=0.5,linetype="longdash")+
+            geom_hline(aes(yintercept=-c(1:3)),alpha=0.5,linetype="longdash")
 
+            if(type=="point"){
+
+                p1<-p1+geom_point(size=0.1)+geom_smooth(se=FALSE)+
+                scale_colour_identity()+
+                theme_bw()+scale_y_continuous(limits=c(0,1),expand=c(0,0))
+
+
+
+                p2<-p2+geom_point(size=0.1)+geom_smooth(se=FALSE)+
+                scale_colour_identity()+
+                theme_bw()
+
+            }else if(type=="bar"){
+                p1<-p1+geom_bar(stat="identity")+geom_smooth(se=FALSE)+
+                scale_colour_identity()+
+                theme_bw()
+
+                p2<-p2+geom_bar(stat="identity")+geom_smooth(se=FALSE)+
+                scale_colour_identity()+
+                theme_bw()
+            }
+          
             out_file=paste0(get_file_name(id),".",format)
 
             ggsave(
@@ -80,19 +97,43 @@ plot_phased=function(
         p1<-p1+geom_hline(aes(yintercept=0.5),linetype="longdash")+
         geom_hline(aes(yintercept=0.25),alpha=0.5,linetype="longdash")+
         geom_hline(aes(yintercept=0.75),alpha=0.5,linetype="longdash")+facet_grid(names~"")
-        p1<-p1+geom_point(size=0.1)+geom_smooth(se=FALSE)+
-        scale_colour_identity()+
-        theme_bw()+scale_y_continuous(limits=c(0,1),expand=c(0,0))
-
+    
 
         p2<-ggplot(tumours_long_cov_filt,
         aes(x=as.numeric(as.factor(pos)),y=log2(value/depth),col=gt_col))
         p2<-p2+geom_hline(aes(yintercept=0.5),linetype="longdash")+
         geom_hline(aes(yintercept=0.25),alpha=0.5,linetype="longdash")+
         geom_hline(aes(yintercept=0.75),alpha=0.5,linetype="longdash")+facet_grid(names~"")
-        p2<-p2+geom_point(size=0.1)+geom_smooth(se=FALSE)+
-        scale_colour_identity()+
-        theme_bw()+facet_grid(names~"")
+      
+          if(type=="point"){
+
+                p1<-p1+geom_point(size=0.1)+geom_smooth(se=FALSE)+
+                scale_colour_identity()+
+                theme_bw()+scale_y_continuous(limits=c(0,1),expand=c(0,0))+facet_grid(names~"")
+
+
+
+
+                p2<-p2+geom_point(size=0.1)+geom_smooth(se=FALSE)+
+                scale_colour_identity()+
+                theme_bw()+facet_grid(names~"")
+
+
+            }else if(type=="bar"){
+                p1<-p1+geom_bar(stat="identity")+geom_smooth(se=FALSE)+
+                scale_colour_identity()+
+                theme_bw()+facet_grid(names~"")
+
+
+                p2<-p2+geom_bar(stat="identity")+geom_smooth(se=FALSE)+
+                scale_colour_identity()+
+                theme_bw()+facet_grid(names~"")
+
+            }
+
+
+
+
 
         out_file=paste0(get_file_name(normal),".",format)
 
