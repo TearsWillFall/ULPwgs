@@ -105,7 +105,7 @@ plot_phased=function(
         geom_hline(aes(yintercept=0.25),alpha=0.5,linetype="longdash")+
         geom_hline(aes(yintercept=0.75),alpha=0.5,linetype="longdash")+facet_grid(names~"")
       
-          if(type=="point"){
+          if(plot_type=="point"){
 
                 p1<-p1+geom_point(size=0.1)+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
@@ -116,13 +116,13 @@ plot_phased=function(
                 theme_bw()+facet_grid(names~"")
 
 
-            }else if(type=="bar"){
+            }else if(plot_type=="bar"){
 
-                p1<-p1+geom_bar(stat="identity")+geom_smooth(se=FALSE)+
+                p1<-p1+geom_segment(aes(xend=as.numeric(as.factor(pos)),yend=0.5))+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
                 theme_bw()+facet_grid(names~"")
 
-                p2<-p2+geom_bar(stat="identity")+geom_smooth(se=FALSE)+
+                p2<-p2+geom_segment(aes(xend=as.numeric(as.factor(pos)),yend=0.5))+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
                 theme_bw()+facet_grid(names~"")
 
