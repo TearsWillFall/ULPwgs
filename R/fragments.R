@@ -87,6 +87,8 @@ evaluate_tf=function(
     gpos=NULL,
     bam=NULL,
     region=1000,
+    sep="\t",
+    header=TRUE,
     ...
 ){
 

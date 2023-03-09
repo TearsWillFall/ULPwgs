@@ -79,8 +79,7 @@ read_gpos=function(
         }else if(grepl(".gpos",gpos)){
             body=read.table(file=gpos,header=header,sep=sep)[,c("chrom","pos")]
             body[,c("ref","alt","gt")]="."
-        }
-        else{
+        }else{
            stop("Not valid file format. Valid file formats are VCF/BED.") 
         }
         gpos_origin=normalizePath(gpos)
