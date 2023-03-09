@@ -17,9 +17,10 @@ plot_phased=function(
     max_af_het=het_af
     min_af_het=1-het_af
 
-    normals=read.table(normal,sep="\t",header=TRUE,stringsAsFactors=FALSE)
+    normals=lapply(normal,read.table,sep="\t",header=TRUE,stringsAsFactors=FALSE)
     tumours=lapply(tumour,read.table,sep="\t",header=TRUE,stringsAsFactors=FALSE)
-    tumours=dplyr::bind_rows(tumours)
+    normals=dplyr::bind_rows(normals) %>% arrange(gtools::mixedorder(chromosome),pos)
+    tumours=dplyr::bind_rows(tumours) %>% arrange(gtools::mixedorder(chromosome),pos)
     tumours_wider=tumours %>% tidyr::pivot_wider(id_cols=c(chrom,pos),names_from=id,values_from=af)
     tumours_wider=dplyr::left_join(normals %>% dplyr::select(chrom,pos,ref,alt,gt,af,depth),tumours_wider)
     tumours_long=tumours_wider %>% tidyr::pivot_longer(cols=!chrom:depth)
