@@ -51,7 +51,7 @@ get_coverage_tfbs=function(
                 verbose=verbose,
                 output_name=paste0(input_id,".",tfbs_id),
                 threads=threads,
-                gt=NULL,
+                gt="",
                 ram=ram,
                 executor_id=task_id
             )
@@ -74,14 +74,16 @@ get_coverage_tfbs=function(
 }
 
 
-#' Get coverage at TFBS
-#' This function calculates coverages based around gpos of TFBS
+#' Get across TF
+#' This function calculates coverages for TFBS of a single TF
 #' 
 #' 
 
 #' @param gpos File with genomic position or data.frame
 #' @param bam Path to BAM file.
 #' @param region Number of bases around the genomic position
+#' @param sep Separator
+#' @param header Header in GPOS file. Defaults TRUE
 #' @export
 
 
