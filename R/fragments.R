@@ -36,6 +36,7 @@ get_coverage_tfbs=function(
 
         tfbs_id=paste0(chrom,"_",pos)
         tfbs=data.frame(chrom=chrom,pos=(pos-region):(pos+region))
+        tfbs[,c("ref","alt","gt")]<-"."
         
         .main.step$steps<-append(
             .main.step$steps,
@@ -111,12 +112,12 @@ evaluate_tf=function(
             dplyr::filter(pos>=1000)
 
         mclapply_os(1:nrow(gpos$body),function(pos){
-                 id=paste0(gpos$body[pos,],collapse="_")
+                 id=paste0(gpos$body[pos,]$chrom,gpos$body[pos,]$pos,collapse="_")
                 .main.step$steps<-append(
                     .main.step$steps,
                     get_coverage_tfbs(
-                            chrom=gpos$body[pos,"chrom"],
-                            pos=gpos$body[pos,"pos"],
+                            chrom=gpos$body[pos,]$chrom,
+                            pos=gpos$body[pos,]$pos,
                             bam=bam,
                             region=region,
                             output_dir=paste0(out_file_dir,"/",tf),
