@@ -105,15 +105,17 @@ evaluate_tf=function(
 
         tf=ULPwgs::get_file_name(gpos)
         gpos=read_gpos(gpos=gpos,threads=threads,header=header,sep=sep) %>% 
-        dplyr::distinct() %>% 
-        dplyr::filter(pos>=1000)
 
-        mclapply_os(1:nrow(gpos),function(pos){
-                 id=paste0(gpos[pos,],collapse="_")
+        gpos$body=gpos$body %>% 
+            dplyr::distinct() %>% 
+            dplyr::filter(pos>=1000)
+
+        mclapply_os(1:nrow(gpos$body),function(pos){
+                 id=paste0(gpos$body[pos,],collapse="_")
                 .main.step$steps<-append(
                     .main.step$steps,
                     get_coverage_tfbs(
-                            gpos=gpos[pos,],
+                            gpos=gpos$body[pos,],
                             bam=bam,
                             region=region,
                             output_dir=paste0(out_file_dir,"/",tf),
