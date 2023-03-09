@@ -115,7 +115,8 @@ evaluate_tf=function(
                 .main.step$steps<-append(
                     .main.step$steps,
                     get_coverage_tfbs(
-                            gpos=gpos$body[pos,],
+                            chrom=gpos$body[pos,"chrom"],
+                            pos=gpos$body[pos,"pos"],
                             bam=bam,
                             region=region,
                             output_dir=paste0(out_file_dir,"/",tf),
