@@ -188,12 +188,12 @@ plot_phased=function(
 
 
 
-        out_file=paste0(get_file_name(normal),".",format)
+        out_file=paste0(get_file_name(normal[1]),".",format)
 
        if(save){
          ggsave(
              out_file,
-            plot=p1|p2,height=length(tumour)*600,
+            plot=p1|p2,height=length(unique(tumours$id))*600,
             width=2*1200,units="px",limitsize = FALSE
         )
        }
