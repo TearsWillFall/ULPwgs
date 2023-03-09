@@ -47,7 +47,8 @@ plot_phased=function(
             y=value,col=gt_col))
             p1<-p1+geom_hline(aes(yintercept=0.5),linetype="longdash")+
             geom_hline(aes(yintercept=0.25),alpha=0.5,linetype="longdash")+
-            geom_hline(aes(yintercept=0.75),alpha=0.5,linetype="longdash")
+            geom_hline(aes(yintercept=0.75),alpha=0.5,linetype="longdash")+
+            facet_grid(""~reorder(chromosome,gtools::mixedorder(chromosome)),space="free",scale="free_x")
         
 
             p2<-ggplot(tumours_long_cov_filt %>% dplyr::filter(name==id),
@@ -55,26 +56,55 @@ plot_phased=function(
             y=log2(value/depth),yend=0.5,col=gt_col))
             p2<-p2+geom_hline(aes(yintercept=0),linetype="longdash")+
             geom_hline(yintercept=c(1:3),alpha=0.5,linetype="longdash")+
-            geom_hline(yintercept=-c(1:3),alpha=0.5,linetype="longdash")
+            geom_hline(yintercept=-c(1:3),alpha=0.5,linetype="longdash")+
+            facet_grid(""~reorder(chromosome,gtools::mixedorder(chromosome)),space="free",scale="free_x")
 
             if(plot_type=="point"){
 
                 p1<-p1+geom_point(size=0.1)+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
-                theme_bw()+scale_y_continuous(limits=c(0,1))
+                theme_bw()+scale_y_continuous(limits=c(0,1))+
+                facet_grid(""~reorder(chromosome,gtools::mixedorder(chromosome)),space="free",scale="free_x")+
+                   facet_grid(name~"")+ theme(
+                    axis.title.x=element_blank(),
+                    panel.spacing = unit(0, "lines"),
+                    axis.text.x=element_blank(),
+                    panel.border = element_rect(colour = "black", fill=NA, size=0.1),
+                    axis.ticks.x=element_blank())
 
                 p2<-p2+geom_point(size=0.1)+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
-                theme_bw()
+                theme_bw()+
+                facet_grid(""~reorder(chromosome,gtools::mixedorder(chromosome)),space="free",scale="free_x")+
+                   facet_grid(name~"")+ theme(
+                    axis.title.x=element_blank(),
+                    panel.spacing = unit(0, "lines"),
+                    axis.text.x=element_blank(),
+                    panel.border = element_rect(colour = "black", fill=NA, size=0.1),
+                    axis.ticks.x=element_blank())
 
             }else if(plot_type=="segment"){
                 p1<-p1+geom_segment(aes(xend=as.numeric(as.factor(pos)),yend=0.5))+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
-                theme_bw()
+                theme_bw()+
+                facet_grid(""~reorder(chromosome,gtools::mixedorder(chromosome)),space="free",scale="free_x")+
+                   facet_grid(name~"")+ theme(
+                    axis.title.x=element_blank(),
+                    panel.spacing = unit(0, "lines"),
+                    axis.text.x=element_blank(),
+                    panel.border = element_rect(colour = "black", fill=NA, size=0.1),
+                    axis.ticks.x=element_blank())
 
                 p2<-p2+geom_segment(aes(xend=as.numeric(as.factor(pos)),yend=0.5))+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
-                theme_bw()
+                theme_bw()+
+                facet_grid(""~reorder(chromosome,gtools::mixedorder(chromosome)),space="free",scale="free_x")+
+                   facet_grid(name~"")+ theme(
+                    axis.title.x=element_blank(),
+                    panel.spacing = unit(0, "lines"),
+                    axis.text.x=element_blank(),
+                    panel.border = element_rect(colour = "black", fill=NA, size=0.1),
+                    axis.ticks.x=element_blank())
             }
           
             out_file=paste0(get_file_name(id),".",format)
@@ -96,36 +126,62 @@ plot_phased=function(
         aes(x=as.numeric(as.factor(pos)),y=value,col=gt_col))
         p1<-p1+geom_hline(aes(yintercept=0.5),linetype="longdash")+
         geom_hline(aes(yintercept=0.25),alpha=0.5,linetype="longdash")+
-        geom_hline(aes(yintercept=0.75),alpha=0.5,linetype="longdash")+facet_grid(names~"")
+        geom_hline(aes(yintercept=0.75),alpha=0.5,linetype="longdash")+
+        facet_grid(name~reorder(chromosome,gtools::mixedorder(chromosome)),space="free",scale="free_x")
     
 
         p2<-ggplot(tumours_long_cov_filt,
         aes(x=as.numeric(as.factor(pos)),y=log2(value/depth),col=gt_col))
         p2<-p2+geom_hline(aes(yintercept=0.5),linetype="longdash")+
         geom_hline(aes(yintercept=0.25),alpha=0.5,linetype="longdash")+
-        geom_hline(aes(yintercept=0.75),alpha=0.5,linetype="longdash")+facet_grid(names~"")
+        geom_hline(aes(yintercept=0.75),alpha=0.5,linetype="longdash")+
+        facet_grid(name~reorder(chromosome,gtools::mixedorder(chromosome)),space="free",scale="free_x")+
       
           if(plot_type=="point"){
 
                 p1<-p1+geom_point(size=0.1)+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
                 theme_bw()+scale_y_continuous(limits=c(0,1))+
-                facet_grid(name~"")
+                facet_grid(name~reorder(chromosome,gtools::mixedorder(chromosome)),space="free",scale="free_x")+ theme(
+                    axis.title.x=element_blank(),
+                    panel.spacing = unit(0, "lines"),
+                    axis.text.x=element_blank(),
+                    panel.border = element_rect(colour = "black", fill=NA, size=0.1),
+                    axis.ticks.x=element_blank())
 
                 p2<-p2+geom_point(size=0.1)+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
-                theme_bw()+facet_grid(name~"")
+                theme_bw()+facet_grid(name~reorder(chromosome,gtools::mixedorder(chromosome)),space="free",scale="free_x")+theme_classic() + theme(
+                    axis.title.x=element_blank(),
+                    panel.spacing = unit(0, "lines"),
+                    axis.text.x=element_blank(),
+                    panel.border = element_rect(colour = "black", fill=NA, size=0.1),
+                    axis.ticks.x=element_blank())
 
 
             }else if(plot_type=="segment"){
 
                 p1<-p1+geom_segment(aes(xend=as.numeric(as.factor(pos)),yend=0.5))+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
-                theme_bw()+facet_grid(name~"")
+                theme_bw()+
+                facet_grid(name~reorder(chromosome,gtools::mixedorder(chromosome)),space="free",scale="free_x")+
+                   facet_grid(name~"")+ theme(
+                    axis.title.x=element_blank(),
+                    panel.spacing = unit(0, "lines"),
+                    axis.text.x=element_blank(),
+                    panel.border = element_rect(colour = "black", fill=NA, size=0.1),
+                    axis.ticks.x=element_blank())
 
                 p2<-p2+geom_segment(aes(xend=as.numeric(as.factor(pos)),yend=0.5))+geom_smooth(se=FALSE)+
                 scale_colour_identity()+
-                theme_bw()+facet_grid(name~"")
+                theme_bw()+
+                facet_grid(name~reorder(chromosome,gtools::mixedorder(chromosome)),space="free",scale="free_x")+
+                   facet_grid(name~"")+ theme(
+                    axis.title.x=element_blank(),
+                    panel.spacing = unit(0, "lines"),
+                    axis.text.x=element_blank(),
+                    panel.border = element_rect(colour = "black", fill=NA, size=0.1),
+                    axis.ticks.x=element_blank())
 
             }
 
