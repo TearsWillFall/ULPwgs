@@ -83,10 +83,6 @@ get_coverage_tfbs=function(
 #' @export
 
 
-
-
-
-
 evaluate_tf=function(
     gpos=NULL,
     bam=NULL,
