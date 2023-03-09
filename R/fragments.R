@@ -134,7 +134,7 @@ evaluate_tf=function(
                         )
                     )
                     .this.step=.main.step$steps[[paste0("get_coverage_tfbs.",id)]]
-                    .main.step$out_files<-append(.main.step$out_files,this.step$out_files)
+                    .main.step$out_files<-append(.main.step$out_files,.this.step$out_files)
                     return()
         },mc.cores=threads)
 
