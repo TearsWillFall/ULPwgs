@@ -76,7 +76,7 @@ read_gpos=function(
         }else if (grepl(".pileup",gpos)){
             origin_file_type="pileup"
             body=read_pileup(pileup=gpos,header=header,sep=sep,rename=rename,sort=sort)[,c("chrom","pos","ref","alt","gt")]
-        }else if(grepl(".gpos")){
+        }else if(grepl(".gpos",gpos)){
             body=read.table(file=gpos,header=header,sep=sep)[,c("chrom","pos")]
             body[,c("ref","alt","gt")]="."
         }
