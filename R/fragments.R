@@ -51,6 +51,7 @@ get_coverage_tfbs=function(
                 verbose=verbose,
                 output_name=paste0(input_id,".",tfbs_id),
                 threads=threads,
+                gt=NULL,
                 ram=ram,
                 executor_id=task_id
             )
