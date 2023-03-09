@@ -76,7 +76,11 @@ read_gpos=function(
         }else if (grepl(".pileup",gpos)){
             origin_file_type="pileup"
             body=read_pileup(pileup=gpos,header=header,sep=sep,rename=rename,sort=sort)[,c("chrom","pos","ref","alt","gt")]
-        }else{
+        }else if(grepl(".gpos")){
+            body=read.table(file=gpos,header=header,sep=sep)[,c("chrom","pos")]
+            body[,c("ref","alt","gt")]="."
+        }
+        else{
            stop("Not valid file format. Valid file formats are VCF/BED.") 
         }
         gpos_origin=normalizePath(gpos)
@@ -132,6 +136,7 @@ get_coverage=function(
     bam=NULL,
     gpos=NULL,
     gt="het",
+    write=TRUE,
     ...
 ){
     
@@ -165,6 +170,11 @@ get_coverage=function(
         row.names=FALSE,
         quote=FALSE
     )
+    
+    add=""
+    if(write){
+        add=paste0(" -o ",.main$out_files)
+    }
 
     .main$exec_code=paste0(
         set_conda_envir(env_cov),
@@ -172,7 +182,7 @@ get_coverage=function(
         " -b ", bam, 
         " -g ",tmp,
         " -t ",threads,
-        " -o ",.main$out_files,
+        add,
         " -i ",input_id,
         " -f True "
     )

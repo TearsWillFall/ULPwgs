@@ -9,6 +9,7 @@ get_coverage(
   bam = NULL,
   gpos = NULL,
   gt = "het",
+  write = TRUE,
   ...
 )
 }
