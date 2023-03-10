@@ -46,6 +46,7 @@ fraction_genome_altered=function(
 
     )
     all_info=dplyr::bind_rows(all_info)
-    return(all_info)
+    
+    return(all_info %>% dplyr::arrange(gain,dplyr::desc(loss)))
 
 }
