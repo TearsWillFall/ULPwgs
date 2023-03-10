@@ -38,6 +38,7 @@ fraction_genome_altered=function(
         }
 
         )
+        info=dplur::bind_rows(info)
         return(info)
         
         
