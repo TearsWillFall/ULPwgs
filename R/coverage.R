@@ -18,16 +18,17 @@ fraction_genome_altered=function(
     
             dat_rslt=dat_tmp%>% 
                 dplyr::group_by(TYPE) %>% 
-                dplyr::summarise(N=n()) %>% dplyr::ungroup() %>% 
-                dplyr::mutate(FRACTION=N/sum(N),POS=1) %>%
-                tidyr::pivot_wider(id_cols=POS,names_from=TYPE,values_from=FRACTION)
+                dplyr::summarise(
+                    N=dplyr::n(),
+                    weight=median(weigth)
+                ) %>% 
+                dplyr::ungroup() %>% 
+                dplyr::mutate(
+                    FRACTION=N/sum(N),POS=1
+                )
 
-            rslt=data.frame(
-                gain=y,loss=x,
-                GAIN=dat_rslt$GAIN,
-                LOSS=dat_rslt$LOSS,
-                WT=dat_rslt$WT
-            )
+            dat_rslt$gain=y
+            dat_rslt$loss=x
         }
 
         )
