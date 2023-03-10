@@ -43,12 +43,17 @@ read_gpos=function(
         )
     }
 
-
+  
     ### Check if input is a file or data.frame
     if(is.null(gpos)){
         stop("Pos argument of type NULL")
     }else if (is.data.frame(gpos)){
         body=gpos
+        if(all(c("chrom","pos") %in% names(body))){
+            stop("Columns chrom and/or pos missing in data.frame")
+        }
+        body[,c("ref","alt","gt")[!c("ref","alt","gt") %in% names(body)]]="."
+        body=body %>% dplyr::select(chrom,pos,ref,alt,gt)
         origin_file_type="data.frame"
     }else if (file.exists(gpos)){
         ### Read VCF file and return body for region information

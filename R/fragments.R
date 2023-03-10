@@ -14,10 +14,8 @@
 
 
 get_coverage_tfbs=function(
-    chrom=NULL,
-    pos=NULL,
+    gpos=NULL,
     bam=NULL,
-    region=1000,
     ...
 ){
 
@@ -34,22 +32,19 @@ get_coverage_tfbs=function(
         .main$steps[[fn_id]]<-.this.env
         .main.step=.main$steps[[fn_id]]
 
-        tfbs_id=paste0(chrom,"_",pos)
-        tfbs=data.frame(chrom=chrom,pos=(pos-region):(pos+region))
-        tfbs[,c("ref","alt","gt")]<-"."
-        
+     
         .main.step$steps<-append(
             .main.step$steps,
             get_coverage(
                 bam=bam,
-                gpos=tfbs,
+                gpos=gpos,
                 output_dir=out_file_dir,
                 tmp_dir=tmp_dir,
                 env_dir=env_dir,
                 batch_dir=batch_dir,
                 err_msg=err_msg,
                 verbose=verbose,
-                output_name=paste0(input_id,".",tfbs_id),
+                output_name=input_id,
                 threads=threads,
                 gt="",
                 ram=ram,
@@ -57,7 +52,7 @@ get_coverage_tfbs=function(
             )
         )
         .this.step=.main.step$steps$get_coverage
-        .main.step$out_files$tfbs_coverage[[tfbs_id]]=.this.step$out_files$pileup
+        .main.step$out_files$tfbs_coverage[[tf]]=.this.step$out_files$pileup
 
         .env$.main<-.main
     }
@@ -114,33 +109,37 @@ evaluate_tf=function(
             dplyr::distinct() %>% 
             dplyr::filter(pos>=1000)
 
-        mclapply_os(1:nrow(gpos$body),function(pos){
-                 id=paste0(gpos$body[pos,]$chrom,gpos$body[pos,]$pos,collapse="_")
-                .main.step$steps<-append(
-                    .main.step$steps,
-                    get_coverage_tfbs(
-                            chrom=gpos$body[pos,]$chrom,
-                            pos=gpos$body[pos,]$pos,
-                            bam=bam,
-                            region=region,
-                            output_dir=paste0(out_file_dir,"/",tf),
-                            tmp_dir=tmp_dir,
-                            env_dir=env_dir,
-                            batch_dir=batch_dir,
-                            output_name=paste0(input_id,".",tf),
-                            err_msg=err_msg,
-                            verbose=verbose,
-                            threads=1,
-                            ram=ram,
-                            executor_id=task_id,
-                            fn_id=id
-                        )
-                    )
-                    .this.step=.main.step$steps[[paste0("get_coverage_tfbs.",id)]]
-                    .main.step$out_files<-append(.main.step$out_files,.this.step$out_files)
-                    return()
-        },mc.cores=threads)
+        tfbs=gpos$body %>% rowwise() %>%
+        mutate(tfbs_id=paste0(chrom,"_",pos),from=pos-1000,to=pos+1000) %>% 
+        group_by(tfbs_id) %>%
+        mutate(pos = map2(from, to, seq)) %>%
+        unnest()%>%
+        select(chrom,pos)
 
+        tfbs[,c("ref","alt","gt")]<-"."
+        
+        .main.step$steps<-append(
+            .main.step$steps,
+            get_coverage_tfbs(
+                    gpos=tfbs,
+                    bam=bam,
+                    output_dir=paste0(out_file_dir,"/",tf),
+                    tmp_dir=tmp_dir,
+                    env_dir=env_dir,
+                    batch_dir=batch_dir,
+                    output_name=paste0(input_id,".",tf),
+                    err_msg=err_msg,
+                    verbose=verbose,
+                    threads=threads,
+                    ram=ram,
+                    executor_id=task_id,
+                    fn_id=tf
+                )
+            )
+            .this.step=.main.step$steps[[paste0("get_coverage_tfbs.",tf)]]
+            .main.step$out_files<-append(.main.step$out_files,.this.step$out_files)
+       
+       
         .env$.main<-.main
     }
 

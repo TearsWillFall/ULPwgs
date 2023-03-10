@@ -1951,3 +1951,189 @@ mpileup_samtools=function(
 }
 
 
+
+
+
+
+#' Filter BAM file by size using samtools
+#'
+#'
+#' @param bam Path to the input file with the sequence.
+#' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
+#' @param mapq Mapping quality of the read to analyze. Default 60.
+#' @param mapq Flags of the reads to read. Default c(99, 147, 83, 163)
+#' @param region Genomic region to search
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param threads Number of threads. Default 3
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Job EXECUTOR ID. Default "mardupsGATK"
+#' @param task_name Name of the task. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
+#' @export
+
+
+new_get_insert_size_samtools=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam=NULL,
+  gpos=NULL,
+  mq=0,
+  flags=c(99, 147, 83, 163),
+  ...
+){
+
+
+   run_main=function(
+        .env
+    ){
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+   
+        set_main(.env=.this.env)
+
+        .main$steps[[fn_id]]<-.this.env
+        .main.step=.main$steps[[fn_id]]
+
+        fg=""
+          if(!is.null(flags)){
+            fg=paste0(" -f ",paste0(flags,collapse=","))
+          }
+
+
+        mapq=""
+        if(!is.null(mq)){
+          mapq=paste0(" -q ",mq)
+        }
+  
+  
+
+
+       
+          
+          out_files$frags=paste0(out_file_dir,"/",id,".",region,".fragments.txt")
+        }else{
+          out_file$frags=paste0(out_file_dir,"/",id,".fragments.txt")
+        }
+
+
+  exec_code=paste(bin_samtools,"view ",fg,mapq,bam,position,
+   " | awk '{
+      mot = substr($10, 1, 4);
+      fl=($9^2)^(1/2);
+      fl_count[NR] = fl;
+      fl_dist[fl] = fl_dist[fl]+1;
+      motif_dist[mot] = motif_dist[mot]+1;
+
+    }END{
+        fl_str_dist=\"\";
+        fl_median = 0;
+        fl_average = 0;
+        fl_sd = 0;
+        fl_mode= 0;
+        fl_max= 0;
+        for( fl in fl_dist ) {
+            if(fl_str_dist!=\"\"){
+              fl_str_dist = fl_str_dist\"|\"fl\":\"fl_dist[fl];
+            } else{
+              fl_str_dist = fl\":\"fl_dist[fl];
+            }
+            
+            if(fl_max<=fl_dist[fl]){
+              fl_max=fl_dist[fl];
+              fl_mode=fl;
+            }
+
+        }
+
+        motif_str_dist=\"\";
+        motif_max= 0;
+        motif_mode= 0;
+
+        for( mot in motif_dist ) {
+            if(motif_str_dist!=\"\"){
+              motif_str_dist  = motif_str_dist\"|\"mot\":\"motif_dist[mot];
+            }else{
+               motif_str_dist =mot\":\"motif_dist[mot];
+            }
+
+            if(motif_max<=motif_dist[mot]){
+              motif_max=motif_dist[mot];
+              motif_mode=mot;
+            }
+        }
+
+        if (NR > 1) {
+            if ((NR % 2) == 1) {
+                fl_median = fl_count[(NR + 1) / 2];
+                motif_median=motif_count[(NR +1)/2];
+            } else {
+                fl_median = (fl_count[NR / 2] + fl_count[(NR / 2) + 1]) / 2.0;
+        
+            }
+            fl_sum = 0;
+            for( i = 1; i <= length( fl_count ); i++ ) {
+                fl_sum += fl_count[i];
+            }
+            fl_average = fl_sum / NR
+            fl_sumsd = 0;
+            for( i = 1; i <= length( fl_count ); i++ ) {
+                fl_sumsd += (fl_count[i] - fl_average)^2;
+            }
+            fl_sd = (fl_sumsd /(NR - 1))^(1/2);
+        } else {
+            if (NR == 1) {
+                fl_median = fl_count[1];
+                fl_average = fl_count[1];
+                fl_sd = 0;
+            } else {
+                fl_median = 0;
+                fl_average = 0;
+                fl_sd = 0;
+            }
+        };
+      printf(\"ID\\tFLAGS\\tMAPQ\\tREGION\\tTOTAL\\tfl_median\\tfl_mode\\tfl_max\\tfl_average\\tfl_sd\\tmotif_mode\\tmotif_max\\tfl_str_dist\\tmotif_str_dist\\n\");
+      printf(\"",id,"\\t",paste0(flags,collapse=","),"\\t",mq,"\\t",ifelse(position=="","GENOME",position),
+      "\\t%d\\t%d\\t%d\\t%d\\t%d\\t%d\\t%s\\t%s\\t%s\\t%s\\n\", NR , fl_median, fl_mode, fl_max, fl_average , fl_sd , motif_mode , motif_max, fl_str_dist , motif_str_dist);}'> ",out_file
+  )
+
+
+  if(mode=="batch"){
+      out_file_dir2=set_dir(dir=out_file_dir,name="batch")
+      batch_code=build_job_exec(job=job,time=time,ram=ram,threads=threads,
+      output_dir=out_file_dir2,hold=hold)
+      exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
+  } 
+
+  if(verbose){
+    print_verbose(job=job,arg=argg,exec_code=exec_code)
+  }
+  error=execute_job(exec_code=exec_code)
+  if(error!=0){
+    stop("samtools failed to run due to unknown error.
+    Check std error for more information.")
+  }
+
+  job_report=build_job_report(
+    job_id=job,
+    executor_id=executor_id,
+    exec_code=exec_code, 
+    task_id=task_id,
+    input_args = argg,
+    out_file_dir=out_file_dir,
+    out_files=list(
+        frag_bam=out_file
+    )
+  )
+
+
+  if(wait&&mode=="batch"){
+      job_validator(job=job_report$job_id,
+      time=update_time,verbose=verbose,threads=threads)
+  }
+
+  return(job_report)
+
+}
