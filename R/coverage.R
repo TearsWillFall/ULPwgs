@@ -35,12 +35,12 @@ fraction_genome_altered=function(
 
             dat_rslt$gain=y
             dat_rslt$loss=x
+            return(dat_rslt)
         }
 
         )
         info=dplyr::bind_rows(info)
         return(info)
-        
         
         },mc.cores=threads
 
