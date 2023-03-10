@@ -2011,13 +2011,14 @@ new_get_insert_size_samtools=function(
   
 
 
+
        
-          
+        if(!is.null(gpos)){
           out_files$frags=paste0(out_file_dir,"/",id,".",region,".fragments.txt")
         }else{
           out_file$frags=paste0(out_file_dir,"/",id,".fragments.txt")
         }
-
+    }
 
   exec_code=paste(bin_samtools,"view ",fg,mapq,bam,position,
    " | awk '{

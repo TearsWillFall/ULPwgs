@@ -5,14 +5,14 @@
 \title{Get coverage at TFBS
 This function calculates coverages based around gpos of TFBS}
 \usage{
-get_coverage_tfbs(chrom = NULL, pos = NULL, bam = NULL, region = 1000, ...)
+get_coverage_tfbs(gpos = NULL, bam = NULL, ...)
 }
 \arguments{
+\item{bam}{Path to BAM file.}
+
 \item{chrom}{Chromosome}
 
 \item{pos}{Position}
-
-\item{bam}{Path to BAM file.}
 
 \item{region}{Number of bases around the genomic position}
 }

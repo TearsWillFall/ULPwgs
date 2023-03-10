@@ -2,10 +2,17 @@
 % Please edit documentation in R/fragments.R
 \name{evaluate_tf}
 \alias{evaluate_tf}
-\title{Get coverage at TFBS
-This function calculates coverages based around gpos of TFBS}
+\title{Get across TF
+This function calculates coverages for TFBS of a single TF}
 \usage{
-evaluate_tf(gpos = NULL, bam = NULL, region = 1000, ...)
+evaluate_tf(
+  gpos = NULL,
+  bam = NULL,
+  region = 1000,
+  sep = "\\t",
+  header = TRUE,
+  ...
+)
 }
 \arguments{
 \item{gpos}{File with genomic position or data.frame}
@@ -13,8 +20,12 @@ evaluate_tf(gpos = NULL, bam = NULL, region = 1000, ...)
 \item{bam}{Path to BAM file.}
 
 \item{region}{Number of bases around the genomic position}
+
+\item{sep}{Separator}
+
+\item{header}{Header in GPOS file. Defaults TRUE}
 }
 \description{
-Get coverage at TFBS
-This function calculates coverages based around gpos of TFBS
+Get across TF
+This function calculates coverages for TFBS of a single TF
 }
