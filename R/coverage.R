@@ -11,6 +11,7 @@ fraction_genome_altered=function(
     dat=read.table(cnr,sep="\t",header=TRUE)
     all_info=mclapply_os(loss,FUN=function(x){
         info=lapply(gain,FUN=function(y){
+            dat_tmp=dat
             dat_tmp$TYPE=ifelse(dat_tmp$log2>=y,"GAIN",
                 ifelse(dat_tmp$log2<=x,"LOSS","WT"
             ))
