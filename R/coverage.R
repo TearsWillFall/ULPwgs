@@ -21,9 +21,9 @@ fraction_genome_altered=function(
                 dplyr::summarise(
                     N=dplyr::n(),
                     N_target=length(log2[gene!="Antitarget"]),
-                    N_antitarget=length(log2[gene!="Antitarget"]),
+                    N_antitarget=length(log2[gene=="Antitarget"]),
                     weight=median(weight),
-                    weight_target=median(weight[gene=="Antitarget"]),
+                    weight_target=median(weight[gene!="Antitarget"]),
                     weight_antitarget=median(weight[gene=="Antitarget"])
                 ) %>% 
                 dplyr::ungroup() %>% 
