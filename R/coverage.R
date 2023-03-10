@@ -20,11 +20,17 @@ fraction_genome_altered=function(
                 dplyr::group_by(TYPE) %>% 
                 dplyr::summarise(
                     N=dplyr::n(),
-                    weight=median(weigth)
+                    N_target=length(log2[gene!="antitarget"]),
+                    N_antitarget=length(log2[gene=="antitarget"]),
+                    weight=median(weight),
+                    weight_target=median(weight[gene=="antitarget"]),
+                    weight_antitarget=median(weight[gene=="antitarget"])
                 ) %>% 
                 dplyr::ungroup() %>% 
                 dplyr::mutate(
-                    FRACTION=N/sum(N),POS=1
+                    FRACTION=N/sum(N),
+                    FRACTION_target=N_target/sum(N_target),
+                    FRACTION_antitarget=N_antitarget/sum(N_antitarget)
                 )
 
             dat_rslt$gain=y
