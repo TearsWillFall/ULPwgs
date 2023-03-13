@@ -113,7 +113,8 @@ evaluate_tf=function(
         dplyr::mutate(tfbs_id=paste0(chrom,"_",pos),from=pos-1000,to=pos+1000) %>% 
         dplyr::group_by(tfbs_id) %>%
         dplyr::mutate(pos = purrr::map2(from, to, seq)) %>%
-        tidyr::unnest()%>%
+        tidyr::unnest(cols=pos) %>%
+        dplyr::ungroup() %>%
         dplyr::select(chrom,pos)
 
         tfbs[,c("ref","alt","gt")]<-"."
