@@ -5,7 +5,7 @@ fraction_genome_altered=function(
     cnr=NULL,
     gain=seq(0,1,by=0.01),
     loss=seq(-1,0,by=0.01),
-    threads=1
+    ...
 ){
 
 
