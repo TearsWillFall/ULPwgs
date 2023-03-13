@@ -109,8 +109,8 @@ evaluate_tf=function(
             dplyr::distinct() %>% 
             dplyr::filter(pos>=1000)
 
-        tfbs=gpos$body %>% rowwise() %>%
-        mutate(tfbs_id=paste0(chrom,"_",pos),from=pos-1000,to=pos+1000) %>% 
+        tfbs=gpos$body %>% dplyr::rowwise() %>%
+        dplyr::mutate(tfbs_id=paste0(chrom,"_",pos),from=pos-1000,to=pos+1000) %>% 
         dplyr::group_by(tfbs_id) %>%
         dplyr::mutate(pos = map2(from, to, seq)) %>%
         tidyr::unnest()%>%
