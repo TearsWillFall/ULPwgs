@@ -49,11 +49,11 @@ read_gpos=function(
         stop("Pos argument of type NULL")
     }else if (is.data.frame(gpos)){
         body=gpos
-        if(all(c("chrom","pos") %in% names(body))){
+        if(!all(c("chrom","pos") %in% names(body))){
             stop("Columns chrom and/or pos missing in data.frame")
         }
-        body[,c("ref","alt","gt")[!c("ref","alt","gt") %in% names(body)]]="."
-        body=body %>% dplyr::select(chrom,pos,ref,alt,gt)
+        body[,c("ref","alt","gt","gid")[!c("ref","alt","gt","gid") %in% names(body)]]="."
+        body=body %>% dplyr::select(chrom,pos,ref,alt,gt,gid)
         origin_file_type="data.frame"
     }else if (file.exists(gpos)){
         ### Read VCF file and return body for region information
@@ -67,6 +67,7 @@ read_gpos=function(
             }else{
                 body=tmp$body %>% dplyr::select(CHROM,POS,REF,ALT)
                 body[,"gt"]="."
+                body[,"gid"]=paste0(body$CHROM,":",body$POS,"_",body$REF,"-",body$ALT)
             }
         }else if(grepl(".bed",gpos)){
             origin_file_type="bed"
@@ -78,12 +79,14 @@ read_gpos=function(
                 sort=sort)$body
             )
             body[,c("ref","alt","gt")]="."
+            body[,"gid"]=paste0(body$chrom,":",body$pos)
         }else if (grepl(".pileup",gpos)){
             origin_file_type="pileup"
-            body=read_pileup(pileup=gpos,header=header,sep=sep,rename=rename,sort=sort)[,c("chrom","pos","ref","alt","gt")]
+            body=read_pileup(pileup=gpos,header=header,sep=sep,rename=rename,sort=sort)[,c("chrom","pos","ref","alt","gt","gid")]
         }else if(grepl(".gpos",gpos)){
             body=read.table(file=gpos,header=header,sep=sep)[,c("chrom","pos")]
             body[,c("ref","alt","gt")]="."
+            body[,"gid"]=paste0(body$chrom,":",bodypos)
         }else{
            stop("Not valid file format. Valid file formats are VCF/BED.") 
         }
@@ -93,7 +96,7 @@ read_gpos=function(
     }
 
 
-    names(body)=c("chrom","pos","ref","alt","gt")
+    names(body)=c("chrom","pos","ref","alt","gt","gid")
 
     if(sort){
         body=sort_gpos(body)

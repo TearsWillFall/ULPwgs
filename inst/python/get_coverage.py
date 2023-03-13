@@ -15,6 +15,7 @@ def get_coverage(gpos:None,bamfile:None,output:None,force:False,id:None):
    ref="."
    alt="."
    gt="."
+   gid="."
    af=0
 
    bamfile = pysam.AlignmentFile(bam, "rb")
@@ -29,6 +30,8 @@ def get_coverage(gpos:None,bamfile:None,output:None,force:False,id:None):
             alt=gpos[3]
          if gpos[4]!=None:
             gt=gpos[4]
+         if gpos[5]!=None:
+            gid=gpos[5]
    
    cov=bamfile.count_coverage(
       contig=chr,
@@ -55,9 +58,9 @@ def get_coverage(gpos:None,bamfile:None,output:None,force:False,id:None):
          raise FileExistsError
    else:
       if id!=None:
-         print(chr,end,ref,alt,gt,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,af,id,sep="\t")
+         print(chr,end,ref,alt,gid,gt,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,af,id,sep="\t")
       else:
-         print(chr,end,ref,alt,gt,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,af,sep="\t")
+         print(chr,end,ref,alt,gid,gt,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,af,sep="\t")
  
 if __name__ == "__main__":
    bam = None
@@ -123,17 +126,17 @@ if __name__ == "__main__":
       if not os.path.exists(output) or force:
          f=open(output,"w")
          if id!=None:
-            f.write("chrom\tpos\tref\talt\tgt\tA\tC\tG\tT\tdepth\taf\tid\n")
+            f.write("chrom\tpos\tref\talt\tgt\tgid\tA\tC\tG\tT\tdepth\taf\tid\n")
          else:
-            f.write("chrom\tpos\tref\talt\tgt\tA\tC\tG\tT\tdepth\taf\n")
+            f.write("chrom\tpos\tref\talt\tgt\tgid\tA\tC\tG\tT\tdepth\taf\n")
          f.close()
       else:
          raise FileExistsError
    else:
       if id!=None:
-         print("chrom\tpos\tref\talt\tgt\tA\tC\tG\tT\tdepth\taf\tid")
+         print("chrom\tpos\tref\talt\tgt\tgid\tA\tC\tG\tT\tdepth\taf\tid")
       else:
-         print("chrom\tpos\tref\talt\tgt\tA\tC\tG\tT\tdepth\taf")
+         print("chrom\tpos\tref\talt\tgt\tgid\tA\tC\tG\tT\tdepth\taf")
 
    if jobs==1 or threads==1:
       list(map(get_coverage,gposcontent,[bam]*jobs,[output]*jobs,[True]*jobs,[id]*jobs))
