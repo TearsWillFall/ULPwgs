@@ -50,17 +50,17 @@ def get_coverage(gpos:None,bamfile:None,output:None,force:False,id:None):
       if not os.path.exists(output) or force:
          f=open(output,"a")
          if id!=None:
-            f.write("\t".join(map(str,[chr,end,ref,alt,gt,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,af,id]))+"\n")
+            f.write("\t".join(map(str,[chr,end,ref,alt,gt,gid,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,af,id]))+"\n")
          else:
-            f.write("\t".join(map(str,[chr,end,ref,alt,gt,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,af]))+"\n")
+            f.write("\t".join(map(str,[chr,end,ref,alt,gt,gid,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,af]))+"\n")
          f.close()
       else:
          raise FileExistsError
    else:
       if id!=None:
-         print(chr,end,ref,alt,gid,gt,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,af,id,sep="\t")
+         print(chr,end,ref,alt,gt,gid,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,af,id,sep="\t")
       else:
-         print(chr,end,ref,alt,gid,gt,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,af,sep="\t")
+         print(chr,end,ref,alt,gt,gid,baseCount["A"],baseCount["C"],baseCount["G"],baseCount["T"],bTotal,af,sep="\t")
  
 if __name__ == "__main__":
    bam = None

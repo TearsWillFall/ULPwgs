@@ -110,7 +110,7 @@ evaluate_tf=function(
             dplyr::filter(pos>=1000)
 
         tfbs=gpos$body %>% dplyr::rowwise() %>%
-        dplyr::mutate(gid=paste0(chrom,"_",pos),from=pos-1000,to=pos+1000) %>% 
+        dplyr::mutate(gid=paste0(chrom,":",pos),from=pos-1000,to=pos+1000) %>% 
         dplyr::group_by(gid) %>%
         dplyr::mutate(pos = purrr::map2(from, to, seq)) %>%
         tidyr::unnest(cols=pos) %>%
