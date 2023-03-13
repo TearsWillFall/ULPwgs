@@ -25,10 +25,10 @@ fraction_genome_altered=function(
                     N_antitarget=length(log2[gene=="Antitarget"]),
                     G_size=sum(width),
                     G_size_target=sum(width[gene!="Antitarget"]),
-                    G_size_antitarget=sum(width[gene!="Antitarget"]),
+                    G_size_antitarget=sum(width[gene=="Antitarget"]),
                     weight=median(weight),
-                    weight_target=median(weight[gene!="Antitarget"],na.rm=TRUE),
-                    weight_antitarget=median(weight[gene=="Antitarget"],na.rm=TRUE)
+                    weight_target=median(as.numeric(weight[gene!="Antitarget"]),na.rm=TRUE),
+                    weight_antitarget=median(as.numeric(weight[gene=="Antitarget"]),na.rm=TRUE)
                 ) %>% 
                 dplyr::ungroup() %>% 
                 dplyr::mutate(
