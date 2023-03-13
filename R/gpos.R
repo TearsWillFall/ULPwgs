@@ -86,7 +86,7 @@ read_gpos=function(
         }else if(grepl(".gpos",gpos)){
             body=read.table(file=gpos,header=header,sep=sep)[,c("chrom","pos")]
             body[,c("ref","alt","gt")]="."
-            body[,"gid"]=paste0(body$chrom,":",bodypos)
+            body[,"gid"]=paste0(body$chrom,":",body$pos)
         }else{
            stop("Not valid file format. Valid file formats are VCF/BED.") 
         }
