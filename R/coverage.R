@@ -78,6 +78,7 @@ fraction_genome_altered=function(
         all_info=all_info %>% 
             dplyr::arrange(gain,dplyr::desc(loss)) %>% 
             dplyr::filter(TYPE!="WT")
+        all_info$id=input_id
         write.table(
             all_info,
             file=.main$out_files$pga,
