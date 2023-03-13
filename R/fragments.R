@@ -111,10 +111,10 @@ evaluate_tf=function(
 
         tfbs=gpos$body %>% rowwise() %>%
         mutate(tfbs_id=paste0(chrom,"_",pos),from=pos-1000,to=pos+1000) %>% 
-        group_by(tfbs_id) %>%
-        mutate(pos = map2(from, to, seq)) %>%
-        unnest()%>%
-        select(chrom,pos)
+        dplyr::group_by(tfbs_id) %>%
+        dplyr::mutate(pos = map2(from, to, seq)) %>%
+        tidyr::unnest()%>%
+        dplyr::select(chrom,pos)
 
         tfbs[,c("ref","alt","gt")]<-"."
         

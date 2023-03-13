@@ -8,8 +8,6 @@ fraction_genome_altered=function(
     ...
 ){
 
-
-
      run_main=function(
         .env
     ){
