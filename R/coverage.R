@@ -116,7 +116,7 @@ extract_pga=function(tumour=NULL,normal=NULL){
         suffix=c(".tumour",".normal")
     )
     tumour=tumour %>% 
-        dlyr::mutate(
+        dplyr::mutate(
             FRACTION=FRACTION.tumour-FRACTION.normal,
             FRACTION_target=FRACTION_target.tumour-FRACTION_target.normal,
             FRACTION_antitarget=FRACTION_antitarget.tumour-FRACTION_antitarget.normal,
