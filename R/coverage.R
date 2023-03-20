@@ -130,14 +130,17 @@ extract_pga=function(tumour=NULL,normal=NULL){
         dplyr::mutate(BASE=FRACTION[gain==0&loss==0]) %>% 
         dplyr::filter(FRACTION==max(FRACTION)) %>% 
         dplyr::filter(loss==max(loss),gain==min(gain)) %>%
-        dplyr::select(TYPE,loss,gain,BASE,FRACTION) %>% 
+        dplyr::select(TYPE,loss,gain,
+            T_N.tumour,T_N_target.tumour,T_N_antitarget.tumour,
+            T_G_size.tumour,T_G_size_target.tumour,T_G_size_antitarget.tumour,
+            BASE,FRACTION) %>% 
         dplyr::ungroup()%>%
         dplyr::rename_with(~sub("_.*","",.x),starts_with("FRACTION")) %>%
         dplyr::mutate(PGA=sum(FRACTION),method="bin",source="all")
     bin_target=tumour %>% dplyr::group_by(TYPE)%>% 
         dplyr::mutate(BASE=FRACTION_target[gain==0&loss==0]) %>% 
         dplyr::filter(FRACTION_target==max(FRACTION_target)) %>% 
-         dplyr::filter(loss==max(loss),gain==min(gain)) %>%
+        dplyr::filter(loss==max(loss),gain==min(gain)) %>%
         dplyr::select(TYPE,loss,gain,BASE,FRACTION_target)%>% 
         dplyr::ungroup()%>%
         dplyr::rename_with(~sub("_.*","",.x),starts_with("FRACTION")) %>%
@@ -177,6 +180,7 @@ extract_pga=function(tumour=NULL,normal=NULL){
         dplyr::mutate(PGA=sum(FRACTION),method="base",source="antitarget")
 
     dat_summ=dplyr::bind_rows(bin_all,bin_target,bin_antitarget,base_all,base_target,base_antitarget)
+    dat_summ$id=unique(tumour$id.tumour)
     return(dat_summ)
 
 }
