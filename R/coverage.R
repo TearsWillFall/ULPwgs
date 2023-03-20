@@ -129,6 +129,7 @@ extract_pga=function(tumour=NULL,normal=NULL){
     bin_all=tumour %>% dplyr::group_by(TYPE) %>% 
         dplyr::mutate(BASE=FRACTION[gain==0&loss==0]) %>% 
         dplyr::filter(FRACTION==max(FRACTION)) %>% 
+        dplyr::filter(loss==max(loss),gain==min(gain)) %>%
         dplyr::select(TYPE,loss,gain,BASE,FRACTION) %>% 
         dplyr::ungroup()%>%
         dplyr::rename_with(~sub("_.*","",.x),starts_with("FRACTION")) %>%
@@ -136,20 +137,23 @@ extract_pga=function(tumour=NULL,normal=NULL){
     bin_target=tumour %>% dplyr::group_by(TYPE)%>% 
         dplyr::mutate(BASE=FRACTION_target[gain==0&loss==0]) %>% 
         dplyr::filter(FRACTION_target==max(FRACTION_target)) %>% 
+         dplyr::filter(loss==max(loss),gain==min(gain)) %>%
         dplyr::select(TYPE,loss,gain,BASE,FRACTION_target)%>% 
         dplyr::ungroup()%>%
-        dplyr::rename_with(~sub("_.*","",.x),starts_with("FRACTION"))
+        dplyr::rename_with(~sub("_.*","",.x),starts_with("FRACTION")) %>%
         dplyr::mutate(PGA=sum(FRACTION),method="bin",source="target")
     bin_antitarget=tumour %>% dplyr::group_by(TYPE)%>% 
         dplyr::mutate(BASE=FRACTION_antitarget[gain==0&loss==0]) %>% 
         dplyr::filter(FRACTION_antitarget==max(FRACTION_antitarget)) %>% 
+        dplyr::filter(loss==max(loss),gain==min(gain)) %>%
         dplyr::select(TYPE,loss,gain,BASE,FRACTION_antitarget)%>% 
         dplyr::rename_with(~sub("_.*","",.x),starts_with("FRACTION")) %>%
         dplyr::ungroup()%>%
         dplyr::mutate(PGA=sum(FRACTION),method="bin",source="antitarget")
     base_all=tumour %>% dplyr::group_by(TYPE)%>% 
         dplyr::mutate(BASE=FRACTION_genome[gain==0&loss==0]) %>% 
-        dplyr::filter(FRACTION_genome==max(FRACTION_genome))%>% 
+        dplyr::filter(FRACTION_genome==max(FRACTION_genome))%>%
+        dplyr::filter(loss==max(loss),gain==min(gain)) %>% 
         dplyr::select(TYPE,loss,gain,BASE,FRACTION_genome)%>% 
         dplyr::ungroup()%>%
         dplyr::rename_with(~sub("_.*","",.x),starts_with("FRACTION")) %>%
@@ -157,6 +161,7 @@ extract_pga=function(tumour=NULL,normal=NULL){
     base_target=tumour %>% dplyr::group_by(TYPE)%>% 
         dplyr::mutate(BASE=FRACTION_genome_target[gain==0&loss==0]) %>% 
         dplyr::filter(FRACTION_genome_target==max(FRACTION_genome_target))%>% 
+        dplyr::filter(loss==max(loss),gain==min(gain)) %>%
         dplyr::select(TYPE,loss,gain,BASE,FRACTION_genome_target)%>% 
         dplyr::ungroup()%>%
         dplyr::rename_with(~sub("_.*","",.x),starts_with("FRACTION")) %>%
@@ -164,7 +169,8 @@ extract_pga=function(tumour=NULL,normal=NULL){
     base_antitarget=tumour %>% 
         dplyr::group_by(TYPE)%>% 
         dplyr::mutate(BASE=FRACTION_genome_antitarget[gain==0&loss==0]) %>% 
-        dplyr::filter(FRACTION_genome_antitarget==max(FRACTION_genome_antitarget))%>% 
+        dplyr::filter(FRACTION_genome_antitarget==max(FRACTION_genome_antitarget))%>%
+        dplyr::filter(loss==max(loss),gain==min(gain)) %>% 
         dplyr::select(TYPE,loss,gain,BASE,FRACTION_genome_antitarget)%>% 
         dplyr::ungroup()%>%
         dplyr::rename_with(~sub("_.*","",.x),starts_with("FRACTION")) %>% 
