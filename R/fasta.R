@@ -44,15 +44,15 @@ read_fasta=function(
 
             body=mclapply_os(X=seq(1,nrow(fai$body)),FUN=function(x){
                     info=fai$body[x,]
-                    info=data.frame(
+                    dat=data.frame(
                         NAME=info$NAME,
                         OFFSET=info$OFFSET,
                         SEQ=system(
                         paste0("sed -n '/^>",
                             info$NAME," /,/^>/p' ",
-                            fasta,"| tail -n +2"),
+                            fasta,"|head -n -1|tail -n +2"),
                             intern=TRUE))
-                    return(info)
+                    return(dat)
             },mc.cores=threads)
             body=dplyr::bind_rows(body)
             origin_file_type="fasta"
