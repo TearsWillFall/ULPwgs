@@ -44,11 +44,11 @@ read_fasta=function(
 
             body=mclapply_os(X=seq(1,nrow(fai$body)),FUN=function(x){
                     info=fai$body[x,]
-                    info=data.frame(info,SEQ=unlist(system(
+                    info=data.frame(info,SEQ=system(
                         paste0("sed -n '/^>",
                             info$NAME," /,/^>/p' ",
                             fasta,"| tail -n +2"),
-                            intern=TRUE)))
+                            intern=TRUE))
                     return(info)
             },mc.cores=threads)
 
@@ -63,7 +63,7 @@ read_fasta=function(
     }
 
     if(sort){
-        body=body %>% arrange(body$OFFSET)
+        body=body %>% dplyr::arrange(body$OFFSET)
     }
 
     fasta_object=list(
