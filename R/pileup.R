@@ -28,9 +28,7 @@ read_pileup=function(
   options(scipen=999)
  
   sort_pileup=function(pileup_body=NULL){
-        return(pileup_body %>% dplyr::arrange(
-            gtools::mixedorder(gid))
-        )
+        return(pileup_body[gtools::mixedorder(pileup_body$gid),])
   }
 
     pileup_origin=NULL
