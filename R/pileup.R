@@ -26,8 +26,7 @@ read_pileup=function(
     threads=1
 ){
   options(scipen=999)
-  col_names=c("chrom","pos","ref","alt","gt","gid","A","C","G","T","depth","af","id")
-   
+ 
   sort_pileup=function(pileup_body=NULL){
         return(pileup_body %>% dplyr::arrange(
             gtools::mixedorder(gid))
@@ -56,9 +55,6 @@ read_pileup=function(
         stop("Not recognized PILEUP format")
     }
 
-    if(!header|rename){
-            names(body)[1:ncol(body)]=col_names[1:ncol(body)]
-    }
 
     if(sort){
         body=sort_pileup(body)
