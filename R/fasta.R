@@ -94,7 +94,7 @@ read_fai=function(fai=NULL,sort=TRUE){
     names(body)=c("NAME","LENGTH","OFFSET","LINEBASES","LINEWIDTH")
     
     if(sort){
-        body=body %>% arrange(OFFSET)
+        body=body %>% dplyr::arrange(OFFSET)
     }
 
     fai_object=list(
@@ -138,7 +138,7 @@ get_base_fasta=function(
       dat=mclapply_os(X=unique(gpos$body$chrom),FUN=function(x){
             tmp_gpos=gpos$body %>% dplyr::filter(chrom==x)
             tmp_fasta=fasta$body %>% dplyr::filter(NAME==x)
-            this_fai=fasta$fai %>%filter(NAME==x)
+            this_fai=fasta$fai %>% dplyr::filter(NAME==x)
             this_chrom=lapply(1:nrow(tmp_gpos),FUN=function(y){
                 this_gpos=tmp_gpos[y,]
                 this_line=as.integer(this_gpos$pos/this_fai$LINEBASES)+1
@@ -151,7 +151,7 @@ get_base_fasta=function(
             return(this_chrom)
       },mc.cores=threads)
 
-      dat=dplyr::bind_rows(dat) %>%arrange(OFFSET,pos) %>% select(-OFFSET)
+      dat=dplyr::bind_rows(dat) %>% dplyr::arrange(OFFSET,pos) %>% dplyr::select(-OFFSET)
       gpos_object=list(
             time=Sys.time(),
             fasta_origin=normalizePath(fasta),
