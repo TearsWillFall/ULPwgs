@@ -41,16 +41,19 @@ read_fasta=function(
                 fai=read_fai(paste0(fasta,".fai"))
               }
 
-
             body=mclapply_os(X=seq(1,nrow(fai$body)),FUN=function(x){
                     info=fai$body[x,]
+                    search=info$NAME
                     dat=data.frame(
                         NAME=info$NAME,
                         OFFSET=info$OFFSET,
                         SEQ=system(
                         paste0("sed -n '/^>",
-                            info$NAME," /,/^>/p' ",
-                            fasta,"|head -n -1|tail -n +2"),
+                            ifelse(
+                                is.numeric(search),
+                                paste0(search," "),
+                                search),,"/,/^>/p' ",
+                            fasta,"|egrep -v '>'"),
                             intern=TRUE))
                     return(dat)
             },mc.cores=threads)
