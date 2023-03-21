@@ -45,7 +45,7 @@ read_fasta=function(
             body=mclapply_os(X=seq(1,nrow(fai$body)),FUN=function(x){
                     info=fai$body[x,]
                     info$SEQ=system(
-                        tmp=paste0("sed '/^>",
+                        paste0("sed '/^>",
                             info$NAME,"$/,/^>/p' ",
                             fasta,"| tail -n +2"),
                             intern=TRUE)
