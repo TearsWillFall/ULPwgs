@@ -28,7 +28,7 @@ read_pileup=function(
   options(scipen=999)
   col_names=c("chrom","pos","ref","alt","A","C","T","G","depth","af","id")
    
-  sort_pileup=function(pileup=NULL){
+  sort_pileup=function(pileup_body=NULL){
         return(pileup_body %>% dplyr::arrange(
             gtools::mixedorder(chrom),pos)
         )

@@ -52,7 +52,7 @@ read_fasta=function(
                             ifelse(
                                 is.numeric(search),
                                 paste0(search," "),
-                                search),,"/,/^>/p' ",
+                                search),"/,/^>/p' ",
                             fasta,"|egrep -v '>'"),
                             intern=TRUE))
                     return(dat)
