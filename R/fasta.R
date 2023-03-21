@@ -17,7 +17,11 @@
 
 
 
-read_fasta=function(fasta=NULL,fai=NULL,sort=TRUE,threads=1){
+read_fasta=function(
+    fasta=NULL,
+    fai=NULL,
+    sort=TRUE,
+    threads=1){
    
   
     fasta_origin=NULL
@@ -31,7 +35,7 @@ read_fasta=function(fasta=NULL,fai=NULL,sort=TRUE,threads=1){
         ### Read VCF file and return body for region information
         if(grepl(".fa",fasta)){
 
-              if(fai!=NULL){
+              if(!is.null(fai)){
                 fai=read_fai(fai) 
               }else{
                 fai=read_fai(paste0(fasta,".fai"))
@@ -85,7 +89,7 @@ read_fasta=function(fasta=NULL,fai=NULL,sort=TRUE,threads=1){
 #' @export
 
 
-read_fai=function(fai,sort=TRUE){
+read_fai=function(fai=NULL,sort=TRUE){
     body=read.csv(fai,header=FALSE,sep="\t")
     names(body)=c("NAME","LENGTH","OFFSET","LINEBASES","LINEWIDTH")
     
