@@ -54,7 +54,7 @@ read_fasta=function(
                             intern=TRUE))
                     return(info)
             },mc.cores=threads)
-
+            body=dplyr::bind_rows(body)
             origin_file_type="fasta"
             fasta_origin=normalizePath(fasta)
 
