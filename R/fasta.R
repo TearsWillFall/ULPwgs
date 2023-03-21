@@ -44,7 +44,7 @@ read_fasta=function(
 
             body=mclapply_os(X=seq(1,nrow(fai$body)),FUN=function(x){
                     info=fai$body[x,]
-                    info$SEQ=system(paste0("sed '/^>",info$NAME," /,/^>/p'",fasta,"| head -n -1 | tail -n -2"),intern=TRUE)
+                    info$SEQ=system(paste0("sed '/^>",info$NAME,"/,/^>/p' ",fasta,"| head -n -1 | tail -n -2"),intern=TRUE)
                     return(info)
             },mc.cores=threads)
 
