@@ -26,7 +26,7 @@ read_pileup=function(
     threads=1
 ){
   options(scipen=999)
-  col_names=c("chrom","pos","ref","alt","A","C","T","G","depth","af","id")
+  col_names=c("chrom","pos","ref","alt","gt","gid","A","C","T","G","depth","af","id")
    
   sort_pileup=function(pileup_body=NULL){
         return(pileup_body %>% dplyr::arrange(
@@ -46,7 +46,7 @@ read_pileup=function(
                 file=pileup,sep=sep,header=header,
                 colClasses="character",nThread=threads
             )
-            origin_file_type="data.frame"
+            origin_file_type="pileup"
             
         }else{
             stop("Not valid file format. Valid file formats are PILEUP.")
