@@ -44,7 +44,7 @@ read_pileup=function(
         if(grepl(".pileup$",pileup)){
             body=data.table::fread(
                 file=pileup,sep=sep,header=header,
-                colClasses="character",nThreads=threads
+                colClasses="character",nThread=threads
             )
             origin_file_type="data.frame"
             

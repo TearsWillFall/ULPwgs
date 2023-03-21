@@ -45,7 +45,7 @@ read_fasta=function(
             body=mclapply_os(X=seq(1,nrow(fai$body)),FUN=function(x){
                     info=fai$body[x,]
                     info$SEQ=system(
-                        paste0("sed '/^>",
+                        tmp=paste0("sed '/^>",
                             info$NAME,"$/,/^>/p' ",
                             fasta,"| tail -n +2"),
                             intern=TRUE)
@@ -138,7 +138,7 @@ get_base_fasta=function(
 ){
     
       fasta=read_fasta(fasta=fasta,fai=fai,sort=sort,threads=threads)
-      gpos=read_gpos(gpos=gpos,sort=sort,header=header)
+      gpos=read_gpos(gpos=gpos,sort=sort,header=header,threads=threads)
       dat=mclapply_os(X=unique(gpos$body$chrom),FUN=function(x){
             tmp_gpos=gpos$body %>% dplyr::filter(chrom==x)
             tmp_fasta=fasta$body %>% dplyr::filter(NAME==x)
