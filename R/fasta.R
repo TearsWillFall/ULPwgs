@@ -66,7 +66,7 @@ read_fasta=function(
     }
 
     if(sort){
-        body=body %>% dplyr::arrange(body$OFFSET)
+        body=body %>% dplyr::arrange(OFFSET)
     }
 
     fasta_object=list(
