@@ -144,7 +144,7 @@ get_base_fasta=function(
 ){
     
       fasta=read_fasta(fasta=fasta,fai=fai,sort=sort,threads=threads)
-      gpos=read_gpos(gpos=gpos,sort=sort,header=header,threads=threads)
+      gpos=read_pileup(gpos=gpos,sort=sort,header=header,threads=threads)
       dat=ULPwgs::mclapply_os(X=unique(gpos$body$chrom),FUN=function(x){
             tmp_gpos=gpos$body %>% dplyr::filter(chrom==x)
             tmp_fasta=fasta$body %>% dplyr::filter(NAME==x)
