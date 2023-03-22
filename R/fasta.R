@@ -142,7 +142,7 @@ get_base_fasta=function(
       header=TRUE,
       threads=1
 ){
-    
+      fasta_origin=normalizePath(fasta)
       fasta=read_fasta(fasta=fasta,fai=fai,sort=sort,threads=threads)
       gpos=read_pileup(pileup=gpos,sort=sort,header=header,threads=threads)
       dat=ULPwgs::mclapply_os(X=unique(gpos$body$chrom),FUN=function(x){
@@ -164,7 +164,7 @@ get_base_fasta=function(
       dat=dplyr::bind_rows(dat) %>% dplyr::arrange(OFFSET,pos) %>% dplyr::select(-OFFSET)
       gpos_object=list(
             time=Sys.time(),
-            fasta_origin=normalizePath(fasta),
+            fasta_origin=fasta_origin,
             origin_file_type=gpos$origin_file_type,
             gpos_origin=gpos$gpos_origin,
             body=body
