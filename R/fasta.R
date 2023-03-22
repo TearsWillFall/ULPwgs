@@ -151,9 +151,9 @@ get_base_fasta=function(
             this_fai=fasta$fai$body %>% dplyr::filter(NAME==x)
             this_chrom=lapply(1:nrow(tmp_gpos),FUN=function(y){
                 this_gpos=tmp_gpos[y,]
-                this_line=as.integer(as.numeric(this_gpos$pos)/as.numeric(this_fai$LINEBASES))
+                this_line=floor((as.integer(as.numeric(this_gpos$pos)-1)/as.numeric(this_fai$LINEBASES)))
                 this_base=as.numeric(this_gpos$pos)-(this_line*as.numeric(this_fai$LINEBASES))
-                this_gpos$ref<-substring(tmp_fasta$SEQ[this_line],this_base,this_base)
+                this_gpos$ref<-substring(tmp_fasta$SEQ[this_line+1],this_base,this_base)
                 return(this_gpos)
             })
             this_chrom=dplyr::bind_rows(this_chrom)
