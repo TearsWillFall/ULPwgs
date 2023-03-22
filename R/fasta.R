@@ -55,6 +55,7 @@ read_fasta=function(
                                 search),"/,/^>/p' ",
                             fasta,"|egrep -v '>'"),
                             intern=TRUE))
+                    dat$line=1:nrow(dat)
                     return(dat)
             },mc.cores=threads)
             body=dplyr::bind_rows(body)
@@ -69,7 +70,7 @@ read_fasta=function(
     }
 
     if(sort){
-        body=body %>% dplyr::arrange(OFFSET)
+        body=body %>% dplyr::arrange(OFFSET,line)
     }
 
     fasta_object=list(
@@ -144,15 +145,15 @@ get_base_fasta=function(
     
       fasta=read_fasta(fasta=fasta,fai=fai,sort=sort,threads=threads)
       gpos=read_gpos(gpos=gpos,sort=sort,header=header,threads=threads)
-      dat=mclapply_os(X=unique(gpos$body$chrom),FUN=function(x){
+      dat=ULPwgs::mclapply_os(X=unique(gpos$body$chrom),FUN=function(x){
             tmp_gpos=gpos$body %>% dplyr::filter(chrom==x)
             tmp_fasta=fasta$body %>% dplyr::filter(NAME==x)
-            this_fai=fasta$fai %>% dplyr::filter(NAME==x)
+            this_fai=fasta$fai$body %>% dplyr::filter(NAME==x)
             this_chrom=lapply(1:nrow(tmp_gpos),FUN=function(y){
                 this_gpos=tmp_gpos[y,]
-                this_line=as.integer(this_gpos$pos/this_fai$LINEBASES)+1
-                this_base=this_gpos$pos-(this_line*this_fai$LINEBASES)
-                this_gpos$REF=substring(tmp_fasta$body[this_line,],this_base,this_base)
+                this_line=as.integer(as.numeric(this_gpos$pos)/as.numeric(this_fai$LINEBASES))
+                this_base=as.numeric(this_gpos$pos)-(this_line*as.numeric(this_fai$LINEBASES))
+                this_gpos$ref<-substring(tmp_fasta$SEQ[this_line],this_base,this_base)
                 return(this_gpos)
             })
             this_chrom=dplyr::bind_rows(this_chrom)
