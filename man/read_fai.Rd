@@ -4,7 +4,7 @@
 \alias{read_fai}
 \title{Read reference genome fasta index file}
 \usage{
-read_fai(fai, sort = TRUE)
+read_fai(fai = NULL, sort = TRUE)
 }
 \arguments{
 \item{fai}{PATH to FAI file.}

@@ -2138,3 +2138,113 @@ new_get_insert_size_samtools=function(
   return(job_report)
 
 }
+
+
+
+
+
+#' Sort and index a sequence file
+#' 
+#'
+#' Wrapper around index_bam_samtools and sort_bam_samtools functions
+#' 
+#' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
+#' @param bam Path to BAM file.
+#' @param read_fraction Fraction of reads to subsample.
+#' @export
+
+sample_bam_samtools=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam=NULL,
+  read_fraction=NULL,
+  ...
+){
+
+
+  run_main=function(
+    .env
+  ){
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+
+    set_main(.env=.this.env)
+
+    .main$out_files$sampled_bam<- paste0(out_file_dir,"/",input_id,".subsampled_",read_fraction,".bam")
+     .main$exec_code=paste0(
+      bin_samtools," view -b -s ",
+      read_fraction,
+      input," -@ ",
+      threads," > ",
+      .main$out_file
+    )
+
+      run_job(.env=.this.env)
+
+      .main.step=.main$steps[[fn_id]]
+      .env$.main <- .main
+    }
+
+  
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="bam"
+    )
+
+    launch(.env=.base.env)
+}
+
+
+
+#' Sort and index a sequence file
+#' 
+#'
+#' Wrapper around index_bam_samtools and sort_bam_samtools functions
+#' 
+#' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
+#' @param bam Path to BAM file.
+#' @param read_fraction Fraction of reads to subsample.
+#' @export
+
+sample_bam_samtools=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam=NULL,
+  read_fraction=NULL,
+  ...
+){
+
+
+  run_main=function(
+    .env
+  ){
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+
+    set_main(.env=.this.env)
+
+    .main$out_files$sampled_bam<- paste0(out_file_dir,"/",input_id,".subsampled_",read_fraction,".bam")
+     .main$exec_code=paste0(
+      bin_samtools," view -b -s ",
+      read_fraction,
+      input," -@ ",
+      threads," > ",
+      .main$out_file
+    )
+
+      run_job(.env=.this.env)
+
+      .main.step=.main$steps[[fn_id]]
+      .env$.main <- .main
+    }
+
+  
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="bam"
+    )
+
+    launch(.env=.base.env)
+}
