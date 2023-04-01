@@ -48,7 +48,7 @@ call_aasuite=function(
             " --cnv_bed ",cns, 
             " --bam ", bam, 
             " --cngain ",cn_gain,
-            " -o ",out_file_dir,
+            " -o ",paste0(out_file_dir,"/",input_id),
             " --cnsize_min ",cnsize_min,
             " --downsample ", downsample,
             " --AA_runmode ", AA_runmode,
