@@ -5,6 +5,7 @@ generate_pga=function(
     cnr=NULL,
     gain=seq(0,1,by=0.01),
     loss=seq(-1,0,by=0.01),
+    chr=c(1:22,"X"),
     ...
 ){
 
@@ -25,6 +26,7 @@ generate_pga=function(
         all_info=mclapply_os(loss,FUN=function(x){
             info=lapply(gain,FUN=function(y){
                 dat_tmp=dat
+                dat_tmp$ch
                 dat_tmp$width=dat_tmp$end-dat_tmp$start
                 dat_tmp$TYPE=ifelse(dat_tmp$log2>=y,"GAIN",
                     ifelse(dat_tmp$log2<=x,"LOSS","WT"
