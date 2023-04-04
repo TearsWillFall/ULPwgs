@@ -43,9 +43,11 @@ ploidy_from_cnr=function(cnr=NULL,chrom=c(1:22)){
     cnr$bin_type=ifelse(cnr$gene=="Antitarget","Antitarget","Target")
     cnr$bin_depth=ifelse(
         cnr$bin_type=="Antitarget",
-        20000,
-        1000
+        sum(cnr[cnr$bin_type=="Target"]$depth)/
+        sum(cnr[cnr$bin_type=="Antitarget"]$depth),
+        1
     )
+
     cnr$bin_weight=cnr$width/cnr$bin_depth*cnr$weight
     cnr$weighted_log2=cnr$bin_weight*cnr$log2
     cnr_target=cnr %>% dplyr::filter(!grepl("Antitarget",gene))
