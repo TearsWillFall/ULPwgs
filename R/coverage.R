@@ -20,68 +20,8 @@ generate_pga=function(
         .main.step=.main$steps[[fn_id]]
 
         .main$out_files$pga=paste0(out_file_dir,"/",input_id,".pga")
-        dat=read.table(input,sep="\t",header=TRUE)
-        
-    
-        all_info=mclapply_os(loss,FUN=function(x){
-            info=lapply(gain,FUN=function(y){
-                dat_tmp=dat
-                dat_tmp=dat_tmp[dat_tmp$chromosome %in% chr,]
-                dat_tmp$width=dat_tmp$end-dat_tmp$start
-                dat_tmp$bin_type=ifelse(grepl("Antitarget",dat_tmp$gene),"Anitarget","Target")
-                dat_tmp$bin=ifelse(dat_tmp$bin_type=="Target",1000,0.1)
-                dat_tmp$log2_weight=dat_tmp$width*dat_tmp$log2
-                dat_tmp$TYPE=ifelse(dat_tmp$log2>=y,"GAIN",
-                    ifelse(dat_tmp$log2<=x,"LOSS","WT"
-                ))
-        
-                dat_rslt=dat_tmp%>% 
-                    dplyr::group_by(TYPE) %>% 
-                    dplyr::summarise(
-                        N=dplyr::n(),
-                        N_target=length(log2[gene!="Antitarget"]),
-                        N_antitarget=length(log2[gene=="Antitarget"]),
-                        G_size=sum(width),
-                        G_size_target=sum(width[gene!="Antitarget"]),
-                        G_size_antitarget=sum(width[gene=="Antitarget"]),
-                        Weight=median(weight),
-                        Weight_target=median(as.numeric(weight[gene!="Antitarget"]),na.rm=TRUE),
-                        Weight_antitarget=median(as.numeric(weight[gene=="Antitarget"]),na.rm=TRUE)
-                    ) %>% 
-                    dplyr::ungroup() %>% 
-                    dplyr::mutate(
-                        FRACTION=N/sum(N),
-                        FRACTION_target=N_target/sum(N_target),
-                        FRACTION_antitarget=N_antitarget/sum(N_antitarget),
-                        FRACTION_genome=G_size/sum(G_size),
-                        FRACTION_genome_target=G_size_target/sum(G_size_target),
-                        FRACTION_genome_antitarget=G_size_antitarget/sum(G_size_antitarget),
-                        T_N=sum(N),
-                        T_N_target=sum(N_target),
-                        T_N_antitarget=sum(N_antitarget),
-                        T_G_size=sum(G_size),
-                        T_G_size_target=sum(G_size_target),
-                        T_G_size_antitarget=sum(G_size_antitarget)
-                    )
+        all_info=calculate_pga(cnr=cnr,gain=gain,loss=loss,chrom=chrom)
 
-                dat_rslt$gain=y
-                dat_rslt$loss=x
-                return(dat_rslt)
-            }
-
-            )
-            info=dplyr::bind_rows(info)
-            return(info)
-            
-            },mc.cores=threads
-
-        )
-        all_info=dplyr::bind_rows(all_info)
-        
-        all_info=all_info %>% 
-            dplyr::arrange(gain,dplyr::desc(loss)) %>% 
-            dplyr::filter(TYPE!="WT")
-        all_info$id=input_id
         write.table(
             all_info,
             file=.main$out_files$pga,
@@ -104,6 +44,87 @@ generate_pga=function(
     launch(.env=.base.env)
 
 
+
+}
+
+#' @export
+
+
+calculate_pga=function(
+    cnr=NULL,
+    gain=seq(0,1,by=0.01),
+    loss=seq(-1,0,by=0.01),
+    chrom=c(1:22)
+){
+
+    dat=read.table(input,sep="\t",header=TRUE)
+    all_info=mclapply_os(loss,FUN=function(x){
+        info=lapply(gain,FUN=function(y){
+            dat_tmp=dat
+            dat_tmp=dat_tmp[dat_tmp$chromosome %in% chr,]
+            ploidy=ploidy_from_cnr(cnr=dat_tmp)
+            dat_tmp$width=dat_tmp$end-dat_tmp$start
+            dat_tmp$bin_type=ifelse(
+                grepl("Antitarget",dat_tmp$gene),
+                "Anitarget","Target"
+            )
+            dat_tmp$log2_corr=dat_tmp$log2*ploidy$ploidy_all
+            dat_tmp$TYPE=ifelse(dat_tmp$log2_corr>=y,"GAIN",
+                ifelse(dat_tmp$log2_corr<=x,"LOSS","WT"
+            ))
+    
+            dat_rslt=dat_tmp%>% 
+                dplyr::group_by(TYPE) %>% 
+                dplyr::summarise(
+                    N=dplyr::n(),
+                    N_target=length(log2_corr[bin_type=="Target"]),
+                    N_antitarget=length(log2_corr[bin_type=="Antitarget"]),
+                    G_size=sum(width),
+                    G_size_target=sum(width[bin_type=="Target"]),
+                    G_size_antitarget=sum(width[bin_type=="Antitarget"]),
+                    Weight=median(weight),
+                    Weight_target=median(as.numeric(weight[bin_type=="Target"]),na.rm=TRUE),
+                    Weight_antitarget=median(as.numeric(weight[bin_type=="Antitarget"]),na.rm=TRUE)
+                ) %>% 
+                dplyr::ungroup() %>% 
+                dplyr::mutate(
+                    FRACTION=N/sum(N),
+                    FRACTION_target=N_target/sum(N_target),
+                    FRACTION_antitarget=N_antitarget/sum(N_antitarget),
+                    FRACTION_genome=G_size/sum(G_size),
+                    FRACTION_genome_target=G_size_target/sum(G_size_target),
+                    FRACTION_genome_antitarget=G_size_antitarget/sum(G_size_antitarget),
+                    T_N=sum(N),
+                    T_N_target=sum(N_target),
+                    T_N_antitarget=sum(N_antitarget),
+                    T_G_size=sum(G_size),
+                    T_G_size_target=sum(G_size_target),
+                    T_G_size_antitarget=sum(G_size_antitarget)
+                )
+
+            dat_rslt$gain=y
+            dat_rslt$loss=x
+            return(dat_rslt)
+        }
+
+        )
+        info=dplyr::bind_rows(info)
+        return(info)
+        
+        },mc.cores=threads
+
+    )
+    all_info=dplyr::bind_rows(all_info)
+    all_info$ploidy_all=ploidy$ploid_all
+    all_info$ploidy_target=ploidy$ploidy_target
+    all_info$ploidy_antitarget=ploidy$ploidy_antitarget
+    
+    all_info=all_info %>% 
+        dplyr::arrange(gain,dplyr::desc(loss)) %>% 
+        dplyr::filter(TYPE!="WT")
+    all_info$id=input_id
+
+    return(all_info)
 
 }
 
