@@ -41,14 +41,18 @@ ploidy_from_cnr=function(cnr=NULL,chrom=c(1:22)){
     cnr=cnr[cnr$chromosome %in% chrom,]
     cnr$width=as.numeric(cnr$end)-as.numeric(cnr$start)
     cnr$bin_type=ifelse(cnr$gene=="Antitarget","Antitarget","Target")
-    cnr$bin_type_weight=ifelse(cnr$bin_type=="Antitarget",sum(cnr[cnr$bin_type=="Antitarget",]$depth)/sum(cnr[cnr$bin_type=="Target",]$depth),1)
+    cnr$bin_depth_weight=ifelse(
+        cnr$bin_type=="Antitarget",
+        sum(cnr[cnr$bin_type=="Antitarget",]$depth)/sum(cnr[cnr$bin_type=="Target",]$depth),
+        1
+    )
     cnr$weighted_log2=cnr$width*cnr$log2*cnr$weight*cnr$bin_type_weight
     cnr_target=cnr %>% dplyr::filter(!grepl("Antitarget",gene))
     cnr_antitarget=cnr %>% dplyr::filter(grepl("Antitarget",gene))
     sol=data.frame(
-        ploidy_all=(sum(cnr$width)/sum(cnr$weighted_log2))/2,
-        ploidy_target=(sum(cnr_target$width)/sum(cnr_target$weighted_log2))/2,
-        ploidy_antitarget=(sum(cnr_antitarget$width)/sum(cnr_antitarget$weighted_log2))/2
+        ploidy_all=(sum(cnr$width)/sum(cnr$weight)/sum(bin_type_weight)/sum(cnr$weighted_log2))/2,
+        ploidy_target=(sum(cnr$width)/sum(cnr$weight)/sum(bin_type_weight)/sum(cnr_target$weighted_log2))/2,
+        ploidy_antitarget=(sum(cnr$width)/sum(cnr$weight)/sum(bin_type_weight)/sum(cnr_antitarget$weighted_log2))/2
     )
     return(sol)
 }
