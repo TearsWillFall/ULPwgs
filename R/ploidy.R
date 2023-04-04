@@ -48,7 +48,7 @@ ploidy_from_cnr=function(cnr=NULL,chrom=c(1:22)){
         1
     )
 
-    cnr$bin_weight=cnr$width/cnr$bin_depth*cnr$weight
+    cnr$bin_weight=cnr$width/cnr$bin_depth
     cnr$weighted_log2=cnr$bin_weight*cnr$log2
     cnr_target=cnr %>% dplyr::filter(!grepl("Antitarget",gene))
     cnr_antitarget=cnr %>% dplyr::filter(grepl("Antitarget",gene))
