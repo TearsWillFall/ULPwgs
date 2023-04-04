@@ -41,11 +41,10 @@ ploidy_from_cnr=function(cnr=NULL,chrom=c(1:22)){
     cnr=cnr[cnr$chromosome %in% chrom,]
     cnr$width=as.numeric(cnr$end)-as.numeric(cnr$start)
     cnr$bin_type=ifelse(cnr$gene=="Antitarget","Antitarget","Target")
-    off_vs_tg=sum(cnr[cnr$bin_type=="Antitarget",]$depth)/sum(cnr[cnr$bin_type=="Target",]$depth)
     cnr$bin_depth_weight=ifelse(
         cnr$bin_type=="Antitarget",
-        off_vs_tg,
-        1
+        sum(cnr[cnr$bin_type=="Antitarget",]$depth),
+        sum(cnr[cnr$bin_type=="Target",]$depth)
     )
     cnr$bin_weight=cnr$width/cnr$bin_depth_weight*cnr$weight
     cnr$weighted_log2=cnr$bin_weight*cnr$log2
