@@ -43,8 +43,8 @@ ploidy_from_cnr=function(cnr=NULL,chrom=c(1:22)){
     cnr$bin_type=ifelse(cnr$gene=="Antitarget","Antitarget","Target")
     cnr$bin_depth=ifelse(
         cnr$bin_type=="Antitarget",
-        sum(cnr[cnr$bin_type=="Target"]$depth)/
-        sum(cnr[cnr$bin_type=="Antitarget"]$depth),
+        sum(cnr[cnr$bin_type=="Target",]$depth)/
+        sum(cnr[cnr$bin_type=="Antitarget",]$depth),
         1
     )
 
