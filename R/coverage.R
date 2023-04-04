@@ -3,8 +3,8 @@
 
 generate_pga=function(
     cnr=NULL,
-    gain=seq(0,1,by=0.1),
-    loss=seq(-1,0,by=0.1),
+    gain=seq(0,1,by=0.01),
+    loss=seq(-1,0,by=0.01),
     chrom=c(1:22),
     ...
 ){
