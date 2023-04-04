@@ -20,7 +20,7 @@ generate_pga=function(
         .main.step=.main$steps[[fn_id]]
 
         .main$out_files$pga=paste0(out_file_dir,"/",input_id,".pga")
-        all_info=calculate_pga(cnr=cnr,gain=gain,loss=loss,chrom=chrom)
+        all_info=calculate_pga(cnr=input,id=input_id,gain=gain,loss=loss,chrom=chrom,threads=threads)
 
         write.table(
             all_info,
@@ -52,17 +52,19 @@ generate_pga=function(
 
 calculate_pga=function(
     cnr=NULL,
+    id=NULL,
     gain=seq(0,1,by=0.01),
     loss=seq(-1,0,by=0.01),
-    chrom=c(1:22)
+    chrom=c(1:22),
+    threads=1
 ){
 
-    dat=read.table(input,sep="\t",header=TRUE)
+    dat=read.table(cnr,sep="\t",header=TRUE)
     all_info=mclapply_os(loss,FUN=function(x){
         info=lapply(gain,FUN=function(y){
             dat_tmp=dat
-            dat_tmp=dat_tmp[dat_tmp$chromosome %in% chr,]
-            ploidy=ploidy_from_cnr(cnr=dat_tmp)
+            dat_tmp=dat_tmp[dat_tmp$chromosome %in% chrom,]
+            ploidy=ploidy_from_cnr(cnr=dat_tmp,chrom=chrom)
             dat_tmp$width=dat_tmp$end-dat_tmp$start
             dat_tmp$bin_type=ifelse(
                 grepl("Antitarget",dat_tmp$gene),
@@ -122,7 +124,7 @@ calculate_pga=function(
     all_info=all_info %>% 
         dplyr::arrange(gain,dplyr::desc(loss)) %>% 
         dplyr::filter(TYPE!="WT")
-    all_info$id=input_id
+    all_info$id=id
 
     return(all_info)
 
