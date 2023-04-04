@@ -74,9 +74,14 @@ calculate_pga=function(
                 "Antitarget","Target"
             )
             dat_tmp$log2_corr=dat_tmp$log2+ploidy$ploidy_all
-            dat_tmp$TYPE=ifelse(dat_tmp$log2_corr>=y,"GAIN",
+            dat_tmp$TYPE_CORR=ifelse(dat_tmp$log2_corr>=y,"GAIN",
                 ifelse(dat_tmp$log2_corr<=x,"LOSS","WT"
             ))
+
+            dat_tmp$TYPE=ifelse(dat_tmp$log2>=y,"GAIN",
+                ifelse(dat_tmp$log2<=x,"LOSS","WT"
+            ))
+    
     
             dat_rslt=dat_tmp%>% 
                 dplyr::group_by(TYPE) %>% 
@@ -120,7 +125,7 @@ calculate_pga=function(
 
     )
     all_info=dplyr::bind_rows(all_info)
-    all_info$ploidy_all=ploidy$ploid_all
+    all_info$ploidy_all=ploidy$ploidy_all
     all_info$ploidy_target=ploidy$ploidy_target
     all_info$ploidy_antitarget=ploidy$ploidy_antitarget
     
