@@ -73,7 +73,7 @@ calculate_pga=function(
                 grepl("Antitarget",dat_tmp$gene),
                 "Antitarget","Target"
             )
-            dat_tmp$log2_corr=dat_tmp$log2*ploidy$ploidy_all
+            dat_tmp$log2_corr=dat_tmp$log2+ploidy$ploidy_all
             dat_tmp$TYPE=ifelse(dat_tmp$log2_corr>=y,"GAIN",
                 ifelse(dat_tmp$log2_corr<=x,"LOSS","WT"
             ))
