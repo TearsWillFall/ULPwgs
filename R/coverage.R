@@ -5,7 +5,7 @@ generate_pga=function(
     cnr=NULL,
     gain=seq(0,1,by=0.01),
     loss=seq(-1,0,by=0.01),
-    chr=c(1:22,"X"),
+    chrom=c(1:22),
     ...
 ){
 
@@ -26,8 +26,11 @@ generate_pga=function(
         all_info=mclapply_os(loss,FUN=function(x){
             info=lapply(gain,FUN=function(y){
                 dat_tmp=dat
-                dat_tmp$ch
+                dat_tmp=dat_tmp[dat_tmp$chromosome %in% chr,]
                 dat_tmp$width=dat_tmp$end-dat_tmp$start
+                dat_tmp$bin_type=ifelse(grepl("Antitarget",dat_tmp$gene),"Anitarget","Target")
+                dat_tmp$bin=ifelse(dat_tmp$bin_type=="Target",1000,0.1)
+                dat_tmp$log2_weight=dat_tmp$width*dat_tmp$log2
                 dat_tmp$TYPE=ifelse(dat_tmp$log2>=y,"GAIN",
                     ifelse(dat_tmp$log2<=x,"LOSS","WT"
                 ))
