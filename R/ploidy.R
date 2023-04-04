@@ -11,13 +11,10 @@
 ploidy_from_cns=function(cns=NULL,chrom=c(1:22)){
     cns=cns[cns$chromosome %in% chrom,]
     cns$width=as.numeric(cns$end)-as.numeric(cns$start)
-    cns$weighted_log2=cns$width*cns$log2*cns$weight/cns$probes
-    cns_target=cns %>% dplyr::filter(!grepl("Antitarget",gene))
-    cns_antitarget=cns %>% dplyr::filter(grepl("Antitarget",gene))
+    cns$seg_weight=cns$width*cns$weight/cns$probes
+    cns$weighted_log2=cns$seg_weight*cns$log2
     sol=data.frame(
-        ploidy_all=(sum(cns$width)/sum(cns$weighted_log2))/2,
-        ploidy_target=(sum(cns_target$width)/sum(cns_target$weighted_log2))/2,
-        ploidy_antitarget=(sum(cns_antitarget$width)/sum(cns_antitarget$weighted_log2))/2
+        ploidy_all=(sum(cns$weighted_log2)/sum(cns$width))/2
     )
     return(sol)
 }
