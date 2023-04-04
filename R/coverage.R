@@ -73,9 +73,9 @@ calculate_pga=function(
                 grepl("Antitarget",dat_tmp$gene),
                 "Antitarget","Target"
             )
-            dat_tmp$log2_corr=dat_tmp$log2+ploidy$ploidy_all
-            dat_tmp$TYPE=ifelse(dat_tmp$log2_corr>=y,"GAIN",
-                ifelse(dat_tmp$log2_corr<=x,"LOSS","WT"
+            dat_tmp$log2=dat_tmp$log2
+            dat_tmp$TYPE=ifelse(dat_tmp$log2>=y,"GAIN",
+                ifelse(dat_tmp$log2<=x,"LOSS","WT"
             ))
 
 
@@ -83,8 +83,8 @@ calculate_pga=function(
                 dplyr::group_by(TYPE) %>% 
                 dplyr::summarise(
                     N=dplyr::n(),
-                    N_target=length(log2_corr[bin_type=="Target"]),
-                    N_antitarget=length(log2_corr[bin_type=="Antitarget"]),
+                    N_target=length(log2[bin_type=="Target"]),
+                    N_antitarget=length(log2[bin_type=="Antitarget"]),
                     G_size=sum(width),
                     G_size_target=sum(width[bin_type=="Target"]),
                     G_size_antitarget=sum(width[bin_type=="Antitarget"]),
