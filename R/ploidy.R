@@ -53,7 +53,7 @@ ploidy_from_cnr=function(cnr=NULL,chrom=c(1:22)){
     cnr_target=cnr %>% dplyr::filter(!grepl("Antitarget",gene))
     cnr_antitarget=cnr %>% dplyr::filter(grepl("Antitarget",gene))
     sol=data.frame(
-        ploidy_all=(/sum(cnr$weighted_log2)/sum(cnr$bin_weight))/2,
+        ploidy_all=(sum(cnr$weighted_log2)/sum(cnr$bin_weight))/2,
         ploidy_target=(sum(cnr_target$weighted_log2)/sum(cnr$bin_weight))/2,
         ploidy_antitarget=(sum(cnr_antitarget$weighted_log2)/sum(cnr$bin_weight))/2
     )
