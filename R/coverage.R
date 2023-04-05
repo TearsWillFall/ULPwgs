@@ -156,78 +156,181 @@ extract_pga=function(tumour=NULL,normal=NULL){
             FRACTION_genome=FRACTION_genome.tumour-FRACTION_genome.normal,
             FRACTION_genome_target=FRACTION_genome_target.tumour-FRACTION_genome_target.normal,
             FRACTION_genome_antitarget=FRACTION_genome_antitarget.tumour-FRACTION_genome_antitarget.normal
-    )
+    ) %>% 
+    dplyr::group_by(TYPE) %>%
+    dplyr::mutate(
+        corrFRACTION=FRACTION[gain==0&loss==0],
+        corrFRACTION_target=FRACTION_target[gain==0&loss==0],
+        corrFRACTION_antitarget=FRACTION_antitarget[gain==0&loss==0],
+        corrFRACTION_genome=FRACTION_genome[gain==0&loss==0],
+        corrFRACTION_genome_target=FRACTION_genome_target[gain==0&loss==0],
+        corrFRACTION_genome_antitarget=FRACTION_genome_antitarget[gain==0&loss==0]
+    ) %>% dplyr::ungroup() %>%
+        dplyr::mutate(
+            fcorrFRACTION=FRACTION-corrFRACTION,
+            fcorrFRACTION_target=FRACTION_target-corrFRACTION_target,
+            fcorrFRACTION_antitarget=FRACTION_antitarget-corrFRACTION_antitarget,
+            fcorrFRACTION_genome=FRACTION_genome-corrFRACTION_genome,
+            fcorrFRACTION_genome_target=FRACTION_genome_target-corrFRACTION_genome_target,
+            fcorrFRACTION_genome_antitarget=FRACTION_genome_antitarget-corrFRACTION_genome_antitarget
+        ) %>%dplyr::group_by(id.tumour,loss,gain) %>%
+         dplyr::mutate(
+            sumfcorrFRACTION=sum(fcorrFRACTION),
+            sumfcorrFRACTION_target=sum(fcorrFRACTION_target),
+            sumfcorrFRACTION_antitarget=sum(fcorrFRACTION_antitarget),
+            sumfcorrFRACTION_genome=sum(fcorrFRACTION_genome),
+            sumfcorrFRACTION_genome_target=sum(fcorrFRACTION_genome_target),
+            sumfcorrFRACTION_genome_antitarget=sum(fcorrFRACTION_genome_antitarget)
+        )
 
-    bin_all=tumour %>% dplyr::group_by(TYPE) %>% 
-        dplyr::mutate(BASE=FRACTION[gain==0&loss==0]) %>% 
-        dplyr::filter(FRACTION==max(FRACTION)) %>% 
-        dplyr::filter(loss==max(loss),gain==min(gain)) %>%
-        dplyr::select(TYPE,loss,gain,
-            T_N.tumour,T_N_target.tumour,T_N_antitarget.tumour,
-            T_G_size.tumour,T_G_size_target.tumour,T_G_size_antitarget.tumour,
-            BASE,FRACTION) %>% 
-        dplyr::ungroup()%>%
-        dplyr::rename_with(~sub("_.*","",.x),starts_with("FRACTION")) %>%
-        dplyr::mutate(PGA=sum(FRACTION),method="bin",source="all")
-    bin_target=tumour %>% dplyr::group_by(TYPE)%>% 
-        dplyr::mutate(BASE=FRACTION_target[gain==0&loss==0]) %>% 
-        dplyr::filter(FRACTION_target==max(FRACTION_target)) %>% 
-        dplyr::filter(loss==max(loss),gain==min(gain)) %>%
-        dplyr::select(TYPE,loss,gain,
-            T_N.tumour,T_N_target.tumour,T_N_antitarget.tumour,
-            T_G_size.tumour,T_G_size_target.tumour,T_G_size_antitarget.tumour,
-            BASE,FRACTION) %>% 
-        dplyr::ungroup()%>%
-        dplyr::rename_with(~sub("_.*","",.x),starts_with("FRACTION")) %>%
-        dplyr::mutate(PGA=sum(FRACTION),method="bin",source="target")
-    bin_antitarget=tumour %>% dplyr::group_by(TYPE)%>% 
-        dplyr::mutate(BASE=FRACTION_antitarget[gain==0&loss==0]) %>% 
-        dplyr::filter(FRACTION_antitarget==max(FRACTION_antitarget)) %>% 
-        dplyr::filter(loss==max(loss),gain==min(gain)) %>%
-        dplyr::select(TYPE,loss,gain,
-            T_N.tumour,T_N_target.tumour,T_N_antitarget.tumour,
-            T_G_size.tumour,T_G_size_target.tumour,T_G_size_antitarget.tumour,
-            BASE,FRACTION) %>% 
-        dplyr::rename_with(~sub("_.*","",.x),starts_with("FRACTION")) %>%
-        dplyr::ungroup()%>%
-        dplyr::mutate(PGA=sum(FRACTION),method="bin",source="antitarget")
-    base_all=tumour %>% dplyr::group_by(TYPE)%>% 
-        dplyr::mutate(BASE=FRACTION_genome[gain==0&loss==0]) %>% 
-        dplyr::filter(FRACTION_genome==max(FRACTION_genome))%>%
-        dplyr::filter(loss==max(loss),gain==min(gain)) %>% 
-        dplyr::select(TYPE,loss,gain,
-            T_N.tumour,T_N_target.tumour,T_N_antitarget.tumour,
-            T_G_size.tumour,T_G_size_target.tumour,T_G_size_antitarget.tumour,
-            BASE,FRACTION) %>% 
-        dplyr::ungroup()%>%
-        dplyr::rename_with(~sub("_.*","",.x),starts_with("FRACTION")) %>%
-        dplyr::mutate(PGA=sum(FRACTION),method="base",source="all")
-    base_target=tumour %>% dplyr::group_by(TYPE)%>% 
-        dplyr::mutate(BASE=FRACTION_genome_target[gain==0&loss==0]) %>% 
-        dplyr::filter(FRACTION_genome_target==max(FRACTION_genome_target))%>% 
-        dplyr::filter(loss==max(loss),gain==min(gain)) %>%
-        dplyr::select(TYPE,loss,gain,
-            T_N.tumour,T_N_target.tumour,T_N_antitarget.tumour,
-            T_G_size.tumour,T_G_size_target.tumour,T_G_size_antitarget.tumour,
-            BASE,FRACTION) %>% 
-        dplyr::ungroup()%>%
-        dplyr::rename_with(~sub("_.*","",.x),starts_with("FRACTION")) %>%
-        dplyr::mutate(PGA=sum(FRACTION),method="base",source="target")
-    base_antitarget=tumour %>% 
-        dplyr::group_by(TYPE)%>% 
-        dplyr::mutate(BASE=FRACTION_genome_antitarget[gain==0&loss==0]) %>% 
-        dplyr::filter(FRACTION_genome_antitarget==max(FRACTION_genome_antitarget))%>%
-        dplyr::filter(loss==max(loss),gain==min(gain)) %>% 
-        dplyr::select(TYPE,loss,gain,
-            T_N.tumour,T_N_target.tumour,T_N_antitarget.tumour,
-            T_G_size.tumour,T_G_size_target.tumour,T_G_size_antitarget.tumour,
-            BASE,FRACTION) %>%  
-        dplyr::ungroup()%>%
-        dplyr::rename_with(~sub("_.*","",.x),starts_with("FRACTION")) %>% 
-        dplyr::mutate(PGA=sum(FRACTION),method="base",source="antitarget")
 
+
+
+
+
+
+
+
+    bin_all=tumour %>%dplyr::ungroup() %>%
+        dplyr::filter(sumfcorrFRACTION==max(sumfcorrFRACTION)) %>%
+        dplyr::select(
+            TYPE,
+            loss,
+            gain,
+            T_N.tumour,
+            T_N_target.tumour,
+            T_N_antitarget.tumour,
+            T_G_size.tumour,
+            T_G_size_target.tumour,
+            T_G_size_antitarget.tumour,
+            FRACTION,
+            corrFRACTION,
+            fcorrFRACTION,
+            sumfcorrFRACTION
+        ) %>% 
+        dplyr::mutate(method="bin",source="all") %>%
+        dplyr::rename(PGA=sumfcorrFRACTION)
+    bin_target=tumour %>%dplyr::ungroup() %>%
+        dplyr::filter(sumfcorrFRACTION_target==max(sumfcorrFRACTION_target)) %>%
+        dplyr::select(
+            TYPE,
+            loss,
+            gain,
+            T_N.tumour,
+            T_N_target.tumour,
+            T_N_antitarget.tumour,
+            T_G_size.tumour,
+            T_G_size_target.tumour,
+            T_G_size_antitarget.tumour,
+            FRACTION_target,
+            corrFRACTION_target,
+            fcorrFRACTION_target,
+            sumfcorrFRACTION_target
+        ) %>% 
+        dplyr::mutate(method="bin",source="target") %>%
+        dplyr::rename(
+            PGA=sumfcorrFRACTION_target,
+            FRACTION=FRACTION_target,
+            corrFRACTION=corrFRACTION_target,
+            fcorrFRACTION=fcorrFRACTION_target
+        )
+    bin_antitarget=tumour %>%dplyr::ungroup() %>%
+        dplyr::filter(sumfcorrFRACTION_antitarget==max(sumfcorrFRACTION_antitarget)) %>%
+        dplyr::select(
+            TYPE,
+            loss,
+            gain,
+            T_N.tumour,
+            T_N_target.tumour,
+            T_N_antitarget.tumour,
+            T_G_size.tumour,
+            T_G_size_target.tumour,
+            T_G_size_antitarget.tumour,
+            FRACTION_antitarget,
+            corrFRACTION_antitarget,
+            fcorrFRACTION_antitarget,
+            sumfcorrFRACTION_antitarget
+        ) %>% 
+        dplyr::mutate(method="bin",source="antitarget") %>%
+        dplyr::rename(
+            PGA=sumfcorrFRACTION_antitarget,
+            FRACTION=FRACTION_antitarget,
+            corrFRACTION=corrFRACTION_antitarget,
+            fcorrFRACTION=fcorrFRACTION_antitarget
+        )
+    base_all=tumour %>%dplyr::ungroup() %>%
+        dplyr::filter(sumfcorrFRACTION_genome==max(sumfcorrFRACTION_genome)) %>%
+        dplyr::select(
+            TYPE,
+            loss,
+            gain,
+            T_N.tumour,
+            T_N_target.tumour,
+            T_N_antitarget.tumour,
+            T_G_size.tumour,
+            T_G_size_target.tumour,
+            T_G_size_antitarget.tumour,
+            FRACTION_genome,
+            corrFRACTION_genome,
+            fcorrFRACTION_genome,
+            sumfcorrFRACTION_genome
+        ) %>% 
+        dplyr::mutate(method="base",source="all") %>%
+        dplyr::rename(
+            PGA=sumfcorrFRACTION_genome,
+            FRACTION=FRACTION_genome,
+            corrFRACTION=corrFRACTION_genome,
+            fcorrFRACTION=fcorrFRACTION_genome
+        )
+    base_target=tumour %>%dplyr::ungroup() %>%
+        dplyr::filter(sumfcorrFRACTION_genome_target==max(sumfcorrFRACTION_genome_target)) %>%
+        dplyr::select(
+            TYPE,
+            loss,
+            gain,
+            T_N.tumour,
+            T_N_target.tumour,
+            T_N_antitarget.tumour,
+            T_G_size.tumour,
+            T_G_size_target.tumour,
+            T_G_size_antitarget.tumour,
+            FRACTION_genome_target,
+            corrFRACTION_genome_target,
+            fcorrFRACTION_genome_target,
+            sumfcorrFRACTION_genome_target
+        ) %>% 
+        dplyr::mutate(method="base",source="target") %>%
+        dplyr::rename(
+            PGA=sumfcorrFRACTION_genome_target,
+            FRACTION=FRACTION_genome_target,
+            corrFRACTION=corrFRACTION_genome_target,
+            fcorrFRACTION=fcorrFRACTION_genome_target
+        )
+    base_antitarget=tumour %>%dplyr::ungroup() %>%
+        dplyr::filter(sumfcorrFRACTION_genome_antitarget==max(sumfcorrFRACTION_genome_antitarget)) %>%
+        dplyr::select(
+            TYPE,
+            loss,
+            gain,
+            T_N.tumour,
+            T_N_target.tumour,
+            T_N_antitarget.tumour,
+            T_G_size.tumour,
+            T_G_size_target.tumour,
+            T_G_size_antitarget.tumour,
+            FRACTION_genome_antitarget,
+            corrFRACTION_genome_antitarget,
+            fcorrFRACTION_genome_antitarget,
+            sumfcorrFRACTION_genome_antitarget
+        ) %>% 
+        dplyr::mutate(method="base",source="antitarget") %>%
+        dplyr::rename(
+            PGA=sumfcorrFRACTION_genome_antitarget,
+            FRACTION=FRACTION_genome_antitarget,
+            corrFRACTION=corrFRACTION_genome_antitarget,
+            fcorrFRACTION=fcorrFRACTION_genome_antitarget
+        )
     dat_summ=dplyr::bind_rows(bin_all,bin_target,bin_antitarget,base_all,base_target,base_antitarget)
-    dat_summ$id=unique(tumour$id.tumour)
     return(dat_summ)
 
 }
