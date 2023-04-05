@@ -193,9 +193,8 @@ extract_pga=function(tumour=NULL,normal=NULL){
 
 
     bin_all=tumour %>%dplyr::ungroup() %>%
-        dplyr::filter(sumfcorrFRACTION==max(sumfcorrFRACTION),
-            sle==min(sle)
-        ) %>%
+        dplyr::filter(sumfcorrFRACTION==max(sumfcorrFRACTION)) %>%
+        dplyr::filter(sle==min(sle)) %>%
         dplyr::select(
             TYPE,
             loss,
@@ -214,7 +213,8 @@ extract_pga=function(tumour=NULL,normal=NULL){
         dplyr::mutate(method="bin",source="all") %>%
         dplyr::rename(PGA=sumfcorrFRACTION)
     bin_target=tumour %>%dplyr::ungroup() %>%
-        dplyr::filter(sumfcorrFRACTION_target==max(sumfcorrFRACTION_target),sle==min(sle)) %>%
+        dplyr::filter(sumfcorrFRACTION_target==max(sumfcorrFRACTION_target)) %>%
+        dplyr::filter(sle==min(sle)) %>%
         dplyr::select(
             TYPE,
             loss,
@@ -238,7 +238,8 @@ extract_pga=function(tumour=NULL,normal=NULL){
             fcorrFRACTION=fcorrFRACTION_target
         )
     bin_antitarget=tumour %>%dplyr::ungroup() %>%
-        dplyr::filter(sumfcorrFRACTION_antitarget==max(sumfcorrFRACTION_antitarget),sle==min(sle)) %>%
+        dplyr::filter(sumfcorrFRACTION_antitarget==max(sumfcorrFRACTION_antitarget)) %>%
+        dplyr::filter(sle==min(sle))%>%
         dplyr::select(
             TYPE,
             loss,
@@ -262,7 +263,8 @@ extract_pga=function(tumour=NULL,normal=NULL){
             fcorrFRACTION=fcorrFRACTION_antitarget
         )
     base_all=tumour %>%dplyr::ungroup() %>%
-        dplyr::filter(sumfcorrFRACTION_genome==max(sumfcorrFRACTION_genome),sle==min(sle)) %>%
+        dplyr::filter(sumfcorrFRACTION_genome==max(sumfcorrFRACTION_genome)) %>%
+          dplyr::filter(sle==min(sle)) %>%
         dplyr::select(
             TYPE,
             loss,
@@ -286,7 +288,8 @@ extract_pga=function(tumour=NULL,normal=NULL){
             fcorrFRACTION=fcorrFRACTION_genome
         )
     base_target=tumour %>%dplyr::ungroup() %>%
-        dplyr::filter(sumfcorrFRACTION_genome_target==max(sumfcorrFRACTION_genome_target),sle==min(sle)) %>%
+        dplyr::filter(sumfcorrFRACTION_genome_target==max(sumfcorrFRACTION_genome_target)) %>%
+        dplyr::filter(sle==min(sle)) %>%
         dplyr::select(
             TYPE,
             loss,
@@ -310,7 +313,8 @@ extract_pga=function(tumour=NULL,normal=NULL){
             fcorrFRACTION=fcorrFRACTION_genome_target
         )
     base_antitarget=tumour %>%dplyr::ungroup() %>%
-        dplyr::filter(sumfcorrFRACTION_genome_antitarget==max(sumfcorrFRACTION_genome_antitarget),sle==min(sle)) %>%
+        dplyr::filter(sumfcorrFRACTION_genome_antitarget==max(sumfcorrFRACTION_genome_antitarget)) %>%
+        dplyr::filter(sle==min(sle)) %>%
         dplyr::select(
             TYPE,
             loss,
