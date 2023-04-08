@@ -203,7 +203,7 @@ calculate_pga_cns=function(
 ){
 
 
-    dat=read.table(cnr,sep="\t",header=TRUE)
+    dat=read.table(cns,sep="\t",header=TRUE)
     dat=dat[dat$chromosome %in% chrom,]
     ploidy=ploidy_from_cns(cns=dat,chrom=chrom)
     all_info=mclapply_os(loss,FUN=function(x){
