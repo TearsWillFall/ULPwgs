@@ -1,7 +1,7 @@
 
 #' @export
 
-generate_pga=function(
+generate_pga_cnr=function(
     cnr=NULL,
     gain=seq(0,1,by=0.01),
     loss=seq(-1,0,by=0.01),
@@ -20,7 +20,7 @@ generate_pga=function(
         .main.step=.main$steps[[fn_id]]
 
         .main$out_files$pga=paste0(out_file_dir,"/",input_id,".pga")
-        all_info=calculate_pga(cnr=input,id=input_id,gain=gain,loss=loss,chrom=chrom,threads=threads)
+        all_info=calculate_pga_cnr(cnr=input,id=input_id,gain=gain,loss=loss,chrom=chrom,threads=threads)
 
         write.table(
             all_info,
@@ -47,10 +47,64 @@ generate_pga=function(
 
 }
 
+
+
+
+
+
+#' @export
+
+generate_pga_cns=function(
+    cns=NULL,
+    gain=seq(0,1,by=0.01),
+    loss=seq(-1,0,by=0.01),
+    chrom=c(1:22),
+    ...
+){
+
+     run_main=function(
+        .env
+    ){
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+   
+        set_main(.env=.this.env)
+        .main$steps[[fn_id]]<-.this.env
+        .main.step=.main$steps[[fn_id]]
+
+        .main$out_files$pga=paste0(out_file_dir,"/",input_id,".pga")
+        all_info=calculate_pga_cns(cns=input,id=input_id,gain=gain,loss=loss,chrom=chrom,threads=threads)
+
+        write.table(
+            all_info,
+            file=.main$out_files$pga,
+            sep="\t",
+            col.names=TRUE,
+            row.names=FALSE,
+            quote=FALSE
+        )
+
+        .env$.main <- .main
+    }
+
+     .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+        .env= .base.env,
+        vars="cns"
+    )
+
+    launch(.env=.base.env)
+
+
+
+}
+
+
 #' @export
 
 
-calculate_pga=function(
+calculate_pga_cnr=function(
     cnr=NULL,
     id=NULL,
     gain=seq(0,1,by=0.1),
@@ -66,8 +120,7 @@ calculate_pga=function(
     all_info=mclapply_os(loss,FUN=function(x){
         info=lapply(gain,FUN=function(y){
             dat_tmp=dat
-           
-    
+
             dat_tmp$width=dat_tmp$end-dat_tmp$start
             dat_tmp$bin_type=ifelse(
                 grepl("Antitarget",dat_tmp$gene),
@@ -136,6 +189,78 @@ calculate_pga=function(
 
 
 
+
+#' @export
+
+
+calculate_pga_cns=function(
+    cns=NULL,
+    id=NULL,
+    gain=seq(0,1,by=0.1),
+    loss=seq(-1,0,by=0.1),
+    chrom=c(1:22),
+    threads=1
+){
+
+
+    dat=read.table(cnr,sep="\t",header=TRUE)
+    dat=dat[dat$chromosome %in% chrom,]
+    ploidy=ploidy_from_cns(cns=dat,chrom=chrom)
+    all_info=mclapply_os(loss,FUN=function(x){
+        info=lapply(gain,FUN=function(y){
+            dat_tmp=dat
+
+            dat_tmp$width=dat_tmp$end-dat_tmp$start
+            dat_tmp$TYPE=ifelse(dat_tmp$log2>=y,"GAIN",
+                ifelse(dat_tmp$log2<=x,"LOSS","WT"
+            ))
+
+
+            dat_rslt=dat_tmp%>% 
+                dplyr::group_by(TYPE) %>% 
+                dplyr::summarise(
+                    N=dplyr::n(),
+                    G_size=sum(width),
+                    Weight=median(weight/probes)
+                ) %>% 
+                dplyr::ungroup() %>% 
+                dplyr::mutate(
+                    FRACTION_corr=N*Weight/sum(N*Weight),
+                    FRACTION=N/sum(N),
+                    FRACTION_genome_corr=G_size*Weight/sum(G_size*Weight),
+                    FRACTION_genome=G_size/sum(G_size),
+                    T_N_corr=sum(N*Weight),
+                    T_N=sum(N),
+                    T_G_size_corr=sum(G_size*Weight),
+                    T_G_size=sum(G_size)
+                )
+
+            dat_rslt$gain=y
+            dat_rslt$loss=x
+            return(dat_rslt)
+        }
+
+        )
+        info=dplyr::bind_rows(info)
+        return(info)
+        
+        },mc.cores=threads
+
+    )
+    all_info=dplyr::bind_rows(all_info)
+    all_info$ploidy_all=ploidy$ploidy_all
+    all_info=all_info %>% 
+        dplyr::arrange(gain,dplyr::desc(loss)) %>% 
+        dplyr::filter(TYPE!="WT")
+    all_info$id=id
+
+    return(all_info)
+
+}
+
+
+
+
 #' @export
 
 extract_pga=function(tumour=NULL,normal=NULL){
@@ -183,14 +308,6 @@ extract_pga=function(tumour=NULL,normal=NULL){
             sumfcorrFRACTION_genome_target=sum(fcorrFRACTION_genome_target),
             sumfcorrFRACTION_genome_antitarget=sum(fcorrFRACTION_genome_antitarget)
         )
-
-
-
-
-
-
-
-
 
     bin_all=tumour %>%dplyr::ungroup() %>%
         dplyr::filter(sumfcorrFRACTION==max(sumfcorrFRACTION)) %>%
