@@ -205,4 +205,128 @@ plot_phased=function(
 
    
    
-}   
+}  
+
+
+#' @export
+
+extract_het_pileup=function(
+    tumour=NULL,
+    normal=NULL,
+    normal_cov=20,
+    het_af=0.6,
+    min_ai=0.1,
+    threads=1,
+    best_cov=1000
+){
+
+    max_af_het=het_af
+    min_af_het=1-het_af
+
+    normals=ULPwgs::mclapply_os(normal,function(x){read.table(x,sep="\t",header=TRUE,stringsAsFactors=FALSE)},mc.cores=threads)
+    tumours=ULPwgs::mclapply_os(tumour,function(x){read.table(x,sep="\t",header=TRUE,stringsAsFactors=FALSE)},mc.cores=threads)
+    normals=dplyr::bind_rows(normals)
+    normals$gid=paste0(normals$chr,":",normals$pos,"_",normals$ref,"_",normals$alt)
+    tumours=dplyr::bind_rows(tumours)
+    tumours$gid=paste0(tumours$chr,":",tumours$pos,"_",tumours$ref,"_",tumours$alt)
+    tumours$id=sub("TRAILS_TR..._","",sub("_BULK.*","",tumours$id))
+    n_normals=length(unique(normals$id))
+    tumours=dplyr::left_join(
+        normals %>% 
+        dplyr::filter(af>=min_af_het&af<=max_af_het,depth>=normal_cov) %>% 
+        dplyr::group_by(gid) %>% 
+        dplyr::mutate(N=n())%>%
+        dplyr::filter(N==n_normals)%>%
+        dplyr::ungroup()%>%
+        dplyr::select(gid) %>%
+        dplyr::distinct(),
+        tumours,
+        by=c("gid"),
+        multiple = "all"
+        )
+    tumours=tumours %>%
+        dplyr::group_by(id) %>%
+        dplyr::mutate(
+            depth_id=mean(depth)) %>%
+        dplyr::ungroup()%>%
+        dplyr::mutate(
+            weight=depth_id/best_cov)%>%
+        dplyr::group_by(id) %>%
+        dplyr::mutate(
+            BAF=0.5-af,
+            aBAF=abs(0.5-af)
+        )
+
+    segmentation=ULPwgs::mclapply_os(unique(tumours$id),function(y){
+        segmentation=lapply(unique(tumours$chrom),FUN=function(x){
+            tumours_tmp=tumours %>% 
+                dplyr::ungroup() %>% 
+                dplyr::filter(chrom==x,id==y) %>% 
+                dplyr::arrange(pos)
+            seg=segment(CNA(tumours_tmp$aBAF, tumours_tmp$chrom, tumours_tmp$pos))
+            tmp=cbind(seg$output,seg$segRows)
+            tmp=tmp[-c(1:2)]
+            merged=lapply(1:nrow(tmp),FUN=function(z){
+                cbind(tumours_tmp[tmp[z,]$startRow:tmp[z,]$endRow,],tmp[z,])
+
+        })
+        
+        return(merged)
+    
+    })
+    segmentation=dplyr::bind_rows(segmentation)
+
+    },mc.cores=threads)
+
+    segmentation=dplyr::bind_rows(segmentation)
+    
+
+    
+    segmentation=segmentation %>% 
+        dplyr::rowwise()%>%
+        dplyr::mutate(
+            ai=ifelse(seg.mean>min_ai,1,0))%>%
+        dplyr::group_by(gid) %>%
+        dplyr::mutate(maxBAF=BAF[which.max(seg.mean)],
+                    maxID=id[which.max(seg.mean)],
+                    refAI=ai[which.max(seg.mean)]
+        ) %>% dplyr::ungroup()
+
+    ref=segmentation %>% dplyr::filter(id==maxID)
+    ref$id="Reference"
+    segmentation=rbind(segmentation,ref) 
+  
+
+    segmentation=segmentation %>% dplyr::rowwise()%>%
+        dplyr::mutate(
+            class=ifelse(maxBAF>0,"yellow",
+                ifelse((maxBAF<0),"blue","grey")),
+            obs_class=ifelse(ai==1&BAF>0,"yellow",
+                ifelse(ai==1&BAF<0,"blue","grey"))
+        )%>% dplyr::mutate(
+            switch=ifelse(
+                class=="yellow"&obs_class=="blue",1,
+                ifelse(class=="blue"&obs_class=="yellow",1,0)),
+            ref=ifelse(id==maxID,1,0)
+        ) %>% dplyr::group_by(id) %>% 
+        dplyr::mutate(
+            n_snps_with_switch=sum(switch),
+            f_switch_id=sum(switch)/n(),
+            n_snps_with_ai=sum(ai),
+            f_switch_id_ai=ifelse(sum(ai)==0,0,sum(switch)/sum(ai))
+        
+            )%>% 
+        dplyr::group_by(gid) %>% 
+        dplyr::mutate(
+            n_samples_with_switch=sum(switch),
+            f_switch_gid=sum(switch)/n(),
+            n_samples_with_ai=sum(ai),
+            f_switch_gid_ai=ifelse(sum(ai)==0,0,sum(switch)/sum(ai))
+        )
+
+    segmentation= segmentation  %>% 
+    dplyr::ungroup() %>% 
+    dplyr::arrange(id,chrom,pos) %>% 
+    dplyr::mutate(gid=forcats::fct_inorder(gid))
+}
+

@@ -622,3 +622,67 @@ job=build_job(executor_id=executor_id,task_id=task_id)
   return(job_report)
 }
 
+
+
+
+
+#' Generate BAM Insert Size Metrics
+#'
+#'
+#' @param bam Path to the input file with the sequence.
+#' @param bin_picard Path to bwa executable. Default path tools/samtools/samtools.
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param ram RAM memory to use in GB. Default 4.
+#' @param tmp_dir Path to TMP directory. Default .
+#' @param executor_id [OPTIONAL] Task executor name. Default "recalCovariates"
+#' @param task_name [OPTIONAL] Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+new_insertsize_metrics_bam_picard=function(
+  bin_picard=build_default_tool_binary_list()$bin_picard,
+  bam=NULL,
+  deviations=0,
+  ...
+){
+ run_main=function(
+    .env
+  ){
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+
+    set_main(.env=.this.env)
+  
+    .main$out_files$insert_size=paste0(out_file_dir,"/",input_id,".picard_insert_size.txt")
+    .main$out_files$pdf=paste0(out_file_dir,"/",input_id,".picard_insert_size.pdf")
+    .main$exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",
+        bin_picard," CollectInsertSizeMetrics ","VALIDATION_STRINGENCY=SILENT I=",
+        input," O=",.main$out_files$pdf," H=",.main$out_files$insert_size,
+      " TMP_DIR=",tmp_dir, " DEVIATIONS=",deviations)
+
+ 
+
+    run_job(.env=.this.env)
+
+    .main.step=.main$steps[[fn_id]]
+
+    .env$.main <- .main
+  }
+
+  .base.env=environment()
+  list2env(list(...),envir=.base.env)
+  set_env_vars(
+    .env= .base.env,
+    vars="bam"
+  )
+ 
+   launch(.env=.base.env)
+
+
+
+}
+
