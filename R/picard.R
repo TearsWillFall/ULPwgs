@@ -647,6 +647,7 @@ new_insertsize_metrics_bam_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bam=NULL,
   deviations=0,
+  min_width=NULL,
   width=NULL,
   ...
 ){
@@ -659,7 +660,12 @@ new_insertsize_metrics_bam_picard=function(
     set_main(.env=.this.env)
 
     if(!is.null(width)){
-        width=paste0(" HISTOGRAM_WIDTH=",width)
+        width=paste0(" W=",width)
+    }
+
+
+    if(!is.null(min_width)){
+        min_width=paste0(" MW=",min_width)
     }
   
     .main$out_files$insert_size=paste0(out_file_dir,"/",input_id,".picard_insert_size.txt")
@@ -667,7 +673,7 @@ new_insertsize_metrics_bam_picard=function(
     .main$exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",
         bin_picard," CollectInsertSizeMetrics ","VALIDATION_STRINGENCY=SILENT I=",
         input," O=",.main$out_files$insert_size," H=",.main$out_files$pdf,
-      " TMP_DIR=",tmp_dir, " DEVIATIONS=",deviations,width)
+      " TMP_DIR=",tmp_dir, " DEVIATIONS=",deviations,width,min_width)
 
  
 
