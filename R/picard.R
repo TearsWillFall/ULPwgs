@@ -651,9 +651,13 @@ new_insertsize_metrics_bam_picard=function(
   width=NULL,
   ...
 ){
+
+
+
  run_main=function(
     .env
   ){
+    options(scipen=999)
     .this.env=environment()
     append_env(to=.this.env,from=.env)
 
