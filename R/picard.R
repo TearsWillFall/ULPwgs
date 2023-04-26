@@ -701,3 +701,51 @@ new_insertsize_metrics_bam_picard=function(
 
 }
 
+
+#' Extract Histogram and Metric Information from Picard Summary File
+#'
+#'
+#' @param summary Path to Picard summary file
+#' @export
+
+parse_summary_picard=function(
+  summary=NULL,
+  ...
+  ){
+
+  run_main=function(
+    .env
+  ){
+    options(scipen=999)
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+
+    set_main(.env=.this.env)
+
+    .main$out_files$histogram=paste0(out_file_dir,"/",input_id,".histogram.txt")
+    .main$out_files$metrics=paste0(out_file_dir,"/",input_id,".metrics.txt")
+    .main$exec_code=paste0(
+      "awk -v RS= \"{if(NR==2) {out=\\\"",out_file_metrics,
+      "\\\"} else if(NR==3){ out=\\\"",
+    .main$out_files$histogram,
+    "\\\"}; if (NR>1)  print > (out)}\" ",input
+    )
+
+    run_job(.env=.this.env)
+
+    .main.step=.main$steps[[fn_id]]
+
+    .env$.main <- .main
+  }
+  
+  .base.env=environment()
+  list2env(list(...),envir=.base.env)
+  set_env_vars(
+    .env= .base.env,
+    vars="summary"
+  )
+
+  launch(.env=.base.env)
+
+}
+
