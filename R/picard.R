@@ -724,7 +724,7 @@ parse_summary_picard=function(
     .main$out_files$histogram=paste0(out_file_dir,"/",input_id,".histogram.txt")
     .main$out_files$metrics=paste0(out_file_dir,"/",input_id,".metrics.txt")
     .main$exec_code=paste0(
-      "awk -v RS= \"{if(NR==2) {out=\\\"",out_file_metrics,
+      "awk -v RS= \"{if(NR==2) {out=\\\"",.main$out_files$metrics,
       "\\\"} else if(NR==3){ out=\\\"",
     .main$out_files$histogram,
     "\\\"}; if (NR>1)  print > (out)}\" ",input
