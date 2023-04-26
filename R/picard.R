@@ -698,7 +698,6 @@ new_insertsize_metrics_bam_picard=function(
    launch(.env=.base.env)
 
 
-
 }
 
 
