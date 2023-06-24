@@ -621,7 +621,7 @@ build_default_nf_list=function(
 #' @export
 
 
-build_default_licenses_list=function(
+build_default_license_list=function(
     licenses=list(
         dir="/lustre/home/regmova/lic",
         licenses=
