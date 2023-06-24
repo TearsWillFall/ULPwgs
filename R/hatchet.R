@@ -46,9 +46,11 @@ run_hatchet=function(
             if(!is.null(threads)){
                 writeLines(paste0("processes = ",threads), connection)
             }
+
             writeLines(paste0("chromosomes = ",chromosomes), connection)
-            writeLines(paste0("bam = ",paste0(bam,collapse="\t")), connection)
-            writeLines(paste0("sample = ",paste0(Vectorize(get_file_name)(bam),collapse="\t")), connection)
+            writeLines(paste0("bams = ",paste0(bam,collapse="\t")), connection)
+            writeLines(paste0("samples = ",paste0(Vectorize(get_file_name)(bam),collapse="\t")), connection)
+            writeLines(paste0("output = ",out_file_dir, connection))
 
             writeLines("", connection)
 
