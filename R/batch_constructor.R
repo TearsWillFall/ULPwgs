@@ -635,8 +635,9 @@ set_env_vars=function(
     }
 
     n_inputs <- 1
+    inputs<-NULL
     inputs_id <- output_name
-    inputs_ext <-NULL
+    inputs_ext <- NULL
 
 
     if(!is.null(vars)){
@@ -823,7 +824,7 @@ set_main_env=function(.env){
    
     .this.env=environment()
     append_env(to=.this.env,from=.env)
-    lapply(
+      lapply(
         1:n_inputs,
         function(n,.env){
           .this.env=environment()
@@ -850,7 +851,8 @@ set_main_env=function(.env){
           .env$main.envs[[n]]<-.this.env
         },
         .env=.this.env
-    )
+      )
+    
   .env$main.envs<-main.envs
 }
 
