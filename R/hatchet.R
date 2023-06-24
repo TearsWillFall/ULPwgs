@@ -1,14 +1,16 @@
 #' Preprocess sequencing data
 #' 
 #'
-#' @param bam Path to a single or multiple BAM files
+#' @param tumour Path to a single or multiple BAM files
+#' @param normal Path to a normal matched BAM file
 #' @param chromosomes Select chromosomes to analyze. Default NULL
 #' @param env_hatchet Hatchet conda enviroment
 #' @param config Hatchet configuration for each step
 #' @export
 
 run_hatchet=function(
-    bam=NULL,
+    tumour=NULL,
+    normal=NULL,
     chromosomes=NULL,
     env_hatchet=build_default_python_enviroment_list()$env_hatchet,
     config=build_default_hatchet_config(),
@@ -30,10 +32,7 @@ run_hatchet=function(
         )
 
         build_ini_hatchet=function(
-            config_file=NULL,
-            threads=NULL,
-            chromosomes=NULL,
-            config=NULL
+            config_file=NULL
         ){
             connection<-file(config_file, "w")
             writeLines("[run]", connection)
@@ -49,8 +48,9 @@ run_hatchet=function(
             }
 
             writeLines(paste0("chromosomes = ",chromosomes), connection)
-            writeLines(paste0("bams = ",paste0(bam,collapse="\t")), connection)
-            writeLines(paste0("samples = ",paste0(Vectorize(get_file_name)(bam),collapse="\t")), connection)
+            writeLines(paste0("normal = ",normal), connection)
+            writeLines(paste0("bams = ",paste0(tumour,collapse="\t")), connection)
+            writeLines(paste0("samples = ",paste0(Vectorize(get_file_name)(tumour),collapse="\t")), connection)
             writeLines(paste0("output = ",out_file_dir), connection)
             writeLines(paste0("reference = ",ref_genome), connection)
 
