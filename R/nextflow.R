@@ -9,6 +9,7 @@ aa_nextflow=function(
     sif=NULL,
     reference_dir=build_default_reference_list()$HG19$aa,
     nf_circdna=build_default_nf_list()$nf_circdna,
+    resume=TRUE,
     ...
 ){
     run_main=function(
@@ -19,7 +20,7 @@ aa_nextflow=function(
             append_env(to=.this.env,from=.env)
 
             set_main(.env=.this.env)
-            
+
             .main$out_files$repeat_bed=paste0(
                 out_file_dir,"/",input_id,
                 ".repeat.circ_candidates.bed"
@@ -31,10 +32,10 @@ aa_nextflow=function(
                 " --input ",normalizePath(input),
                 " --input_format BAM ",
                 " --outdir ",out_file_dir, 
-                " --genome hg19 ",
+                " --genome GRCh37 ",
                 " -profile singularity ",
                 " --circle_identifier ampliconarchitect ",
-                " --reference_build hg19 ",
+                " --reference_build GRCh37 ",
                 " --mosek_license_dir ",license_dir,
                 " --aa_data_repo ", reference_dir,
                 " --bam_sorted ", 
@@ -43,7 +44,7 @@ aa_nextflow=function(
                 " --skip_markduplicates ", 
                 " --max_cpus ", threads,
                 " --max_mem ", ram, 
-                " -resume "
+                ifelse(resume," -resume ","")
             )
 
             run_job(.env=.this.env)
