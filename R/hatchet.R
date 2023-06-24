@@ -51,8 +51,8 @@ run_hatchet=function(
             writeLines(paste0("chromosomes = ",chromosomes), connection)
             writeLines(paste0("bams = ",paste0(bam,collapse="\t")), connection)
             writeLines(paste0("samples = ",paste0(Vectorize(get_file_name)(bam),collapse="\t")), connection)
-            writeLines(paste0("output = ",out_file_dir, connection))
-            writeLines(paste0("reference = ",ref_genome, connection))
+            writeLines(paste0("output = ",out_file_dir), connection)
+            writeLines(paste0("reference = ",ref_genome), connection)
 
             writeLines("", connection)
 
