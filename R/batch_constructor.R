@@ -634,6 +634,11 @@ set_env_vars=function(
         return()
     }
 
+    n_inputs <- 1
+    inputs_id <- output_name
+    inputs_ext <-NULL
+
+
     if(!is.null(vars)){
       inputs <- get(vars)
       n_inputs <- length(inputs)
@@ -643,9 +648,8 @@ set_env_vars=function(
       )
       inputs_ext <- unname(Vectorize(get_file_ext)(inputs))
     }
-
-
-
+    
+   
     out_file_dir <- set_dir(
           dir=output_dir
     )
@@ -827,7 +831,7 @@ set_main_env=function(.env){
 
           .env$self.envs <- .this.env
           input<-inputs[n]
-          n_inputs<-1
+          n_inputs<- 1
           input_id<-inputs_id[n]
           input_ext<-inputs_ext[n]
 
