@@ -402,6 +402,14 @@ unlist_lvl=function(named_list,var,recursive=FALSE){
 }
 
 
+#' @export
+ set_nf_envir=function(modules=build_default_myriad_module_list()$java){
+      paste0(myriad_module(
+        mode="unload",module=modules$default),";",
+        myriad_module(mode="unload",module=modules$v17),";"
+      )
+}
+
 
 
 #' @export

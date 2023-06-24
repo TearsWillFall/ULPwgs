@@ -26,7 +26,8 @@ build_default_reference_list(
      c(1:22, "X"),
     ".phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz"), gmap =
     paste0("/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/new/chr", c(1:22,
-    "X"), ".b37.gmap.gz")))), database = list(all_snps =
+    "X"), ".b37.gmap.gz")))), aa = list(dir = "/lustre/home/regmova/aa"), database =
+    list(all_snps =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/database/00-All.vcf.gz",
     all_common =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/database/00-common_all.vcf.gz"),

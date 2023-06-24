@@ -24,7 +24,12 @@ build_default_myriad_module_list=function(
         ),
         r=list(
             recommended="r/recommended"
+        ),
+        java=list(
+            default="java/1.8.0_92",
+            v17="java/temurin-17/17.0.2+8"
         )
+
     )
 ){
     return(modules)
@@ -550,6 +555,7 @@ build_default_tool_binary_list=function(
                 bin_bgzip="/lustre/scratch/scratch/regmova/tools/htslib/bin/bgzip",
                 bin_tabix="/lustre/scratch/scratch/regmova/tools/htslib/bin/tabix",
                 bin_htsfile="/lustre/scratch/scratch/regmova/tools/htslib/bin/htsfile",
+                bin_nextflow="/lustre/home/regmova/bin/nextflow",
                 bin_bwa="/lustre/scratch/scratch/regmova/tools/bwa/bwa",
                 bin_shapeit="/lustre/scratch/scratch/regmova/tools/shapeit4/bin/shapeit",
                 bin_allele_counter="/lustre/scratch/scratch/regmova/tools/alleleCount/bin/alleleCounter",
@@ -580,6 +586,58 @@ build_default_tool_binary_list=function(
     ){
          return(binaries)
 }
+
+
+
+
+
+
+#' Build default nf-core pipeline list
+#' 
+#'
+#' @param pipelines List with tool_names and paths 
+#' @export
+
+
+build_default_nf_list=function(
+    pipelines=
+        list(
+            nf_circdna=list(
+                name="nf-core/circdna",
+                version="1.0.3"
+            ),
+            nf_sarek="nf-core/sarek",
+            nf_rnaseq="nf-core/rnaseq"
+        )
+    ){
+         return(pipelines)
+}
+
+
+#' Build default license list
+#' 
+#'
+#' @param licenses List with tool_names and paths 
+#' @export
+
+
+build_default_licenses_list=function(
+    licenses=list(
+        dir="/lustre/home/regmova/lic",
+        licenses=
+        list(
+            mosek="/lustre/home/regmova/lic/mosek.lic",
+            gurobi="/lustre/home/regmova/lic/gurobi.lic"
+        )
+    )
+    ){
+    return(licenses)
+}
+
+
+
+
+
 
 
 #' Build default python enviroment list
@@ -799,6 +857,9 @@ build_default_reference_list=function(
                         )
                     )
                 ),
+                aa=list(
+                    dir="/lustre/home/regmova/aa"
+                ),
                 database=list(
                     all_snps="/lustre/scratch/scratch/regmova/PCF/references/hg19/database/00-All.vcf.gz",
                     all_common="/lustre/scratch/scratch/regmova/PCF/references/hg19/database/00-common_all.vcf.gz"
@@ -915,8 +976,103 @@ build_default_reference_list=function(
         )
     ){
         return(references)
-    }
+}
 
+
+
+#' Build default references
+#' 
+#'
+#' @param configs List with reference files
+#' @export
+
+
+build_default_hatchet_config=function(
+    configs=list(
+        download_panel=list(
+            run=FALSE,
+            config=list(
+                ref_panel = "1000GP_Phase3",
+                refpaneldir = "../HATCHET/reference/panel"
+            )
+        ),
+        genotype_snps=list(
+            run=TRUE,
+            config=list(
+                mincov = 8,
+                maxcov = 300,
+                reference_version = "hg19",
+                chr_notation = "False"
+            )
+        ),
+        count_alleles=list(
+            run=TRUE,
+            config=list(
+                mincov = 8,
+                maxcov = 300
+            )
+        ),
+        count_reads=list(
+            run=TRUE,
+            config=list(
+            )
+        ),
+        phase_snps=list(
+            run=TRUE,
+            config=list(
+            )
+        ),
+        combine_counts=list(
+            run=TRUE,
+            config=list(
+                msr = 3000,
+                mtr = 5000
+            )
+        ),
+        cluster_bins=list(
+            run=TRUE,
+            config=list(
+                diploidbaf = 0.10,
+                minK = 2,
+                maxK = 30,
+                tau=0.000001,
+                transmat = "\"diag\"",
+                decoding = "\"map\"",
+                covar = "\"diag\"",
+                restarts=10
+            )
+        ),
+        loc_clust=list(
+            run=TRUE,
+            config=list(
+            )
+        ),
+        plot_bins=list(
+            run=TRUE,
+            config=list(
+            )
+        ),
+        compute_cn=list(
+            run=TRUE,
+            config=list(
+                solver = "cpp",
+                clones = "2,8",
+                ghostprop = 0.3,
+                tolerancerdr = 0.08,
+                tolerancebaf = 0.04,
+                seeds = 400,
+                minprop = 0.03
+            )
+        ),
+        plot_cn=list(
+            run=TRUE,
+            config=list(
+            )
+        )
+    )
+){
+    return(configs)
+}
 
 
 #' Build default references

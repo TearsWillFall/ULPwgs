@@ -18,6 +18,7 @@ set_env_vars(
   verbose = FALSE,
   bgzip_index = FALSE,
   index_format = "tbi",
+  license_dir = build_default_license_config()$dir,
   clean = FALSE,
   batch_config = build_default_preprocess_config(),
   threads = 1,

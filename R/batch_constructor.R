@@ -37,8 +37,15 @@ options(scipen = 999)
 #' @param out_files Output files for job
 #' @export
 
-build_job_report=function(job_id="job_1",executor_id="",task_id="",exec_code="",
-job_order=1, input_args="",out_file_dir="", out_files=list(file="file")){
+build_job_report=function(job_id="job_1",
+  executor_id="",
+  task_id="",
+  exec_code="",
+  job_order=1,
+  input_args="",
+  out_file_dir="",
+  out_files=list(file="file")
+){
   options(scipen = 999)
   job_report=list(job_id=job_id,executor_id=executor_id,task_id=task_id,
   job_order=job_order,input_args=input_args,exec_code=exec_code,
@@ -59,8 +66,16 @@ job_order=1, input_args="",out_file_dir="", out_files=list(file="file")){
 #' 
 #' @export
 
-build_job_exec=function(job="",time="48:0:0",ram=3,threads=1,
-output_dir=".",hold=NULL,wd=getwd(),array=""){
+build_job_exec=function(
+  job="",
+  time="48:0:0",
+  ram=3,
+  threads=1,
+  output_dir=".",
+  hold=NULL,
+  wd=getwd(),
+  array=""
+){
 
   if(is.null(job)){ 
     stop("A job ID has to be supplied to uniquely identify the job.")
@@ -88,7 +103,13 @@ output_dir=".",hold=NULL,wd=getwd(),array=""){
 #' @export
 
 
-job_validator=function(job="",time=10,verbose=FALSE,threads=3){
+job_validator=function(
+  job="",
+  time=10,
+  verbose=FALSE,
+  threads=3
+){
+
   error=FALSE
   col_names=c("job_id","job_priority","job_name","user","status","start_time","nodes")
   exec_code="qstat -xml | tr '\n' ' ' | sed 's#<job_list[^>]*>#\\n#g'   | sed 's#<[^>]*>##g' | grep \" \" | column -t"
@@ -140,7 +161,11 @@ return()
 #' @param sep Separator between name and ID
 #' @export
 
-make_unique_id=function(name,id=sample(1:100000000000000,1),sep="_"){
+make_unique_id=function(
+  name,
+  id=sample(1:100000000000000,1),
+  sep="_"
+){
   options(scipen = 999)
   unique_name=paste0(c(name,id),collapse=sep)
   return(unique_name)
@@ -221,7 +246,6 @@ build_main=function(
 #' @export
 
 wait_scheduler=function(.env){
-
     .this.env=environment()
     append_env(to=.this.env,from=.env)
     check=TRUE
@@ -550,6 +574,7 @@ set_env_vars=function(
   verbose=FALSE,
   bgzip_index=FALSE,
   index_format="tbi",
+  license_dir=build_default_license_config()$dir,
   clean=FALSE,
   batch_config=build_default_preprocess_config(),
   threads=1,
@@ -618,6 +643,7 @@ set_env_vars=function(
       )
       inputs_ext <- unname(Vectorize(get_file_ext)(inputs))
     }
+
 
 
     out_file_dir <- set_dir(
