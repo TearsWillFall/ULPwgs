@@ -84,10 +84,7 @@ run_hatchet=function(
         }
 
         build_ini_hatchet(
-            config_file=.main$out_files$hatchet_config,
-            threads=threads,
-            chromosomes=chromosomes,
-            config=config
+            config_file=.main$out_files$hatchet_config
             )
        
         .main$exec_code=paste(
