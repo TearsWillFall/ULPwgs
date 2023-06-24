@@ -12,6 +12,7 @@ run_hatchet=function(
     chromosomes=NULL,
     env_hatchet=build_default_python_enviroment_list()$env_hatchet,
     config=build_default_hatchet_config(),
+    ref_genome=build_default_reference_list()$HG19$reference$genome,
     ...
 ){
 
@@ -51,6 +52,7 @@ run_hatchet=function(
             writeLines(paste0("bams = ",paste0(bam,collapse="\t")), connection)
             writeLines(paste0("samples = ",paste0(Vectorize(get_file_name)(bam),collapse="\t")), connection)
             writeLines(paste0("output = ",out_file_dir, connection))
+            writeLines(paste0("reference = ",ref_genome, connection))
 
             writeLines("", connection)
 
