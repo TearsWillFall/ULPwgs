@@ -88,7 +88,7 @@ run_hatchet=function(
        
         .main$exec_code=paste(
             set_conda_envir(env=env_hatchet),
-            " python -m hatchet ",.main$out_files$hatchet_config
+            " python -m hatchet run ",.main$out_files$hatchet_config
         )
 
         run_job(.env=.this.env)
