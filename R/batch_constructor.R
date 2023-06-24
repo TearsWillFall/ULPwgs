@@ -192,7 +192,8 @@ check_job_limit=function(job_limit=1000000){
 #' @export
 
 execute_job=function(exec_code){
-  error=system(exec_code)
+  #Read .bashrc to import all envriomental variables
+  error=system(paste0(". $HOME/.bashrc;",exec_code))
   return(error)
 }
 
@@ -351,8 +352,9 @@ build_clean_exec=function(
 ){
   .this.env=environment()
   append_env(to=.this.env,from=.env)
-  .env$exec_code<- paste0(". $HOME/.bashrc;", .env$exec_code," && rm",paste(input))
+  .env$exec_code<- paste0(.env$exec_code," && rm",paste(input))
 }
+
 
 
 
