@@ -406,7 +406,7 @@ unlist_lvl=function(named_list,var,recursive=FALSE){
  set_nf_envir=function(modules=build_default_myriad_module_list()$java){
       paste0(myriad_module(
         mode="unload",module=modules$default),";",
-        myriad_module(mode="unload",module=modules$v17),";"
+        myriad_module(mode="load",module=modules$v17),";"
       )
 }
 
