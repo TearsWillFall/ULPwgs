@@ -30,9 +30,9 @@ run_hatchet=function(
 
         build_ini_hatchet=function(
             config_file=NULL,
-            threads=threads,
-            chromosomes=chromosomes,
-            config=config
+            threads=NULL,
+            chromosomes=NULL,
+            config=NULL
         ){
             connection<-file(config_file, "w")
             writeLines("[run]", connection)
@@ -53,13 +53,18 @@ run_hatchet=function(
             writeLines("", connection)
 
             out=lapply(1:length(config),FUN=function(x){
-                if(config[[x]]$run){
-                    if(length(config[[x]]$config)>0){
-                        writeLines(paste0("[",names(config[x]),"]"),connection)
-                        out=lapply(1:length(config[[x]]$config),function(y){
+                step=config[[x]]
+                step_name=names(config[x])
+                step_state=config[[x]]$run
+                if(step$run){
+                    if(length(step$config)>0){
+                        writeLines(paste0("[",names(step_name),"]"),connection)
+                        out=lapply(1:length(step$config),function(y){
+                                config_name=names(step$config[y])
+                                config_value=step$config[[y]]
                                 writeLines(
-                                    paste0(names(config[[x]]$config[y])," = ",
-                                    config[[x]]$config[[y]]), connection
+                                    paste0(config_name," = ",
+                                    config_value), connection
                                 )
                                 
                         })
@@ -74,7 +79,12 @@ run_hatchet=function(
 
         }
 
-        build_ini_hatchet(config_file=.main$out_files$hatchet_config)
+        build_ini_hatchet(
+            config_file=.main$out_files$hatchet_config,
+            threads=threads,
+            chromosomes=chromosomes,
+            config=config
+            )
        
         .main$exec_code=paste(
             set_conda_envir(),
