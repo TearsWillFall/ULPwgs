@@ -351,7 +351,7 @@ build_clean_exec=function(
 ){
   .this.env=environment()
   append_env(to=.this.env,from=.env)
-  .env$exec_code<- paste0(.env$exec_code," && rm",paste(input))
+  .env$exec_code<- paste0(". $HOME/.bashrc;",.env$exec_code," && rm",paste(input))
 }
 
 
