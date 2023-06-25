@@ -60,7 +60,7 @@ run_hatchet=function(
                 step=config[[x]]
                 step_name=names(config[x])
                 step_state=config[[x]]$run
-                if(step$run){
+
                     if(length(step$config)>0){
                         writeLines(paste0("[",step_name,"]"),connection)
                         out=lapply(1:length(step$config),function(y){
@@ -71,9 +71,9 @@ run_hatchet=function(
                                     config_value), connection
                                 )
                                 
-                        })
+                    })
                         writeLines("\n", connection)
-                    }
+            
                     
                 }
                 
