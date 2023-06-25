@@ -1020,6 +1020,7 @@ build_default_hatchet_config=function(
         phase_snps=list(
             run=TRUE,
             config=list(
+                refpaneldir = "../HATCHET/reference/panel"
             )
         ),
         combine_counts=list(

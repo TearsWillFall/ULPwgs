@@ -21,10 +21,6 @@ aa_nextflow=function(
 
             set_main(.env=.this.env)
 
-            .main$out_files$repeat_bed=paste0(
-                out_file_dir,"/",input_id,
-                ".repeat.circ_candidates.bed"
-            )
             .main$exec_code=paste(
                 set_nf_envir(),
                 " nextflow run ",nf_circdna$name,
