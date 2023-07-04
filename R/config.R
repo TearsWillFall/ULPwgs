@@ -653,7 +653,8 @@ build_default_python_enviroment_list=function(
         list(
                 env_circlemap="/lustre/home/regmova/miniconda3/envs/circle-map",
                 env_hatchet="/lustre/home/regmova/miniconda3/envs/hatchet",
-                env_cov="/lustre/home/regmova/miniconda3/envs/cov"
+                env_cov="/lustre/home/regmova/miniconda3/envs/cov",
+                env_medicc2="/lustre/home/regmova/miniconda3/envs/medicc_env"
         )
     ){
          return(enviroments)

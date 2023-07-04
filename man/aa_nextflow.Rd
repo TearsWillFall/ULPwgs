@@ -8,6 +8,7 @@ aa_nextflow(
   sif = NULL,
   reference_dir = build_default_reference_list()$HG19$aa,
   nf_circdna = build_default_nf_list()$nf_circdna,
+  resume = TRUE,
   ...
 )
 }
