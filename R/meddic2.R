@@ -85,7 +85,7 @@ run_meddic2=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
-      var
+      var="cn"
     )
 
     launch(.env=.base.env)
