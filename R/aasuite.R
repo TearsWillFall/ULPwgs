@@ -18,8 +18,8 @@
 #' @export
 #' 
 call_aasuite=function(
-    sif_aa="/lustre/scratch/scratch/regmova/Singularity_Images/ampliconsuite-pipeline.sif",
-    bin_aasuite="/lustre/scratch/scratch/regmova/tools/AmpliconSuite-pipeline/singularity/run_paa_singularity.py",
+    sif_aa=build_default_sif_list()$sif_aa,
+    bin_aasuite=build_default_tool_binary_list()$bin_aasuite,
     cns=NULL,
     bam=NULL,
     cn_gain=4.5,

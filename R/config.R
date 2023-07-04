@@ -556,6 +556,7 @@ build_default_tool_binary_list=function(
                 bin_tabix="/lustre/scratch/scratch/regmova/tools/htslib/bin/tabix",
                 bin_htsfile="/lustre/scratch/scratch/regmova/tools/htslib/bin/htsfile",
                 bin_nextflow="/lustre/home/regmova/bin/nextflow",
+                bin_aasuite="/lustre/scratch/scratch/regmova/tools/AmpliconSuite-pipeline/singularity/run_paa_singularity.py",
                 bin_bwa="/lustre/scratch/scratch/regmova/tools/bwa/bwa",
                 bin_shapeit="/lustre/scratch/scratch/regmova/tools/shapeit4/bin/shapeit",
                 bin_allele_counter="/lustre/scratch/scratch/regmova/tools/alleleCount/bin/alleleCounter",
@@ -697,6 +698,7 @@ build_default_sif_list=function(
                 V3="/lustre/scratch/scratch/regmova/Singularity_Images/pcf_select_v3_14_11_2022.sif"
             ),
             sif_preprocess="/lustre/scratch/scratch/regmova/Singularity_Images/preProcess_latest.sif",
+            sif_aa="/lustre/scratch/scratch/regmova/Singularity_Images/ampliconsuite-pipeline.sif",
             sif_gatk="/lustre/scratch/scratch/regmova/Singularity_Images/gatk_latest.sif",
             sif_cnvkit="/lustre/scratch/scratch/regmova/Singularity_Images/cnvkit_latest.sif"
         )
@@ -993,7 +995,7 @@ build_default_hatchet_config=function(
             run=FALSE,
             config=list(
                 ref_panel = "1000GP_Phase3",
-                refpaneldir = "../HATCHET/reference/panel"
+                refpaneldir = "/lustre/scratch/scratch/regmova/TRIALS/HATCHET/reference/panel"
             )
         ),
         genotype_snps=list(
@@ -1020,7 +1022,7 @@ build_default_hatchet_config=function(
         phase_snps=list(
             run=TRUE,
             config=list(
-                refpaneldir = "../HATCHET/reference/panel"
+                refpaneldir = "/lustre/scratch/scratch/regmova/TRIALS/HATCHET/reference/panel"
             )
         ),
         combine_counts=list(

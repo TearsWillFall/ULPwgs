@@ -39,7 +39,7 @@ aa_nextflow=function(
                 " --skip_multiqc ", 
                 " --skip_markduplicates ", 
                 " --max_cpus ", threads,
-                " --max_mem ", ram, 
+                " --max_memory ", ram, 
                 ifelse(resume," -resume ","")
             )
 
