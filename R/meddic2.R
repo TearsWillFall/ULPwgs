@@ -72,7 +72,7 @@ run_meddic2=function(
 
         .main$exec_code=paste(
             set_conda_envir(env=env_medicc2),
-            " python -m medicc2 ", cn, out_file_dir, " --plot \"both\" --events "
+            " medicc2 ", cn, out_file_dir, " --plot \"both\" --events "
         )
 
         run_job(.env=.this.env)
