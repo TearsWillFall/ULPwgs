@@ -103,7 +103,7 @@ evaluate_tf=function(
         .main.step=.main$steps[[fn_id]]
 
         tf=ULPwgs::get_file_name(gpos)
-        gpos=read_gpos(gpos=gpos,threads=threads,header=header,sep=sep)
+        gpos=read_gpos(gpos=gpos,threads=threads,header=header,sep=sep,sort=FALSE)
 
         gpos$body=gpos$body %>% 
             dplyr::distinct() %>% 
