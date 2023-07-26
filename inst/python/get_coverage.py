@@ -14,7 +14,7 @@ def divide_chunks(lst, n):
 
 def get_coverage(gps:None,bamfile:None,output:None,force:False,id:None):
    bamfile = pysam.AlignmentFile(bam, "rb")
-   if gpos!=None:
+   if gps!=None:
          for gpos in gps:
             chr=None
             start=None
