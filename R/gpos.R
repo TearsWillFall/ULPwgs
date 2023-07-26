@@ -84,7 +84,7 @@ read_gpos=function(
             origin_file_type="pileup"
             body=read_pileup(pileup=gpos,header=header,sep=sep,rename=rename,sort=FALSE)$body[,c("chrom","pos","ref","alt","gt","gid")]
         }else if(grepl(".gpos",gpos)){
-            body=read.table(file=gpos,header=header,sep=sep)[,c("chrom","pos")]
+            body=data.table::fread(file=gpos,header=header,sep=sep,nThread=threads)[,c("chrom","pos")]
             body[,c("ref","alt","gt")]="."
             body[,"gid"]=paste0(body$chrom,":",body$pos)
         }else{
