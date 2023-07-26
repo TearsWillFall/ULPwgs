@@ -128,7 +128,7 @@ evaluate_tf=function(
             .main.step$steps,
             get_coverage_tfbs(
                     gpos=tfbs,
-                    bam=bam,
+                    bam=input,
                     output_dir=paste0(out_file_dir,"/",tf),
                     tmp_dir=tmp_dir,
                     env_dir=env_dir,
