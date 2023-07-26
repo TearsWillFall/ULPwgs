@@ -9,6 +9,7 @@ evaluate_tf(
   gpos = NULL,
   bam = NULL,
   region = 1000,
+  ntfbs = NULL,
   sep = "\\t",
   header = TRUE,
   ...
@@ -21,7 +22,9 @@ evaluate_tf(
 
 \item{region}{Number of bases around the genomic position}
 
-\item{sep}{Separator}
+\item{ntfbs}{Number of TFBS to use. TFBS relevance based on peak.count column. Default NULL.}
+
+\item{sep}{Separator to read genomic position file.}
 
 \item{header}{Header in GPOS file. Defaults TRUE}
 }
