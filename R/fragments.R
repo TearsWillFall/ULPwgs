@@ -19,8 +19,6 @@ get_coverage_tfbs=function(
     ...
 ){
 
-
-
     run_main=function(
         .env
     ){
@@ -77,7 +75,8 @@ get_coverage_tfbs=function(
 #' @param gpos File with genomic position or data.frame
 #' @param bam Path to BAM file.
 #' @param region Number of bases around the genomic position
-#' @param sep Separator
+#' @param ntfbs Number of TFBS to use. TFBS relevance based on peak.count column. Default NULL.
+#' @param sep Separator to read genomic position file.
 #' @param header Header in GPOS file. Defaults TRUE
 #' @export
 
@@ -86,6 +85,7 @@ evaluate_tf=function(
     gpos=NULL,
     bam=NULL,
     region=1000,
+    ntfbs=NULL,
     sep="\t",
     header=TRUE,
     ...
@@ -107,10 +107,17 @@ evaluate_tf=function(
 
         gpos$body=gpos$body %>% 
             dplyr::distinct() %>% 
-            dplyr::filter(pos>=1000)
+            dplyr::filter(pos>=region)
 
+        if (!is.null(ntfbs)&is.numeric(ntfbs)){
+            gpos$body=gpos$body[1:ntfbs,]
+        }
+        
         tfbs=gpos$body %>% dplyr::rowwise() %>%
-        dplyr::mutate(gid=paste0(chrom,":",pos),from=pos-1000,to=pos+1000) %>% 
+        dplyr::mutate(
+            gid=paste0(chrom,":",pos),
+            from=pos-region,
+            to=pos+region) %>% 
         dplyr::group_by(gid) %>%
         dplyr::mutate(pos = purrr::map2(from, to, seq)) %>%
         tidyr::unnest(cols=pos) %>%
@@ -135,9 +142,9 @@ evaluate_tf=function(
                     fn_id=tf
                 )
             )
-            .this.step=.main.step$steps[[paste0("get_coverage_tfbs.",tf)]]
-            .main.step$out_files<-append(.main.step$out_files,.this.step$out_files)
-       
+        .this.step=.main.step$steps[[paste0("get_coverage_tfbs.",tf)]]
+        .main.step$out_files<-append(.main.step$out_files,.this.step$out_files)
+    
        
         .env$.main<-.main
     }
@@ -153,99 +160,14 @@ evaluate_tf=function(
     launch(.env=.base.env)
 
 }
-
-
-
-
-
-#' Get across TF
-#' This function calculates coverages for TFBS of a single TF
-#' 
-#' 
-
-#' @param gpos File with genomic position or data.frame
-#' @param bam Path to BAM file.
-#' @param region Number of bases around the genomic position
-#' @param sep Separator
-#' @param header Header in GPOS file. Defaults TRUE
-#' @export
 
 
 score_tf=function(
     pileup=NULL,
     region=1000,
-    sep="\t",
-    header=TRUE,
-    ...
+    central=150,
+    threads=1
 ){
-
-     run_main=function(
-        .env
-    ){
-        .this.env=environment()
-        append_env(to=.this.env,from=.env)
-   
-        set_main(.env=.this.env)
-
-        .main$steps[[fn_id]]<-.this.env
-        .main.step=.main$steps[[fn_id]]
-
-        tf=ULPwgs::get_file_name(gpos)
-        gpos=read_gpos(gpos=gpos,threads=threads,header=header,sep=sep)
-
-        gpos$body=gpos$body %>% 
-            dplyr::distinct() %>% 
-            dplyr::filter(pos>=1000)
-
-        tfbs=gpos$body %>% dplyr::rowwise() %>%
-        dplyr::mutate(gid=paste0(chrom,":",pos),from=pos-1000,to=pos+1000) %>% 
-        dplyr::group_by(gid) %>%
-        dplyr::mutate(pos = purrr::map2(from, to, seq)) %>%
-        tidyr::unnest(cols=pos) %>%
-        dplyr::ungroup() %>%
-        dplyr::select(chrom,pos,gid)
-        
-        .main.step$steps<-append(
-            .main.step$steps,
-            get_coverage_tfbs(
-                    gpos=tfbs,
-                    bam=bam,
-                    output_dir=paste0(out_file_dir,"/",tf),
-                    tmp_dir=tmp_dir,
-                    env_dir=env_dir,
-                    batch_dir=batch_dir,
-                    output_name=paste0(input_id,".",tf),
-                    err_msg=err_msg,
-                    verbose=verbose,
-                    threads=threads,
-                    ram=ram,
-                    executor_id=task_id,
-                    fn_id=tf
-                )
-            )
-            .this.step=.main.step$steps[[paste0("get_coverage_tfbs.",tf)]]
-            .main.step$out_files<-append(.main.step$out_files,.this.step$out_files)
-       
-       
-        .env$.main<-.main
-    }
-
-
-    .base.env=environment()
-    list2env(list(...),envir=.base.env)
-    set_env_vars(
-        .env=.base.env,
-        vars="bam"
-    )
-
-    launch(.env=.base.env)
-
-}
-
-
-
-
-score_tf=function(pileup=NULL,region=1000,central=150,threads=1){
     dat=read_pileup(pileup=pileup,threads=threads,sort=FALSE)
     summ=dat$body %>% 
     dplyr::group_by(gid) %>% 
