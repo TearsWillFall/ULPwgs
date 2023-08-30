@@ -501,7 +501,6 @@ access_cnvkit=function(
         }
 
 
-
         .main$exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
           " cnvkit.py batch -p ",threads,
           ifelse(is.null(bin_size_antitarget)," -m wgs ",""),
