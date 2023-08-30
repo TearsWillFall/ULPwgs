@@ -469,7 +469,7 @@ access_cnvkit=function(
           input_id,
           ".target_",bin_size_target,
           ifelse(!is.null(bin_size_antitarget),
-          ".antitarget_",NULL),bin_size_antitarget,
+          ".antitarget_",""),bin_size_antitarget,
           ".pon.cnn"
         )
 
@@ -480,7 +480,7 @@ access_cnvkit=function(
 
 
         if(!is.null(access)){
-          paste0(" -g ",access)
+          access=paste0(" -g ",access)
         }
 
         
