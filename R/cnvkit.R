@@ -474,6 +474,8 @@ access_cnvkit=function(
         )
 
 
+
+
         if(!is.null(target)){
           target=paste0(" -t ",target)
         }
@@ -501,7 +503,9 @@ access_cnvkit=function(
 
 
         .main$exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
-          " cnvkit.py batch -p ",threads, " -n ",gsub(";"," ",input),
+          " cnvkit.py batch -p ",threads,
+          ifelse(is.null(bin_size_antitarget)," -m wgs ",""),
+          " -n ",gsub(";"," ",input),
           " --output-reference ",.main$out_files$pon,
           " -f ", ref_genome,access,target,
           " --target-avg-size ",bin_size_target,
