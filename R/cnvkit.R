@@ -468,7 +468,8 @@ access_cnvkit=function(
         .main$out_files$pon=paste0(out_file_dir,"/",
           input_id,
           ".target_",bin_size_target,
-          ".antitarget_",bin_size_antitarget,
+          ifelse(!is.null(bin_size_antitarget),
+          ".antitarget_",NULL),bin_size_antitarget,
           ".pon.cnn"
         )
 
@@ -482,19 +483,29 @@ access_cnvkit=function(
           paste0(" -g ",access)
         }
 
-        if(!is.null(min_bin_size_antitarget)){
-          min_bin_size_antitarget=paste0(
+        
+        if(!is.null(bin_size_antitarget)){
+          bin_size_antitarget=paste0(
             " --antitarget-min-size ",
-            min_bin_size_antitarget
+          bin_size_antitarget
             )
         }
+
+         if(!is.null(min_bin_size_antitarget)){
+          min_bin_size_antitarget=paste0(
+            " --antitarget-min-size ",
+          min_bin_size_antitarget
+            )
+        }
+
+
 
         .main$exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
           " cnvkit.py batch -p ",threads, " -n ",gsub(";"," ",input),
           " --output-reference ",.main$out_files$pon,
           " -f ", ref_genome,access,target,
           " --target-avg-size ",bin_size_target,
-          " --antitarget-avg-size ",bin_size_antitarget,
+          bin_size_antitarget,
           min_bin_size_antitarget
         )
 
