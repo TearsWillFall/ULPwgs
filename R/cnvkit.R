@@ -156,31 +156,33 @@ process_cnvkit=function(
       .this.step=.main.step$steps$call_coverage_cnvkit.target
       .main.step$out_files$cnn=.this.step$out_files
 
-      .main.step$steps <-append(
-          .main.step$steps,
-          call_coverage_cnvkit(
-            sif_cnvkit=sif_cnvkit,
-            ref_genome=ref_genome,
-            bam=input,
-            bed=antitarget,
-            type="antitarget",
-            output_dir=out_file_dir,
-            tmp_dir=tmp_dir,
-            env_dir=env_dir,
-            batch_dir=batch_dir,
-            err_msg=err_msg,
-            read_count=read_count,
-            min_mapq=min_mapq,
-            verbose=verbose,
-            threads=threads,
-            ram=ram,
-            executor_id=task_id
+      if(!is.null(antitarget)){
+          .main.step$steps <-append(
+            .main.step$steps,
+            call_coverage_cnvkit(
+              sif_cnvkit=sif_cnvkit,
+              ref_genome=ref_genome,
+              bam=input,
+              bed=antitarget,
+              type="antitarget",
+              output_dir=out_file_dir,
+              tmp_dir=tmp_dir,
+              env_dir=env_dir,
+              batch_dir=batch_dir,
+              err_msg=err_msg,
+              read_count=read_count,
+              min_mapq=min_mapq,
+              verbose=verbose,
+              threads=threads,
+              ram=ram,
+              executor_id=task_id
+          )
         )
-      )
 
-      .this.step=.main.step$steps$call_coverage_cnvkit.antitarget
-      .main.step$out_files$cnn=append(.main.step$out_files$cnn,.this.step$out_files)
-
+        .this.step=.main.step$steps$call_coverage_cnvkit.antitarget
+        .main.step$out_files$cnn=append(.main.step$out_files$cnn,.this.step$out_files)
+      }
+     
 
        .main.step$steps <-append(
           .main.step$steps,
@@ -1654,7 +1656,10 @@ segment_cnvkit=function(
       .main$exec_code=paste(
         "singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
         " cnvkit.py fix -o ",.main$out_files$cnr, 
-        add, normalizePath(input), normalizePath(antitarget), pon
+        add, 
+          normalizePath(input),
+          ifelse(!is.null(antitarget)){normalizePath(antitarget),""},
+          normalizePath(pon)
       )
 
       run_job(.env=.this.env)

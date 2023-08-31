@@ -10,9 +10,6 @@ dilute_tumour=function(
     ...
 ){
 
-
-
-
     if(read_fraction<1){
         subsample_samtools(bam=tumour,read_fraction=read_fraction)
     }
