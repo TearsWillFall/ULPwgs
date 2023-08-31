@@ -1658,7 +1658,7 @@ segment_cnvkit=function(
         " cnvkit.py fix -o ",.main$out_files$cnr, 
         add, 
           normalizePath(input),
-          ifelse(!is.null(antitarget)){normalizePath(antitarget),""},
+          ifelse(!is.null(antitarget))(normalizePath(antitarget),""),
           normalizePath(pon)
       )
 
