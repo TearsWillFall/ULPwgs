@@ -1621,7 +1621,6 @@ segment_cnvkit=function(
     pon=build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn_male,
     target=NULL,
     antitarget=NULL,
-    output_name=NULL,
     gc=TRUE,
     edge=TRUE,
     rmask=TRUE,
@@ -1658,7 +1657,7 @@ segment_cnvkit=function(
         " cnvkit.py fix -o ",.main$out_files$cnr, 
         add, 
           normalizePath(input),
-          ifelse(!is.null(antitarget))(normalizePath(antitarget),""),
+          ifelse(!is.null(antitarget),normalizePath(antitarget),""),
           normalizePath(pon)
       )
 
@@ -1678,8 +1677,6 @@ segment_cnvkit=function(
 
     launch(.env=.base.env)
 
-
-   
   }
   
 

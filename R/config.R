@@ -871,6 +871,16 @@ build_default_reference_list=function(
                     reflat="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/refFlat.txt",
                     genes="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/genes.txt"
                 ),
+                wgs=list(
+                    binned=list(
+                            target_1k="/lustre/scratch/scratch/regmova/PCF/references/hg19/wgs/bin_1k/hs37d5.access-5k-mappable.target.bed",
+                            target_5k="/lustre/scratch/scratch/regmova/PCF/references/hg19/wgs/bin_5k/hs37d5.access-5k-mappable.target.bed",
+                            target_50k="/lustre/scratch/scratch/regmova/PCF/references/hg19/wgs/bin_50k/hs37d5.access-5k-mappable.target.bed"
+                    ),
+                    variant=list(
+                        
+                    )
+                ),
                 panel=list(
                     PCF_V2=list(
                         intervals=list(
