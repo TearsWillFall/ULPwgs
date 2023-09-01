@@ -3646,14 +3646,15 @@ filter_variant_tranches_gatk=function(
   ...
 ){
 
-  .this.env=environment()
-  append_env(to=.this.env,from=.env)
-  set_main(.env=.this.env)
 
 
   run_main=function(
     .env
   ){
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+    set_main(.env=.this.env)
+
 
     prev_filters=" --invalidate-previous-filters "
     if (keep_previous_filters){
