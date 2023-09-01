@@ -3344,13 +3344,15 @@ new_haplotypecaller_gatk=function(
   
     .base.env=environment()
     list2env(list(...),envir=.base.env)
-    if(is.null(output_name)){
-      output_name=get_file_name(bam)
-    }
     set_env_vars(
       .env= .base.env,
       vars="region"
     )
+
+    if(is.null(output_name)){
+      output_name=get_file_name(bam)
+    }
+    
     launch(.env=.base.env)
 }
 
