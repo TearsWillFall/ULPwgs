@@ -3425,7 +3425,7 @@ call_haplotypecaller_gatk=function(
     ### IF PATH READ AS BED
     if (file.exists(region)){
       region=read_bed(
-        bed=.main.step$out_files$region
+        bed=.main.step$out_files$region,rename=FALSE
       )
     }
 
