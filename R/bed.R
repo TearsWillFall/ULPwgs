@@ -23,7 +23,7 @@ read_bed=function(
     bed=NULL,sep="\t",
     header=TRUE,
     rename=TRUE,
-    srt=TRUE
+    sort=TRUE
 ){
   options(scipen=999)
   path=NA
@@ -57,6 +57,8 @@ read_bed=function(
     }
   }
 
+  print(bed)
+
   if(is.data.frame(bed)){
     body=bed
   }
@@ -64,7 +66,7 @@ read_bed=function(
   bed_object=list(
     time=Sys.time(),
     bed_origin=normalizePath(path),
-    body=ifelse(srt,sort_bed(body),body)
+    body=ifelse(sort,sort_bed(body),body)
   )
   return(bed_object)
 }
