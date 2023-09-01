@@ -318,11 +318,13 @@ build_exec_innit=function(
         ### Use SGE TASK ID if mode is set to batch otherwise use value
         
         if(mode=="local"){
-             
               exec_code=paste0("Rscript -e \" invisible(lapply(1:",n_inputs,
               ",FUN=function(select){",ns,"::",fn,"(inherit=\\\"",
               self_file,"\\\",select=select)}))\"")
-        
+        }else if(mode=="local_parallel"){
+              exec_code=paste0("Rscript -e \" invisible(mclapply(1:",n_inputs,
+              ",FUN=function(select){",ns,"::",fn,"(inherit=\\\"",
+              self_file,"\\\",select=select)},mc.cores=",threads,"))\"")
         }else if(mode=="batch"){
               exec_code=paste0("Rscript -e \" invisible(",
               ns,"::",fn,"(inherit=\\\"",self_file,
