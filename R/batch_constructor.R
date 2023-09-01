@@ -322,7 +322,7 @@ build_exec_innit=function(
               ",FUN=function(select){",ns,"::",fn,"(inherit=\\\"",
               self_file,"\\\",select=select)}))\"")
         }else if(mode=="local_parallel"){
-              exec_code=paste0("Rscript -e \" invisible(mclapply(1:",n_inputs,
+              exec_code=paste0("Rscript -e \" invisible(parallel::mclapply(1:",n_inputs,
               ",FUN=function(select){",ns,"::",fn,"(inherit=\\\"",
               self_file,"\\\",select=select)},mc.cores=",threads,"))\"")
         }else if(mode=="batch"){
