@@ -3289,24 +3289,9 @@ haplotypecaller_gatk=function(
 #' https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller
 #'
 #' @param sif_gatk [REQUIRED] Path to gatk sif file.
-#' @param normal [OPTIONAL] Path to normal BAM file.
+#' @param bam [OPTIONAL] Path to normal BAM file.
 #' @param ref_genome [REQUIRED] Path to reference genome fasta file.
-#' @param rdata [OPTIONAL] Import R data information with list of BAM.
-#' @param selected [OPTIONAL] Select BAM from list.
-#' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
-#' @param output_dir [OPTIONAL] Path to the output directory.
-#' @param tmp_dir [OPTIONAL] Path to the temporary directory.
-#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
-#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
-#' @param verbose [OPTIONAL] Enables progress messages. Default False.
-#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
-#' @param batch_config [REQUIRED] Additional batch configuration if batch mode selected.
-#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
-#' @param task_name Task name. Default "recalCovariates"
-#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
-#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
-#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
-#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @param region [REQUIRED] Genomic position in samtools format chr:start-end.
 #' @export
 
 

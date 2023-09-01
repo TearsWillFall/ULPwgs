@@ -9,7 +9,6 @@ fix_cnvkit(
   pon = build_default_reference_list()$HG19$panel$PCF_V3$variant$pon_cn_male,
   target = NULL,
   antitarget = NULL,
-  output_name = NULL,
   gc = TRUE,
   edge = TRUE,
   rmask = TRUE,
@@ -23,13 +22,13 @@ fix_cnvkit(
 
 \item{antitarget}{\link{REQUIRED} Path to BED file with target regions. Default none.}
 
-\item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
-
 \item{gc}{\link{OPTIONAL} Disble GC bias correction. Default FALSE.}
 
 \item{edge}{\link{OPTIONAL} Disble edge correction. Default FALSE.}
 
 \item{rmask}{\link{OPTIONAL} Disble repeat mask correction. Default FALSE.}
+
+\item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
 
 \item{output_dir}{\link{OPTIONAL} Path to the output directory.}
 
