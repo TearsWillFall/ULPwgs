@@ -3664,11 +3664,11 @@ filter_variant_tranches_gatk=function(
       prev_filters=" "
     }
 
-    if(is.null(indel_db)){
+    if(!is.null(indel_db)){
       indel_db=paste0(" --resource ",normalizePath(indel_db))
     }
 
-    if(is.null(haplotype_db)){
+    if(!is.null(haplotype_db)){
       haplotype_db=paste0(" --resource ",normalizePath(haplotype_db))
     }
 
@@ -3680,7 +3680,8 @@ filter_variant_tranches_gatk=function(
       " -O ", .main$out_files$filtered_vcf, 
       " -V ",normalizePath(input), " --info-key ",info_key,
       " --snp-tranche ",snp_tranche,
-      " --indel-tranche ",indel_tranche,indel_db,
+      " --indel-tranche ",indel_tranche,
+      indel_db,
       haplotype_db,prev_filters
     )
 
