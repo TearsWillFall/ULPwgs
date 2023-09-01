@@ -3350,7 +3350,7 @@ new_haplotypecaller_gatk=function(
         .main.step$steps<-append(
         .main.step$steps,
         cnn_score_variants_gatk(
-          sif_cnvkit=sif_cnvkit,
+          sif_gatk=sif_gatk,
           ref_genome=ref_genome,
           bam=ifelse(score_CNN=="CNN_2D",normalizePath(bam),NULL),
           vcf=.main$out_files$unfiltered_vcf,
