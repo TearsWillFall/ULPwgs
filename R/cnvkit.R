@@ -138,7 +138,7 @@ process_cnvkit=function(
           ref_genome=ref_genome,
           bam=input,
           bed=target,
-          type="target",
+          fn_id="target",
           output_dir=out_file_dir,
           tmp_dir=tmp_dir,
           env_dir=env_dir,
@@ -164,7 +164,7 @@ process_cnvkit=function(
               ref_genome=ref_genome,
               bam=input,
               bed=antitarget,
-              type="antitarget",
+              fn_id="antitarget",
               output_dir=out_file_dir,
               tmp_dir=tmp_dir,
               env_dir=env_dir,
@@ -1223,7 +1223,6 @@ call_coverage_cnvkit=function(
   sif_cnvkit=build_default_sif_list()$sif_cnvkit,
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   bam=NULL,
-  type="target",
   bed=NULL,
   read_count=FALSE,
   min_mapq=0,
@@ -1240,15 +1239,9 @@ call_coverage_cnvkit=function(
 
 
     output_name=paste0(input_id,".",type,"coverage")
-    fn=paste0(fn,".",type)
-
-
+   
     .main$steps[[fn_id]]<-.this.env
     .main.step<-.main$steps[[fn_id]]
-    
-    if(type!="target" && type != "antitarget"){
-      stop("Valid values for type are : target / antitarget")
-    }
 
 
     .main.step$steps<-append(
@@ -1280,7 +1273,8 @@ call_coverage_cnvkit=function(
 
 
   }
-
+  ## GET TYPE OF FILE FROM FUNCTION IDENTIFIER
+  type=fn_id
   .base.env=environment()
   list2env(list(...),envir=.base.env)
   set_env_vars(
