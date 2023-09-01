@@ -1651,17 +1651,17 @@ segment_cnvkit=function(
         add=paste(add," --no-rmask ")
       }
 
+      if(is.null(antitarget)){
+            antitarget=paste0(tmp_dir,"/antitargetcoverage.cnn")
+            system(paste("cp ", system.file("data", "antitargetcoverage.cnn", package=ns), tmp_dir))
+      }
 
       .main$exec_code=paste(
         "singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
         " cnvkit.py fix -o ",.main$out_files$cnr, 
         add, 
           normalizePath(input),
-          ifelse(
-            !is.null(antitarget),
-            normalizePath(antitarget),
-            system.file("data", "antitargetcoverage.cnn", package=ns)
-            ),
+          normalizePath(antitarget),
           normalizePath(pon)
       )
 
