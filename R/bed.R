@@ -57,8 +57,6 @@ read_bed=function(
     }
   }
 
-  print(bed)
-
   if(is.data.frame(bed)){
     body=bed
   }
