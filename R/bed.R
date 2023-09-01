@@ -26,6 +26,7 @@ read_bed=function(
     srt=TRUE
 ){
   options(scipen=999)
+  path=NA
   col_names=c(
     "chrom","chromStart","chromEnd","name",
     "score","start","thickStart","thickEnd",
@@ -40,8 +41,9 @@ read_bed=function(
   if(is.null(bed)){
     stop("bed argument is of type NULL")
   }
-
+  
   if(file.exists(bed)){
+    path=bed
     if(grepl(".bed$",bed)){
         bed=read.csv(
             file=bed,sep=sep,header=header,
@@ -61,15 +63,11 @@ read_bed=function(
 
   bed_object=list(
     time=Sys.time(),
-    bed_origin=normalizePath(bed),
+    bed_origin=normalizePath(path),
     body=ifelse(srt,sort_bed(body),body)
   )
   return(bed_object)
 }
-
-
-
-
 
 
 
