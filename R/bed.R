@@ -66,8 +66,9 @@ read_bed=function(
   bed_object=list(
     time=Sys.time(),
     bed_origin=normalizePath(path),
-    body=ifelse(sort,sort_bed(body),body)
+    body=if(sort){sort_bed(body)}else{body}
   )
+
   return(bed_object)
 }
 
