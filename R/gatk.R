@@ -3415,8 +3415,9 @@ call_haplotypecaller_gatk=function(
         )
       )
       .this.step=.main.step$steps$get_sq_bam
-      .main.step$out_files$region=.this.step$out_files
-      region=.main.step$out_files$region$index_bed
+      print(.this.step$steps)
+      .main.step$out_files$region=.this.step$out_files$index_bed
+      region=.main.step$out_files$region
      
     }
 
@@ -3424,8 +3425,8 @@ call_haplotypecaller_gatk=function(
 
     ### IF PATH READ AS BED
     if (file.exists(region)){
-      region=read_bed(bed=
-        .main.step$out_files$region
+      region=read_bed(
+        bed=.main.step$out_files$region
       )
     }
 
