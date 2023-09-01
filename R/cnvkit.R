@@ -1750,13 +1750,13 @@ segment_cnvkit=function(
       }
 
 
-      if(is.null(cn_thr)){
+      if(!is.null(cn_thr)){
 
         cn_thr=paste0(" -t ",cn_thr)
 
       }
 
-      if(is.null(min_probes)){
+      if(!is.null(min_probes)){
 
         min_probes=paste0(" -m ",min_probes)
 
