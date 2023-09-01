@@ -8,8 +8,14 @@
 
 
 get_file_name=function(file_path=""){
-  filename=unlist(strsplit(basename(file_path),"\\."))[1]
-  return(filename)
+  tryCatch({
+     filename=unlist(strsplit(basename(file_path),"\\."))[1]
+     return(filename)
+  },error=function(e){
+     return("")
+  })
+ 
+
 }
 
 
@@ -1489,7 +1495,7 @@ get_sq_bam=function(
 
         set_main(.env=.this.env)
 
-        
+
 
         .main$out_files$index_bed=paste0(out_file_dir,"/",input_id,".index.bed")
         .main$exec_code=paste0(
