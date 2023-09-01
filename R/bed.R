@@ -45,8 +45,7 @@ read_bed=function(
     if(grepl(".bed$",bed)){
         body=read.csv(
             file,sep=sep,header=header,
-            colClasses="character",
-            stringAsFactors=FALSE
+            colClasses="character"
         )
         if(!header|rename){
             names(body)=col_names[1:ncol(body)]

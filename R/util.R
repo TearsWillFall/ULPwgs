@@ -1480,6 +1480,7 @@ get_sq_bam=function(
   ){
  
     options(scipen = 999)
+    
     run_main=function(
       .env
     ){
@@ -1487,6 +1488,8 @@ get_sq_bam=function(
         append_env(to=.this.env,from=.env)
 
         set_main(.env=.this.env)
+
+        
 
         .main$out_files$index_bed=paste0(out_file_dir,"/",input_id,".index.bed")
         .main$exec_code=paste0(
@@ -1506,6 +1509,7 @@ get_sq_bam=function(
       .env= .base.env,
       vars="bam"
     )
+
     launch(.env=.base.env)
     
 }
