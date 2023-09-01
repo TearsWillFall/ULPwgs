@@ -3278,6 +3278,106 @@ haplotypecaller_gatk=function(
 
 
 
+#' Variant Calling using HaplotypeCaller
+#'
+#' This function functions calls HaplotypeCaller for variant calling.
+#' If a vector of normal samples are provided these will be processed in multi-sample mode.
+#' To run in normal mode suppply a single normal sample.
+#' TO DO// Implement mitochondrial mode feature
+#' 
+#' For more information read:
+#' https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller
+#'
+#' @param sif_gatk [REQUIRED] Path to gatk sif file.
+#' @param normal [OPTIONAL] Path to normal BAM file.
+#' @param ref_genome [REQUIRED] Path to reference genome fasta file.
+#' @param rdata [OPTIONAL] Import R data information with list of BAM.
+#' @param selected [OPTIONAL] Select BAM from list.
+#' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param tmp_dir [OPTIONAL] Path to the temporary directory.
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param batch_config [REQUIRED] Additional batch configuration if batch mode selected.
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+new_haplotypecaller_gatk=function(
+    sif_gatk=build_default_sif_list()$sif_gatk,
+    ref_genome=build_default_reference_list()$HG19$reference$genome,
+    bam=NULL,
+    region=NULL,
+    ...
+){
+
+   run_main=function(
+    .env
+  ){
+
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+    set_main(.env=.this.env)
+
+  
+    tmp_dir=paste0(" --tmp-dir ",normalizePath(tmp_dir))
+
+  
+    if (is.null(region)){
+        .main$out_files$unfiltered_vcf=paste0(
+          out_file_dir,"/",input_id,".unfilt.vcf.gz"
+        )
+    }else{
+        .main$out_files$unfiltered_vcf=paste0(
+          out_file_dir,"/",paste0(input_id,".",region),".unfilt.vcf.gz"
+        )
+        region=paste0(" -L ",region)
+    }
+
+    .main$exec_code=paste(
+      "singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
+      " /gatk/gatk HaplotypeCaller -R ",
+      normalizePath(ref_genome), 
+      paste0(" -I ",normalizePath(bam)),
+      " -O ",.main$out_files$unfiltered_vcf,
+      region
+    )
+
+    run_job(.env=.this.env)
+
+    .env$.main<-.main
+   }
+
+    if(is.null(output_name)){
+      output_name=get_file_name(bam)
+    }
+    
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="region"
+    )
+    launch(.env=.base.env)
+}
+
+
+
+
+
+
+
+
+
+
+
 #' Multiregion parallelization across Haplotypecaller Gatk Variant Calling
 #'
 #' This function functions calls Haplotypecaller across multiple regions in parallel.
