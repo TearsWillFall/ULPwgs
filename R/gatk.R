@@ -3311,6 +3311,7 @@ new_haplotypecaller_gatk=function(
     append_env(to=.this.env,from=.env)
     set_main(.env=.this.env)
 
+
   
     tmp_dir=paste0(" --tmp-dir ",normalizePath(tmp_dir))
 
@@ -3343,7 +3344,7 @@ new_haplotypecaller_gatk=function(
     if(is.null(output_name)){
       output_name=get_file_name(bam)
     }
-    
+
     .base.env=environment()
     list2env(list(...),envir=.base.env)
     set_env_vars(
@@ -3355,6 +3356,120 @@ new_haplotypecaller_gatk=function(
 
 
 
+
+#' Variant Calling using HaplotypeCaller
+#'
+#' This function functions calls HaplotypeCaller for variant calling.
+#' If a vector of normal samples are provided these will be processed in multi-sample mode.
+#' To run in normal mode suppply a single normal sample.
+#' TO DO// Implement mitochondrial mode feature
+#' 
+#' For more information read:
+#' https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller
+#'
+#' @param sif_gatk [REQUIRED] Path to gatk sif file.
+#' @param bam [OPTIONAL] Path to normal BAM file.
+#' @param ref_genome [REQUIRED] Path to reference genome fasta file.
+#' @param region [REQUIRED] Genomic position in samtools format chr:start-end.
+#' @export
+
+
+call_haplotypecaller_gatk=function(
+    sif_gatk=build_default_sif_list()$sif_gatk,
+    bin_samtools=build_default_tool_binary_list()$bin_samtools,
+    ref_genome=build_default_reference_list()$HG19$reference$genome,
+    bam=NULL,
+    region=NULL,
+    ...
+){
+
+   run_main=function(
+    .env
+  ){
+
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+    set_main(.env=.this.env)
+
+    .main$steps[[fn_id]]<-.this.env
+    .main.step=.main$steps[[fn_id]]
+
+    ### IF NO REGION IS GIVEN SPLIT BAM PER CHROMOSOME
+    if(is.null(region)){
+      .main.step$steps <-append(
+        .main.step$steps,
+        get_sq_bam(
+          bin_samtools=bin_samtols,
+          bam=input,
+          output_name=input_id,
+          output_dir=tmp_dir,
+          header=TRUE,
+          tmp_dir=tmp_dir,
+          env_dir=env_dir,
+          batch_dir=batch_dir,
+          err_msg=err_msg,
+          verbose=verbose,
+          threads=threads,
+          ram=ram,
+          executor_id=task_id
+        )
+      )
+      .this.step=.main.step$steps$get_sq_bam
+      .main.step$out_files$region=.this.step$out_files
+      region=.main.step$out_files$region
+     
+    }
+
+    ### ASCERTAIN REGION INPUT IF GIVEN
+
+    ### IF PATH READ AS BED
+    if (file.exists(normalizePath(region))){
+      region=read_bed(
+        .main.step$out_files$region
+      )
+    }
+
+    ### IF DATA.FRAME GENERATE GID 
+
+    if (is.data.frame(region)){
+      region$gid=paste0(region$chr,":",region$start,"-",region$end)
+      region=unlist(region$gid)
+    }
+
+
+    .main.step$steps <-append(
+      .main.step$steps,
+      new_haplotypecaller_gatk(
+        sif_gatk=sif_gatk,
+        ref_genome=ref_genome,
+        bam=input,
+        output_name=input_id,
+        region=region,
+        mode="local_parallel",
+        output_dir=out_file_dir,
+        tmp_dir=tmp_dir,
+        env_dir=env_dir,
+        batch_dir=batch_dir,
+        err_msg=err_msg,
+        verbose=verbose,
+        threads=threads,
+        ram=ram,
+        executor_id=task_id
+    ))
+
+    .env$.main<-.main
+
+  }
+
+  .base.env=environment()
+  list2env(list(...),envir=.base.env)
+  set_env_vars(
+    .env= .base.env,
+    vars="bam"
+  )
+  launch(.env=.base.env)
+
+}
 
 
 

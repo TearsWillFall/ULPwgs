@@ -1462,6 +1462,60 @@ bed_coverage=function(
 
 
 
+#' Function to extract SQ (Reference sequence dictionary) 
+#'
+#' This function takes a BAM file and collects the chr names from the bam
+#' file.
+#'
+#' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
+#' @param bam Path to directory with BAM files to merge.
+#' @param header Save header in BED file.
+#' @export
+
+get_sq_bam=function(
+    bin_samtools=build_default_tool_binary_list()$bin_samtools,
+    bam=NULL,
+    header=TRUE,
+    ...
+  ){
+ 
+    options(scipen = 999)
+    run_main=function(
+      .env
+    ){
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+
+        set_main(.env=.this.env)
+
+        .main$out_files$index_bed=paste0(out_file_dir,"/",input_id,".index.bed")
+        .main$exec_code=paste0(
+          bin_samtools," view -H ",input,
+          " | grep @SQ| awk -F  \"\\t|:\" \'{print $3\"\\t\"0\"\\t\"$5}\'",
+          ifelse(header," |  awk \'BEGIN{print \"chr\\tstart\\tend\"}1\'","")," >",
+          .main$out_files$index_bed
+        )
+
+        run_job(.env=.this.env)
+        .env$.main<-.main
+    }
+  
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="bam"
+    )
+    launch(.env=.base.env)
+    
+}
+
+
+
+
+
+
+
 #' Function to collect chromosome data in bam
 #'
 #' This function takes a BAM file and collects the chr names from the bam
