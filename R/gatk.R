@@ -3591,6 +3591,9 @@ cnn_score_variants_gatk=function(
         ram=ram,
         executor_id=task_id
       )
+
+      .this.step=.main.step$steps$filter_variant_tranches_gatk
+      .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
     }
     .env$.main<-.main
   } 
@@ -3681,6 +3684,8 @@ filter_variant_tranches_gatk=function(
       haplotype_db,prev_filters
     )
 
+    run_job(.env=.this.env)
+    .env$.main<-.main
   }
 
   .base.env=environment()
