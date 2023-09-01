@@ -3432,8 +3432,8 @@ call_haplotypecaller_gatk=function(
     ### IF DATA.FRAME GENERATE GID
     if (is.data.frame(region)){
       region=region[region$chrom %in% chromosomes,]
-
-      region$gid=paste0(region$chrom,":",region$chromStart+1,"-",region$chromEnd+1)
+    ### CHANGE TO BASE 1 SYSTEM
+      region$gid=paste0(region$chrom,":",region$chromStart+1,"-",region$chromEnd)
       region=unlist(region$gid)
     }
 

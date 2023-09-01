@@ -918,7 +918,7 @@ append_env = function(to=environment(), from=NULL) {
 
 set_input_id=function(inputs,ids=NULL){
       if(!is.null(ids)){
-        my_id=ids
+        my_id=rep(ids,length(inputs))
       }else{
         my_id=unname(Vectorize(get_file_name)(inputs))
       }
