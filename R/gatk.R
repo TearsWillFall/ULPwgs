@@ -3399,7 +3399,7 @@ call_haplotypecaller_gatk=function(
       .main.step$steps <-append(
         .main.step$steps,
         get_sq_bam(
-          bin_samtools=bin_samtols,
+          bin_samtools=bin_samtools,
           bam=input,
           output_name=input_id,
           output_dir=tmp_dir,
