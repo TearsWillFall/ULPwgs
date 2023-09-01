@@ -32,30 +32,31 @@ read_bed=function(
     "itemRgb","blockCount","blockSizes","blockStarts")
    
     sort_bed=function(bed=NULL){
-        return(bed_body %>% dplyr::arrange(
+        return(bed %>% dplyr::arrange(
             gtools::mixedorder(chrom),chromStart,chromEnd)
         )
     }
 
   if(is.null(bed)){
     stop("bed argument is of type NULL")
-  }else if(is.data.frame(bed)){
-    body=bed
-  }else if(file.exists(bed)){
+  }
+
+  if(file.exists(bed)){
     if(grepl(".bed$",bed)){
-        body=read.csv(
+        bed=read.csv(
             file=bed,sep=sep,header=header,
             colClasses="character"
         )
         if(!header|rename){
-            names(body)=col_names[1:ncol(body)]
+            names(bed)=col_names[1:ncol(bed)]
         }
     }else{
         stop("Not valid file format. Valid file formats are BED.")
     }
-   
-  }else{
-    stop("Not recognized input BED format")
+  }
+
+  if(is.data.frame(bed)){
+    body=bed
   }
 
   bed_object=list(
