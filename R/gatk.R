@@ -3341,12 +3341,12 @@ new_haplotypecaller_gatk=function(
     .env$.main<-.main
    }
 
+  
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
     if(is.null(output_name)){
       output_name=get_file_name(bam)
     }
-
-    .base.env=environment()
-    list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
       vars="region"
