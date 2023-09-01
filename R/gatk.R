@@ -3429,11 +3429,11 @@ call_haplotypecaller_gatk=function(
       )$body
     }
 
-    ### IF DATA.FRAME GENERATE GID 
-
+    ### IF DATA.FRAME GENERATE GID
     if (is.data.frame(region)){
       region=region[region$chrom %in% chromosomes,]
-      region$gid=paste0(region$chrom,":",region$chromStart,"-",region$chromEnd)
+
+      region$gid=paste0(region$chrom,":",region$chromStart+1,"-",region$chromEnd+1)
       region=unlist(region$gid)
     }
 
