@@ -3415,7 +3415,6 @@ call_haplotypecaller_gatk=function(
         )
       )
       .this.step=.main.step$steps$get_sq_bam
-      print(.this.step)
       .main.step$out_files$region=.this.step$out_files$index_bed
       region=.main.step$out_files$region
      
