@@ -1660,7 +1660,7 @@ segment_cnvkit=function(
           ifelse(
             !is.null(antitarget),
             normalizePath(antitarget),
-            system.file("extdata", "antitargetcoverage.cnn", package=ns)
+            system.file("data", "antitargetcoverage.cnn", package=ns)
             ),
           normalizePath(pon)
       )
