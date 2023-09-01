@@ -9,6 +9,9 @@ new_haplotypecaller_gatk(
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   bam = NULL,
   region = NULL,
+  score = TRUE,
+  score_CNN = "CNN_1D",
+  filter = TRUE,
   ...
 )
 }

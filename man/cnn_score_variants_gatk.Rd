@@ -9,6 +9,7 @@ cnn_score_variants_gatk(
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   vcf = NULL,
   bam = NULL,
+  filter = TRUE,
   ...
 )
 }

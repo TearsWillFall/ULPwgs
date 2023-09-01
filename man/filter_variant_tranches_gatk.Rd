@@ -6,33 +6,19 @@
 \usage{
 filter_variant_tranches_gatk(
   sif_gatk = build_default_sif_list()$sif_gatk,
-  vcf = "",
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   indel_db = build_default_reference_list()$HG19$variant$mills_reference,
   haplotype_db = build_default_reference_list()$HG19$variant$hapmap_reference,
-  output_dir = ".",
-  output_name = "",
+  vcf = NULL,
   info_key = "CNN_1D",
   snp_tranche = 99.95,
   indel_tranche = 99.4,
   keep_previous_filters = FALSE,
-  verbose = FALSE,
-  batch_config = build_default_preprocess_config(),
-  threads = 4,
-  ram = 4,
-  mode = "local",
-  executor_id = make_unique_id("FilterVariantTranchesGatk"),
-  task_name = "FilterVariantTranchesGatk",
-  time = "48:0:0",
-  update_time = 60,
-  wait = FALSE,
-  hold = NULL
+  ...
 )
 }
 \arguments{
 \item{sif_gatk}{\link{REQUIRED} Path to gatk sif file.}
-
-\item{vcf}{\link{OPTIONAL} Path to VCF file.}
 
 \item{ref_genome}{\link{REQUIRED} Path to reference genome fasta file.}
 
@@ -40,9 +26,7 @@ filter_variant_tranches_gatk(
 
 \item{haplotype_db}{\link{OPTIONAL} Path to database with haplotype info.}
 
-\item{output_dir}{\link{OPTIONAL} Path to the output directory.}
-
-\item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of the first tumour sample of the samples will be used.}
+\item{vcf}{\link{REQUIRED} Path to VCF file.}
 
 \item{info_key}{\link{OPTIONAL} Info Key for CNN model training. Default CNN_1D. Options \link{"CNN_1D","CNN_2D"}}
 
@@ -50,31 +34,7 @@ filter_variant_tranches_gatk(
 
 \item{indel_tranche}{\link{OPTIONAL} INDEL tranche cut-off.}
 
-\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
-
-\item{batch_config}{\link{REQUIRED} Additional batch configuration if batch mode selected.}
-
-\item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
-
-\item{ram}{\link{OPTIONAL} RAM memory to asing to each thread. Default 4}
-
-\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
-
-\item{executor_id}{Task EXECUTOR ID. Default "recalCovariates"}
-
-\item{task_name}{Task name. Default "recalCovariates"}
-
-\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
-
-\item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
-
-\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
-
-\item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
-
 \item{keep_previous_tranche}{\link{OPTIONAL} Remove previous filter information.}
-
-\item{regions}{\link{OPTIONAL} Regions to parallelize through. If not given will be infered from BAM file.}
 }
 \description{
 This function filters variant tranches calls generated using CNNScoreVariants method

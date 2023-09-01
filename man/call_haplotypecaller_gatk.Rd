@@ -11,6 +11,9 @@ call_haplotypecaller_gatk(
   bam = NULL,
   chromosomes = c(1:22, "X", "Y"),
   region = NULL,
+  score = TRUE,
+  score_CNN = "CNN_1D",
+  filter = TRUE,
   ...
 )
 }

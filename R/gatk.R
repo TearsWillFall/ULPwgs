@@ -3300,6 +3300,9 @@ new_haplotypecaller_gatk=function(
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     bam=NULL,
     region=NULL,
+    score=TRUE,
+    score_CNN="CNN_1D",
+    filter=TRUE,
     ...
 ){
 
@@ -3340,6 +3343,33 @@ new_haplotypecaller_gatk=function(
     )
 
     run_job(.env=.this.env)
+
+    .main.step=.main$steps[[fn_id]]
+
+    if(score){
+        .main.step$steps<-append(
+        .main.step$steps,
+        cnn_score_variants_gatk(
+          sif_cnvkit=sif_cnvkit,
+          ref_genome=ref_genome,
+          bam=ifelse(score_CNN=="CNN_2D",normalizePath(bam),NULL),
+          vcf=.main$out_files$unfiltered_vcf,
+          filter=filter,
+          output_name=paste0(input_id,".",input),
+          output_dir=out_file_dir,
+          tmp_dir=tmp_dir,
+          batch_dir=batch_dir,
+          env_dir=env_dir,
+          err_msg=err_msg,
+          verbose=verbose,
+          threads=threads,
+          ram=ram,
+          executor_id=task_id
+        )
+      )
+      .this.step=.main.step$steps$cnn_score_variants_gatk
+      .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
+    }
     .env$.main<-.main
    }
 
@@ -3382,6 +3412,9 @@ call_haplotypecaller_gatk=function(
     bam=NULL,
     chromosomes=c(1:22,"X","Y"),
     region=NULL,
+    score=TRUE,
+    score_CNN="CNN_1D",
+    filter=TRUE,
     ...
 ){
 
@@ -3503,10 +3536,10 @@ cnn_score_variants_gatk=function(
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   vcf=NULL,
   bam=NULL,
+  filter=TRUE,
   ...
 ){
 
-  
    run_main=function(
     .env
   ){
@@ -3516,11 +3549,13 @@ cnn_score_variants_gatk=function(
     set_main(.env=.this.env)
 
     opt=""
-    .main$out_files$scored_vcf=paste0(out_file_dir,"/",input_id,".CNNscored.1D.",input_ext)
+    info_key="CNN_1D"
+    .main$out_files$scored_vcf=paste0(out_file_dir,"/",input_id,".CNNscored.1D.vcf")
     if (!is.null(bam)){
+        info_key="CNN_2D"
        bam=paste0(" -I ",bam)
        opt=" -tensor-type read_tensor "
-      .main$out_files$scored_vcf=paste0(out_file_dir,"/",input_id,".CNNscored.2D.",input_ext)
+      .main$out_files$scored_vcf=paste0(out_file_dir,"/",input_id,".CNNscored.2D.vcf")
     }
 
     .main$exec_code=paste(
@@ -3533,6 +3568,30 @@ cnn_score_variants_gatk=function(
     )
 
      run_job(.env=.this.env)
+
+
+    if(filter){
+      filter_variant_tranches_gatk(
+        sif_gatk=build_default_sif_list()$sif_gatk,
+        ref_genome=normalizePath(ref_genome),
+        indel_db=normalizePath(indel_db),
+        haplotype_db=normalizePath(haplotype_db),
+        vcf=.main$out_files$scored_vcf,
+        info_key=info_key,
+        snp_tranche=snp_tranche,
+        indel_tranche=indel_tranche,
+        keep_previous_filters=keep_previous_filters,
+        output_dir=out_file_dir,
+        tmp_dir=tmp_dir,
+        env_dir=env_dir,
+        batch_dir=batch_dir,
+        err_msg=err_msg,
+        verbose=verbose,
+        threads=threads,
+        ram=ram,
+        executor_id=task_id
+      )
+    }
     .env$.main<-.main
   } 
 
@@ -3552,748 +3611,6 @@ cnn_score_variants_gatk=function(
 
 
 
-#' Multiregion parallelization across Haplotypecaller Gatk Variant Calling
-#'
-#' This function functions calls Haplotypecaller across multiple regions in parallel.
-#' If a vector of normal samples are provided these will be processed in co-joint calling  mode.
-#' To run in normal mode suppply a normal sample.
-#' 
-#' //TODO validate co-joint calling mode
-#' 
-#' For more information read:
-#' https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller
-#'
-#'
-#' @param sif_gatk [REQUIRED] Path to gatk sif file.
-#' @param bin_bcftools [REQUIRED] Path to bcftools binary file.
-#' @param bin_bgzip [REQUIRED] Path to bgzip binary file.
-#' @param bin_tabix [REQUIRED] Path to tabix binary file.
-#' @param bin_samtools [REQUIRED] Path to samtools binary file.
-#' @param normal [OPTIONAL] Path to normal BAM file.
-#' @param ref_genome [REQUIRED] Path to reference genome fasta file.
-#' @param indel_db [OPTIONAL] Path to database with indel info.
-#' @param haplotype_db [OPTIONAL] Path to database with haplotype info.
-#' @param info_key [OPTIONAL] Info Key for CNN model training. Default CNN_1D. Options ["CNN_1D","CNN_2D"]
-#' @param snp_tranche [OPTIONAL] SNP tranche cut-off.
-#' @param indel_tranche [OPTIONAL] INDEL tranche cut-off.
-#' @param keep_previous_tranche [OPTIONAL] Remove previous filter information.
-#' @param rdata [OPTIONAL] Import R data information with list of BAM.
-#' @param selected [OPTIONAL] Select BAM from list.
-#' @param regions [OPTIONAL] Regions to parallelize through. If not given will be infered from BAM file.
-#' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
-#' @param output_dir [OPTIONAL] Path to the output directory.
-#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
-#' @param filter [OPTIONAL] Filter variants. Default TRUE
-#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
-#' @param verbose [OPTIONAL] Enables progress messages. Default False.
-#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
-#' @param batch_config [REQUIRED] Additional batch configuration if batch mode selected.
-#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
-#' @param task_name Task name. Default "recalCovariates"
-#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
-#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
-#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
-#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
-#' @export
-
-
-
-parallel_regions_haplotypecaller_gatk=function(
-  rdata=NULL,selected=NULL,
-  sif_gatk=build_default_sif_list()$sif_gatk,
-  bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
-  bin_samtools=build_default_tool_binary_list()$bin_samtools,
-  bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
-  bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  normal="",
-  ref_genome=build_default_reference_list()$HG19$reference$genome,
-  regions=NULL,
-  output_dir=".",
-  chr=c(1:22,"X","Y","MT"),
-  indel_db=build_default_reference_list()$HG19$variant$mills_reference,
-  haplotype_db=build_default_reference_list()$HG19$variant$hapmap_reference,
-  filter=TRUE,
-  output_name="",
-  info_key="CNN_1D",
-  snp_tranche=99.95,
-  indel_tranche=99.4,
-  keep_previous_filters=FALSE,
-  clean=FALSE,
-  verbose=FALSE,
-  batch_config=build_default_preprocess_config(),
-  threads=4,ram=4,mode="local",
-  executor_id=make_unique_id("parallelCallHaplotypecallerGatk"),
-  task_name="parallelCallHaplotypecallerGatk",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
-){
-  
-  if(!is.null(rdata)){
-    load(rdata)
-    if(!is.null(selected)){
-      tumour=tumours_list[selected]
-
-    }
-  }
-
-  id=""
-  if(output_name!=""){
-    id=output_name
-  }else{
-    id=get_file_name(normal[1])
-  }
-
-  argg <- as.list(environment())
-  task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir,name=paste0("haplotypecaller_reports/",id))
-  tmp_dir=set_dir(dir=out_file_dir,name="tmp")
-
-  job=build_job(executor_id=executor_id,task_id=task_id)
-
-  jobs_report=build_job_report(
-    job_id=job,
-    executor_id=executor_id,
-    exec_code=list(), 
-    task_id=task_id,
-    input_args=argg,
-    out_file_dir=out_file_dir,
-    out_files=list(
-      )
-    )
-
-  if(is.null(regions)){
-
-    jobs_report[["steps"]][["getChr"]] <- get_bam_reference_chr(
-      bin_samtools=bin_samtools,
-      bam=normalizePath(normal[1]),verbose=verbose,output_dir=normalizePath(tmp_dir),
-      output_name=paste0(get_file_name(normal[1]),"_Ref"),
-      executor_id=task_id,mode="local",threads=threads,ram=ram,
-      time=time,update_time=update_time,wait=FALSE,hold=hold)
-
-    regions=read.table(jobs_report[["steps"]][["getChr"]]$out_files$ref,
-    sep="\t",header=TRUE)
-    hold=jobs_report[["steps"]][["getChr"]]$job_id
-  }
-
-  regions$start=regions$start+1
-  regions=regions %>% dplyr::mutate(region=paste0(chr,":",start,"-",end))
-
-  if(!is.null(chr)){
-    regions=regions[regions$chr %in% chr,]
-  }
-
-  region_list=regions$region
-  names(region_list)=regions$region
-
-  if(mode=="local"){
-    jobs_report[["steps"]][["par_region_call_variants"]]<-
-    parallel::mclapply(region_list,FUN=function(region){
-      job_report <- haplotypecaller_gatk(
-            sif_gatk=sif_gatk,
-            region=region,
-            normal=normalizePath(normal),
-            output_name=id,
-            ref_genome=normalizePath(ref_genome),
-            output_dir=tmp_dir,
-            tmp_dir=tmp_dir,
-            verbose=verbose,
-            executor_id=task_id
-      )
-    },mc.cores=threads)
-    
-    }else if(mode=="batch"){
-          rdata_file=paste0(tmp_dir,"/",job,".regions.RData")
-          output_dir=tmp_dir
-          output_name=id
-          executor_id=task_id
-          save(
-            region_list,
-            normalizePath(normal),sif_gatk,
-            normalizePath(ref_genome),
-            output_name,
-            output_dir,
-            executor_id,
-            verbose,
-            tmp_dir,
-            file = rdata_file
-          )
-          exec_code=paste0("Rscript -e \"ULPwgs::haplotypecaller_gatk(rdata=\\\"",
-          rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
-          out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-          batch_code=build_job_exec(job=job,time=time,ram=ram,
-          threads=1,output_dir=out_file_dir2,
-          hold=hold,array=length(region_list))
-          exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
-
-          if(verbose){
-              print_verbose(job=job,arg=argg,exec_code=exec_code)
-          }
-          error=execute_job(exec_code=exec_code)
-          if(error!=0){
-              stop("gatk failed to run due to unknown error.
-              Check std error for more information.")
-          }
-
-  
-         jobs_report[["steps"]][["par_region_call_variants"]]<- build_job_report(
-              job_id=job,
-              executor_id=executor_id,
-              exec_code=exec_code, 
-              task_id=task_id,
-              input_args=argg,
-              out_file_dir=tmp_dir,
-              out_files=list(
-                  vcf=paste0(tmp_dir,"/vcf/",id,".",region_list,".unfilt.vcf.gz"),
-                  idx=paste0(tmp_dir,"/vcf/",id,".",region_list,".unfilt.vcf.idx")
-                )
-        )
-
-  }
-
-
-  vcfs<-unlist_lvl(jobs_report[["steps"]][["par_region_call_variants"]],var="vcf")
-  hold<-unlist_lvl(jobs_report[["steps"]][["par_region_call_variants"]],var="job_id")
-  jobs_report[["steps"]][["concatVCF"]] <- concat_vcf(
-    bin_bcftools=bin_bcftools,
-    bin_bgzip=bin_bgzip,
-    bin_tabix=bin_tabix,
-    vcfs=normalizePath(vcfs),clean=clean,sort=TRUE,
-    compress=FALSE,format="vcf",
-    verbose=verbose,output_name=id,
-    output_dir=out_file_dir,
-    tmp_dir=tmp_dir,batch_config=batch_config,
-    threads=1,ram=ram,mode=mode,
-    executor_id=task_id,
-    time=time,hold=hold
-  )
-
-  if(filter){
-        vcf<-jobs_report[["steps"]][["concatVCF"]]$out_files$concat_vcf
-        hold<-jobs_report[["steps"]][["concatVCF"]]$job_id
-        jobs_report[["steps"]][["cnnScoreVariantsGatk"]]<-cnn_score_variants_gatk(
-        sif_gatk=sif_gatk,
-        vcf=normalizePath(vcf),bam=ifelse(info_key=="CNN_1D","",bam),
-        ref_genome=normalizePath(ref_genome),
-        output_dir=out_file_dir,output_name=id,
-        verbose=verbose,
-        batch_config=batch_config,
-        threads=threads,ram=ram,mode=mode,
-        executor_id=task_id,
-        time=time,
-        hold=hold
-    )
-
-      vcf<-jobs_report[["steps"]][["cnnScoreVariantsGatk"]]$out_files$scored_vcf
-      hold<-jobs_report[["steps"]][["cnnScoreVariantsGatk"]]$job_id
-
-      jobs_report[["steps"]][["filterVariantTranchesGatk"]]<-filter_variant_tranches_gatk(
-        sif_gatk=sif_gatk,
-        vcf=normalizePath(vcf),
-        ref_genome=normalizePath(ref_genome),
-        indel_db=normalizePath(indel_db),
-        haplotype_db=normalizePath(haplotype_db),
-        output_dir=out_file_dir,output_name=id,
-        info_key=info_key,
-        snp_tranche=snp_tranche,
-        indel_tranche=indel_tranche,
-        keep_previous_filters=keep_previous_filters,
-        verbose=verbose,
-        batch_config=batch_config,
-        threads=threads,ram=ram,mode=mode,
-        executor_id=task_id,
-        time=time,
-        hold=hold
-    )
-
-
-  if(extract_pass){
-      vcf<- jobs_report[["steps"]][["filterVariantTranchesGatk"]]$out_files$filtered_vcf
-      hold<-jobs_report[["steps"]][["filterVariantTranchesGatk"]]$job_id
-      job_report[["steps"]][["extractPASSvcf"]]<-
-        parallel_vcfs_variants_by_filters_vcf(
-          bin_bgzip=bin_bgzip,
-          bin_tabix=bin_tabix,
-          vcf=normalizePath(vcf),
-          filters="PASS",
-          exclusive=TRUE,
-          compress=FALSE,
-          output_dir=out_file_dir,
-          verbose=verbose,
-          batch_config=batch_config,
-          threads=threads,ram=ram,mode=mode,
-          executor_id=task_id,
-          time=time,
-          hold=job
-        )
-    }
-
-  }
-
-  return(jobs_report)
-
-}
-
-
-
-#' Multiregion parallelization of Haplotypecaller Gatk Variant Calling for multiple-samples
-#'
-#' This function functions calls Haplotypecaller across multiple regions in parallel across multiple sanmples
-#' If a vector of normal samples are provided these will be processed in co-joint calling  mode.
-#' To run in normal mode suppply a normal sample.
-#' 
-#' //TODO validate co-joint calling mode
-#' 
-#' For more information read:
-#' https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller
-#'
-#' @param rdata [OPTIONAL] Import R data information with list of BAM.
-#' @param selected [OPTIONAL] Select BAM from list.
-#' @param sif_gatk [REQUIRED] Path to gatk sif file.
-#' @param bin_bcftools [REQUIRED] Path to bcftools binary file.
-#' @param bin_bgzip [REQUIRED] Path to bgzip binary file.
-#' @param bin_tabix [REQUIRED] Path to tabix binary file.
-#' @param bin_samtools [REQUIRED] Path to samtools binary file.
-#' @param normal [OPTIONAL] Path to normal BAM file.
-#' @param patient_id [OPTIONAL] Patient ID.
-#' @param ref_genome [REQUIRED] Path to reference genome fasta file.
-#' @param indel_db [OPTIONAL] Path to database with indel info.
-#' @param haplotype_db [OPTIONAL] Path to database with haplotype info.
-#' @param info_key [OPTIONAL] Info Key for CNN model training. Default CNN_1D. Options ["CNN_1D","CNN_2D"]
-#' @param snp_tranche [OPTIONAL] SNP tranche cut-off.
-#' @param indel_tranche [OPTIONAL] INDEL tranche cut-off.
-#' @param keep_previous_tranche [OPTIONAL] Remove previous filter information.
-#' @param regions [OPTIONAL] Regions to parallelize through. If not given will be infered from BAM file.
-#' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
-#' @param output_dir [OPTIONAL] Path to the output directory.
-#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
-#' @param filter [OPTIONAL] Filter variants. Default TRUE
-#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
-#' @param verbose [OPTIONAL] Enables progress messages. Default False.
-#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
-#' @param batch_config [REQUIRED] Additional batch configuration if batch mode selected.
-#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
-#' @param task_name Task name. Default "recalCovariates"
-#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
-#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
-#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
-#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
-#' @export
-
-
-parallel_samples_haplotypecaller_gatk=function(
-  sif_gatk=build_default_sif_list()$sif_gatk,
-  bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
-  bin_samtools=build_default_tool_binary_list()$bin_samtools,
-  bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
-  bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  normal="",patient_id="",
-  chr=c(1:22,"X","Y","MT"),
-  ref_genome=build_default_reference_list()$HG19$reference$genome,
-  indel_db=build_default_reference_list()$HG19$variant$mills_reference,
-  haplotype_db=build_default_reference_list()$HG19$variant$hapmap_reference,
-  filter=TRUE,
-  info_key="CNN_1D",
-  snp_tranche=99.95,
-  indel_tranche=99.4,
-  keep_previous_filters=FALSE,
-  clean=FALSE,
-  regions=NULL,
-  method="single",
-  verbose=FALSE,
-  output_dir=".",
-  batch_config=build_default_preprocess_config(),
-  threads=4,ram=4,mode="local",
-  executor_id=make_unique_id("parSamplesHaplotypeCaller"),
-  task_name="parSamplesHaplotypeCaller",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
-){
-
-  argg <- as.list(environment())
-  task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir,name=patient_id)
-  tmp_dir=set_dir(dir=out_file_dir,name="haplotypecaller_tmp")
- 
-
-  job=build_job(executor_id=executor_id,task_id=task_id)
-
-
-  jobs_report=build_job_report(
-    job_id=job,
-    executor_id=executor_id,
-    exec_code=list(), 
-    task_id=task_id,
-    input_args=argg,
-    out_file_dir=out_file_dir,
-    out_files=list(
-      )
-    )
-
-  if(method=="single"){
-
-    normal_list=normal
-    names(normal_list)=Vectorize(get_file_name)(normal)
-
-    if(mode=="local"){
-      jobs_report[["steps"]][["par_sample_call_germline_variants"]]<-
-      parallel::mclapply(normal_list,FUN=function(normal){
-        job_report <- parallel_regions_haplotypecaller_gatk(
-            sif_gatk=sif_gatk,
-            bin_bcftools=bin_bcftools,
-            bin_samtools=bin_samtools,
-            bin_bgzip=bin_bgzip,
-            bin_tabix=bin_tabix,
-            normal=normalizePath(normal),
-            ref_genome=normalizePath(ref_genome),
-            regions=regions,
-            output_dir=out_file_dir,
-            indel_db=normalizePath(indel_db),
-            haplotype_db=normalizePath(haplotype_db),
-            filter=filter,
-            output_name=get_file_name(normal),
-            info_key=info_key,
-            snp_tranche=snp_tranche,
-            indel_tranche=indel_tranche,
-            keep_previous_filters=keep_previous_filters,
-            clean=clean,
-            verbose=verbose,
-            batch_config=batch_config,
-            threads=threads,ram=ram,mode=local,
-            executor_id=task_id,
-            time=time,
-            hold=hold)
-      },mc.cores=threads)
-    }else if(mode=="batch"){
-            rdata_file=paste0(tmp_dir,"/",job,".samples.RData")
-            output_dir=out_file_dir
-            executor_id=task_id
-            save(
-              normal_list,
-              sif_gatk,
-              bin_bcftools,
-              bin_samtools,
-              bin_bgzip,
-              bin_tabix,
-              normalizePath(ref_genome),
-              regions,
-              output_dir,
-              normalizePath(indel_db),
-              normalizePath(haplotype_db),
-              filter,
-              info_key,
-              snp_tranche,
-              indel_tranche,
-              executor_id,
-              keep_previous_filters,
-              clean,
-              verbose
-            )
-            exec_code=paste0("Rscript -e \"ULPwgs::parallel_regions_haplotypecaller_gatk(rdata=\\\"",
-            rdata_file,"\\\",selected=$SGE_TASK_ID)\"")
-            out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-            batch_code=build_job_exec(job=job,time=time,ram=ram,
-            threads=2,output_dir=out_file_dir2,
-            hold=hold,array=length(normal_list))
-            exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
-
-            if(verbose){
-                print_verbose(job=job,arg=argg,exec_code=exec_code)
-            }
-            error=execute_job(exec_code=exec_code)
-            if(error!=0){
-                stop("gatk failed to run due to unknown error.
-                Check std error for more information.")
-            }
-    
-          jobs_report[["steps"]][["par_sample_call_germline_variants"]]<- build_job_report(
-                job_id=job,
-                executor_id=executor_id,
-                exec_code=exec_code, 
-                task_id=task_id,
-                input_args=argg,
-                out_file_dir=out_file_dir,
-                out_files=list(
-                  filtered_vcf=ifelse(filter,paste0(out_file_dir,"/haplotypecaller_reports/",
-                  names(normal_list),"/",names(normal_list),".filteredTranches.vcf"),""),
-                )
-                  )
-             }
-    }else if (method=="multi"){
-        jobs_report[["steps"]][["par_sample_call_germline_variants"]]<-
-          parallel_regions_haplotypecaller_gatk(
-            sif_gatk=sif_gatk,
-            bin_bcftools=bin_bcftools,
-            bin_samtools=bin_samtools,
-            bin_bgzip=bin_bgzip,
-            bin_tabix=bin_tabix,
-            normal=normalizePath(normal),
-            ref_genome=normalizePath(ref_genome),
-            regions=regions,
-            output_dir=out_file_dir,
-            indel_db=normalizePath(indel_db),
-            haplotype_db=normalizePath(haplotype_db),
-            filter=filter,
-            output_name=patient_id,
-            info_key=info_key,
-            snp_tranche=snp_tranche,
-            indel_tranche=indel_tranche,
-            keep_previous_filters=keep_previous_filters,
-            clean=clean,
-            verbose=verbose,
-            batch_config=batch_config,
-            threads=threads,ram=ram,mode=local,
-            executor_id=task_id,
-            time=time,
-            hold=hold)
-    }else{
-      stop("Wrong method supplied. Only single or multi methods available.")
-    }     
-
-
-  if(wait&&mode=="batch"){
-    job_validator(job=unlist_lvl(jobs_report[["steps"]],var="job_id"),time=update_time,
-    verbose=verbose,threads=threads)
-  }
-
-  return(jobs_report)
-
-}
-
-
-
-#' Multiregion parallelization of Haplotypecaller Gatk Variant Calling for multiple-samples for single and multiple samples
-#'
-#' This function functions calls Haplotypecaller across multiple regions in parallel across multiple sanmples
-#' If a vector of normal samples are provided these will be processed in co-joint calling  mode.
-#' To run in normal mode suppply a normal sample.
-#' 
-#' //TODO validate co-joint calling mode
-#' 
-#' For more information read:
-#' https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller
-#' 
-#' 
-#' @param rdata [OPTIONAL] Import R data information with list of BAM.
-#' @param selected [OPTIONAL] Select BAM from list.
-#' @param sif_gatk [REQUIRED] Path to gatk sif file.
-#' @param bin_bcftools [REQUIRED] Path to bcftools binary file.
-#' @param bin_bgzip [REQUIRED] Path to bgzip binary file.
-#' @param bin_tabix [REQUIRED] Path to tabix binary file.
-#' @param bin_samtools [REQUIRED] Path to samtools binary file.
-#' @param sample_sheet [OPTIONAL] Path to sheet with sample information.
-#' @param normal [OPTIONAL] Path to normal BAM file.
-#' @param patient_id [OPTIONAL] Patient ID.
-#' @param bam_dir [OPTIONAL] Path to directory with BAM files.
-#' @param pattern [OPTIONAL] Pattern to use to search for BAM files in BAM directory.
-#' @param ref_genome [REQUIRED] Path to reference genome fasta file.
-#' @param indel_db [OPTIONAL] Path to database with indel info.
-#' @param haplotype_db [OPTIONAL] Path to database with haplotype info.
-#' @param info_key [OPTIONAL] Info Key for CNN model training. Default CNN_1D. Options ["CNN_1D","CNN_2D"]
-#' @param snp_tranche [OPTIONAL] SNP tranche cut-off.
-#' @param indel_tranche [OPTIONAL] INDEL tranche cut-off.
-#' @param keep_previous_tranche [OPTIONAL] Remove previous filter information.
-#' @param regions [OPTIONAL] Regions to parallelize through. If not given will be infered from BAM file.
-#' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
-#' @param output_dir [OPTIONAL] Path to the output directory.
-#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
-#' @param filter [OPTIONAL] Filter variants. Default TRUE
-#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
-#' @param verbose [OPTIONAL] Enables progress messages. Default False.
-#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
-#' @param batch_config [REQUIRED] Additional batch configuration if batch mode selected.
-#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
-#' @param task_name Task name. Default "recalCovariates"
-#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
-#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
-#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
-#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
-#' @export
-
-
-
-
-
-multisample_haplotypecaller_gatk=function(
-  sif_gatk=build_default_sif_list()$sif_gatk,
-  bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
-  bin_samtools=build_default_tool_binary_list()$bin_samtools,
-  bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
-  bin_tabix=build_default_tool_binary_list()$bin_tabix,
-  sample_sheet=NULL,
-  bam_dir="",
-  patient_id="",
-  pattern="bam$",
-  chr=c(1:22,"X","Y","MT"),
-  ref_genome=build_default_reference_list()$HG19$reference$genome,
-  indel_db=build_default_reference_list()$HG19$variant$mills_reference,
-  haplotype_db=build_default_reference_list()$HG19$variant$hapmap_reference,
-  filter=TRUE,
-  info_key="CNN_1D",
-  snp_tranche=99.95,
-  indel_tranche=99.4,
-  keep_previous_filters=FALSE,
-  clean=FALSE,
-  regions=NULL,
-  method="single",
-  verbose=FALSE,
-  output_dir=".",
-  header=TRUE,
-  sep="\t",
-  batch_config=build_default_preprocess_config(),
-  threads=4,ram=4,mode="local",
-  executor_id=make_unique_id("multiSampleHaplotypeCaller"),
-  task_name="multiSampleHaplotypeCaller",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
-){
-
-  argg <- as.list(environment())
-
-        task_id=make_unique_id(task_name)
-        out_file_dir=set_dir(dir=output_dir)
-
-        job=build_job(executor_id=executor_id,task_id=task_id)
-
-        job_report=build_job_report(
-                job_id=job,
-                executor_id=executor_id,
-                exec_code=list(), 
-                task_id=task_id,
-                input_args=argg,
-                out_file_dir=out_file_dir,
-                out_files=list(
-                )
-        )
-
-    columns=c(
-      "sif_gatk",
-      "bin_bcftools",
-      "bin_samtools",
-      "bin_bgzip",
-      "bin_tabix",
-      "patient_id",
-      "normal",
-      "ref_genome",
-      "indel_db",
-      "haplotype_db",
-      "filter",
-      "chr",
-      "info_key",
-      "snp_tranche",
-      "indel_tranche",
-      "keep_previous_filters",
-      "clean",
-      "regions",
-      "method",
-      "output_dir",
-      "verbose",
-      "batch_config",
-      "threads",
-      "ram",
-      "time",
-      "mode",
-      "hold")
-
-
-    if(!is.null(sample_sheet)){
-      
-        if(!is.data.frame(sample_sheet)){
-                file_info=read.csv(sample_sheet,header=header,sep=sep,stringsAsFactors=FALSE)
-                if(!header){
-                    names(file_info)=columns
-                }
-        }else{
-                file_info=sample_sheet
-        }
-        
-        file_info=file_info %>% dplyr::group_by(dplyr::across(-normal)) %>% dplyr::summarise(normal=list(normal))
-
-        job_report[["steps"]][["multisample_haplotypecaller"]]=parallel::mclapply(seq(1,nrow(file_info)),FUN=function(x){
-            
-            lapply(columns,FUN=function(col){
-                if(is.null(file_info[[col]])){
-                    file_info[[col]]<<-get(col)
-                }
-            })
-        
-            job_report<-parallel_samples_haplotypecaller_gatk(
-                  sif_gatk=file_info[x,]$sif_gatk,
-                  bin_bcftools=file_info[x,]$sif_bcftools,
-                  bin_samtools=file_info[x,]$bin_samtools,
-                  bin_bgzip=file_info[x,]$bin_bgzip,
-                  bin_tabix=file_info[x,]$bin_tabix,
-                  normal=normalizePath(file_info[x,]$normal),
-                  patient_id=file_info[x,]$patient_id,
-                  ref_genome=normalizePath(file_info[x,]$ref_genome),
-                  indel_db=normalizePath(file_info[x,]$indel_db),
-                  haplotype_db=normalizePath(file_info[x,]$haplotype_db),
-                  filter=file_info[x,]$filter,
-                  info_key=file_info[x,]$info_key,
-                  chr=evaluate(parse(text=file_info[x,]$chr)),
-                  snp_tranche=file_info[x,]$snp_tranche,
-                  indel_tranche=file_info[x,]$indel_tranche,
-                  keep_previous_filters=file_info[x,]$keep_previous_filters,
-                  output_dir=file_info[x,]$output_dir,
-                  clean=file_info[x,]$clean,
-                  regions=file_info[[x,"regions"]],
-                  method=file_info[x,]$method,
-                  verbose=file_info[x,]$verbose,
-                  batch_config=file_info[x,]$batch_config,
-                  threads=file_info[x,]$threads,
-                  ram=file_info[x,]$ram,
-                  mode=file_info[x,]$mode,
-                  executor_id=task_id,
-                  time=file_info[x,]$time,
-                  hold=file_info[[x,"hold"]]
-              )
-            },mc.cores=ifelse(mode=="local",1,3))
-
-    }else{
-        bam_dir_path=system(paste("realpath",bam_dir),intern=TRUE)
-        normal=system(paste0("find ",bam_dir_path,"| grep ",pattern),intern=TRUE)
-      
-
-          job_report<-parallel_samples_haplotypecaller_gatk(
-                  sif_gatk=sif_gatk,
-                  bin_bcftools=sif_bcftools,
-                  bin_samtools=bin_samtools,
-                  bin_bgzip=bin_bgzip,
-                  bin_tabix=bin_tabix,
-                  normal=normalizePath(normal),
-                  patient_id=patient_id,
-                  chr=chr,
-                  ref_genome=normalizePath(ref_genome),
-                  indel_db=normalizePath(indel_db),
-                  haplotype_db=normalizePath(haplotype_db),
-                  filter=filter,
-                  info_key=info_key,
-                  snp_tranche=snp_tranche,
-                  indel_tranche=indel_tranche,
-                  keep_previous_filters=keep_previous_filters,
-                  clean=clean,
-                  regions=regions,
-                  method=method,
-                  verbose=verbose,
-                  output_dir=output_dir,
-                  batch_config=batch_config,
-                  threads=threads,
-                  ram=ram,
-                  mode=mode,
-                  executor_id=task_id,
-                  time=time,
-                  hold=hold
-              )
-    }
-
-
-    if(wait&&mode=="batch"){
-        job_validator(job=unlist_level(named_list=job_report[["steps"]][["multisample_haplotypecaller"]],var="job_id"),
-        time=update_time,verbose=verbose,threads=threads)
-    }
-
-    return(job_report)
-
-}
-
-
-
 
 
 #' Variant Trench Filtering using GATK
@@ -4304,7 +3621,7 @@ multisample_haplotypecaller_gatk=function(
 #' https://gatk.broadinstitute.org/hc/en-us/articles/360051308071-FilterVariantTranches
 #'
 #' @param sif_gatk [REQUIRED] Path to gatk sif file.
-#' @param vcf [OPTIONAL] Path to VCF file.
+#' @param vcf [REQUIRED] Path to VCF file.
 #' @param ref_genome [REQUIRED] Path to reference genome fasta file.
 #' @param indel_db [OPTIONAL] Path to database with indel info.
 #' @param haplotype_db [OPTIONAL] Path to database with haplotype info.
@@ -4312,127 +3629,66 @@ multisample_haplotypecaller_gatk=function(
 #' @param snp_tranche [OPTIONAL] SNP tranche cut-off.
 #' @param indel_tranche [OPTIONAL] INDEL tranche cut-off.
 #' @param keep_previous_tranche [OPTIONAL] Remove previous filter information.
-#' @param regions [OPTIONAL] Regions to parallelize through. If not given will be infered from BAM file.
-#' @param output_name [OPTIONAL] Name for the output. If not given the name of the first tumour sample of the samples will be used.
-#' @param output_dir [OPTIONAL] Path to the output directory.
-#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
-#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
-#' @param verbose [OPTIONAL] Enables progress messages. Default False.
-#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
-#' @param batch_config [REQUIRED] Additional batch configuration if batch mode selected.
-#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
-#' @param task_name Task name. Default "recalCovariates"
-#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
-#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
-#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
-#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 
 
 
 filter_variant_tranches_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
-  vcf="",
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   indel_db=build_default_reference_list()$HG19$variant$mills_reference,
   haplotype_db=build_default_reference_list()$HG19$variant$hapmap_reference,
-  output_dir=".",output_name="",
+  vcf=NULL,
   info_key="CNN_1D",
   snp_tranche=99.95,
   indel_tranche=99.4,
   keep_previous_filters=FALSE,
-  verbose=FALSE,
-  batch_config=build_default_preprocess_config(),
-  threads=4,ram=4,mode="local",
-  executor_id=make_unique_id("FilterVariantTranchesGatk"),
-  task_name="FilterVariantTranchesGatk",time="48:0:0",
-  update_time=60,wait=FALSE,hold=NULL
+  ...
 ){
 
-
-  argg <- as.list(environment())
-  task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir)
-  job=build_job(executor_id=executor_id,task_id=task_id)
+  .this.env=environment()
+  append_env(to=.this.env,from=.env)
+  set_main(.env=.this.env)
 
 
-  id=""
-  if(output_name!=""){
-    id=output_name
-  }else{
-    id=get_file_name(vcf[1])
-  }
+  run_main=function(
+    .env
+  ){
 
+    prev_filters=" --invalidate-previous-filters "
+    if (keep_previous_filters){
+      prev_filters=" "
+    }
 
-  prev_filters=" --invalidate-previous-filters "
-  if (keep_previous_filters){
-    prev_filters=" "
-  }
+    if(is.null(indel_db)){
+      indel_db=paste0(" --resource ",normalizePath(indel_db))
+    }
 
-  if(indel_db!=""){
-    indel_db=paste0(" --resource ",normalizePath(indel_db))
-  }
+    if(is.null(haplotype_db)){
+      haplotype_db=paste0(" --resource ",normalizePath(haplotype_db))
+    }
 
-  if(haplotype_db!=""){
-    haplotype_db=paste0(" --resource ",normalizePath(haplotype_db))
-  }
-
-
-
-  out_file=paste0(out_file_dir,"/",id,".filteredTranches.vcf")
-
+    .main$out_files$filtered_vcf=paste0(out_file_dir,"/",input_id,".filteredTranches.vcf")
   
-  exec_code=paste(
-    "singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
-    " /gatk/gatk  FilterVariantTranches -R ",ref_genome, 
-    " -O ", out_file, 
-    " -V ",vcf, " --info-key ",info_key,
-    " --snp-tranche ",snp_tranche,
-    " --indel-tranche ",indel_tranche,indel_db,
-    haplotype_db,prev_filters
-  )
-
-  if(mode=="batch"){
-       out_file_dir2=set_dir(dir=out_file_dir,name="batch")
-       batch_code=build_job_exec(job=job,hold=hold,time=time,ram=ram,
-       threads=threads,output_dir=out_file_dir2)
-       exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,";",exec_code,"'|",batch_code)
-  }
-
-  if(verbose){
-       print_verbose(job=job,arg=argg,exec_code=exec_code)
-  }
-
-  error=execute_job(exec_code=exec_code)
-  
-  
-  if(error!=0){
-    stop("gatk failed to run due to unknown error.
-    Check std error for more information.")
-  }
-
-  job_report=build_job_report(
-    job_id=job,
-    executor_id=executor_id,
-    exec_code=exec_code, 
-    task_id=task_id,
-    input_args = argg,
-    out_file_dir=out_file_dir,
-    out_files=list(
-      filtered_vcf=out_file,
-      idx=paste0(out_file,".idx")
+    .main$exec_code=paste(
+      "singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
+      " /gatk/gatk  FilterVariantTranches -R ",normalizePath(ref_genome), 
+      " -O ", .main$out_files$filtered_vcf, 
+      " -V ",normalizePath(input), " --info-key ",info_key,
+      " --snp-tranche ",snp_tranche,
+      " --indel-tranche ",indel_tranche,indel_db,
+      haplotype_db,prev_filters
     )
-  )
 
-
-  if(wait&&mode=="batch"){
-    job_validator(job=job_report$job_id,time=update_time,
-    verbose=verbose,threads=threads)
   }
 
-  return(job_report)
+  .base.env=environment()
+  list2env(list(...),envir=.base.env)
+  set_env_vars(
+      .env=.base.env,
+      vars="vcf"
+  )
+
+  launch(.env=.base.env)
 
 }
-
-
-

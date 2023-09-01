@@ -1250,7 +1250,6 @@ call_coverage_cnvkit=function(
       stop("Valid values for type are : target / antitarget")
     }
 
-
     .main.step$steps<-append(
       .main.step$steps,
       coverage_cnvkit(
