@@ -3379,6 +3379,7 @@ call_haplotypecaller_gatk=function(
     bin_samtools=build_default_tool_binary_list()$bin_samtools,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     bam=NULL,
+    chromosomes=c(1:22,"X","Y"),
     region=NULL,
     ...
 ){
@@ -3432,7 +3433,8 @@ call_haplotypecaller_gatk=function(
     ### IF DATA.FRAME GENERATE GID 
 
     if (is.data.frame(region)){
-      region$gid=paste0(region$chr,":",region$start,"-",region$end)
+      region=region[region$chrom %in% chromosomes,]
+      region$gid=paste0(region$chrom,":",region$chromStart,"-",region$chromEnd)
       region=unlist(region$gid)
     }
 
