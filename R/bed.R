@@ -23,7 +23,7 @@ read_bed=function(
     bed=NULL,sep="\t",
     header=TRUE,
     rename=TRUE,
-    sort=TRUE
+    srt=TRUE
 ){
   options(scipen=999)
   col_names=c(
@@ -62,7 +62,7 @@ read_bed=function(
   bed_object=list(
     time=Sys.time(),
     bed_origin=normalizePath(bed),
-    body=ifelse(sort,sort_bed(body),body)
+    body=ifelse(srt,sort_bed(body),body)
   )
   return(bed_object)
 }
