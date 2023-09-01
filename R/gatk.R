@@ -3416,15 +3416,15 @@ call_haplotypecaller_gatk=function(
       )
       .this.step=.main.step$steps$get_sq_bam
       .main.step$out_files$region=.this.step$out_files
-      region=.main.step$out_files$region
+      region=.main.step$out_files$region$index_bed
      
     }
 
     ### ASCERTAIN REGION INPUT IF GIVEN
 
     ### IF PATH READ AS BED
-    if (file.exists(normalizePath(region))){
-      region=read_bed(
+    if (file.exists(region)){
+      region=read_bed(bed=
         .main.step$out_files$region
       )
     }
