@@ -3322,9 +3322,9 @@ new_haplotypecaller_gatk=function(
         )
     }else{
         .main$out_files$unfiltered_vcf=paste0(
-          out_file_dir,"/",paste0(input_id,".",region),".unfilt.vcf.gz"
+          out_file_dir,"/",paste0(input_id,".",input),".unfilt.vcf.gz"
         )
-        region=paste0(" -L ",region)
+        region=paste0(" -L ",input)
     }
 
     .main$exec_code=paste(
