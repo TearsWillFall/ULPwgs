@@ -4,45 +4,26 @@
 \alias{concat_vcf}
 \title{Concatenate a list of vcf files}
 \usage{
-concat_vcf(
-  bin_bcftools = build_default_tool_binary_list()$bin_bcftools,
-  bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
-  bin_tabix = build_default_tool_binary_list()$bin_tabix,
-  vcfs = "",
-  sort = TRUE,
-  compress = FALSE,
-  clean = TRUE,
-  format = "vcf",
-  output_name = "",
-  output_dir = ".",
-  tmp_dir = ".",
-  verbose = FALSE,
-  batch_config = build_default_preprocess_config(),
-  threads = 1,
-  ram = 4,
-  mode = "local",
-  executor_id = make_unique_id("concatVCF"),
-  task_name = "concatVCF",
-  time = "48:0:0",
-  update_time = 60,
-  wait = FALSE,
-  hold = NULL
-)
+concat_vcf(vcfs = NULL)
 }
 \arguments{
-\item{compress}{Output compressed file. Default file.}
-
-\item{format}{Output file format. vcf/bcf}
+\item{vcf}{\link{Optional} Path to vcf files to merge.}
 
 \item{output_name}{\link{OPTIONAL} Name for the output. If not given the name of one of the samples will be used.}
 
+\item{pon}{\link{Optional} Path to panel of normal.}
+
 \item{output_dir}{Path to the output directory.}
 
-\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
+\item{format}{Output file format. vcf/bcf}
+
+\item{compress}{Output compressed file. Default file.}
 
 \item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 1}
 
 \item{ram}{\link{OPTIONAL} RAM memory to asing to each thread. Default 4}
+
+\item{verbose}{\link{OPTIONAL} Enables progress messages. Default False.}
 
 \item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
 
@@ -57,10 +38,6 @@ concat_vcf(
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
 \item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
-
-\item{vcf}{\link{Optional} Path to vcf files to merge.}
-
-\item{pon}{\link{Optional} Path to panel of normal.}
 }
 \description{
 This function functions concatenates a list of vcf files

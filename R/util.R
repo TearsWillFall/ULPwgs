@@ -61,6 +61,8 @@ filter_chr=function(
 
 
 
+
+
 #' Set the current dir
 #' This function sets and/or creates the directory
 #' for a function
@@ -2252,3 +2254,12 @@ filter_tabulated_vcf=function(
       
 }
 
+
+#' @export 
+get_variable_env=function(envs,variable="out_files"){
+  unlist(lapply(
+      1:length(envs),FUN=function(x){
+        envs[[x]][[1]][[variable]]
+      }
+    ))
+}

@@ -3324,6 +3324,9 @@ new_haplotypecaller_gatk=function(
         .main$out_files$unfiltered_vcf=paste0(
           out_file_dir,"/",paste0(input_id,".",input),".unfilt.vcf.gz"
         )
+        .main$out_files$unfiltered_vcf_index=paste0(
+          out_file_dir,"/",paste0(input_id,".",input),".unfilt.vcf.gz.tbi"
+        )
         region=paste0(" -L ",input)
     }
 
@@ -3337,7 +3340,6 @@ new_haplotypecaller_gatk=function(
     )
 
     run_job(.env=.this.env)
-
     .env$.main<-.main
    }
 
@@ -3458,9 +3460,15 @@ call_haplotypecaller_gatk=function(
         executor_id=task_id
     ))
 
+    .this.step=.main.step$steps
+    .main.step$out_files$unfiltered_vcfs=unlist(get_variable_env(env=.this.step))
+    
+
     .env$.main<-.main
 
   }
+
+  
 
   .base.env=environment()
   list2env(list(...),envir=.base.env)
@@ -3473,6 +3481,71 @@ call_haplotypecaller_gatk=function(
 }
 
 
+
+#' Germline Variant Scoring Using CNN
+#'
+#' This function functions calls CNNScoreVariants.
+#' If a vector of normal samples are provided these will be processed in multi-sample mode.
+#' To run in normal mode suppply a single normal sample.
+#' TO DO// Implement mitochondrial mode feature
+#' 
+#' For more information read:
+#' https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller
+#'
+#' @param sif_gatk [REQUIRED] Path to gatk sif file.
+#' @param vcf [REQUIRE] Path to VCF file.
+#' @param ref_genome [REQUIRED] Path to reference genome fasta file.
+#' @param bam [OPTIONAL] Path to BAM file. If given then 2D CNN will be applied
+#' @export
+#' 
+cnn_score_variants_gatk=function(
+  sif_gatk=build_default_sif_list()$sif_gatk,
+  ref_genome=build_default_reference_list()$HG19$reference$genome,
+  vcf=NULL,
+  bam=NULL,
+  ...
+){
+
+  
+   run_main=function(
+    .env
+  ){
+
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+    set_main(.env=.this.env)
+
+    opt=""
+    .main$out_files$scored_vcf=paste0(out_file_dir,"/",input_id,".CNNscored.1D.",input_ext)
+    if (!is.null(bam)){
+       bam=paste0(" -I ",bam)
+       opt=" -tensor-type read_tensor "
+      .main$out_files$scored_vcf=paste0(out_file_dir,"/",input_id,".CNNscored.2D.",input_ext)
+    }
+
+    .main$exec_code=paste(
+      "singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
+      " /gatk/gatk CNNScoreVariants -R ",
+      normalizePath(ref_genome), 
+      paste0(" -V ",normalizePath(vcf)),
+      " -O ",.main$out_files$scored_vcf,
+      bam,opt
+    )
+
+     run_job(.env=.this.env)
+    .env$.main<-.main
+  } 
+
+   .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="vcf"
+    )
+
+    launch(.env=.base.env)
+
+}
 
 
 

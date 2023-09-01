@@ -1526,7 +1526,19 @@ write_vcf=function(
 }
 
 
+concat_vcf=function(vcfs=NULL){
 
+
+  options(scipen=999)
+
+  run_main=function(
+    .env
+  ){
+      vcfs=lapply(vcfs,read_vcf,threads=threads)
+      
+  }
+
+}
 
 
 
