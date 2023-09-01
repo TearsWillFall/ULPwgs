@@ -44,7 +44,7 @@ read_bed=function(
   }else if(file.exists(bed)){
     if(grepl(".bed$",bed)){
         body=read.csv(
-            bed=bed,sep=sep,header=header,
+            file=bed,sep=sep,header=header,
             colClasses="character"
         )
         if(!header|rename){
