@@ -3579,11 +3579,11 @@ cnn_score_variants_gatk=function(
     set_main(.env=.this.env)
 
     opt=""
-    .main$out_files$scored_vcf=paste0(out_file_dir,"/",input_id,".CNNscored.1D.vcf")
+    .main$out_files$scored_vcf=paste0(out_file_dir,"/",input_id,".CNNscored.1D.vcf.gz")
     if (info_key=="CNN_2D"){
        bam=paste0(" -I ",bam)
        opt=" -tensor-type read_tensor "
-      .main$out_files$scored_vcf=paste0(out_file_dir,"/",input_id,".CNNscored.2D.vcf")
+      .main$out_files$scored_vcf=paste0(out_file_dir,"/",input_id,".CNNscored.2D.vcf.gz")
     }else{
       bam=NULL
     }
@@ -3706,7 +3706,7 @@ filter_variant_tranches_gatk=function(
       haplotype_db=paste0(" --resource ",normalizePath(haplotype_db))
     }
 
-    .main$out_files$filtered_vcf=paste0(out_file_dir,"/",input_id,".filteredTranches.vcf")
+    .main$out_files$filtered_vcf=paste0(out_file_dir,"/",input_id,".filteredTranches.vcf.gz")
   
     .main$exec_code=paste(
       "singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
