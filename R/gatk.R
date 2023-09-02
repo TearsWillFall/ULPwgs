@@ -3472,21 +3472,23 @@ call_haplotypecaller_gatk=function(
     }
 
     ### ASCERTAIN REGION INPUT IF GIVEN
+    
+   if(!is.vector(region)){
+      ### IF PATH READ AS BED
+      if (file.exists(region)){
+        region=read_bed(
+          bed=.main.step$out_files$region
+        )$body
+      }
 
-    ### IF PATH READ AS BED
-    if (file.exists(region)){
-      region=read_bed(
-        bed=.main.step$out_files$region
-      )$body
-    }
-
-    ### IF DATA.FRAME GENERATE GID
-    if (is.data.frame(region)){
-      region=region[region$chrom %in% chromosomes,]
-    ### CHANGE TO BASE 1 SYSTEM
-      region$gid=paste0(region$chrom,":",region$chromStart+1,"-",region$chromEnd)
-      region=unlist(region$gid)
-    }
+      ### IF DATA.FRAME GENERATE GID
+      if (is.data.frame(region)){
+        region=region[region$chrom %in% chromosomes,]
+      ### CHANGE TO BASE 1 SYSTEM
+        region$gid=paste0(region$chrom,":",region$chromStart+1,"-",region$chromEnd)
+        region=unlist(region$gid)
+      }
+   }
 
 
     .main.step$steps <-append(
