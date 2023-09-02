@@ -3350,7 +3350,7 @@ new_haplotypecaller_gatk=function(
     run_job(.env=.this.env)
 
     .main.step=.main$steps[[fn_id]]
-    print(.main.step$out_files$unfiltered_vcf)
+    
     if(score){
         .main.step$steps<-append(
         .main.step$steps,
@@ -3633,6 +3633,8 @@ cnn_score_variants_gatk=function(
 
    .base.env=environment()
     list2env(list(...),envir=.base.env)
+
+    print(.base.env)
     set_env_vars(
       .env= .base.env,
       vars="vcf"
