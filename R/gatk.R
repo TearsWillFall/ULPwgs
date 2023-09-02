@@ -3359,7 +3359,7 @@ new_haplotypecaller_gatk=function(
           ref_genome=normalizePath(ref_genome),
           haplotype_db=normalizePath(haplotype_db),
           indel_db=normalizePath(indel_db),
-          bam=ifelse(score_CNN=="CNN_2D",normalizePath(bam),NULL),
+          bam=bam,
           vcf=.main.step$out_files$unfiltered_vcf,
           filter=filter,
           info_key=score_CNN,
@@ -3579,13 +3579,13 @@ cnn_score_variants_gatk=function(
     set_main(.env=.this.env)
 
     opt=""
-    info_key="CNN_1D"
     .main$out_files$scored_vcf=paste0(out_file_dir,"/",input_id,".CNNscored.1D.vcf")
-    if (!is.null(bam)){
-        info_key="CNN_2D"
+    if (info_key=="CNN_2D"){
        bam=paste0(" -I ",bam)
        opt=" -tensor-type read_tensor "
       .main$out_files$scored_vcf=paste0(out_file_dir,"/",input_id,".CNNscored.2D.vcf")
+    }else{
+      bam=NULL
     }
 
     .main$exec_code=paste(
@@ -3633,9 +3633,6 @@ cnn_score_variants_gatk=function(
     
    .base.env=environment()
     list2env(list(...),envir=.base.env)
-
-    lapply(.base.env,FUN=function(x){print(x)})
-    
     set_env_vars(
       .env= .base.env,
       vars="vcf"
