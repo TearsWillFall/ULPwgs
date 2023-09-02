@@ -3615,6 +3615,7 @@ cnn_score_variants_gatk=function(
         indel_tranche=indel_tranche,
         keep_previous_filters=keep_previous_filters,
         output_dir=out_file_dir,
+        output_name=input_id,
         tmp_dir=tmp_dir,
         env_dir=env_dir,
         batch_dir=batch_dir,
