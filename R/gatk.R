@@ -3350,7 +3350,7 @@ new_haplotypecaller_gatk=function(
     run_job(.env=.this.env)
 
     .main.step=.main$steps[[fn_id]]
-
+    print(.main.step$out_files$unfiltered_vcf)
     if(score){
         .main.step$steps<-append(
         .main.step$steps,
