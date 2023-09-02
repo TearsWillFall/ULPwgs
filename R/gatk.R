@@ -3322,7 +3322,9 @@ new_haplotypecaller_gatk=function(
 
   
     tmp_dir=paste0(" --tmp-dir ",normalizePath(tmp_dir))
-
+    if(mode=="local_parallel"){
+      threads=1
+    }
   
     if (is.null(region)){
         .main$out_files$unfiltered_vcf=paste0(
@@ -3340,7 +3342,7 @@ new_haplotypecaller_gatk=function(
 
     .main$exec_code=paste(
       "singularity exec -H ",paste0(getwd(),":/home "),sif_gatk,
-      " /gatk/gatk HaplotypeCaller -R ",
+      " /gatk/gatk HaplotypeCaller --native-pair-hmm-threads ",threads," -R ",
       normalizePath(ref_genome), 
       paste0(" -I ",normalizePath(bam)),
       " -O ",.main$out_files$unfiltered_vcf,
