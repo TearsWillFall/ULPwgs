@@ -2263,7 +2263,7 @@ get_variable_env=function(envs,variable="out_files"){
       }
     ))
   tmp=data.frame(name=names(variables),value=variables) %>%
-    group_by(name) %>% summarise(value=list(value))
+    dplyr::group_by(name) %>% dplyr::summarise(value=list(value))
   tmp_loc=tmp$value
   names(tmp_loc)=tmp$name
   return(tmp_loc)
