@@ -3634,7 +3634,7 @@ cnn_score_variants_gatk=function(
    .base.env=environment()
     list2env(list(...),envir=.base.env)
 
-    print(.base.env)
+    print(as.list.environment(.base.env))
     set_env_vars(
       .env= .base.env,
       vars="vcf"
