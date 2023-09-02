@@ -3630,11 +3630,12 @@ cnn_score_variants_gatk=function(
     }
     .env$.main<-.main
   } 
-
+    
    .base.env=environment()
     list2env(list(...),envir=.base.env)
 
-    print(as.list.environment(.base.env))
+    lapply(.base.env,FUN=function(x){print(x)})
+    
     set_env_vars(
       .env= .base.env,
       vars="vcf"
