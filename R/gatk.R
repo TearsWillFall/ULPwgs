@@ -3298,11 +3298,16 @@ haplotypecaller_gatk=function(
 new_haplotypecaller_gatk=function(
     sif_gatk=build_default_sif_list()$sif_gatk,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
+    indel_db=build_default_reference_list()$HG19$variant$mills_reference,
+    haplotype_db=build_default_reference_list()$HG19$variant$hapmap_reference,
     bam=NULL,
     region=NULL,
     score=TRUE,
     score_CNN="CNN_1D",
     filter=TRUE,
+    snp_tranche=99.95,
+    indel_tranche=99.4,
+    keep_previous_filters=FALSE,
     ...
 ){
 
@@ -3351,10 +3356,16 @@ new_haplotypecaller_gatk=function(
         .main.step$steps,
         cnn_score_variants_gatk(
           sif_gatk=sif_gatk,
-          ref_genome=ref_genome,
+          ref_genome=normalizePath(ref_genome),
+          haplotype_db=normalizePath(haplotype_db),
+          indel_db=normalizePath(indel_db),
           bam=ifelse(score_CNN=="CNN_2D",normalizePath(bam),NULL),
-          vcf=.main$out_files$unfiltered_vcf,
+          vcf=.main.step$out_files$unfiltered_vcf,
           filter=filter,
+          info_key=score_CNN,
+          snp_tranche=snp_tranche,
+          indel_tranche=indel_tranche,
+          keep_previous_filters=keep_previous_filters,
           output_name=paste0(input_id,".",input),
           output_dir=out_file_dir,
           tmp_dir=tmp_dir,
@@ -3409,12 +3420,17 @@ call_haplotypecaller_gatk=function(
     sif_gatk=build_default_sif_list()$sif_gatk,
     bin_samtools=build_default_tool_binary_list()$bin_samtools,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
+    indel_db=build_default_reference_list()$HG19$variant$mills_reference,
+    haplotype_db=build_default_reference_list()$HG19$variant$hapmap_reference,
     bam=NULL,
     chromosomes=c(1:22,"X","Y"),
     region=NULL,
     score=TRUE,
-    score_CNN="CNN_1D",
     filter=TRUE,
+    score_CNN="CNN_1D",
+    snp_tranche=99.95,
+    indel_tranche=99.4,
+    keep_previous_filters=FALSE,
     ...
 ){
 
@@ -3477,10 +3493,18 @@ call_haplotypecaller_gatk=function(
       .main.step$steps,
       new_haplotypecaller_gatk(
         sif_gatk=sif_gatk,
-        ref_genome=ref_genome,
+        ref_genome=normalizePath(ref_genome),
+        haplotype_db=normalizePath(haplotype_db),
+        indel_db=normalizePath(indel_db),
         bam=input,
         output_name=input_id,
         region=region,
+        score=score,
+        filter=filter,
+        score_CNN=score_CNN,
+        snp_tranche=snp_tranche,
+        indel_tranche=indel_tranche,
+        keep_previous_filters=keep_previous_filters,
         mode="local_parallel",
         output_dir=out_file_dir,
         tmp_dir=tmp_dir,
@@ -3534,9 +3558,15 @@ call_haplotypecaller_gatk=function(
 cnn_score_variants_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
   ref_genome=build_default_reference_list()$HG19$reference$genome,
+  indel_db=build_default_reference_list()$HG19$variant$mills_reference,
+  haplotype_db=build_default_reference_list()$HG19$variant$hapmap_reference,
   vcf=NULL,
   bam=NULL,
   filter=TRUE,
+  info_key="CNN_1D",
+  snp_tranche=99.95,
+  indel_tranche=99.4,
+  keep_previous_filters=FALSE,
   ...
 ){
 
