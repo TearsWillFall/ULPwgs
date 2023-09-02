@@ -3367,7 +3367,7 @@ new_haplotypecaller_gatk=function(
           indel_tranche=indel_tranche,
           keep_previous_filters=keep_previous_filters,
           output_name=paste0(input_id,".",input),
-          output_dir=out_file_dir,
+          output_dir=paste0(out_file_dir,"_scored"),
           tmp_dir=tmp_dir,
           batch_dir=batch_dir,
           env_dir=env_dir,
@@ -3423,6 +3423,7 @@ call_haplotypecaller_gatk=function(
     indel_db=build_default_reference_list()$HG19$variant$mills_reference,
     haplotype_db=build_default_reference_list()$HG19$variant$hapmap_reference,
     bam=NULL,
+    patient_id=NULL,
     chromosomes=c(1:22,"X","Y"),
     region=NULL,
     score=TRUE,
@@ -3440,7 +3441,13 @@ call_haplotypecaller_gatk=function(
 
     .this.env=environment()
     append_env(to=.this.env,from=.env)
+    out_file_dir=set_dir(
+        out_file_dir,
+        name=paste0(patient_id,"/haplotypecaller_reports/",input_id)
+    )
+
     set_main(.env=.this.env)
+
 
     .main$steps[[fn_id]]<-.this.env
     .main.step=.main$steps[[fn_id]]
@@ -3490,7 +3497,12 @@ call_haplotypecaller_gatk=function(
       }
    }
 
-
+    ###  ONLY RUN LOCALLY PARALLEL JOBS AT REGION LEVEL IF SAMPLE LEVEL LOCAL/BATCH MODE
+    run_mode="local_parallel"
+    if(mode=="local_parallel"){
+      run_mode="local"
+    }
+  
     .main.step$steps <-append(
       .main.step$steps,
       new_haplotypecaller_gatk(
@@ -3507,8 +3519,8 @@ call_haplotypecaller_gatk=function(
         snp_tranche=snp_tranche,
         indel_tranche=indel_tranche,
         keep_previous_filters=keep_previous_filters,
-        mode="local_parallel",
-        output_dir=out_file_dir,
+        mode=run_mode,
+        output_dir=paste0(out_file_dir,"_unfiltered"),
         tmp_dir=tmp_dir,
         env_dir=env_dir,
         batch_dir=batch_dir,
@@ -3616,7 +3628,7 @@ cnn_score_variants_gatk=function(
         snp_tranche=snp_tranche,
         indel_tranche=indel_tranche,
         keep_previous_filters=keep_previous_filters,
-        output_dir=out_file_dir,
+        output_dir=paste0(out_file_dir,"_filtered"),
         output_name=input_id,
         tmp_dir=tmp_dir,
         env_dir=env_dir,
