@@ -3598,9 +3598,12 @@ cnn_score_variants_gatk=function(
     )
 
      run_job(.env=.this.env)
-
+    
+    .main.step=.main$steps[[fn_id]]
 
     if(filter){
+      .main.step$steps <-append(
+      .main.step$steps,
       filter_variant_tranches_gatk(
         sif_gatk=build_default_sif_list()$sif_gatk,
         ref_genome=normalizePath(ref_genome),
@@ -3621,7 +3624,7 @@ cnn_score_variants_gatk=function(
         ram=ram,
         executor_id=task_id
       )
-
+    )
       .this.step=.main.step$steps$filter_variant_tranches_gatk
       .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
     }
