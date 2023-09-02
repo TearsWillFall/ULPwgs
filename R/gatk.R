@@ -3480,7 +3480,7 @@ call_haplotypecaller_gatk=function(
 
     ### ASCERTAIN REGION INPUT IF GIVEN
     
-   if(!is.vector(region)){
+   if(length(region)==1){
       ### IF PATH READ AS BED
       if (file.exists(region)){
         region=read_bed(
