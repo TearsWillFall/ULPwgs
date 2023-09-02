@@ -3492,7 +3492,7 @@ call_haplotypecaller_gatk=function(
       if (is.data.frame(region)){
         region=region[region$chrom %in% chromosomes,]
       ### CHANGE TO BASE 1 SYSTEM
-        region$gid=paste0(region$chrom,":",region$chromStart+1,"-",region$chromEnd)
+        region$gid=paste0(region$chrom,":",as.numeric(region$chromStart)+1,"-",as.numeric(region$chromEnd))
         region=unlist(region$gid)
       }
    }
