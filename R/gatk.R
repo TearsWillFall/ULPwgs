@@ -3518,9 +3518,7 @@ call_haplotypecaller_gatk=function(
     ))
 
     .this.step=.main.step$steps
-    .main.step$out_files$unfiltered_vcfs=unlist(get_variable_env(env=.this.step))
-    
-
+    .main.step$out_files$region_vcfs=unlist(get_variable_env(env=.this.step))
     .env$.main<-.main
 
   }
