@@ -3367,7 +3367,7 @@ new_haplotypecaller_gatk=function(
           indel_tranche=indel_tranche,
           keep_previous_filters=keep_previous_filters,
           output_name=paste0(input_id,".",input),
-          output_dir=paste0(out_file_dir,"_scored"),
+          output_dir=paste0(out_file_dir,"/scored"),
           tmp_dir=tmp_dir,
           batch_dir=batch_dir,
           env_dir=env_dir,
@@ -3498,6 +3498,8 @@ call_haplotypecaller_gatk=function(
    }
 
     ###  ONLY RUN LOCALLY PARALLEL JOBS AT REGION LEVEL IF SAMPLE LEVEL LOCAL/BATCH MODE
+    ###  LIMITATION OF MCLAPPLY
+
     run_mode="local_parallel"
     if(mode=="local_parallel"){
       run_mode="local"
@@ -3520,7 +3522,7 @@ call_haplotypecaller_gatk=function(
         indel_tranche=indel_tranche,
         keep_previous_filters=keep_previous_filters,
         mode=run_mode,
-        output_dir=paste0(out_file_dir,"_unfiltered"),
+        output_dir=paste0(out_file_dir,"/unfiltered"),
         tmp_dir=tmp_dir,
         env_dir=env_dir,
         batch_dir=batch_dir,
@@ -3628,7 +3630,7 @@ cnn_score_variants_gatk=function(
         snp_tranche=snp_tranche,
         indel_tranche=indel_tranche,
         keep_previous_filters=keep_previous_filters,
-        output_dir=paste0(out_file_dir,"_filtered"),
+        output_dir=paste0(out_file_dir,"/filtered"),
         output_name=input_id,
         tmp_dir=tmp_dir,
         env_dir=env_dir,
