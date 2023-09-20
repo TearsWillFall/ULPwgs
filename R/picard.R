@@ -668,7 +668,7 @@ new_insertsize_metrics_bam_picard=function(
     }
 
      if(!is.null(deviations)){
-        deviations=paste0(" W=",deviations)
+        deviations=paste0(" DEVIATIONS=",deviations)
      }
 
     if(!is.null(min_width)){
@@ -680,7 +680,7 @@ new_insertsize_metrics_bam_picard=function(
     .main$exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",
         bin_picard," CollectInsertSizeMetrics ","VALIDATION_STRINGENCY=SILENT I=",
         input," O=",.main$out_files$insert_size," H=",.main$out_files$pdf,
-      " TMP_DIR=",tmp_dir, " DEVIATIONS=",deviations,width,min_width)
+      " TMP_DIR=",tmp_dir,deviations,width,min_width)
 
  
 
