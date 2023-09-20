@@ -1979,7 +1979,7 @@ mpileup_samtools=function(
 new_get_insert_size_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam=NULL,
-  gpos=NULL,
+  region=NULL,
   mapq=0,
   flags=c(99, 147, 83, 163),
   ...
@@ -2006,18 +2006,18 @@ new_get_insert_size_samtools=function(
           add=paste0(" -q ",mapq)
         }
        
-        if(!is.null(gpos)){
-          .main$out_files$frags=paste0(out_file_dir,"/",id,".",gpos,".fragments.txt")
+        if(!is.null(input)){
+          .main$out_files$frags=paste0(out_file_dir,"/",input_id,".",input,".fragments.txt")
         }else{
-          .main$out_files$frags=paste0(out_file_dir,"/",id,".fragments.txt")
+          .main$out_files$frags=paste0(out_file_dir,"/",input_id,".fragments.txt")
         }
 
         position="GENOME"
-        if(!is.null(gpos)){
-          position=gpos
+        if(!is.null(input)){
+          position=input
         }
 
-      .main$exec_code=paste(bin_samtools,"view ",add,bam,gpos," -@ ",threads,
+      .main$exec_code=paste(bin_samtools,"view ",add,bam,input," -@ ",threads,
       " | awk '{
           mot = substr($10, 1, 4);
           fl=($9^2)^(1/2);
@@ -2103,7 +2103,8 @@ new_get_insert_size_samtools=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env=.base.env,
-      vars="bam"
+      output_name=get_file_name(bam),
+      vars="region"
     )
 
   launch(.env=.base.env)
