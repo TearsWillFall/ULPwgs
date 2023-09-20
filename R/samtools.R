@@ -2019,7 +2019,7 @@ new_get_insert_size_samtools=function(
         }
         reg=""
         if(ignore_N_bases){
-          reg=" && index(mot,\"N\")==0)"
+          reg=" && index(mot,\"N\")==0"
         }
 
       
