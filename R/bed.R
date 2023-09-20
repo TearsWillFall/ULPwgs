@@ -23,7 +23,8 @@ read_bed=function(
     bed=NULL,sep="\t",
     header=TRUE,
     rename=TRUE,
-    sort=TRUE
+    sort=FALSE,
+    threads=1
 ){
   options(scipen=999)
   path=NA
@@ -33,8 +34,11 @@ read_bed=function(
     "itemRgb","blockCount","blockSizes","blockStarts")
    
     sort_bed=function(bed=NULL){
-        return(bed %>% dplyr::arrange(
-            gtools::mixedorder(chrom),chromStart,chromEnd)
+        return(
+            bed %>% 
+            dplyr::arrange(
+              gtools::mixedorder(chrom),chromStart,chromEnd
+            )
         )
     }
 
@@ -47,7 +51,8 @@ read_bed=function(
     if(grepl(".bed$",bed)){
         bed=data.table::fread(
             file=bed,sep=sep,header=header,
-            colClasses="character"
+            colClasses="character",
+            nThread=threads
         )
         if(!header|rename){
             names(bed)=col_names[1:ncol(bed)]
