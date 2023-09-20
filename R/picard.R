@@ -646,7 +646,7 @@ job=build_job(executor_id=executor_id,task_id=task_id)
 new_insertsize_metrics_bam_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bam=NULL,
-  deviations=0,
+  deviations=NULL,
   min_width=NULL,
   width=NULL,
   ...
@@ -667,6 +667,9 @@ new_insertsize_metrics_bam_picard=function(
         width=paste0(" W=",width)
     }
 
+     if(!is.null(deviations)){
+        deviations=paste0(" W=",deviations)
+     }
 
     if(!is.null(min_width)){
         min_width=paste0(" MW=",min_width)
