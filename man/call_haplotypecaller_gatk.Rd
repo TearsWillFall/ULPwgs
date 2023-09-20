@@ -8,12 +8,18 @@ call_haplotypecaller_gatk(
   sif_gatk = build_default_sif_list()$sif_gatk,
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
+  indel_db = build_default_reference_list()$HG19$variant$mills_reference,
+  haplotype_db = build_default_reference_list()$HG19$variant$hapmap_reference,
   bam = NULL,
+  patient_id = NULL,
   chromosomes = c(1:22, "X", "Y"),
   region = NULL,
   score = TRUE,
-  score_CNN = "CNN_1D",
   filter = TRUE,
+  score_CNN = "CNN_1D",
+  snp_tranche = 99.95,
+  indel_tranche = 99.4,
+  keep_previous_filters = FALSE,
   ...
 )
 }

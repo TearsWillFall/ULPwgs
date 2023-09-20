@@ -7,7 +7,7 @@
 new_insertsize_metrics_bam_picard(
   bin_picard = build_default_tool_binary_list()$bin_picard,
   bam = NULL,
-  deviations = 0,
+  deviations = NULL,
   min_width = NULL,
   width = NULL,
   ...

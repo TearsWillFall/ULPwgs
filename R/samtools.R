@@ -2022,6 +2022,12 @@ new_get_insert_size_samtools=function(
           reg=" && index(mot,\"N\")==0"
         }
 
+        if(mode=="local_parallel"){
+          threads=1
+        }
+        
+
+
       
       .main$exec_code=paste(bin_samtools,"view ",add,bam,input," -@ ",threads,
       " | gawk '{
@@ -2124,6 +2130,154 @@ new_get_insert_size_samtools=function(
 
 }
  
+
+
+#' Filter BAM file by size using samtools
+#'
+#'
+#' @param bam Path to the input file with the sequence.
+#' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
+#' @param mapq Mapping quality of the read to analyze. Default 60.
+#' @param mapq Flags of the reads to read. Default c(99, 147, 83, 163)
+#' @param region Genomic region to search
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param threads Number of threads. Default 3
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Job EXECUTOR ID. Default "mardupsGATK"
+#' @param task_name Name of the task. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
+#' @export
+
+call_get_insert_size_samtools=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam=NULL,
+  region=NULL,
+  mapq=NULL,
+  patient_id=NULL,
+  chromosomes=c(1:22,"X","Y"),
+  flags=c(99, 147, 83, 163),
+  min_fl=1,
+  max_fl=1000,
+  ignore_N_bases=TRUE,
+  ...
+){
+
+   run_main=function(
+    .env
+  ){
+
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+    out_file_dir=set_dir(
+        out_file_dir,
+        name=paste0(patient_id,"/insert_size_reports/",input_id)
+    )
+
+    set_main(.env=.this.env)
+
+
+    .main$steps[[fn_id]]<-.this.env
+    .main.step=.main$steps[[fn_id]]
+    
+    ### IF NO REGION IS GIVEN SPLIT BAM PER CHROMOSOME
+    if(is.null(region)){
+      .main.step$steps <-append(
+        .main.step$steps,
+        get_sq_bam(
+          bin_samtools=bin_samtools,
+          bam=input,
+          output_name=input_id,
+          output_dir=tmp_dir,
+          header=TRUE,
+          tmp_dir=tmp_dir,
+          env_dir=env_dir,
+          batch_dir=batch_dir,
+          err_msg=err_msg,
+          verbose=verbose,
+          threads=threads,
+          ram=ram,
+          executor_id=task_id
+        )
+      )
+      .this.step=.main.step$steps$get_sq_bam
+      .main.step$out_files$region=.this.step$out_files$index_bed
+      region=.main.step$out_files$region
+    }
+
+
+     ### ASCERTAIN REGION INPUT IF GIVEN
+    
+   if(length(region)==1){
+      ### IF PATH READ AS BED
+      if (file.exists(region)){
+        region=read_bed(
+          bed=.main.step$out_files$region
+        )$body
+      }
+
+      ### IF DATA.FRAME GENERATE GID
+      if (is.data.frame(region)){
+        region=region[region$chrom %in% chromosomes,]
+      ### CHANGE TO BASE 1 SYSTEM
+        region$gid=paste0(region$chrom,":",as.numeric(region$chromStart)+1,"-",as.numeric(region$chromEnd))
+        region=unlist(region$gid)
+      }
+   }
+
+    ###  ONLY RUN LOCALLY PARALLEL JOBS AT REGION LEVEL IF SAMPLE LEVEL LOCAL/BATCH MODE
+    ###  LIMITATION OF MCLAPPLY
+
+    run_mode="local_parallel"
+    if(mode=="local_parallel"){
+      run_mode="local"
+    }
+
+    .main.step$steps <-append(
+    .main.step$steps,
+    new_get_insert_size_samtools(
+      bin_samtools=bin_samtools,
+      bam=input,
+      region=region,
+      mapq=mapq,
+      flags=flags,
+      min_fl=min_fl,
+      max_fl=max_fl,
+      ignore_N_bases=ignore_N_bases,
+      mode=run_mode,
+      output_dir=paste0(out_file_dir,"/insert_size"),
+      tmp_dir=tmp_dir,
+      env_dir=env_dir,
+      batch_dir=batch_dir,
+      err_msg=err_msg,
+      verbose=verbose,
+      threads=threads,
+      ram=ram,
+      executor_id=task_id
+      )
+    )
+
+    .this.step=.main.step$steps
+    .main.step$out_files$region_fragmentome=get_variable_env(env=.this.step)
+    .env$.main<-.main
+
+  }
+  .base.env=environment()
+  list2env(list(...),envir=.base.env)
+  set_env_vars(
+    .env= .base.env,
+    vars="bam"
+  )
+  launch(.env=.base.env)
+
+}
+
+
+
+
 
 
 
