@@ -45,7 +45,7 @@ read_bed=function(
   if(file.exists(bed)){
     path=bed
     if(grepl(".bed$",bed)){
-        bed=read.csv(
+        bed=data.table::fread(
             file=bed,sep=sep,header=header,
             colClasses="character"
         )
