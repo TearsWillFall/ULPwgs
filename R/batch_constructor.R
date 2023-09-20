@@ -853,7 +853,7 @@ set_main_env=function(.env){
           
           build_main(.env=.this.env)
         
-          .env$main.envs[[n]]<-.this.env
+          .env$main.envs[[n]]<<-.this.env
         },
         .env=.this.env,
         mc.cores=parallel::detectCores()
