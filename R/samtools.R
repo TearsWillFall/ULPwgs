@@ -2024,7 +2024,7 @@ new_get_insert_size_samtools=function(
 
       
       .main$exec_code=paste(bin_samtools,"view ",add,bam,input," -@ ",threads,
-      " | awk '{
+      " | gawk '{
           mot = substr($10, 1, 4);
           fl=($9^2)^(1/2);",
           paste0("if(fl >= ",min_fl,"&& fl <= ",max_fl,reg,")"),
@@ -2041,6 +2041,8 @@ new_get_insert_size_samtools=function(
             fl_sd = 0;
             fl_mode= 0;
             fl_max= 0;
+
+            PROCINFO[\"sorted_in\"] = \"@ind_int_asc\";
             for( fl in fl_dist ) {
                 if(fl_str_dist!=\"\"){
                   fl_str_dist = fl_str_dist\"|\"fl\":\"fl_dist[fl];
@@ -2059,6 +2061,7 @@ new_get_insert_size_samtools=function(
             motif_max= 0;
             motif_mode= 0;
 
+            PROCINFO[\"sorted_in\"] = \"@val_num_asc\";
             for( mot in motif_dist ) {
                 if(motif_str_dist!=\"\"){
                   motif_str_dist  = motif_str_dist\"|\"mot\":\"motif_dist[mot];
