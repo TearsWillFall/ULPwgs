@@ -1980,8 +1980,9 @@ new_get_insert_size_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam=NULL,
   region=NULL,
-  mapq=0,
+  mapq=NULL,
   flags=c(99, 147, 83, 163),
+  min_fl=1,
   ...
 ){
 
