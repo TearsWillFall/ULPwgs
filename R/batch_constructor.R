@@ -834,7 +834,7 @@ set_main_env=function(.env){
     .this.env=environment()
     append_env(to=.this.env,from=.env)
     
-    parallel::mclapply(
+    lapply(
         1:n_inputs,
         function(n,.env){
           .this.env=environment()
@@ -853,10 +853,9 @@ set_main_env=function(.env){
           
           build_main(.env=.this.env)
         
-          .env$main.envs[[n]]<<-.this.env
+          .env$main.envs[[n]]<-.this.env
         },
-        .env=.this.env,
-        mc.cores=parallel::detectCores()
+        .env=.this.env
       )
     
   .env$main.envs<-main.envs
