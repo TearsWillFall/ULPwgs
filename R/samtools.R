@@ -2027,12 +2027,12 @@ new_get_insert_size_samtools=function(
       " | awk '{
           mot = substr($10, 1, 4);
           fl=($9^2)^(1/2);",
-          paste0("(fl >= ",min_fl,"&& fl <= ",max_fl,reg,");"),
+          paste0("if(fl >= ",min_fl,"&& fl <= ",max_fl,reg,")"),
           "{
             fl_count[NR] = fl;
             fl_dist[fl] = fl_dist[fl]+1;
             motif_dist[mot] = motif_dist[mot]+1;
-          }
+          };
 
         }END{
             fl_str_dist=\"\";
