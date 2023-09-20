@@ -173,8 +173,8 @@ transform_tf_data=function(tf_data=NULL){
 }
 
 
-sol_data_long=sol_data %>% select(starts_with("cnr_tfbs"),id,seqnames,gid) %>% pivot_longer(cols=!id:gid)
-sol_data_long=sol_data_long[grepl("log2",sol_data_long$name),]
-sol_data_long$pos=ifelse(grepl("left",sol_data_long$name),"left",ifelse(grepl("right",sol_data_long$name),"right","central"))
-sol_data_long=sol_data_long %>% group_by(id,gid) %>% mutate(dist_to_tfbs=-5:5,abs_dist_to_tfbs=abs(-5:5))
-sol_data_long=sol_data_long %>% group_by(id,gid,abs_dist_to_tfbs) %>% mutate(abs_value=median(value,na.rm=TRUE))
+# sol_data_long=sol_data %>% select(starts_with("cnr_tfbs"),id,seqnames,gid) %>% pivot_longer(cols=!id:gid)
+# sol_data_long=sol_data_long[grepl("log2",sol_data_long$name),]
+# sol_data_long$pos=ifelse(grepl("left",sol_data_long$name),"left",ifelse(grepl("right",sol_data_long$name),"right","central"))
+# sol_data_long=sol_data_long %>% group_by(id,gid) %>% mutate(dist_to_tfbs=-5:5,abs_dist_to_tfbs=abs(-5:5))
+# sol_data_long=sol_data_long %>% group_by(id,gid,abs_dist_to_tfbs) %>% mutate(abs_value=median(value,na.rm=TRUE))
