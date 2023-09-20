@@ -1994,8 +1994,6 @@ new_get_insert_size_samtools=function(
    
         set_main(.env=.this.env)
 
-        .main$steps[[fn_id]]<-.this.env
-        .main.step=.main$steps[[fn_id]]
 
         add=""
           if(!is.null(flags)){
@@ -2093,8 +2091,8 @@ new_get_insert_size_samtools=function(
                 }
             };
           printf(\"ID\\tFLAGS\\tMAPQ\\tREGION\\tTOTAL\\tfl_median\\tfl_mode\\tfl_max\\tfl_average\\tfl_sd\\tmotif_mode\\tmotif_max\\tfl_str_dist\\tmotif_str_dist\\n\");
-          printf(\"",id,"\\t",paste0(flags,collapse=","),"\\t",mq,"\\t",position,
-          "\\t%d\\t%d\\t%d\\t%d\\t%d\\t%d\\t%s\\t%s\\t%s\\t%s\\n\", NR , fl_median, fl_mode, fl_max, fl_average , fl_sd , motif_mode , motif_max, fl_str_dist , motif_str_dist);}'> ",out_file
+          printf(\"",input_id,"\\t",paste0(flags,collapse=","),"\\t",mapq,"\\t",position,
+          "\\t%d\\t%d\\t%d\\t%d\\t%d\\t%d\\t%s\\t%s\\t%s\\t%s\\n\", NR , fl_median, fl_mode, fl_max, fl_average , fl_sd , motif_mode , motif_max, fl_str_dist , motif_str_dist);}'> ",.main$out_files$frags
       )
       run_job(.env=.this.env)
       .env$.main <- .main
