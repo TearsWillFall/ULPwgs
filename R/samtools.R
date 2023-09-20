@@ -2026,9 +2026,6 @@ new_get_insert_size_samtools=function(
           threads=1
         }
         
-
-
-      
       .main$exec_code=paste(bin_samtools,"view ",add,bam,input," -@ ",threads,
       " | gawk '{
           mot = substr($10, 1, 4);
@@ -2176,7 +2173,6 @@ call_get_insert_size_samtools=function(
         out_file_dir,
         name=paste0(patient_id,"/insert_size_reports/",input_id)
     )
-
     set_main(.env=.this.env)
 
 

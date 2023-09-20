@@ -14,8 +14,10 @@
 build_job=function(executor_id="executor",task_id="task"){
 options(scipen = 999)
   executor=paste0("EXECUTOR_",executor_id)
-  task=paste0("TASK_",task_id)
-  job=paste0(c(executor,task),collapse=".")
+  job=lapply(task_id,FUN=function(id){
+    task=paste0("TASK_",id)
+    job=paste0(c(executor,task),collapse=".")
+  })
   return(job)
 }
 
@@ -163,11 +165,11 @@ return()
 
 make_unique_id=function(
   name,
-  id=sample(1:100000000000000,1),
+  id=sample(1:100000000000000,1,replace=FALSE),
   sep="_"
 ){
   options(scipen = 999)
-  unique_name=paste0(c(name,id),collapse=sep)
+  unique_name=paste0(name,"_",id)
   return(unique_name)
 }
 
@@ -612,9 +614,7 @@ set_env_vars=function(
     }
     
     if(is.null(fn)){
-
       ## GET CALLER FUNCTION NAME IF NOT GIVEN
-
     fn <- sub(".*::","",sub("\\(.*","",
         paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=","))
       )
@@ -652,6 +652,11 @@ set_env_vars=function(
         ids=output_name
       )
       inputs_ext <- unname(Vectorize(get_file_ext)(inputs))
+      task_ids <- make_unique_id(fn,sample(1:1e+14,n_inputs,replace=FALSE))
+      job_ids <- build_job(
+        executor_id=executor_id,
+        task_id=task_ids
+      )
     }
     
    
@@ -828,25 +833,21 @@ set_main_env=function(.env){
    
     .this.env=environment()
     append_env(to=.this.env,from=.env)
-      lapply(
+    
+    parallel::mclapply(
         1:n_inputs,
         function(n,.env){
           .this.env=environment()
           append_env(to=.this.env,from=.env)
 
           .env$self.envs <- .this.env
+
           input<-inputs[n]
           n_inputs<- 1
           input_id<-inputs_id[n]
           input_ext<-inputs_ext[n]
-
-          task_id <- make_unique_id(fn)
-
-          job_id <- build_job(
-            executor_id=executor_id,
-            task_id=task_id
-          )
-
+          job_id<-job_ids[n]
+      
           err_msg <- paste0(err_msg ,fn," (",job_id,") "," -> ")
           
           
@@ -854,7 +855,8 @@ set_main_env=function(.env){
         
           .env$main.envs[[n]]<-.this.env
         },
-        .env=.this.env
+        .env=.this.env,
+        mc.cores=parallel::detectCores()
       )
     
   .env$main.envs<-main.envs
