@@ -2026,8 +2026,8 @@ new_get_insert_size_samtools=function(
       .main$exec_code=paste(bin_samtools,"view ",add,bam,input," -@ ",threads,
       " | awk '{
           mot = substr($10, 1, 4);
-          fl=($9^2)^(1/2);
-          (fl >= ",min_fl,"&& fl <= ",max_fl,reg,");",
+          fl=($9^2)^(1/2);",
+          paste0("(fl >= ",min_fl,"&& fl <= ",max_fl,reg,");"),
           "{
             fl_count[NR] = fl;
             fl_dist[fl] = fl_dist[fl]+1;
