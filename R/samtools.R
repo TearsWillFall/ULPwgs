@@ -1983,6 +1983,8 @@ new_get_insert_size_samtools=function(
   mapq=NULL,
   flags=c(99, 147, 83, 163),
   min_fl=1,
+  max_fl=1000,
+  ignore_N_bases=TRUE,
   ...
 ){
 
@@ -2015,14 +2017,22 @@ new_get_insert_size_samtools=function(
         if(!is.null(input)){
           position=input
         }
+        reg=""
+        if(ignore_N_bases){
+          reg=" && index(mot,\"N\")==0)"
+        }
 
+      
       .main$exec_code=paste(bin_samtools,"view ",add,bam,input," -@ ",threads,
       " | awk '{
           mot = substr($10, 1, 4);
           fl=($9^2)^(1/2);
-          fl_count[NR] = fl;
-          fl_dist[fl] = fl_dist[fl]+1;
-          motif_dist[mot] = motif_dist[mot]+1;
+          (fl >= ",min_fl,"&& fl <= ",max_fl,reg,");",
+          "{
+            fl_count[NR] = fl;
+            fl_dist[fl] = fl_dist[fl]+1;
+            motif_dist[mot] = motif_dist[mot]+1;
+          }
 
         }END{
             fl_str_dist=\"\";
