@@ -2042,7 +2042,7 @@ new_get_insert_size_samtools=function(
             fl_mode= 0;
             fl_max= 0;
 
-            PROCINFO[\"sorted_in\"] = \"@ind_int_asc\";
+            PROCINFO[\"sorted_in\"] = \"@ind_num_asc\";
             for( fl in fl_dist ) {
                 if(fl_str_dist!=\"\"){
                   fl_str_dist = fl_str_dist\"|\"fl\":\"fl_dist[fl];
