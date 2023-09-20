@@ -2215,7 +2215,7 @@ call_get_insert_size_samtools=function(
       ### IF PATH READ AS BED
       if (file.exists(region)){
         region=read_bed(
-          bed=.main.step$out_files$region
+          bed=region
         )$body
       }
 
