@@ -6,7 +6,14 @@
 This function reads a BED file and stores it in a list format.
 Assumes 0 based BED file}
 \usage{
-read_bed(bed = NULL, sep = "\\t", header = TRUE, rename = TRUE, sort = TRUE)
+read_bed(
+  bed = NULL,
+  sep = "\\t",
+  header = TRUE,
+  rename = TRUE,
+  sort = FALSE,
+  threads = 1
+)
 }
 \arguments{
 \item{bed}{Path to the BED file}
