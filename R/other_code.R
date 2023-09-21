@@ -221,18 +221,19 @@ get_tf_from_cnvkit=function(
     system(paste0("chmod 755 ",fpath))
     fpath<-paste0("Rscript ",fpath)
 
-    .main$out_files[[input_id]]$hits<-paste0(
-      out_file_dir,"/",input_id,".",get_file_name(tf),".hits.txt"
+    tf_name=get_file_name(tf)
+    .main$out_files[[tf_name]]$hits<-paste0(
+      out_file_dir,"/",input_id,".", tf_name,".hits.txt"
     )
-    .main$out_files[[input_id]]$miss<-paste0(
-      out_file_dir,"/",input_id,".",get_file_name(tf),".miss.txt"
+    .main$out_files[[tf_name]]$miss<-paste0(
+      out_file_dir,"/",input_id,".", tf_name,".miss.txt"
     )
     .main$exec_code<-paste0(
         fpath,
         " -r ",cnvkit_data$cnr,
         " -s ",cnvkit_data$cns,
         " -t ",tf,
-        " -o ",paste0(out_file_dir,"/",input_id,".",get_file_name(tf))
+        " -o ",paste0(out_file_dir,"/",input_id,".",tf_name)
     )
     run_job(.env=.this.env)
     .env$.main<-.main
@@ -243,6 +244,7 @@ get_tf_from_cnvkit=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
+      output_name=get_file_name(cnvkit_data$cns),
       vars="tf"
     )
 
@@ -276,6 +278,7 @@ get_tf_from_cnvkit=function(
 get_tf_from_sample=function(
   cnvkit_data=NULL,
   tf_data=NULL,
+  patient_id=NULL,
   ...
 ){
 
@@ -285,6 +288,11 @@ get_tf_from_sample=function(
 
     .this.env=environment()
     append_env(to=.this.env,from=.env)
+    out_file_dir=set_dir(
+        out_file_dir,
+        name=paste0(patient_id,"/tf_reports/",get_file_name(input$cns))
+    )
+
     set_main(.env=.this.env)
 
     .main$steps[[fn_id]]<-.this.env
@@ -295,6 +303,8 @@ get_tf_from_sample=function(
       get_tf_from_cnvkit(
         cnvkit_data=input,
         tf=tf_data,
+        output_name=get_file_name(input$cns),
+        output_dir=paste0(out_file_dir,"/tfs"),
         tmp_dir=tmp_dir,
         env_dir=env_dir,
         batch_dir=batch_dir,
@@ -315,7 +325,6 @@ get_tf_from_sample=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
-      output_name=get_file_name(input$cns),
       vars="cnvkit_data"
     )
 
