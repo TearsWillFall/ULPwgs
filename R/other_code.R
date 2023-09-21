@@ -231,9 +231,9 @@ get_tf_from_cnvkit=function(
     )
     .main$exec_code<-paste0(
         fpath,
-        " -r ",normalizePath(cnr),
-        " -s ",normalizePath(cns),
-        " -t ",normalizePath(input),
+        " -r ",cnr,
+        " -s ",cns,
+        " -t ",input,
         " -o ",paste0(out_file_dir,"/",input_id,".",tf_name)
     )
     run_job(.env=.this.env)
@@ -301,8 +301,8 @@ get_tf_from_sample=function(
     .main.step$steps <-append(
     .main.step$steps,
       get_tf_from_cnvkit(
-        cnr=normalizePath(input$cnr),
-        cns=normalizePath(input$cns),
+        cnr=input$cnr,
+        cns=input$cns,
         tf=tf_data,
         output_name=get_file_name(input$cns),
         output_dir=out_file_dir,
