@@ -178,3 +178,151 @@ transform_tf_data=function(tf_data=NULL){
 # sol_data_long$pos=ifelse(grepl("left",sol_data_long$name),"left",ifelse(grepl("right",sol_data_long$name),"right","central"))
 # sol_data_long=sol_data_long %>% group_by(id,gid) %>% mutate(dist_to_tfbs=-5:5,abs_dist_to_tfbs=abs(-5:5))
 # sol_data_long=sol_data_long %>% group_by(id,gid,abs_dist_to_tfbs) %>% mutate(abs_value=median(value,na.rm=TRUE))
+
+
+
+
+#' Filter BAM file by size using samtools
+#'
+#'
+#' @param bam Path to the input file with the sequence.
+#' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
+#' @param mapq Mapping quality of the read to analyze. Default 60.
+#' @param mapq Flags of the reads to read. Default c(99, 147, 83, 163)
+#' @param region Genomic region to search
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param threads Number of threads. Default 3
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Job EXECUTOR ID. Default "mardupsGATK"
+#' @param task_name Name of the task. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
+#' @export
+
+
+get_tf_from_cnvkit=function(
+  cnvkit_data=NULL,
+  tf_data=NULL,
+  ...
+){
+
+   run_main=function(
+    .env
+  ){
+
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+    set_main(.env=.this.env)
+
+    .main$steps[[fn_id]]<-.this.env
+    .main.step=.main$steps[[fn_id]]
+
+    .main$out_files$tf$hits<-paste0(out_file_dir,"/",input_id,".",names(tfbs),".hits.txt")
+    .main$out_files$tf$miss<-paste0(out_file_dir,"/",input_id,".",names(tfbs),".miss.txt")
+
+    cnr=cnvkit_data$cnr
+    cns=cnvkit_data$cns
+    depth=median(cns$depth)
+    tfbs=input
+    overlaps=GenomicRanges::findOverlaps(tfbs,cnr)
+    missing_tfbs=tfbs[-as.data.frame(overlaps)$queryHits]
+    chromosomes=as.character(unique(GenomeInfoDb::seqnames(tfbs)))
+    chunks=length(chromosomes)
+    hit_tfbs=lapply(chromosomes,FUN=function(chr){
+        tfbs_tmp=tfbs[GenomeInfoDb::seqnames(tfbs)==chr]
+        cnr_tmp=cnr[GenomeInfoDb::seqnames(cnr)==chr]
+        cns_tmp=cns[GenomeInfoDb::seqnames(cns)==chr]
+
+        tmp_ranges=as.data.frame(IRanges::ranges(cnr_tmp))
+        cnr_tmp$cnr_pos=(tmp_ranges$start+tmp_ranges$end)/2
+        cnr_tmp$cnr_bin_size=tmp_ranges$width
+
+        invisible(lapply(5:1,FUN=function(x){
+            sol=dplyr::lag(cnr_tmp$rid,n=x)
+            S4Vectors::mcols(cnr_tmp)[paste0("cnr_rid_left_",x)]<<-ifelse(
+            is.na(sol),cnr_tmp$rid,sol)
+        }))
+        cnr_tmp$cnr_rid_central=cnr_tmp$rid
+        
+        invisible(lapply(1:5,FUN=function(x){
+          sol=dplyr::lead(cnr_tmp$rid,n=x)
+          S4Vectors::mcols(cnr_tmp)[paste0("cnr_rid_right_",x)]<<-ifelse(
+             is.na(sol),cnr_tmp$rid,sol)
+        }))
+
+      
+        invisible(lapply(5:1,FUN=function(x){
+          sol=dplyr::lag(cnr_tmp$log2,n=x)
+          S4Vectors::mcols(cnr_tmp)[paste0("cnr_tfbs_left_log2_",x)]<<-ifelse(
+            is.na(sol),cnr_tmp$log2,sol)
+        }))
+        cnr_tmp$cnr_tfbs_central_log2=cnr_tmp$log2
+
+        invisible(lapply(1:5,FUN=function(x){
+          sol=dplyr::lead(cnr_tmp$log2,n=x)
+          S4Vectors::mcols(cnr_tmp)[,paste0("cnr_tfbs_right_log2_",x)]<<-ifelse(
+            is.na(sol),cnr_tmp$log2,sol
+          )
+        }))
+
+        invisible(lapply(5:1,FUN=function(x){
+            sol=dplyr::lag(cnr_tmp$depth,n=x)
+            S4Vectors::mcols(cnr_tmp)[,paste0("cnr_tfbs_left_depth_",x)]<<-ifelse(
+            is.na(sol),cnr_tmp$log2,sol
+          )
+        }))
+
+        cnr_tmp$cnr_tfbs_central_depth=cnr_tmp$depth
+
+        invisible(lapply(1:5,FUN=function(x){
+          sol=dplyr::lead(cnr_tmp$depth,n=x)
+          S4Vectors::mcols(cnr_tmp)[,paste0("cnr_tfbs_right_depth_",x)]<<-ifelse(
+            is.na(sol),cnr_tmp$depth,sol
+          )
+         }))
+
+        cnr_tmp=cnr_tmp[,grepl("cnr",names(S4Vectors::mcols(cnr_tmp)))]
+
+
+        hit_tfbs=plyranges::join_overlap_left(
+          tfbs_tmp,cnr_tmp,suffix=NULL)
+
+        tmp_ranges=as.data.frame(IRanges::ranges(cns_tmp))
+        cns_tmp$cns_pos=(tmp_ranges$start+tmp_ranges$end)/2
+        cns_tmp$cns_seg_size=tmp_ranges$width
+        cns_tmp$cns_seg_left_log2=dplyr::lag(cns_tmp$log2)
+        cns_tmp$cns_seg_central_log2=cns_tmp$log2
+        cns_tmp$cns_seg_right_log2=dplyr::lead(cns_tmp$log2)
+        cns_tmp$cns_sid_left=dplyr::lag(cns_tmp$sid)
+        cns_tmp$cns_sid_central=cns_tmp$sid
+        cns_tmp$cns_sid_right=dplyr::lead(cns_tmp$sid)
+
+        cns_tmp=cns_tmp[,grepl("cns",names(S4Vectors::mcols(cns_tmp)))]
+        hit_tfbs=plyranges::join_overlap_left(
+          hit_tfbs,cns_tmp,suffix=NULL
+        )
+          return(hit_tfbs)
+        }
+    )
+
+    hit_tfbs=plyranges::bind_ranges(hit_tfbs)
+    hit_tfbs$sample_depth=depth
+    data.table::fwrite(hit_tfbs,file=.main$out_files$tf$hits)
+    data.table::fwrite(missing_tfbs,file=.main$out_files$tf$miss)
+    .env$.main<-.main
+
+  }
+
+  .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      output_name=names(cnvkit_data),
+      vars="tf"
+    )
+
+    launch(.env=.base.env)
+}
