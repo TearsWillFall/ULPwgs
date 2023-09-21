@@ -220,101 +220,110 @@ get_tf_from_cnvkit=function(
     .main$steps[[fn_id]]<-.this.env
     .main.step=.main$steps[[fn_id]]
 
-    cnr=cnvkit_data$cnr
-    cns=cnvkit_data$cns
-    depth=median(cns$depth)
-    tfbs=input[[1]]
   
-    .main$out_files$tf$hits<-paste0(out_file_dir,"/",input_id,".",names(tfbs),".hits.txt")
-    .main$out_files$tf$miss<-paste0(out_file_dir,"/",input_id,".",names(tfbs),".miss.txt")
+    .main$out_files$tf$hits<-paste0(out_file_dir,"/",input_id,".",names(inputs),".hits.txt")
+    .main$out_files$tf$miss<-paste0(out_file_dir,"/",input_id,".",names(inputs),".miss.txt")
 
 
+    find_overlaps=function(tfbs,cnr,cns,hits,miss){
+      depth=median(cns$depth)
+      overlaps=GenomicRanges::findOverlaps(tfbs,cnr)
+      missing_tfbs=tfbs[-as.data.frame(overlaps)$queryHits]
+      chromosomes=as.character(unique(GenomeInfoDb::seqnames(tfbs)))
+      chunks=length(chromosomes)
+      hit_tfbs=lapply(chromosomes,FUN=function(chr){
+          tfbs_tmp=tfbs[GenomeInfoDb::seqnames(tfbs)==chr]
+          cnr_tmp=cnr[GenomeInfoDb::seqnames(cnr)==chr]
+          cns_tmp=cns[GenomeInfoDb::seqnames(cns)==chr]
 
-    overlaps=GenomicRanges::findOverlaps(tfbs,cnr)
-    missing_tfbs=tfbs[-as.data.frame(overlaps)$queryHits]
-    chromosomes=as.character(unique(GenomeInfoDb::seqnames(tfbs)))
-    chunks=length(chromosomes)
-    hit_tfbs=lapply(chromosomes,FUN=function(chr){
-        tfbs_tmp=tfbs[GenomeInfoDb::seqnames(tfbs)==chr]
-        cnr_tmp=cnr[GenomeInfoDb::seqnames(cnr)==chr]
-        cns_tmp=cns[GenomeInfoDb::seqnames(cns)==chr]
+          tmp_ranges=as.data.frame(IRanges::ranges(cnr_tmp))
+          cnr_tmp$cnr_pos=(tmp_ranges$start+tmp_ranges$end)/2
+          cnr_tmp$cnr_bin_size=tmp_ranges$width
 
-        tmp_ranges=as.data.frame(IRanges::ranges(cnr_tmp))
-        cnr_tmp$cnr_pos=(tmp_ranges$start+tmp_ranges$end)/2
-        cnr_tmp$cnr_bin_size=tmp_ranges$width
+          invisible(lapply(5:1,FUN=function(x){
+              sol=dplyr::lag(cnr_tmp$rid,n=x)
+              S4Vectors::mcols(cnr_tmp)[paste0("cnr_rid_left_",x)]<<-ifelse(
+              is.na(sol),cnr_tmp$rid,sol)
+          }))
+          cnr_tmp$cnr_rid_central=cnr_tmp$rid
+          
+          invisible(lapply(1:5,FUN=function(x){
+            sol=dplyr::lead(cnr_tmp$rid,n=x)
+            S4Vectors::mcols(cnr_tmp)[paste0("cnr_rid_right_",x)]<<-ifelse(
+              is.na(sol),cnr_tmp$rid,sol)
+          }))
 
-        invisible(lapply(5:1,FUN=function(x){
-            sol=dplyr::lag(cnr_tmp$rid,n=x)
-            S4Vectors::mcols(cnr_tmp)[paste0("cnr_rid_left_",x)]<<-ifelse(
-            is.na(sol),cnr_tmp$rid,sol)
-        }))
-        cnr_tmp$cnr_rid_central=cnr_tmp$rid
         
-        invisible(lapply(1:5,FUN=function(x){
-          sol=dplyr::lead(cnr_tmp$rid,n=x)
-          S4Vectors::mcols(cnr_tmp)[paste0("cnr_rid_right_",x)]<<-ifelse(
-             is.na(sol),cnr_tmp$rid,sol)
-        }))
+          invisible(lapply(5:1,FUN=function(x){
+            sol=dplyr::lag(cnr_tmp$log2,n=x)
+            S4Vectors::mcols(cnr_tmp)[paste0("cnr_tfbs_left_log2_",x)]<<-ifelse(
+              is.na(sol),cnr_tmp$log2,sol)
+          }))
+          cnr_tmp$cnr_tfbs_central_log2=cnr_tmp$log2
 
-      
-        invisible(lapply(5:1,FUN=function(x){
-          sol=dplyr::lag(cnr_tmp$log2,n=x)
-          S4Vectors::mcols(cnr_tmp)[paste0("cnr_tfbs_left_log2_",x)]<<-ifelse(
-            is.na(sol),cnr_tmp$log2,sol)
-        }))
-        cnr_tmp$cnr_tfbs_central_log2=cnr_tmp$log2
+          invisible(lapply(1:5,FUN=function(x){
+            sol=dplyr::lead(cnr_tmp$log2,n=x)
+            S4Vectors::mcols(cnr_tmp)[,paste0("cnr_tfbs_right_log2_",x)]<<-ifelse(
+              is.na(sol),cnr_tmp$log2,sol
+            )
+          }))
 
-        invisible(lapply(1:5,FUN=function(x){
-          sol=dplyr::lead(cnr_tmp$log2,n=x)
-          S4Vectors::mcols(cnr_tmp)[,paste0("cnr_tfbs_right_log2_",x)]<<-ifelse(
-            is.na(sol),cnr_tmp$log2,sol
+          invisible(lapply(5:1,FUN=function(x){
+              sol=dplyr::lag(cnr_tmp$depth,n=x)
+              S4Vectors::mcols(cnr_tmp)[,paste0("cnr_tfbs_left_depth_",x)]<<-ifelse(
+              is.na(sol),cnr_tmp$log2,sol
+            )
+          }))
+
+          cnr_tmp$cnr_tfbs_central_depth=cnr_tmp$depth
+
+          invisible(lapply(1:5,FUN=function(x){
+            sol=dplyr::lead(cnr_tmp$depth,n=x)
+            S4Vectors::mcols(cnr_tmp)[,paste0("cnr_tfbs_right_depth_",x)]<<-ifelse(
+              is.na(sol),cnr_tmp$depth,sol
+            )
+          }))
+
+          cnr_tmp=cnr_tmp[,grepl("cnr",names(S4Vectors::mcols(cnr_tmp)))]
+
+
+          hit_tfbs=plyranges::join_overlap_left(
+            tfbs_tmp,cnr_tmp,suffix=NULL)
+
+          tmp_ranges=as.data.frame(IRanges::ranges(cns_tmp))
+          cns_tmp$cns_pos=(tmp_ranges$start+tmp_ranges$end)/2
+          cns_tmp$cns_seg_size=tmp_ranges$width
+          cns_tmp$cns_seg_left_log2=dplyr::lag(cns_tmp$log2)
+          cns_tmp$cns_seg_central_log2=cns_tmp$log2
+          cns_tmp$cns_seg_right_log2=dplyr::lead(cns_tmp$log2)
+          cns_tmp$cns_sid_left=dplyr::lag(cns_tmp$sid)
+          cns_tmp$cns_sid_central=cns_tmp$sid
+          cns_tmp$cns_sid_right=dplyr::lead(cns_tmp$sid)
+
+          cns_tmp=cns_tmp[,grepl("cns",names(S4Vectors::mcols(cns_tmp)))]
+          hit_tfbs=plyranges::join_overlap_left(
+            hit_tfbs,cns_tmp,suffix=NULL
           )
-        }))
+            return(hit_tfbs)
+          }
+      )
 
-        invisible(lapply(5:1,FUN=function(x){
-            sol=dplyr::lag(cnr_tmp$depth,n=x)
-            S4Vectors::mcols(cnr_tmp)[,paste0("cnr_tfbs_left_depth_",x)]<<-ifelse(
-            is.na(sol),cnr_tmp$log2,sol
-          )
-        }))
+      hit_tfbs=plyranges::bind_ranges(hit_tfbs)
+      hit_tfbs$sample_depth=depth
+      data.table::fwrite(as.data.frame(hit_tfbs),file=hits)
+      data.table::fwrite(as.data.frame(missing_tfbs),file=miss)
+        return()
+    }
 
-        cnr_tmp$cnr_tfbs_central_depth=cnr_tmp$depth
-
-        invisible(lapply(1:5,FUN=function(x){
-          sol=dplyr::lead(cnr_tmp$depth,n=x)
-          S4Vectors::mcols(cnr_tmp)[,paste0("cnr_tfbs_right_depth_",x)]<<-ifelse(
-            is.na(sol),cnr_tmp$depth,sol
-          )
-         }))
-
-        cnr_tmp=cnr_tmp[,grepl("cnr",names(S4Vectors::mcols(cnr_tmp)))]
-
-
-        hit_tfbs=plyranges::join_overlap_left(
-          tfbs_tmp,cnr_tmp,suffix=NULL)
-
-        tmp_ranges=as.data.frame(IRanges::ranges(cns_tmp))
-        cns_tmp$cns_pos=(tmp_ranges$start+tmp_ranges$end)/2
-        cns_tmp$cns_seg_size=tmp_ranges$width
-        cns_tmp$cns_seg_left_log2=dplyr::lag(cns_tmp$log2)
-        cns_tmp$cns_seg_central_log2=cns_tmp$log2
-        cns_tmp$cns_seg_right_log2=dplyr::lead(cns_tmp$log2)
-        cns_tmp$cns_sid_left=dplyr::lag(cns_tmp$sid)
-        cns_tmp$cns_sid_central=cns_tmp$sid
-        cns_tmp$cns_sid_right=dplyr::lead(cns_tmp$sid)
-
-        cns_tmp=cns_tmp[,grepl("cns",names(S4Vectors::mcols(cns_tmp)))]
-        hit_tfbs=plyranges::join_overlap_left(
-          hit_tfbs,cns_tmp,suffix=NULL
-        )
-          return(hit_tfbs)
-        }
+    find_overlaps(
+      tfbs=input[[1]],
+      cnr=cnvkit_data$cnr,
+      cns=cncnvkit_data$cns,
+      hits==.main$out_files$tf$hits,
+      miss=.main$out_files$tf$miss
     )
-
-    hit_tfbs=plyranges::bind_ranges(hit_tfbs)
-    hit_tfbs$sample_depth=depth
-    data.table::fwrite(as.data.frame(hit_tfbs),file=.main$out_files$tf$hits)
-    data.table::fwrite(as.data.frame(missing_tfbs),file=.main$out_files$tf$miss)
+    
+   
     .env$.main<-.main
 
   }
