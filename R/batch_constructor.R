@@ -647,11 +647,20 @@ set_env_vars=function(
     if(!is.null(vars)){
       inputs <- get(vars)
       n_inputs <- length(inputs)
+
       inputs_id <- set_input_id(
-        inputs=inputs,
-        ids=output_name
-      )
-      inputs_ext <- unname(Vectorize(get_file_ext)(inputs))
+          inputs=inputs,
+          ids=output_name
+        )
+
+      if(all(sapply(inputs,typeof)=="string")){
+          inputs_ext <- unname(Vectorize(get_file_ext)(inputs))
+      }else{
+          inputs_ext <- rep("",length(inputs))
+      }
+   
+      
+     
       task_ids <- make_unique_id(fn,sample(1:1e+14,n_inputs,replace=FALSE))
       job_ids <- build_job(
         executor_id=executor_id,
@@ -919,6 +928,8 @@ append_env = function(to=environment(), from=NULL) {
 set_input_id=function(inputs,ids=NULL){
       if(!is.null(ids)){
         my_id=rep(ids,length(inputs))
+      }else if(!all(sapply(inputs,typeof)=="string")){
+        my_id <- ifelse(!is.null(inputs),names(inputs),seq(1,length(inputs)))
       }else{
         my_id=unname(Vectorize(get_file_name)(inputs))
       }
