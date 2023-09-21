@@ -225,8 +225,8 @@ get_tf_from_cnvkit=function(
     depth=median(cns$depth)
     tfbs=input[[1]]
   
-    .main$out_files$tf$hits<-paste0(out_file_dir,"/",input_id,".",names(tfbs),".hits.txt")
-    .main$out_files$tf$miss<-paste0(out_file_dir,"/",input_id,".",names(tfbs),".miss.txt")
+    .main$out_files$tf$hits<-paste0(out_file_dir,"/",input_id,".",names(input),".hits.txt")
+    .main$out_files$tf$miss<-paste0(out_file_dir,"/",input_id,".",names(input),".miss.txt")
 
     overlaps=GenomicRanges::findOverlaps(tfbs,cnr)
     missing_tfbs=tfbs[-as.data.frame(overlaps)$queryHits]
@@ -323,6 +323,78 @@ get_tf_from_cnvkit=function(
       .env= .base.env,
       output_name=names(cnvkit_data),
       vars="tf_data"
+    )
+
+    launch(.env=.base.env)
+}
+
+
+
+
+#' Filter BAM file by size using samtools
+#'
+#'
+#' @param bam Path to the input file with the sequence.
+#' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
+#' @param mapq Mapping quality of the read to analyze. Default 60.
+#' @param mapq Flags of the reads to read. Default c(99, 147, 83, 163)
+#' @param region Genomic region to search
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param threads Number of threads. Default 3
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Job EXECUTOR ID. Default "mardupsGATK"
+#' @param task_name Name of the task. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
+#' @export
+
+
+get_tf_from_sample=function(
+  cnvkit_data=NULL,
+  tf_data=NULL,
+  ...
+){
+
+   run_main=function(
+    .env
+  ){
+
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+    set_main(.env=.this.env)
+
+    .main$steps[[fn_id]]<-.this.env
+    .main.step=.main$steps[[fn_id]]
+
+    .main.step$steps <-append(
+    .main.step$steps,
+      get_tf_from_cnvkit(
+        cnvkit_data=input[[1]],
+        tf_data=tf_data,
+        output_name=names(input)
+        tmp_dir=tmp_dir,
+        env_dir=env_dir,
+        batch_dir=batch_dir,
+        err_msg=err_msg,
+        verbose=verbose,
+        threads=threads,
+        ram=ram,
+        executor_id=task_id
+      )
+    )
+
+    .env$.main<-.main
+
+  }
+
+  .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="cnvkit_data"
     )
 
     launch(.env=.base.env)
