@@ -222,7 +222,7 @@ get_tf_from_cnvkit=function(
     system(paste0("chmod 755 ",fpath))
     fpath<-paste0("Rscript ",fpath)
 
-    tf_name=get_file_name(tf)
+    tf_name=get_file_name(input)
     .main$out_files[[tf_name]]$hits<-paste0(
       out_file_dir,"/",input_id,".", tf_name,".hits.txt"
     )
