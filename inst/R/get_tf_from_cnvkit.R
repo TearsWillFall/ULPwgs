@@ -157,7 +157,7 @@ get_tf_from_cnvkit=function(
 }
 
 cnvkit_data=import_cnvkit_data(cnr=opt$cnr,cns=opt$cns)
-tf_data=import_tf_data(tf=opt$output_file)
+tf_data=import_tf_data(tf=opt$tf)
 output_name=opt$output_file
 if(is.null(opt$output_file)){
     output_name=paste0(names(cnvkit_data),".",names(tf_data),".txt")
