@@ -204,7 +204,8 @@
 
 
 get_tf_from_cnvkit=function(
-  cnvkit_data=NULL,
+  cnr=NULL,
+  cns=NULL,
   tf=NULL,
   ...
 ){
@@ -230,8 +231,8 @@ get_tf_from_cnvkit=function(
     )
     .main$exec_code<-paste0(
         fpath,
-        " -r ",normalizePath(cnvkit_data$cnr),
-        " -s ",normalizePath(cnvkit_data$cns),
+        " -r ",normalizePath(cnr),
+        " -s ",normalizePath(cns),
         " -t ",normalizePath(tf),
         " -o ",paste0(out_file_dir,"/",input_id,".",tf_name)
     )
@@ -244,7 +245,6 @@ get_tf_from_cnvkit=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
-      output_name=get_file_name(cnvkit_data$cns),
       vars="tf"
     )
 
@@ -301,10 +301,11 @@ get_tf_from_sample=function(
     .main.step$steps <-append(
     .main.step$steps,
       get_tf_from_cnvkit(
-        cnvkit_data=input,
+        cnr=input$cnr,
+        cns=input$cns,
         tf=tf_data,
         output_name=get_file_name(input$cns),
-        output_dir=paste0(out_file_dir,"/tfs"),
+        output_dir=out_file_dir,
         tmp_dir=tmp_dir,
         env_dir=env_dir,
         batch_dir=batch_dir,
