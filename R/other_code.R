@@ -230,9 +230,9 @@ get_tf_from_cnvkit=function(
     )
     .main$exec_code<-paste0(
         fpath,
-        " -r ",cnvkit_data$cnr,
-        " -s ",cnvkit_data$cns,
-        " -t ",tf,
+        " -r ",normalizePath(cnvkit_data$cnr),
+        " -s ",normalizePath(cnvkit_data$cns),
+        " -t ",normalizePath(tf),
         " -o ",paste0(out_file_dir,"/",input_id,".",tf_name)
     )
     run_job(.env=.this.env)
