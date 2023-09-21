@@ -151,8 +151,8 @@ get_tf_from_cnvkit=function(
 
     hit_tfbs=plyranges::bind_ranges(hit_tfbs)
     hit_tfbs$sample_depth=depth
-    data.table::fwrite(as.data.frame(hit_tfbs),file=output_name)
-    data.table::fwrite(as.data.frame(missing_tfbs),file=output_name)
+    data.table::fwrite(as.data.frame(hit_tfbs),file=paste0(output_name,".hits.txt"))
+    data.table::fwrite(as.data.frame(missing_tfbs),file=paste0(output_name,".miss.txt"))
     return()
 }
 
