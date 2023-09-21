@@ -63,7 +63,7 @@ import_tf_data=function(
 get_tf_from_cnvkit=function(
     cnr=NULL,
     cns=NULL,
-    tf=NULL,
+    tfbs=NULL,
     output_name=NULL
 ){
 
@@ -168,6 +168,6 @@ if(is.null(opt$output_file)){
 invisible(get_tf_from_cnvkit(
     cnr=cnvkit_data[[1]]$cnr,
     cns=cnvkit_data[[1]]$cns,
-    tf=tf_data[[1]],
+    tfbs=tf_data[[1]],
     output_name=output_name
 ))
