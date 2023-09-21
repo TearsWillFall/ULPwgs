@@ -223,7 +223,7 @@ get_tf_from_cnvkit=function(
     cnr=cnvkit_data$cnr
     cns=cnvkit_data$cns
     depth=median(cns$depth)
-    tfbs=input
+    tfbs=input[[1]]
   
     .main$out_files$tf$hits<-paste0(out_file_dir,"/",input_id,".",names(tfbs),".hits.txt")
     .main$out_files$tf$miss<-paste0(out_file_dir,"/",input_id,".",names(tfbs),".miss.txt")
