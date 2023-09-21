@@ -237,14 +237,12 @@ get_tf_from_cnvkit=function(
     )
     run_job(.env=.this.env)
     .env$.main<-.main
-
   }
 
   .base.env=environment()
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
-      output_name=get_file_name(cnvkit_data$cns),
       vars="tf"
     )
 

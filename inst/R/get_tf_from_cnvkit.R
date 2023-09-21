@@ -64,7 +64,7 @@ get_tf_from_cnvkit=function(
     cnr=NULL,
     cns=NULL,
     tf=NULL,
-    output_name=NULL,
+    output_name=NULL
 ){
 
     depth=median(cns$depth)
