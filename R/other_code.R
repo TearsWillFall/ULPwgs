@@ -222,17 +222,17 @@ get_tf_from_cnvkit=function(
     fpath<-paste0("Rscript ",fpath)
 
     .main$out_files[[input_id]]$hits<-paste0(
-      out_file_dir,"/",get_file_name(cnvkit_data$cnr),".",input_id,".hits.txt"
+      out_file_dir,"/",input_id,".",get_file_name(tf),".hits.txt"
     )
     .main$out_files[[input_id]]$miss<-paste0(
-      out_file_dir,"/",get_file_name(cnvkit_data$cnr),".",input_id,".miss.txt"
+      out_file_dir,"/",input_id,".",get_file_name(tf),".miss.txt"
     )
     .main$exec_code<-paste0(
         fpath,
         " -r ",cnvkit_data$cnr,
         " -s ",cnvkit_data$cns,
         " -t ",tf,
-        " -o ",paste0(out_file_dir,"/",get_file_name(cnvkit_data$cnr),".",input_id)
+        " -o ",paste0(out_file_dir,"/",input_id,".",get_file_name(tf))
     )
     run_job(.env=.this.env)
     .env$.main<-.main
@@ -315,6 +315,7 @@ get_tf_from_sample=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
+      output_name=get_file_name(input$cns),
       vars="cnvkit_data"
     )
 
