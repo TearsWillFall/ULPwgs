@@ -1,4 +1,5 @@
 #!/usr/bin/env Rscript
+options(tidyverse.quiet = TRUE)
 library("optparse")
 library("tidyverse")
  
@@ -157,9 +158,11 @@ get_tf_from_cnvkit=function(
     hit_tfbs$sample_depth=depth
     hit_tfbs$tf=tf
     hit_tfbs$id=id
-    hit_tfbs=plyranges::mutate(plyranges::group_by(hit_tfbs,gid),BP=ifelse(plyranges::n()>1,1,0))
+    hit_tfbs=plyranges::mutate(
+      plyranges::group_by(hit_tfbs,gid),
+      BP=ifelse(plyranges::n()>1,1,0)
+    )
     scores_tfbs=as.data.frame(hit_tfbs) %>% 
-      dplyr::group_by(id,tf)%>%
       dplyr::summarise(
         dplyr::across(
             c(
@@ -190,8 +193,6 @@ output_name=opt$output_file
 if(is.null(opt$output_file)){
     output_name=paste0(names(cnvkit_data),".",names(tf_data),".txt")
 }
-
-
 
 invisible(get_tf_from_cnvkit(
     cnr=cnvkit_data[[1]]$cnr,
