@@ -1482,6 +1482,7 @@ get_sq_bam=function(
     bin_samtools=build_default_tool_binary_list()$bin_samtools,
     bam=NULL,
     header=TRUE,
+    base=0,
     ...
   ){
  
@@ -1500,7 +1501,7 @@ get_sq_bam=function(
         .main$out_files$index_bed=paste0(out_file_dir,"/",input_id,".index.bed")
         .main$exec_code=paste0(
           bin_samtools," view -H ",input,
-          " | grep @SQ| awk -F  \"\\t|:\" \'{print $3\"\\t\"0\"\\t\"$5}\'",
+          " | grep @SQ| awk -F  \"\\t|:\" \'{print $3\"\\t\"",base,"\"\\t\"$5}\'",
           ifelse(header," |  awk \'BEGIN{print \"chr\\tstart\\tend\"}1\'","")," >",
           .main$out_files$index_bed
         )

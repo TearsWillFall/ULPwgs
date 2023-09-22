@@ -2188,6 +2188,7 @@ call_get_insert_size_samtools=function(
           bam=input,
           output_name=input_id,
           output_dir=tmp_dir,
+          index=1,
           header=TRUE,
           tmp_dir=tmp_dir,
           env_dir=env_dir,
@@ -2218,8 +2219,8 @@ call_get_insert_size_samtools=function(
       ### IF DATA.FRAME GENERATE GID
       if (is.data.frame(region)){
         region=region[region$chrom %in% chromosomes,]
-      ### CHANGE TO BASE 1 SYSTEM
-        region$gid=paste0(region$chrom,":",as.numeric(region$chromStart)+1,"-",as.numeric(region$chromEnd))
+        region$gid=paste0(region$chrom,":",as.numeric(region$chromStart),"-",as.numeric(region$chromEnd))
+    
         region=unlist(region$gid)
       }
    }
