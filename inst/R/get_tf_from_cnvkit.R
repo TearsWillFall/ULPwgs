@@ -174,10 +174,10 @@ get_tf_from_cnvkit=function(
             sd=~sd(.,na.rm=TRUE)
         )
       )
-    ) %>% dplyr::mutate(names="value")
+    )
     
-    
-    scores_tfbs=tidyr::pivot_longer(scores_tfbs,!names)
+
+    scores_tfbs=tidyr::pivot_longer(scores_tfbs,!id:tf)
     data.table::fwrite(as.data.frame(hit_tfbs),file=paste0(output_name,".hits.txt"))
     data.table::fwrite(as.data.frame(missing_tfbs),file=paste0(output_name,".miss.txt"))
     data.table::fwrite(scores_tfbs,file=paste0(output_name,".scores.txt"))
