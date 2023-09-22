@@ -1,8 +1,6 @@
 #!/usr/bin/env Rscript
-options(tidyverse.quiet = TRUE)
 library("optparse")
-library("tidyverse")
- 
+
 option_list = list(
   make_option(c("-r", "--cnr"), type="character", default=NULL, 
               help="CNR data", metavar="character"),
@@ -75,7 +73,6 @@ get_tf_from_cnvkit=function(
     overlaps=GenomicRanges::findOverlaps(tfbs,cnr)
     missing_tfbs=tfbs[-as.data.frame(overlaps)$queryHits]
     chromosomes=as.character(unique(GenomeInfoDb::seqnames(tfbs)))
-    chunks=length(chromosomes)
     hit_tfbs=lapply(chromosomes,FUN=function(chr){
         tfbs_tmp=tfbs[GenomeInfoDb::seqnames(tfbs)==chr]
         cnr_tmp=cnr[GenomeInfoDb::seqnames(cnr)==chr]
@@ -84,8 +81,7 @@ get_tf_from_cnvkit=function(
         tmp_ranges=as.data.frame(IRanges::ranges(cnr_tmp))
         cnr_tmp$cnr_tfbs_pos=(tmp_ranges$start+tmp_ranges$end)/2
         cnr_tmp$cnr_tfbs_bin_size=tmp_ranges$width
-        cnr_tmp$cnr_tfbs_pos_within_bin=cnr_tmp$start-cnr_tmp$cnr_tfbs_pos
-
+   
         invisible(lapply(5:1,FUN=function(x){
             sol=dplyr::lag(cnr_tmp$rid,n=x)
             S4Vectors::mcols(cnr_tmp)[paste0("cnr_rid_left_",x)]<<-ifelse(
@@ -135,6 +131,7 @@ get_tf_from_cnvkit=function(
 
         hit_tfbs=plyranges::join_overlap_left(
           tfbs_tmp,cnr_tmp,suffix=NULL)
+        hit_tfbs$cnr_tfbs_pos_from_bin=IRanges::ranges(hit_tfbs)$start-hit_tfbs$cnr_tfbs_pos
 
         tmp_ranges=as.data.frame(IRanges::ranges(cns_tmp))
         cns_tmp$cns_seg_pos=(tmp_ranges$start+tmp_ranges$end)/2
@@ -150,6 +147,8 @@ get_tf_from_cnvkit=function(
         hit_tfbs=plyranges::join_overlap_left(
           hit_tfbs,cns_tmp,suffix=NULL
         )
+        hit_tfbs$cnr_seg_pos_from_bin=IRanges::ranges(hit_tfbs)$start-hit_tfbs$cns_seg_pos
+
           return(hit_tfbs)
         }
     )
@@ -162,23 +161,17 @@ get_tf_from_cnvkit=function(
       plyranges::group_by(hit_tfbs,gid),
       BP=ifelse(plyranges::n()>1,1,0)
     )
-    scores_tfbs=as.data.frame(hit_tfbs) %>% 
+    scores_tfbs= scores_tfbs=dplyr::mutate(
       dplyr::summarise(
+        dplyr::group_by(as.data.frame(hit_tfbs),c(id,tf)),
         dplyr::across(
-            c(
-              dplyr::starts_with("cnr_tfbs_"),
-              dplyr::starts_with("cns_seg")
-            ),
-            list(
-              mean=~mean(.,na.rm=TRUE),
-              sd=~sd(.,na.rm=TRUE)
-            )
-        )
-      ) %>%
-      dplyr::mutate(
-        names="value"
-      )
-      
+          c(dplyr::starts_with("cnr_tfbs_"),
+            dplyr::starts_with("cns_seg")),
+            list(mean=~mean(.,na.rm=TRUE),
+            sd=~sd(.,na.rm=TRUE))
+          )
+      ),
+    names="value")
     scores_tfbs[2,]=names(scores_tfbs)  
     scores_tfbs=tidyr::pivot_longer(scores_tfbs,!names)
     data.table::fwrite(as.data.frame(hit_tfbs),file=paste0(output_name,".hits.txt"))
