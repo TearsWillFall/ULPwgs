@@ -1,5 +1,7 @@
 #!/usr/bin/env Rscript
+options(tidyverse.quiet = TRUE)
 library("optparse")
+library("tidyverse")
 
 option_list = list(
   make_option(c("-r", "--cnr"), type="character", default=NULL, 
@@ -161,17 +163,20 @@ get_tf_from_cnvkit=function(
       plyranges::group_by(hit_tfbs,gid),
       BP=ifelse(plyranges::n()>1,1,0)
     )
-    scores_tfbs= scores_tfbs=dplyr::mutate(
-      dplyr::summarise(
-        dplyr::group_by(as.data.frame(hit_tfbs),c(id,tf)),
-        dplyr::across(
-          c(dplyr::starts_with("cnr_tfbs_"),
-            dplyr::starts_with("cns_seg")),
+    scores_tfbs= as.data.frame(hit_tfbs) %>% 
+    dplyr::group_by(id,tf) %>%
+    dplyr::summarise(
+      dplyr::across(
+        c(
+          dplyr::starts_with("cnr_tfbs_"),
+          dplyr::starts_with("cns_seg")),
             list(mean=~mean(.,na.rm=TRUE),
-            sd=~sd(.,na.rm=TRUE))
-          )
-      ),
-    names="value")
+            sd=~sd(.,na.rm=TRUE)
+        )
+      )
+    ) %>% dplyr::mutate(names="value")
+    
+
     scores_tfbs[2,]=names(scores_tfbs)  
     scores_tfbs=tidyr::pivot_longer(scores_tfbs,!names)
     data.table::fwrite(as.data.frame(hit_tfbs),file=paste0(output_name,".hits.txt"))
