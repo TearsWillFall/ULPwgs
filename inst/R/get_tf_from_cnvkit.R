@@ -64,7 +64,9 @@ get_tf_from_cnvkit=function(
     cnr=NULL,
     cns=NULL,
     tfbs=NULL,
-    output_name=NULL
+    output_name=NULL,
+    tf=NULL,
+    id=NULL
 ){
 
     depth=median(cns$depth)
@@ -151,7 +153,8 @@ get_tf_from_cnvkit=function(
 
     hit_tfbs=plyranges::bind_ranges(hit_tfbs)
     hit_tfbs$sample_depth=depth
-    hit_tfbs$tf=tf_name
+    hit_tfbs$tf=tf
+    hit_tfbs$id=id
     hit_tfbs=plyranges::mutate(plyranges::group_by(hit_tfbs,gid),BP=ifelse(plyranges::n()>1,1,0))
     data.table::fwrite(as.data.frame(hit_tfbs),file=paste0(output_name,".hits.txt"))
     data.table::fwrite(as.data.frame(missing_tfbs),file=paste0(output_name,".miss.txt"))
@@ -171,5 +174,7 @@ invisible(get_tf_from_cnvkit(
     cnr=cnvkit_data[[1]]$cnr,
     cns=cnvkit_data[[1]]$cns,
     tfbs=tf_data[[1]],
-    output_name=output_name
+    output_name=output_name,
+    tf=names(tf_data),
+    id=names(cnvkit_data)
 ))
