@@ -653,7 +653,7 @@ set_env_vars=function(
           ids=output_name
         )
 
-      if(all(sapply(inputs,typeof)=="string")){
+      if(all(sapply(inputs,typeof)=="character")){
           inputs_ext <- unname(Vectorize(get_file_ext)(inputs))
       }else{
           inputs_ext <- rep("",length(inputs))
@@ -928,7 +928,7 @@ append_env = function(to=environment(), from=NULL) {
 set_input_id=function(inputs,ids=NULL){
       if(!is.null(ids)){
         my_id=rep(ids,length(inputs))
-      }else if(!all(sapply(inputs,typeof)=="string")){
+      }else if(!all(sapply(inputs,typeof)=="character")){
         my_id <- ifelse(!is.null(inputs),names(inputs),seq(1,length(inputs)))
       }else{
         my_id=unname(Vectorize(get_file_name)(inputs))
