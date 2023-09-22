@@ -1,5 +1,6 @@
 #!/usr/bin/env Rscript
 options(tidyverse.quiet = TRUE)
+options(dplyr.summarise.inform = FALSE)
 library("optparse")
 library("tidyverse")
 
@@ -170,14 +171,20 @@ get_tf_from_cnvkit=function(
         c(
           dplyr::starts_with("cnr_tfbs_"),
           dplyr::starts_with("cns_seg")),
-            list(mean=~mean(.,na.rm=TRUE),
-            sd=~sd(.,na.rm=TRUE)
+            list(
+                mean=~mean(.,na.rm=TRUE),
+                median=~median(.,na.rm=TRUE),
+                sd=~sd(.,na.rm=TRUE),
+                iqr=~IQR(.,na.rm=TRUE),
+                n=~sum(!is.na(.)),
+                .names = "{.col}.{.fn}"
         )
       )
     )
     
 
     scores_tfbs=tidyr::pivot_longer(scores_tfbs,!id:tf)
+    scores_tfbs=scores_tfbs %>% tidyr::separate_wider_delim(name,delim=".",names=c("var","type"))
     data.table::fwrite(as.data.frame(hit_tfbs),file=paste0(output_name,".hits.txt"))
     data.table::fwrite(as.data.frame(missing_tfbs),file=paste0(output_name,".miss.txt"))
     data.table::fwrite(scores_tfbs,file=paste0(output_name,".scores.txt"))
