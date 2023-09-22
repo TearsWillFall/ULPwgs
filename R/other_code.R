@@ -290,7 +290,7 @@ get_tf_from_sample=function(
     append_env(to=.this.env,from=.env)
     out_file_dir=set_dir(
         out_file_dir,
-        name=paste0(patient_id,"/tf_reports/",get_file_name(input$cns))
+        name=paste0(patient_id,"/tf_reports/",get_file_name(input[[1]]$cns))
     )
 
     set_main(.env=.this.env)
