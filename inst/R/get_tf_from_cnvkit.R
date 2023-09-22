@@ -176,9 +176,9 @@ get_tf_from_cnvkit=function(
                 median=~median(.,na.rm=TRUE),
                 sd=~sd(.,na.rm=TRUE),
                 iqr=~IQR(.,na.rm=TRUE),
-                n=~sum(!is.na(.)),
-                .names = "{.col}.{.fn}"
-        )
+                n=~sum(!is.na(.))
+        ),
+        .names = "{.col}.{.fn}"
       )
     )
     
