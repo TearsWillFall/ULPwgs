@@ -327,7 +327,6 @@ get_tf_from_sample=function(
     .this.step=.main.step$steps$get_tf_from_cnvkit
     .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
     .env$.main<-.main
-
   }
 
   .base.env=environment()
