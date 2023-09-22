@@ -294,22 +294,32 @@ get_tf_from_sample=function(
     )
 
     set_main(.env=.this.env)
+    
+    
+    if(mode=="local_parallel"){
+      run_mode="local"
+    }else{
+      run_mode=mode
+    }
+   
 
     .main$steps[[fn_id]]<-.this.env
     .main.step=.main$steps[[fn_id]]
 
+
     .main.step$steps <-append(
     .main.step$steps,
       get_tf_from_cnvkit(
-        cnr=input$cnr,
-        cns=input$cns,
+        cnr=input[[1]]$cnr,
+        cns=input[[1]]$cns,
         tf=tf_data,
-        output_name=get_file_name(input$cns),
+        output_name=get_file_name(input[[1]]$cns),
         output_dir=out_file_dir,
         tmp_dir=tmp_dir,
         env_dir=env_dir,
         batch_dir=batch_dir,
         err_msg=err_msg,
+        mode=run_mode
         verbose=verbose,
         threads=threads,
         ram=ram,
