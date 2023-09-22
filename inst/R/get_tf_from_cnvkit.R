@@ -131,7 +131,7 @@ get_tf_from_cnvkit=function(
 
         hit_tfbs=plyranges::join_overlap_left(
           tfbs_tmp,cnr_tmp,suffix=NULL)
-        hit_tfbs$cnr_tfbs_pos_from_bin=IRanges::ranges(hit_tfbs)$start-hit_tfbs$cnr_tfbs_pos
+        hit_tfbs$cnr_tfbs_pos_from_bin=as.data.frame(IRanges::ranges(hit_tfbs))$start-hit_tfbs$cnr_tfbs_pos
 
         tmp_ranges=as.data.frame(IRanges::ranges(cns_tmp))
         cns_tmp$cns_seg_pos=(tmp_ranges$start+tmp_ranges$end)/2
@@ -147,7 +147,7 @@ get_tf_from_cnvkit=function(
         hit_tfbs=plyranges::join_overlap_left(
           hit_tfbs,cns_tmp,suffix=NULL
         )
-        hit_tfbs$cnr_seg_pos_from_bin=IRanges::ranges(hit_tfbs)$start-hit_tfbs$cns_seg_pos
+        hit_tfbs$cnr_seg_pos_from_bin=as.data.frame(IRanges::ranges(hit_tfbs))$start-hit_tfbs$cns_seg_pos
 
           return(hit_tfbs)
         }
