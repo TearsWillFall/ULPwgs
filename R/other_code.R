@@ -295,11 +295,9 @@ get_tf_from_sample=function(
 
     set_main(.env=.this.env)
     
-    
+    run_mode="local_parallel"
     if(mode=="local_parallel"){
       run_mode="local"
-    }else{
-      run_mode=mode
     }
    
 
