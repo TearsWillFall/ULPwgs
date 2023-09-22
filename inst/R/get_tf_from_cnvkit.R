@@ -82,6 +82,7 @@ get_tf_from_cnvkit=function(
         tmp_ranges=as.data.frame(IRanges::ranges(cnr_tmp))
         cnr_tmp$cnr_tfbs_pos=(tmp_ranges$start+tmp_ranges$end)/2
         cnr_tmp$cnr_tfbs_bin_size=tmp_ranges$width
+        cnr_tmp$cnr_tfbs_pos_within_bin=cnr_tmp$start-cnr_tmp$cnr_tfbs_pos
 
         invisible(lapply(5:1,FUN=function(x){
             sol=dplyr::lag(cnr_tmp$rid,n=x)
@@ -156,8 +157,23 @@ get_tf_from_cnvkit=function(
     hit_tfbs$tf=tf
     hit_tfbs$id=id
     hit_tfbs=plyranges::mutate(plyranges::group_by(hit_tfbs,gid),BP=ifelse(plyranges::n()>1,1,0))
+    scores_tfbs=dplyr::mutate(
+      dplyr::summarise(
+        dplyr::group_by(as.data.frame(hit_tfbs),c(id,tf)),
+        dplyr::across(
+          c(dplyr::starts_with("cnr_tfbs_"),
+            dplyr::starts_with("cns_seg")),
+            list(mean=~mean(.,na.rm=TRUE),
+            sd=~sd(.,na.rm=TRUE))
+          )
+      ),
+    names="value")
+    
+    scores_tfbs$names=names(scores_tfbs)  
+    scores_tfbs=tidyr::pivot_longer(scores_tfbs,!names)
     data.table::fwrite(as.data.frame(hit_tfbs),file=paste0(output_name,".hits.txt"))
     data.table::fwrite(as.data.frame(missing_tfbs),file=paste0(output_name,".miss.txt"))
+    data.table::fwrite(scores_tfbs,file=paste0(output_name,".scores.txt"))
     return()
 }
 
