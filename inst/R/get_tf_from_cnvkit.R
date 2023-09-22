@@ -78,8 +78,8 @@ get_tf_from_cnvkit=function(
         cns_tmp=cns[GenomeInfoDb::seqnames(cns)==chr]
 
         tmp_ranges=as.data.frame(IRanges::ranges(cnr_tmp))
-        cnr_tmp$cnr_pos=(tmp_ranges$start+tmp_ranges$end)/2
-        cnr_tmp$cnr_bin_size=tmp_ranges$width
+        cnr_tmp$cnr_tfbs_pos=(tmp_ranges$start+tmp_ranges$end)/2
+        cnr_tmp$cnr_tfbs_bin_size=tmp_ranges$width
 
         invisible(lapply(5:1,FUN=function(x){
             sol=dplyr::lag(cnr_tmp$rid,n=x)
@@ -132,7 +132,7 @@ get_tf_from_cnvkit=function(
           tfbs_tmp,cnr_tmp,suffix=NULL)
 
         tmp_ranges=as.data.frame(IRanges::ranges(cns_tmp))
-        cns_tmp$cns_pos=(tmp_ranges$start+tmp_ranges$end)/2
+        cns_tmp$cns_seg_pos=(tmp_ranges$start+tmp_ranges$end)/2
         cns_tmp$cns_seg_size=tmp_ranges$width
         cns_tmp$cns_seg_left_log2=dplyr::lag(cns_tmp$log2)
         cns_tmp$cns_seg_central_log2=cns_tmp$log2
@@ -151,6 +151,7 @@ get_tf_from_cnvkit=function(
 
     hit_tfbs=plyranges::bind_ranges(hit_tfbs)
     hit_tfbs$sample_depth=depth
+    hit_tfbs=hit_tfbs %>% group_by(gid)%>% mutate(BP=ifelse(n()>1,1,0))
     data.table::fwrite(as.data.frame(hit_tfbs),file=paste0(output_name,".hits.txt"))
     data.table::fwrite(as.data.frame(missing_tfbs),file=paste0(output_name,".miss.txt"))
     return()
