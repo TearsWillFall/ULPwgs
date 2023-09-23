@@ -48,23 +48,22 @@ read_bed=function(
   
   if(file.exists(bed)){
     path=bed
-    if(grepl(".bed$",bed)){
-        bed=data.table::fread(
-            file=bed,sep=sep,header=header,
-            colClasses="character",
-            nThread=threads
-        )
-        if(!header|rename){
-            names(bed)=col_names[1:ncol(bed)]
-        }
-    }else{
-        stop("Not valid file format. Valid file formats are BED.")
+
+    bed=data.table::fread(
+        file=bed,sep=sep,header=header,
+        colClasses="character",
+        nThread=threads
+    )
+    if(!header|rename){
+        names(bed)=col_names[1:ncol(bed)]
     }
+
   }
 
   if(is.data.frame(bed)){
     body=bed
   }
+  names(body)[1:3]<-c("chrom","chromStart","chromEnd")
 
   bed_object=list(
     time=Sys.time(),

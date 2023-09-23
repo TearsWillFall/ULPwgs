@@ -503,7 +503,8 @@ access_cnvkit=function(
         }
 
 
-        .main$exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
+        .main$exec_code=paste("singularity exec -H ",
+          paste0(getwd(),":/home "),sif_cnvkit,
           " cnvkit.py batch -p ",threads,
           ifelse(is.null(bin_size_antitarget)," -m wgs ",""),
           " -n ",gsub(";"," ",input),
@@ -1068,7 +1069,8 @@ autobin_cnvkit=function(
             add=paste(add," --short-names ")
           }
 
-          .main$exec_code=paste("singularity exec -H ",paste0(getwd(),":/home "),sif_cnvkit,
+          .main$exec_code=paste("singularity exec -H ",
+            paste0(getwd(),":/home "),sif_cnvkit,
             " cnvkit.py autobin -t ",bed," -f ",ref_genome,
             " -b ",bp_per_bin, " -m ",seq_method,access,
             "  --target-max-size ",max_bin_size_target,
@@ -2073,12 +2075,19 @@ plot_cnvkit=function(
 
 
       }
-     
-      
-  
-
-    
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 tfbs="TFBS/mnt/ssd/gtrd1903-temp/BioUML_20210519111712054.tmp/669696E3583AE070C6B3DACC767116B1/only_top1000/hg19/AR.1000.tfbs"
 cnr="~/Scratch/CNV_WGS/pl/bin_1k/cnvkit_reports/PEA172_2019_05_02_PL/PEA172_2019_05_02_PL.cnr"
