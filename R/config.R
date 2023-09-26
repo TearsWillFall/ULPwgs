@@ -873,12 +873,14 @@ build_default_reference_list=function(
                 ),
                 wgs=list(
                     binned=list(
-                            target_1k="/lustre/scratch/scratch/regmova/PCF/references/hg19/wgs/bin_1k/hs37d5.access-5k-mappable.target.bed",
-                            target_5k="/lustre/scratch/scratch/regmova/PCF/references/hg19/wgs/bin_5k/hs37d5.access-5k-mappable.target.bed",
-                            target_50k="/lustre/scratch/scratch/regmova/PCF/references/hg19/wgs/bin_50k/hs37d5.access-5k-mappable.target.bed"
+                            target_1k="/lustre/scratch/scratch/regmova/PCF/references/hg19/wgs/reference_1k/hs37d5.access-5k-mappable.target.bed",
+                            target_5k="/lustre/scratch/scratch/regmova/PCF/references/hg19/wgs/reference_5k/hs37d5.access-5k-mappable.target.bed",
+                            target_50k="/lustre/scratch/scratch/regmova/PCF/references/hg19/wgs/reference_50k/hs37d5.access-5k-mappable.target.bed"
                     ),
                     variant=list(
-                        
+                        pon_cn_1k="/lustre/scratch/scratch/regmova/PCF/references/hg19/wgs/reference_1k/pon_trails_wgs.target_1000.pon.cnn",
+                        pon_cn_5k="/lustre/scratch/scratch/regmova/PCF/references/hg19/wgs/reference_5k/pon_trails_wgs.target_5000.pon.cnn",
+                        pon_cn_50k="/lustre/scratch/scratch/regmova/PCF/references/hg19/wgs/reference_50k/pon_trails_wgs.target_50000.pon.cnn"
                     )
                 ),
                 panel=list(
