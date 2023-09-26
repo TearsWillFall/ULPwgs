@@ -75,6 +75,7 @@ build_job_exec=function(
   threads=1,
   output_dir=".",
   hold=NULL,
+  bypass=FALSE,
   wd=getwd(),
   array=""
 ){
@@ -89,7 +90,12 @@ build_job_exec=function(
   if(array!=""){
       array=paste0(" -t 1-",array)
   }
-  exec_code=paste("qsub -V -N ",job,array,paste0(" -l h_rt=",time),
+
+  bps=""
+  if(bypass){
+    bps=" -P crag7day "
+  }
+  exec_code=paste("qsub -V -N ",job,array,bypass,paste0(" -l h_rt=",time),
   paste0(" -l mem=",ram,"G"), paste0(" -pe smp ",threads), paste0(" -wd ",wd), 
   paste0(" -o ",output_dir,"/",job,".std_out"),
   paste0(" -e ",output_dir,"/",job,".std_error"),hold)
@@ -384,6 +390,7 @@ build_batch_exec_innit=function(
       job=job_id,time=time,ram=ram,
       threads=threads,wd=getwd(),
       output_dir=batch_dir,
+      bypass=bypass,
       hold=hold,array=n_inputs
     )
 
