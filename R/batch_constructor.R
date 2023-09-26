@@ -95,7 +95,7 @@ build_job_exec=function(
   if(bypass){
     bps=" -P crag7day "
   }
-  exec_code=paste("qsub -V -N ",job,array,bypass,paste0(" -l h_rt=",time),
+  exec_code=paste("qsub -V -N ",job,array,bps,paste0(" -l h_rt=",time),
   paste0(" -l mem=",ram,"G"), paste0(" -pe smp ",threads), paste0(" -wd ",wd), 
   paste0(" -o ",output_dir,"/",job,".std_out"),
   paste0(" -e ",output_dir,"/",job,".std_error"),hold)
