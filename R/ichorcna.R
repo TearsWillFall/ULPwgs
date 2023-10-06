@@ -636,7 +636,7 @@ ichor_wgs=function(
                 " --WIG ",wig, 
                 " --ploidy ",ploidy,
                 " --normal ", normal,
-                "--maxCN ", maxCN,
+                " --maxCN ", maxCN,
                 " --gcWig ", gcWig,
                 " --mapWig ", mapWig,
                 " --centromere ", centromere,
