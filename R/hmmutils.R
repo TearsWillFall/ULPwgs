@@ -92,6 +92,7 @@ read_counter=function(
   bin_readcount=build_default_tool_binary_list()$bin_readcount,
   bam=NULL,
   region=NULL,
+  patient_id=NULL,
   chrs=c(1:22,"X","Y"),
   win=500000,
   mapq=20,
