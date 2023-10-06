@@ -11,6 +11,7 @@ build_job_exec(
   threads = 1,
   output_dir = ".",
   hold = NULL,
+  bypass = FALSE,
   wd = getwd(),
   array = ""
 )

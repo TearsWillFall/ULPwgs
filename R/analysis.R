@@ -235,79 +235,7 @@ metrics_alignqc=function(
 
   }
 
-#' Generate a WIG file
-#'
-#' This function generates a WIG file.
-#'
-#'
-#' @param bam Path to the BAM file .
-#' @param bin_samtools Path to readCounter executable. Default path tools/samtools/samtools.
-#' @param bin_readcount Path to readCounter executable. Default path tools/hmmcopy_utils/bin/readCounter.
-#' @param output_dir Path to the output directory.
-#' @param chrs String of chromosomes to include. c()
-#' @param win Size of non overlaping windows. Default 500000.
-#' @param format Output format [wig/seg] . Default wig
-#' @param threads Number of threads to use. Default 3
-#' @param verbose Enables progress messages. Default False.
-#' @export
 
-
-read_counter=function(bin_samtools=build_default_tool_binary_list()$bin_samtools,
-bin_readcount=build_default_tool_binary_list()$bin_readcount,
-chrs=c(1:22,"X","Y"),win=500000, format="wig", bam="",
-output_dir=".",verbose=FALSE,batch_config=build_default_preprocess_config(),
-threads=3){
-
-    win=format(win,scientific=F)
-
-
-    out_file_dir=set_dir(dir=output_dir,name=paste0("read_counter/",format))
-    out_file=paste0(out_file_dir,"/",get_file_name(bam))
-
-    ## Check chr notation
-    exec_code=paste(bin_samtools,"view",bam," | head -n 1 | awk -F \"\t\" '{cat $3}'")
-    
-    if (verbose){
-      print_verbose(exec_code=exec_code)
-    }
-    chr=system(exec_code,intern=TRUE)
-
-    fmt=""
-
-    if (format=="seg"){
-      fmt="-s"
-    }
-
-     if (threads>1){
-        parallel::mclapply(seq(1,length(chrs)),FUN=function(x){
-          exec_code=cat(paste(bin_readcount,fmt,"--window", win,"--quality 20 --chromosome",
-            paste0("chr",chrs[x],collapse=","), bam,">", paste0(out_file,".",x,".",format)))
-          if (verbose){
-            print_verbose(exec_code=exec_code)
-          }
-          system(exec_code)
-        },mc.cores=threads
-      )
-      system(paste0("ls -v -d ",out_file_dir,"/* | xargs cat >",out_file,".",format))
-      system(paste0("rm ",out_file,".*.",format))
-      }else{
-        exec_code=paste(bin_readcount,fmt,"--window", win,"--quality 20 --chromosome",
-          paste0("chr",chrs,collapse=","), bam,">", paste0(out_file,".",format))
-        if (verbose){
-          print_verbose(exec_code=exec_code)
-        }
-        system(exec_code)
-      }
-    
-    if (grepl("chr",chr)){
-     
-      exec_code=paste("sed -i 's/chrom=chr/chrom=/g'",paste0(out_file,".",format))
-      if (verbose){
-          print_verbose(exec_code=exec_code)
-      }
-      system(exec_code)
-    }
-  }
 
 #' Filter BAM to specific regions
 #'

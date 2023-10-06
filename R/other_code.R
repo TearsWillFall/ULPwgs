@@ -338,3 +338,24 @@ get_tf_from_sample=function(
 
     launch(.env=.base.env)
 }
+
+
+# options(scipen=999)
+# sol=lapply(-1,
+#   FUN=function(y){
+#     lapply(unique(dat$id)[918:1056],
+#       FUN=function(x){
+#         dat_tmp=dat %>% filter(id!=x);
+#         ovlps=findOverlaps(dat_tmp,dat %>% filter(id==x),maxgap=y);
+#         sol=dat_tmp[as.data.frame(ovlps)$queryHits];
+#         sol$tf_hit=x;sol$dist=y;data.table::fwrite(file=paste0("overlaps/tf_",x,".size_",y,".overlaps"),as.data.frame(sol));return()})})
+
+
+# sol_wider=dat %>% 
+# as.data.frame()%>% 
+# group_by(seqnames,start,end,id,dist)%>% 
+# summarise(N=length(unique(tf_hit))) %>% 
+# arrange(dist,desc(N)) 
+# dat_only_dt=dplyr::left_join(as.data.frame(dat_only),sol_wider)
+# dat_only_dt=dat_only_dt %>% mutate_if(is.numeric,dplyr::coalesce,0)
+# dat_only_dt_longer=dat_only_dt %>% pivot_longer(`-1`:`1000000`)

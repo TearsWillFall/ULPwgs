@@ -4,7 +4,7 @@
 \alias{get_tf_from_sample}
 \title{Filter BAM file by size using samtools}
 \usage{
-get_tf_from_sample(cnvkit_data = NULL, tf_data = NULL, ...)
+get_tf_from_sample(cnvkit_data = NULL, tf_data = NULL, patient_id = NULL, ...)
 }
 \arguments{
 \item{bam}{Path to the input file with the sequence.}

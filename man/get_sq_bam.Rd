@@ -8,6 +8,7 @@ get_sq_bam(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = NULL,
   header = TRUE,
+  base = 0,
   ...
 )
 }

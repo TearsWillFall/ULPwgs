@@ -4,7 +4,11 @@
 \alias{make_unique_id}
 \title{Create an unique ID}
 \usage{
-make_unique_id(name, id = sample(1:1e+14, 1, replace = FALSE), sep = "_")
+make_unique_id(
+  name,
+  id = sample(1:100000000000000, 1, replace = FALSE),
+  sep = "_"
+)
 }
 \arguments{
 \item{name}{Name of the ID}

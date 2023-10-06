@@ -4,7 +4,7 @@
 \alias{get_tf_from_cnvkit}
 \title{Filter BAM file by size using samtools}
 \usage{
-get_tf_from_cnvkit(cnvkit_data = NULL, tf = NULL, ...)
+get_tf_from_cnvkit(cnr = NULL, cns = NULL, tf = NULL, ...)
 }
 \arguments{
 \item{bam}{Path to the input file with the sequence.}
