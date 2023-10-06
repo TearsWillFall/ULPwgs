@@ -632,7 +632,7 @@ ichor_wgs=function(
 
         .main$exec_code=paste0(
             "Rscript ",bin_ichorcna,
-                " --id ",patient_id,
+                " --id ",ifelse(is.null(patient_id),input_id,patient_id),
                 " --WIG ",wig, 
                 " --ploidy ",ploidy,
                 " --normal ", normal,
