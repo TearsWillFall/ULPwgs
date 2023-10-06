@@ -593,6 +593,7 @@ parallel_sample_ichor_capture=function(
 ichor_wgs=function(
     bin_ichorcna=build_default_tool_binary_list()$bin_ichor,
     wig=NULL,
+    patient_id=NULL,
     normal="\"c(0.5,0.6,0.7,0.8,0.9)\"",
     ploidy="\"c(2,3)\"",
     maxCN=5,
