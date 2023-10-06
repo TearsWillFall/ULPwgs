@@ -35,7 +35,7 @@ read_counter_region=function(
         .main$out_files[[format]]=paste0(
             out_file_dir,"/",
             input_id,".",
-            region,".",
+            input,".",
             format
         )
 
