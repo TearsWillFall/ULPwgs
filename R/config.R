@@ -881,6 +881,12 @@ build_default_reference_list=function(
                         pon_cn_1k="/lustre/scratch/scratch/regmova/PCF/references/hg19/wgs/reference_1k/pon_trails_wgs.target_1000.pon.cnn",
                         pon_cn_5k="/lustre/scratch/scratch/regmova/PCF/references/hg19/wgs/reference_5k/pon_trails_wgs.target_5000.pon.cnn",
                         pon_cn_50k="/lustre/scratch/scratch/regmova/PCF/references/hg19/wgs/reference_50k/pon_trails_wgs.target_50000.pon.cnn"
+                    ),
+                    ichorcna=list(
+                        pon_500k="/lustre/scratch/scratch/regmova/tools/ichorCNA/inst/extdata/HD_ULP_PoN_500kb_median_normAutosome_mapScoreFiltered_median.rds",
+                        gc_500k="/lustre/scratch/scratch/regmova/tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",
+                        map_500k="/lustre/scratch/scratch/regmova/tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",
+                        centromere="/lustre/scratch/scratch/regmova/tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt"
                     )
                 ),
                 panel=list(

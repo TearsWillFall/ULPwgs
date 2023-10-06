@@ -9,11 +9,12 @@ read_counter(
   bin_readcount = build_default_tool_binary_list()$bin_readcount,
   bam = NULL,
   region = NULL,
-  chrs = c(1:22, "X", "Y"),
+  patient_id = NULL,
+  chromosomes = c(1:22, "X", "Y"),
   win = 500000,
   mapq = 20,
   format = "wig",
-  chr_notation = FALSE
+  ...
 )
 }
 \arguments{
@@ -23,13 +24,13 @@ read_counter(
 
 \item{bam}{Path to the BAM file .}
 
-\item{chrs}{String of chromosomes to include. c()}
-
 \item{win}{Size of non overlaping windows. Default 500000.}
 
 \item{format}{Output format \link{wig/seg} . Default wig}
 
 \item{output_dir}{Path to the output directory.}
+
+\item{chrs}{String of chromosomes to include. c()}
 
 \item{threads}{Number of threads to use. Default 3}
 

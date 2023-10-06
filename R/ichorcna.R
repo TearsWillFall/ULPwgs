@@ -571,15 +571,89 @@ parallel_sample_ichor_capture=function(
 
 
 
-
+#' Generate a ichorCNA for WGSd
+#'
+#' This function generates a WIG file.
+#'
+#'
+#' @param bam Path to the BAM file .
+#' @param bin_samtools Path to readCounter executable. Default path tools/samtools/samtools.
+#' @param bin_readcount Path to readCounter executable. Default path tools/hmmcopy_utils/bin/readCounter.
+#' @param output_dir Path to the output directory.
+#' @param chrs String of chromosomes to include. c()
+#' @param win Size of non overlaping windows. Default 500000.
+#' @param format Output format [wig/seg] . Default wig
+#' @param threads Number of threads to use. Default 3
+#' @param verbose Enables progress messages. Default False.
+#' @export
 
 
 
 
 ichor_wgs=function(
-
+    bin_ichorcna=build_default_tool_binary_list()$bin_ichor,
+    wig=NULL,
+    normal="\"c(0.5,0.6,0.7,0.8,0.9)\"",
+    ploidy="\"c(2,3)\"",
+    maxCN=5,
+    gcWig=build_default_reference_list()$HG19$wgs$ichorcna$gc_500k,
+    mapWig=build_default_reference_list()$HG19$wgs$ichorcna$map_500k,
+    centromere=build_default_reference_list()$HG19$wgs$ichorcna$centromere,
+    normalPanel=build_default_reference_list()$HG19$wgs$ichorcna$pon_500k,
+    chrs="\"c(1:22, \"X\")\"",
+    chrTrain="\"c(1:22)\"",
+    estimateNormal=TRUE,
+    estimatePloidy=TRUE,
+    estimateScPrevalence=TRUE,
+    includeHOMD=FALSE,
+    scStates="\"c(1,3)\"",
+    txnE=0.9999,
+    txnStrength=10000,
+    ...
 ){
+    options(scipen=999)
 
 
+
+    run_main=function(
+        .env
+    ){
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+
+
+        out_file_dir=set_dir(
+            out_file_dir,
+            name=paste0(patient_id,"/ichor_cna/",input_id)
+        )
+
+        set_main(.env=.this.env)
+
+        .main$exec_code=paste0(
+            "Rscript ",bin_ichorcna,
+                " --id ",patient_id,
+                " --WIG ",wig, 
+                " --ploidy ",ploidy,
+                " --normal ", normal,
+                "--maxCN ", maxCN,
+                " --gcWig ", gcWig,
+                " --mapWig ", mapWig,
+                " --centromere ", centromere,
+                " --normalPanel ", normalPanel,
+                " --includeHOMD ",ifelse(includeHOMD,"True","False"),
+                " --chrs ",chrs,
+                " --chrTrain ",chrTrain,
+                " --estimateNormal ", ifelse(estimateNormal,"True","False"),
+                " --estimatePloidy ", ifelse(estimatePloidy,"True","False"),
+                " --estimateScPrevalence ", ifelse(estimateScPrevalence,"True","False"),
+                " --scStates ",scStates,
+                " --txnE ",txnE,
+                " --txnStrength ", txnStrength,
+                " --outDir ",.main$out_file_dir
+        )
+
+      run_job(.env=.this.env)
+      .env$.main <- .main
+    }
 
 }

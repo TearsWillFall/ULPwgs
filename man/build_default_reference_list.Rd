@@ -47,15 +47,24 @@ build_default_reference_list(
      pon_cn_5k =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/wgs/reference_5k/pon_trails_wgs.target_5000.pon.cnn",
     pon_cn_50k =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg19/wgs/reference_50k/pon_trails_wgs.target_50000.pon.cnn")),
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/wgs/reference_50k/pon_trails_wgs.target_50000.pon.cnn"),
+    ichorcna = list(pon_500k =
+    "/lustre/scratch/scratch/regmova/tools/ichorCNA/inst/extdata/HD_ULP_PoN_500kb_median_normAutosome_mapScoreFiltered_median.rds",
+    gc_500k =
+    "/lustre/scratch/scratch/regmova/tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",
+    map_500k =
+    "/lustre/scratch/scratch/regmova/tools/ichorCNA/inst/extdata/map_hg19_500kb.wig", 
+  
+      centromere =
+    "/lustre/scratch/scratch/regmova/tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt")),
     panel = list(PCF_V2 = list(intervals = list(bi =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/cap_tg.interval_list",
     ti =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/prim_tg.interval_list"),
     bed = list(bait =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/cap_tg.bed", 
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/cap_tg.bed", target =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/prim_tg.bed"), 
     
-    target = "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/prim_tg.bed"),
     variant = list(pon_cn =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon_seg/pon_seg.cnn",
     pon_cn_male =
@@ -64,64 +73,65 @@ build_default_reference_list(
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon_var/pon_gatkPoN.vcf.gz"),
     binned = list(target =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/cap_tg.binned.targets.bed",
-    
-     antitarget =
+    antitarget =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/cap_tg.binned.antitargets.bed"),
-    ascat = list(G1000 = list(allele =
+    
+     ascat = list(G1000 = list(allele =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/G1000/alleleData_chr",
     loci =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/G1000/loci_chr",
     gc =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/G1000/gc.txt", rt
     = "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/G1000/rt.txt"),
-    
-     battenberg = list(allele =
+    battenberg = list(allele =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/battenberg/alleleData_chr",
-    loci =
+    
+         loci =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/battenberg/loci_chr",
     gc =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/battenberg/gc.txt",
     rt =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/battenberg/rt.txt")),
     annotation = list(genes =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/genes.bed")), 
-    
-    PCF_V3 = list(intervals = list(bi =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/genes.bed")), PCF_V3 =
+    list(intervals = list(bi =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/cap_tg.interval_list",
-    ti =
+    
+     ti =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/prim_tg.interval_list"),
     bed = list(bait =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/cap_tg.bed", target =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/prim_tg.bed"), variant
     = list(pon_cn =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/pon_seg/pon_seg.cnn", 
-
-            pon_cn_male =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/pon_seg/pon_seg.cnn",
+    pon_cn_male =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/pon_seg/pon_seg_male.cnn",
     pon_muts =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/pon_var/pon_gatkPoN.vcf.gz"),
-    binned = list(target =
+    
+     binned = list(target =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/cap_tg.binned.targets.bed",
     antitarget =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/cap_tg.binned.antitargets.bed"),
     ascat = list(G1000 = list(allele =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/G1000/alleleData_chr",
-    
-         loci =
+    loci =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/G1000/loci_chr",
     gc =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/G1000/gc.txt", rt
-    = "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/G1000/rt.txt"),
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/G1000/gc.txt", 
+ 
+           rt =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/G1000/rt.txt"),
     battenberg = list(allele =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/battenberg/alleleData_chr",
     loci =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/battenberg/loci_chr",
     gc =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/battenberg/gc.txt",
-    
-         rt =
+    rt =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/battenberg/rt.txt")),
-    annotation = list(genes =
+    
+     annotation = list(genes =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/genes.bed"))), rnaseq =
     list(intervals = list(ri =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/rnaseq//intervals/rRNA.interval_list"),
@@ -129,20 +139,20 @@ build_default_reference_list(
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/rnaseq/reference/refFlat.txt")),
     variant = list(germ_reference =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/af-only-gnomad.raw.sites.vcf",
-    
-     biallelic_reference =
+    biallelic_reference =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/small_exac_common_3.vcf",
-    hapmap_reference =
+    
+     hapmap_reference =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/hapmap_3.3.b37.vcf",
     mills_reference =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/Mills_and_1000G_gold_standard.indels.b37.vcf")),
     HG19_ALT = list(reference = list(genome =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19_alt/reference/human_g1k_v37.fasta")),
     HG38 = list(reference = list(genome =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg38/reference/ucsc.hg38.fa"), 
-    
+    "/lustre/scratch/scratch/regmova/PCF/references/hg38/reference/ucsc.hg38.fa"),
     database = list(all_snps =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg38/database/00-All.vcf.gz",
+    "/lustre/scratch/scratch/regmova/PCF/references/hg38/database/00-All.vcf.gz", 
+    
     all_common =
     "/lustre/scratch/scratch/regmova/PCF/references/hg38/database/00-common_all.vcf.gz")))
 )
