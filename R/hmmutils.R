@@ -96,7 +96,7 @@ read_counter=function(
   win=500000,
   mapq=20,
   format="wig",
-  chr_notation=FALSE
+  ...
 ){  
 
     run_main=function(
