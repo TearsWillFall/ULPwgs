@@ -108,7 +108,7 @@ read_counter=function(
 
         out_file_dir=set_dir(
             out_file_dir,
-            name=paste0(patient_id,"/insert_size_reports/",input_id)
+            name=paste0(patient_id,"/read_counts/",input_id)
         )
 
         set_main(.env=.this.env)
@@ -192,7 +192,7 @@ read_counter=function(
         .env$.main<-.main
    
     }
-    
+
     .base.env=environment()
     list2env(list(...),envir=.base.env)
     set_env_vars(
