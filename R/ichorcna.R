@@ -633,7 +633,7 @@ ichor_wgs=function(
         .main$exec_code=paste0(
             "Rscript ",bin_ichorcna,
                 " --id ",ifelse(is.null(patient_id),input_id,patient_id),
-                " --WIG ",wig, 
+                " --WIG ",input, 
                 " --ploidy ",ploidy,
                 " --normal ", normal,
                 " --maxCN ", maxCN,
