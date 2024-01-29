@@ -561,8 +561,8 @@ build_default_tool_binary_list=function(
                 bin_shapeit="/lustre/scratch/scratch/regmova/tools/shapeit4/bin/shapeit",
                 bin_allele_counter="/lustre/scratch/scratch/regmova/tools/alleleCount/bin/alleleCounter",
                 bin_strelka=list(
-                    somatic="/lustre/scratch/scratch/regmova/tools/strelka-2.9.10/build/bin/configureStrelkaSomaticWorkflow.py",
-                    germline="/lustre/scratch/scratch/regmova/tools/strelka-2.9.10/build/bin/configureStrelkaGermlineWorkflow.py"
+                    somatic="/lustre/scratch/scratch/regmova/tools/strelka-2.9.10/bin/configureStrelkaSomaticWorkflow.py",
+                    germline="/lustre/scratch/scratch/regmova/tools/strelka-2.9.10/bin/configureStrelkaGermlineWorkflow.py"
                 ),
                 bin_ucsc=list(
                     bigBedToBed="/lustre/scratch/scratch/regmova/tools/OtherTools/bigBedToBed",
@@ -571,7 +571,7 @@ build_default_tool_binary_list=function(
                 ),
                 bin_sshpass="/lustre/scratch/scratch/regmova/tools/sshpass/sshpass",
                 bin_vep="/lustre/scratch/scratch/regmova/tools/ensembl-vep/vep",    
-                bin_manta="/lustre/scratch/scratch/regmova/tools/manta-1.6.0/build/bin/configManta.py",
+                bin_manta="/lustre/scratch/scratch/regmova/tools/manta-1.6.0/bin/configManta.py",
                 bin_ichor_pon="/lustre/scratch/scratch/regmova/tools/ichorCNA/scripts/createPanelOfNormals.R",
                 bin_ichor="/lustre/scratch/scratch/regmova/tools/ichorCNA/scripts/runIchorCNA.R",
                 bin_samtools="/lustre/scratch/scratch/regmova/tools/samtools/samtools",
