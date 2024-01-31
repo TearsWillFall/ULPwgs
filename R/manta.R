@@ -404,7 +404,7 @@ call_somatic_sv_manta=function(
           extract_pass_variants_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf=.main.step$out_files$annotated$af$sv$bgzip_vcf,
+            vcf=.main.step$out_files$annotated$af$bgzip_vcf,
             type="sv",
             output_dir=paste0(out_file_dir,"/annotated"),
             tmp_dir=tmp_dir,
@@ -429,7 +429,7 @@ call_somatic_sv_manta=function(
                 bin_bgzip=bin_bgzip,
                 bin_tabix=bin_tabix,
                 cache_vep=cache_vep,
-                vcf=.main.step$out_files$annotated$filter$sv$bgzip_vcf,
+                vcf=.main.step$out_files$annotated$filter$bgzip_vcf,
                 type="sv",
                 tabulate=tabulate,
                 output_dir=paste0(out_file_dir,"/annotated"),
