@@ -622,7 +622,7 @@ add_af_strelka_vcf=function(
           )
         )
         .this.step=.main.step$steps$add_indel_af_strelka_vcf
-        .main.step$out_files[[type]]=.this.step$out_files
+        .main.step$out_files=.this.step$out_files
       }else if(type=="sv"){
         .main.step$steps<-append(
         .main.step$steps,
