@@ -19,7 +19,7 @@ read_vcf=function(vcf=NULL,sep="\t",threads=1){
       body=data.table::fread(cmd=paste0("gunzip -c ",vcf," | grep -v ^# "),
       nThread=threads,colClasses="character",header=FALSE,sep="\t")
       header=system(paste0("gunzip -c ",vcf, "| grep ^#" ),intern=TRUE)
-  }else
+  }else{
       body=data.table::fread(cmd=paste0("grep -v ^# ",vcf),
       nThread=threads,colClasses="character",header=FALSE,sep="\t")
       header=system(paste0("grep ^# ",vcf),intern=TRUE)
