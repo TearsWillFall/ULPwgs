@@ -223,6 +223,7 @@ call_germline_sv_manta=function(
             vcf= .main.step$out_files$manta$variants$diploid_sv,
             output_dir=paste0(out_file_dir,"/annotated"),
             type="sv",
+            fn_id="sv",
             tmp_dir=tmp_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
