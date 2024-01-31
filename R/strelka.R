@@ -403,7 +403,7 @@ call_somatic_snvs_strelka=function(
          )
 
         .this.step=.main.step$steps$add_af_strelka_vcf.snv
-        .main.step$out_files$annotated$af=.this.step$out_files
+        .main.step$out_files$annotated$af$snv=.this.step$out_files
 
 
         ### ADD AF for INDELS
@@ -428,10 +428,8 @@ call_somatic_snvs_strelka=function(
         )
   
         .this.step=.main.step$steps$add_af_strelka_vcf.indel
-        .main.step$out_files$annotated$af=append(
-          .main.step$out_files$annotated$af,
-          .this.step$out_files
-        )
+        .main.step$out_files$annotated$af$indel=.this.step$out_files
+
 
 
         ### FILTER SNV BY FILTERS
@@ -456,7 +454,7 @@ call_somatic_snvs_strelka=function(
         )
 
         .this.step=.main.step$steps$extract_pass_variants_strelka_vcf.snv
-        .main.step$out_files$annotated$filter=.this.step$out_files
+        .main.step$out_files$annotated$filter$snv=.this.step$out_files
 
 
 
@@ -483,10 +481,8 @@ call_somatic_snvs_strelka=function(
         )
 
         .this.step=.main.step$steps$extract_pass_variants_strelka_vcf.indel
-        .main.step$out_files$annotated$filter=append(
-          .main.step$out_files$annotated$filter,
-          .this.step$out_files
-        )
+        .main.step$out_files$annotated$filter$indel=.this.step$out_files
+
 
 
 
@@ -515,7 +511,7 @@ call_somatic_snvs_strelka=function(
           )
 
           .this.step=.main.step$steps$annotate_strelka_vep.snv
-          .main.step$out_files$annotated$vep=.this.step$out_files
+          .main.step$out_files$annotated$vep$snv=.this.step$out_files
 
 
           ### ANNOTATE INDEL USING VEP
@@ -542,10 +538,8 @@ call_somatic_snvs_strelka=function(
           )
 
           .this.step=.main.step$steps$annotate_strelka_vep.indel
-          .main.step$out_files$annotated$vep=append(
-            .main.step$out_files$annotated$vep,
-            .this.step$out_files
-          )
+          .main.step$out_files$annotated$vep$indel=.this.step$out_files
+        
 
         }
 
@@ -681,7 +675,7 @@ call_germline_snvs_strelka=function(
          )
 
         .this.step=.main.step$steps$add_af_strelka_vcf.germline
-        .main.step$out_files$annotated$af=.this.step$out_files
+        .main.step$out_files$annotated$af$germline=.this.step$out_files
 
 
   
@@ -710,7 +704,7 @@ call_germline_snvs_strelka=function(
         )
 
         .this.step=.main.step$steps$extract_pass_variants_strelka_vcf.germline
-        .main.step$out_files$annotated$filter=.this.step$out_files
+        .main.step$out_files$annotated$filter$germline=.this.step$out_files
         
 
 
@@ -740,7 +734,7 @@ call_germline_snvs_strelka=function(
           )
 
           .this.step=.main.step$steps$annotate_strelka_vep.germline
-          .main.step$out_files$annotated$vep=.this.step$out_files
+          .main.step$out_files$annotated$vep$germline=.this.step$out_files
         }
 
           .env$.main<-.main
