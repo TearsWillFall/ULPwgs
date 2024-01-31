@@ -567,7 +567,7 @@ add_af_strelka_vcf=function(
 
       .this.env=environment()
       append_env(to=.this.env,from=.env)
-      
+
       set_main(.env=.this.env)
 
       output_name=paste0(input_id,".",type)
@@ -1053,7 +1053,7 @@ extract_pass_variants_strelka_vcf=function(
           )
         )
       .this.step=.main.step$steps$variants_by_filters_vcf
-      .main.step$out_files[[type]]=.this.step$out_files
+      .main.step$out_files=.this.step$out_files
 
       .env$.main<-.main
 
