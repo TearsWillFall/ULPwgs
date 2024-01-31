@@ -599,7 +599,7 @@ add_af_strelka_vcf=function(
           )
         )
         .this.step=.main.step$steps$add_snv_af_strelka_vcf
-        .main.step$out_files[[type]]=.this.step$out_files
+        .main.step$out_files=.this.step$out_files
       }else if(type=="indel"){
         .main.step$steps<-append(
         .main.step$steps,
@@ -641,7 +641,7 @@ add_af_strelka_vcf=function(
           )
         )
         .this.step=.main.step$steps$add_sv_af_strelka_vcf
-        .main.step$out_files[[type]]=.this.step$out_files
+        .main.step$out_files=.this.step$out_files
     
       }else if(type=="germline"){
         .main.step$steps<-append(
@@ -663,7 +663,7 @@ add_af_strelka_vcf=function(
           )
         )
         .this.step=.main.step$steps$add_gl_af_strelka_vcf
-        .main.step$out_files[[type]]=.this.step$out_files 
+        .main.step$out_files=.this.step$out_files 
       }else{
         stop("Wrong type argument")
       }
