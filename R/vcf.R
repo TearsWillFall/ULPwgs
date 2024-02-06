@@ -1193,7 +1193,7 @@ tabulate_vcf=function(
             ### Ascertain that samples are called TUMOUR and/or NORMAL to prevent multiple columns
             samples="NORMAL"
             samples=append(samples,rep("TUMOR",length(unlist(vcf$body[1,]$SAMPLE))-1))
-            vcf$body$SAMPLE=list(dplyr::tibble(samples))
+            vcf$body$SAMPLE=list(dplyr::tibble(SAMPLE=samples))
             vcf=extract_csq_info_vcf(vcf)
 
             ##### Extract body information from VCF
