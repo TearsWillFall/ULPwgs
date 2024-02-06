@@ -1190,16 +1190,28 @@ tabulate_vcf=function(
             cat(x="No variants detected in input VCF.",file=.main$out_files$tab_vcf,sep="\n")
     
         }else{
+            ### Ascertain that samples are called TUMOUR and/or NORMAL to prevent multiple columns
+            samples=list("NORMAL")
+            samples=c(samples,rep("TUMOR",dim(vcf$body[1,]$SAMPLE)))
+            vcf$body$SAMPLES=samples
+            vcf$body=vcf$body %>% 
+              mutate(SAMPLE=paste0("/",SAMPLE))
             vcf=extract_csq_info_vcf(vcf)
 
             ##### Extract body information from VCF
 
             vcf_body=vcf$body %>% tidyr::unnest(cols=Allele:TRANSCRIPTION_FACTORS)
+            
+      
+
             vcf_body=vcf_body %>% unnest_vcf_body(full=TRUE) %>% 
-            tidyr::pivot_wider(values_from=VALUE,names_from=c(SAMPLE,FORMAT))
+            tidyr::pivot_wider(values_from=VALUE,names_from=c(SAMPLES,FORMAT))
             vcf_body$patient_id="NA"
             vcf_body$tumour_id="NA"
             vcf_body$normal_id="NA"
+            
+          
+        
 
             if(!is.null(patient_id)){
                 vcf_body$patient_id=patient_id
