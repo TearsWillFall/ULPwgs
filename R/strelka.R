@@ -352,7 +352,6 @@ call_somatic_snvs_strelka=function(
     patient_id=NULL,
     tumour_id=NULL,
     normal_id=NULL,
-    patient_id=NULL,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     indel_candidates=NULL,
     annotate=TRUE,
