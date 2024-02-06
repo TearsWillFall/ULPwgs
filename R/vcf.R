@@ -1195,7 +1195,7 @@ tabulate_vcf=function(
             samples=c(samples,rep("TUMOR",length(vcf$body[1,]$SAMPLE)-1))
             vcf$body$SAMPLES=samples
             vcf$body=vcf$body %>% 
-              mutate(SAMPLE=paste0("/",SAMPLE))
+              dplyr::mutate(SAMPLE=paste0("/",SAMPLE))
             vcf=extract_csq_info_vcf(vcf)
 
             ##### Extract body information from VCF
