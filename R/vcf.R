@@ -1124,10 +1124,12 @@ extract_csq_info_vcf=function(vcf){
     split="Format: ",gsub("\"","",
     vcf$descriptors$INFO$CSQ$Description))[[1]][2],split="\\|"))
   vcf=tabulate_info_vcf(vcf)
-  vcf$body=vcf$body %>% dplyr::select(cols_to_save)%>% dplyr::rowwise() %>% 
-  dplyr::mutate(CSQ=list(as.list(dplyr::bind_rows(lapply(unlist(stringr::str_split(CSQ,pattern=",")),
-  FUN=function(x){lst=unlist(stringr::str_split(x,pattern="\\|"));
-  names(lst)=cols_in_csq;lst}))))) %>% tidyr::unnest_wider(CSQ)
+  vcf$body=vcf$body %>% 
+  dplyr::select(cols_to_save)%>% 
+  dplyr::rowwise() %>% 
+  dplyr::mutate(CSQ=strsplit(CSQ,","))%>%
+  tidyr::unnest(CSQ)%>% 
+  tidyr::separate(CSQ,into=cols_in_csq,sep="\\|")
   return(vcf)
 }
 
