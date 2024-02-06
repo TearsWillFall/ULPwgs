@@ -824,7 +824,7 @@ build_default_option_list=function(
 
 build_default_cache_list=function(
     cache=list(
-        cache_vep="/lustre/home/regmova/.vep"
+        cache_vep="/lustre/scratch/scratch/regmova/tools/ensembl-vep/.vep"
     )
 ){
     return(cache)
