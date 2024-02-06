@@ -1192,7 +1192,7 @@ tabulate_vcf=function(
         }else{
             ### Ascertain that samples are called TUMOUR and/or NORMAL to prevent multiple columns
             samples=list("NORMAL")
-            samples=c(samples,rep("TUMOR",dim(vcf$body[1,]$SAMPLE)))
+            samples=c(samples,rep("TUMOR",length(vcf$body[1,]$SAMPLE)-1))
             vcf$body$SAMPLES=samples
             vcf$body=vcf$body %>% 
               mutate(SAMPLE=paste0("/",SAMPLE))
