@@ -42,7 +42,7 @@ call_sv_manta=function(
     tabulate=TRUE,
     normal_id=NULL,
     tumour_id=NULL,
-    patient_id=NULL
+    patient_id=NULL,
     ...
 ){
 
