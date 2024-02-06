@@ -32,6 +32,9 @@ annotate_vep=function(
     vcf=NULL,
     tabulate=TRUE,
     compress=TRUE,
+    patient_id=NULL,
+    tumour_id=NULL,
+    normal_id=NULL,
     fmt="vcf",
     ...
 ){
@@ -102,6 +105,9 @@ annotate_vep=function(
                   vcf=.main$out_files$vep_vcf,
                   output_dir=out_file_dir,
                   output_name=output_name,
+                  patient_id=patient_id,
+                  tumour_id=tumour_id,
+                  normal_id=normal_id,
                   tmp_dir=tmp_dir,
                   env_dir=env_dir,
                   batch_dir=batch_dir,

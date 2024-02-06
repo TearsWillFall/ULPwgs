@@ -40,6 +40,9 @@ call_sv_manta=function(
     targeted=TRUE,
     annotate=TRUE,
     tabulate=TRUE,
+    normal_id=NULL,
+    tumour_id=NULL,
+    patient_id=NULL
     ...
 ){
 
@@ -54,8 +57,16 @@ call_sv_manta=function(
       .main.step<-.main$steps[[fn_id]]
 
       if(!is.null(normal)){
+        if(is.null(normal_id)){
+          normal_id=get_file_name(normal)   
+        }
+             
 
         if(!is.null(tumour)){
+        
+           if(is.null(tumour_id)){
+              tumour_id=get_file_name(tumour)   
+           }
 
             .main.step$steps<-append(
               .main.step$steps,
@@ -71,6 +82,9 @@ call_sv_manta=function(
                 annotate=annotate,
                 tabulate=tabulate,
                 ref_genome=ref_genome,
+                patient_id=patient_id,
+                tumour_id=tumour_id,
+                normal_id=normal_id,
                 output_dir=paste0(out_file_dir,"/",input_id,"/somatic/sv"),
                 tmp_dir=tmp_dir,
                 env_dir=env_dir,
@@ -99,6 +113,8 @@ call_sv_manta=function(
                 cache_vep=cache_vep,
                 normal=input,
                 annotate=annotate,
+                patient_id=patient_id,
+                normal_id=normal_id,
                 tabulate=tabulate,
                 ref_genome=ref_genome,
                 output_dir=paste0(out_file_dir,"/",input_id,"/germline/sv"),
@@ -168,6 +184,7 @@ call_germline_sv_manta=function(
     cache_vep=build_default_cache_list()$cache_vep,
     bin_manta=build_default_tool_binary_list()$bin_manta,
     normal=NULL,
+    normal_id=NULL,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     targeted=TRUE,
     annotate=TRUE,
@@ -269,6 +286,8 @@ call_germline_sv_manta=function(
                 bin_bgzip=bin_bgzip,
                 bin_tabix=bin_tabix,
                 cache_vep=cache_vep,
+                patient_id=patient_id,
+                normal_id=normal_id,
                 vcf=.main.step$out_files$annotated$filter$bgzip_vcf,
                 type="sv",
                 fn_id="sv",
@@ -329,6 +348,9 @@ call_somatic_sv_manta=function(
     bin_manta=build_default_tool_binary_list()$bin_manta,
     tumour=NULL,
     normal=NULL,
+    normal_id=NULL,
+    tumour_id=NULL,
+    patient_id=NULL
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     targeted=TRUE,
     annotate=TRUE,
@@ -434,6 +456,9 @@ call_somatic_sv_manta=function(
                 bin_bgzip=bin_bgzip,
                 bin_tabix=bin_tabix,
                 cache_vep=cache_vep,
+                patient_id=patient_id,
+                tumour_id=tumour_id,
+                normal_id=normal_id,
                 vcf=.main.step$out_files$annotated$filter$bgzip_vcf,
                 type="sv",
                 fn_id="sv",

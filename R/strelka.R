@@ -39,6 +39,8 @@ call_variants_strelka=function(
     tumour=NULL,
     normal=NULL,
     patient_id=NULL,
+    tumour_id=NULL,
+    normal_id=NULL,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     annotate=TRUE,
     tabulate=TRUE,
@@ -70,6 +72,9 @@ call_variants_strelka=function(
                 cache_vep=cache_vep,
                 tumour=tumour,
                 normal=normal,
+                patient_id=patient_id,
+                tumour_id=tumour_id,
+                normal_id=normal_id,
                 annotate=annotate,
                 tabulate=tabulate,
                 ref_genome=ref_genome,
@@ -103,6 +108,9 @@ call_variants_strelka=function(
               indel_candidates=.main.step$out_files$sv$indel_candidates,
               tumour=tumour,
               normal=normal,
+              patient_id=patient_id,
+              tumour_id=tumour_id,
+              normal_id=normal_id,
               ref_genome=ref_genome,
               output_dir=paste0(
                   out_file_dir,"/",patient_id,
@@ -176,6 +184,9 @@ call_snvs_strelka=function(
     cache_vep=build_default_cache_list()$cache_vep,
     tumour=NULL,
     normal=NULL,
+    patient_id=NULL,
+    tumour_id=NULL,
+    normal_id=NULL,
     indel_candidates=NULL,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     targeted=TRUE,
@@ -198,8 +209,16 @@ call_snvs_strelka=function(
    
   
       if(!is.null(normal)){
+        if(is.null(normal_id)){
+          normal_id=get_file_name(normal)
+        }
 
         if(!is.null(tumour)){
+
+          if(is.null(tumour_id)){
+            tumour_id=get_file_name(tumour)
+          }
+
 
             .main.step$steps<-append(
               .main.step$steps,
@@ -212,6 +231,9 @@ call_snvs_strelka=function(
                 cache_vep=cache_vep,
                 tumour=input,
                 normal=normal,
+                patient_id=patient_id,
+                tumour_id=tumour_id,
+                normal_id=normal_id,
                 annotate=annotate,
                 tabulate=tabulate,
                 ref_genome=ref_genome,
@@ -244,6 +266,8 @@ call_snvs_strelka=function(
                 bin_vep=bin_vep,
                 cache_vep=cache_vep,
                 normal=input,
+                patient_id=patient_id,
+                normal_id=normal_id,
                 annotate=annotate,
                 tabulate=tabulate,
                 ref_genome=ref_genome,
@@ -325,6 +349,9 @@ call_somatic_snvs_strelka=function(
     cache_vep=build_default_cache_list()$cache_vep,
     tumour=NULL,
     normal=NULL,
+    patient_id=NULL,
+    tumour_id=NULL,
+    normal_id=NULL,
     patient_id=NULL,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     indel_candidates=NULL,
@@ -500,6 +527,9 @@ call_somatic_snvs_strelka=function(
                 bin_bgzip=bin_bgzip,
                 bin_tabix=bin_tabix,
                 cache_vep=cache_vep,
+                patient_id=patient_id,
+                tumour_id=tumour_id,
+                normal_id=normal_id,
                 vcf=.main.step$out_files$annotated$filter$snv$bgzip_vcf,
                 type="snv",
                 fn_id="snv",
@@ -528,6 +558,9 @@ call_somatic_snvs_strelka=function(
                 bin_bgzip=bin_bgzip,
                 bin_tabix=bin_tabix,
                 cache_vep=cache_vep,
+                patient_id=patient_id,
+                tumour_id=tumour_id,
+                normal_id=normal_id,
                 vcf=.main.step$out_files$annotated$filter$indel$bgzip_vcf,
                 type="indel",
                 fn_id="indel",
@@ -602,6 +635,8 @@ call_germline_snvs_strelka=function(
     cache_vep=build_default_cache_list()$cache_vep,
     bin_strelka=build_default_tool_binary_list()$bin_strelka$germline,
     normal=NULL,
+    patient_id=NULL,
+    normal_id=NULL,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     indel_candidates=NULL,
     extract_pass=TRUE,
@@ -727,6 +762,9 @@ call_germline_snvs_strelka=function(
                 bin_bgzip=bin_bgzip,
                 bin_tabix=bin_tabix,
                 cache_vep=cache_vep,
+                patient_id=patient_id,
+                tumour_id=tumour_id,
+                normal_id=normal_id,
                 vcf=.main.step$out_files$annotated$filter$germline$bgzip_vcf,
                 type="germline",
                 fn_id="germline",

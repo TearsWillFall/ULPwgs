@@ -1158,6 +1158,9 @@ extract_csq_info_vcf=function(vcf){
 
 tabulate_vcf=function(
   vcf=NULL,
+  tumour_id=NULL,
+  normal_id=NULL,
+  patient_id=NULL,
   ...
 ){
 
@@ -1194,6 +1197,24 @@ tabulate_vcf=function(
             vcf_body=vcf$body %>% tidyr::unnest(cols=Allele:TRANSCRIPTION_FACTORS)
             vcf_body=vcf_body %>% unnest_vcf_body(full=TRUE) %>% 
             tidyr::pivot_wider(values_from=VALUE,names_from=c(SAMPLE,FORMAT))
+            vcf_body$patient_id="NA"
+            vcf_body$tumour_id="NA"
+            vcf_body$normal_id="NA"
+
+            if(!is.null(patient_id)){
+                vcf_body$patient_id=patient_id
+            }
+
+            if(!is.null(tumour_id)){
+                vcf_body$tumour_id=tumour_id
+            }
+
+            if(!is.null(normal_id)){
+                vcf_body$normal_id=normal_id
+            }
+            
+            
+          
             write.table(x=vcf_body,file=.main$out_files$tab_vcf,sep="\t",quote=FALSE,
             row.names=FALSE,col.names=TRUE)
         }
