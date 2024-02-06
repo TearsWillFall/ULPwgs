@@ -1193,9 +1193,7 @@ tabulate_vcf=function(
             ### Ascertain that samples are called TUMOUR and/or NORMAL to prevent multiple columns
             samples=list("NORMAL")
             samples=c(samples,rep("TUMOR",length(vcf$body[1,]$SAMPLE)-1))
-            vcf$body$SAMPLES=samples
-            vcf$body=vcf$body %>% 
-              dplyr::mutate(SAMPLE=paste0("/",SAMPLE))
+            vcf$body$SAMPLE=samples
             vcf=extract_csq_info_vcf(vcf)
 
             ##### Extract body information from VCF
@@ -1205,7 +1203,7 @@ tabulate_vcf=function(
       
 
             vcf_body=vcf_body %>% unnest_vcf_body(full=TRUE) %>% 
-            tidyr::pivot_wider(values_from=VALUE,names_from=c(SAMPLES,FORMAT))
+            tidyr::pivot_wider(values_from=VALUE,names_from=c(SAMPLE,FORMAT))
             vcf_body$patient_id="NA"
             vcf_body$tumour_id="NA"
             vcf_body$normal_id="NA"
