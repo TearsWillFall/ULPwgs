@@ -775,8 +775,8 @@ new_tg_summary_metrics_bam_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bam=NULL,
   ref_genome=build_default_reference_list()$HG19$reference$genome,
-  bi=build_default_reference_list()$HG19$panel$bi,
-  ti=build_default_reference_list()$HG19$panel$ti,
+  bi=build_default_reference_list()$HG19$panel$PCF_V3$intervals$bi,
+  ti=build_default_reference_list()$HG19$panel$PCF_V3$intervals$ti,
   ...
   ){
       run_main=function(

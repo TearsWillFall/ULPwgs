@@ -991,8 +991,10 @@ build_default_reference_list=function(
                 ),
                 panel=list(
                     PCF_V3=list(
-                         bi="/lustre/scratch/scratch/regmova/PCF/references/hg19_alt/panel/v3/cap_tg.interval_list",
-                        ti="/lustre/scratch/scratch/regmova/PCF/references/hg19_alt/panel/v3/prim_tg.interval_list"
+                        intervals=list(
+                            bi="/lustre/scratch/scratch/regmova/PCF/references/hg19_alt/panel/v3/cap_tg.interval_list",
+                            ti="/lustre/scratch/scratch/regmova/PCF/references/hg19_alt/panel/v3/prim_tg.interval_list"
+                        )
                     )
                 ),
 
