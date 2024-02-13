@@ -1118,9 +1118,11 @@ check_pcf_identity=function(
         .main$out_files$indentity <- paste0(out_file_dir,"/",input_id,".tsv")
 
 
-        snps=system(paste0("find ",input, "| grep .snps$"),intern=TRUE)
+        snps=system(paste0("find ",clonet_dir, "| grep .snps$"),intern=TRUE)
         snps_annot=data.frame(file_path=snps,file_name=unlist(lapply(snps,get_file_name)))
-        snps_annot=snps_annot %>% group_by(file_name) %>% summarise(file_path=file_path[1])
+        snps_annot=snps_annot %>% 
+            dplyr::group_by(file_name) %>% 
+            dplyr::summarise(file_path=file_path[1])
         dat=dplyr::bind_rows(parallel::mclapply(1:nrow(snps_annot),FUN=function(x){
             dat=read.table(snps_annot[x,]$file_path,sep="\t",header=TRUE);
             dat$id=snps_annot[x,]$file_name;
