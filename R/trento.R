@@ -1146,9 +1146,10 @@ check_pcf_identity=function(
         tidyr::pivot_longer(-id) %>%
         dplyr::rename(
                 sample1=id,
-                sample2=names,
-                corr=values
+                sample2=name,
+                corr=value
         )
+
         if(drop_self){
           cor_matrix=cor_matrix %>%
             dplyr::filter(
