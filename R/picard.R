@@ -751,3 +751,70 @@ parse_summary_picard=function(
 
 }
 
+
+#' Generate BAM Summary for Targeted data
+#'
+#'
+#' @param bam Path to the input file with the sequence.
+#' @param bin_picard Path to bwa executable. Default path tools/samtools/samtools.
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param ram RAM memory to use in GB. Default 4.
+#' @param tmp_dir Path to TMP directory. Default .
+#' @param bi Bait capture target interval for panel data. Interval format.
+#' @param ti Primary target intervals for panel data. Interval format.
+#' @param executor_id [OPTIONAL] Task executor name. Default "recalCovariates"
+#' @param task_name [OPTIONAL] Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+new_tg_summary_metrics_bam_picard=function(
+  bin_picard=build_default_tool_binary_list()$bin_picard,
+  bam=NULL,
+  ref_genome=build_default_reference_list()$HG19$reference$genome,
+  bi=build_default_reference_list()$HG19$panel$bi,
+  ti=build_default_reference_list()$HG19$panel$ti,
+  ...
+  ){
+      run_main=function(
+              .env
+          ){
+              .this.env=environment()
+              append_env(to=.this.env,from=.env)
+              
+            
+              out_file_dir=set_dir(
+                  out_file_dir,
+                  name="summary"
+              )
+
+              set_main(.env=.this.env)
+              
+        
+              .main$out_files$ts=paste0(out_file_dir,"/",input,".picard_TS.txt")
+              .main$out_files$metrics=paste0(out_file_dir,"/",input,".picard_CollectHSmetrics.txt")
+  
+              .main$exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir,
+              " -jar ",bin_picard," CollectHsMetrics VALIDATION_STRINGENCY=SILENT BI=",
+              bi," TI=",ti," I=",input," THEORETICAL_SENSITIVITY_OUTPUT=",
+              .main$out_files$ts," O=",.main$out_files$metrics," R=",ref_genome," TMP_DIR=",tmp_dir)
+
+              run_job(
+                .env=.this.env
+              )
+
+              .env$.main<-.main
+          }
+
+      .base.env=environment()
+      list2env(list(...),envir=.base.env)
+      set_env_vars(
+          .env=.base.env,
+          vars="bam"
+      )
+
+      launch(.env=.base.env)
+}

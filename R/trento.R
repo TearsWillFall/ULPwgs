@@ -1163,6 +1163,7 @@ check_pcf_identity=function(
             file= .main$out_files$indentity,
             sep=sep
             )
+        
         .env$.main<-.main
     }
     .base.env=environment()
