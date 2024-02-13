@@ -56,7 +56,7 @@ annotate_vep=function(
 
       .main$exec_code=paste(bin_vep," -format ",fmt,
         "-i",vcf,"-o", .main$out_files$vep_vcf,
-        "--cache --port 3337 --everything --force_overwrite --vcf --fork ",
+        "--cache --offline --everything --force_overwrite --vcf --fork ",
         threads," --dir ",cache_vep
       )
 
