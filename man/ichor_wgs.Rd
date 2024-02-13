@@ -7,6 +7,7 @@
 ichor_wgs(
   bin_ichorcna = build_default_tool_binary_list()$bin_ichor,
   wig = NULL,
+  patient_id = NULL,
   normal = "\\"c(0.5,0.6,0.7,0.8,0.9)\\"",
   ploidy = "\\"c(2,3)\\"",
   maxCN = 5,
@@ -14,7 +15,7 @@ ichor_wgs(
   mapWig = build_default_reference_list()$HG19$wgs$ichorcna$map_500k,
   centromere = build_default_reference_list()$HG19$wgs$ichorcna$centromere,
   normalPanel = build_default_reference_list()$HG19$wgs$ichorcna$pon_500k,
-  chrs = "\\"c(1:22, \\"X\\")\\"",
+  chrs = "\\"c(1:22, 'X')\\"",
   chrTrain = "\\"c(1:22)\\"",
   estimateNormal = TRUE,
   estimatePloidy = TRUE,

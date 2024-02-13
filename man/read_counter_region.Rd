@@ -8,7 +8,7 @@ read_counter_region(
   bin_readcount = build_default_tool_binary_list()$bin_readcount,
   bam = NULL,
   region = NULL,
-  win = 500000,
+  win = 5e+05,
   mapq = 20,
   format = "wig",
   ...

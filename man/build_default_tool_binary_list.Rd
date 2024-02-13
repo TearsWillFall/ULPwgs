@@ -5,9 +5,8 @@
 \title{Build default tools binaries config}
 \usage{
 build_default_tool_binary_list(
-  binaries = list(bin_fastqc =
-    "/lustre/scratch/scratch/regmova/tools/FastQC/bin/fastqc", bin_skewer =
-    "/lustre/scratch/scratch/regmova/tools/skewer/skewer", bin_fastqc =
+  binaries = list(bin_fastqc = "/lustre/scratch/scratch/regmova/tools/FastQC/bin/fastqc",
+    bin_skewer = "/lustre/scratch/scratch/regmova/tools/skewer/skewer", bin_fastqc =
     "/lustre/scratch/scratch/regmova/tools/FastQC/bin/fastqc", bin_bcftools =
     "/lustre/scratch/scratch/regmova/tools/bcftools/bcftools", bin_bgzip =
     "/lustre/scratch/scratch/regmova/tools/htslib/bin/bgzip", bin_tabix =
@@ -20,30 +19,30 @@ build_default_tool_binary_list(
     "/lustre/scratch/scratch/regmova/tools/shapeit4/bin/shapeit", bin_allele_counter =
     "/lustre/scratch/scratch/regmova/tools/alleleCount/bin/alleleCounter", bin_strelka =
     list(somatic =
-    "/lustre/scratch/scratch/regmova/tools/strelka-2.9.10/build/bin/configureStrelkaSomaticWorkflow.py",
+    "/lustre/scratch/scratch/regmova/tools/strelka-2.9.10/bin/configureStrelkaSomaticWorkflow.py",
     
          germline =
-    "/lustre/scratch/scratch/regmova/tools/strelka-2.9.10/build/bin/configureStrelkaGermlineWorkflow.py"),
+    "/lustre/scratch/scratch/regmova/tools/strelka-2.9.10/bin/configureStrelkaGermlineWorkflow.py"),
     bin_ucsc = list(bigBedToBed =
     "/lustre/scratch/scratch/regmova/tools/OtherTools/bigBedToBed", bedToBigBed =
     "/lustre/scratch/scratch/regmova/tools/OtherTools/bedToBigBed", liftOver =
     "/lustre/scratch/scratch/regmova/tools/OtherTools/liftOver"), bin_sshpass =
     "/lustre/scratch/scratch/regmova/tools/sshpass/sshpass", bin_vep =
-    "/lustre/scratch/scratch/regmova/tools/ensembl-vep/vep", 
-     bin_manta =
-    "/lustre/scratch/scratch/regmova/tools/manta-1.6.0/build/bin/configManta.py",
+    "/lustre/scratch/scratch/regmova/tools/ensembl-vep/vep", bin_manta =
+    "/lustre/scratch/scratch/regmova/tools/manta-1.6.0/bin/configManta.py", 
+    
     bin_ichor_pon =
     "/lustre/scratch/scratch/regmova/tools/ichorCNA/scripts/createPanelOfNormals.R",
     bin_ichor = "/lustre/scratch/scratch/regmova/tools/ichorCNA/scripts/runIchorCNA.R",
     bin_samtools = "/lustre/scratch/scratch/regmova/tools/samtools/samtools", bin_gatk =
     "/lustre/scratch/scratch/regmova/tools/gatk/gatk", bin_readcount =
     "/lustre/scratch/scratch/regmova/tools/hmmcopy_utils/bin/readCounter", bin_ciri =
-    "/lustre/scratch/scratch/regmova/tools/CIRI/CIRI_Full_v2.1.1.jar", 
-     bin_picard =
-    "/lustre/scratch/scratch/regmova/tools/picard/build/libs/picard.jar", bin_samtools =
-    "/lustre/scratch/scratch/regmova/tools/samtools/samtools", bin_picard =
-    "/lustre/scratch/scratch/regmova/tools/picard/build/libs/picard.jar", bin_bedtools =
-    "/lustre/scratch/scratch/regmova/tools/bedtools2/bin/bedtools", bin_ciri_quant =
+    "/lustre/scratch/scratch/regmova/tools/CIRI/CIRI_Full_v2.1.1.jar", bin_picard =
+    "/lustre/scratch/scratch/regmova/tools/picard/build/libs/picard.jar", 
+    
+    bin_samtools = "/lustre/scratch/scratch/regmova/tools/samtools/samtools", bin_picard
+    = "/lustre/scratch/scratch/regmova/tools/picard/build/libs/picard.jar", bin_bedtools
+    = "/lustre/scratch/scratch/regmova/tools/bedtools2/bin/bedtools", bin_ciri_quant =
     "/lustre/scratch/scratch/regmova/tools/CIRIquant/bin/CIRIquant")
 )
 }

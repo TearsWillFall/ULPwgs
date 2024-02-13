@@ -14,11 +14,11 @@ autobin_cnvkit(
   seq_method = "hybrid",
   split = FALSE,
   short_names = FALSE,
-  bp_per_bin = 100000,
+  bp_per_bin = 1e+05,
   min_bin_size_target = 20,
   max_bin_size_target = 20000,
   min_bin_size_antitarget = 500,
-  max_bin_size_antitarget = 500000,
+  max_bin_size_antitarget = 5e+05,
   ...
 )
 }

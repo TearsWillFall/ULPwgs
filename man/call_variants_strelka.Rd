@@ -16,6 +16,8 @@ call_variants_strelka(
   tumour = NULL,
   normal = NULL,
   patient_id = NULL,
+  tumour_id = NULL,
+  normal_id = NULL,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   annotate = TRUE,
   tabulate = TRUE,

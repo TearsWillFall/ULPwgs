@@ -12,6 +12,8 @@ call_germline_snvs_strelka(
   cache_vep = build_default_cache_list()$cache_vep,
   bin_strelka = build_default_tool_binary_list()$bin_strelka$germline,
   normal = NULL,
+  patient_id = NULL,
+  normal_id = NULL,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   indel_candidates = NULL,
   extract_pass = TRUE,

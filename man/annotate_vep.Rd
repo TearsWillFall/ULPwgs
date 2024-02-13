@@ -12,6 +12,9 @@ annotate_vep(
   vcf = NULL,
   tabulate = TRUE,
   compress = TRUE,
+  patient_id = NULL,
+  tumour_id = NULL,
+  normal_id = NULL,
   fmt = "vcf",
   ...
 )

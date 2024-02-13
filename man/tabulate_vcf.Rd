@@ -4,7 +4,13 @@
 \alias{tabulate_vcf}
 \title{Generate tabulated table from annotate VCF}
 \usage{
-tabulate_vcf(vcf = NULL, ...)
+tabulate_vcf(
+  vcf = NULL,
+  tumour_id = NULL,
+  normal_id = NULL,
+  patient_id = NULL,
+  ...
+)
 }
 \arguments{
 \item{vcf}{Path to VCF file}

@@ -17,12 +17,12 @@ ichorCNA(
   gc = "tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",
   map = "tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",
   centromere = "tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",
- 
-    normal_panel = "tools/ichorCNA/inst/extdata/HD_ULP_PoN_500kb_median_normAutosome_mapScoreFiltered_median.rds",
+  normal_panel =
+    "tools/ichorCNA/inst/extdata/HD_ULP_PoN_500kb_median_normAutosome_mapScoreFiltered_median.rds",
   output_dir = ".",
   verbose = TRUE,
   libdir = "tools/ichorCNA",
-  male_tresh = 0.0001,
+  male_tresh = 1e-04,
   chrs = "'c(1:22,\\"X\\")'",
   chrTrain = "'c(1:22)'"
 )

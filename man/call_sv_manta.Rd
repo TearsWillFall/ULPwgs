@@ -17,6 +17,9 @@ call_sv_manta(
   targeted = TRUE,
   annotate = TRUE,
   tabulate = TRUE,
+  normal_id = NULL,
+  tumour_id = NULL,
+  patient_id = NULL,
   ...
 )
 }

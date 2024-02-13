@@ -26,6 +26,7 @@ set_env_vars(
   ns = "ULPwgs",
   mode = "local",
   time = "48:0:0",
+  bypass = FALSE,
   sheet = NULL,
   inherit = NULL,
   select = NULL,
