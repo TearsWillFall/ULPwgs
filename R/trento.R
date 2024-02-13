@@ -1118,7 +1118,7 @@ check_pcf_identity=function(
         .main$out_files$indentity <- paste0(out_file_dir,"/",input_id,".tsv")
 
 
-        snps=system(paste0("find ",clonet_dir, "| grep .snps$"),intern=TRUE)
+        snps=system(paste0("find ",clonet_dir, "| grep .snps$| xargs realpath"),intern=TRUE)
         snps_annot=data.frame(file_path=snps,file_name=unlist(lapply(snps,get_file_name)))
         snps_annot=snps_annot %>% 
             dplyr::group_by(file_name) %>% 
