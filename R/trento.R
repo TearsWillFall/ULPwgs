@@ -1092,6 +1092,7 @@ clonet_dirs=build_default_clonet_dir_list()){
 #'
 #' @param output_name Ouput file name.
 #' @param clonet_dir Clonet directories to search for SNP files.
+#' @param drop_self Drop diagnonal values in matrix 
 #' @export
 #' 
 
@@ -1099,6 +1100,7 @@ check_pcf_identity=function(
     output_name=NULL,
     clonet_dir=NULL,
     drop_self=TRUE,
+    sep="\t",
     ...
 ){
     options(scipen=999)
