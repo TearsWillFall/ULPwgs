@@ -4,12 +4,20 @@
 \alias{check_pcf_identity}
 \title{Writes VCF file from a VCF data.structure}
 \usage{
-check_pcf_identity(output_name = NULL, clonet_dir = NULL, ...)
+check_pcf_identity(
+  output_name = NULL,
+  clonet_dir = NULL,
+  drop_self = TRUE,
+  sep = "\\t",
+  ...
+)
 }
 \arguments{
 \item{output_name}{Ouput file name.}
 
 \item{clonet_dir}{Clonet directories to search for SNP files.}
+
+\item{drop_self}{Drop diagnonal values in matrix}
 }
 \description{
 VCF datastructure is in list format and contains a header, a body and
