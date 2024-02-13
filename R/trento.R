@@ -1097,7 +1097,7 @@ clonet_dirs=build_default_clonet_dir_list()){
 
 
 check_pcf_identity=function(
-    output_name=NULL
+    output_name=NULL,
     clonet_dir=NULL,
     ...
 ){
