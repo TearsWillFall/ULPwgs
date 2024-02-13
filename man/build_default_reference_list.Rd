@@ -149,10 +149,14 @@ build_default_reference_list(
     HG19_ALT = list(reference = list(genome =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19_alt/reference/human_g1k_v37.fasta")),
     HG38 = list(reference = list(genome =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg38/reference/ucsc.hg38.fa"),
-    database = list(all_snps =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg38/database/00-All.vcf.gz", 
+    "/lustre/scratch/scratch/regmova/PCF/references/hg38/reference/ucsc.hg38.fa"), panel
+    = list(PCF_V3 = list(bi =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19_alt/panel/v3/cap_tg.interval_list",
     
+     ti =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19_alt/panel/v3/prim_tg.interval_list")),
+    database = list(all_snps =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg38/database/00-All.vcf.gz",
     all_common =
     "/lustre/scratch/scratch/regmova/PCF/references/hg38/database/00-common_all.vcf.gz")))
 )
