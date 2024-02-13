@@ -1123,11 +1123,13 @@ check_pcf_identity=function(
         snps_annot=snps_annot %>% 
             dplyr::group_by(file_name) %>% 
             dplyr::summarise(file_path=file_path[1])
-        dat=dplyr::bind_rows(parallel::mclapply(1:nrow(snps_annot),FUN=function(x){
+        print(snps_annot)
+        dat=parallel::mclapply(1:nrow(snps_annot),FUN=function(x){
             dat=read.table(snps_annot[x,]$file_path,sep="\t",header=TRUE);
             dat$id=snps_annot[x,]$file_name;
-            dat
-        }),mc.cores=threads)
+            return(dat)
+        },mc.cores=threads)
+        dat=dplyr::bind_rows(dat)
 
         dat_wider=dat %>% 
         tidyr::pivot_wider(
