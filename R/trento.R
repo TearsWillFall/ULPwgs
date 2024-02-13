@@ -1123,7 +1123,7 @@ check_pcf_identity=function(
         snps_annot=snps_annot %>% 
             dplyr::group_by(file_name) %>% 
             dplyr::summarise(file_path=file_path[1])
-        print(snps_annot)
+
         dat=parallel::mclapply(1:nrow(snps_annot),FUN=function(x){
             dat=read.table(snps_annot[x,]$file_path,sep="\t",header=TRUE);
             dat$id=snps_annot[x,]$file_name;
@@ -1137,7 +1137,7 @@ check_pcf_identity=function(
             names_from=rsid,
             values_from=af
         )
-        cor_matrix=cor(dat_wider[,-1])
+        cor_matrix=cor(t(dat_wider[,-1]))
         colnames(cor_matrix)=unlist(dat_wider[,1])
         rownames(cor_matrix)=unlist(dat_wider[,1])
         cor_matrix=cbind(dat_wider[,1],cor_matrix)
