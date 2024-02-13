@@ -1122,7 +1122,7 @@ check_pcf_identity=function(
         snps_annot=data.frame(file_path=snps,file_name=unlist(lapply(snps,get_file_name)))
         snps_annot=snps_annot %>% group_by(file_name) %>% summarise(file_path=file_path[1])
         dat=dplyr::bind_rows(parallel::mclapply(1:nrow(snps_annot),FUN=function(x){
-            dat=read.table(snps_annot[x,]$file_path,spe="\t",header=TRUE);
+            dat=read.table(snps_annot[x,]$file_path,sep="\t",header=TRUE);
             dat$id=snps_annot[x,]$file_name;
             dat
         }),mc.cores=threads)
