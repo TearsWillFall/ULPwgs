@@ -1098,6 +1098,7 @@ clonet_dirs=build_default_clonet_dir_list()){
 check_pcf_identity=function(
     output_name=NULL,
     clonet_dir=NULL,
+    drop_self=TRUE,
     ...
 ){
     options(scipen=999)
@@ -1148,6 +1149,12 @@ check_pcf_identity=function(
                 sample2=names,
                 corr=values
         )
+        if(drop_self){
+          cor_matrix=cor_matrix %>%
+            dplyr::filter(
+                sample1!=sample2
+            )  
+        }
         data.table::fwrite(
             x=cor_matrix,
             file= .main$out_files$indentity,
