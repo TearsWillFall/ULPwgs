@@ -1085,5 +1085,78 @@ clonet_dirs=build_default_clonet_dir_list()){
     
 }
 
+#' Writes VCF file from a VCF data.structure
+#'
+#' VCF datastructure is in list format and contains a header, a body and
+#' the corresponding col_names
+#'
+#' @param output_name Ouput file name.
+#' @param clonet_dir Clonet directories to search for SNP files.
+#' @export
+#' 
 
 
+check_pcf_identity=function(
+    output_name=NULL
+    clonet_dir=NULL,
+    ...
+){
+    options(scipen=999)
+
+    run_main=function(
+        .env
+    ){
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+
+
+        out_file_dir=set_dir(
+            out_file_dir,
+            name="identity"
+        )
+
+        set_main(.env=.this.env)
+        .main$out_files$indentity <- paste0(out_file_dir,"/",input_id,".tsv")
+
+
+        snps=system(paste0("find ",input, "| grep .snps$"),intern=TRUE)
+        snps_annot=data.frame(file_path=snps,file_name=unlist(lapply(snps,get_file_name)))
+        snps_annot=snps_annot %>% group_by(file_name) %>% summarise(file_path=file_path[1])
+        dat=dplyr::bind_rows(parallel::mclapply(1:nrow(snps_annot),FUN=function(x){
+            dat=read.table(snps_annot[x,]$file_path,spe="\t",header=TRUE);
+            dat$id=snps_annot[x,]$file_name;
+            dat
+        }),mc.cores=threads)
+
+        dat_wider=dat %>% 
+        tidyr::pivot_wider(
+            id_cols=id,
+            names_from=rsid,
+            values_from=af
+        )
+        cor_matrix=cor(dat_wider[,-1])
+        colnames(cor_matrix)=unlist(dat_wider[,1])
+        rownames(cor_matrix)=unlist(dat_wider[,1])
+        cor_matrix=cbind(dat_wider[,1],cor_matrix)
+        cor_matrix=cor_matrix %>% 
+        tidyr::pivot_longer(-id) %>%
+        dplyr::rename(
+                sample1=id,
+                sample2=names,
+                corr=values
+        )
+        data.table::fwrite(
+            x=cor_matrix,
+            file= .main$out_files$indentity,
+            sep=sep
+            )
+        .env$.main<-.main
+    }
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+        .env= .base.env,
+        vars="output_name"
+    )
+    launch(.env=.base.env)
+}
