@@ -61,7 +61,12 @@ call_variants_strelka=function(
       .main$steps[[fn_id]]<-.this.env
       .main.step<-.main$steps[[fn_id]]
 
-    
+      if(!is.null(tumour)){
+        tumour=input
+      }else{
+        normal=input
+      }
+       
     
 
       .main.step$steps <-append(
@@ -73,8 +78,8 @@ call_variants_strelka=function(
                 bin_manta=bin_manta,
                 bin_vep=bin_vep,
                 cache_vep=cache_vep,
-                tumour=ifelse(!is.null(tumour),input,tumour),
-                normal=ifelse(is.null(tumour),input,normal),
+                tumour=tumour,
+                normal=normal,
                 patient_id=patient_id,
                 tumour_id=tumour_id,
                 normal_id=normal_id,
@@ -109,8 +114,8 @@ call_variants_strelka=function(
               annotate=annotate,
               tabulate=tabulate,
               indel_candidates=.main.step$out_files$sv$indel_candidates,
-              tumour=ifelse(!is.null(tumour),input,tumour),
-              normal=ifelse(is.null(tumour),input,normal),
+              tumour=tumour,
+              normal=normal,
               patient_id=patient_id,
               tumour_id=tumour_id,
               normal_id=normal_id,
