@@ -185,6 +185,7 @@ call_germline_sv_manta=function(
     bin_manta=build_default_tool_binary_list()$bin_manta,
     normal=NULL,
     normal_id=NULL,
+    patient_id=NULL,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     targeted=TRUE,
     annotate=TRUE,
