@@ -762,7 +762,6 @@ call_germline_snvs_strelka=function(
                 bin_tabix=bin_tabix,
                 cache_vep=cache_vep,
                 patient_id=patient_id,
-                tumour_id=tumour_id,
                 normal_id=normal_id,
                 vcf=.main.step$out_files$annotated$filter$germline$bgzip_vcf,
                 type="germline",
