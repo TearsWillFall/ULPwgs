@@ -60,7 +60,10 @@ call_variants_strelka=function(
 
       .main$steps[[fn_id]]<-.this.env
       .main.step<-.main$steps[[fn_id]]
-    
+
+      tumour=ifelse(!is.null(tumour),input,tumour)
+      normal=ifelse(is.null(tumour),input,normal)
+
       .main.step$steps <-append(
             .main.step$steps,
             call_sv_manta(
