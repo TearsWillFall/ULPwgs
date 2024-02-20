@@ -61,13 +61,16 @@ call_variants_strelka=function(
       .main$steps[[fn_id]]<-.this.env
       .main.step<-.main$steps[[fn_id]]
 
-      if(!is.null(tumour)){
+      
+      if(vars=="tumour"){
         tumour=input
-      }else{
+      }else if(vars=="normal"){
         normal=input
+      }else{
+        stop("Missing variable")
       }
        
-    
+
 
       .main.step$steps <-append(
             .main.step$steps,
