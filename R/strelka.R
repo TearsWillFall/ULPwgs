@@ -62,16 +62,12 @@ call_variants_strelka=function(
       .main.step<-.main$steps[[fn_id]]
 
       
-      if(vars=="tumour"){
+      if(is.list(tumour)){
         tumour=input
-      }else if(vars=="normal"){
-        normal=input
       }else{
-        stop("Missing variable")
+        normal=input
       }
        
-
-
       .main.step$steps <-append(
             .main.step$steps,
             call_sv_manta(
