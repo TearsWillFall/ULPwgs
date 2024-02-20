@@ -64,7 +64,7 @@ call_variants_strelka=function(
       
       if(is.list(tumour)){
         tumour=input
-      }else{
+      }else if(is.list(normal)){
         normal=input
       }
        
