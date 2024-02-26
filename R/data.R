@@ -131,7 +131,7 @@ build_flowcell_id=function(flowcells=list(
 
 
     ),pattern=c(
-      "000000000-[A-Z][A-Z][A-Z][A-Z]$"
+      "000000000-[A-Z][A-Z][A-Z][A-Z]$",
       "C[A-Z,0-9]{4}ANXX$",
       "C[A-Z,0-9]{4}ANXX$",
       "C[A-Z,0-9]{4}ANXX$",
