@@ -55,6 +55,7 @@ build_instrument_id = function(instruments=list(
 
 build_flowcell_id=function(flowcells=list(
     instrument=c(
+      "MiSeq",
       "HiSeq 1500",
       "HiSeq 2000",
       "HiSeq 2500",
