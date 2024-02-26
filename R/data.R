@@ -91,6 +91,7 @@ build_flowcell_id=function(flowcells=list(
       "NovaSeq 6000"
 
     ),flowcell=c(
+      "MiSeq flow cell",
       "High Output (8-lane) v4 flow cell",
       "High Output (8-lane) v4 flow cell",
       "High Output (8-lane) v4 flow cell",
@@ -130,6 +131,7 @@ build_flowcell_id=function(flowcells=list(
 
 
     ),pattern=c(
+      "000000000-[A-Z][A-Z][A-Z][A-Z]$"
       "C[A-Z,0-9]{4}ANXX$",
       "C[A-Z,0-9]{4}ANXX$",
       "C[A-Z,0-9]{4}ANXX$",
