@@ -41,6 +41,7 @@ call_variants_strelka=function(
     patient_id=NULL,
     tumour_id=NULL,
     normal_id=NULL,
+    regions=NULL,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     annotate=TRUE,
     tabulate=TRUE,
@@ -84,6 +85,7 @@ call_variants_strelka=function(
                 normal_id=normal_id,
                 annotate=annotate,
                 tabulate=tabulate,
+                regions=regions,
                 ref_genome=ref_genome,
                 output_dir=paste0(
                   out_file_dir,"/",patient_id,
@@ -112,6 +114,7 @@ call_variants_strelka=function(
               cache_vep=cache_vep,
               annotate=annotate,
               tabulate=tabulate,
+              regions=regions,
               indel_candidates=.main.step$out_files$sv$indel_candidates,
               tumour=tumour,
               normal=normal,
@@ -195,6 +198,7 @@ call_snvs_strelka=function(
     tumour_id=NULL,
     normal_id=NULL,
     indel_candidates=NULL,
+    regions=NULL,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     targeted=TRUE,
     verbose=TRUE,
@@ -243,6 +247,7 @@ call_snvs_strelka=function(
                 normal_id=normal_id,
                 annotate=annotate,
                 tabulate=tabulate,
+                regions=regions,
                 ref_genome=ref_genome,
                 output_dir=paste0(out_file_dir,"/",input_id,"/somatic/snvs_indels"),
                 tmp_dir=tmp_dir,
@@ -277,6 +282,7 @@ call_snvs_strelka=function(
                 normal_id=normal_id,
                 annotate=annotate,
                 tabulate=tabulate,
+                regions=regions,
                 ref_genome=ref_genome,
                 output_dir=paste0(out_file_dir,"/",input_id,"/germline/snvs_indels"),
                 tmp_dir=tmp_dir,
@@ -348,6 +354,7 @@ call_snvs_strelka=function(
 
 
 call_somatic_snvs_strelka=function(
+    bin_samtools=build_default_tool_binary_list()$bin_samtools,
     bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
     bin_tabix=build_default_tool_binary_list()$bin_tabix,
@@ -361,6 +368,7 @@ call_somatic_snvs_strelka=function(
     normal_id=NULL,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     indel_candidates=NULL,
+    regions=NULL,
     annotate=TRUE,
     tabulate=TRUE,
     targeted=TRUE,
@@ -377,6 +385,35 @@ call_somatic_snvs_strelka=function(
         set_main(.env=.this.env)
 
 
+      ### IF NO REGION IS GIVEN SPLIT BAM PER CHROMOSOME
+      if(is.null(regions)){
+        .main.step$steps <-append(
+          .main.step$steps,
+          get_sq_bam(
+            bin_samtools=bin_samtools,
+            bam=input,
+            output_name=input_id,
+            output_dir=tmp_dir,
+            header=FALSE,
+            index=TRUE,
+            tmp_dir=tmp_dir,
+            env_dir=env_dir,
+            batch_dir=batch_dir,
+            err_msg=err_msg,
+            verbose=verbose,
+            threads=threads,
+            ram=ram,
+            executor_id=task_id
+          )
+        )
+        .this.step=.main.step$steps$get_sq_bam
+        .main.step$out_files$region=.this.step$out_files$index_bed
+        region=.main.step$out_files$region
+      
+      }
+
+        
+
           
         .main$exec_code=paste0(
           bin_strelka,
@@ -384,8 +421,9 @@ call_somatic_snvs_strelka=function(
           " --normalBam ",normal,
           " --referenceFasta ", ref_genome ,
           " --runDir ", out_file_dir, 
+          ifelse(!is.null(regions),paste0(" --callRegions ",regions),""),
           ifelse(targeted," --exome ",""),
-          ifelse(indel_candidates,
+          ifelse(!is.null(indel_candidates),
             paste0("--indelCandidates ",indel_candidates),""), "; ",
           paste0(
             out_file_dir,
@@ -667,9 +705,10 @@ call_germline_snvs_strelka=function(
           bin_strelka,
           " --bam ",normalizePath(input),
           " --referenceFasta ", normalizePath(ref_genome),
-          " --runDir ", out_file_dir, 
+          " --runDir ", out_file_dir,
+          ifelse(!is.null(regions),paste0(" --callRegions ",regions),""),
           ifelse(targeted," --exome ",""),
-          ifelse(indel_candidates,
+          ifelse(!is.null(indel_candidates),
             paste0("--indelCandidates ",indel_candidates),""), "; ",
               paste0(
                 out_file_dir,

@@ -1485,7 +1485,9 @@ get_sq_bam=function(
     bin_samtools=build_default_tool_binary_list()$bin_samtools,
     bam=NULL,
     header=TRUE,
+    chromosomes=NULL,
     base=0,
+    index=FALSE,
     ...
   ){
  
@@ -1499,12 +1501,16 @@ get_sq_bam=function(
 
         set_main(.env=.this.env)
 
-
+        chr=""
+        if(!is.null(chromosomes)){
+          chr= paste0("| grep -E ",paste0("\"",paste0(paste0("^([chr]{0,3})",chromosomes),collapse="\\|"),"\""))
+        }
 
         .main$out_files$index_bed=paste0(out_file_dir,"/",input_id,".index.bed")
         .main$exec_code=paste0(
           bin_samtools," view -H ",input,
-          " | grep @SQ| awk -F  \"\\t|:\" \'{print $3\"\\t\"",base,"\"\\t\"$5}\'",
+          " | grep @SQ ",chr,
+          "| awk -F  \"\\t|:\" \'{print $3\"\\t\"",base,"\"\\t\"$5}\'",
           ifelse(header," |  awk \'BEGIN{print \"chr\\tstart\\tend\"}1\'","")," >",
           .main$out_files$index_bed
         )
