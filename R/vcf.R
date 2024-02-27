@@ -1203,7 +1203,9 @@ tabulate_vcf=function(
       
 
             vcf_body=vcf_body %>% unnest_vcf_body(full=TRUE) %>% 
-            tidyr::pivot_wider(values_from=VALUE,names_from=c(SAMPLE,FORMAT))
+            tidyr::pivot_wider(values_from=VALUE,names_from=c(SAMPLE,FORMAT),
+            values_fn=unique
+            )
             vcf_body$patient_id="NA"
             vcf_body$tumour_id="NA"
             vcf_body$normal_id="NA"
