@@ -1501,7 +1501,6 @@ get_sq_bam=function(
     ){
         .this.env=environment()
         append_env(to=.this.env,from=.env)
-
         set_main(.env=.this.env)
         
 

@@ -70,7 +70,38 @@ call_variants_strelka=function(
       }else if(is.list(normal)){
         normal=input
       }
-       
+
+      ### IF NO REGION IS GIVEN SPLIT BAM PER CHROMOSOME
+      if(is.null(regions)){
+        .main.step$steps <-append(
+          .main.step$steps,
+          get_sq_bam(
+            bin_samtools=bin_samtools,
+            bin_bcftools=bin_bcftools,
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            bam=input,
+            output_name=input_id,
+            output_dir=tmp_dir,
+            header=FALSE,
+            index=TRUE,
+            compress=TRUE,
+            chromosomes=chromosomes,
+            tmp_dir=tmp_dir,
+            env_dir=env_dir,
+            batch_dir=batch_dir,
+            err_msg=err_msg,
+            verbose=verbose,
+            threads=threads,
+            ram=ram,
+            executor_id=task_id
+          )
+        )
+        .this.step=.main.step$steps$get_sq_bam
+        .main.step$out_files$regions=.this.step$out_files$bgzip_bed
+        regions=.main.step$out_files$regions
+      }
+
       .main.step$steps <-append(
             .main.step$steps,
             call_sv_manta(
@@ -397,46 +428,15 @@ call_somatic_snvs_strelka=function(
         append_env(to=.this.env,from=.env)
         set_main(.env=.this.env)
 
-        .main$steps[[fn_id]]<-.this.env
-        .main.step=.main$steps[[fn_id]]
-
-      ### IF NO REGION IS GIVEN SPLIT BAM PER CHROMOSOME
-      if(is.null(regions)){
-        .main.step$steps <-append(
-          .main.step$steps,
-          get_sq_bam(
-            bin_samtools=bin_samtools,
-            bam=input,
-            output_name=input_id,
-            output_dir=tmp_dir,
-            header=FALSE,
-            index=TRUE,
-            compress=TRUE,
-            chromosomes=chromosomes,
-            tmp_dir=tmp_dir,
-            env_dir=env_dir,
-            batch_dir=batch_dir,
-            err_msg=err_msg,
-            verbose=verbose,
-            threads=threads,
-            ram=ram,
-            executor_id=task_id
-          )
-        )
-        .this.step=.main.step$steps$get_sq_bam
-        .main.step$out_files$regions=.this.step$out_files$bgzip_bed
-        regions=.main.step$out_files$regions
-      }
-
-
+    
           
-        .main.step$exec_code=paste0(
+        .main$exec_code=paste0(
           bin_strelka,
           " --tumorBam ",input,
           " --normalBam ",normal,
           " --referenceFasta ", ref_genome ,
           " --runDir ", out_file_dir, 
-          paste0(" --callRegions ",regions),
+          ifelse(!is.null(regions),paste0(" --callRegions ",regions),""),
           ifelse(targeted," --exome ",""),
           ifelse(!is.null(indel_candidates),
             paste0("--indelCandidates ",indel_candidates),""), "; ",
@@ -447,12 +447,12 @@ call_somatic_snvs_strelka=function(
             )
           )
         
-        .main.step$out_files$strelka$workflow=paste0(out_file_dir,"/runWorkflow.py")
-        .main.step$out_files$strelka$stats=list(
+        .main$out_files$strelka$workflow=paste0(out_file_dir,"/runWorkflow.py")
+        .main$out_files$strelka$stats=list(
               tsv=paste0(out_file_dir,"/results/stats/runStats.tsv"),
               xml=paste0(out_file_dir,"/results/stats/runStats.xml")
         )
-        .main.step$out_files$strelka$variants=list(
+        .main$out_files$strelka$variants=list(
               indel=paste0(out_file_dir,"/results/variants/somatic.indels.vcf.gz"),
               indel_idx=paste0(out_file_dir,"/results/variants/somatic.indels.vcf.gz.tbi"),
               snv=paste0(out_file_dir,"/results/variants/somatic.snvs.vcf.gz"),
@@ -463,7 +463,8 @@ call_somatic_snvs_strelka=function(
             .env=.this.env
         )
 
-        .main.step<-.main$steps[[fn_id]]
+        .main.step=.main$steps[[fn_id]]
+
 
 
         
@@ -716,14 +717,12 @@ call_germline_snvs_strelka=function(
         set_main(.env=.this.env)
 
 
-          
-
         .main$exec_code=paste0(
           bin_strelka,
           " --bam ",normalizePath(input),
           " --referenceFasta ", normalizePath(ref_genome),
           " --runDir ", out_file_dir,
-          paste0(" --callRegions ",regions),
+          ifelse(!is.null(regions),paste0(" --callRegions ",regions),""),
           ifelse(targeted," --exome ",""),
           ifelse(!is.null(indel_candidates),
             paste0("--indelCandidates ",indel_candidates),""), "; ",

@@ -61,8 +61,6 @@ call_sv_manta=function(
         if(is.null(normal_id)){
           normal_id=get_file_name(normal)   
         }
-             
-
         if(!is.null(tumour)){
         
            if(is.null(tumour_id)){
