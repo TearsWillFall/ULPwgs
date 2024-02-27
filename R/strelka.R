@@ -28,6 +28,7 @@
 
 
 call_variants_strelka=function(
+    bin_samtools=build_default_tool_binary_list()$bin_samtools,
     bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
     bin_tabix=build_default_tool_binary_list()$bin_tabix,
@@ -41,6 +42,7 @@ call_variants_strelka=function(
     patient_id=NULL,
     tumour_id=NULL,
     normal_id=NULL,
+    chromosomes=c(1:22,"X","Y","MT"),
     regions=NULL,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     annotate=TRUE,
@@ -72,6 +74,7 @@ call_variants_strelka=function(
       .main.step$steps <-append(
             .main.step$steps,
             call_sv_manta(
+                bin_samtools=bin_samtools,
                 bin_bcftools=bin_bcftools,
                 bin_bgzip=bin_bgzip,
                 bin_tabix=bin_tabix,
@@ -80,6 +83,7 @@ call_variants_strelka=function(
                 cache_vep=cache_vep,
                 tumour=tumour,
                 normal=normal,
+                chromosomes=chromosomes,
                 patient_id=patient_id,
                 tumour_id=tumour_id,
                 normal_id=normal_id,
@@ -105,6 +109,7 @@ call_variants_strelka=function(
       .main.step$steps <-append(
         .main.step$steps,
             call_snvs_strelka(
+              bin_samtools=bin_samtools,
               bin_bcftools=bin_bcftools,
               bin_bgzip=bin_bgzip,
               bin_tabix=bin_tabix,
@@ -115,6 +120,7 @@ call_variants_strelka=function(
               annotate=annotate,
               tabulate=tabulate,
               regions=regions,
+              chromosomes=chromosomes,
               indel_candidates=.main.step$out_files$sv$indel_candidates,
               tumour=tumour,
               normal=normal,
@@ -185,6 +191,7 @@ call_variants_strelka=function(
 
 
 call_snvs_strelka=function( 
+    bin_samtools=build_default_tool_binary_list()$bin_samtools,
     bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
     bin_tabix=build_default_tool_binary_list()$bin_tabix,
@@ -198,6 +205,7 @@ call_snvs_strelka=function(
     tumour_id=NULL,
     normal_id=NULL,
     indel_candidates=NULL,
+    chromosomes=c(1:22,"X","Y","MT"),
     regions=NULL,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     targeted=TRUE,
@@ -234,6 +242,7 @@ call_snvs_strelka=function(
             .main.step$steps<-append(
               .main.step$steps,
               call_somatic_snvs_strelka(
+                bin_samtools=bin_samtools,
                 bin_strelka=bin_strelka_somatic,
                 bin_bcftools=bin_bcftools,
                 bin_bgzip=bin_bgzip,
@@ -242,6 +251,7 @@ call_snvs_strelka=function(
                 cache_vep=cache_vep,
                 tumour=input,
                 normal=normal,
+                chromosomes=chromosomes,
                 patient_id=patient_id,
                 tumour_id=tumour_id,
                 normal_id=normal_id,
@@ -271,6 +281,7 @@ call_snvs_strelka=function(
             .main.step$steps<-append(
               .main.step$steps,
               call_germline_snvs_strelka(
+                bin_samtools=bin_samtools,
                 bin_strelka=bin_strelka_germline,
                 bin_bcftools=bin_bcftools,
                 bin_bgzip=bin_bgzip,
@@ -280,6 +291,7 @@ call_snvs_strelka=function(
                 normal=input,
                 patient_id=patient_id,
                 normal_id=normal_id,
+                chromosomes=chromosomes,
                 annotate=annotate,
                 tabulate=tabulate,
                 regions=regions,
@@ -366,6 +378,7 @@ call_somatic_snvs_strelka=function(
     patient_id=NULL,
     tumour_id=NULL,
     normal_id=NULL,
+    chromosomes=c(1:22,"X","Y","MT"),
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     indel_candidates=NULL,
     regions=NULL,
@@ -384,6 +397,8 @@ call_somatic_snvs_strelka=function(
         append_env(to=.this.env,from=.env)
         set_main(.env=.this.env)
 
+        .main$steps[[fn_id]]<-.this.env
+        .main.step=.main$steps[[fn_id]]
 
       ### IF NO REGION IS GIVEN SPLIT BAM PER CHROMOSOME
       if(is.null(regions)){
@@ -396,6 +411,8 @@ call_somatic_snvs_strelka=function(
             output_dir=tmp_dir,
             header=FALSE,
             index=TRUE,
+            compress=TRUE,
+            chromosomes=chromosomes,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
@@ -407,21 +424,19 @@ call_somatic_snvs_strelka=function(
           )
         )
         .this.step=.main.step$steps$get_sq_bam
-        .main.step$out_files$region=.this.step$out_files$index_bed
-        region=.main.step$out_files$region
-      
+        .main.step$out_files$regions=.this.step$out_files$bgzip_bed
+        regions=.main.step$out_files$regions
       }
 
-        
 
           
-        .main$exec_code=paste0(
+        .main.step$exec_code=paste0(
           bin_strelka,
           " --tumorBam ",input,
           " --normalBam ",normal,
           " --referenceFasta ", ref_genome ,
           " --runDir ", out_file_dir, 
-          ifelse(!is.null(regions),paste0(" --callRegions ",regions),""),
+          paste0(" --callRegions ",regions),
           ifelse(targeted," --exome ",""),
           ifelse(!is.null(indel_candidates),
             paste0("--indelCandidates ",indel_candidates),""), "; ",
@@ -432,12 +447,12 @@ call_somatic_snvs_strelka=function(
             )
           )
         
-        .main$out_files$strelka$workflow=paste0(out_file_dir,"/runWorkflow.py")
-        .main$out_files$strelka$stats=list(
+        .main.step$out_files$strelka$workflow=paste0(out_file_dir,"/runWorkflow.py")
+        .main.step$out_files$strelka$stats=list(
               tsv=paste0(out_file_dir,"/results/stats/runStats.tsv"),
               xml=paste0(out_file_dir,"/results/stats/runStats.xml")
         )
-        .main$out_files$strelka$variants=list(
+        .main.step$out_files$strelka$variants=list(
               indel=paste0(out_file_dir,"/results/variants/somatic.indels.vcf.gz"),
               indel_idx=paste0(out_file_dir,"/results/variants/somatic.indels.vcf.gz.tbi"),
               snv=paste0(out_file_dir,"/results/variants/somatic.snvs.vcf.gz"),
@@ -672,6 +687,7 @@ call_somatic_snvs_strelka=function(
 
 
 call_germline_snvs_strelka=function(
+    bin_samtools=build_default_tool_binary_list()$bin_samtools,
     bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
     bin_tabix=build_default_tool_binary_list()$bin_tabix,
@@ -681,6 +697,7 @@ call_germline_snvs_strelka=function(
     normal=NULL,
     patient_id=NULL,
     normal_id=NULL,
+    chromosomes=c(1:22,"X","Y","MT"),
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     indel_candidates=NULL,
     extract_pass=TRUE,
@@ -706,7 +723,7 @@ call_germline_snvs_strelka=function(
           " --bam ",normalizePath(input),
           " --referenceFasta ", normalizePath(ref_genome),
           " --runDir ", out_file_dir,
-          ifelse(!is.null(regions),paste0(" --callRegions ",regions),""),
+          paste0(" --callRegions ",regions),
           ifelse(targeted," --exome ",""),
           ifelse(!is.null(indel_candidates),
             paste0("--indelCandidates ",indel_candidates),""), "; ",

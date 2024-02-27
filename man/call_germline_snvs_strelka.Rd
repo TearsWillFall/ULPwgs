@@ -5,6 +5,7 @@
 \title{Strelka wrapper for germline SNV variant calling}
 \usage{
 call_germline_snvs_strelka(
+  bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bin_bcftools = build_default_tool_binary_list()$bin_bcftools,
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
@@ -14,6 +15,7 @@ call_germline_snvs_strelka(
   normal = NULL,
   patient_id = NULL,
   normal_id = NULL,
+  chromosomes = c(1:22, "X", "Y", "MT"),
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   indel_candidates = NULL,
   extract_pass = TRUE,

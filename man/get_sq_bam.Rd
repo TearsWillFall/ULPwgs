@@ -6,9 +6,14 @@
 \usage{
 get_sq_bam(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
+  bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
+  bin_tabix = build_default_tool_binary_list()$bin_tabix,
   bam = NULL,
   header = TRUE,
+  chromosomes = NULL,
   base = 0,
+  index = FALSE,
+  compress = FALSE,
   ...
 )
 }

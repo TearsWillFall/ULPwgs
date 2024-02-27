@@ -5,6 +5,7 @@
 \title{Strelka wrapper for SNV variant calling}
 \usage{
 call_snvs_strelka(
+  bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bin_bcftools = build_default_tool_binary_list()$bin_bcftools,
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
@@ -18,6 +19,8 @@ call_snvs_strelka(
   tumour_id = NULL,
   normal_id = NULL,
   indel_candidates = NULL,
+  chromosomes = c(1:22, "X", "Y", "MT"),
+  regions = NULL,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   targeted = TRUE,
   verbose = TRUE,
