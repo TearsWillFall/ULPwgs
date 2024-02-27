@@ -1503,7 +1503,7 @@ get_sq_bam=function(
 
         chr=""
         if(!is.null(chromosomes)){
-          chr= paste0("| grep -E ",paste0("\"",paste0(paste0("^([chr]{0,3})",chromosomes),collapse="\\|"),"\""))
+          chr= paste0("| grep -E ",paste0("\"",paste0(paste0("^([chr]{0,3})",chromosomes),collapse="|"),"\""))
         }
 
         .main$out_files$index_bed=paste0(out_file_dir,"/",input_id,".index.bed")
