@@ -1525,23 +1525,24 @@ get_sq_bam=function(
 
         run_job(.env=.this.env)
 
+
         if(compress|index){
               .main.step$steps<-append(
                   .main.step$steps,
                   compress_and_index_bed_htslib(
-                  bin_bgzip=bin_bgzip,
-                  bin_tabix=bin_tabix,
-                  bed=.main$out_files$index_bed,
-                  output_dir=out_file_dir,
-                  tmp_dir=tmp_dir,
-                  env_dir=env_dir,
-                  batch_dir=batch_dir,
-                  err_msg=err_msg,
-                  threads=threads,
-                  ram=ram,
-                  executor=task_id,
-                  compress=compress,
-                  index=index
+                    bin_bgzip=bin_bgzip,
+                    bin_tabix=bin_tabix,
+                    bed=.main.step$out_files$index_bed,
+                    output_dir=out_file_dir,
+                    tmp_dir=tmp_dir,
+                    env_dir=env_dir,
+                    batch_dir=batch_dir,
+                    err_msg=err_msg,
+                    threads=threads,
+                    ram=ram,
+                    executor=task_id,
+                    compress=compress,
+                    index=index
                 )
               )
               .this.step=.main.step$steps$compress_and_index_bed_htslib
