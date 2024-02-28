@@ -9,6 +9,7 @@ variants_by_type_vcf(
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
   vcf = NULL,
   type = "snv",
+  chromosomes = NULL,
   ...
 )
 }

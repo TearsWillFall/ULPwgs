@@ -10,6 +10,7 @@ add_sv_af_strelka_vcf(
   bin_bgzip = build_default_tool_binary_list()$bin_bgzip,
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
   vcf = NULL,
+  chromosomes = NULL,
   ...
 )
 }

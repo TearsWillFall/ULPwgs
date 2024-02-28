@@ -9,6 +9,7 @@ tabulate_vcf(
   tumour_id = NULL,
   normal_id = NULL,
   patient_id = NULL,
+  chromosomes = NULL,
   ...
 )
 }

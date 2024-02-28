@@ -10,6 +10,7 @@ variants_by_filters_vcf(
   vcf = NULL,
   filters = "PASS",
   exclusive = FALSE,
+  chromosomes = NULL,
   ...
 )
 }

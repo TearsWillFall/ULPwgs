@@ -16,6 +16,7 @@ annotate_strelka_vep(
   fmt = "vcf",
   tabulate = TRUE,
   type = "snv",
+  chromosomes = NULL,
   ...
 )
 }

@@ -11,6 +11,7 @@ add_af_strelka_vcf(
   bin_tabix = build_default_tool_binary_list()$bin_tabix,
   vcf = NULL,
   type = "snv",
+  chromosomes = NULL,
   ...
 )
 }
