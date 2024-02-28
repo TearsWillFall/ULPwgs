@@ -601,7 +601,80 @@ call_germline_snvs_strelka=function(
 
 
 
-         
+       
+
+          .env$.main<-.main
+
+      }
+
+
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="normal"
+    )
+
+    launch(.env=.base.env)
+      
+
+}
+
+
+
+
+#' Strelka wrapper for germline SNV variant calling
+#'
+#' This function wraps the STRELKA functions for germline variant calling
+#' 
+#' @param bin_strelka_somatic Path to strelka somatic workflow binary
+#' @param tumour [OPTIONAL] Path to tumour BAM file.
+#' @param normal [REQUIRED] Path to tumour BAM file.
+#' @param ref_genome [REQUIRED] Path to reference genome FASTA
+#' @param variants [REQUIRED] Variants types to call. Default all. Options ["snv","sv","all"]
+#' @param indel_candidates [OPTIONAL] Path to indel candidates file produced by MANTA.
+#' @param targeted [REQUIRED] Remove coverage filtering for exome/targeted data. Default TRUE
+#' @param output_dir [OPTIONAL] Path to the output directory. Default current directory
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param batch_config [OPTIONAL] Default configuration for job submission in batch.
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+annotate_germline_strelka_output<-function(
+    bin_samtools=build_default_tool_binary_list()$bin_samtools,
+    bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
+    bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+    bin_tabix=build_default_tool_binary_list()$bin_tabix,
+    bin_vep=build_default_tool_binary_list()$bin_vep,
+    bin_strelka=build_default_tool_binary_list()$bin_strelka$somatic,
+    cache_vep=build_default_cache_list()$cache_vep,
+    chromosomes=NULL,
+    vcf=NULL,
+    ...
+  ){
+
+     run_main=function(
+        .env
+    ){
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+        set_main(.env=.this.env)
+        .main.step=.main$steps[[fn_id]]
+
+        if(!is.null(chromosomes)){
+          chromosomes=input
+        }else{
+          vcf=input
+        }
+
         ### ADD AF for SNVS and INDELS 
 
         .main.step$steps<- append(
@@ -609,10 +682,11 @@ call_germline_snvs_strelka=function(
            add_af_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf=.main.step$out_files$strelka$variants$snv_and_indel,
+            vcf=vcf,
             type="germline",
             fn_id="germline",
             output_dir=paste0(out_file_dir,"/annotated"),
+            chromosomes=chromosomes,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
@@ -629,9 +703,6 @@ call_germline_snvs_strelka=function(
         .main.step$out_files$annotated$af$germline=.this.step$out_files
 
 
-  
-
-
         ### FILTER VARIANTS BY FILTERS
 
       
@@ -644,6 +715,7 @@ call_germline_snvs_strelka=function(
             type="germline",
             fn_id="germline",
             output_dir=paste0(out_file_dir,"/annotated"),
+            chromosomes=chromosomes,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
@@ -674,6 +746,7 @@ call_germline_snvs_strelka=function(
                 patient_id=patient_id,
                 normal_id=normal_id,
                 vcf=.main.step$out_files$annotated$filter$germline$bgzip_vcf,
+                chromosomes=chromosomes,
                 type="germline",
                 fn_id="germline",
                 output_dir=paste0(out_file_dir,"/annotated"),
@@ -691,23 +764,23 @@ call_germline_snvs_strelka=function(
           .this.step=.main.step$steps$annotate_strelka_vep.germline
           .main.step$out_files$annotated$vep$germline=.this.step$out_files
         }
+    }
 
-          .env$.main<-.main
-
-      }
-
-
+    
     .base.env=environment()
-    list2env(list(...),envir=.base.env)
-    set_env_vars(
-      .env= .base.env,
-      vars="normal"
-    )
+      list2env(list(...),envir=.base.env)
+      set_env_vars(
+        .env= .base.env,
+        vars=ifelse(!is.null(chromosomes),"chromosomes","vcf")
+      )
 
     launch(.env=.base.env)
-      
 
 }
+
+
+
+
 
 
 #' Strelka wrapper for germline SNV variant calling
@@ -882,7 +955,7 @@ annotate_somatic_strelka_output<-function(
 
             ### ANNOTATE SNV USING VEP
             .main.step$steps <-append(
-              .main.step$steps ,
+              .main.step$steps,
               annotate_strelka_vep(
                 bin_vep=bin_vep,
                 bin_bgzip=bin_bgzip,
