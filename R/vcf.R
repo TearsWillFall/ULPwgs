@@ -8,19 +8,26 @@
 #' @export
 
 
-read_vcf=function(vcf=NULL,sep="\t",threads=1){
+read_vcf=function(vcf=NULL,sep="\t",threads=1,chromosomes=NULL){
   options(scipen=999)
-  cols=c("CHROM","POS","ID","REF","ALT","QUAL","FILTER","INFO","FORMAT")
+  cols=c(
+    "CHROM","POS","ID","REF",
+    "ALT","QUAL","FILTER",
+    "INFO","FORMAT"
+  )
 
-  
+  chr=""
+  if(!is.null(chromosomes)){
+     chr= paste0("| grep -E ",paste0("\"",paste0(paste0("^([chr]{0,3})",chromosomes),collapse="|"),"\""))
+  }
   if(is.null(vcf)){
     stop("vcf arguments is of type NULL")
   }else if(check_if_compressed(vcf)){
-      body=data.table::fread(cmd=paste0("gunzip -c ",vcf," | grep -v ^# "),
+      body=data.table::fread(cmd=paste0("gunzip -c ",vcf," | grep -v ^# ",chr),
       nThread=threads,colClasses="character",header=FALSE,sep="\t")
       header=system(paste0("gunzip -c ",vcf, "| grep ^#" ),intern=TRUE)
   }else{
-      body=data.table::fread(cmd=paste0("grep -v ^# ",vcf),
+      body=data.table::fread(cmd=paste0("grep -v ^# ",vcf,chr),
       nThread=threads,colClasses="character",header=FALSE,sep="\t")
       header=system(paste0("grep ^# ",vcf),intern=TRUE)
   }
@@ -455,7 +462,7 @@ add_gl_af_strelka_vcf=function(
   vcf=NULL,
   ...
 ){
-    
+
     run_main=function(.env){
 
         .this.env=environment()
@@ -468,8 +475,10 @@ add_gl_af_strelka_vcf=function(
 
         vcf_dat=read_vcf(input,threads=threads)
         vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
-        vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
-        dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
+        vcf_dat$body=vcf_dat$body %>% 
+          dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
+          dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
+     
         ##Extract Tier1 read information for REF and ALT
         vcf_dat$body=vcf_dat$body %>% dplyr::mutate(
           UREF=tryCatch({strsplit(VALUE[FORMAT=="AD"],split=",")[[1]][1]},error=function(e){NA}),
