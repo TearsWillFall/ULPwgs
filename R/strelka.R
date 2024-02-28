@@ -467,7 +467,7 @@ call_somatic_snvs_strelka=function(
 
 
         .main.step$steps=append(.main.step$steps,
-          annotate_somatic_strelka_output(
+          annotate_somatic_output_strelka(
             chromosomes=ifelse(targeted,NULL,chromosomes),
             vcf_list=list(
               snv=.main.step$out_files$strelka$variants$snv,
@@ -600,7 +600,7 @@ call_germline_snvs_strelka=function(
         .main.step<-.main$steps[[fn_id]]
 
         .main.step$steps=append(.main.step$steps,
-        annotate_somatic_strelka_output(
+        annotate_germline_output_strelka(
           chromosomes=ifelse(targeted,NULL,chromosomes),
           vcf=.main.step$out_files$strelka$variants$snv_and_indel,
             bin_samtools=bin_samtools,
@@ -620,7 +620,7 @@ call_germline_snvs_strelka=function(
             executor_id=task_id
           )
         )
-        
+
         .env$.main<-.main
 
       }
