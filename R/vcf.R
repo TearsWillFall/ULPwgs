@@ -23,7 +23,7 @@ read_vcf=function(
 
   chr=""
   if(!is.null(chromosomes)){
-     chr= paste0("| grep -E ",paste0("\"",paste0(paste0("^([chr]{0,3})",chromosomes),collapse="|"),"\""))
+     chr= paste0("| grep -P ",paste0("\"",paste0(paste0("^([chr]{0,3})",chromosomes,"\t"),collapse="|"),"\""))
   }
   if(is.null(vcf)){
     stop("vcf arguments is of type NULL")
@@ -1211,10 +1211,6 @@ extract_csq_info_vcf=function(vcf){
   tidyr::separate(CSQ,into=cols_in_csq,sep="\\|")
   return(vcf)
 }
-
-
-
-
 
 
 
