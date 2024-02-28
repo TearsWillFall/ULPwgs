@@ -703,7 +703,7 @@ annotate_germline_output_strelka<-function(
             vcf=vcf,
             type="germline",
             fn_id="germline",
-            output_dir=paste0(out_file_dir,"/annotated"),
+            output_dir=paste0(out_file_dir,"/annotated/af"),
             chromosomes=chromosomes,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
@@ -732,7 +732,7 @@ annotate_germline_output_strelka<-function(
             vcf=.main.step$out_files$annotated$af$germline$bgzip_vcf,
             type="germline",
             fn_id="germline",
-            output_dir=paste0(out_file_dir,"/annotated"),
+            output_dir=paste0(out_file_dir,"/annotated/filter"),
             chromosomes=chromosomes,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
@@ -748,8 +748,6 @@ annotate_germline_output_strelka<-function(
         .this.step=.main.step$steps$extract_pass_variants_strelka_vcf.germline
         .main.step$out_files$annotated$filter$germline=.this.step$out_files
         
-
-
 
         if(annotate){
 
@@ -767,7 +765,7 @@ annotate_germline_output_strelka<-function(
                 chromosomes=chromosomes,
                 type="germline",
                 fn_id="germline",
-                output_dir=paste0(out_file_dir,"/annotated"),
+                output_dir=paste0(out_file_dir,"/annotated/vep"),
                 tmp_dir=tmp_dir,
                 env_dir=env_dir,
                 batch_dir=batch_dir,
@@ -867,7 +865,7 @@ annotate_somatic_output_strelka<-function(
             vcf=vcf_list[[1]],
             type="snv",
             fn_id="snv",
-            output_dir=paste0(out_file_dir,"/annotated"),
+            output_dir=paste0(out_file_dir,"/annotated/af"),
             chromosomes=chromosomes,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
@@ -894,7 +892,7 @@ annotate_somatic_output_strelka<-function(
               chromosomes=chromosomes,
               type="indel",
               fn_id="indel",
-              output_dir=paste0(out_file_dir,"/annotated"),
+              output_dir=paste0(out_file_dir,"/annotated/af"),
               tmp_dir=tmp_dir,
               env_dir=env_dir,
               batch_dir=batch_dir,
@@ -923,7 +921,7 @@ annotate_somatic_output_strelka<-function(
             chromosomes=chromosomes,
             type="snv",
             fn_id="snv",
-            output_dir=paste0(out_file_dir,"/annotated"),
+            output_dir=paste0(out_file_dir,"/annotated/filter"),
             tmp_dir=tmp_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
@@ -952,7 +950,7 @@ annotate_somatic_output_strelka<-function(
             chromosomes=chromosomes,
             type="indel",
             fn_id="indel",
-            output_dir=paste0(out_file_dir,"/annotated"),
+            output_dir=paste0(out_file_dir,"/annotated/filter"),
             tmp_dir=tmp_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
@@ -987,7 +985,7 @@ annotate_somatic_output_strelka<-function(
                 chromosomes=chromosomes,
                 type="snv",
                 fn_id="snv",
-                output_dir=paste0(out_file_dir,"/annotated"),
+                output_dir=paste0(out_file_dir,"/annotated/vep"),
                 tmp_dir=tmp_dir,
                 env_dir=env_dir,
                 batch_dir=batch_dir,
@@ -1019,7 +1017,7 @@ annotate_somatic_output_strelka<-function(
                 chromosomes=chromosomes,
                 type="indel",
                 fn_id="indel",
-                output_dir=paste0(out_file_dir,"/annotated"),
+                output_dir=paste0(out_file_dir,"/annotated/vep"),
                 tmp_dir=tmp_dir,
                 env_dir=env_dir,
                 batch_dir=batch_dir,

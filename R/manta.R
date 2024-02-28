@@ -38,6 +38,7 @@ call_sv_manta=function(
     normal=NULL,
     regions=NULL,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
+    chromosomes=c(1:22,"X","Y","MT"),
     targeted=TRUE,
     annotate=TRUE,
     tabulate=TRUE,
@@ -81,6 +82,7 @@ call_sv_manta=function(
                 annotate=annotate,
                 tabulate=tabulate,
                 ref_genome=ref_genome,
+                chromosomes=chromosomes,
                 regions=regions,
                 patient_id=patient_id,
                 tumour_id=tumour_id,
@@ -114,6 +116,7 @@ call_sv_manta=function(
                 normal=input,
                 annotate=annotate,
                 patient_id=patient_id,
+                chromosomes=chromosomes,
                 regions=regions,
                 normal_id=normal_id,
                 tabulate=tabulate,
@@ -188,6 +191,7 @@ call_germline_sv_manta=function(
     normal_id=NULL,
     patient_id=NULL,
     regions=NULL,
+    chromosomes=NULL,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     targeted=TRUE,
     annotate=TRUE,
@@ -235,16 +239,17 @@ call_germline_sv_manta=function(
 
         .main.step=.main$steps[[fn_id]]
 
-    
-        .main.step$steps <- append(
-          .main.step$steps, 
-          add_af_strelka_vcf(
+
+        ### We don't split by chromosome because its not necessary as SV files are not large enough
+        .main.step$steps=append(.main.step$steps,
+        annotate_germline_output_manta(
+            vcf=.main.step$out_files$manta$variants$diploid_sv,
+            bin_samtools=bin_samtools,
+            bin_bcftools=bin_bcftools,
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf= .main.step$out_files$manta$variants$diploid_sv,
-            output_dir=paste0(out_file_dir,"/annotated"),
-            type="sv",
-            fn_id="sv",
+            bin_vep=bin_vep,
+            cache_vep=cache_vep,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
@@ -255,61 +260,7 @@ call_germline_sv_manta=function(
             executor_id=task_id
           )
         )
-        .this.step=.main.step$steps$add_af_strelka_vcf.sv
-        .main.step$out_files$annotated$af=.this.step$out_files
-      
-        .main.step$steps <-append(
-          .main.step$steps, 
-          extract_pass_variants_strelka_vcf(
-            bin_bgzip=bin_bgzip,
-            bin_tabix=bin_tabix,
-            vcf=.main.step$out_files$annotated$af$bgzip_vcf,
-            type="sv",
-            fn_id="sv",
-            output_dir=paste0(out_file_dir,"/annotated"),
-            tmp_dir=tmp_dir,
-            env_dir=env_dir,
-            batch_dir=batch_dir,
-            err_msg=err_msg,
-            verbose=verbose,
-            threads=threads,
-            ram=ram,
-            executor_id=task_id
-    
-          )
-        )
-
-        .this.step=.main.step$steps$extract_pass_variants_strelka_vcf.sv
-        .main.step$out_files$annotated$filter=.this.step$out_files
-      
-        if(annotate){
-            .main.step$steps<-append(
-              .main.step$steps,
-              annotate_strelka_vep(
-                bin_vep=bin_vep,
-                bin_bgzip=bin_bgzip,
-                bin_tabix=bin_tabix,
-                cache_vep=cache_vep,
-                patient_id=patient_id,
-                normal_id=normal_id,
-                vcf=.main.step$out_files$annotated$filter$bgzip_vcf,
-                type="sv",
-                fn_id="sv",
-                output_dir=paste0(out_file_dir,"/annotated"),
-                tmp_dir=tmp_dir,
-                env_dir=env_dir,
-                batch_dir=batch_dir,
-                err_msg=err_msg,
-                verbose=verbose,
-                threads=threads,
-                ram=ram,
-                executor_id=task_id
-            )
-          )
-
-        .this.step=.main.step$steps$annotate_strelka_vep.sv
-        .main.step$out_files$annotated$vep=.this.step$out_files  
-}
+        
          
         .env$.main <- .main
     }
@@ -326,6 +277,157 @@ call_germline_sv_manta=function(
 
 
 }
+
+
+
+#' Strelka wrapper for germline SNV variant calling
+#'
+#' This function wraps the STRELKA functions for germline variant calling
+#' 
+#' @param bin_strelka_somatic Path to strelka somatic workflow binary
+#' @param tumour [OPTIONAL] Path to tumour BAM file.
+#' @param normal [REQUIRED] Path to tumour BAM file.
+#' @param ref_genome [REQUIRED] Path to reference genome FASTA
+#' @param variants [REQUIRED] Variants types to call. Default all. Options ["snv","sv","all"]
+#' @param indel_candidates [OPTIONAL] Path to indel candidates file produced by MANTA.
+#' @param targeted [REQUIRED] Remove coverage filtering for exome/targeted data. Default TRUE
+#' @param output_dir [OPTIONAL] Path to the output directory. Default current directory
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param batch_config [OPTIONAL] Default configuration for job submission in batch.
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+annotate_output_manta<-function(
+    bin_samtools=build_default_tool_binary_list()$bin_samtools,
+    bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
+    bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+    bin_tabix=build_default_tool_binary_list()$bin_tabix,
+    bin_vep=build_default_tool_binary_list()$bin_vep,
+    cache_vep=build_default_cache_list()$cache_vep,
+    chromosomes=NULL,
+    vcf=NULL,
+    ...
+  ){
+
+
+    run_main=function(
+        .env
+    ){  
+      
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+        set_main(.env=.this.env)
+
+        if(!is.null(chromosomes)){
+          chromosomes=input
+        }else{
+          vcf=input
+        }
+
+
+      .main.step$steps <- append(
+            .main.step$steps, 
+            add_af_strelka_vcf(
+              bin_bgzip=bin_bgzip,
+              bin_tabix=bin_tabix,
+              vcf=vcf,
+              output_dir=paste0(out_file_dir,"/annotated/af"),
+              type="sv",
+              fn_id="sv",
+              chromosomes=chromosomes,
+              tmp_dir=tmp_dir,
+              env_dir=env_dir,
+              batch_dir=batch_dir,
+              err_msg=err_msg,
+              verbose=verbose, 
+              threads=threads,
+              ram=ram,
+              executor_id=task_id
+            )
+          )
+          .this.step=.main.step$steps$add_af_strelka_vcf.sv
+          .main.step$out_files$annotated$af=.this.step$out_files
+        
+          .main.step$steps <-append(
+            .main.step$steps, 
+            extract_pass_variants_strelka_vcf(
+              bin_bgzip=bin_bgzip,
+              bin_tabix=bin_tabix,
+              vcf=.main.step$out_files$annotated$af$bgzip_vcf,
+              type="sv",
+              fn_id="sv",
+              chromosomes=chromosomes,
+              output_dir=paste0(out_file_dir,"/annotated/filter"),
+              tmp_dir=tmp_dir,
+              env_dir=env_dir,
+              batch_dir=batch_dir,
+              err_msg=err_msg,
+              verbose=verbose,
+              threads=threads,
+              ram=ram,
+              executor_id=task_id
+      
+            )
+          )
+
+          .this.step=.main.step$steps$extract_pass_variants_strelka_vcf.sv
+          .main.step$out_files$annotated$filter=.this.step$out_files
+        
+          if(annotate){
+              .main.step$steps<-append(
+                .main.step$steps,
+                annotate_strelka_vep(
+                  bin_vep=bin_vep,
+                  bin_bgzip=bin_bgzip,
+                  bin_tabix=bin_tabix,
+                  cache_vep=cache_vep,
+                  patient_id=patient_id,
+                  normal_id=normal_id,
+                  vcf=.main.step$out_files$annotated$filter$bgzip_vcf,
+                  type="sv",
+                  fn_id="sv",
+                  chromosomes=chromosomes,
+                  output_dir=paste0(out_file_dir,"/annotated/vep"),
+                  tmp_dir=tmp_dir,
+                  env_dir=env_dir,
+                  batch_dir=batch_dir,
+                  err_msg=err_msg,
+                  verbose=verbose,
+                  threads=threads,
+                  ram=ram,
+                  executor_id=task_id
+              )
+            )
+
+          .this.step=.main.step$steps$annotate_strelka_vep.sv
+          .main.step$out_files$annotated$vep=.this.step$out_files  
+    }
+    }
+
+     .base.env=environment()
+      list2env(list(...),envir=.base.env)
+      set_env_vars(
+        .env= .base.env,
+        vars=ifelse(!is.null(chromosomes),"chromosomes","vcf")
+      )
+
+    launch(.env=.base.env)
+
+  }
+
+
+
+
+
 
 
 
@@ -408,16 +510,16 @@ call_somatic_sv_manta=function(
   
         .main.step=.main$steps[[fn_id]]
 
-    
-        .main.step$steps <- append(
-          .main.step$steps, 
-          add_af_strelka_vcf(
+        ### We don't split by chromosome because its not necessary as SV files are not large enough
+        .main.step$steps=append(.main.step$steps,
+        annotate_output_manta(
+            vcf=.main.step$out_files$manta$variants$sv,
+            bin_samtools=bin_samtools,
+            bin_bcftools=bin_bcftools,
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf=.main.step$out_files$manta$variants$sv,
-            type="sv",
-            fn_id="sv",
-            output_dir=paste0(out_file_dir,"/annotated"),
+            bin_vep=bin_vep,
+            cache_vep=cache_vep,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
@@ -428,62 +530,8 @@ call_somatic_sv_manta=function(
             executor_id=task_id
           )
         )
-        .this.step=.main.step$steps$add_af_strelka_vcf.sv
-        .main.step$out_files$annotated$af=.this.step$out_files
-      
-       .main.step$steps <-append(
-          .main.step$steps, 
-          extract_pass_variants_strelka_vcf(
-            bin_bgzip=bin_bgzip,
-            bin_tabix=bin_tabix,
-            vcf=.main.step$out_files$annotated$af$bgzip_vcf,
-            type="sv",
-            fn_id="sv",
-            output_dir=paste0(out_file_dir,"/annotated"),
-            tmp_dir=tmp_dir,
-            env_dir=env_dir,
-            batch_dir=batch_dir,
-            err_msg=err_msg,
-            verbose=verbose,
-            threads=threads,
-            ram=ram,
-            executor_id=task_id
-          )
-        )
-
-        .this.step=.main.step$steps$extract_pass_variants_strelka_vcf.sv
-        .main.step$out_files$annotated$filter=.this.step$out_files
-
-        if(annotate){
-            .main.step$steps<-append(
-              .main.step$steps,
-              annotate_strelka_vep(
-                bin_vep=bin_vep,
-                bin_bgzip=bin_bgzip,
-                bin_tabix=bin_tabix,
-                cache_vep=cache_vep,
-                patient_id=patient_id,
-                tumour_id=tumour_id,
-                normal_id=normal_id,
-                vcf=.main.step$out_files$annotated$filter$bgzip_vcf,
-                type="sv",
-                fn_id="sv",
-                tabulate=tabulate,
-                output_dir=paste0(out_file_dir,"/annotated"),
-                tmp_dir=tmp_dir,
-                env_dir=env_dir,
-                batch_dir=batch_dir,
-                err_msg=err_msg,
-                verbose=verbose,
-                threads=threads,
-                ram=ram,
-                executor_id=task_id
-            )
-          )
-           .this.step=.main.step$steps$annotate_strelka_vep.sv
-          .main.step$out_files$annotated$vep=.this.step$out_files
-        }
-
+    
+       
         .env$.main <- .main
     }
 
@@ -498,4 +546,3 @@ call_somatic_sv_manta=function(
 
 
 }
-

@@ -15,6 +15,7 @@ call_sv_manta(
   normal = NULL,
   regions = NULL,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
+  chromosomes = c(1:22, "X", "Y", "MT"),
   targeted = TRUE,
   annotate = TRUE,
   tabulate = TRUE,
