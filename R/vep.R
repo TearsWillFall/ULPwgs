@@ -52,12 +52,22 @@ annotate_vep=function(
 
       set_main(.env=.this.env)
 
-      .main$out_files$vep_vcf=paste0(out_file_dir,"/",input_id,".vep.vcf")
+
+      chr=""
+      chrms=""
+      if(!is.null(chromosomes)){
+        chr=paste0(".",paste0(chromosomes,collapse="_"))
+        chrms=paste0("--chr ",paste0(chromosomes,collapse=","))
+      }
+
+
+      .main$out_files$vep_vcf=paste0(
+        out_file_dir,"/",input_id,".vep",chr,".vcf")
 
       .main$exec_code=paste(bin_vep," -format ",fmt,
         "-i",vcf,"-o", .main$out_files$vep_vcf,
         "--cache --offline --everything --force_overwrite --vcf --fork ",
-        threads," --dir ",cache_vep
+        threads," --dir ",cache_vep,chrms
       )
 
 
@@ -96,8 +106,6 @@ annotate_vep=function(
           )
     }
 
-
-
        if(tabulate){
               .main.step$steps<-append(
                 .main.step$steps,
@@ -108,6 +116,7 @@ annotate_vep=function(
                   patient_id=patient_id,
                   tumour_id=tumour_id,
                   normal_id=normal_id,
+                  chromosomes=chromosomes,
                   tmp_dir=tmp_dir,
                   env_dir=env_dir,
                   batch_dir=batch_dir,
@@ -182,6 +191,7 @@ annotate_strelka_vep=function(
     fmt="vcf",
     tabulate=TRUE,
     type="snv",
+    chromosomes=NULL,
     ...
 ){
 
@@ -209,6 +219,7 @@ annotate_strelka_vep=function(
           bin_vep=bin_vep,
           cache_vep=cache_vep,
           vcf=input,
+          chromosomes=chromosomes,
           tabulate=tabulate,
           patient_id=patient_id,
           tumour_id=tumour_id,

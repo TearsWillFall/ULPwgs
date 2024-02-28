@@ -8,7 +8,12 @@
 #' @export
 
 
-read_vcf=function(vcf=NULL,sep="\t",threads=1,chromosomes=NULL){
+read_vcf=function(
+  vcf=NULL,
+  sep="\t",
+  threads=1,
+  chromosomes=NULL
+){
   options(scipen=999)
   cols=c(
     "CHROM","POS","ID","REF",
@@ -126,8 +131,9 @@ add_snv_af_strelka_vcf=function(
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
   vcf=NULL,
+  chromosomes=NULL,
   ...
-  ){
+){
     
     run_main=function(.env){
 
@@ -140,7 +146,7 @@ add_snv_af_strelka_vcf=function(
         .main$steps[[fn_id]]<-.this.env
         .main.step=.main$steps[[fn_id]]
 
-        vcf_dat=read_vcf(input,threads=threads)
+        vcf_dat=read_vcf(input,threads=threads,chromosomes=chromosomes)
         vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
         vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
         dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
@@ -161,7 +167,11 @@ add_snv_af_strelka_vcf=function(
 
         vcf_dat$descriptors$FORMAT[["AF"]]<-add_af_descriptor()
         
-      
+
+        chr=""
+        if(!is.null(chromosomes)){
+          chr=paste0(".",paste0(chromosomes,collapse="_"))
+        }
       
 
         .main$steps[[fn_id]]$steps <- append(
@@ -170,7 +180,7 @@ add_snv_af_strelka_vcf=function(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
             vcf=vcf_dat,
-            output_name=paste0(input_id,".af"),
+            output_name=paste0(input_id,chr,".af"),
             output_dir=out_file_dir,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
@@ -231,6 +241,7 @@ add_indel_af_strelka_vcf=function(
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
   vcf=NULL,
+  chromosomes=NULL,
   ...
   ){
     
@@ -263,8 +274,11 @@ add_indel_af_strelka_vcf=function(
         }
 
         vcf_dat$descriptors$FORMAT[["AF"]]<-add_af_descriptor()
-      
-      
+
+        chr=""
+        if(!is.null(chromosomes)){
+          chr=paste0(".",paste0(chromosomes,collapse="_"))
+        }
 
         .main$steps[[fn_id]]$steps <- append(
           .main$steps[[fn_id]]$steps,
@@ -272,7 +286,7 @@ add_indel_af_strelka_vcf=function(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
             vcf=vcf_dat,
-            output_name=paste0(input_id,".af"),
+            output_name=paste0(input_id,chr,".af"),
             output_dir=out_file_dir,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
@@ -335,6 +349,7 @@ add_sv_af_strelka_vcf=function(
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
   vcf=NULL,
+  chromosomes=NULL,
   ...
 ){
     
@@ -350,7 +365,8 @@ add_sv_af_strelka_vcf=function(
 
         vcf_dat=read_vcf(input,threads=threads)
         vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
-        vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
+        vcf_dat$body=vcf_dat$body %>% 
+        dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
         dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AFP")) %>% 
         dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AFS"))
         ##Extract Tier1 read information for REF and ALT
@@ -385,7 +401,10 @@ add_sv_af_strelka_vcf=function(
         vcf_dat$descriptors$FORMAT[["AFS"]]<-add_afs_descriptor()
         
       
-      
+        chr=""
+        if(!is.null(chromosomes)){
+          chr=paste0(".",paste0(chromosomes,collapse="_"))
+        }
 
         .main.step$steps <- append(
           .main.step$steps,
@@ -393,7 +412,7 @@ add_sv_af_strelka_vcf=function(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
             vcf=vcf_dat,
-            output_name=paste0(input_id,".af"),
+            output_name=paste0(input_id,chr,".af"),
             output_dir=out_file_dir,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
@@ -460,6 +479,7 @@ add_gl_af_strelka_vcf=function(
   bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
   vcf=NULL,
+  chromosomes=NULL,
   ...
 ){
 
@@ -497,7 +517,10 @@ add_gl_af_strelka_vcf=function(
 
         vcf_dat$descriptors$FORMAT[["AF"]]<-add_af_descriptor()
   
-      
+        chr=""
+        if(!is.null(chromosomes)){
+          chr=paste0(".",paste0(chromosomes,collapse="_"))
+        }
 
         .main.step$steps <- append(
           .main.step$steps,
@@ -505,7 +528,7 @@ add_gl_af_strelka_vcf=function(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
             vcf=vcf_dat,
-            output_name=paste0(input_id,".af"),
+            output_name=paste0(input_id,chr,".af"),
             output_dir=out_file_dir,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
@@ -568,6 +591,7 @@ add_af_strelka_vcf=function(
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
   vcf=NULL,
   type="snv",
+  chromosomes=NULL,
   ...
 ){
   
@@ -597,6 +621,7 @@ add_af_strelka_vcf=function(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
             vcf=input,
+            chromosomes=chromosomes,
             output_dir=out_file_dir,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
@@ -618,6 +643,7 @@ add_af_strelka_vcf=function(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
             vcf=input,
+            chromosomes=chromosomes,
             output_dir=out_file_dir,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
@@ -639,6 +665,7 @@ add_af_strelka_vcf=function(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
             vcf=input,
+            chromosomes=chromosomes,
             output_dir=out_file_dir,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
@@ -661,6 +688,7 @@ add_af_strelka_vcf=function(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
             vcf=input,
+            chromosomes=chromosomes,
             output_dir=out_file_dir,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
@@ -768,6 +796,7 @@ variants_by_filters_vcf=function(
   vcf=NULL,
   filters="PASS",
   exclusive=FALSE,
+  chromosomes=NULL,
   ...
 ){
 
@@ -780,13 +809,22 @@ variants_by_filters_vcf=function(
 
     set_main(.env=.this.env)
 
-    output_name=paste0(input_id,".",paste0(filters,collapse="."))
+    chr=""
+    if(!is.null(chromosomes)){
+      chr=paste0(".",paste0(chromosomes,collapse="_"))
+    }
+
+    output_name=paste0(input_id,".",paste0(filters,collapse="."),chr)
 
     .main$steps[[fn_id]]<-.this.env
     .main.step<-.main$steps[[fn_id]]
    
 
-    vcf_dat=read_vcf(vcf=input,threads=threads)
+    vcf_dat=read_vcf(
+      vcf=input,
+      threads=threads,
+      chromosomes=chromosomes
+    )
 
     if(exclusive){
       vcf_dat$body=vcf$body %>% dplyr::filter(lengths(FILTER)==length(filters))
@@ -797,6 +835,8 @@ variants_by_filters_vcf=function(
 
     vcf_dat$descriptors$variants_by_filters<-paste0(filters,collapse=";")
 
+
+    
     .main.step$steps <- append(
       .main.step$steps,
       write_vcf(
@@ -918,6 +958,7 @@ variants_by_type_vcf=function(
   bin_tabix=build_default_tool_binary_list()$bin_tabix,
   vcf=NULL,
   type="snv",
+  chromosomes=NULL,
   ...
 ){
 
@@ -930,15 +971,19 @@ variants_by_type_vcf=function(
 
     set_main(.env=.this.env)
 
-    output_name=paste0(input_id,".",paste0(type,collapse="."))
+    chr=""
+    if(!is.null(chromosomes)){
+      chr=paste0(".",paste0(chromosomes,collapse="_"))
+    }
+
+    output_name=paste0(input_id,".",paste0(type,collapse="."),chr)
 
     .main$steps[[fn_id]]<-.this.env
     .main.step<-.main$steps[[fn_id]]
    
 
-    vcf_dat=read_vcf(vcf=input,threads=threads)
+    vcf_dat=read_vcf(vcf=input,threads=threads,chromosomes=chromosomes)
 
- 
     if(type=="snv"){
         vcf_dat$body=vcf_dat$body %>% dplyr::filter(nchar(REF)==1|nchar(ALT)==1)
     
@@ -987,14 +1032,6 @@ variants_by_type_vcf=function(
 
 
 
-
-
-
-
-
-
-
-
 #' Extract PASS variants in VCF file
 #'
 #' VCF datastructure is in list format and contains a header, a body and
@@ -1024,6 +1061,7 @@ extract_pass_variants_strelka_vcf=function(
       bin_tabix=build_default_tool_binary_list()$bin_tabix,
       vcf=NULL,
       type="snv",
+      chromosomes=NULL,
       ...
     ){
 
@@ -1051,6 +1089,7 @@ extract_pass_variants_strelka_vcf=function(
             bin_tabix=bin_tabix,
             vcf=input,
             filters="PASS",
+            chromosomes=chromosomes,
             output_name=output_name,
             output_dir=out_file_dir,
             tmp_dir=tmp_dir,
@@ -1170,6 +1209,7 @@ tabulate_vcf=function(
   tumour_id=NULL,
   normal_id=NULL,
   patient_id=NULL,
+  chromosomes=NULL,
   ...
 ){
 
@@ -1184,12 +1224,17 @@ tabulate_vcf=function(
 
         set_main(.env=.this.env)
 
-        .main$out_files$tab_vcf=paste0(out_file_dir,"/",input_id,".tabulated.tsv")
+        chr=""
+        if(!is.null(chromosomes)){
+          chr=paste0(".",paste0(chromosomes,collapse="_"))
+        }
+
+        .main$out_files$tab_vcf=paste0(out_file_dir,"/",input_id,".tabulated",chr,".tsv")
     
 
         ignore=TRUE
         #### Catch empty VCF 
-        tryCatch({vcf=read_vcf(input,threads=threads);ignore=FALSE},error=function(error){
+        tryCatch({vcf=read_vcf(input,threads=threads,chromosomes=chromosomes);ignore=FALSE},error=function(error){
             warning("No variants detected in VCF. Ignoring input VCF.")
         })
 

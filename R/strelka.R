@@ -466,181 +466,29 @@ call_somatic_snvs_strelka=function(
         .main.step=.main$steps[[fn_id]]
 
 
-
-        
-        ### ADD AF for SNVS
-
-         .main.step$steps <- append(
-          .main.step$steps,
-           add_af_strelka_vcf(
-            bin_bgzip=bin_bgzip,
-            bin_tabix=bin_tabix,
-            vcf=.main.step$out_files$strelka$variants$snv,
-            type="snv",
-            fn_id="snv",
-            output_dir=paste0(out_file_dir,"/annotated"),
-            tmp_dir=tmp_dir,
-            env_dir=env_dir,
-            batch_dir=batch_dir,
-            err_msg=err_msg,
-            verbose=verbose, 
-            threads=threads,
-            ram=ram,
-            executor_id=task_id
-          )
-         )
-
-        .this.step=.main.step$steps$add_af_strelka_vcf.snv
-        .main.step$out_files$annotated$af$snv=.this.step$out_files
-
-
-        ### ADD AF for INDELS
-        .main.step$steps <- append(
-          .main.step$steps,
-            add_af_strelka_vcf(
+        .main.step$steps=append(.main.step$steps,
+          annotate_somatic_strelka_output(
+            chromosomes=ifelse(targeted,NULL,chromosomes),
+            vcf_list=list(
+              snv=.main.step$out_files$strelka$variants$snv,
+              indel=.main.step$out_files$strelka$variants$indel),
+              bin_samtools=bin_samtools,
+              bin_bcftools=bin_bcftools,
               bin_bgzip=bin_bgzip,
               bin_tabix=bin_tabix,
-              vcf=.main.step$out_files$strelka$variants$indel,
-              type="indel",
-              fn_id="indel",
-              output_dir=paste0(out_file_dir,"/annotated"),
+              bin_vep=bin_vep,
+              bin_strelka=bin_strelka,
+              cache_vep=cache_vep,
               tmp_dir=tmp_dir,
               env_dir=env_dir,
               batch_dir=batch_dir,
               err_msg=err_msg,
-              verbose=verbose,
+              verbose=verbose, 
               threads=threads,
               ram=ram,
               executor_id=task_id
-
           )
         )
-  
-        .this.step=.main.step$steps$add_af_strelka_vcf.indel
-        .main.step$out_files$annotated$af$indel=.this.step$out_files
-
-
-
-        ### FILTER SNV BY FILTERS
-         
-        .main.step$steps<-append(
-          .main.step$steps, 
-          extract_pass_variants_strelka_vcf(
-            bin_bgzip=bin_bgzip,
-            bin_tabix=bin_tabix,
-            vcf=.main.step$out_files$annotated$af$snv$bgzip_vcf,
-            type="snv",
-            fn_id="snv",
-            output_dir=paste0(out_file_dir,"/annotated"),
-            tmp_dir=tmp_dir,
-            env_dir=env_dir,
-            batch_dir=batch_dir,
-            err_msg=err_msg,
-            verbose=verbose,
-            threads=threads,
-            ram=ram,
-            executor_id=task_id
-          )
-        )
-
-        .this.step=.main.step$steps$extract_pass_variants_strelka_vcf.snv
-        .main.step$out_files$annotated$filter$snv=.this.step$out_files
-
-
-
-        ### FILTER INDELS BY FILTERS
-
-      
-        .main.step$steps<-append(
-          .main.step$steps, 
-          extract_pass_variants_strelka_vcf(
-            bin_bgzip=bin_bgzip,
-            bin_tabix=bin_tabix,
-            vcf=.main.step$out_files$annotated$af$indel$bgzip_vcf,
-            type="indel",
-            fn_id="indel",
-            output_dir=paste0(out_file_dir,"/annotated"),
-            tmp_dir=tmp_dir,
-            env_dir=env_dir,
-            batch_dir=batch_dir,
-            err_msg=err_msg,
-            verbose=verbose,
-            threads=threads,
-            ram=ram,
-            executor_id=task_id
-          )
-        )
-
-        .this.step=.main.step$steps$extract_pass_variants_strelka_vcf.indel
-        .main.step$out_files$annotated$filter$indel=.this.step$out_files
-
-
-
-
-        if(annotate){
-
-            ### ANNOTATE SNV USING VEP
-            .main.step$steps <-append(
-              .main.step$steps ,
-              annotate_strelka_vep(
-                bin_vep=bin_vep,
-                bin_bgzip=bin_bgzip,
-                bin_tabix=bin_tabix,
-                cache_vep=cache_vep,
-                patient_id=patient_id,
-                tumour_id=tumour_id,
-                normal_id=normal_id,
-                vcf=.main.step$out_files$annotated$filter$snv$bgzip_vcf,
-                type="snv",
-                fn_id="snv",
-                output_dir=paste0(out_file_dir,"/annotated"),
-                tmp_dir=tmp_dir,
-                env_dir=env_dir,
-                batch_dir=batch_dir,
-                err_msg=err_msg,
-                verbose=verbose,
-                threads=threads,
-                ram=ram,
-                executor_id=task_id
-            )
-          )
-
-          .this.step=.main.step$steps$annotate_strelka_vep.snv
-          .main.step$out_files$annotated$vep$snv=.this.step$out_files
-
-
-          ### ANNOTATE INDEL USING VEP
-
-          .main.step$steps <-append(
-              .main.step$steps ,
-              annotate_strelka_vep(
-                bin_vep=bin_vep,
-                bin_bgzip=bin_bgzip,
-                bin_tabix=bin_tabix,
-                cache_vep=cache_vep,
-                patient_id=patient_id,
-                tumour_id=tumour_id,
-                normal_id=normal_id,
-                vcf=.main.step$out_files$annotated$filter$indel$bgzip_vcf,
-                type="indel",
-                fn_id="indel",
-                output_dir=paste0(out_file_dir,"/annotated"),
-                tmp_dir=tmp_dir,
-                env_dir=env_dir,
-                batch_dir=batch_dir,
-                err_msg=err_msg,
-                verbose=verbose,
-                threads=threads,
-                ram=ram,
-                executor_id=task_id
-            )
-          )
-
-          .this.step=.main.step$steps$annotate_strelka_vep.indel
-          .main.step$out_files$annotated$vep$indel=.this.step$out_files
-        
-
-        }
 
 
           .env$.main<-.main
@@ -860,3 +708,252 @@ call_germline_snvs_strelka=function(
       
 
 }
+
+
+#' Strelka wrapper for germline SNV variant calling
+#'
+#' This function wraps the STRELKA functions for germline variant calling
+#' 
+#' @param bin_strelka_somatic Path to strelka somatic workflow binary
+#' @param tumour [OPTIONAL] Path to tumour BAM file.
+#' @param normal [REQUIRED] Path to tumour BAM file.
+#' @param ref_genome [REQUIRED] Path to reference genome FASTA
+#' @param variants [REQUIRED] Variants types to call. Default all. Options ["snv","sv","all"]
+#' @param indel_candidates [OPTIONAL] Path to indel candidates file produced by MANTA.
+#' @param targeted [REQUIRED] Remove coverage filtering for exome/targeted data. Default TRUE
+#' @param output_dir [OPTIONAL] Path to the output directory. Default current directory
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param batch_config [OPTIONAL] Default configuration for job submission in batch.
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+
+
+annotate_somatic_strelka_output<-function(
+    bin_samtools=build_default_tool_binary_list()$bin_samtools,
+    bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
+    bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+    bin_tabix=build_default_tool_binary_list()$bin_tabix,
+    bin_vep=build_default_tool_binary_list()$bin_vep,
+    bin_strelka=build_default_tool_binary_list()$bin_strelka$somatic,
+    cache_vep=build_default_cache_list()$cache_vep,
+    chromosomes=NULL,
+    vcf_list=NULL,
+    ...
+){
+
+        run_main=function(
+        .env
+    ){
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+        set_main(.env=.this.env)
+        .main.step=.main$steps[[fn_id]]
+
+        if(!is.null(chromosomes)){
+          chromosomes=input
+        }else{
+          vcf_list=input
+        }
+
+        ### ADD AF for SNVS
+
+         .main.step$steps <- append(
+          .main.step$steps,
+           add_af_strelka_vcf(
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            vcf=vcf_list[[1]],
+            type="snv",
+            fn_id="snv",
+            output_dir=paste0(out_file_dir,"/annotated"),
+            chromosomes=chromosomes,
+            tmp_dir=tmp_dir,
+            env_dir=env_dir,
+            batch_dir=batch_dir,
+            err_msg=err_msg,
+            verbose=verbose, 
+            threads=threads,
+            ram=ram,
+            executor_id=task_id
+          )
+         )
+
+        .this.step=.main.step$steps$add_af_strelka_vcf.snv
+        .main.step$out_files$annotated$af$snv=.this.step$out_files
+
+
+        ### ADD AF for INDELS
+        .main.step$steps <- append(
+          .main.step$steps,
+            add_af_strelka_vcf(
+              bin_bgzip=bin_bgzip,
+              bin_tabix=bin_tabix,
+              vcf=vcf_list[[2]],
+              chromosomes=chromosomes,
+              type="indel",
+              fn_id="indel",
+              output_dir=paste0(out_file_dir,"/annotated"),
+              tmp_dir=tmp_dir,
+              env_dir=env_dir,
+              batch_dir=batch_dir,
+              err_msg=err_msg,
+              verbose=verbose,
+              threads=threads,
+              ram=ram,
+              executor_id=task_id
+
+          )
+        )
+  
+        .this.step=.main.step$steps$add_af_strelka_vcf.indel
+        .main.step$out_files$annotated$af$indel=.this.step$out_files
+
+
+
+        ### FILTER SNV BY FILTERS
+         
+        .main.step$steps<-append(
+          .main.step$steps, 
+          extract_pass_variants_strelka_vcf(
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            vcf=.main.step$out_files$annotated$af$snv$bgzip_vcf,
+            chromosomes=chromosomes,
+            type="snv",
+            fn_id="snv",
+            output_dir=paste0(out_file_dir,"/annotated"),
+            tmp_dir=tmp_dir,
+            env_dir=env_dir,
+            batch_dir=batch_dir,
+            err_msg=err_msg,
+            verbose=verbose,
+            threads=threads,
+            ram=ram,
+            executor_id=task_id
+          )
+        )
+
+        .this.step=.main.step$steps$extract_pass_variants_strelka_vcf.snv
+        .main.step$out_files$annotated$filter$snv=.this.step$out_files
+
+
+
+        ### FILTER INDELS BY FILTERS
+
+      
+        .main.step$steps<-append(
+          .main.step$steps, 
+          extract_pass_variants_strelka_vcf(
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            vcf=.main.step$out_files$annotated$af$indel$bgzip_vcf,
+            chromosomes=chromosomes,
+            type="indel",
+            fn_id="indel",
+            output_dir=paste0(out_file_dir,"/annotated"),
+            tmp_dir=tmp_dir,
+            env_dir=env_dir,
+            batch_dir=batch_dir,
+            err_msg=err_msg,
+            verbose=verbose,
+            threads=threads,
+            ram=ram,
+            executor_id=task_id
+          )
+        )
+
+        .this.step=.main.step$steps$extract_pass_variants_strelka_vcf.indel
+        .main.step$out_files$annotated$filter$indel=.this.step$out_files
+
+
+
+
+        if(annotate){
+
+            ### ANNOTATE SNV USING VEP
+            .main.step$steps <-append(
+              .main.step$steps ,
+              annotate_strelka_vep(
+                bin_vep=bin_vep,
+                bin_bgzip=bin_bgzip,
+                bin_tabix=bin_tabix,
+                cache_vep=cache_vep,
+                patient_id=patient_id,
+                tumour_id=tumour_id,
+                normal_id=normal_id,
+                vcf=.main.step$out_files$annotated$filter$snv$bgzip_vcf,
+                chromosomes=chromosomes,
+                type="snv",
+                fn_id="snv",
+                output_dir=paste0(out_file_dir,"/annotated"),
+                tmp_dir=tmp_dir,
+                env_dir=env_dir,
+                batch_dir=batch_dir,
+                err_msg=err_msg,
+                verbose=verbose,
+                threads=threads,
+                ram=ram,
+                executor_id=task_id
+            )
+          )
+
+          .this.step=.main.step$steps$annotate_strelka_vep.snv
+          .main.step$out_files$annotated$vep$snv=.this.step$out_files
+
+
+          ### ANNOTATE INDEL USING VEP
+
+          .main.step$steps <-append(
+              .main.step$steps ,
+              annotate_strelka_vep(
+                bin_vep=bin_vep,
+                bin_bgzip=bin_bgzip,
+                bin_tabix=bin_tabix,
+                cache_vep=cache_vep,
+                patient_id=patient_id,
+                tumour_id=tumour_id,
+                normal_id=normal_id,
+                vcf=.main.step$out_files$annotated$filter$indel$bgzip_vcf,
+                chromosomes=chromosomes,
+                type="indel",
+                fn_id="indel",
+                output_dir=paste0(out_file_dir,"/annotated"),
+                tmp_dir=tmp_dir,
+                env_dir=env_dir,
+                batch_dir=batch_dir,
+                err_msg=err_msg,
+                verbose=verbose,
+                threads=threads,
+                ram=ram,
+                executor_id=task_id
+            )
+          )
+
+          .this.step=.main.step$steps$annotate_strelka_vep.indel
+          .main.step$out_files$annotated$vep$indel=.this.step$out_files
+        
+        }
+    }
+
+    .base.env=environment()
+      list2env(list(...),envir=.base.env)
+      set_env_vars(
+        .env= .base.env,
+        vars=ifelse(!is.null(chromosomes),"chromosomes","vcf_list")
+      )
+
+    launch(.env=.base.env)
+
+
+}
+      
