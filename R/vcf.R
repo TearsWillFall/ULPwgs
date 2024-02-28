@@ -146,10 +146,16 @@ add_snv_af_strelka_vcf=function(
         .main$steps[[fn_id]]<-.this.env
         .main.step=.main$steps[[fn_id]]
 
-        vcf_dat=read_vcf(input,threads=threads,chromosomes=chromosomes)
-        vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
-        vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
-        dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
+        vcf_dat=read_vcf(
+          vcf=input,
+          threads=threads,
+          chromosomes=chromosomes
+        )
+        vcf_dat$body=vcf_dat$body %>% 
+          unnest_vcf_body()
+        vcf_dat$body=vcf_dat$body %>% 
+          dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
+          dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
         ##Extract Tier1 read information for REF and ALT
         vcf_dat$body=vcf_dat$body %>% dplyr::mutate(
           UREF=strsplit(VALUE[FORMAT==paste0(REF,"U")],split=",")[[1]][1],
@@ -255,10 +261,16 @@ add_indel_af_strelka_vcf=function(
         .main$steps[[fn_id]]<-.this.env
         .main.step=.main$steps[[fn_id]]
 
-        vcf_dat=read_vcf(input,threads=threads)
-        vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
-        vcf_dat$body=vcf_dat$body %>% dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
-        dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
+        vcf_dat=read_vcf(
+          vcf=input,
+          threads=threads,
+          chromosomes=chromosomes
+        )
+        vcf_dat$body=vcf_dat$body %>% 
+          unnest_vcf_body()
+        vcf_dat$body=vcf_dat$body %>% 
+          dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
+          dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
         ##Extract Tier1 read information for REF and ALT
         vcf_dat$body=vcf_dat$body %>% dplyr::mutate(
           UREF=strsplit(VALUE[FORMAT=="TAR"],split=",")[[1]][1],
@@ -363,12 +375,18 @@ add_sv_af_strelka_vcf=function(
         .main$steps[[fn_id]]<-.this.env
         .main.step=.main$steps[[fn_id]]
 
-        vcf_dat=read_vcf(input,threads=threads)
-        vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
+        vcf_dat=read_vcf(
+          vcf=input,
+          threads=threads,
+          chromosomes=chromosomes
+        )
+
         vcf_dat$body=vcf_dat$body %>% 
-        dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
-        dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AFP")) %>% 
-        dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AFS"))
+          unnest_vcf_body()
+        vcf_dat$body=vcf_dat$body %>% 
+          dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
+          dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AFP")) %>% 
+          dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AFS"))
         ##Extract Tier1 read information for REF and ALT
         vcf_dat$body=vcf_dat$body %>% dplyr::mutate(
           PREF=tryCatch({strsplit(VALUE[FORMAT=="PR"],split=",")[[1]][1]},error=function(e){NA}),
@@ -493,8 +511,14 @@ add_gl_af_strelka_vcf=function(
         .main$steps[[fn_id]]<-.this.env
         .main.step=.main$steps[[fn_id]]
 
-        vcf_dat=read_vcf(input,threads=threads)
-        vcf_dat$body=vcf_dat$body %>% unnest_vcf_body()
+        vcf_dat=read_vcf(
+          vcf=input,
+          threads=threads,
+          chromosomes=chromosomes
+        )
+
+        vcf_dat$body=vcf_dat$body %>% 
+          unnest_vcf_body()
         vcf_dat$body=vcf_dat$body %>% 
           dplyr::group_by_at(dplyr::vars(-VALUE,-FORMAT)) %>% 
           dplyr::group_modify(~dplyr::add_row(.x,FORMAT="AF"))
@@ -599,7 +623,6 @@ add_af_strelka_vcf=function(
     .env
   ){
 
-
       .this.env=environment()
       append_env(to=.this.env,from=.env)
 
@@ -636,7 +659,9 @@ add_af_strelka_vcf=function(
         )
         .this.step=.main.step$steps$add_snv_af_strelka_vcf
         .main.step$out_files=.this.step$out_files
+
       }else if(type=="indel"){
+
         .main.step$steps<-append(
         .main.step$steps,
           add_indel_af_strelka_vcf(
@@ -658,6 +683,7 @@ add_af_strelka_vcf=function(
         )
         .this.step=.main.step$steps$add_indel_af_strelka_vcf
         .main.step$out_files=.this.step$out_files
+
       }else if(type=="sv"){
         .main.step$steps<-append(
         .main.step$steps,
@@ -682,6 +708,7 @@ add_af_strelka_vcf=function(
         .main.step$out_files=.this.step$out_files
     
       }else if(type=="germline"){
+
         .main.step$steps<-append(
         .main.step$steps,
           add_gl_af_strelka_vcf(
@@ -982,7 +1009,11 @@ variants_by_type_vcf=function(
     .main.step<-.main$steps[[fn_id]]
    
 
-    vcf_dat=read_vcf(vcf=input,threads=threads,chromosomes=chromosomes)
+    vcf_dat=read_vcf(
+      vcf=input,
+      threads=threads,
+      chromosomes=chromosomes
+    )
 
     if(type=="snv"){
         vcf_dat$body=vcf_dat$body %>% dplyr::filter(nchar(REF)==1|nchar(ALT)==1)
