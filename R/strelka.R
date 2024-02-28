@@ -830,7 +830,7 @@ annotate_germline_output_strelka<-function(
 
 
 
-annotate_germline_output_strelka<-function(
+annotate_somatic_output_strelka<-function(
     bin_samtools=build_default_tool_binary_list()$bin_samtools,
     bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
