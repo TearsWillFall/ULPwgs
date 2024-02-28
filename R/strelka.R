@@ -599,11 +599,29 @@ call_germline_snvs_strelka=function(
 
         .main.step<-.main$steps[[fn_id]]
 
-
-
-       
-
-          .env$.main<-.main
+        .main.step$steps=append(.main.step$steps,
+        annotate_somatic_strelka_output(
+          chromosomes=ifelse(targeted,NULL,chromosomes),
+          vcf=.main.step$out_files$strelka$variants$snv_and_indel,
+            bin_samtools=bin_samtools,
+            bin_bcftools=bin_bcftools,
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            bin_vep=bin_vep,
+            bin_strelka=bin_strelka,
+            cache_vep=cache_vep,
+            tmp_dir=tmp_dir,
+            env_dir=env_dir,
+            batch_dir=batch_dir,
+            err_msg=err_msg,
+            verbose=verbose, 
+            threads=threads,
+            ram=ram,
+            executor_id=task_id
+          )
+        )
+        
+        .env$.main<-.main
 
       }
 
@@ -648,7 +666,7 @@ call_germline_snvs_strelka=function(
 #' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 
-annotate_germline_strelka_output<-function(
+annotate_germline_output_strelka<-function(
     bin_samtools=build_default_tool_binary_list()$bin_samtools,
     bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
@@ -764,6 +782,7 @@ annotate_germline_strelka_output<-function(
           .this.step=.main.step$steps$annotate_strelka_vep.germline
           .main.step$out_files$annotated$vep$germline=.this.step$out_files
         }
+        .env$.main<-.main
     }
 
     
@@ -811,7 +830,7 @@ annotate_germline_strelka_output<-function(
 
 
 
-annotate_somatic_strelka_output<-function(
+annotate_germline_output_strelka<-function(
     bin_samtools=build_default_tool_binary_list()$bin_samtools,
     bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
@@ -1016,6 +1035,7 @@ annotate_somatic_strelka_output<-function(
           .main.step$out_files$annotated$vep$indel=.this.step$out_files
         
         }
+        .env$.main<-.main
     }
 
     .base.env=environment()
