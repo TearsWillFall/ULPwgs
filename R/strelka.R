@@ -479,6 +479,10 @@ call_somatic_snvs_strelka=function(
               bin_vep=bin_vep,
               bin_strelka=bin_strelka,
               cache_vep=cache_vep,
+              annotate=annotate,
+              patient_id=patient_id,
+              tumour_id=tumour_id,
+              normal_id=normal_id,
               tmp_dir=tmp_dir,
               env_dir=env_dir,
               batch_dir=batch_dir,
@@ -610,6 +614,9 @@ call_germline_snvs_strelka=function(
             bin_vep=bin_vep,
             bin_strelka=bin_strelka,
             cache_vep=cache_vep,
+            annotate=annotate,
+            patient_id=patient_id,
+            normal_id=normal_id,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
@@ -676,6 +683,9 @@ annotate_germline_output_strelka<-function(
     cache_vep=build_default_cache_list()$cache_vep,
     chromosomes=NULL,
     vcf=NULL,
+    annotate=TRUE,
+    patient_id=NULL,
+    normal_id=NULL,
     ...
   ){
 
@@ -838,6 +848,10 @@ annotate_somatic_output_strelka<-function(
     cache_vep=build_default_cache_list()$cache_vep,
     chromosomes=NULL,
     vcf_list=NULL,
+    annotate=TRUE,
+    patient_id=NULL,
+    tumour_id=NULL,
+    normal_id=NULL,
     ...
 ){
 

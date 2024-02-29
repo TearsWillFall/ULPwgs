@@ -20,7 +20,7 @@ read_vcf=function(
     "ALT","QUAL","FILTER",
     "INFO","FORMAT"
   )
-
+ 
   chr=""
   if(!is.null(chromosomes)){
      chr= paste0("| grep -P ",paste0("\"",paste0(paste0("^([chr]{0,3})",chromosomes,"\t"),collapse="|"),"\""))
