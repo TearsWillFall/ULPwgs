@@ -30,6 +30,7 @@ Imports:
     tidyverse,
     kutils,
     shiny,
+    shinyWidgets,
     shinydashboard,
     shinydashboardPlus,
     shinyjs,
