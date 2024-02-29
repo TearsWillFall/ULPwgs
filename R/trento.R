@@ -527,7 +527,7 @@ clonet_view_trento=function(method="log2_beta", clonet_dir="",threads=3,
 
     
     ### Gene Annotations
-    annot_input_file <- system.file("extdata", "gene_annotations_hg19.bed", package="ULPwgs")
+    annot_input_file <- system.file("data", "gene_annotations_hg19.bed", package="ULPwgs")
     annot_data=read.delim( annot_input_file,header=TRUE)
     panel=annot_data %>% dplyr::group_by(PANEL_VERSION) %>% dplyr::summarise(N=dplyr::n())
     panel$diff=abs(panel$N-length(unique(cn_data$gene)))
