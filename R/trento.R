@@ -393,6 +393,11 @@ new_clonet_trento=function(
         out_file_dir=set_dir(dir=out_file_dir,name="clonet_reports")
         out_file_dir=set_dir(dir=out_file_dir,name=input_id)
 
+        ## FIX for ABEMUS looking for all files in the same directory
+        tmp_dir=set_dir(dir=tmp_dir,name=patient_id)
+        tmp_dir=set_dir(dir=tmp_dir,name=input_id)
+
+
         set_main(.env=.this.env)
       
         .main$out_files$sample_info=paste0(
@@ -484,8 +489,13 @@ new_clonet_trento=function(
 #' @export
 
 
-clonet_view_trento=function(method="log2_beta", clonet_dir="",threads=3,
-    ram=4,output_dir=".",verbose=FALSE,sample_labels=NA,
+clonet_view_trento=function(
+    method="log2_beta",
+    clonet_dir="",
+    threads=3,
+    ram=4,output_dir=".",
+    verbose=FALSE,
+    sample_labels=NA,
     batch_config=build_default_preprocess_config(),
     executor_id=make_unique_id("clonet_view"),
     task_name="clonet_view",mode="local",time="48:0:0",
