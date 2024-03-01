@@ -336,6 +336,7 @@ annotate_output_manta<-function(
         .this.env=environment()
         append_env(to=.this.env,from=.env)
         set_main(.env=.this.env)
+        .main.step=.main$steps[[fn_id]]
 
         if(!is.null(chromosomes)){
           chromosomes=input

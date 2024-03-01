@@ -879,6 +879,10 @@ annotate_somatic_output_strelka<-function(
         }else{
           vcf_list=input
         }
+        
+        if(mode=="local_parallel"){
+          threads=1
+        }
 
         ### ADD AF for SNVS
 
