@@ -256,7 +256,6 @@ call_germline_sv_manta=function(
             cache_vep=cache_vep,
             annotate=annotate,
             patient_id=patient_id,
-            tumour_id=tumour_id,
             normal_id=normal_id,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
@@ -329,7 +328,6 @@ annotate_output_manta<-function(
     normal_id=NULL,
     ...
   ){
-
 
     run_main=function(
         .env
@@ -404,6 +402,7 @@ annotate_output_manta<-function(
                   cache_vep=cache_vep,
                   patient_id=patient_id,
                   normal_id=normal_id,
+                  tumour_id=tumour_id,
                   vcf=.main.step$out_files$annotated$filter$bgzip_vcf,
                   type="sv",
                   fn_id="sv",
@@ -458,6 +457,7 @@ annotate_output_manta<-function(
 
 
 call_somatic_sv_manta=function(
+    bin_samtools=build_default_tool_binary_list()$bin_samtools,
     bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
     bin_tabix=build_default_tool_binary_list()$bin_tabix,
@@ -531,6 +531,9 @@ call_somatic_sv_manta=function(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
             bin_vep=bin_vep,
+            patient_id=patient_id,
+            tumour_id=tumour_id,
+            normal_id=normal_id,
             cache_vep=cache_vep,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
