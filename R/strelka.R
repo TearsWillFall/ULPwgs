@@ -599,9 +599,9 @@ call_germline_snvs_strelka=function(
         run_job(
               .env=.this.env
         )
-
+        run_mode="local"
         if(!targeted){
-          mode="local_parallel"
+          run_mode="local_parallel"
         }else{
           chromosomes=NULL
         }
@@ -628,7 +628,7 @@ call_germline_snvs_strelka=function(
             err_msg=err_msg,
             verbose=verbose, 
             threads=threads,
-            mode=mode,
+            mode=run_mode,
             ram=ram,
             executor_id=task_id
           )
@@ -709,11 +709,12 @@ annotate_germline_output_strelka<-function(
           vcf=input
         }
 
-         if(mode=="local_parallel"){
-            threads=1
-         }
+        if(mode=="local_parallel"){
+          threads=1
+        }
 
-        ### ADD AF for SNVS and INDELS 
+       
+            ### ADD AF for SNVS and INDELS 
 
         .main.step$steps<- append(
          .main.step$steps,
