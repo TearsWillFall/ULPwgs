@@ -422,7 +422,10 @@ annotate_output_manta<-function(
 
           .this.step=.main.step$steps$annotate_strelka_vep.sv
           .main.step$out_files$annotated$vep=.this.step$out_files  
-    }
+        }
+
+      .env$.main<-.main
+
     }
 
      .base.env=environment()
