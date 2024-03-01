@@ -602,7 +602,6 @@ call_germline_snvs_strelka=function(
 
         if(!targeted){
           mode="local_parallel"
-          threads=1
         }else{
           chromosomes=NULL
         }
@@ -709,6 +708,10 @@ annotate_germline_output_strelka<-function(
         }else{
           vcf=input
         }
+
+         if(mode=="local_parallel"){
+            threads=1
+         }
 
         ### ADD AF for SNVS and INDELS 
 
