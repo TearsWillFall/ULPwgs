@@ -600,12 +600,18 @@ call_germline_snvs_strelka=function(
               .env=.this.env
         )
 
+        if(!targeted){
+          mode="local_parallel"
+          threads=1
+        }else{
+          chromosomes=NULL
+        }
 
         .main.step<-.main$steps[[fn_id]]
 
         .main.step$steps=append(.main.step$steps,
         annotate_germline_output_strelka(
-          chromosomes=ifelse(targeted,NULL,chromosomes),
+          chromosomes=chromosomes,
           vcf=.main.step$out_files$strelka$variants$snv_and_indel,
             bin_samtools=bin_samtools,
             bin_bcftools=bin_bcftools,
@@ -623,6 +629,7 @@ call_germline_snvs_strelka=function(
             err_msg=err_msg,
             verbose=verbose, 
             threads=threads,
+            mode=mode,
             ram=ram,
             executor_id=task_id
           )
