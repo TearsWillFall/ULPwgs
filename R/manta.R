@@ -28,6 +28,7 @@
 
 
 call_sv_manta=function( 
+    bin_samtools=build_default_tool_binary_list()$bin_samtools,
     bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
     bin_tabix=build_default_tool_binary_list()$bin_tabix,
@@ -71,6 +72,7 @@ call_sv_manta=function(
             .main.step$steps<-append(
               .main.step$steps,
               call_somatic_sv_manta(
+                bin_samtools=bin_samtools,
                 bin_manta=bin_manta,
                 bin_bcftools=bin_bcftools,
                 bin_bgzip=bin_bgzip,
@@ -107,6 +109,7 @@ call_sv_manta=function(
            .main.step$steps<-append(
               .main.step$steps,
               call_germline_sv_manta(
+                bin_samtools=bin_samtools,
                 bin_manta=bin_manta,
                 bin_bcftools=bin_bcftools,
                 bin_bgzip=bin_bgzip,
@@ -181,6 +184,7 @@ call_sv_manta=function(
 
 
 call_germline_sv_manta=function(
+    bin_samtools=build_default_tool_binary_list()$bin_samtools,
     bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
     bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
     bin_tabix=build_default_tool_binary_list()$bin_tabix,
