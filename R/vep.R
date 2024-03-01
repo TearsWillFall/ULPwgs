@@ -84,7 +84,7 @@ annotate_vep=function(
               bin_bgzip=bin_bgzip,
               bin_tabix=bin_tabix,
               vcf=.main$out_files$vep_vcf,
-              output_name=output_name,
+              output_name=paste0(input_id,".vep",chr,".vcf"),
               compress=compress,
               index_format=index_format,
               bgzip_index=bgzip_index,
@@ -111,7 +111,7 @@ annotate_vep=function(
                 .main.step$steps,
                 tabulate_vcf(
                   vcf=.main$out_files$vep_vcf,
-                  output_dir=out_file_dir,
+                  output_dir=paste0(out_file_dir,"/tabulated"),
                   output_name=output_name,
                   patient_id=patient_id,
                   tumour_id=tumour_id,

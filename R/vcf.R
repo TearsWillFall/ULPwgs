@@ -636,8 +636,6 @@ add_af_strelka_vcf=function(
       .main.step=.main$steps[[fn_id]]
 
       if(type=="snv"){
-
-
         .main.step$steps<-append(
         .main.step$steps,
           add_snv_af_strelka_vcf(
