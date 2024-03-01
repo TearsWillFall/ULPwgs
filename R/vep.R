@@ -94,7 +94,6 @@ annotate_vep=function(
               env_dir=env_dir,
               batch_dir=batch_dir,
               err_msg=err_msg,
-              output_name=input_id,
               verbose=verbose,
               threads=threads,
               ram=ram
