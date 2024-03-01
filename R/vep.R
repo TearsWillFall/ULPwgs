@@ -35,6 +35,7 @@ annotate_vep=function(
     patient_id=NULL,
     tumour_id=NULL,
     normal_id=NULL,
+    chromosomes=NULL,
     fmt="vcf",
     ...
 ){
@@ -84,7 +85,7 @@ annotate_vep=function(
               bin_bgzip=bin_bgzip,
               bin_tabix=bin_tabix,
               vcf=.main$out_files$vep_vcf,
-              output_name=paste0(input_id,".vep",chr,".vcf"),
+              output_name=paste0(input_id,".vep",chr),
               compress=compress,
               index_format=index_format,
               bgzip_index=bgzip_index,
