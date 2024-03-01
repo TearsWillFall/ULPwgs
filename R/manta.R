@@ -242,7 +242,7 @@ call_germline_sv_manta=function(
 
         ### We don't split by chromosome because its not necessary as SV files are not large enough
         .main.step$steps=append(.main.step$steps,
-        annotate_germline_output_manta(
+        annotate_output_manta(
             vcf=.main.step$out_files$manta$variants$diploid_sv,
             bin_samtools=bin_samtools,
             bin_bcftools=bin_bcftools,
