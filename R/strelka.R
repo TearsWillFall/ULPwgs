@@ -483,6 +483,7 @@ call_somatic_snvs_strelka=function(
               patient_id=patient_id,
               tumour_id=tumour_id,
               normal_id=normal_id,
+              output_dir=out_file_dir,
               tmp_dir=tmp_dir,
               env_dir=env_dir,
               batch_dir=batch_dir,
@@ -622,6 +623,7 @@ call_germline_snvs_strelka=function(
             annotate=annotate,
             patient_id=patient_id,
             normal_id=normal_id,
+            output_dir=out_file_dir,
             tmp_dir=tmp_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
@@ -879,7 +881,7 @@ annotate_somatic_output_strelka<-function(
         }else{
           vcf_list=input
         }
-        
+
         if(mode=="local_parallel"){
           threads=1
         }

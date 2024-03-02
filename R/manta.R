@@ -255,6 +255,7 @@ call_germline_sv_manta=function(
             bin_vep=bin_vep,
             cache_vep=cache_vep,
             annotate=annotate,
+            output_dir=out_file_dir,
             patient_id=patient_id,
             normal_id=normal_id,
             tmp_dir=tmp_dir,
