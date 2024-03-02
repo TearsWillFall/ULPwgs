@@ -332,7 +332,7 @@ build_exec_innit=function(
         }else if(mode=="local_parallel"){
               exec_code=paste0("Rscript -e \" invisible(parallel::mclapply(1:",n_inputs,
               ",FUN=function(select){",ns,"::",fn,"(inherit=\\\"",
-              self_file,"\\\",select=select)},mc.cores=",threads,"))\"")
+              self_file,"\\\",select=select)},mc.cores=",threads-1,"))\"")
         }else if(mode=="batch"){
               exec_code=paste0("Rscript -e \" invisible(",
               ns,"::",fn,"(inherit=\\\"",self_file,
