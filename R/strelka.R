@@ -469,9 +469,9 @@ call_somatic_snvs_strelka=function(
         .main.step$steps=append(.main.step$steps,
           annotate_somatic_output_strelka(
             chromosomes=ifelse(targeted,NULL,chromosomes),
-            vcf_list=list(
+            vcf_list=list(list(
               snv=.main.step$out_files$strelka$variants$snv,
-              indel=.main.step$out_files$strelka$variants$indel),
+              indel=.main.step$out_files$strelka$variants$indel)),
               bin_samtools=bin_samtools,
               bin_bcftools=bin_bcftools,
               bin_bgzip=bin_bgzip,
@@ -612,7 +612,7 @@ call_germline_snvs_strelka=function(
         .main.step$steps=append(.main.step$steps,
         annotate_germline_output_strelka(
           chromosomes=chromosomes,
-          vcf=.main.step$out_files$strelka$variants$snv_and_indel,
+            vcf=.main.step$out_files$strelka$variants$snv_and_indel,
             bin_samtools=bin_samtools,
             bin_bcftools=bin_bcftools,
             bin_bgzip=bin_bgzip,
