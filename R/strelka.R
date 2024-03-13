@@ -880,7 +880,7 @@ annotate_somatic_output_strelka<-function(
         if(!is.null(chromosomes)){
           chromosomes=input
         }else{
-          vcf_list=input
+          vcf_list=unlist(input)
         }
 
         if(mode=="local_parallel"){
@@ -894,7 +894,7 @@ annotate_somatic_output_strelka<-function(
            add_af_strelka_vcf(
             bin_bgzip=bin_bgzip,
             bin_tabix=bin_tabix,
-            vcf=vcf_list[[1]],
+            vcf=vcf_list[1],
             type="snv",
             fn_id="snv",
             output_dir=paste0(out_file_dir,"/annotated/af/snv"),
@@ -920,7 +920,7 @@ annotate_somatic_output_strelka<-function(
             add_af_strelka_vcf(
               bin_bgzip=bin_bgzip,
               bin_tabix=bin_tabix,
-              vcf=vcf_list[[2]],
+              vcf=vcf_list[2],
               chromosomes=chromosomes,
               type="indel",
               fn_id="indel",
