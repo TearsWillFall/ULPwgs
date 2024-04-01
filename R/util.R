@@ -277,6 +277,9 @@ cp_data=function(
   origin=NULL,
   target=NULL,
   verbose=FALSE,
+  user=NULL,
+  node=NULL,
+  password=NULL,
   ...
 ){
 
@@ -298,7 +301,26 @@ cp_data=function(
         stop("target argument is required.")
       }
 
-      .main$exec_code=paste("cp -r ",input," -t ", target)
+      ip=""
+      if(!is.null(node)){
+        if(!is.null(user)){
+          ip=paste0(user,"@",node)
+        }
+
+        ip=paste0("ssh ",ip)
+      }
+
+      pass=""
+      if(!is.null(password)){
+        if(file.exists(password)){
+          pass=paste("sshpass -f ",password)
+        }else{
+          pass=paste("sshpass -p ",password)
+        }
+      }
+
+
+      .main$exec_code=paste(pass,ip," \"cp -r ",input," -t ", target,"\"")
 
       run_job(.this.env)
 

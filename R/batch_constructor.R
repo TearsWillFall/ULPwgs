@@ -375,16 +375,20 @@ build_clean_exec=function(
 
 
 
-
-
-
 build_batch_exec_innit=function(
   .env=environment()
 ){  
+
     n_inputs<-1
     .this.env=environment()
     append_env(to=.this.env,from=.env)
 
+    job=build_job_remote(
+      job=job,
+      user=user,
+      password=password,
+      node=node
+    )
 
     batch_code=build_job_exec(
       job=job_id,time=time,ram=ram,
@@ -425,6 +429,51 @@ set_self=function(
 
 }
 
+
+
+#' Build remote job 
+#' 
+#' @param node Remote node name.
+#' @param password Password or path to file with password.
+#' @param user Name of the user.
+#' @param job Job to run
+#' 
+#' @export
+
+
+build_job_remote=function(
+    node=NULL,
+    user=NULL,
+    password=NULL,
+    job=NULL,
+){
+
+  ip=""
+      if(!is.null(node)){
+        if(!is.null(user)){
+          ip=paste0(user,"@",node)
+        }
+
+        ip=paste0("ssh ",ip)
+      }
+
+  pass=""
+  if(!is.null(password)){
+    if(file.exists(password)){
+      pass=paste("sshpass -f ",password)
+    }else{
+      pass=paste("sshpass -p ",password)
+    }
+  }
+
+
+  if(ip==""& pass==""){
+    return(job)
+  }else{
+    job=paste(pass,ip," \"",job,"\"")
+    return(job)
+  }
+}
 
 
 #' Run job from batch constructor
@@ -596,6 +645,9 @@ set_env_vars=function(
   mode="local",
   time="48:0:0",
   bypass=FALSE,
+  node=NULL,
+  user=NULL,
+  password=NULL,
   sheet=NULL,
   inherit=NULL,
   select=NULL,
