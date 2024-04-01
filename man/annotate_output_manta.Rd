@@ -13,6 +13,10 @@ annotate_output_manta(
   cache_vep = build_default_cache_list()$cache_vep,
   chromosomes = NULL,
   vcf = NULL,
+  annotate = TRUE,
+  patient_id = NULL,
+  tumour_id = NULL,
+  normal_id = NULL,
   ...
 )
 }

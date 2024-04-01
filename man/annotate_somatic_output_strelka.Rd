@@ -14,6 +14,10 @@ annotate_somatic_output_strelka(
   cache_vep = build_default_cache_list()$cache_vep,
   chromosomes = NULL,
   vcf_list = NULL,
+  annotate = TRUE,
+  patient_id = NULL,
+  tumour_id = NULL,
+  normal_id = NULL,
   ...
 )
 }

@@ -15,6 +15,7 @@ annotate_vep(
   patient_id = NULL,
   tumour_id = NULL,
   normal_id = NULL,
+  chromosomes = NULL,
   fmt = "vcf",
   ...
 )

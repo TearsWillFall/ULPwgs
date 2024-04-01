@@ -14,6 +14,9 @@ annotate_germline_output_strelka(
   cache_vep = build_default_cache_list()$cache_vep,
   chromosomes = NULL,
   vcf = NULL,
+  annotate = TRUE,
+  patient_id = NULL,
+  normal_id = NULL,
   ...
 )
 }
