@@ -445,7 +445,7 @@ build_job_remote=function(
     node=NULL,
     user=NULL,
     password=NULL,
-    job=NULL,
+    job=NULL
 ){
 
   ip=""
