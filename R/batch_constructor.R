@@ -383,12 +383,6 @@ build_batch_exec_innit=function(
     .this.env=environment()
     append_env(to=.this.env,from=.env)
 
-    job=build_job_remote(
-      job=job,
-      user=user,
-      password=password,
-      node=node
-    )
 
     batch_code=build_job_exec(
       job=job_id,time=time,ram=ram,
@@ -442,11 +436,11 @@ set_self=function(
 
 
 build_job_remote=function(
-    node=NULL,
-    user=NULL,
-    password=NULL,
-    job=NULL
+    .env
 ){
+
+  .this.env=environment()
+  append_env(to=.this.env,from=.env)
 
   ip=""
       if(!is.null(node)){
@@ -467,11 +461,8 @@ build_job_remote=function(
   }
 
 
-  if(ip==""& pass==""){
-    return(job)
-  }else{
-    job=paste(pass,ip," \"",job,"\"")
-    return(job)
+  if(ip!=""|pass!=""){
+    .env$exec_code=paste0(pass,ip," \"",.env$exec_code,"\"")
   }
 }
 
@@ -501,12 +492,15 @@ run_self=function(
             .env=.self
     )
 
+   
+
 
     if(mode=="batch"){
         build_batch_exec_innit(
               .env=.self
         )
     }
+
 
 
     if(verbose){
@@ -555,6 +549,10 @@ run_self=function(
  ){
       .this.env=environment()
       append_env(to=.this.env,from=.env$.main)
+
+      build_job_remote(
+        .env=.this.env
+      )
 
       if(clean){
         build_clean_exec(.env=.this.env)
