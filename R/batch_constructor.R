@@ -462,7 +462,7 @@ build_job_remote=function(
 
 
   if(ip!=""|pass!=""){
-    .env$exec_code=paste0(pass,ip," \"",.env$exec_code,"\"")
+    .env$exec_code=paste(pass,ip," \"",.env$exec_code,"\"")
   }
 }
 
