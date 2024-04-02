@@ -724,32 +724,26 @@ set_env_vars=function(
           ## CHECK MISSING CASES
           ## CHECK IF REMOTE NODE IS GIVEN
           if(remote){
+              print("Here")
               ### CHECK IF VARIABLE PATH EXIST IN REMOTE
-              check=check_file_path(
-                  origin=var_value,
-                  verbose=verbose,
-                  password=password,
-                  node=node,
-                  user=user,
-                  out_file_dir=tmp_dir,
-                  tmp_dir=tmp_dir,
-                  env_dir=env_dir,
-                  batch_dir=batch_dir,
-                  err_msg=err_msg
-              )
-              check=readLines(check$check_file_path$out_files$realpath)
-              if(!grepl("realpath",check)){
-              var_dir=set_dir(dir=ln_dir,name=var)
-              ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
-              system(paste(
+              check=system(paste(
                "sshpass -f ",password,
                " ssh ",paste0(user,
                 ifelse(!is.null(user,"@")),node),
-                "\" cp -r ",var_value," -t ",
-                var_dir, "\"")
-              )                
-              ### UPDATE THE VARIABLE TO THE REMOTE FILE
-              .this.env[[var]]=paste0(var_dir,"/",basename(var_value))
+                "\" realpath -e ",var_value"\""),intern=TRUE
+              )
+              if(!grepl("realpath",check)){
+                var_dir=set_dir(dir=ln_dir,name=var)
+                ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
+                system(paste(
+                "sshpass -f ",password,
+                " ssh ",paste0(user,
+                  ifelse(!is.null(user,"@")),node),
+                  "\" cp -r ",var_value," -t ",
+                  var_dir, "\"")
+                )                
+                ### UPDATE THE VARIABLE TO THE REMOTE FILE
+                .this.env[[var]]=paste0(var_dir,"/",basename(var_value))
               }
             }
           }
