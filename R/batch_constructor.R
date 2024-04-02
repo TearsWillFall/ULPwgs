@@ -501,8 +501,10 @@ build_job_remote=function(
     }
   }
 
+  ## ONLY RUN JOB IN REMOTE NODE IF REMOTE NODE IS GIVEN
+  ## OTHERWISE THE EXEC_CODE REMAINS THE SAME
 
-  if(ip!=""|pass!=""){
+  if(remote){
     .env$exec_code=paste(pass,ip," \"",.env$exec_code,"\"")
   }
 }
@@ -593,6 +595,7 @@ run_self=function(
       append_env(to=.this.env,from=.env$.main)
 
       if(!get_data){
+
         build_job_remote(
         .env=.this.env
         )
