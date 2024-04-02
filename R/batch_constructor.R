@@ -625,6 +625,8 @@ set_env_vars=function(
   fn_vars=NULL,
   output_dir=".",
   tmp_dir=NULL,
+  ln_dir=NULL,
+  rmt_dir=NULL,
   env_dir=NULL,
   batch_dir=NULL,
   output_name=NULL,
@@ -701,6 +703,20 @@ set_env_vars=function(
       )
     }
 
+    if(is.null(ln_dir)){
+        tmp_dir <- set_dir(
+          dir=tmp_dir,
+          name="ln"
+      )
+    }
+
+    if(is.null(rmt_dir)){
+        tmp_dir <- set_dir(
+          dir=tmp_dir,
+          name="rmt"
+      )
+    }
+
     if(is.null(env_dir)){
           env_dir<- set_dir(
             dir=out_file_dir,
@@ -733,10 +749,11 @@ set_env_vars=function(
             FALSE
         })){
           var_value=normalizePath(var_value)
-          ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE TEMP DIRECTORY
-          system(paste("ln -fs",var_value, tmp_dir))
+          ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE 
+          ## TEMP DIRECTORY FOR EACH VARIABLE
+          system(paste("mkdir ",set_dir(ln_dir,var)";ln -fs",var_value, ln_dir))
           ### UPDATE THE VARIABLE TO THE SYMLINK
-          .this.env[[var]]=paste0(tmp_dir,"/",basename(var_value))
+          .this.env[[var]]=paste0(ln_dir,"/",basename(var_value))
 
         }else{
           ## CHECK MISSING CASES
