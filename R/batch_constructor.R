@@ -428,49 +428,6 @@ set_self=function(
 
 
 
-#' Build remote job 
-#' 
-#' @param node Remote node name.
-#' @param password Password or path to file with password.
-#' @param user Name of the user.
-#' @param job Job to run
-#' 
-#' @export
-
-
-build_job_remote=function(
-    .env
-){
-
-  .this.env=environment()
-  append_env(to=.this.env,from=.env)
-
-  ip=""
-      if(!is.null(node)){
-        if(!is.null(user)){
-          ip=paste0(user,"@",node)
-        }
-
-        ip=paste0("ssh ",ip)
-      }
-
-  pass=""
-  if(!is.null(password)){
-    if(file.exists(password)){
-      pass=paste("sshpass -f ",password)
-    }else{
-      pass=paste("sshpass -p ",password)
-    }
-  }
-
-  ## ONLY RUN JOB IN REMOTE NODE IF REMOTE NODE IS GIVEN
-  ## OTHERWISE THE EXEC_CODE REMAINS THE SAME
-
-  if(remote){
-    .env$exec_code=paste(pass,ip," \"",.env$exec_code,"\"")
-  }
-}
-
 
 #' Run job from batch constructor
 #' 
@@ -555,11 +512,6 @@ run_self=function(
  ){
       .this.env=environment()
       append_env(to=.this.env,from=.env$.main)
-
-
-      build_job_remote(
-      .env=.this.env
-      )
     
       if(clean){
         build_clean_exec(.env=.this.env)
@@ -742,6 +694,12 @@ set_env_vars=function(
       fn_vars=fn_vars[!grepl("\\.",fn_vars)]
     }
 
+    
+    if(!is.null(node)){
+      remote=TRUE
+    }
+
+
     ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
     for(var in fn_vars){
       var_value=get(var)
@@ -845,13 +803,6 @@ set_env_vars=function(
     if(is.null(err_msg)){
         err_msg <- paste0("CRITICAL ERROR: ",fn," (",job_id,") "," -> ")
     }
-
-
-     if(!is.null(node)){
-      remote=TRUE
-    }
-
-    
 
     
     set_main_env(.env=.this.env)
