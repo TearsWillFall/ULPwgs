@@ -707,7 +707,7 @@ set_env_vars=function(
     
     ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE SYMLINK OF FILES
     if(is.null(ln_dir)){
-        tmp_dir <- set_dir(
+        ln_dir <- set_dir(
           dir=tmp_dir,
           name="ln"
       )
@@ -715,7 +715,7 @@ set_env_vars=function(
 
     ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE REMOTE FILES
     if(is.null(rmt_dir)){
-        tmp_dir <- set_dir(
+        rmt_dir <- set_dir(
           dir=tmp_dir,
           name="rmt"
       )
