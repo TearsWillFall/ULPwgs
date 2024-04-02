@@ -4,14 +4,14 @@
 \alias{build_job_remote}
 \title{Build remote job}
 \usage{
-build_job_remote(node = NULL, user = NULL, password = NULL, job = NULL)
+build_job_remote(.env)
 }
 \arguments{
 \item{node}{Remote node name.}
 
-\item{user}{Name of the user.}
-
 \item{password}{Password or path to file with password.}
+
+\item{user}{Name of the user.}
 
 \item{job}{Job to run}
 }

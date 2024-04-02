@@ -596,10 +596,14 @@ run_self=function(
         build_job_remote(
         .env=.this.env
         )
+        ### WE REMOVE THE INPUT FILE ONLY IF SUGGESTED BY USER
+        if(clean){
+          build_clean_exec(.env=.this.env)
+        }
       }else{
         ### COPY OR SYSTEM LINK DATA TO TMP_DIR DEPENDING ON HOW DATA IS STORED
         build_data_loc(.env=.this.env)
-        ### REMOVE TMP DATA FROM LOCATION AFTER DONE
+        ### ALWAYS REMOVE AFTER WE ARE DONE AS DATA IS STORED SOMEWHERE ELSE
         build_clean_exec(.env=.this.env)
       }
     
