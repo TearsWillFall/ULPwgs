@@ -276,7 +276,6 @@ file_cp=function(
 cp_data=function(
   origin=NULL,
   target=NULL,
-  verbose=FALSE,
   ...
 ){
 
@@ -290,8 +289,8 @@ cp_data=function(
   
       set_main(.env=.this.env)
 
-      if(is.null(file)){
-        stop("file argument is required.")
+      if(is.null(origin)){
+        stop("origin argument is required.")
       }
       
       if(is.null(target)){
@@ -303,7 +302,71 @@ cp_data=function(
       run_job(.this.env)
 
       .env$.main<-.main
+
+    }
+
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+        .env=.base.env,
+        vars="origin"
+    )
+
+    launch(.env=.base.env)
+     
+}
+
+
+
+#' cp file/directory
+#' This function removes/deletes one or multiple files/directories
+#'
+#' @param file Path to the file/directory.[REQUIRED]
+#' @param target Path to the file/directory.[REQUIRED]
+#' @param threads [OPTIONAL] Number of threads to split the work. Default 4
+#' @param ram [OPTIONAL] RAM memory to asing to each thread. Default 4
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param batch_config [REQUIRED] Additional batch configuration if batch mode selected.
+#' @param executor_id Task EXECUTOR ID. Default "recalCovariates"
+#' @param task_name Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+
+ln_data=function(
+  origin=NULL,
+  target=NULL,
+  ...
+){
+
+  
+    run_main=function(
+      .env
+    ){
+
+      .this.env=environment()
+      append_env(to=.this.env,from=.env)
+  
+      set_main(.env=.this.env)
+
+      if(is.null(origin)){
+        stop("origin argument is required.")
+      }
       
+      if(is.null(target)){
+        stop("target argument is required.")
+      }
+
+      .main$exec_code=paste("ln -s ",input, target)
+
+      run_job(.this.env)
+
+      .env$.main<-.main
+
     }
 
     .base.env=environment()

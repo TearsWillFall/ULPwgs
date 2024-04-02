@@ -366,6 +366,47 @@ build_clean_exec=function(
 }
 
 
+#' Copy data to tmp directory
+#' 
+#' @param .env Inherit current enviroment.
+#' 
+#' 
+#' @export
+
+
+build_data_loc=function(
+  .env
+){
+  .this.env=environment()
+  append_env(to=.this.env,from=.env)
+  .env$tmp_dir=set_dir(dir=tmp_dir,name="files")
+
+  if(remote){
+    cp_data(
+      origin=.env$input,
+      target=.env$tmp_dir,
+      executor_id=task_id,
+      tmp_dir=tmp_dir,
+      env_dir=env_dir,
+      batch_dir=batch_dir,
+      err_msg=err_msg
+    )
+  }else{
+    ln_data(
+      origin=.env$input,
+      target=.env$tmp_dir,
+      executor_id=task_id,
+      tmp_dir=tmp_dir,
+      env_dir=env_dir,
+      batch_dir=batch_dir,
+      err_msg=err_msg
+    )
+  }
+  .env$input=paste0(.env$tmp_dir,"/",get_file_name(.env$input))
+}
+
+
+
 
 
 #' Build execution innit for batch
@@ -536,6 +577,7 @@ run_self=function(
   
 }
 
+
 #' Run job from batch constructor
 #' 
 #' @param env Inherit current enviroment.
@@ -550,14 +592,17 @@ run_self=function(
       .this.env=environment()
       append_env(to=.this.env,from=.env$.main)
 
-      build_job_remote(
+      if(!get_data){
+        build_job_remote(
         .env=.this.env
-      )
-
-      if(clean){
+        )
+      }else{
+        ### COPY OR SYSTEM LINK DATA TO TMP_DIR DEPENDING ON HOW DATA IS STORED
+        build_data_loc(.env=.this.env)
+        ### REMOVE TMP DATA FROM LOCATION AFTER DONE
         build_clean_exec(.env=.this.env)
       }
-
+    
       if(verbose){
         print_verbose(
           job=job_id,
@@ -577,13 +622,6 @@ run_self=function(
       .env$.main$steps[[fn_id]] <- .this.env
  }
    
-
-
-
-
-
-
-
 #' Wrapper around qstat call for SGE
 #' 
 #' 
@@ -642,6 +680,7 @@ set_env_vars=function(
   ns="ULPwgs",
   mode="local",
   time="48:0:0",
+  get=FALSE,
   bypass=FALSE,
   node=NULL,
   user=NULL,
@@ -650,6 +689,8 @@ set_env_vars=function(
   inherit=NULL,
   select=NULL,
   err_msg=NULL,
+  remote=FALSE,
+  get_data=FALSE,
   executor_id=NULL,
   wait=FALSE,
   hold=NULL
@@ -761,6 +802,10 @@ set_env_vars=function(
 
     if(is.null(err_msg)){
         err_msg <- paste0("CRITICAL ERROR: ",fn," (",job_id,") "," -> ")
+    }
+
+    if(!is.null(node)){
+      remote=TRUE
     }
     
     set_main_env(.env=.this.env)
