@@ -688,7 +688,7 @@ set_env_vars=function(
     if(is.null(executor_id)){
       executor_id <- make_unique_id(fn)
     }
-
+    print(fn_vars)
     ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
     for(var in fn_vars){
       var_value=get(var)
