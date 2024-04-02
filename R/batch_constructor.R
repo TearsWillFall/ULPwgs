@@ -751,7 +751,7 @@ set_env_vars=function(
           var_value=normalizePath(var_value)
           ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE 
           ## TEMP DIRECTORY FOR EACH VARIABLE
-          system(paste("mkdir ",set_dir(ln_dir,var)";ln -fs",var_value, ln_dir))
+          system(paste("mkdir ",set_dir(ln_dir,var),";ln -fs ",var_value, ln_dir))
           ### UPDATE THE VARIABLE TO THE SYMLINK
           .this.env[[var]]=paste0(ln_dir,"/",basename(var_value))
 
