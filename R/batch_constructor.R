@@ -702,6 +702,7 @@ set_env_vars=function(
         error=function(e){
           next
       })){
+        print(var_value)
         ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE TEMP DIRECTORY
           ln=ln_data(
                 origin=var_value,
