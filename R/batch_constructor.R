@@ -725,14 +725,14 @@ set_env_vars=function(
                 err_msg=err_msg
           )
         ### UPDATE THE VARIABLE TO THE SYMLINK
-          .env[[this.var]]=ln$ln_data$out_files$file
+          .env[[var]]=ln$ln_data$out_files$file
       }else{
         ## CHECK MISSING CASES
         ## CHECK IF REMOTE NODE IS GIVEN
         if(remote){
             ### CHECK VARIABLE REMOTELY
             check=check_file_path(
-                origin=get(this.var),
+                origin=var_value,
                 verbose=verbose,
                 password=password,
                 node=node,
@@ -760,7 +760,7 @@ set_env_vars=function(
                 err_msg=err_msg
               )
             ### UPDATE THE VARIABLE TO THE REMOTE FILE
-            .env[[this.var]]=cp$cp_data$out_files$file
+            .env[[var]]=cp$cp_data$out_files$file
             }
           }
         }
