@@ -307,7 +307,7 @@ check_file_path=function(
 
 cp_data=function(
   origin=NULL,
-  target=NULL,
+  output_dir=NULL,
   ...
 ){
 
@@ -382,7 +382,7 @@ cp_data=function(
 
 ln_data=function(
   origin=NULL,
-  target=NULL,
+  output_dir=NULL,
   ...
 ){
     
@@ -400,13 +400,10 @@ ln_data=function(
         stop("origin argument is required.")
       }
       
-      if(is.null(target)){
-        stop("target argument is required.")
-      }
 
-      .main$out_files$file=paste0(target,"/",basename(input))
+      .main$out_files$file=paste0(out_file_dir,"/",basename(input))
 
-      .main$exec_code=paste("ln -sf ",input, target)
+      .main$exec_code=paste("ln -sf ",input, out_file_dir)
 
       run_job(.this.env)
       .env$.main<-.main
@@ -421,7 +418,7 @@ ln_data=function(
         vars="origin",
         fn_vars=fn_vars
     )
-
+    
     launch(.env=.base.env)
      
 }
