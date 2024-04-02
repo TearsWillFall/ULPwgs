@@ -783,13 +783,15 @@ set_env_vars=function(
               if(!grepl("realpath",check)){
               var_dir=set_dir(dir=ln_dir,name=var)
               ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
-              system(paste("sshpass -f ",password, " ssh ",paste0(user,
-                ifelse(!is.null(user,"@")),node),"\" cp -r ",
-                var_value," -t ",var_dir, "\"")
+              system(paste(
+               "sshpass -f ",password,
+               " ssh ",paste0(user,
+                ifelse(!is.null(user,"@")),node),
+                "\" cp -r ",var_value," -t ",
+                var_dir, "\"")
               )                
-              
               ### UPDATE THE VARIABLE TO THE REMOTE FILE
-              .this.env[[var]]=cp$cp_data$out_files$file
+              .this.env[[var]]=paste0(var_dir,"/",basename(var_value))
               }
             }
           }
