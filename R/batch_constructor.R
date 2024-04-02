@@ -705,13 +705,14 @@ set_env_vars=function(
     }
 
     ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
-    for(this.var in fn_vars){
-      
+    for(var in fn_vars){
+      var_value=get(var)
       ## WE CHECK IF VARIABLE CONTAINS A PATH
-      if(file.exists(get(this.var))){
+      print(var_value)
+      if(file.exists(var_value)){
         ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE TEMP DIRECTORY
           ln=ln_data(
-                origin=get(this.var),
+                origin=var_value,
                 target=.env$tmp_dir,
                 password=password,
                 node=node,
