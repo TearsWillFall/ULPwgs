@@ -726,13 +726,14 @@ set_env_vars=function(
           if(remote){
               print("Here")
               ### CHECK IF VARIABLE PATH EXIST IN REMOTE
-              check=system(paste(
+              
+              check=suppressWarnings(system(paste(
                "sshpass -f ",password,
                " ssh ",paste0(user,
                 ifelse(!is.null(user),"@",""),node),
                 "\" realpath -e ",var_value,"\""),intern=TRUE
-              )
-              if(!grepl("realpath",check)){
+              ))
+              if(length(check)!=0){
                 var_dir=set_dir(dir=ln_dir,name=var)
                 ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
                 system(paste(
