@@ -696,13 +696,16 @@ set_env_vars=function(
           dir=output_dir
     )
 
+
+    ### CREATE TMP DIRECTORY 
     if(is.null(tmp_dir)){
         tmp_dir <- set_dir(
           dir=out_file_dir,
           name="tmp"
       )
     }
-
+    
+    ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE SYMLINK OF FILES
     if(is.null(ln_dir)){
         tmp_dir <- set_dir(
           dir=tmp_dir,
@@ -710,6 +713,7 @@ set_env_vars=function(
       )
     }
 
+    ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE REMOTE FILES
     if(is.null(rmt_dir)){
         tmp_dir <- set_dir(
           dir=tmp_dir,
@@ -717,6 +721,7 @@ set_env_vars=function(
       )
     }
 
+    ### CREATE DIRECTORY TO STORE ENVIROMENT DATA
     if(is.null(env_dir)){
           env_dir<- set_dir(
             dir=out_file_dir,
@@ -724,6 +729,7 @@ set_env_vars=function(
         )
       }
 
+    ### CREATE DIRECTORY TO BATCH DATA
     if(is.null(batch_dir)){
         batch_dir<- set_dir(
           dir=out_file_dir,
@@ -732,7 +738,7 @@ set_env_vars=function(
     }
 
     if(!is.null(fn_vars)){
-      fn_vars=fn_vars[!grepl("\\.",fn_vars)]
+      ## REMOVE ENVIROMENTS FROM VARIABLES
       fn_vars=fn_vars[!grepl("\\.",fn_vars)]
     }
 
@@ -751,9 +757,10 @@ set_env_vars=function(
           var_value=normalizePath(var_value)
           ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE 
           ## TEMP DIRECTORY FOR EACH VARIABLE
-          system(paste("mkdir ",set_dir(ln_dir,var),";ln -fs ",var_value, ln_dir))
+          var_dir=set_dir(dir=ln_dir,name=var)
+          system(paste("mkdir ",var_dir,";ln -fs ",var_value, var_dir))
           ### UPDATE THE VARIABLE TO THE SYMLINK
-          .this.env[[var]]=paste0(ln_dir,"/",basename(var_value))
+          .this.env[[var]]=paste0(var_dir,"/",basename(var_value))
 
         }else{
           ## CHECK MISSING CASES
