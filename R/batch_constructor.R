@@ -695,12 +695,46 @@ set_env_vars=function(
         return()
     }
 
-    n_inputs <- 1
-    inputs<-NULL
-    inputs_id <- output_name
-    inputs_ext <- NULL
+  
+   
+    out_file_dir <- set_dir(
+          dir=output_dir
+    )
 
-    if(!is.null(node)){
+    if(is.null(tmp_dir)){
+        tmp_dir <- set_dir(
+          dir=out_file_dir,
+          name="tmp"
+      )
+    }
+
+    if(is.null(env_dir)){
+          env_dir<- set_dir(
+            dir=out_file_dir,
+            name="env"
+        )
+      }
+
+    if(is.null(batch_dir)){
+        batch_dir<- set_dir(
+          dir=out_file_dir,
+          name="batch"
+      )
+    }
+  
+    task_id <- make_unique_id(fn)
+
+    job_id <- build_job(
+      executor_id=executor_id,
+      task_id=task_id
+    )
+
+    if(is.null(err_msg)){
+        err_msg <- paste0("CRITICAL ERROR: ",fn," (",job_id,") "," -> ")
+    }
+
+
+     if(!is.null(node)){
       remote=TRUE
     }
 
@@ -765,6 +799,12 @@ set_env_vars=function(
           }
         }
       }
+
+
+    n_inputs <- 1
+    inputs<-NULL
+    inputs_id <- output_name
+    inputs_ext <- NULL
    
     if(!is.null(vars)){
       inputs <- get(vars)
@@ -789,43 +829,8 @@ set_env_vars=function(
         task_id=task_ids
       )
     }
-    
-   
-    out_file_dir <- set_dir(
-          dir=output_dir
-    )
 
-    if(is.null(tmp_dir)){
-        tmp_dir <- set_dir(
-          dir=out_file_dir,
-          name="tmp"
-      )
-    }
 
-    if(is.null(env_dir)){
-          env_dir<- set_dir(
-            dir=out_file_dir,
-            name="env"
-        )
-      }
-
-    if(is.null(batch_dir)){
-        batch_dir<- set_dir(
-          dir=out_file_dir,
-          name="batch"
-      )
-    }
-  
-    task_id <- make_unique_id(fn)
-
-    job_id <- build_job(
-      executor_id=executor_id,
-      task_id=task_id
-    )
-
-    if(is.null(err_msg)){
-        err_msg <- paste0("CRITICAL ERROR: ",fn," (",job_id,") "," -> ")
-    }
     
     set_main_env(.env=.this.env)
 
