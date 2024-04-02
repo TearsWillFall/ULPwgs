@@ -439,7 +439,7 @@ new_clonet_trento=function(
 
 
 
-        .main$exec_code=paste(" singularity run -H /:/home", " --app pcfs ",
+        .main$exec_code=paste(" singularity run -H /:/home/work", " --app pcfs ",
             sif_clonet, " -s ", .main$out_files$sample_info ," -o ", 
             out_file_dir, " -t ", 
             tmp_dir, " -n " , threads, tc, ploidy
