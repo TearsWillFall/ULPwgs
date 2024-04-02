@@ -20,6 +20,8 @@ get_file_name=function(file_path=""){
 
 
 
+
+
 #' Filter BED file by chromosome
 #' This function sets and/or creates the directory
 #' for a function
@@ -254,6 +256,36 @@ file_cp=function(
 
 
 
+check_file_path=function(
+  path=NULL,
+  ...
+){
+  run_main=function(
+      .env
+    ){
+      .this.env=environment()
+      append_env(to=.this.env,from=.env)
+  
+      set_main(.env=.this.env)
+
+      if(is.null(path)){
+        stop("Path argument is required.")
+      }
+
+      .main$out_files$realpath=paste0(out_file_dir,"/",input,".path")
+      .main$exec_code=paste(" realpath -e ",path,">", .main$out_files$realpath)
+      run_job(.this.env)
+      .env$.main<-.main
+    }
+
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+        .env=.base.env,
+        vars="path"
+    )
+}
+
 #' cp file/directory
 #' This function removes/deletes one or multiple files/directories
 #'
@@ -278,8 +310,6 @@ cp_data=function(
   target=NULL,
   ...
 ){
-
-  
     run_main=function(
       .env
     ){
@@ -296,6 +326,8 @@ cp_data=function(
       if(is.null(target)){
         stop("target argument is required.")
       }
+      
+      .main$out_files$file=paste0(target,"/",basename(input))
 
       .main$exec_code=paste("cp -r ",input," -t ", target)
 
@@ -304,17 +336,23 @@ cp_data=function(
       .env$.main<-.main
 
     }
-
+    
+    fn_vars=names(environment())
     .base.env=environment()
     list2env(list(...),envir=.base.env)
     set_env_vars(
         .env=.base.env,
-        vars="origin"
+        vars="origin",
+        fn_vars=fn_vars
     )
 
     launch(.env=.base.env)
      
 }
+
+
+
+
 
 
 
@@ -361,19 +399,21 @@ ln_data=function(
         stop("target argument is required.")
       }
 
+      .main$out_files$file=paste0(target,"/",basename(input))
+
       .main$exec_code=paste("ln -sf ",input, target)
 
       run_job(.this.env)
-
       .env$.main<-.main
 
     }
-
+    fn_vars=names(environment())
     .base.env=environment()
     list2env(list(...),envir=.base.env)
     set_env_vars(
         .env=.base.env,
-        vars="origin"
+        vars="origin",
+        fn_vars=fn_vars
     )
 
     launch(.env=.base.env)

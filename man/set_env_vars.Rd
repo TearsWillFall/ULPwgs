@@ -36,7 +36,6 @@ set_env_vars(
   select = NULL,
   err_msg = NULL,
   remote = FALSE,
-  get_data = FALSE,
   executor_id = NULL,
   wait = FALSE,
   hold = NULL

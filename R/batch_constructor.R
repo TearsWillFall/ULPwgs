@@ -366,46 +366,6 @@ build_clean_exec=function(
 }
 
 
-#' Copy data to tmp directory
-#' 
-#' @param .env Inherit current enviroment.
-#' 
-#' 
-#' @export
-
-
-build_data_loc=function(
-  .env
-){
-  .this.env=environment()
-  append_env(to=.this.env,from=.env)
-  .env$tmp_dir=set_dir(dir=tmp_dir,name="files")
-
-  if(remote){
-    cp_data(
-      origin=.env$input,
-      target=.env$tmp_dir,
-      executor_id=task_id,
-      verbose=verbose,
-      tmp_dir=tmp_dir,
-      env_dir=env_dir,
-      batch_dir=batch_dir,
-      err_msg=err_msg
-    )
-  }else{
-    ln_data(
-      origin=.env$input,
-      target=.env$tmp_dir,
-      executor_id=task_id,
-      verbose=verbose,
-      tmp_dir=tmp_dir,
-      env_dir=env_dir,
-      batch_dir=batch_dir,
-      err_msg=err_msg
-    )
-  }
-  .env$input=paste0(.env$tmp_dir,"/",get_file_name(.env$input))
-}
 
 
 
@@ -597,24 +557,14 @@ run_self=function(
       append_env(to=.this.env,from=.env$.main)
 
 
-
-      
-      if(!get_data){
-        ## WE ONLY RUN REMOTE JOBS IF WE DON'T BUILT THE DATA LOCALLY
-        build_job_remote(
-        .env=.this.env
-        )
-        ### WE REMOVE THE INPUT FILE ONLY IF SUGGESTED BY USER
-        if(clean){
-          build_clean_exec(.env=.this.env)
-        }
-      }else{
-        ### COPY OR SYSTEM LINK DATA TO TMP_DIR DEPENDING ON HOW DATA IS STORED
-        build_data_loc(.env=.this.env)
-        ### ALWAYS REMOVE AFTER WE ARE DONE AS DATA IS STORED SOMEWHERE ELSE
+      build_job_remote(
+      .env=.this.env
+      )
+    
+      if(clean){
         build_clean_exec(.env=.this.env)
       }
-    
+     
       if(verbose){
         print_verbose(
           job=job_id,
@@ -659,10 +609,6 @@ qdel=function(jobs){
 
 
 
-
-
-
-
 #' Set default enviromental variables based on input for all
 #' functions in package.
 #' 
@@ -702,7 +648,6 @@ set_env_vars=function(
   select=NULL,
   err_msg=NULL,
   remote=FALSE,
-  get_data=FALSE,
   executor_id=NULL,
   wait=FALSE,
   hold=NULL
@@ -754,7 +699,71 @@ set_env_vars=function(
     inputs_id <- output_name
     inputs_ext <- NULL
 
+    if(!is.null(node)){
+      remote=TRUE
+    }
 
+    ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
+    for(this.var in fn_vars){
+      
+      ## WE CHECK IF VARIABLE CONTAINS A PATH
+      if(file.exists(get(this.var))){
+        ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE TEMP DIRECTORY
+          ln=ln_data(
+                origin=get(this.var),
+                target=.env$tmp_dir,
+                password=password,
+                node=node,
+                user=user,
+                executor_id=task_id,
+                verbose=verbose,
+                tmp_dir=tmp_dir,
+                env_dir=env_dir,
+                batch_dir=batch_dir,
+                err_msg=err_msg
+          )
+        ### UPDATE THE VARIABLE TO THE SYMLINK
+          .env[[this.var]]=ln$ln_data$out_files$file
+      }else{
+        ## CHECK MISSING CASES
+        ## CHECK IF REMOTE NODE IS GIVEN
+        if(remote){
+            ### CHECK VARIABLE REMOTELY
+            check=check_file_path(
+                origin=get(this.var),
+                verbose=verbose,
+                password=password,
+                node=node,
+                user=user,
+                out_file_dir=tmp_dir,
+                tmp_dir=tmp_dir,
+                env_dir=env_dir,
+                batch_dir=batch_dir,
+                err_msg=err_msg
+            )
+            check=readLines(check$check_file_path$out_files$realpath)
+            if(!grepl("realpath",check)){
+              ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
+              cp=cp_data(
+                origin=check,
+                target=.env$tmp_dir,
+                password=password,
+                node=node,
+                user=user,
+                executor_id=task_id,
+                verbose=verbose,
+                tmp_dir=tmp_dir,
+                env_dir=env_dir,
+                batch_dir=batch_dir,
+                err_msg=err_msg
+              )
+            ### UPDATE THE VARIABLE TO THE REMOTE FILE
+            .env[[this.var]]=cp$cp_data$out_files$file
+            }
+          }
+        }
+      }
+   
     if(!is.null(vars)){
       inputs <- get(vars)
       n_inputs <- length(inputs)
@@ -814,10 +823,6 @@ set_env_vars=function(
 
     if(is.null(err_msg)){
         err_msg <- paste0("CRITICAL ERROR: ",fn," (",job_id,") "," -> ")
-    }
-
-    if(!is.null(node)){
-      remote=TRUE
     }
     
     set_main_env(.env=.this.env)
