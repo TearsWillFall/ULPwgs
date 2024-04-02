@@ -758,7 +758,7 @@ set_env_vars=function(
           ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE 
           ## TEMP DIRECTORY FOR EACH VARIABLE
           var_dir=set_dir(dir=ln_dir,name=var)
-          system(paste("mkdir ",var_dir,";ln -fs ",var_value, var_dir))
+          system(paste("ln -fs ",var_value, var_dir))
           ### UPDATE THE VARIABLE TO THE SYMLINK
           .this.env[[var]]=paste0(var_dir,"/",basename(var_value))
 
@@ -781,20 +781,13 @@ set_env_vars=function(
               )
               check=readLines(check$check_file_path$out_files$realpath)
               if(!grepl("realpath",check)){
-                ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
-                cp=cp_data(
-                  origin=check,
-                  target=tmp_dir,
-                  password=password,
-                  node=node,
-                  user=user,
-                  executor_id=executor_id,
-                  verbose=verbose,
-                  tmp_dir=tmp_dir,
-                  env_dir=env_dir,
-                  batch_dir=batch_dir,
-                  err_msg=err_msg
-                )
+              var_dir=set_dir(dir=ln_dir,name=var)
+              ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
+              system(paste("sshpass -f ",password, " ssh ",paste0(user,
+                ifelse(!is.null(user,"@")),node),"\" cp -r ",
+                var_value," -t ",var_dir, "\"")
+              )                
+              
               ### UPDATE THE VARIABLE TO THE REMOTE FILE
               .this.env[[var]]=cp$cp_data$out_files$file
               }
