@@ -729,7 +729,7 @@ set_env_vars=function(
               check=system(paste(
                "sshpass -f ",password,
                " ssh ",paste0(user,
-                ifelse(!is.null(user,"@")),node),
+                ifelse(!is.null(user),"@",""),node),
                 "\" realpath -e ",var_value,"\""),intern=TRUE
               )
               if(!grepl("realpath",check)){
