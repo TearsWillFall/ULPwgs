@@ -689,10 +689,102 @@ set_env_vars=function(
       executor_id <- make_unique_id(fn)
     }
 
+    ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
+    for(var in fn_vars){
+      var_value=get(var)
+      ## WE CHECK IF VARIABLE CONTAINS A PATH
+      print(var_value)
+      if(file.exists(var_value)){
+        ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE TEMP DIRECTORY
+          ln=ln_data(
+                origin=var_value,
+                target=.env$tmp_dir,
+                password=password,
+                node=node,
+                user=user,
+                executor_id=executor_id,
+                verbose=verbose,
+                tmp_dir=tmp_dir,
+                env_dir=env_dir,
+                batch_dir=batch_dir,
+                err_msg=err_msg
+          )
+        ### UPDATE THE VARIABLE TO THE SYMLINK
+          .this.env[[var]]=ln$ln_data$out_files$file
+      }else{
+        ## CHECK MISSING CASES
+        ## CHECK IF REMOTE NODE IS GIVEN
+        if(remote){
+            ### CHECK VARIABLE REMOTELY
+            check=check_file_path(
+                origin=var_value,
+                verbose=verbose,
+                password=password,
+                node=node,
+                user=user,
+                out_file_dir=tmp_dir,
+                tmp_dir=tmp_dir,
+                env_dir=env_dir,
+                batch_dir=batch_dir,
+                err_msg=err_msg
+            )
+            check=readLines(check$check_file_path$out_files$realpath)
+            if(!grepl("realpath",check)){
+              ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
+              cp=cp_data(
+                origin=check,
+                target=.env$tmp_dir,
+                password=password,
+                node=node,
+                user=user,
+                executor_id=executor_id,
+                verbose=verbose,
+                tmp_dir=tmp_dir,
+                env_dir=env_dir,
+                batch_dir=batch_dir,
+                err_msg=err_msg
+              )
+            ### UPDATE THE VARIABLE TO THE REMOTE FILE
+            .this.env[[var]]=cp$cp_data$out_files$file
+            }
+          }
+        }
+      }
+
     if (!is.null(sheet)){
         read_sheet(.env=.this.env)
         set_ss_env(.env=.this.env)
         return()
+    }
+
+    
+    n_inputs <- 1
+    inputs<-NULL
+    inputs_id <- output_name
+    inputs_ext <- NULL
+   
+    if(!is.null(vars)){
+      inputs <- get(vars)
+      n_inputs <- length(inputs)
+
+      inputs_id <- set_input_id(
+          inputs=inputs,
+          ids=output_name
+        )
+
+      if(all(sapply(inputs,typeof)=="character")){
+          inputs_ext <- unname(Vectorize(get_file_ext)(inputs))
+      }else{
+          inputs_ext <- rep("",length(inputs))
+      }
+   
+      
+     
+      task_ids <- make_unique_id(fn,sample(1:1e+14,n_inputs,replace=FALSE))
+      job_ids <- build_job(
+        executor_id=executor_id,
+        task_id=task_ids
+      )
     }
 
   
@@ -738,98 +830,7 @@ set_env_vars=function(
       remote=TRUE
     }
 
-    ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
-    for(var in fn_vars){
-      var_value=get(var)
-      ## WE CHECK IF VARIABLE CONTAINS A PATH
-      print(var_value)
-      if(file.exists(var_value)){
-        ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE TEMP DIRECTORY
-          ln=ln_data(
-                origin=var_value,
-                target=.env$tmp_dir,
-                password=password,
-                node=node,
-                user=user,
-                executor_id=task_id,
-                verbose=verbose,
-                tmp_dir=tmp_dir,
-                env_dir=env_dir,
-                batch_dir=batch_dir,
-                err_msg=err_msg
-          )
-        ### UPDATE THE VARIABLE TO THE SYMLINK
-          .this.env[[var]]=ln$ln_data$out_files$file
-      }else{
-        ## CHECK MISSING CASES
-        ## CHECK IF REMOTE NODE IS GIVEN
-        if(remote){
-            ### CHECK VARIABLE REMOTELY
-            check=check_file_path(
-                origin=var_value,
-                verbose=verbose,
-                password=password,
-                node=node,
-                user=user,
-                out_file_dir=tmp_dir,
-                tmp_dir=tmp_dir,
-                env_dir=env_dir,
-                batch_dir=batch_dir,
-                err_msg=err_msg
-            )
-            check=readLines(check$check_file_path$out_files$realpath)
-            if(!grepl("realpath",check)){
-              ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
-              cp=cp_data(
-                origin=check,
-                target=.env$tmp_dir,
-                password=password,
-                node=node,
-                user=user,
-                executor_id=task_id,
-                verbose=verbose,
-                tmp_dir=tmp_dir,
-                env_dir=env_dir,
-                batch_dir=batch_dir,
-                err_msg=err_msg
-              )
-            ### UPDATE THE VARIABLE TO THE REMOTE FILE
-            .this.env[[var]]=cp$cp_data$out_files$file
-            }
-          }
-        }
-      }
-
-
-    n_inputs <- 1
-    inputs<-NULL
-    inputs_id <- output_name
-    inputs_ext <- NULL
-   
-    if(!is.null(vars)){
-      inputs <- get(vars)
-      n_inputs <- length(inputs)
-
-      inputs_id <- set_input_id(
-          inputs=inputs,
-          ids=output_name
-        )
-
-      if(all(sapply(inputs,typeof)=="character")){
-          inputs_ext <- unname(Vectorize(get_file_ext)(inputs))
-      }else{
-          inputs_ext <- rep("",length(inputs))
-      }
-   
-      
-     
-      task_ids <- make_unique_id(fn,sample(1:1e+14,n_inputs,replace=FALSE))
-      job_ids <- build_job(
-        executor_id=executor_id,
-        task_id=task_ids
-      )
-    }
-
+    
 
     
     set_main_env(.env=.this.env)
