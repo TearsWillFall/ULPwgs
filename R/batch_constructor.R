@@ -594,8 +594,11 @@ run_self=function(
       .this.env=environment()
       append_env(to=.this.env,from=.env$.main)
 
-      if(!get_data){
 
+
+      
+      if(!get_data){
+        ## WE ONLY RUN REMOTE JOBS IF WE DON'T BUILT THE DATA LOCALLY
         build_job_remote(
         .env=.this.env
         )
