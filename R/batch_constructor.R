@@ -362,7 +362,7 @@ build_clean_exec=function(
 ){
   .this.env=environment()
   append_env(to=.this.env,from=.env)
-  .env$exec_code<- paste0(.env$exec_code," && rm",paste(input))
+  .env$exec_code<- paste0(.env$exec_code," && rm ",paste(input))
 }
 
 
@@ -386,6 +386,7 @@ build_data_loc=function(
       origin=.env$input,
       target=.env$tmp_dir,
       executor_id=task_id,
+      verbose=verbose,
       tmp_dir=tmp_dir,
       env_dir=env_dir,
       batch_dir=batch_dir,
@@ -396,6 +397,7 @@ build_data_loc=function(
       origin=.env$input,
       target=.env$tmp_dir,
       executor_id=task_id,
+      verbose=verbose,
       tmp_dir=tmp_dir,
       env_dir=env_dir,
       batch_dir=batch_dir,

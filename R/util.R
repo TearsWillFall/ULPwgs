@@ -361,7 +361,7 @@ ln_data=function(
         stop("target argument is required.")
       }
 
-      .main$exec_code=paste("ln -s ",input, target)
+      .main$exec_code=paste("ln -sf ",input, target)
 
       run_job(.this.env)
 
