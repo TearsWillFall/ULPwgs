@@ -738,7 +738,7 @@ set_env_vars=function(
                 system(paste(
                 "sshpass -f ",password,
                 " ssh ",paste0(user,
-                  ifelse(!is.null(user,"@")),node),
+                  ifelse(!is.null(user),"@",""),node),
                   "\" cp -r ",var_value," -t ",
                   var_dir, "\"")
                 )                
