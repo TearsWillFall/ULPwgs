@@ -693,9 +693,9 @@ set_env_vars=function(
     for(var in fn_vars){
       var_value=get(var)
       ## WE CHECK IF VARIABLE CONTAINS A PATH
-      print(var_value)
       if(file.exists(var_value)){
         ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE TEMP DIRECTORY
+          print(var_value)
           ln=ln_data(
                 origin=var_value,
                 target=.env$tmp_dir,
