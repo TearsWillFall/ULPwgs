@@ -735,7 +735,7 @@ set_env_vars=function(
               ))
 
               if(length(check)!=0){
-                var_dir=set_dir(dir=rm_dir,name=var)
+                var_dir=set_dir(dir=rmt_dir,name=var)
                 ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
                 system(paste(
                 "sshpass -f ",password,
@@ -800,7 +800,6 @@ set_env_vars=function(
         err_msg <- paste0("CRITICAL ERROR: ",fn," (",job_id,") "," -> ")
     }
 
-    
     set_main_env(.env=.this.env)
 
     .env$self.envs<-.this.env
