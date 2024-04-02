@@ -689,16 +689,43 @@ set_env_vars=function(
       executor_id <- make_unique_id(fn)
     }
 
+    
+    out_file_dir <- set_dir(
+          dir=output_dir
+    )
+
+    if(is.null(tmp_dir)){
+        tmp_dir <- set_dir(
+          dir=out_file_dir,
+          name="tmp"
+      )
+    }
+
+    if(is.null(env_dir)){
+          env_dir<- set_dir(
+            dir=out_file_dir,
+            name="env"
+        )
+      }
+
+    if(is.null(batch_dir)){
+        batch_dir<- set_dir(
+          dir=out_file_dir,
+          name="batch"
+      )
+    }
+
     if(!is.null(fn_vars)){
       fn_vars=fn_vars[!grepl("\\.",fn_vars)]
       fn_vars=fn_vars[!grepl("\\.",fn_vars)]
     }
 
-    print(fn_vars)
     ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
     for(var in fn_vars){
       var_value=get(var)
+      ### CHECK VARIABLE TYPE
       var_type=typeof(var_value)
+      ### IF VARIABLE TYPE IS CHARACTER
       if(var_type=="character"){
         ## WE CHECK IF VARIABLE CONTAINS A PATH
         if(tryCatch({file.exists(var_value)},
@@ -707,26 +734,15 @@ set_env_vars=function(
         })){
           print(var_value)
           ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE TEMP DIRECTORY
-            ln=ln_data(
-                  origin=var_value,
-                  target=.env$tmp_dir,
-                  password=password,
-                  node=node,
-                  user=user,
-                  executor_id=executor_id,
-                  verbose=verbose,
-                  tmp_dir=tmp_dir,
-                  env_dir=env_dir,
-                  batch_dir=batch_dir,
-                  err_msg=err_msg
-            )
+          system(paste("ln -fs",var_value, tmp_dir))
           ### UPDATE THE VARIABLE TO THE SYMLINK
-            .this.env[[var]]=ln$ln_data$out_files$file
+          .this.env[[var]]=paste0(tmp_dir,"/",basename(var_value))
+          
         }else{
           ## CHECK MISSING CASES
           ## CHECK IF REMOTE NODE IS GIVEN
           if(remote){
-              ### CHECK VARIABLE REMOTELY
+              ### CHECK IF VARIABLE PATH EXIST IN REMOTE
               check=check_file_path(
                   origin=var_value,
                   verbose=verbose,
@@ -744,7 +760,7 @@ set_env_vars=function(
                 ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
                 cp=cp_data(
                   origin=check,
-                  target=.env$tmp_dir,
+                  target=tmp_dir,
                   password=password,
                   node=node,
                   user=user,
@@ -799,32 +815,6 @@ set_env_vars=function(
       )
     }
 
-  
-   
-    out_file_dir <- set_dir(
-          dir=output_dir
-    )
-
-    if(is.null(tmp_dir)){
-        tmp_dir <- set_dir(
-          dir=out_file_dir,
-          name="tmp"
-      )
-    }
-
-    if(is.null(env_dir)){
-          env_dir<- set_dir(
-            dir=out_file_dir,
-            name="env"
-        )
-      }
-
-    if(is.null(batch_dir)){
-        batch_dir<- set_dir(
-          dir=out_file_dir,
-          name="batch"
-      )
-    }
   
     task_id <- make_unique_id(fn)
 
