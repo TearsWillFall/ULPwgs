@@ -690,7 +690,7 @@ set_env_vars=function(
     }
 
     if(!is.null(fn_vars)){
-      fn_vars=fn_vars[grepl("\\.",fn_vars)]
+      fn_vars=fn_vars[!grepl("\\.",fn_vars)]
     }
 
     print(fn_vars)
