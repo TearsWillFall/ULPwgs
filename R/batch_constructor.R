@@ -688,6 +688,11 @@ set_env_vars=function(
     if(is.null(executor_id)){
       executor_id <- make_unique_id(fn)
     }
+
+    if(!is.null(fn_vars)){
+      fn_vars=fn_vars[grepl("\\.",fn_vars)]
+    }
+
     print(fn_vars)
     ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
     for(var in fn_vars){
@@ -695,7 +700,6 @@ set_env_vars=function(
       ## WE CHECK IF VARIABLE CONTAINS A PATH
       if(file.exists(var_value)){
         ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE TEMP DIRECTORY
-          print(var_value)
           ln=ln_data(
                 origin=var_value,
                 target=.env$tmp_dir,

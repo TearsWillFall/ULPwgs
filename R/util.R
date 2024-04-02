@@ -311,9 +311,7 @@ cp_data=function(
   ...
 ){
 
-    fn_vars=names(environment())
-    list2env(list(...),envir=environment())
-    .base.env=environment()
+
 
     run_main=function(
       .env
@@ -341,6 +339,11 @@ cp_data=function(
       .env$.main<-.main
 
     }
+
+
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    fn_vars=names(.base.env)
 
     set_env_vars(
         .env=.base.env,
@@ -382,10 +385,7 @@ ln_data=function(
   target=NULL,
   ...
 ){
-    fn_vars=names(environment())
-    list2env(list(...),envir=environment())
-    .base.env=environment()
-
+    
   
     run_main=function(
       .env
@@ -412,7 +412,10 @@ ln_data=function(
       .env$.main<-.main
 
     }
-  
+
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    fn_vars=names(.base.env)
     set_env_vars(
         .env=.base.env,
         vars="origin",
