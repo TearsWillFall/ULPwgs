@@ -691,69 +691,73 @@ set_env_vars=function(
 
     if(!is.null(fn_vars)){
       fn_vars=fn_vars[!grepl("\\.",fn_vars)]
+      fn_vars=fn_vars[!grepl("\\.",fn_vars)]
     }
 
     print(fn_vars)
     ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
     for(var in fn_vars){
       var_value=get(var)
-      ## WE CHECK IF VARIABLE CONTAINS A PATH
-      if(tryCatch({file.exists(var_value)},
-        error=function(e){
-          next
-      })){
-        print(var_value)
-        ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE TEMP DIRECTORY
-          ln=ln_data(
-                origin=var_value,
-                target=.env$tmp_dir,
-                password=password,
-                node=node,
-                user=user,
-                executor_id=executor_id,
-                verbose=verbose,
-                tmp_dir=tmp_dir,
-                env_dir=env_dir,
-                batch_dir=batch_dir,
-                err_msg=err_msg
-          )
-        ### UPDATE THE VARIABLE TO THE SYMLINK
-          .this.env[[var]]=ln$ln_data$out_files$file
-      }else{
-        ## CHECK MISSING CASES
-        ## CHECK IF REMOTE NODE IS GIVEN
-        if(remote){
-            ### CHECK VARIABLE REMOTELY
-            check=check_file_path(
-                origin=var_value,
-                verbose=verbose,
-                password=password,
-                node=node,
-                user=user,
-                out_file_dir=tmp_dir,
-                tmp_dir=tmp_dir,
-                env_dir=env_dir,
-                batch_dir=batch_dir,
-                err_msg=err_msg
+      var_type=typeof(var_value)
+      if(var_type=="character"){
+        ## WE CHECK IF VARIABLE CONTAINS A PATH
+        if(tryCatch({file.exists(var_value)},
+          error=function(e){
+            FALSE
+        })){
+          print(var_value)
+          ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE TEMP DIRECTORY
+            ln=ln_data(
+                  origin=var_value,
+                  target=.env$tmp_dir,
+                  password=password,
+                  node=node,
+                  user=user,
+                  executor_id=executor_id,
+                  verbose=verbose,
+                  tmp_dir=tmp_dir,
+                  env_dir=env_dir,
+                  batch_dir=batch_dir,
+                  err_msg=err_msg
             )
-            check=readLines(check$check_file_path$out_files$realpath)
-            if(!grepl("realpath",check)){
-              ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
-              cp=cp_data(
-                origin=check,
-                target=.env$tmp_dir,
-                password=password,
-                node=node,
-                user=user,
-                executor_id=executor_id,
-                verbose=verbose,
-                tmp_dir=tmp_dir,
-                env_dir=env_dir,
-                batch_dir=batch_dir,
-                err_msg=err_msg
+          ### UPDATE THE VARIABLE TO THE SYMLINK
+            .this.env[[var]]=ln$ln_data$out_files$file
+        }else{
+          ## CHECK MISSING CASES
+          ## CHECK IF REMOTE NODE IS GIVEN
+          if(remote){
+              ### CHECK VARIABLE REMOTELY
+              check=check_file_path(
+                  origin=var_value,
+                  verbose=verbose,
+                  password=password,
+                  node=node,
+                  user=user,
+                  out_file_dir=tmp_dir,
+                  tmp_dir=tmp_dir,
+                  env_dir=env_dir,
+                  batch_dir=batch_dir,
+                  err_msg=err_msg
               )
-            ### UPDATE THE VARIABLE TO THE REMOTE FILE
-            .this.env[[var]]=cp$cp_data$out_files$file
+              check=readLines(check$check_file_path$out_files$realpath)
+              if(!grepl("realpath",check)){
+                ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
+                cp=cp_data(
+                  origin=check,
+                  target=.env$tmp_dir,
+                  password=password,
+                  node=node,
+                  user=user,
+                  executor_id=executor_id,
+                  verbose=verbose,
+                  tmp_dir=tmp_dir,
+                  env_dir=env_dir,
+                  batch_dir=batch_dir,
+                  err_msg=err_msg
+                )
+              ### UPDATE THE VARIABLE TO THE REMOTE FILE
+              .this.env[[var]]=cp$cp_data$out_files$file
+              }
             }
           }
         }
