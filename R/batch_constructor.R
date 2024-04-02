@@ -759,7 +759,7 @@ set_env_vars=function(
                 err_msg=err_msg
           )
         ### UPDATE THE VARIABLE TO THE SYMLINK
-          .env[[var]]=ln$ln_data$out_files$file
+          .this.env[[var]]=ln$ln_data$out_files$file
       }else{
         ## CHECK MISSING CASES
         ## CHECK IF REMOTE NODE IS GIVEN
@@ -794,7 +794,7 @@ set_env_vars=function(
                 err_msg=err_msg
               )
             ### UPDATE THE VARIABLE TO THE REMOTE FILE
-            .env[[var]]=cp$cp_data$out_files$file
+            .this.env[[var]]=cp$cp_data$out_files$file
             }
           }
         }
