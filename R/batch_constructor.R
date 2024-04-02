@@ -732,12 +732,12 @@ set_env_vars=function(
           error=function(e){
             FALSE
         })){
-          print(var_value)
+          var_value=normalizePath(var_value)
           ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE TEMP DIRECTORY
           system(paste("ln -fs",var_value, tmp_dir))
           ### UPDATE THE VARIABLE TO THE SYMLINK
           .this.env[[var]]=paste0(tmp_dir,"/",basename(var_value))
-          
+
         }else{
           ## CHECK MISSING CASES
           ## CHECK IF REMOTE NODE IS GIVEN
