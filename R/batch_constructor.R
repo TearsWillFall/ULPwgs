@@ -724,27 +724,28 @@ set_env_vars=function(
           ## CHECK MISSING CASES
           ## CHECK IF REMOTE NODE IS GIVEN
           if(remote){
-              print("Here")
+
               ### CHECK IF VARIABLE PATH EXIST IN REMOTE
-              
+
               check=suppressWarnings(system(paste(
                "sshpass -f ",password,
                " ssh ",paste0(user,
                 ifelse(!is.null(user),"@",""),node),
                 "\" realpath -e ",var_value,"\""),intern=TRUE
               ))
+
               if(length(check)!=0){
-                var_dir=set_dir(dir=ln_dir,name=var)
+                var_dir=set_dir(dir=rm_dir,name=var)
                 ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
                 system(paste(
                 "sshpass -f ",password,
                 " ssh ",paste0(user,
                   ifelse(!is.null(user),"@",""),node),
-                  "\" cp -r ",var_value," -t ",
+                  "\" cp -r ",check," -t ",
                   var_dir, "\"")
                 )                
                 ### UPDATE THE VARIABLE TO THE REMOTE FILE
-                .this.env[[var]]=paste0(var_dir,"/",basename(var_value))
+                .this.env[[var]]=paste0(var_dir,"/",basename(check))
               }
             }
           }
