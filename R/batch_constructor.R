@@ -699,59 +699,62 @@ set_env_vars=function(
       remote=TRUE
     }
 
+    consolidate_type<-function(.env){
+      .this.env=environment()
+      append_env(to=.this.env,from=.env)
+      ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
+      for(var in fn_vars){
+        var_value=get(var)
+        ### CHECK VARIABLE TYPE
+        var_type=typeof(var_value)
+        ### IF VARIABLE TYPE IS CHARACTER
+        if(var_type=="character"){
+          ## WE CHECK IF VARIABLE CONTAINS A PATH
+          if(tryCatch({file.exists(var_value)},
+            error=function(e){
+              FALSE
+          })){
+            var_value=normalizePath(var_value)
+            ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE 
+            ## TEMP DIRECTORY FOR EACH VARIABLE
+            var_dir=set_dir(dir=ln_dir,name=var)
+            system(paste("ln -fs ",var_value, var_dir))
+            ### UPDATE THE VARIABLE TO THE SYMLINK
+            .this.env[[var]]=paste0(var_dir,"/",basename(var_value))
 
-    ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
-    for(var in fn_vars){
-      var_value=get(var)
-      ### CHECK VARIABLE TYPE
-      var_type=typeof(var_value)
-      ### IF VARIABLE TYPE IS CHARACTER
-      if(var_type=="character"){
-        ## WE CHECK IF VARIABLE CONTAINS A PATH
-        if(tryCatch({file.exists(var_value)},
-          error=function(e){
-            FALSE
-        })){
-          var_value=normalizePath(var_value)
-          ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE 
-          ## TEMP DIRECTORY FOR EACH VARIABLE
-          var_dir=set_dir(dir=ln_dir,name=var)
-          system(paste("ln -fs ",var_value, var_dir))
-          ### UPDATE THE VARIABLE TO THE SYMLINK
-          .this.env[[var]]=paste0(var_dir,"/",basename(var_value))
+          }else{
+            ## CHECK MISSING CASES
+            ## CHECK IF REMOTE NODE IS GIVEN
+            if(remote){
 
-        }else{
-          ## CHECK MISSING CASES
-          ## CHECK IF REMOTE NODE IS GIVEN
-          if(remote){
+                ### CHECK IF VARIABLE PATH EXIST IN REMOTE
 
-              ### CHECK IF VARIABLE PATH EXIST IN REMOTE
-
-              check=suppressWarnings(system(paste(
-               "sshpass -f ",password,
-               " ssh ",paste0(user,
-                ifelse(!is.null(user),"@",""),node),
-                "\" realpath -e ",var_value,"\""),intern=TRUE
-              ))
-
-              if(length(check)!=0){
-                var_dir=set_dir(dir=rmt_dir,name=var)
-                ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
-                system(paste(
+                check=suppressWarnings(system(paste(
                 "sshpass -f ",password,
                 " ssh ",paste0(user,
                   ifelse(!is.null(user),"@",""),node),
-                  "\" cp -r ",check," -t ",
-                  var_dir, "\"")
-                )                
-                ### UPDATE THE VARIABLE TO THE REMOTE FILE
-                .this.env[[var]]=paste0(var_dir,"/",basename(check))
+                  "\" realpath -e ",var_value,"\""),intern=TRUE
+                ))
+
+                if(length(check)!=0){
+                  var_dir=set_dir(dir=rmt_dir,name=var)
+                  ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
+                  system(paste(
+                  "sshpass -f ",password,
+                  " ssh ",paste0(user,
+                    ifelse(!is.null(user),"@",""),node),
+                    "\" cp -r ",check," -t ",
+                    var_dir, "\"")
+                  )                
+                  ### UPDATE THE VARIABLE TO THE REMOTE FILE
+                  .this.env[[var]]=paste0(var_dir,"/",basename(check))
+                }
               }
             }
           }
         }
-      }
-
+    }
+    
     if (!is.null(sheet)){
         read_sheet(.env=.this.env)
         set_ss_env(.env=.this.env)
