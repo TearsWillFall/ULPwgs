@@ -644,7 +644,6 @@ set_env_vars=function(
           inherit <-readRDS(file=inherit)
         }
         append_env(from=inherit$main.envs[[select]])
-        parent.frame()$self.envs <- environment()
         return()
     }
     
