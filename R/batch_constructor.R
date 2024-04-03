@@ -1047,7 +1047,7 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
        ## GET VARIABLE NAMES
        fn_vars=names(.base.env)[!grepl("\\.|FUN",names(.base.env))]
 
-       append_env(to=this.env,from=.base.env)
+       append_to_child()
     
       ## WE WILL DEFINE THE ENVIROMENTAL VARIABLES
       set_env_vars()
