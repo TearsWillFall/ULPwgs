@@ -864,12 +864,12 @@ read_sheet=function(){
 set_main_env=function(){
     append_env(to=environment(),from=parent.frame())
     ### WE CREATE AN ENVIRONMENT FOR EACH INPUT VALUE
-    print(as.list(environment()))
     main.envs=parallel::mclapply(
         1:n_inputs,
         function(row,.env){
-        append_env(to=environment(),from=.env)
         .this.env=environment()
+        append_env(to=.this.env,from=.env)
+      
 
         ### ASSIGN VARS IN SHEET TO ENVIROMENT
         for (col in n_vars){
@@ -893,7 +893,7 @@ set_main_env=function(){
         build_main()
 
         return(.this.env)
-        },
+        },.env=parent.frame(),
         mc.cores=parallel::detectCores()
     )
     append_env(from=environment(),to=parent.frame())
