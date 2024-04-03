@@ -216,14 +216,13 @@ execute_job=function(exec_code){
 #' @export
 
 
-build_self=function(
-  .env=environment()
-){        
+build_self=function(){   
+      .base.env=parent.frame()     
       .this.env=environment()
-      append_env(to=.this.env,from=.env)
+      append_env(to=.this.env,from=.base.env)
       self_file=paste0(env_dir,"/",job_id,".self.RData")
       saveRDS(.this.env,file = self_file)
-      append_env(to=.env,from=.this.env)
+      append_env(to=.base.env,from=.this.env)
 }
 
 
@@ -238,14 +237,13 @@ build_self=function(
 #' @param env List of objects to save in RData object
 #' @export
 
-build_main=function(
-  .env=environment()
-  ){
+build_main=function(){
+  .base.env=parent.frame()
   .this.env=environment()
-  append_env(to=.this.env,from=.env)
+  append_env(to=.this.env,from=.base.env)
   main_file=paste0(env_dir,"/",job_id,".main.RData")
-  saveRDS(.env$steps,file=main_file)
-  append_env(to=.env,from=.this.env)
+  saveRDS(.base.env$steps,file=main_file)
+  append_env(to=.base.env,from=.this.env)
 }
 
 
@@ -254,11 +252,11 @@ build_main=function(
 #' @param .env List of objects to save in RData object
 #' @export
 
-wait_scheduler=function(.env){
+wait_scheduler=function(){
+    .base.env=parent.frame()
     .this.env=environment()
-    append_env(to=.this.env,from=.env)
+    append_env(to=.this.env,from=.base.env)
     check=TRUE
-
     while(check){
       Sys.sleep(60)
       jobs_in_queue=suppressWarnings(system("qstat -r | grep  \"jobname\"",intern=TRUE))
@@ -284,26 +282,19 @@ wait_scheduler=function(.env){
 #' @param .env List of objects to save in RData object
 #' @export
 
-read_main=function(
-  .env=environment()
-  ){
-    
+read_main=function(){
+    .base.env=parent.frame()
     .this.env=environment()
-    append_env(to=.this.env,from=.env)
+    append_env(to=.this.env,from=.base.env)
 
  
     ### Reads mains and updates values for enviroments with data
-
-    if(n_inputs>1){
       main.envs=lapply(1:n_inputs,function(n){
-          main.env=readRDS(main.envs[[n]]$main_file)
-        
-        })
-    }else{
-      main.envs=readRDS(main.envs[[1]]$main_file)
-    }
-    
-    .env$main.envs<-main.envs
+          main.env=readRDS(main.envs[[n]]$main_file)}
+    )
+  
+    append_env(to=.base.env,from=.this.env)
+
 }
 
 
@@ -318,10 +309,10 @@ read_main=function(
 
 
 build_exec_innit=function(
-        .env=environment()
 ){
+        .base.env=parent.frame()
         .this.env=environment()
-        append_env(to=.this.env,from=.env)
+        append_env(to=.this.env,from=.base.env)
 
         ### Use SGE TASK ID if mode is set to batch otherwise use value
         
@@ -341,7 +332,7 @@ build_exec_innit=function(
           stop("Unkown mode type")
         }
 
-        append_env(to=.env,from=.this.env)
+        append_env(to=.base.env,from=.this.env)
 }
 
 
@@ -378,14 +369,10 @@ build_clean_exec=function(
 
 
 
-build_batch_exec_innit=function(
-  .env=environment()
-){  
-
-    n_inputs<-1
+build_batch_exec_innit=function(){ 
+    .base.env=parent.frame()
     .this.env=environment()
-    append_env(to=.this.env,from=.env)
-
+    append_env(to=.this.env,from=.base.env)
 
     batch_code=build_job_exec(
       job=job_id,time=time,ram=ram,
@@ -398,7 +385,7 @@ build_batch_exec_innit=function(
     exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
     ";",exec_code,"'|",batch_code)
 
-    append_env(to=.env,from=.this.env)
+    append_env(to=.batch.env,from=.this.env)
 }
 
 
@@ -409,21 +396,17 @@ build_batch_exec_innit=function(
 #' 
 #' @export
 
-
-set_self=function(
-  .env
-){
+set_self=function(){
+    
+    .base.env=parent.frame()
     .this.env=environment()
-    append_env(to=.this.env,from=.env)
-
+    append_env(to=.this.env,from=.base.env)
     error=0
     self_file=""
     main_code=""
     exec_code=""
     batch_code=""
-    .env$.self=environment()
-    return()
-
+    append_env(to=.base.env,from=.this.env)
 }
 
 
@@ -436,65 +419,52 @@ set_self=function(
 #' 
 #' @export
 
-run_self=function(
-  .env=environment()
-){  
-
+run_self=function(){  
+    .base.env=parent.frame()
     .this.env=environment()
-    append_env(to=.this.env,from=.env)
-    set_self(.env=.env)
+    append_env(to=.this.env,from=.base.env$self_env)
     
-    .self=.env$.self
 
+    ### Initiate 
+    set_self()
     ### Create RData object to inherit vars
+    build_self()
+    ### Create caller function
+    build_exec_innit()
 
-    build_self(.env=.self)
-
-    build_exec_innit(
-            .env=.self
-    )
-
-   
-
-
+    ### UPDATE CALLER FUNCTION IF SCHEDULER IS USED
     if(mode=="batch"){
-        build_batch_exec_innit(
-              .env=.self
-        )
+        build_batch_exec_innit()
     }
 
-
-
+    ### PRODUCE VERBOSE
     if(verbose){
-          print_verbose(job=.self$job_id,
-            arg=as.list(.self),
-            exec_code=.self$exec_code
+          print_verbose(job=job_id,
+            arg=as.list(.this.env),
+            exec_code=exec_code
           )
     }
 
-    .self$error=execute_job(exec_code=.self$exec_code)
+    ### EXECUTE JOB
+    error=execute_job(exec_code=exec_code)
 
-    if(.self$error!=0){
-        stop(.self$err_msg)
+    ### RETURN ERROR MESSAGE
+    if(error!=0){
+        stop(err_msg)
     }
 
-
+    ### WAIT FOR SCHEDULER TO FINISH
     if(mode=="batch"){
       if(wait){
-         wait_scheduler(.env=.self)
-         read_main(.env=.self)
+         wait_scheduler()
+         read_main()
       }
     }else{
-      read_main(.env=.self)
+      read_main()
     }
 
-    build_self(.env=.self)
-    
-    if(is.null(.self$main.envs)){
-      return(.self)
-    }else{
-      return(.self$main.envs)
-    }
+    return(main.envs)
+ 
   
 }
 
@@ -507,14 +477,13 @@ run_self=function(
 #' @export
 
 
- run_job=function(
-  .env=environment()
- ){
+ run_job=function(){
+      .base.env=parent.frame()
       .this.env=environment()
-      append_env(to=.this.env,from=.env$.main)
+      append_env(to=.this.env,from=.base.env)
     
       if(clean){
-        build_clean_exec(.env=.this.env)
+        build_clean_exec()
       }
      
       if(verbose){
@@ -532,8 +501,8 @@ run_self=function(
       if(error!=0){
           stop(err_msg)
       }
-      
-      .env$.main$steps[[fn_id]] <- .this.env
+
+      .base.env$steps[[fn_id]] <- .this.env
  }
    
 #' Wrapper around qstat call for SGE
@@ -564,9 +533,10 @@ qdel=function(jobs){
 #' 
 #' @export
 
-consolidate_type<-function(.env){
+consolidate_type<-function(){
+      .base.env=parent.frame()
       .this.env=environment()
-      append_env(to=.this.env,from=.env)
+      append_env(to=.this.env,from=.base.env)
 
       ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
       for(var in fn_vars){
@@ -619,6 +589,7 @@ consolidate_type<-function(.env){
             }
           }
         }
+  append_env(to=.base.env,from=.this.env)  
 }
 
 
@@ -674,145 +645,196 @@ set_env_vars=function(
   wait=FALSE,
   hold=NULL
 ){  
+
+    ## START WITH BASE.ENV VARIABLES
     .base.env=parent.frame()
     .this.env=environment()
     append_env(to=.this.env,from= .base.env)
+    
+    ### ONE JOB FOR TOP FUNCTION
     .base.env$n_jobs <- 1
 
-       
+    ### IF WE INHERIT A RDS FILE READ AND APPEND
+    ### WE SAVE RDS FILES WHEN SUBMITTING JOBS TO SCHEDULER OR JOBS RUN LOCALLY IN PARALLEL
+    ### SELECT VARIABLE DEFINES WHICH ENV WE ARE RUNNING
+    ### WE APPEND THIS ENV AND STOP
     if(!is.null(inherit)){
         if(!is.environment(inherit)){
           inherit <-readRDS(file=inherit)
         }
-        append_env(to=.this.env,from=inherit)
-        main.envs<-inherit$main.envs
-        .renv=main.envs[[select]]
+        append_env(to=.this.env,inherit$main.envs[[select]])
         .base.env$self.envs <- .this.env
         return()
     }
     
-
+    #### IF FUNCTION ID IS NOT GIVE WE USE FN NAME AS ID
+    #### OTHERWISE WE APPEND FUNCTION ID
     if(is.null(fn_id)){
       fn_id<-fn
     }else{
       fn_id<-paste0(fn,".",fn_id)
     }
 
-
+    ### IF EXECTUCTOR ID IS NOT GIVEN WE CREATE AN UNIQUE NAME USING THE FUNCTION ID
     if(is.null(executor_id)){
       executor_id <- make_unique_id(fn)
     }
 
-    
-    out_file_dir <- set_dir(
-          dir=output_dir
-    )
-
-
-    ### CREATE TMP DIRECTORY 
-    if(is.null(tmp_dir)){
-        tmp_dir <- set_dir(
-          dir=out_file_dir,
-          name="tmp"
-      )
-    }
-    
-    ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE SYMLINK OF FILES
-    if(is.null(ln_dir)){
-        ln_dir <- set_dir(
-          dir=tmp_dir,
-          name="ln"
-      )
-    }
-
-    ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE REMOTE FILES
-    if(is.null(rmt_dir)){
-        rmt_dir <- set_dir(
-          dir=tmp_dir,
-          name="rmt"
-      )
-    }
-
-    ### CREATE DIRECTORY TO STORE ENVIROMENT DATA
-    if(is.null(env_dir)){
-          env_dir<- set_dir(
-            dir=out_file_dir,
-            name="env"
-        )
-      }
-
-    ### CREATE DIRECTORY TO BATCH DATA
-    if(is.null(batch_dir)){
-        batch_dir<- set_dir(
-          dir=out_file_dir,
-          name="batch"
-      )
-    }
-
-    if(!is.null(fn_vars)){
-      ## REMOVE ENVIROMENTS FROM VARIABLES
-      fn_vars=fn_vars[!grepl("\\.",fn_vars)]
-    }
-
-    
+    ### CHECK IF FILES PATH CAN BE LOCATED REMOTELY
     if(!is.null(node)){
       remote=TRUE
     }
 
+    ### CREATE WORK DIRECTORIES
+    set_work_dir()
   
-    
+    ### CHECK IF VARIABLE SHEET IS GIVEN
+    ### IF SHEET IS GIVEN WE ASSIGN THE VARIABLES AND QUIT
     if (!is.null(sheet)){
-        read_sheet(.env=.this.env)
-        set_ss_env(.env=.this.env)
-        return()
+        ### READ VARIABLE SHEET
+        read_sheet()
+    }else{
+    ### SET CREATE A SHEET FROM THE FUNCTION VARIABLES
+        sheet=as.data.frame(as.list(.base.env)[fn_vars])
     }
 
-    
-    n_inputs <- 1
-    inputs<-NULL
-    inputs_id <- output_name
-    inputs_ext <- NULL
-   
-    if(!is.null(vars)){
-      inputs <- get(vars)
-      n_inputs <- length(inputs)
+    ascertain_sheet()
 
-      inputs_id <- set_input_id(
-          inputs=inputs,
-          ids=output_name
-        )
+    ### WE ASSIGN A TASK ID TO THE CALLER FUNCTION
 
-      if(all(sapply(inputs,typeof)=="character")){
-          inputs_ext <- unname(Vectorize(get_file_ext)(inputs))
-      }else{
-          inputs_ext <- rep("",length(inputs))
-      }
-     
-      task_ids <- make_unique_id(fn,sample(1:1e+14,n_inputs,replace=FALSE))
-      job_ids <- build_job(
-        executor_id=executor_id,
-        task_id=task_ids
-      )
-    }
-
-  
     task_id <- make_unique_id(fn)
 
     job_id <- build_job(
       executor_id=executor_id,
       task_id=task_id
     )
-
+    
+    ### WE CREATE AN ERROR MESSAGE TO TRACK WHERE JOB FAILS
     if(is.null(err_msg)){
         err_msg <- paste0("CRITICAL ERROR: ",fn," (",job_id,") "," -> ")
     }
 
-    set_main_env(.env=.this.env)
-
+    ### FROM THE PARENT ENVIRONMENT WE CREATE A NEW ENVIRONMENT FOR EACH INPUT
+    set_main_env()
+    
+    ### 
     .base.env$self.envs<-.this.env
 
   
 }
+
+#' Set working directory to use
+#' 
+#' @param output_dir Environment
+#' @export
+
+
+set_work_dir=function(){
+      .base.env=parent.frame()
+      .this.env=environment()
+      append_env(to=.this.env,from=.base.env)
+  
+      ### CREATE MAIN WORKING DIRECTORY
+      out_file_dir <- set_dir(
+          dir=output_dir
+      )
+
+
+      ### CREATE TMP DIRECTORY
+      ### WE WILL STORE TMP FILES FOR ALL FUNCTIONS HERE 
+      if(is.null(tmp_dir)){
+          tmp_dir <- set_dir(
+            dir=out_file_dir,
+            name="tmp"
+        )
+      }
+      
+      ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE SYMLINK OF FILES
+      ### WE WILL STORE SYMLINK FILES FOR LOCAL FILES
+      if(is.null(ln_dir)){
+          ln_dir <- set_dir(
+            dir=tmp_dir,
+            name="ln"
+        )
+      }
+
+      ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE REMOTE FILES
+      ### WE WILL STORE REMOTE DOWNLOAD FILES HERE
+      if(is.null(rmt_dir)){
+          rmt_dir <- set_dir(
+            dir=tmp_dir,
+            name="rmt"
+        )
+      }
+
+      ### CREATE DIRECTORY TO STORE ENVIROMENT DATA
+      ### WE WILL STORE R ENVIRONMENT DATA HERE
+      if(is.null(env_dir)){
+            env_dir<- set_dir(
+              dir=out_file_dir,
+              name="env"
+          )
+        }
+
+      ### CREATE DIRECTORY TO BATCH DATA
+      ### WE WILL STORE SCHEDULER DATA HERE
+      if(is.null(batch_dir)){
+          batch_dir<- set_dir(
+            dir=out_file_dir,
+            name="batch"
+        )
+      }
+
+    ### WE APPEND NEW VARIABLES BACK TO THE MAIN FUNCTION
+    append_env(to=.base.env,from=.this.env)
+}
+
+#' Set main enviroment inputs
+#'
+#' @export
+
+set_inputs<-function(){
+       .base.env=parent.frame()
+       .this.env=environment()
+        append_env(to=.this.env,from=.base.env)
+
+        n_inputs <- 1
+        inputs<-NULL
+        inputs_id <- output_name
+        inputs_ext <- NULL
+
+      ### IF VARS ARGUMENT IS ASSIGNED WE PERMIT MUTLIPLE INPUTS FOR SPECIFIC VARIABLE
+        if(!is.null(vars)){
+          inputs <- get(vars)
+          n_inputs <- length(inputs)
+         
+        }
+
+        append_env(to=.base.env,from=.this.env)
+}
+
+
+#' Ascertain values in variable sheet
+#'
+#' @export
+
+ ascertain_sheet<-function(){
+      .base.env=parent.frame()
+      .this.env=environment()
+      append_env(to=.this.env,from=.base.env)
+      n_total<-nrow(sheet)
+      sheet=sheet %>% dplyr::distinct()
+      n_inputs<-nrow(sheet)
+      n_vars<-ncol(sheet)
+      n_dup=n_total-n_inputs
+      if(n_dup>0){
+        warning(paste0(n_dup, " were duplicated in sheet"))
+      }
+      .base.env=parent.frame()
+      .this.env=environment()
+      append_env(to=.base.env,from=.this.env)
+}
+
 
 
 #' Set steps enviroment for use
@@ -821,28 +843,18 @@ set_env_vars=function(
 #' @export
 
 
-run=function(.env){
-
+run=function(){
+  .base.env=parent.frame()
   .this.env=environment()
-  append_env(to=.this.env,from=.env)
+  append_env(to=.this.env,from=.base.env)
 
   if(is.null(select)){
-    run_self(.env=.env)
+    run_self()
   }else{
-    .renv=.env$.renv
-    consolidate_type(.env=.renv)
-    FUN(.env=.renv)
-    build_main(.env=.renv$.main)
+    consolidate_type()
+    FUN()
+    build_main()
   }
-}
-
-#' Set base environment
-#' 
-#' @param .env Environment
-#' @export
-
-set_base_env=function(...){
-    
 }
 
 
@@ -855,14 +867,7 @@ set_base_env=function(...){
 launch=function(){
       .this.env=environment()
       append_env(to=.this.env,from=parent.frame())
-
-      if(n_jobs>1){
-        reports=lapply(seq(1,n_jobs),function(n){
-            run(.env=self.envs[[n]])
-        })
-      }else{
-        reports=run(.env=self.envs)
-      }
+      reports=run(.env=self.envs)
       return(reports)
   }
 
@@ -873,28 +878,13 @@ launch=function(){
 #' @export
 
 
-read_sheet=function(.env){
-
+read_sheet=function(){
+    .base.env=parent.frame()
     .this.env=environment()
-    append_env(to=.this.env,from=.env)
-
+    append_env(to=.this.env,from=.base.env)
     sheet=read.delim(sheet,header=TRUE)
-    n_total<-nrow(sheet)
-    sheet=sheet %>% dplyr::distinct()
-    
-    n_jobs<-nrow(sheet)
-    n_vars<-ncol(sheet)
-    n_dup=n_total-n_jobs
-    
-    if(n_dup>0){
-      warning(paste0(n_dup, " were duplicated in sheet"))
-    }
-
-    .env$.env$n_jobs <- .env$n_jobs <- n_jobs
-    .env$.env$n_vars <- .env$n_vars <- n_vars
-    .env$sheet <- sheet
+    append_env(to=.base.env,from=.this.env)
 }
-
 
 
 
@@ -902,87 +892,44 @@ read_sheet=function(.env){
 
 #' Set steps enviroment for use
 #' 
-#' @param .env Environment
 #' @export
 
 
-set_ss_env=function(.env){
-
+set_main_env=function(){
+    .base.env=parent.frame()
     .this.env=environment()
-    append_env(to=.this.env,from=.env)
-
-    this.sheet=sheet
-    vars_sheet=colnames(this.sheet)
-
-    lapply(seq(1,n_jobs),
-      FUN=function(row,.env){
-        .this.env=environment()
-        append_env(to=.this.env,from=.env)
-        sheet <- NULL
-    
-
-        ### ASSIGN VARS IN SHEET TO ENVIROMENT
-      
-        invisible(
-            lapply(seq(1,n_vars),
-              FUN=function(col)
-            {
-              .this.env[[vars_sheet[col]]] <- this.sheet[[row,col]]
-            }
-          )
-        )
-        
-        set_env_vars(
-            .env=.this.env
-        )
-        
-        .env$self.envs[[row]] <- self.envs
-      },.env=.this.env
-    )
-    .env$.env$self.envs<-self.envs      
-}
-
-
-
-
-#' Set steps enviroment for use
-#' 
-#' @param .env Environment
-#' @export
-
-
-set_main_env=function(.env){
-    .this.env=environment()
-    append_env(to=.this.env,from=.env)
+    append_env(to=.this.env,from=.base.env)
+    ### WE CREATE AN ENVIRONMENT FOR EACH INPUT VALUE
     main.envs=parallel::mclapply(
         1:n_inputs,
-        function(n,.env){
-          .this.env=environment()
-          append_env(to=.this.env,from=.env)
-          
-          .env$self.envs <- .this.env
-          if(!is.null(vars)){
-            .this.env[[vars]]<-inputs[n]
-          }
+        function(row){
+        .this.env=environment()
+        append_env(to=.this.env,from=.base.env)
+        
+        ### ASSIGN VARS IN SHEET TO ENVIROMENT
+        for (col in n_vars){
+          .this.env[[names(sheet)[col]]]<-sheet[row,col]
+        }
 
-          input<-inputs[n]
-          n_inputs<- 1
-          input_id<-inputs_id[n]
-          input_ext<-inputs_ext[n]
-          job_id<-job_ids[n]
-      
-          err_msg <- paste0(err_msg ,fn," (",job_id,") "," -> ")
-          
-          
-          build_main(.env=.this.env)
-          return(.this.env)
+        ### WE CREATE A TASK ID FOR EACH JOB
+        executor_id=task_id
+        task_id <- make_unique_id(fn)
+        job_id <- build_job(
+          executor_id=executor_id,
+          task_id=task_id
+        )
+
+        ## WE TRACE ERROR MESSAGE
+        err_msg <- paste0(err_msg ,fn," (",job_id,") "," -> ")
+        
+        ### TO TRACK EACH JOB WE SAVE EACH ENVIROMENT IN RDS FORMAT
+        build_main()
+
+        return(.this.env)
         },
-        .env=.this.env,
         mc.cores=parallel::detectCores()
     )
-
-    
-  .env$main.envs<-main.envs
+    append_env(to=.base.env,from=.this.env)
 }
 
 
@@ -992,22 +939,17 @@ set_main_env=function(.env){
 #' @param envir Environment
 #' @export
 
-
-
-
-set_main=function(
-  .env=environment()
-){     
+set_main=function(){     
+      .base.env=parent.frame()
       .this.env=environment()
-      append_env(to=.this.env,from=.env)
+      append_env(to=.this.env,from=.base.env)
       exec_code=""
       error=0
       out_file=""
       steps=list()
       out_files=list()
-      .env$.main=environment()
-      return()
-  }
+      append_env(to=.base.env,from=.this.env)
+}
 
 
 
@@ -1097,15 +1039,19 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
        ### ADD OTHER VARIABLES TO BASE ENV
        list2env(x=list(...),envir=.base.env)
        ## CREATE FUNCTION VARIABLE NAMES
-       .base.env$fn_vars=names(.base.env)
-      
+       .base.env$fn_vars=names(.base.env)[!grepl("\\.",names(.base.env))]
+       ## IF NOT SET UP BY THE USER WE WILL GET THE MAIN FUNCTION NAME
        if(is.null(.base.env$fn)){
-        ## GET CALLER FUNCTION NAME IF NOT GIVEN
-        fn <- sub(".*::","",sub("\\(.*","",
-          paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=","))
-        )
-      }
+          ## GET CALLER FUNCTION NAME
+          fn <- sub(".*::","",sub("\\(.*","",
+            paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=","))
+          )
+       }
+
+      ## WE WILL DEFINE THE ENVIROMENTAL VARIABLES
       set_env_vars()
+
+      ## WE WILL LAUNCH THE MAIN FUNCTION
       launch()
     }
 

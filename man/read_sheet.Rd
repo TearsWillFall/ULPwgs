@@ -4,7 +4,7 @@
 \alias{read_sheet}
 \title{Set steps enviroment for use}
 \usage{
-read_sheet(.env)
+read_sheet()
 }
 \arguments{
 \item{.env}{Environment}

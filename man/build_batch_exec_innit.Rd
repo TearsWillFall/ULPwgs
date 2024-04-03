@@ -4,7 +4,7 @@
 \alias{build_batch_exec_innit}
 \title{Build execution innit for batch}
 \usage{
-build_batch_exec_innit(.env = environment())
+build_batch_exec_innit()
 }
 \arguments{
 \item{.env}{Inherit envoment variables}

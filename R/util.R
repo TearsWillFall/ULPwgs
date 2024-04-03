@@ -311,13 +311,12 @@ cp_data=function(
   target=NULL,
   ...
 ){
-    FUN=function(
-      .env
-    ){
+    FUN=function(){
+      .base.env=parent.frame()
       .this.env=environment()
-      append_env(to=.this.env,from=.env)
+      append_env(to=.this.env,from=.base.env)
   
-      set_main(.env=.this.env)
+      set_main()
 
       if(is.null(origin)){
         stop("origin argument is required.")
@@ -327,13 +326,13 @@ cp_data=function(
         stop("target argument is required.")
       }
       
-      .main$out_files$file=paste0(target,"/",basename(input))
+      out_files$file=paste0(target,"/",basename(input))
 
-      .main$exec_code=paste("cp -r ",input," -t ", target)
+      exec_code=paste("cp -r ",input," -t ", target)
 
-      run_job(.this.env)
-
-      .env$.main<-.main
+      run_job()
+      
+      append_env(to=.base.env,from=.this.env)
 
     }
     
@@ -372,14 +371,12 @@ ln_data=function(
   ...
 ){
 
-    run_main=function(
-      .env
+    main=function(
     ){
-
+      .base.env=parent.frame()
       .this.env=environment()
       append_env(to=.this.env,from=.env)
-  
-      set_main(.env=.this.env)
+      set_main()
 
       if(is.null(origin)){
         stop("origin argument is required.")

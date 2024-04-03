@@ -4,7 +4,7 @@
 \alias{set_self}
 \title{Set vars for self run}
 \usage{
-set_self(.env)
+set_self()
 }
 \arguments{
 \item{env}{Inherit current enviroment.}

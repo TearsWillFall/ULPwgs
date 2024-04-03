@@ -16,12 +16,13 @@ build_default_hatchet_config(
     
     combine_counts = list(run = TRUE, config = list(msr = 3000, mtr = 5000)),
     cluster_bins = list(run = TRUE, config = list(diploidbaf = 0.1, minK = 2, maxK = 30,
-    tau = 1e-06, transmat = "\\"diag\\"", decoding = "\\"map\\"", covar = "\\"diag\\"",
-    restarts = 10)), loc_clust = list(run = TRUE, config = list()), plot_bins = list(run
-    = TRUE, config = list()), compute_cn = list(run = TRUE, config = list(solver = "cpp",
-    clones = "2,8", ghostprop = 0.3, tolerancerdr = 0.08, tolerancebaf = 0.04, seeds =
-    400, minprop = 0.03)), 
-     plot_cn = list(run = TRUE, config = list()))
+    tau = 0.000001, transmat = "\\"diag\\"", decoding = "\\"map\\"", covar =
+    "\\"diag\\"", restarts = 10)), loc_clust = list(run = TRUE, config = list()),
+    plot_bins = list(run = TRUE, config = list()), compute_cn = list(run = TRUE, config =
+    list(solver = "cpp", clones = "2,8", ghostprop = 0.3, tolerancerdr = 0.08,
+    tolerancebaf = 0.04, seeds = 400, 
+         minprop = 0.03)), plot_cn = list(run =
+    TRUE, config = list()))
 )
 }
 \arguments{

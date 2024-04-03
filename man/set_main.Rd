@@ -4,7 +4,7 @@
 \alias{set_main}
 \title{Set steps enviroment for use}
 \usage{
-set_main(.env = environment())
+set_main()
 }
 \arguments{
 \item{envir}{Environment}

@@ -4,7 +4,7 @@
 \alias{wait_scheduler}
 \title{Build execution innit for function to execute}
 \usage{
-wait_scheduler(.env)
+wait_scheduler()
 }
 \arguments{
 \item{.env}{List of objects to save in RData object}

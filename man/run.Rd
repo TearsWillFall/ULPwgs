@@ -4,7 +4,7 @@
 \alias{run}
 \title{Set steps enviroment for use}
 \usage{
-run(.env)
+run()
 }
 \arguments{
 \item{.env}{Environment}

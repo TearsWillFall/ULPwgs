@@ -13,7 +13,7 @@ panel_of_normals_ichorCNA(
   gc = "tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",
   map = "tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",
   centromere = "tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt",
-  male_tresh = 1e-04,
+  male_tresh = 0.0001,
   verbose = TRUE
 )
 }

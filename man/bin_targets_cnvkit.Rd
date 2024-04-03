@@ -9,7 +9,7 @@ bin_targets_cnvkit(
   access = build_default_reference_list()$HG19$reference$access_5k,
   bed = NULL,
   annotation = NULL,
-  bin_size_antitarget = 1e+05,
+  bin_size_antitarget = 100000,
   bin_size_target = 100,
   min_bin_size_antitarget = NULL,
   split = FALSE,

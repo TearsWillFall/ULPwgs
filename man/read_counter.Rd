@@ -11,7 +11,7 @@ read_counter(
   region = NULL,
   patient_id = NULL,
   chromosomes = c(1:22, "X", "Y"),
-  win = 5e+05,
+  win = 500000,
   mapq = 20,
   format = "wig",
   ...

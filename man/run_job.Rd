@@ -4,7 +4,7 @@
 \alias{run_job}
 \title{Run job from batch constructor}
 \usage{
-run_job(.env = environment())
+run_job()
 }
 \arguments{
 \item{env}{Inherit current enviroment.}

@@ -4,7 +4,7 @@
 \alias{build_main}
 \title{Build execution innit for function to execute}
 \usage{
-build_main(.env = environment())
+build_main()
 }
 \arguments{
 \item{env}{List of objects to save in RData object}

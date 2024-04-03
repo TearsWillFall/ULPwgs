@@ -4,7 +4,7 @@
 \alias{consolidate_type}
 \title{Function to consolidate the types within main function}
 \usage{
-consolidate_type(.env)
+consolidate_type()
 }
 \arguments{
 \item{.env}{Environment}

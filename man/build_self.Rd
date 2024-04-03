@@ -4,7 +4,7 @@
 \alias{build_self}
 \title{Build RData object to inherit in main_function}
 \usage{
-build_self(.env = environment())
+build_self()
 }
 \arguments{
 \item{objects}{List of objects to save in RData object}
