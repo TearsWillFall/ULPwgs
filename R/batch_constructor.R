@@ -844,10 +844,7 @@ set_inputs<-function(){
 
 
 run=function(){
-  .base.env=parent.frame()
-  .this.env=environment()
-  append_env(to=.this.env,from=.base.env)
-
+  append_env()
   if(is.null(select)){
     run_self()
   }else{
@@ -865,9 +862,9 @@ run=function(){
 #' @export
 
 launch=function(){
-      .this.env=environment()
-      append_env(to=.this.env,from=parent.frame())
-      reports=run(.env=self.envs)
+  
+      append_env()
+      reports=run()
       return(reports)
   }
 
@@ -959,7 +956,7 @@ set_main=function(){
 #' @param from Enviroment to append from
 #' @export
 
-append_env = function(to=environment(), from=NULL) {
+append_env = function(to=environment(), from=parent.frame()) {
       
       from_list = ls(from)
       for(var in from_list) {
@@ -1050,7 +1047,7 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
 
       ## WE WILL DEFINE THE ENVIROMENTAL VARIABLES
       set_env_vars()
-
+      print(as.list(.base.env))
       ## WE WILL LAUNCH THE MAIN FUNCTION
       launch()
     }
