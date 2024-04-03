@@ -232,7 +232,6 @@ build_self=function(){
 
 #' Build execution innit for function to execute
 #' 
-#' @param env List of objects to save in RData object
 #' @export
 
 build_main=function(){
@@ -864,9 +863,9 @@ set_main_env=function(){
     main.envs=parallel::mclapply(
         1:n_inputs,
         function(row){
-        .this.env=environment()
         append_env(to=environment(),from=parent.frame())
-        
+        .this.env=environment()
+
         ### ASSIGN VARS IN SHEET TO ENVIROMENT
         for (col in n_vars){
           .this.env[[names(sheet)[col]]]<-sheet[row,col]
@@ -883,6 +882,8 @@ set_main_env=function(){
         ## WE TRACE ERROR MESSAGE
         err_msg <- paste0(err_msg ,fn," (",job_id,") "," -> ")
         
+        print(as.list(.this.env))
+
         ### TO TRACK EACH JOB WE SAVE EACH ENVIROMENT IN RDS FORMAT
         build_main()
 
