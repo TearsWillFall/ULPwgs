@@ -375,9 +375,7 @@ ln_data=function(
 ){
 
    
-    set_base_env(
-      .env=environment()
-    )
+    set_base_env()
     
     run_main=function(
       .env
@@ -404,14 +402,8 @@ ln_data=function(
       .env$.main<-.main
 
     }
-
-    set_env_vars(
-        .env= environment()
-    )
-
-    launch(
-        .env= environment()
-    )
+    set_env_vars()
+    launch()
 }
 
 
