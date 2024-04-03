@@ -338,12 +338,8 @@ cp_data=function(
 
     }
 
-    set_env_vars(
-      .env=environment()
-    )
-    launch(
-      .env=environment()
-    )
+    set_env_vars()
+    launch()
      
 }
 
@@ -377,8 +373,12 @@ ln_data=function(
   target=NULL,
   ...
 ){
-    set_base_env()
-  
+
+   
+    set_base_env(
+      .env=environment()
+    )
+    
     run_main=function(
       .env
     ){
@@ -405,13 +405,13 @@ ln_data=function(
 
     }
 
-   set_env_vars(
-      .env=environment()
-   )
-   
-   launch(
-      .env=environment()
-   )
+    set_env_vars(
+        .env= environment()
+    )
+
+    launch(
+        .env= environment()
+    )
 }
 
 

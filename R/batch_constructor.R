@@ -848,7 +848,7 @@ run=function(.env){
 #' @param .env Environment
 #' @export
 
-set_base_env=function(.env){
+set_base_env=function(.env=environment()){
         ### ADD OTHER VARIABLES TO BASE ENV
         list2env(list(...),envir=.env)
         ## CREATE FUNCTION VARIABLE NAMES
@@ -862,7 +862,7 @@ set_base_env=function(.env){
 #' @param .env Environment
 #' @export
 
-launch=function(.env){
+launch=function(.env=environment()){
       .this.env=environment()
       append_env(to=.this.env,from=.env)
 
