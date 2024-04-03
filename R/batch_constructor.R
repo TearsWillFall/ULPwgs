@@ -860,7 +860,6 @@ run=function(){
 #' @export
 
 launch=function(){
-  
       append_env()
       reports=run()
       return(reports)
@@ -1026,6 +1025,7 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
     FUN=NULL,
     ...
  ){
+
        if(is.null(FUN)){
           stop("Please define a function to run")
        }
@@ -1034,18 +1034,19 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
        ### ADD OTHER VARIABLES TO BASE ENV
        list2env(x=list(...),envir=.base.env)
        ## CREATE FUNCTION VARIABLE NAMES
-       .base.env$fn_vars=names(.base.env)[!grepl("\\.",names(.base.env))]
+       fn_vars=names(.base.env)[!grepl("\\.",names(.base.env))]
        ## IF NOT SET UP BY THE USER WE WILL GET THE MAIN FUNCTION NAME
-       if(is.null(.base.env$fn)){
+       if(is.null(fn)){
           ## GET CALLER FUNCTION NAME
           fn <- sub(".*::","",sub("\\(.*","",
             paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=","))
           )
        }
-
+      
+      print(as.list(.this.env))
       ## WE WILL DEFINE THE ENVIROMENTAL VARIABLES
       set_env_vars()
-      print(sheet)
+      
       ## WE WILL LAUNCH THE MAIN FUNCTION
       launch()
     }

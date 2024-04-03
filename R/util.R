@@ -312,12 +312,8 @@ cp_data=function(
   ...
 ){
     FUN=function(){
-      .base.env=parent.frame()
-      .this.env=environment()
-      append_env(to=.this.env,from=.base.env)
-  
+      append_env()
       set_main()
-
       if(is.null(origin)){
         stop("origin argument is required.")
       }
@@ -331,7 +327,7 @@ cp_data=function(
       exec_code=paste("cp -r ",input," -t ", target)
 
       run_job()
-      
+
       append_env(to=.base.env,from=.this.env)
 
     }
