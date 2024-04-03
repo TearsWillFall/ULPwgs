@@ -309,6 +309,7 @@ check_file_path=function(
 cp_data=function(
   origin=NULL,
   target=NULL,
+  force=TRUE,
   ...
 ){
 
@@ -322,10 +323,15 @@ cp_data=function(
       if(is.null(target)){
         stop("target argument is required.")
       }
-      
+
+      args=""
+      if(force){
+        args=" -f "
+      }
+
       out_files$file=paste0(target,"/",basename(origin))
 
-      exec_code=paste("cp -r ",origin," -t ", target)
+      exec_code=paste("cp -r ",args,origin," -t ", target)
 
       run_job()
 
