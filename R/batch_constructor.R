@@ -848,16 +848,15 @@ run=function(.env){
 #' @param .env Environment
 #' @export
 
-set_base_env=function(){
-        .base.env=parent.frame()
+set_base_env=function(...){
         ### ADD OTHER VARIABLES TO BASE ENV
-        list2env(list(.base.env$...),envir=.base.env)
+        list2env(x=list(...),envir=parent.frame())
         ## CREATE FUNCTION VARIABLE NAMES
-        .base.env$fn_vars=names(.base.env)
+        .base.env$fn_vars=names(parent.frame())
 }
 
 
-
+rd()
 
 
 #' Set steps enviroment for use
