@@ -564,8 +564,9 @@ qdel=function(jobs){
 #' 
 #' @export
 
-consolidate_type<-function(){
-      .this.env=parent.frame()
+consolidate_type<-function(.env){
+      .this.env=environment()
+      append_env(to=.this.env,from=.env)
 
       ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
       for(var in fn_vars){
@@ -870,7 +871,7 @@ launch=function(){
             run(.env=self.envs[[n]])
         })
       }else{
-          reports=run(.env=self.envs)
+        reports=run(.env=self.envs)
       }
       return(reports)
   }
