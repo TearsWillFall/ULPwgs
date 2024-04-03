@@ -512,7 +512,7 @@ qdel=function(jobs){
 #' @export
 
 consolidate_type<-function(){
-      .this.env=environment()
+      .base.env=environment()
       append_env(to=environment(),from=parent.frame())
       ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
       for(var in fn_vars){
@@ -530,9 +530,9 @@ consolidate_type<-function(){
             ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE 
             ## TEMP DIRECTORY FOR EACH VARIABLE
             var_dir=set_dir(dir=ln_dir,name=var)
-            system(paste("ln -fs ",var_value, var_dir)," > /dev/null 2>&1 ")
+            system(paste("ln -fs ",var_value, var_dir," > /dev/null 2>&1 "))
             ### UPDATE THE VARIABLE TO THE SYMLINK
-            .this.env[[var]]=paste0(var_dir,"/",basename(var_value))
+            .base.env[[var]]=paste0(var_dir,"/",basename(var_value))
 
           }else{
             ## CHECK MISSING CASES
@@ -559,13 +559,13 @@ consolidate_type<-function(){
                     var_dir, "\"")
                   )                
                   ### UPDATE THE VARIABLE TO THE REMOTE FILE
-                  .this.env[[var]]=paste0(var_dir,"/",basename(check))
+                  .base.env[[var]]=paste0(var_dir,"/",basename(check))
                 }
               }
             }
           }
         }
-  append_env(from=environment(),to=parent.frame()) 
+
 }
 
 
