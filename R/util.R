@@ -323,9 +323,9 @@ cp_data=function(
         stop("target argument is required.")
       }
       
-      out_files$file=paste0(target,"/",basename(input))
+      out_files$file=paste0(target,"/",basename(origin))
 
-      exec_code=paste("cp -r ",input," -t ", target)
+      exec_code=paste("cp -r ",origin," -t ", target)
 
       run_job()
 
