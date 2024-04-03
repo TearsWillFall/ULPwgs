@@ -708,7 +708,11 @@ set_env_vars=function(
 
 
 set_work_dir=function(){
-      append_env(to=environment(),from=parent.frame())
+      append_env(
+        to=environment(),
+        from=parent.frame()
+      )
+
       ### CREATE MAIN WORKING DIRECTORY
       out_file_dir <- set_dir(
           dir=output_dir
@@ -860,10 +864,11 @@ read_sheet=function(){
 set_main_env=function(){
     append_env(to=environment(),from=parent.frame())
     ### WE CREATE AN ENVIRONMENT FOR EACH INPUT VALUE
+    print(as.list(environment()))
     main.envs=parallel::mclapply(
         1:n_inputs,
-        function(row){
-        append_env(to=environment(),from=parent.frame())
+        function(row,.env){
+        append_env(to=environment(),from=.env)
         .this.env=environment()
 
         ### ASSIGN VARS IN SHEET TO ENVIROMENT
@@ -882,7 +887,7 @@ set_main_env=function(){
         ## WE TRACE ERROR MESSAGE
         err_msg <- paste0(err_msg ,fn," (",job_id,") "," -> ")
         
-        print(as.list(.this.env))
+      
 
         ### TO TRACK EACH JOB WE SAVE EACH ENVIROMENT IN RDS FORMAT
         build_main()
