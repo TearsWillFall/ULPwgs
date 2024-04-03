@@ -938,35 +938,14 @@ append_env = function(to=environment(), from=parent.frame()) {
 #' 
 #' @export
 
-append_to_child = function(to=environment(), from=parent.frame()) {
-      
-      from_list = ls(from)
-      for(var in from_list) {
-        if(!grepl("\\.",var)){
-          if(is.null(to[[var]])){
-             to[[var]] <- NULL
-          }
-        }
-
-        if(!is.null(from[[var]])){
-           to[[var]] <- from[[var]]
-        }
-      }
-}
-
-
-#' Append to child
-#' 
-#' @export
-
-append_to_parent = function(
+append_to_child = function(
   to=environment(), 
   from=parent.frame()
 ) {
-    append_env(to=to,from=from)
+   append_env(to=to,from=from)
 }
 
-#' Append to child
+#' Append to parent
 #' 
 #' @export
 
