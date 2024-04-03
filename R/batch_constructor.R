@@ -850,9 +850,8 @@ run=function(.env){
 
 set_base_env=function(){
         .base.env=parent.frame()
-        print(.base.env)
         ### ADD OTHER VARIABLES TO BASE ENV
-        list2env(list(...),envir=.base.env)
+        list2env(list(.base.env[["..."]]),envir=.base.env)
         ## CREATE FUNCTION VARIABLE NAMES
         .base.env$fn_vars=names(.base.env)
 }
