@@ -1032,9 +1032,13 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
        .this.env=environment()
        .base.env=parent.frame()
        ### ADD OTHER VARIABLES TO BASE ENV
-       list2env(x=list(...),envir=.base.env)
+       list2env(x=list(...),envir=..base.env)
+       
        ## CREATE FUNCTION VARIABLE NAMES
        fn_vars=names(.base.env)[!grepl("\\.",names(.base.env))]
+
+       append_env(.this.env,.base.env)
+
        ## IF NOT SET UP BY THE USER WE WILL GET THE MAIN FUNCTION NAME
        if(is.null(fn)){
           ## GET CALLER FUNCTION NAME
@@ -1042,8 +1046,6 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
             paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=","))
           )
        }
-
-      append_env(.this.env,.base.env)
       
       print(as.list(.this.env))
       ## WE WILL DEFINE THE ENVIROMENTAL VARIABLES
