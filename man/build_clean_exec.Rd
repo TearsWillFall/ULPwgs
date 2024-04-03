@@ -4,7 +4,7 @@
 \alias{build_clean_exec}
 \title{Run job from batch constructor}
 \usage{
-build_clean_exec(.env)
+build_clean_exec()
 }
 \arguments{
 \item{.env}{Inherit current enviroment.}

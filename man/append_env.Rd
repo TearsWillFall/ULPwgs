@@ -4,7 +4,7 @@
 \alias{append_env}
 \title{Append two enviroments}
 \usage{
-append_env(to = environment(), from = NULL)
+append_env(to = environment(), from = parent.frame())
 }
 \arguments{
 \item{to}{Enviroment to append to}

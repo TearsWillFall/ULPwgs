@@ -6,9 +6,6 @@
 \usage{
 set_work_dir()
 }
-\arguments{
-\item{output_dir}{Environment}
-}
 \description{
 Set working directory to use
 }
