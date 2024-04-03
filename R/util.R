@@ -260,6 +260,7 @@ check_file_path=function(
   path=NULL,
   ...
 ){
+
   run_main=function(
       .env
     ){
@@ -310,9 +311,7 @@ cp_data=function(
   target=NULL,
   ...
 ){
-
-    set_base_env()
-    run_main=function(
+    FUN=function(
       .env
     ){
       .this.env=environment()
@@ -338,9 +337,8 @@ cp_data=function(
 
     }
     
-    set_env_vars()
-    launch()
-     
+    call_function(FUN=FUN,...=...)
+  
 }
 
 
@@ -374,9 +372,6 @@ ln_data=function(
   ...
 ){
 
-   
-    set_base_env()
-
     run_main=function(
       .env
     ){
@@ -403,8 +398,8 @@ ln_data=function(
 
     }
 
-    set_env_vars()
-    launch()
+    call_function(FUN=FUN,...=...)
+
 }
 
 

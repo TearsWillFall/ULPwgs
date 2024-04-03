@@ -4,7 +4,7 @@
 \alias{launch}
 \title{Set steps enviroment for use}
 \usage{
-launch(.env)
+launch()
 }
 \arguments{
 \item{.env}{Environment}

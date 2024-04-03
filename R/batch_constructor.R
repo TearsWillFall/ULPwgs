@@ -677,7 +677,7 @@ set_env_vars=function(
     .base.env=parent.frame()
     .this.env=environment()
     append_env(to=.this.env,from= .base.env)
-     .base.env$n_jobs <- 1
+    .base.env$n_jobs <- 1
 
        
     if(!is.null(inherit)){
@@ -691,13 +691,6 @@ set_env_vars=function(
         return()
     }
     
-    if(is.null(fn)){
-      ## GET CALLER FUNCTION NAME IF NOT GIVEN
-    fn <- sub(".*::","",sub("\\(.*","",
-        paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=","))
-      )
-    }
-
 
     if(is.null(fn_id)){
       fn_id<-fn
@@ -838,7 +831,7 @@ run=function(.env){
   }else{
     .renv=.env$.renv
     consolidate_type(.env=.renv)
-    run_main(.env=.renv)
+    FUN(.env=.renv)
     build_main(.env=.renv$.main)
   }
 }
@@ -849,14 +842,9 @@ run=function(.env){
 #' @export
 
 set_base_env=function(...){
-        ### ADD OTHER VARIABLES TO BASE ENV
-        list2env(x=list(...),envir=parent.frame())
-        ## CREATE FUNCTION VARIABLE NAMES
-        .base.env$fn_vars=names(parent.frame())
+    
 }
 
-
-rd()
 
 
 #' Set steps enviroment for use
@@ -1092,8 +1080,34 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
       rep(cat("    \n"),ws)
 }
 
+#' Caller function within routine
+#' 
+#' @param FUN Function to call
+#' @export
 
+ call_function=function(
+    FUN=NULL,
+    ...
+ ){
+       if(is.null(FUN)){
+          stop("Please define a function to run")
+       }
 
+       .base.env=parent.frame()
+       ### ADD OTHER VARIABLES TO BASE ENV
+       list2env(x=list(...),envir=.base.env)
+       ## CREATE FUNCTION VARIABLE NAMES
+       .base.env$fn_vars=names(.base.env)
+      
+       if(is.null(.base.env$fn)){
+        ## GET CALLER FUNCTION NAME IF NOT GIVEN
+        fn <- sub(".*::","",sub("\\(.*","",
+          paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=","))
+        )
+      }
+      set_env_vars()
+      launch()
+    }
 
 
 

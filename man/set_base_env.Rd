@@ -4,7 +4,7 @@
 \alias{set_base_env}
 \title{Set base environment}
 \usage{
-set_base_env(.env)
+set_base_env(...)
 }
 \arguments{
 \item{.env}{Environment}

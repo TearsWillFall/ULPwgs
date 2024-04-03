@@ -6,7 +6,6 @@
 functions in package.}
 \usage{
 set_env_vars(
-  .env = environment(),
   vars = NULL,
   fn = NULL,
   fn_id = NULL,
