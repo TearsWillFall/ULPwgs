@@ -219,7 +219,7 @@ execute_job=function(exec_code){
 build_self=function(){   
       append_to_child()
       self_file=paste0(env_dir,"/",job_id,".self.RData")
-      saveRDS(.this.env,file = self_file)
+      saveRDS(environment(),file = self_file)
       append_to_parent()
 }
 
@@ -238,7 +238,7 @@ build_self=function(){
 build_main=function(){
   append_to_child()
   main_file=paste0(env_dir,"/",job_id,".main.RData")
-  saveRDS(.base.env$steps,file=main_file)
+  saveRDS(steps,file=main_file)
   append_to_parent()
 }
 
@@ -421,7 +421,7 @@ run_self=function(){
     ### PRODUCE VERBOSE
     if(verbose){
           print_verbose(job=job_id,
-            arg=as.list(.this.env),
+            arg=as.list(environment()),
             exec_code=exec_code
           )
     }
@@ -460,7 +460,7 @@ run_self=function(){
 
  run_job=function(){
       append_to_child()
-    
+      
       if(clean){
         build_clean_exec()
       }
@@ -468,7 +468,7 @@ run_self=function(){
       if(verbose){
         print_verbose(
           job=job_id,
-          arg=as.list(.this.env),
+          arg=as.list(environment()),
           exec_code=exec_code
         )
       }
@@ -481,7 +481,7 @@ run_self=function(){
           stop(err_msg)
       }
 
-      .base.env$steps[[fn_id]] <- .this.env
+     parent.frame()$steps[[fn_id]] <- environment()
  }
    
 #' Wrapper around qstat call for SGE
@@ -513,6 +513,7 @@ qdel=function(jobs){
 #' @export
 
 consolidate_type<-function(){
+     .this.env=environment()
       append_to_child()
       ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
       for(var in fn_vars){
@@ -625,8 +626,6 @@ set_env_vars=function(
     ## START WITH BASE.ENV VARIABLES
     append_to_child()
     
-    ### ONE JOB FOR TOP FUNCTION
-    .base.env$n_jobs <- 1
 
     ## IF NOT SET UP BY THE USER WE WILL GET THE MAIN FUNCTION NAME
       
@@ -645,8 +644,8 @@ set_env_vars=function(
         if(!is.environment(inherit)){
           inherit <-readRDS(file=inherit)
         }
-        append_env(to=.this.env,inherit$main.envs[[select]])
-        .base.env$self.envs <- .this.env
+        append_env(from=inherit$main.envs[[select]])
+        parent.frame()$self.envs <- environment()
         return()
     }
     
@@ -678,7 +677,7 @@ set_env_vars=function(
         read_sheet()
     }else{
     ### SET CREATE A SHEET FROM THE FUNCTION VARIABLES
-        sheet=as.data.frame(as.list(.base.env)[fn_vars])
+        sheet=as.data.frame(as.list(parent.frame())[fn_vars])
     }
 
     ascertain_sheet()
@@ -803,8 +802,6 @@ set_inputs<-function(){
       if(n_dup>0){
         warning(paste0(n_dup, " were duplicated in sheet"))
       }
-      .base.env=parent.frame()
-      .this.env=environment()
       append_to_parent()
 }
 
@@ -1050,12 +1047,12 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
        ## GET VARIABLE NAMES
        fn_vars=names(.base.env)[!grepl("\\.|FUN",names(.base.env))]
 
-       append_to_child()
+       append_env(to=this.env,from=.base.env)
     
       ## WE WILL DEFINE THE ENVIROMENTAL VARIABLES
       set_env_vars()
 
-      print(main.envs)
+      print(as.list(main.envs))
       ## WE WILL LAUNCH THE MAIN FUNCTION
       launch()
     }
