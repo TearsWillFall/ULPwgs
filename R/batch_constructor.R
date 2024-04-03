@@ -861,9 +861,9 @@ set_base_env=function(){
 #' @param .env Environment
 #' @export
 
-launch=function(.env=environment()){
+launch=function(){
       .this.env=environment()
-      append_env(to=.this.env,from=.env)
+      append_env(to=.this.env,from=parent.frame())
 
       if(n_jobs>1){
         reports=lapply(seq(1,n_jobs),function(n){
