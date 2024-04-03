@@ -480,7 +480,7 @@ run_self=function(){
           stop(err_msg)
       }
 
-     parent.frame()$steps[[fn_id]] <- environment()
+      append_env(from=environment(),to=parent.frame())
  }
    
 #' Wrapper around qstat call for SGE
