@@ -237,7 +237,7 @@ build_self=function(){
 build_main=function(){
   append_env(to=environment(),from=parent.frame())
   main_file=paste0(env_dir,"/",job_id,".main.RData")
-  saveRDS(steps,file=main_file)
+  saveRDS(environment(),file=main_file)
   append_env(from=environment(),to=parent.frame())
 }
 
