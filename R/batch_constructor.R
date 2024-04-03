@@ -512,7 +512,7 @@ qdel=function(jobs){
 #' @export
 
 consolidate_type<-function(){
-     .this.env=environment()
+      .this.env=environment()
       append_env(to=environment(),from=parent.frame())
       ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
       for(var in fn_vars){
@@ -626,6 +626,17 @@ set_env_vars=function(
     append_env(to=environment(),from=parent.frame())
     
 
+    ### IF WE INHERIT A RDS FILE READ AND APPEND
+    ### WE SAVE RDS FILES WHEN SUBMITTING JOBS TO SCHEDULER OR JOBS RUN LOCALLY IN PARALLEL
+    ### SELECT VARIABLE DEFINES WHICH ENV WE ARE RUNNING
+    ### WE APPEND THIS ENV AND STOP
+    if(!is.null(inherit)){
+        if(!is.environment(inherit)){
+          inherit <-readRDS(file=inherit)
+        }
+        append_env(to=inherit$task.envs[[select]],from=parent.frame())
+        return()
+    }
     ## IF NOT SET UP BY THE USER WE WILL GET THE MAIN FUNCTION NAME
       
     if(is.null(fn)){
@@ -635,17 +646,7 @@ set_env_vars=function(
       )
     }
 
-    ### IF WE INHERIT A RDS FILE READ AND APPEND
-    ### WE SAVE RDS FILES WHEN SUBMITTING JOBS TO SCHEDULER OR JOBS RUN LOCALLY IN PARALLEL
-    ### SELECT VARIABLE DEFINES WHICH ENV WE ARE RUNNING
-    ### WE APPEND THIS ENV AND STOP
-    if(!is.null(inherit)){
-        if(!is.environment(inherit)){
-          inherit <-readRDS(file=inherit)
-        }
-        append_env(to=environment(),from=inherit$task.envs[[select]])
-        return()
-    }
+
     
     #### IF FUNCTION ID IS NOT GIVE WE USE FN NAME AS ID
     #### OTHERWISE WE APPEND FUNCTION ID
@@ -874,7 +875,7 @@ set_task_env=function(){
         for (col in n_vars){
           .this.env[[names(sheet)[col]]]<-sheet[row,col]
         }
-
+  
         ### WE CREATE A TASK ID FOR EACH JOB
         executor_id=task_id
         task_id <- make_unique_id(fn)
