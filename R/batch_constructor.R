@@ -1035,23 +1035,24 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
     ...
  ){
 
-       if(is.null(FUN)){
-          stop("Please define a function to run")
-       }
-       .this.env=environment()
-       .base.env=parent.frame()
-       ### ADD OTHER VARIABLES TO BASE ENV
-       list2env(x=list(...),envir=.base.env)
-       
-       ## GET VARIABLE NAMES
-       fn_vars=names(.base.env)[!grepl("\\.|FUN",names(.base.env))]
+      if(is.null(FUN)){
+        stop("Please define a function to run")
+      }
+      .this.env=environment()
+      .base.env=parent.frame()
+      ### ADD OTHER VARIABLES TO BASE ENV
+      list2env(x=list(...),envir=.base.env)
+      
+      ## GET VARIABLE NAMES
+      fn_vars=names(.base.env)[!grepl("\\.|FUN",names(.base.env))]
 
-       append_to_child(.this.env,.base.env)
-    
+      append_to_child()
+      
+      print(as.list(environment()))
       ## WE WILL DEFINE THE ENVIROMENTAL VARIABLES
       set_env_vars()
 
-      print(as.list(main.envs))
+    
       ## WE WILL LAUNCH THE MAIN FUNCTION
       launch()
     }
