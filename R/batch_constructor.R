@@ -308,8 +308,8 @@ build_exec_innit=function(
         
         if(mode=="local"){
               exec_code=paste0("Rscript -e \" invisible(lapply(1:",n_inputs,
-              ",FUN=function(select){tryCatch({",ns,"::",fn,"(inherit=\\\"",
-              self_file,"\\\",select=select),error(e){NULL})}))\"")
+              ",FUN=function(select){",ns,"::",fn,"(inherit=\\\"",
+              self_file,"\\\",select=select)}))\"")
         }else if(mode=="local_parallel"){
               exec_code=paste0("Rscript -e \" invisible(parallel::mclapply(1:",n_inputs,
               ",FUN=function(select){",ns,"::",fn,"(inherit=\\\"",
