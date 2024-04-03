@@ -870,7 +870,7 @@ set_task_env=function(){
         append_env(to=environment(),from=.env)
       
         ### ASSIGN VARS IN SHEET TO ENVIROMENT
-        for (col in n_vars){
+        for (col in 1:n_vars){
           assign(names(sheet)[col],sheet[row,col])
         }
   
