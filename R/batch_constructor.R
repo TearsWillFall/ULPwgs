@@ -1029,7 +1029,7 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
        if(is.null(FUN)){
           stop("Please define a function to run")
        }
-
+       .this.env=environment()
        .base.env=parent.frame()
        ### ADD OTHER VARIABLES TO BASE ENV
        list2env(x=list(...),envir=.base.env)
@@ -1042,11 +1042,13 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
             paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=","))
           )
        }
+
+      append_env(.this.env,.base.env)
       
       print(as.list(.this.env))
       ## WE WILL DEFINE THE ENVIROMENTAL VARIABLES
       set_env_vars()
-      
+      print(sheet)
       ## WE WILL LAUNCH THE MAIN FUNCTION
       launch()
     }
