@@ -634,7 +634,7 @@ set_env_vars=function(
         if(!is.environment(inherit)){
           inherit <-readRDS(file=inherit)
         }
-        append_env(to=inherit$task.envs[[select]],from=parent.frame())
+        append_env(to=parent.frame(),from=inherit$task.envs[[select]])
         return()
     }
     ## IF NOT SET UP BY THE USER WE WILL GET THE MAIN FUNCTION NAME
