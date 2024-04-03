@@ -281,8 +281,8 @@ read_main=function(){
 
  
     ### Reads mains and updates values for enviroments with data
-      main.envs=lapply(1:n_inputs,function(n){
-          main.env=readRDS(main.envs[[n]]$main_file)}
+      task.envs=lapply(1:n_inputs,function(n){
+          task.env=readRDS(task.envs[[n]]$main_file)}
     )
   
     append_env(from=environment(),to=parent.frame())
@@ -443,7 +443,7 @@ run_self=function(){
       read_main()
     }
 
-    return(main.envs)
+    return(task.envs)
  
   
 }
@@ -643,7 +643,7 @@ set_env_vars=function(
         if(!is.environment(inherit)){
           inherit <-readRDS(file=inherit)
         }
-        append_env(from=inherit$main.envs[[select]])
+        append_env(to=environment(),from=inherit$task.envs[[select]])
         return()
     }
     
@@ -695,7 +695,7 @@ set_env_vars=function(
     }
 
     ### FROM THE PARENT ENVIRONMENT WE CREATE A NEW ENVIRONMENT FOR EACH INPUT
-    set_main_env()
+    set_task_env()
     
     append_env(from=environment(),to=parent.frame())
   
@@ -860,10 +860,10 @@ read_sheet=function(){
 #' @export
 
 
-set_main_env=function(){
+set_task_env=function(){
     append_env(to=environment(),from=parent.frame())
     ### WE CREATE AN ENVIRONMENT FOR EACH INPUT VALUE
-    main.envs=parallel::mclapply(
+    task.envs=parallel::mclapply(
         1:n_inputs,
         function(row,.env){
         .this.env=environment()
@@ -905,7 +905,7 @@ set_main_env=function(){
 #' @param envir Environment
 #' @export
 
-set_main=function(){     
+set_task=function(){     
       append_env(to=environment(),from=parent.frame())
       exec_code=""
       error=0
