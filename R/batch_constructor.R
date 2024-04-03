@@ -217,12 +217,10 @@ execute_job=function(exec_code){
 
 
 build_self=function(){   
-      .base.env=parent.frame()     
-      .this.env=environment()
-      append_env(to=.this.env,from=.base.env)
+      append_to_child()
       self_file=paste0(env_dir,"/",job_id,".self.RData")
       saveRDS(.this.env,file = self_file)
-      append_env(to=.base.env,from=.this.env)
+      append_to_parent()
 }
 
 
@@ -238,12 +236,10 @@ build_self=function(){
 #' @export
 
 build_main=function(){
-  .base.env=parent.frame()
-  .this.env=environment()
-  append_env(to=.this.env,from=.base.env)
+  append_to_child()
   main_file=paste0(env_dir,"/",job_id,".main.RData")
   saveRDS(.base.env$steps,file=main_file)
-  append_env(to=.base.env,from=.this.env)
+  append_to_parent()
 }
 
 
@@ -253,9 +249,7 @@ build_main=function(){
 #' @export
 
 wait_scheduler=function(){
-    .base.env=parent.frame()
-    .this.env=environment()
-    append_env(to=.this.env,from=.base.env)
+    append_to_child()
     check=TRUE
     while(check){
       Sys.sleep(60)
@@ -283,9 +277,8 @@ wait_scheduler=function(){
 #' @export
 
 read_main=function(){
-    .base.env=parent.frame()
-    .this.env=environment()
-    append_env(to=.this.env,from=.base.env)
+
+    append_to_child()
 
  
     ### Reads mains and updates values for enviroments with data
@@ -293,7 +286,7 @@ read_main=function(){
           main.env=readRDS(main.envs[[n]]$main_file)}
     )
   
-    append_env(to=.base.env,from=.this.env)
+    append_to_parent()
 
 }
 
@@ -310,9 +303,7 @@ read_main=function(){
 
 build_exec_innit=function(
 ){
-        .base.env=parent.frame()
-        .this.env=environment()
-        append_env(to=.this.env,from=.base.env)
+        append_to_child()
 
         ### Use SGE TASK ID if mode is set to batch otherwise use value
         
@@ -332,7 +323,7 @@ build_exec_innit=function(
           stop("Unkown mode type")
         }
 
-        append_env(to=.base.env,from=.this.env)
+        append_to_parent()
 }
 
 
@@ -349,11 +340,10 @@ build_exec_innit=function(
 
 
 build_clean_exec=function(
-  .env
 ){
-  .this.env=environment()
-  append_env(to=.this.env,from=.env)
-  .env$exec_code<- paste0(.env$exec_code," && rm ",paste(input))
+   append_to_child()
+   exec_code<- paste0(exec_code," && rm ",paste(input))
+   append_to_parent()
 }
 
 
@@ -370,10 +360,7 @@ build_clean_exec=function(
 
 
 build_batch_exec_innit=function(){ 
-    .base.env=parent.frame()
-    .this.env=environment()
-    append_env(to=.this.env,from=.base.env)
-
+    append_to_child()
     batch_code=build_job_exec(
       job=job_id,time=time,ram=ram,
       threads=threads,wd=getwd(),
@@ -384,8 +371,7 @@ build_batch_exec_innit=function(){
 
     exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
     ";",exec_code,"'|",batch_code)
-
-    append_env(to=.batch.env,from=.this.env)
+    append_to_parent()
 }
 
 
@@ -398,15 +384,13 @@ build_batch_exec_innit=function(){
 
 set_self=function(){
     
-    .base.env=parent.frame()
-    .this.env=environment()
-    append_env(to=.this.env,from=.base.env)
+    append_to_child()
     error=0
     self_file=""
     main_code=""
     exec_code=""
     batch_code=""
-    append_env(to=.base.env,from=.this.env)
+    append_to_parent()
 }
 
 
@@ -420,11 +404,8 @@ set_self=function(){
 #' @export
 
 run_self=function(){  
-    .base.env=parent.frame()
-    .this.env=environment()
-    append_env(to=.this.env,from=.base.env$self_env)
-    
 
+    append_to_child()
     ### Initiate 
     set_self()
     ### Create RData object to inherit vars
@@ -478,9 +459,7 @@ run_self=function(){
 
 
  run_job=function(){
-      .base.env=parent.frame()
-      .this.env=environment()
-      append_env(to=.this.env,from=.base.env)
+      append_to_child()
     
       if(clean){
         build_clean_exec()
@@ -534,10 +513,7 @@ qdel=function(jobs){
 #' @export
 
 consolidate_type<-function(){
-      .base.env=parent.frame()
-      .this.env=environment()
-      append_env(to=.this.env,from=.base.env)
-
+      append_to_child()
       ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
       for(var in fn_vars){
         var_value=get(var)
@@ -589,7 +565,7 @@ consolidate_type<-function(){
             }
           }
         }
-  append_env(to=.base.env,from=.this.env)  
+  append_to_parent() 
 }
 
 
@@ -647,9 +623,7 @@ set_env_vars=function(
 ){  
 
     ## START WITH BASE.ENV VARIABLES
-    .base.env=parent.frame()
-    .this.env=environment()
-    append_env(to=.this.env,from= .base.env)
+    append_to_child()
     
     ### ONE JOB FOR TOP FUNCTION
     .base.env$n_jobs <- 1
@@ -726,7 +700,7 @@ set_env_vars=function(
     ### FROM THE PARENT ENVIRONMENT WE CREATE A NEW ENVIRONMENT FOR EACH INPUT
     set_main_env()
     
-    append_env(to=.base.env,from= .this.env)
+    append_to_parent()
   
 }
 
@@ -737,11 +711,7 @@ set_env_vars=function(
 
 
 set_work_dir=function(){
-      .base.env=parent.frame()
-      .this.env=environment()
-      append_env(to=.this.env,from=.base.env)
-
-  
+      append_to_child()
       ### CREATE MAIN WORKING DIRECTORY
       out_file_dir <- set_dir(
           dir=output_dir
@@ -794,7 +764,7 @@ set_work_dir=function(){
       }
 
     ### WE APPEND NEW VARIABLES BACK TO THE MAIN FUNCTION
-    append_env(to=.base.env,from=.this.env)
+    append_to_parent()
 }
 
 #' Set main enviroment inputs
@@ -802,10 +772,7 @@ set_work_dir=function(){
 #' @export
 
 set_inputs<-function(){
-       .base.env=parent.frame()
-       .this.env=environment()
-        append_env(to=.this.env,from=.base.env)
-
+        append_to_child()
         n_inputs <- 1
         inputs<-NULL
         inputs_id <- output_name
@@ -818,7 +785,7 @@ set_inputs<-function(){
          
         }
 
-        append_env(to=.base.env,from=.this.env)
+        append_to_parent()
 }
 
 
@@ -827,9 +794,7 @@ set_inputs<-function(){
 #' @export
 
  ascertain_sheet<-function(){
-      .base.env=parent.frame()
-      .this.env=environment()
-      append_env(to=.this.env,from=.base.env)
+      append_to_child()
       n_total<-nrow(sheet)
       sheet=sheet %>% dplyr::distinct()
       n_inputs<-nrow(sheet)
@@ -840,7 +805,7 @@ set_inputs<-function(){
       }
       .base.env=parent.frame()
       .this.env=environment()
-      append_env(to=.base.env,from=.this.env)
+      append_to_parent()
 }
 
 
@@ -852,7 +817,7 @@ set_inputs<-function(){
 
 
 run=function(){
-  append_env()
+  append_to_child()
   if(is.null(select)){
     run_self()
   }else{
@@ -870,7 +835,7 @@ run=function(){
 #' @export
 
 launch=function(){
-      append_env()
+      append_to_child()
       reports=run()
       return(reports)
   }
@@ -883,11 +848,9 @@ launch=function(){
 
 
 read_sheet=function(){
-    .base.env=parent.frame()
-    .this.env=environment()
-    append_env(to=.this.env,from=.base.env)
+    append_to_child()
     sheet=read.delim(sheet,header=TRUE)
-    append_env(to=.base.env,from=.this.env)
+    append_to_parent()
 }
 
 
@@ -900,15 +863,13 @@ read_sheet=function(){
 
 
 set_main_env=function(){
-    .base.env=parent.frame()
-    .this.env=environment()
-    append_env(to=.this.env,from=.base.env)
+    append_to_child()
     ### WE CREATE AN ENVIRONMENT FOR EACH INPUT VALUE
     main.envs=parallel::mclapply(
         1:n_inputs,
         function(row){
         .this.env=environment()
-        append_env(to=.this.env,from=.base.env)
+        append_to_child()
         
         ### ASSIGN VARS IN SHEET TO ENVIROMENT
         for (col in n_vars){
@@ -933,7 +894,7 @@ set_main_env=function(){
         },
         mc.cores=parallel::detectCores()
     )
-    append_env(to=.base.env,from=.this.env)
+    append_to_parent()
 }
 
 
@@ -944,15 +905,13 @@ set_main_env=function(){
 #' @export
 
 set_main=function(){     
-      .base.env=parent.frame()
-      .this.env=environment()
-      append_env(to=.this.env,from=.base.env)
+      append_to_child()
       exec_code=""
       error=0
       out_file=""
       steps=list()
       out_files=list()
-      append_env(to=.base.env,from=.this.env)
+      append_to_parent()
 }
 
 
@@ -978,6 +937,50 @@ append_env = function(to=environment(), from=parent.frame()) {
         }
       }
 }
+
+#' Append to child
+#' 
+#' @export
+
+append_to_child = function(to=environment(), from=parent.frame()) {
+      
+      from_list = ls(from)
+      for(var in from_list) {
+        if(!grepl("\\.",var)){
+          if(is.null(to[[var]])){
+             to[[var]] <- NULL
+          }
+        }
+
+        if(!is.null(from[[var]])){
+           to[[var]] <- from[[var]]
+        }
+      }
+}
+
+
+#' Append to child
+#' 
+#' @export
+
+append_to_parent = function(
+  to=environment(), 
+  from=parent.frame()
+) {
+    append_env(to=to,from=from)
+}
+
+#' Append to child
+#' 
+#' @export
+
+append_to_parent = function(
+  from=environment(),
+  to=parent.frame()
+){
+  append_env(to=to,from=from)
+}
+
 
 
 #' Set default environment ID
@@ -1047,13 +1050,12 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
        ## GET VARIABLE NAMES
        fn_vars=names(.base.env)[!grepl("\\.|FUN",names(.base.env))]
 
-       append_env(.this.env,.base.env)
-       
-      
-      print(as.list(.this.env))
+       append_to_child()
+    
       ## WE WILL DEFINE THE ENVIROMENTAL VARIABLES
       set_env_vars()
-      print(sheet)
+
+      print(main.envs)
       ## WE WILL LAUNCH THE MAIN FUNCTION
       launch()
     }
