@@ -629,12 +629,12 @@ set_env_vars=function(
 
     ## IF NOT SET UP BY THE USER WE WILL GET THE MAIN FUNCTION NAME
       
-      if(is.null(fn)){
-        ## GET CALLER FUNCTION NAME
-        fn <- sub(".*::","",sub("\\(.*","",
-          paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=","))
-        )
-      }
+    if(is.null(fn)){
+      ## GET CALLER FUNCTION NAME
+      fn <- sub(".*::","",sub("\\(.*","",
+        paste0(deparse(sys.calls()[[sys.nframe()-2]]),collapse=","))
+      )
+    }
 
     ### IF WE INHERIT A RDS FILE READ AND APPEND
     ### WE SAVE RDS FILES WHEN SUBMITTING JOBS TO SCHEDULER OR JOBS RUN LOCALLY IN PARALLEL
@@ -705,7 +705,6 @@ set_env_vars=function(
 
 #' Set working directory to use
 #' 
-#' @param output_dir Environment
 #' @export
 
 
@@ -1047,7 +1046,7 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
        ## GET VARIABLE NAMES
        fn_vars=names(.base.env)[!grepl("\\.|FUN",names(.base.env))]
 
-       append_to_child()
+       append_to_child(.this.env,.base.env)
     
       ## WE WILL DEFINE THE ENVIROMENTAL VARIABLES
       set_env_vars()
