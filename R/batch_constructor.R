@@ -1045,7 +1045,7 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
        list2env(x=list(...),envir=.base.env)
        
        ## GET VARIABLE NAMES
-       fn_vars=names(.base.env)[!grepl("\\.",names(.base.env))]
+       fn_vars=names(.base.env)[!grepl("\\.|FUN",names(.base.env))]
 
        append_env(.this.env,.base.env)
        
