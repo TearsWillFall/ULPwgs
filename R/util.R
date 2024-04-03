@@ -312,8 +312,6 @@ cp_data=function(
   ...
 ){
 
-    call_function(FUN=FUN,...=...)
-  
     FUN=function(){
       append_env()
       set_main()
@@ -334,6 +332,8 @@ cp_data=function(
       append_env(to=.base.env,from=.this.env)
 
     }
+
+    call_function(FUN=FUN,...=...)
   
 }
 
@@ -368,7 +368,7 @@ ln_data=function(
   ...
 ){
 
-    main=function(
+    FUN=function(
     ){
       .base.env=parent.frame()
       .this.env=environment()
