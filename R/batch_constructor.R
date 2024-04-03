@@ -867,13 +867,11 @@ set_task_env=function(){
     task.envs=parallel::mclapply(
         1:n_inputs,
         function(row,.env){
-        .this.env=environment()
-        append_env(to=.this.env,from=.env)
+        append_env(to=environment(),from=.env)
       
-
         ### ASSIGN VARS IN SHEET TO ENVIROMENT
         for (col in n_vars){
-          .this.env[[names(sheet)[col]]]<-sheet[row,col]
+          assign(names(sheet)[col],sheet[row,col])
         }
   
         ### WE CREATE A TASK ID FOR EACH JOB
@@ -887,12 +885,11 @@ set_task_env=function(){
         ## WE TRACE ERROR MESSAGE
         err_msg <- paste0(err_msg ,fn," (",job_id,") "," -> ")
         
-      
-
+    
         ### TO TRACK EACH JOB WE SAVE EACH ENVIROMENT IN RDS FORMAT
         build_main()
 
-        return(.this.env)
+        return(environment())
         },.env=parent.frame(),
         mc.cores=parallel::detectCores()
     )
