@@ -974,7 +974,7 @@ set_main_env=function(.env){
           if(!is.null(vars)){
             .this.env[[vars]]<-inputs[n]
           }
-          
+
           input<-inputs[n]
           n_inputs<- 1
           input_id<-inputs_id[n]
@@ -1042,7 +1042,6 @@ append_env = function(to=environment(), from=NULL) {
         }
       }
 }
-
 
 
 #' Set default environment ID
