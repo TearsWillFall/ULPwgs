@@ -564,9 +564,9 @@ qdel=function(jobs){
 #' 
 #' @export
 
-consolidate_type<-function(.env){
-      .this.env=environment()
-      append_env(to=.this.env,from=.env)
+consolidate_type<-function(){
+      .this.env=parent.frame()
+
       ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
       for(var in fn_vars){
         var_value=get(var)
@@ -637,7 +637,6 @@ consolidate_type<-function(.env){
 #' @export
 
 set_env_vars=function(
-  .env=environment(),
   vars=NULL,
   fn=NULL,
   fn_id=NULL,
@@ -674,10 +673,10 @@ set_env_vars=function(
   wait=FALSE,
   hold=NULL
 ){  
-
+    .base.env=parent.frame()
     .this.env=environment()
-    append_env(to=.this.env,from=.env)
-    .env$n_jobs <- 1
+    append_env(to=.this.env,from= .base.env)
+     .base.env$n_jobs <- 1
 
        
     if(!is.null(inherit)){
@@ -687,7 +686,7 @@ set_env_vars=function(
         append_env(to=.this.env,from=inherit)
         main.envs<-inherit$main.envs
         .renv=main.envs[[select]]
-        .env$self.envs <- .this.env
+        .base.env$self.envs <- .this.env
         return()
     }
     
@@ -816,7 +815,7 @@ set_env_vars=function(
 
     set_main_env(.env=.this.env)
 
-    .env$self.envs<-.this.env
+    .base.env$self.envs<-.this.env
 
   
 }
@@ -848,12 +847,12 @@ run=function(.env){
 #' @param .env Environment
 #' @export
 
-set_base_env=function(.env=environment()){
+set_base_env=function(){
+        .base.env=parent.frame()
         ### ADD OTHER VARIABLES TO BASE ENV
-        list2env(list(...),envir=.env)
+        list2env(list(...),envir=.base.env)
         ## CREATE FUNCTION VARIABLE NAMES
-        fn_vars=names(.env)
-        .env=environment()
+        .base.env$fn_vars=names(.base.env)
 }
 
 
