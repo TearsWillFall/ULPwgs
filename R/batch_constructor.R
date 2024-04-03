@@ -557,6 +557,73 @@ qdel=function(jobs){
   system("qdel ",paste(jobs,collapse=" "))
 }
 
+#' Function to consolidate the types within main function
+#' 
+#' @param .env Environment
+#' 
+#' 
+#' @export
+
+consolidate_type<-function(.env){
+      .this.env=environment()
+      append_env(to=.this.env,from=.env)
+      ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
+      for(var in fn_vars){
+        var_value=get(var)
+        ### CHECK VARIABLE TYPE
+        var_type=typeof(var_value)
+        ### IF VARIABLE TYPE IS CHARACTER
+        if(var_type=="character"){
+          ## WE CHECK IF VARIABLE CONTAINS A PATH
+          if(tryCatch({file.exists(var_value)},
+            error=function(e){
+              FALSE
+          })){
+            var_value=normalizePath(var_value)
+            ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE 
+            ## TEMP DIRECTORY FOR EACH VARIABLE
+            var_dir=set_dir(dir=ln_dir,name=var)
+            system(paste("ln -fs ",var_value, var_dir)," > /dev/null 2>&1 ")
+            ### UPDATE THE VARIABLE TO THE SYMLINK
+            .this.env[[var]]=paste0(var_dir,"/",basename(var_value))
+
+          }else{
+            ## CHECK MISSING CASES
+            ## CHECK IF REMOTE NODE IS GIVEN
+            if(remote){
+
+                ### CHECK IF VARIABLE PATH EXIST IN REMOTE
+
+                check=suppressWarnings(system(paste(
+                "sshpass -f ",password,
+                " ssh ",paste0(user,
+                  ifelse(!is.null(user),"@",""),node),
+                  "\" realpath -e ",var_value,"\""),intern=TRUE
+                ))
+
+                if(length(check)!=0){
+                  var_dir=set_dir(dir=rmt_dir,name=var)
+                  ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
+                  system(paste(
+                  "sshpass -f ",password,
+                  " ssh ",paste0(user,
+                    ifelse(!is.null(user),"@",""),node),
+                    "\" cp -rn ",check," -t ",
+                    var_dir, "\"")
+                  )                
+                  ### UPDATE THE VARIABLE TO THE REMOTE FILE
+                  .this.env[[var]]=paste0(var_dir,"/",basename(check))
+                }
+              }
+            }
+          }
+        }
+}
+
+
+
+
+
 
 
 
@@ -699,61 +766,7 @@ set_env_vars=function(
       remote=TRUE
     }
 
-    consolidate_type<-function(.env){
-      .this.env=environment()
-      append_env(to=.this.env,from=.env)
-      ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
-      for(var in fn_vars){
-        var_value=get(var)
-        ### CHECK VARIABLE TYPE
-        var_type=typeof(var_value)
-        ### IF VARIABLE TYPE IS CHARACTER
-        if(var_type=="character"){
-          ## WE CHECK IF VARIABLE CONTAINS A PATH
-          if(tryCatch({file.exists(var_value)},
-            error=function(e){
-              FALSE
-          })){
-            var_value=normalizePath(var_value)
-            ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE 
-            ## TEMP DIRECTORY FOR EACH VARIABLE
-            var_dir=set_dir(dir=ln_dir,name=var)
-            system(paste("ln -fs ",var_value, var_dir))
-            ### UPDATE THE VARIABLE TO THE SYMLINK
-            .this.env[[var]]=paste0(var_dir,"/",basename(var_value))
-
-          }else{
-            ## CHECK MISSING CASES
-            ## CHECK IF REMOTE NODE IS GIVEN
-            if(remote){
-
-                ### CHECK IF VARIABLE PATH EXIST IN REMOTE
-
-                check=suppressWarnings(system(paste(
-                "sshpass -f ",password,
-                " ssh ",paste0(user,
-                  ifelse(!is.null(user),"@",""),node),
-                  "\" realpath -e ",var_value,"\""),intern=TRUE
-                ))
-
-                if(length(check)!=0){
-                  var_dir=set_dir(dir=rmt_dir,name=var)
-                  ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
-                  system(paste(
-                  "sshpass -f ",password,
-                  " ssh ",paste0(user,
-                    ifelse(!is.null(user),"@",""),node),
-                    "\" cp -r ",check," -t ",
-                    var_dir, "\"")
-                  )                
-                  ### UPDATE THE VARIABLE TO THE REMOTE FILE
-                  .this.env[[var]]=paste0(var_dir,"/",basename(check))
-                }
-              }
-            }
-          }
-        }
-    }
+  
     
     if (!is.null(sheet)){
         read_sheet(.env=.this.env)
@@ -781,8 +794,6 @@ set_env_vars=function(
       }else{
           inputs_ext <- rep("",length(inputs))
       }
-   
-      
      
       task_ids <- make_unique_id(fn,sample(1:1e+14,n_inputs,replace=FALSE))
       job_ids <- build_job(
@@ -826,9 +837,23 @@ run=function(.env){
     run_self(.env=.env)
   }else{
     .renv=.env$.renv
+    consolidate_type(.env=.renv)
     run_main(.env=.renv)
     build_main(.env=.renv$.main)
   }
+}
+
+#' Set base environment
+#' 
+#' @param .env Environment
+#' @export
+
+set_base_env=function(.env){
+        ### ADD OTHER VARIABLES TO BASE ENV
+        list2env(list(...),envir=.env)
+        ## CREATE FUNCTION VARIABLE NAMES
+        fn_vars=names(.env)
+        .env=environment()
 }
 
 
@@ -944,9 +969,12 @@ set_main_env=function(.env){
         function(n,.env){
           .this.env=environment()
           append_env(to=.this.env,from=.env)
-
+          
           .env$self.envs <- .this.env
-
+          if(!is.null(vars)){
+            .this.env[[vars]]<-inputs[n]
+          }
+          
           input<-inputs[n]
           n_inputs<- 1
           input_id<-inputs_id[n]

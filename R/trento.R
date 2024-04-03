@@ -381,10 +381,8 @@ new_clonet_trento=function(
     ploidy=NULL,
     ...
 ){
-    fn_vars=names(environment())
-    list2env(list(...),envir=environment())
-    .base.env=environment()
-
+    set_base_env(.env=environment())
+   
     run_main=function(
         .env
     ){
@@ -457,11 +455,10 @@ new_clonet_trento=function(
     }
 
     set_env_vars(
-        .env= .base.env,
-        vars="tumour",
-        fn_vars=fn_vars
+        .env= environment(),
+        vars="tumour"
     )
-
+    
     launch(.env=.base.env)
     
 }
