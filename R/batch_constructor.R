@@ -654,6 +654,15 @@ set_env_vars=function(
     ### ONE JOB FOR TOP FUNCTION
     .base.env$n_jobs <- 1
 
+    ## IF NOT SET UP BY THE USER WE WILL GET THE MAIN FUNCTION NAME
+      
+      if(is.null(fn)){
+        ## GET CALLER FUNCTION NAME
+        fn <- sub(".*::","",sub("\\(.*","",
+          paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=","))
+        )
+      }
+
     ### IF WE INHERIT A RDS FILE READ AND APPEND
     ### WE SAVE RDS FILES WHEN SUBMITTING JOBS TO SCHEDULER OR JOBS RUN LOCALLY IN PARALLEL
     ### SELECT VARIABLE DEFINES WHICH ENV WE ARE RUNNING
@@ -731,6 +740,7 @@ set_work_dir=function(){
       .base.env=parent.frame()
       .this.env=environment()
       append_env(to=.this.env,from=.base.env)
+
   
       ### CREATE MAIN WORKING DIRECTORY
       out_file_dir <- set_dir(
@@ -1034,18 +1044,11 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
        ### ADD OTHER VARIABLES TO BASE ENV
        list2env(x=list(...),envir=.base.env)
        
-       ## CREATE FUNCTION VARIABLE NAMES
+       ## GET VARIABLE NAMES
        fn_vars=names(.base.env)[!grepl("\\.",names(.base.env))]
 
        append_env(.this.env,.base.env)
-
-       ## IF NOT SET UP BY THE USER WE WILL GET THE MAIN FUNCTION NAME
-       if(is.null(fn)){
-          ## GET CALLER FUNCTION NAME
-          fn <- sub(".*::","",sub("\\(.*","",
-            paste0(deparse(sys.calls()[[sys.nframe()-1]]),collapse=","))
-          )
-       }
+       
       
       print(as.list(.this.env))
       ## WE WILL DEFINE THE ENVIROMENTAL VARIABLES
