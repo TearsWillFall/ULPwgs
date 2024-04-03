@@ -1032,7 +1032,7 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
        .this.env=environment()
        .base.env=parent.frame()
        ### ADD OTHER VARIABLES TO BASE ENV
-       list2env(x=list(...),envir=..base.env)
+       list2env(x=list(...),envir=.base.env)
        
        ## CREATE FUNCTION VARIABLE NAMES
        fn_vars=names(.base.env)[!grepl("\\.",names(.base.env))]
