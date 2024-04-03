@@ -717,9 +717,7 @@ set_env_vars=function(
     ### FROM THE PARENT ENVIRONMENT WE CREATE A NEW ENVIRONMENT FOR EACH INPUT
     set_main_env()
     
-    ### 
-    .base.env$self.envs<-.this.env
-
+    append_env(to=.base.env,from= .this.env)
   
 }
 
@@ -1047,7 +1045,7 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
 
       ## WE WILL DEFINE THE ENVIROMENTAL VARIABLES
       set_env_vars()
-      print(as.list(.base.env))
+      print(sheet)
       ## WE WILL LAUNCH THE MAIN FUNCTION
       launch()
     }
