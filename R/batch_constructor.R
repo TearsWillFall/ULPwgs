@@ -258,7 +258,7 @@ buildCall=function(){
 
 
 buildCall.init=function(){
-
+    append_env(to=environment(),from=parent.frame())
     ### Use SGE TASK ID if mode is set to batch otherwise use value
     
     if(mode=="local"){
@@ -284,7 +284,6 @@ buildCall.init=function(){
 
 buildCall.batch=function(){
     append_env(to=environment(),from=parent.frame())
- 
     exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
     ";",exec_code,"'|",batch_code)
     append_env(from=environment(),to=parent.frame())
