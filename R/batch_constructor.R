@@ -786,7 +786,7 @@ set_work_dir_parent=function(){
 #' 
 #' @export
 
-set_work_dir_child=function(){
+set_work_dir_children=function(){
       append_env(
         to=environment(),
         from=parent.frame()
