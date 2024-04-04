@@ -983,7 +983,7 @@ buildSheet.create=function(){
       sheet=as.data.frame(as.list(parent.frame())[fn_vars])
   }
 
-  processSheet.ascertain()
+  buildSheet.ascertain()
 
   append_env(from=environment(),to=parent.frame())
 
