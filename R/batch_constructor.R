@@ -793,36 +793,29 @@ set_work_dir_children=function(){
         from=parent.frame()
       )
 
-      ### CREATE MAIN WORKING DIRECTORY
-      child_dir <- set_dir(
-          dir=parent_dir,
-          name=child_id
-      )
-
       ### CREATE TMP DIRECTORY
       ### WE WILL STORE TMP FILES FOR ALL FUNCTIONS HERE 
       
       tmp_dir <- set_dir(
         dir=child_dir,
-        name="tmp"
+        name=child_id
       )
-      
       
       ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE SYMLINK OF FILES
       ### WE WILL STORE SYMLINK FILES FOR LOCAL FILES
     
       ln_dir <- set_dir(
         dir=tmp_dir,
-        name="ln"
+        name=child_id
       )
-    
+
 
       ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE REMOTE FILES
       ### WE WILL STORE REMOTE DOWNLOAD FILES HERE
       
       rmt_dir <- set_dir(
           dir=tmp_dir,
-          name="rmt"
+          name=child_id
       )
       
 
@@ -831,7 +824,7 @@ set_work_dir_children=function(){
     
       env_dir<- set_dir(
           dir=child_dir,
-          name="env"
+          name=child_id
       )
         
 
@@ -840,7 +833,7 @@ set_work_dir_children=function(){
    
       batch_dir<- set_dir(
         dir=child_dir,
-        name="batch"
+        name=child_id
       )
 
 
