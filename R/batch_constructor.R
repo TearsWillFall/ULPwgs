@@ -20,14 +20,14 @@ build_job=function(
   if(is.null(parent_id)){
     stop("parent_id argument is required to allocate an id for job")
   }
-  executor=paste0("parent_",parent_id)
+  parent_id=paste0("parent_",parent_id)
   if(!is.null(child_id)){
     job=lapply(child_id,FUN=function(id){
     task=paste0("child_",id)
-    job=paste0(c(executor,task),collapse=".")
+    job=paste0(c(parent_id,child_id),collapse=".")
     })
   }else{
-    job=paste0(c(executor,task),collapse=".")
+    job=parent_id
   }
 
   return(job)
