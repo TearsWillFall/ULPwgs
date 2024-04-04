@@ -851,7 +851,7 @@ buildEnv.parent=function(
     buildErrorMessage.parent()
 
     ### WE PREPARE TO DUMP CHILD INFO
-    dumpInfo.set()
+    dumpInfo()
 
     ### FROM THE PARENT ENVIRONMENT WE CREATE A NEW ENVIRONMENT FOR EACH INPUT
     child.envs=parallel::mclapply(
@@ -903,15 +903,10 @@ buildEnv.parent.set=function(){
 
 
 dumpInfo<-function(){
-   UseMethod("dumpInfo")
-}
-
-dumpInfo.set<-function(){
   append_env(to=environment(),from=parent.frame())
 
   ### TRACING CHILDREN CAN BE DIFFICULT
   ### WE DEFINE THE VARIABLES THAT WILL HELP IDENTIFY CHILDREN IN JOB HIERARCHY
-
 
   dump_names=c("parent_id","child_order","child_id",fn_vars)
   
@@ -922,7 +917,7 @@ dumpInfo.set<-function(){
 
   write.table(
         file=dump_file,
-        x=dump_names,
+        x=data.frame(dump_names),
         sep="\t",
         col.names=FALSE,
         row.names=FALSE,
@@ -930,6 +925,7 @@ dumpInfo.set<-function(){
   )
 
   append_env(from=environment(),to=parent.frame())
+   UseMethod("dumpInfo")
 }
 
 dumpInfo.append=function(){
