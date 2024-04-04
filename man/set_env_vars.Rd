@@ -28,7 +28,6 @@ set_env_vars(
   ns = "ULPwgs",
   mode = "local",
   time = "48:0:0",
-  get = FALSE,
   bypass = FALSE,
   node = NULL,
   user = NULL,
@@ -38,7 +37,8 @@ set_env_vars(
   select = NULL,
   err_msg = NULL,
   remote = FALSE,
-  executor_id = NULL,
+  complimentary = FALSE,
+  parent_id = NULL,
   wait = FALSE,
   hold = NULL
 )

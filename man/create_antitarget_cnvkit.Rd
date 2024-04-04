@@ -8,7 +8,7 @@ create_antitarget_cnvkit(
   sif_cnvkit = build_default_sif_list()$sif_cnvkit,
   access = build_default_reference_list()$HG19$reference$access_5k,
   bed = NULL,
-  bin_size = 500000,
+  bin_size = 5e+05,
   min_bin_size = NULL,
   ...
 )

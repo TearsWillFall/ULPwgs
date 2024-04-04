@@ -6,8 +6,8 @@
 \usage{
 build_job_report(
   job_id = "job_1",
-  executor_id = "",
-  task_id = "",
+  parent_id = "",
+  child_id = "",
   exec_code = "",
   job_order = 1,
   input_args = "",
@@ -18,9 +18,9 @@ build_job_report(
 \arguments{
 \item{job_id}{Job ID}
 
-\item{executor_id}{Task executor ID}
+\item{parent_id}{Task executor ID}
 
-\item{task_id}{Task ID}
+\item{child_id}{Task ID}
 
 \item{exec_code}{Execution code}
 

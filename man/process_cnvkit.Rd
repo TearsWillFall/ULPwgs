@@ -32,7 +32,7 @@ process_cnvkit(
   range_scatter = NULL,
   range_list_scatter = NULL,
   genes_scatter = NULL,
-  margin_width_scatter = 1000000,
+  margin_width_scatter = 1e+06,
   plot_by_bin_scatter = FALSE,
   trend_scatter = FALSE,
   antitarget_symbol_scatter = "@",

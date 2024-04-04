@@ -11,7 +11,7 @@ create_pon_cnvkit(
   normal = NULL,
   target = NULL,
   bin_size_target = 75,
-  bin_size_antitarget = 500000,
+  bin_size_antitarget = 5e+05,
   min_bin_size_antitarget = NULL,
   ...
 )

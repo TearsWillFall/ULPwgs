@@ -22,7 +22,7 @@ ichorCNA(
   output_dir = ".",
   verbose = TRUE,
   libdir = "tools/ichorCNA",
-  male_tresh = 0.0001,
+  male_tresh = 1e-04,
   chrs = "'c(1:22,\\"X\\")'",
   chrTrain = "'c(1:22)'"
 )

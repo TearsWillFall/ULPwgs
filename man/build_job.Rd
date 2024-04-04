@@ -6,7 +6,7 @@
 Job constructor only uses the top level Executor ID
 and the bottom level task ID.}
 \usage{
-build_job(executor_id = "executor", task_id = "task")
+build_job(parent_id = NULL, child_id = NULL)
 }
 \arguments{
 \item{executor}{Job EXECUTOR ID}

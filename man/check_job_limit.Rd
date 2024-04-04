@@ -4,7 +4,7 @@
 \alias{check_job_limit}
 \title{Check for job limit in Myriad SGE}
 \usage{
-check_job_limit(job_limit = 1000000)
+check_job_limit(job_limit = 1e+06)
 }
 \arguments{
 \item{exec_code}{Execution code}
