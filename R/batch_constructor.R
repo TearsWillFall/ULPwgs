@@ -729,7 +729,8 @@ set_work_dir_parent=function(){
 
       ### CREATE MAIN WORKING DIRECTORY
       parent_dir <- set_dir(
-          dir=out_file_dir
+          dir=out_file_dir,
+          name=parent_id
       )
 
       ### CREATE TMP DIRECTORY
@@ -794,7 +795,8 @@ set_work_dir_children=function(){
 
       ### CREATE MAIN WORKING DIRECTORY
       child_dir <- set_dir(
-          dir=parent_dir
+          dir=parent_dir,
+          name=child_id
       )
 
       ### CREATE TMP DIRECTORY
