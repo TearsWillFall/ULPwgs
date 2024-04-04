@@ -492,7 +492,7 @@ runEnv.run=function(){
 
   #Read .bashrc to import all envriomental variables
   error=system(paste0(". $HOME/.bashrc;",exec_code))
-  ### RETURN ERROR MESSAGE
+  ### RETURN ERROR MESSAGEchild_order
   if(error!=0){
       stop(err_msg)
   }
@@ -941,7 +941,7 @@ dumpInfo.append=function(){
 
   info=data.frame(
       parent_id=parent_id,
-      child_order=n,
+      child_order=row,
       child_id=child_id,
       sheet[row,]
   )
