@@ -11,13 +11,25 @@
 
 
 
-build_job=function(executor_id="executor",task_id="task"){
-options(scipen = 999)
-  executor=paste0("EXECUTOR_",executor_id)
-  job=lapply(task_id,FUN=function(id){
-    task=paste0("TASK_",id)
+build_job=function(
+  parent_id=NULL,
+  child_id=NULL
+){
+
+  options(scipen = 999)
+  if(is.null(parent_id)){
+    stop("parent_id argument is required to allocate an id for job")
+  }
+  executor=paste0("parent_",parent_id)
+  if(!is.null(child_id)){
+    job=lapply(child_id,FUN=function(id){
+    task=paste0("child_",id)
     job=paste0(c(executor,task),collapse=".")
-  })
+    })
+  }else{
+    job=paste0(c(executor,task),collapse=".")
+  }
+
   return(job)
 }
 
@@ -30,8 +42,8 @@ options(scipen = 999)
 #'
 #'
 #' @param job_id Job ID
-#' @param executor_id Task executor ID
-#' @param task_id Task ID
+#' @param parent_id Task executor ID
+#' @param child_id Task ID
 #' @param exec_code Execution code
 #' @param input Input arguments for job
 #' @param job_order Job execution order
@@ -40,8 +52,8 @@ options(scipen = 999)
 #' @export
 
 build_job_report=function(job_id="job_1",
-  executor_id="",
-  task_id="",
+  parent_id="",
+  child_id="",
   exec_code="",
   job_order=1,
   input_args="",
@@ -49,7 +61,7 @@ build_job_report=function(job_id="job_1",
   out_files=list(file="file")
 ){
   options(scipen = 999)
-  job_report=list(job_id=job_id,executor_id=executor_id,task_id=task_id,
+  job_report=list(job_id=job_id,parent_id=parent_id,child_id=child_id,
   job_order=job_order,input_args=input_args,exec_code=exec_code,
   out_file_dir=out_file_dir,out_files=out_files)
   return(job_report)
@@ -346,11 +358,6 @@ build_clean_exec=function(
 }
 
 
-
-
-
-
-
 #' Build execution innit for batch
 #' 
 #' @param .env Inherit envoment variables
@@ -557,9 +564,14 @@ consolidate_type<-function(){
                     ifelse(!is.null(user),"@",""),node),
                     "\" cp -rn ",check," -t ",
                     var_dir, "\"")
-                  )                
-                  ### UPDATE THE VARIABLE TO THE REMOTE FILE
-                  .base.env[[var]]=paste0(var_dir,"/",basename(check))
+                  )
+                  var_value=paste0(var_dir,"/",basename(check))     
+                  var_dir=set_dir(dir=ln_dir,name=var)
+
+                  ### UPDATE THE VARIABLE TO THE SYMLINK
+                  system(paste("ln -fs ",var_value, var_dir," > /dev/null 2>&1 "))
+                  .base.env[[var]]=paste0(var_dir,"/",basename(var_value))
+                 
                 }
               }
             }
@@ -607,7 +619,6 @@ set_env_vars=function(
   ns="ULPwgs",
   mode="local",
   time="48:0:0",
-  get=FALSE,
   bypass=FALSE,
   node=NULL,
   user=NULL,
@@ -617,7 +628,8 @@ set_env_vars=function(
   select=NULL,
   err_msg=NULL,
   remote=FALSE,
-  executor_id=NULL,
+  complimentary=FALSE,
+  parent_id=NULL,
   wait=FALSE,
   hold=NULL
 ){  
@@ -657,8 +669,8 @@ set_env_vars=function(
     }
 
     ### IF EXECTUCTOR ID IS NOT GIVEN WE CREATE AN UNIQUE NAME USING THE FUNCTION ID
-    if(is.null(executor_id)){
-      executor_id <- make_unique_id(fn)
+    if(is.null(parent_id)){
+      parent_id <- make_unique_id(fn)
     }
 
     ### CHECK IF FILES PATH CAN BE LOCATED REMOTELY
@@ -667,7 +679,7 @@ set_env_vars=function(
     }
 
     ### CREATE WORK DIRECTORIES
-    set_work_dir()
+    set_work_dir_parent()
   
     ### CHECK IF VARIABLE SHEET IS GIVEN
     ### IF SHEET IS GIVEN WE ASSIGN THE VARIABLES AND QUIT
@@ -681,13 +693,10 @@ set_env_vars=function(
 
     ascertain_sheet()
 
-    ### WE ASSIGN A TASK ID TO THE CALLER FUNCTION
-
-    task_id <- make_unique_id(fn)
+    ### WE ASSIGN A JOB ID TO THE CALLER FUNCTION
 
     job_id <- build_job(
-      executor_id=executor_id,
-      task_id=task_id
+      parent_id=parent_id
     )
     
     ### WE CREATE AN ERROR MESSAGE TO TRACK WHERE JOB FAILS
@@ -706,8 +715,7 @@ set_env_vars=function(
 #' 
 #' @export
 
-
-set_work_dir=function(){
+set_work_dir_parent=function(){
       append_env(
         to=environment(),
         from=parent.frame()
@@ -719,11 +727,16 @@ set_work_dir=function(){
       )
 
 
+      ### CREATE MAIN WORKING DIRECTORY
+      parent_dir <- set_dir(
+          dir=out_file_dir
+      )
+
       ### CREATE TMP DIRECTORY
       ### WE WILL STORE TMP FILES FOR ALL FUNCTIONS HERE 
       if(is.null(tmp_dir)){
           tmp_dir <- set_dir(
-            dir=out_file_dir,
+            dir=parent_dir,
             name="tmp"
         )
       }
@@ -750,7 +763,7 @@ set_work_dir=function(){
       ### WE WILL STORE R ENVIRONMENT DATA HERE
       if(is.null(env_dir)){
             env_dir<- set_dir(
-              dir=out_file_dir,
+              dir=parent_dir,
               name="env"
           )
         }
@@ -759,7 +772,7 @@ set_work_dir=function(){
       ### WE WILL STORE SCHEDULER DATA HERE
       if(is.null(batch_dir)){
           batch_dir<- set_dir(
-            dir=out_file_dir,
+            dir=parent_dir,
             name="batch"
         )
       }
@@ -767,6 +780,74 @@ set_work_dir=function(){
     ### WE APPEND NEW VARIABLES BACK TO THE MAIN FUNCTION
     append_env(from=environment(),to=parent.frame())
 }
+
+
+#' Set working directory to use
+#' 
+#' @export
+
+set_work_dir_child=function(){
+      append_env(
+        to=environment(),
+        from=parent.frame()
+      )
+
+      ### CREATE MAIN WORKING DIRECTORY
+      child_dir <- set_dir(
+          dir=parend_dir
+      )
+
+      ### CREATE TMP DIRECTORY
+      ### WE WILL STORE TMP FILES FOR ALL FUNCTIONS HERE 
+      
+      tmp_dir <- set_dir(
+        dir=child_dir,
+        name="tmp"
+      )
+      
+      
+      ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE SYMLINK OF FILES
+      ### WE WILL STORE SYMLINK FILES FOR LOCAL FILES
+    
+      ln_dir <- set_dir(
+        dir=tmp_dir,
+        name="ln"
+      )
+    
+
+      ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE REMOTE FILES
+      ### WE WILL STORE REMOTE DOWNLOAD FILES HERE
+      
+      rmt_dir <- set_dir(
+          dir=tmp_dir,
+          name="rmt"
+      )
+      
+
+      ### CREATE DIRECTORY TO STORE ENVIROMENT DATA
+      ### WE WILL STORE R ENVIRONMENT DATA HERE
+    
+      env_dir<- set_dir(
+          dir=child_dir,
+          name="env"
+      )
+        
+
+      ### CREATE DIRECTORY TO BATCH DATA
+      ### WE WILL STORE SCHEDULER DATA HERE
+   
+      batch_dir<- set_dir(
+        dir=child_dir,
+        name="batch"
+      )
+
+
+    ### WE APPEND NEW VARIABLES BACK TO THE MAIN FUNCTION
+    append_env(from=environment(),to=parent.frame())
+}
+
+
+
 
 #' Set main enviroment inputs
 #'
@@ -867,6 +948,7 @@ set_task_env=function(){
     task.envs=parallel::mclapply(
         1:n_inputs,
         function(row,.env){
+        
         append_env(to=environment(),from=.env)
       
         ### ASSIGN VARS IN SHEET TO ENVIROMENT
@@ -874,13 +956,17 @@ set_task_env=function(){
           assign(names(sheet)[col],sheet[row,col])
         }
   
-        ### WE CREATE A TASK ID FOR EACH JOB
-        executor_id=task_id
-        task_id <- make_unique_id(fn)
+        ### WE CREATE A JOB ID FOR EACH CHILD
+        ### CHILDREN SHALL WORK!!
+        child_id <- make_unique_id(fn)
+        
+        set_work_dir_children()
+        
         job_id <- build_job(
-          executor_id=executor_id,
-          task_id=task_id
+          parent_id=parent_id,
+          child_id=child_id
         )
+
 
         ## WE TRACE ERROR MESSAGE
         err_msg <- paste0(err_msg ,fn," (",job_id,") "," -> ")

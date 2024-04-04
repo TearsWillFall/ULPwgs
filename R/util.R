@@ -309,7 +309,7 @@ check_file_path=function(
 cp_data=function(
   origin=NULL,
   target=NULL,
-  force=TRUE,
+  force=FALSE,
   ...
 ){
 
@@ -331,7 +331,7 @@ cp_data=function(
 
       out_files$file=paste0(target,"/",basename(origin))
 
-      exec_code=paste("cp -r ",args,origin," -t ", target)
+      exec_code=paste("cp -rn ",args,origin," -t ", target)
 
       run_job()
 
