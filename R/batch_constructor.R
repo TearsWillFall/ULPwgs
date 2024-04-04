@@ -442,7 +442,7 @@ runEnv.parent=function(){
   setVars.parent()
 
   ### CREATE RDS OBJECT TO STORE ENVIRONMENT
-  storeEnv.parent()
+  storeEnv.parent.write()
 
   ### CREATE CALLER
   buildCall.init()
@@ -569,16 +569,6 @@ runEnv.consolidate=function(){
 
 
 
-#' Set steps enviroment for use
-#' 
-#' @param .env Environment
-#' @export
-
-launch=function(){
-      append_env(to=environment(),from=parent.frame())
-      reports=run()
-      return(reports)
-  }
 
 
 
@@ -783,7 +773,7 @@ buildEnv.child=function(){
   buildErrorMessage.child()
 
   ### CREATE RDS FORMAT
-  storeRDS.child.set()
+  storeEnv.child.write()
 
   ### WE DUMP CHILDREN INFO
   
@@ -1106,7 +1096,7 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
       buildEnv.parent()
     
       ## WE WILL LAUNCH THE MAIN FUNCTION
-      launch()
+      runEnv()
     }
 
 
