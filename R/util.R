@@ -332,8 +332,8 @@ cp_data=function(
       out_files$file=paste0(target,"/",basename(origin))
 
       exec_code=paste("cp -rn ",args,origin," -t ", target)
-
-      run_job()
+      
+      runEnv.child()
 
       append_env(from=environment(),to=parent.frame())
 
