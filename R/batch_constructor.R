@@ -20,11 +20,11 @@ build_job=function(
   if(is.null(parent_id)){
     stop("parent_id argument is required to allocate an id for job")
   }
-  parent_id=paste0("parent_",parent_id)
+  parent_id=paste0("parent.",parent_id)
   if(!is.null(child_id)){
     job=lapply(child_id,FUN=function(id){
-    task=paste0("child_",id)
-    job=paste0(c(parent_id,child_id),collapse=".")
+      child_id=paste0("child.",id)
+      job=paste0(c(parent_id,child_id),collapse=".")
     })
   }else{
     job=parent_id
@@ -184,10 +184,10 @@ return()
 make_unique_id=function(
   name,
   id=sample(1:100000000000000,1,replace=FALSE),
-  sep="_"
+  sep="."
 ){
   options(scipen = 999)
-  unique_name=paste0(name,"_",id)
+  unique_name=paste0(name,sep,id)
   return(unique_name)
 }
 
