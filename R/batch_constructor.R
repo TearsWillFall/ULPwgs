@@ -252,9 +252,6 @@ wait_scheduler=function(){
 
 
 
-
-
-
 buildCall=function(){
   UseMethod("buildCaller")
 }
@@ -859,7 +856,7 @@ buildEnv.parent=function(
     buildDirs.parent()
     
     ### CREATE SHEET WITH VARIABLES
-    buildsSheet.create()
+    buildSheet.create()
     
     ### CREATE AN ERROR MESSAGE TO TRACK WHERE JOB FAILS
     buildErrorMessage.parent()
@@ -892,7 +889,7 @@ buildEnv.parent.set=function(){
   if(is.null(fn)){
     ## GET CALLER FUNCTION NAME
     fn <- sub(".*::","",sub("\\(.*","",
-      paste0(deparse(sys.calls()[[sys.nframe()-2]]),collapse=","))
+      paste0(deparse(sys.calls()[[sys.nframe()-3]]),collapse=","))
     )
   }
 
