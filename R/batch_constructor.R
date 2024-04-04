@@ -797,7 +797,7 @@ set_work_dir_children=function(){
       ### WE WILL STORE TMP FILES FOR ALL FUNCTIONS HERE 
       
       tmp_dir <- set_dir(
-        dir=child_dir,
+        dir=tmp_dir,
         name=child_id
       )
       
@@ -805,7 +805,7 @@ set_work_dir_children=function(){
       ### WE WILL STORE SYMLINK FILES FOR LOCAL FILES
     
       ln_dir <- set_dir(
-        dir=tmp_dir,
+        dir=ln_dir,
         name=child_id
       )
 
@@ -814,7 +814,7 @@ set_work_dir_children=function(){
       ### WE WILL STORE REMOTE DOWNLOAD FILES HERE
       
       rmt_dir <- set_dir(
-          dir=tmp_dir,
+          dir=rmt_dir,
           name=child_id
       )
       
@@ -823,7 +823,7 @@ set_work_dir_children=function(){
       ### WE WILL STORE R ENVIRONMENT DATA HERE
     
       env_dir<- set_dir(
-          dir=child_dir,
+          dir=env_dir,
           name=child_id
       )
         
@@ -832,7 +832,7 @@ set_work_dir_children=function(){
       ### WE WILL STORE SCHEDULER DATA HERE
    
       batch_dir<- set_dir(
-        dir=child_dir,
+        dir=batch_dir,
         name=child_id
       )
 
