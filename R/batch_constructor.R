@@ -525,7 +525,7 @@ runEnv.consolidate=function(){
       fn_vars,
       FUN=function(
         var,
-        .batch.env
+        env
       ){
         append_env(to=environment(),from=env)
         var_value=get(var)
