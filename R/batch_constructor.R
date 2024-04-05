@@ -829,7 +829,8 @@ buildEnv.parent=function(
         if(!is.environment(inherit)){
           inherit <-readRDS(file=inherit)
         }
-        append_env(to=parent.frame(),from=inherit$child.envs[[select]])
+        append_env(to=environment(),from=inherit$child.envs[[select]])
+        append_env(to=parent.frame(),from=environment())
         return()
     }
 
