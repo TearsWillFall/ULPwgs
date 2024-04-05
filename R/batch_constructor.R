@@ -478,6 +478,44 @@ runEnv.run=function(){
 
 
 
+runEnv.consolidate.symlink=function(){
+    append_env(to=environment(),from=parent.frame())
+    var_value=normalizePath(var_value)
+    ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE 
+    ## TEMP DIRECTORY FOR EACH VARIABLE
+    var_dir=set_dir(dir=ln_dir,name=var)
+    system(paste("ln -fs ",var_value, var_dir," > /dev/null 2>&1 "))
+    ### UPDATE THE VARIABLE TO THE SYMLINK
+    append_env(from=environment(),to=parent.frame())
+}
+
+
+runEnv.consolidate.remote.check=function(){
+    append_env(to=environment(),from=parent.frame())
+    check=suppressWarnings(system(paste(
+    "sshpass -f ",password,
+    " ssh ",paste0(user,
+      ifelse(!is.null(user),"@",""),node),
+      "\" realpath -e ",var_value,"\" > /dev/null 2>&1 "),intern=TRUE
+    ))
+    append_env(from=environment(),to=parent.frame())
+}
+
+runEnv.consolidate.remote.get=function(){
+  append_env(to=environment(),from=parent.frame())
+  var_dir=set_dir(dir=rmt_dir,name=var)
+  ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
+  system(paste(
+  "sshpass -f ",password,
+  " ssh ",paste0(user,
+    ifelse(!is.null(user),"@",""),node),
+    "\" cp -rn ",check," -t ",
+    var_dir, "> /dev/null 2>&1\"")
+  )
+  append_env(from=environment(),to=parent.frame())
+}
+
+
 
 runEnv.consolidate=function(){
     .base.env=environment()
@@ -494,50 +532,29 @@ runEnv.consolidate=function(){
           error=function(e){
             FALSE
         })){
-          var_value=normalizePath(var_value)
-          ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE 
-          ## TEMP DIRECTORY FOR EACH VARIABLE
-          var_dir=set_dir(dir=ln_dir,name=var)
-          system(paste("ln -fs ",var_value, var_dir," > /dev/null 2>&1 "))
-          ### UPDATE THE VARIABLE TO THE SYMLINK
-          .base.env[[var]]=paste0(var_dir,"/",basename(var_value))
-
+          runEnv.consolidate.symlink()
         }else{
           ## CHECK MISSING CASES
           ## CHECK IF REMOTE NODE IS GIVEN
           if(remote){
 
               ### CHECK IF VARIABLE PATH EXIST IN REMOTE
-
-              check=suppressWarnings(system(paste(
-              "sshpass -f ",password,
-              " ssh ",paste0(user,
-                ifelse(!is.null(user),"@",""),node),
-                "\" realpath -e ",var_value,"\""),intern=TRUE
-              ))
+              runEnv.consolidate.remote.check()
 
               if(length(check)!=0){
-                var_dir=set_dir(dir=rmt_dir,name=var)
-                ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
-                system(paste(
-                "sshpass -f ",password,
-                " ssh ",paste0(user,
-                  ifelse(!is.null(user),"@",""),node),
-                  "\" cp -rn ",check," -t ",
-                  var_dir, "\"")
-                )
+                ### GET REMOTE PATH
+                runEnv.consolidate.remote.get()
                 var_value=paste0(var_dir,"/",basename(check))     
-                var_dir=set_dir(dir=ln_dir,name=var)
-
-                ### UPDATE THE VARIABLE TO THE SYMLINK
-                system(paste("ln -fs ",var_value, var_dir," > /dev/null 2>&1 "))
-                .base.env[[var]]=paste0(var_dir,"/",basename(var_value))
-                
-              }
+           
+                ### We CREATE A SYMLINK TO THE DATA
+                runEnv.consolidate.symlink()   
             }
           }
         }
       }
+    }
+
+  .base.env[[var]]=paste0(var_dir,"/",basename(var_value))
 }
 
 
@@ -890,8 +907,8 @@ dumpInfo.append=function(){
 
   info=data.frame(
       parent_id=parent_id,
-      child_order=row,
       child_id=child_id,
+      child_order=row,
       sheet[row,]
   )
 
