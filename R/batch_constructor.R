@@ -416,13 +416,13 @@ set_inputs<-function(){
 }
 
 
-#' Set steps enviroment for use
-#' 
-#' @param .env Environment
-#' @export
 
 
 runEnv=function(){
+  UseMethod("runEnv")
+}
+
+runEnv.launch=function(){
   append_env(to=environment(),from=parent.frame())
   if(is.null(select)){
     runEnv.parent()
@@ -430,9 +430,10 @@ runEnv=function(){
     runEnv.child()
   }
   return(child.envs)
-  UseMethod("runEnv")
 }
 
+
+  
 
 runEnv.parent=function(){
   append_env(to=environment(),from=parent.frame())
@@ -479,7 +480,6 @@ runEnv.child=function(){
   append_env(from=environment(),to=parent.frame())
 
 }
-
 
 runEnv.run=function(){
   append_env(to=environment(),from=parent.frame())
@@ -825,15 +825,6 @@ buildEnv.parent=function(
     ### WE SAVE RDS FILES WHEN SUBMITTING JOBS TO SCHEDULER OR JOBS RUN LOCALLY IN PARALLEL
     ### SELECT VARIABLE DEFINES WHICH ENV WE ARE RUNNING
     ### WE APPEND THIS ENV AND STOP
-    if(!is.null(inherit)){
-        if(!is.environment(inherit)){
-          inherit <-readRDS(file=inherit)
-        }
-        append_env(to=environment(),from=inherit$child.envs[[select]])
-        append_env(to=parent.frame(),from=environment())
-        return()
-    }
-
 
     ### CREATE VARIABLES FOR THE ENVIRONMENT
     buildEnv.parent.set()
@@ -1074,38 +1065,49 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
 
       append_env(to=environment(),from=parent.frame())
 
-      ### WE BUILD THE PARENT ENVIRONMENT
-      
-      buildEnv.parent()
+      ## WE CHECK IF WE ARE INHERITING A PARENT ENVIROMENT
+      ## ELSE WE CREATE A PARENT ENVIROMENT
 
-      ### WE SET THE DUMPSTER WHERE TO PUT CHILDREN INFO
-      dumpInfo.set()
+      if(exists("inherit")){
+        if(!is.environment(inherit)){
+          inherit <-readRDS(file=inherit)
+        }else{
+          append_env(to=environment(),from=inherit)
+        }
+        append_env(to=environment(),from=inherit$child.envs[[select]])
+      }else{
+        ### WE BUILD THE PARENT ENVIRONMENT
+        
+        buildEnv.parent()
 
-      ### FROM THE PARENT ENVIRONMENT WE CREATE A NEW ENVIRONMENT FOR EACH UNIQUE INPUT
-      child.envs=parallel::mclapply(
-          1:n_inputs,
-          function(row,.env){
+        ### WE SET THE DUMPSTER WHERE TO PUT CHILDREN INFO
+        dumpInfo.set()
 
-            append_env(to=environment(),from=.env)
+        ### FROM THE PARENT ENVIRONMENT WE CREATE A NEW ENVIRONMENT FOR EACH UNIQUE INPUT
+        child.envs=parallel::mclapply(
+            1:n_inputs,
+            function(row,.env){
+
+              append_env(to=environment(),from=.env)
 
 
-            ### WE BUILD THE CHILD ENV
-            buildEnv.child()
+              ### WE BUILD THE CHILD ENV
+              buildEnv.child()
 
-            ### WE DUMP CHILDREN INFO
-            dumpInfo.append()
+              ### WE DUMP CHILDREN INFO
+              dumpInfo.append()
 
-            return(environment())
-            },
-            .env=environment(),
-            mc.cores=parallel::detectCores()
-     )
-
-    append_env(from=environment(),to=parent.frame())
-
-    
+              return(environment())
+              },
+              .env=environment(),
+              mc.cores=parallel::detectCores()
+        )
+      }
       ## WE WILL LAUNCH THE MAIN FUNCTION
-      runEnv()
+      runEnv.launch()
+
+      append_env(from=environment(),to=parent.frame())
+
     }
 
 
