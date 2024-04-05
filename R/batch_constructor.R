@@ -203,7 +203,7 @@ storeEnv.child.write=function(){
 storeEnv.child.read=function(){
   append_env(to=environment(),from=parent.frame())
   ### Reads mains and updates values for enviroments with data
-    child.envs=lapply(1:n_inputs,function(n){
+  child.envs=lapply(1:n_inputs,function(n){
         child.env=readRDS(child.envs[[n]]$child_file)}
   )
   append_env(from=environment(),to=parent.frame())
@@ -442,7 +442,11 @@ runEnv.parent=function(){
         wait_scheduler()
     }
   }
+
+  ### WE UPDATE THE CHILD ENVIROMENTS WITHIN PARENT
   storeEnv.child.read()
+
+  
   append_env(from=environment(),to=parent.frame())
 }
 
@@ -458,10 +462,14 @@ runEnv.child=function(){
   ### CONSOLIDATE VARIABLES AND PATHS
   runEnv.consolidate()
   
-  ### WE RUN THE FUNCION
+  ### WE RUN THE USER DEFINED FUNCTION
   FUN()
-  storeEnv.child.read()
+
+  ### WE RUN THE ENVIROMENT
   runEnv.run()
+  
+  ### WE WRITE RESULTS FOR CHILD TO RDS
+  storeEnv.child.write()
 
   append_env(from=environment(),to=parent.frame())
 
@@ -473,7 +481,7 @@ runEnv.run=function(){
    ### PRODUCE VERBOSE
   if(verbose){
         print_verbose(job=job_id,
-          arg=as.list(environment())[dump_names],
+          arg=as.list(environment())[names(environment()) %in% dump_names],
           exec_code=exec_code
         )
   }
@@ -855,7 +863,7 @@ buildEnv.parent.set=function(){
   ### CHECK IF FILES PATH CAN BE LOCATED REMOTELY
   if(!is.null(node)){
     remote=TRUE
-  }
+  }mp_
 
   append_env(from=environment(),to=parent.frame())
 }
