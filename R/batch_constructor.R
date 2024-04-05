@@ -559,7 +559,7 @@ runEnv.consolidate=function(){
             ### We CREATE A SYMLINK TO THE DATA
             runEnv.consolidate.symlink()   
           }
-          env[[var]]=paste0(var_dir,"/",basename(var_value))
+          env[[var]]=normalizePath(paste0(var_dir,"/",basename(var_value)))
 
           }
       },
