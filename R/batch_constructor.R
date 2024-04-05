@@ -536,7 +536,7 @@ runEnv.consolidate=function(){
           ## WE CHECK IF VARIABLE CONTAINS A PATH
           if(tryCatch({file.exists(var_value)},
             error=function(e){
-              FALSE
+              return()
           })){
             runEnv.consolidate.symlink()
           }else{
@@ -557,8 +557,9 @@ runEnv.consolidate=function(){
               }
             }
           }
+          env[[var]]=paste0(var_dir,"/",basename(var_value))
         }
-        env[[var]]=paste0(var_dir,"/",basename(var_value))
+        
       },
       env=.base.env,
       mc.cores=1
