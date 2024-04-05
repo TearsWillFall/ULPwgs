@@ -851,7 +851,7 @@ buildEnv.parent=function(
     buildErrorMessage.parent()
 
     ### WE PREPARE TO DUMP CHILD INFO
-    dumpInfo()
+    dumpInfo.set()
 
     ### FROM THE PARENT ENVIRONMENT WE CREATE A NEW ENVIRONMENT FOR EACH INPUT
     child.envs=parallel::mclapply(
