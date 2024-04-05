@@ -1093,6 +1093,8 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
               mc.cores=parallel::detectCores()
         )
       }
+      
+      print(as.list(environment()))
       ## WE WILL LAUNCH THE PARENT OR THE CHILD FUNCTION
       if(is.null(select)){
         runEnv.parent()
@@ -1102,7 +1104,6 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
 
       append_env(from=environment(),to=parent.frame())
       
-
     }
 
 
