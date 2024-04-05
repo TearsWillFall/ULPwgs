@@ -496,7 +496,7 @@ runEnv.consolidate.remote.check=function(){
     "sshpass -f ",password,
     " ssh ",paste0(user,
       ifelse(!is.null(user),"@",""),node),
-      "\" realpath -e ",var_value,"\" > /dev/null 2>&1 "),intern=TRUE
+      "\" realpath -e ",var_value," > /dev/null 2>&1 \" "),intern=TRUE
     ))
     append_env(from=environment(),to=parent.frame())
 }
@@ -539,7 +539,7 @@ runEnv.consolidate=function(){
           }else{
             ## CHECK MISSING CASES
             ## CHECK IF REMOTE NODE IS GIVEN
-            if(!remote){
+            if(!node){
               return()
             }
 
@@ -810,7 +810,6 @@ buildEnv.parent=function(
   env=NULL,
   select=NULL,
   err_msg=NULL,
-  remote=FALSE,
   complimentary=FALSE,
   parent_id=NULL,
   wait=FALSE,
@@ -862,10 +861,6 @@ buildEnv.parent.set=function(){
   }
 
 
-  ### CHECK IF FILES PATH CAN BE LOCATED REMOTELY
-  if(!is.null(node)){
-    remote=TRUE
-  }
 
   append_env(from=environment(),to=parent.frame())
 }
