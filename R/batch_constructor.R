@@ -521,40 +521,47 @@ runEnv.consolidate=function(){
     .base.env=environment()
     append_env(to=environment(),from=parent.frame())
     ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
-    for(var in fn_vars){
-      var_value=get(var)
-      ### CHECK VARIABLE TYPE
-      var_type=typeof(var_value)
-      ### IF VARIABLE TYPE IS CHARACTER
-      if(var_type=="character"){
-        ## WE CHECK IF VARIABLE CONTAINS A PATH
-        if(tryCatch({file.exists(var_value)},
-          error=function(e){
-            FALSE
-        })){
-          runEnv.consolidate.symlink()
-        }else{
-          ## CHECK MISSING CASES
-          ## CHECK IF REMOTE NODE IS GIVEN
-          if(remote){
+    parallel::mclapply(
+      fn_vars,
+      FUN=function(
+        var,
+        .batch.env
+      ){
+        var_value=get(var)
+        ### CHECK VARIABLE TYPE
+        var_type=typeof(var_value)
+        ### IF VARIABLE TYPE IS CHARACTER
+        if(var_type=="character"){
+          ## WE CHECK IF VARIABLE CONTAINS A PATH
+          if(tryCatch({file.exists(var_value)},
+            error=function(e){
+              FALSE
+          })){
+            runEnv.consolidate.symlink()
+          }else{
+            ## CHECK MISSING CASES
+            ## CHECK IF REMOTE NODE IS GIVEN
+            if(remote){
 
-              ### CHECK IF VARIABLE PATH EXIST IN REMOTE
-              runEnv.consolidate.remote.check()
+                ### CHECK IF VARIABLE PATH EXIST IN REMOTE
+                runEnv.consolidate.remote.check()
 
-              if(length(check)!=0){
-                ### GET REMOTE PATH
-                runEnv.consolidate.remote.get()
-                var_value=paste0(var_dir,"/",basename(check))     
-           
-                ### We CREATE A SYMLINK TO THE DATA
-                runEnv.consolidate.symlink()   
+                if(length(check)!=0){
+                  ### GET REMOTE PATH
+                  runEnv.consolidate.remote.get()
+                  var_value=paste0(var_dir,"/",basename(check))     
+            
+                  ### We CREATE A SYMLINK TO THE DATA
+                  runEnv.consolidate.symlink()   
+              }
             }
           }
         }
-      }
-    }
-
-  .base.env[[var]]=paste0(var_dir,"/",basename(var_value))
+        .base.env[[var]]=paste0(var_dir,"/",basename(var_value))
+      },
+      .base.env=.base.env,
+      mc.cores=parallel::detectCores-1
+    )
 }
 
 
