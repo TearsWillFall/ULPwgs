@@ -534,32 +534,32 @@ runEnv.consolidate=function(){
         ### IF VARIABLE TYPE IS CHARACTER
         if(var_type=="character"){
           ## WE CHECK IF VARIABLE CONTAINS A PATH
-          if(tryCatch({file.exists(var_value)},
-            error=function(e){
-              return()
-          })){
+          if(file.exists(var_value)){
             runEnv.consolidate.symlink()
           }else{
             ## CHECK MISSING CASES
             ## CHECK IF REMOTE NODE IS GIVEN
-            if(remote){
-
-                ### CHECK IF VARIABLE PATH EXIST IN REMOTE
-                runEnv.consolidate.remote.check()
-
-                if(length(check)!=0){
-                  ### GET REMOTE PATH
-                  runEnv.consolidate.remote.get()
-                  var_value=paste0(var_dir,"/",basename(check))     
-            
-                  ### We CREATE A SYMLINK TO THE DATA
-                  runEnv.consolidate.symlink()   
-              }
+            if(!remote){
+              return()
             }
+
+            ### CHECK IF VARIABLE PATH EXIST IN REMOTE
+            runEnv.consolidate.remote.check()
+
+            if(length(check)==0){
+              return()
+            }
+
+            ### GET REMOTE PATH
+            runEnv.consolidate.remote.get()
+            var_value=paste0(var_dir,"/",basename(check))     
+      
+            ### We CREATE A SYMLINK TO THE DATA
+            runEnv.consolidate.symlink()   
           }
           env[[var]]=paste0(var_dir,"/",basename(var_value))
-        }
-        
+
+          }
       },
       env=.base.env,
       mc.cores=1
