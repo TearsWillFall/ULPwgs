@@ -262,10 +262,6 @@ buildCall.init=function(){
     ### Use SGE TASK ID if mode is set to batch otherwise use value
     
     if(mode=="local"){
-          exec_code=paste0("Rscript -e \" invisible(lapply(1:",n_inputs,
-          ",FUN=function(select){",ns,"::",fn,"(env=\\\"",
-          parent_file,"\\\",select=select)}))\"")
-    }else if(mode=="local_parallel"){
           exec_code=paste0("Rscript -e \" invisible(parallel::mclapply(1:",n_inputs,
           ",FUN=function(select){",ns,"::",fn,"(env=\\\"",
           parent_file,"\\\",select=select)},mc.cores=",threads-1,"))\"")
@@ -1092,9 +1088,8 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
               return(environment())
               },
               .env=environment(),
-              mc.cores=parallel::detectCores()
+              mc.cores=parallel::detectCores()-1
         )
-      
       }
 
 
@@ -1106,7 +1101,7 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
       }
 
       return(.this.env)
-      
+
     }
 
 
