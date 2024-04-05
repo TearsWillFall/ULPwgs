@@ -539,12 +539,14 @@ runEnv.consolidate=function(){
           }else{
             ## CHECK MISSING CASES
             ## CHECK IF REMOTE NODE IS GIVEN
-            if(!is.null(node)){
+            if(is.null(node)){
               return()
             }
+            print(node)
 
             ### CHECK IF VARIABLE PATH EXIST IN REMOTE
             runEnv.consolidate.remote.check()
+            print(check)
 
             if(length(check)==0){
               return()
