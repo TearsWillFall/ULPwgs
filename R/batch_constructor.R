@@ -759,10 +759,6 @@ buildEnv.child=function(){
   ### CREATE CHILD JOB ID
   buildId.child()
 
-  ### CREATE WORKING DIRECTORIES FOR EACH CHILD
-
-  buildDirs.child()
-
   ## CREATE ERROR MESSAGE FOR EACH CHILD
 
   buildErrorMessage.child()
