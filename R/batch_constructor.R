@@ -850,8 +850,6 @@ buildEnv.parent=function(
 }
 
 
-   
-}
 
 buildEnv.parent.set=function(){
   append_env(to=environment(),from=parent.frame())
@@ -1059,7 +1057,6 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
     FUN=NULL,
     ...
  ){
-
       if(is.null(FUN)){
         stop("Please define a function to run")
       }
@@ -1079,7 +1076,7 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
 
       ### WE SET THE DUMPSTER WHERE TO PUT CHILDREN INFO
       dumpInfo.set()
-      
+
       ### FROM THE PARENT ENVIRONMENT WE CREATE A NEW ENVIRONMENT FOR EACH UNIQUE INPUT
       child.envs=parallel::mclapply(
           1:n_inputs,
