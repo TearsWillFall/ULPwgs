@@ -774,10 +774,6 @@ buildEnv.child=function(){
   ### CREATE RDS FORMAT
   storeEnv.child.write()
 
-  ### WE DUMP CHILDREN INFO
-  
-  dumpInfo.append()
-
   append_env(from=environment(),to=parent.frame())
 
 }
@@ -850,25 +846,11 @@ buildEnv.parent=function(
     ### CREATE AN ERROR MESSAGE TO TRACK WHERE JOB FAILS
     buildErrorMessage.parent()
 
-    ### WE PREPARE TO DUMP CHILD INFO
-    dumpInfo.set()
-
-    ### FROM THE PARENT ENVIRONMENT WE CREATE A NEW ENVIRONMENT FOR EACH INPUT
-    child.envs=parallel::mclapply(
-        1:n_inputs,
-        function(row,.env){
-
-          append_env(to=environment(),from=.env)
-
-          buildEnv.child()
-
-          return(environment())
-          },
-          .env=environment(),
-          mc.cores=parallel::detectCores()
-    )
-
     append_env(from=environment(),to=parent.frame())
+}
+
+
+   
 }
 
 buildEnv.parent.set=function(){
@@ -1094,6 +1076,32 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
       ### WE BUILD THE PARENT ENVIRONMENT
       
       buildEnv.parent()
+
+      ### WE SET THE DUMPSTER WHERE TO PUT CHILDREN INFO
+      dumpInfo.set()
+      
+      ### FROM THE PARENT ENVIRONMENT WE CREATE A NEW ENVIRONMENT FOR EACH UNIQUE INPUT
+      child.envs=parallel::mclapply(
+          1:n_inputs,
+          function(row,.env){
+
+            append_env(to=environment(),from=.env)
+
+
+            ### WE BUILD THE CHILD ENV
+            buildEnv.child()
+
+            ### WE DUMP CHILDREN INFO
+            dumpInfo.append()
+
+            return(environment())
+            },
+            .env=environment(),
+            mc.cores=parallel::detectCores()
+     )
+
+    append_env(from=environment(),to=parent.frame())
+
     
       ## WE WILL LAUNCH THE MAIN FUNCTION
       runEnv()
