@@ -422,18 +422,6 @@ runEnv=function(){
   UseMethod("runEnv")
 }
 
-runEnv.launch=function(){
-  append_env(to=environment(),from=parent.frame())
-  if(is.null(select)){
-    runEnv.parent()
-  }else{
-    runEnv.child()
-  }
-  return(child.envs)
-}
-
-
-  
 
 runEnv.parent=function(){
   append_env(to=environment(),from=parent.frame())
@@ -1103,10 +1091,17 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
               mc.cores=parallel::detectCores()
         )
       }
-      ## WE WILL LAUNCH THE MAIN FUNCTION
-      runEnv.launch()
-
+      ## WE WILL LAUNCH THE PARENT OR THE CHILD FUNCTION
+      if(is.null(select)){
+        runEnv.parent()
+      }else{
+        runEnv.child()
+      }
+      
       append_env(from=environment(),to=parent.frame())
+      
+
+      
 
     }
 
