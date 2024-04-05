@@ -187,7 +187,7 @@ storeEnv=function(){
 
 storeEnv.parent.write=function(){
   append_env(to=environment(),from=parent.frame())
-  parent_file=paste0(env_dir,"/",job_id,".parent.RData")
+  parent_file=paste0(env_dir,"/",parent_id,".parent.RData")
   saveRDS(environment(),file = parent_file)
   append_env(from=environment(),to=parent.frame())
 }
@@ -195,7 +195,7 @@ storeEnv.parent.write=function(){
 
 storeEnv.child.write=function(){
   append_env(to=environment(),from=parent.frame())
-  child_file=paste0(env_dir,"/",job_id,".child.RData")
+  child_file=paste0(env_dir,"/",child_id,".child.RData")
   saveRDS(environment(),file=child_file)
   append_env(from=environment(),to=parent.frame())
 }
@@ -432,17 +432,17 @@ runEnv.parent=function(){
   buildCall.init()
 
   runEnv.run()
- 
+  
+
   ### WAIT FOR SCHEDULER TO FINISH
   if(mode=="batch"){
     if(wait){
         wait_scheduler()
     }
   }
-  
-  ### WE UPDATE THE CHILD ENVIROMENTS WITHIN PARENT
-  storeEnv.child.read()
 
+
+  
   append_env(from=environment(),to=parent.frame())
 }
 
@@ -474,7 +474,7 @@ runEnv.child=function(){
 runEnv.run=function(){
   append_env(to=environment(),from=parent.frame())
  
-   ### PRODUCE VERBOSE
+  ### PRODUCE VERBOSE
   if(verbose){
         print_verbose(job=job_id,
           arg=as.list(environment())[names(environment()) %in% dump_names],
@@ -491,6 +491,8 @@ runEnv.run=function(){
 
   append_env(from=environment(),to=parent.frame())
 }
+
+
 
 
 runEnv.consolidate=function(){
@@ -1048,7 +1050,7 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
       .base.env=parent.frame()
       ### ADD OTHER VARIABLES TO BASE ENV
       list2env(x=list(...),envir=.base.env)
-      
+
       ## GET VARIABLE NAMES
       fn_vars=names(.base.env)[!grepl("\\.|FUN",names(.base.env))]
 
@@ -1092,7 +1094,9 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
               .env=environment(),
               mc.cores=parallel::detectCores()
         )
+      
       }
+
 
       ## WE WILL LAUNCH THE PARENT OR THE CHILD FUNCTION
       if(is.null(select)){
@@ -1100,7 +1104,7 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
       }else{
         runEnv.child()
       }
-      
+
       return(.this.env)
       
     }
