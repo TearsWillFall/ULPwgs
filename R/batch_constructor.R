@@ -263,15 +263,15 @@ buildCall.init=function(){
     
     if(mode=="local"){
           exec_code=paste0("Rscript -e \" invisible(lapply(1:",n_inputs,
-          ",FUN=function(select){",ns,"::",fn,"(.env=\\\"",
+          ",FUN=function(select){",ns,"::",fn,"(env=\\\"",
           parent_file,"\\\",select=select)}))\"")
     }else if(mode=="local_parallel"){
           exec_code=paste0("Rscript -e \" invisible(parallel::mclapply(1:",n_inputs,
-          ",FUN=function(select){",ns,"::",fn,"(.env=\\\"",
+          ",FUN=function(select){",ns,"::",fn,"(env=\\\"",
           parent_file,"\\\",select=select)},mc.cores=",threads-1,"))\"")
     }else if(mode=="batch"){
           exec_code=paste0("Rscript -e \" invisible(",
-          ns,"::",fn,"(.env=\\\"",parent_file,
+          ns,"::",fn,"(env=\\\"",parent_file,
           "\\\",select=$SGE_TASK_ID))\"")
           buildCaller.batch()
 
@@ -1057,13 +1057,14 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
       ## WE CHECK IF WE ARE INHERITING A PARENT ENVIROMENT
       ## ELSE WE CREATE A PARENT ENVIROMENT
 
-      if(exists(".env")){
-        if(!is.environment(.env)){
-          .env <-readRDS(file=.env)
+      if(exists("env")){
+        if(!is.environment(inherit_env)){
+          env <-readRDS(file=env)
+          append_env(to=environment(),from=.env$child.envs[[select]])
         }else{
-          append_env(to=environment(),from=.env)
+          append_env(to=environment(),from=env)
         }
-        append_env(to=environment(),from=.env$child.envs[[select]])
+        env<-NULL
       }else{
         ### WE BUILD THE PARENT ENVIRONMENT
         
