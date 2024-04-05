@@ -445,7 +445,6 @@ runEnv.parent=function(){
 
   ### WE UPDATE THE CHILD ENVIROMENTS WITHIN PARENT
   storeEnv.child.read()
-
   
   append_env(from=environment(),to=parent.frame())
 }
@@ -863,7 +862,7 @@ buildEnv.parent.set=function(){
   ### CHECK IF FILES PATH CAN BE LOCATED REMOTELY
   if(!is.null(node)){
     remote=TRUE
-  }mp_
+  }
 
   append_env(from=environment(),to=parent.frame())
 }
