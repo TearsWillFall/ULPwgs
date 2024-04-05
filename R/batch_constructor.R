@@ -560,7 +560,10 @@ runEnv.consolidate=function(){
         .base.env[[var]]=paste0(var_dir,"/",basename(var_value))
       },
       .base.env=.base.env,
-      mc.cores=parallel::detectCores-1
+      mc.cores=ifelse(
+        (parallel::detectCores()-1)<1,
+        1,(parallel::detectCores()-1)
+      )
     )
 }
 
@@ -1096,7 +1099,11 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
               return(environment())
               },
               .env=environment(),
-              mc.cores=parallel::detectCores()-1
+              mc.cores=ifelse(
+                (parallel::detectCores()-1)<1,
+                1,
+                (parallel::detectCores()-1)
+          )
         )
       }
 
