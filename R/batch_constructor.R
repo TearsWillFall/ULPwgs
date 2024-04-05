@@ -1058,7 +1058,7 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
       ## ELSE WE CREATE A PARENT ENVIROMENT
 
       if(exists("env")){
-        if(!is.environment(inherit_env)){
+        if(!is.environment(env)){
           env <-readRDS(file=env)
           append_env(to=environment(),from=.env$child.envs[[select]])
         }else{
