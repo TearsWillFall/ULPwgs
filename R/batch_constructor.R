@@ -291,6 +291,7 @@ buildCall.init=function(){
 
 buildCall.batch=function(){
     append_env(to=environment(),from=parent.frame())
+    buildCall.batch.init()
     exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
     ";",exec_code,"'|",batch_code)
     append_env(from=environment(),to=parent.frame())
