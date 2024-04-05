@@ -261,12 +261,23 @@ buildCall.init=function(){
     append_env(to=environment(),from=parent.frame())
     ### Use SGE TASK ID if mode is set to batch otherwise use value
     
+
+    ## WE ASSUME WE HAVE INFINITE CORES AND CAN RUN INFINITE JOBS 
+    cores=Inf
+    rjobs=Inf
     if(mode=="local"){
+          ### LOCALLY WE ARE LIMITED IN NUMBER OF CORES
+          cores=parallel::detectCores()-1
+        
+          ### WE ASSIGN A REASONABLE NUMBER OF JOBS FoR THE REQUESTED NUMBER OF THREADS 
+          rjobs=floor(cores/threads)
           exec_code=paste0("Rscript -e \" invisible(parallel::mclapply(1:",n_inputs,
           ",FUN=function(select){",ns,"::",fn,"(env=\\\"",
-          parent_file,"\\\",select=select)},mc.cores=",
+          parent_file,"\\\",select=select)},mc.cores=",rjobs,
           floor((parallel::detectCores-1)/threads),"))\"")
     }else if(mode=="batch"){
+          ### IN BATCH WE ASSUME INFINITE RESOURCES 
+
           exec_code=paste0("Rscript -e \" invisible(",
           ns,"::",fn,"(env=\\\"",parent_file,
           "\\\",select=$SGE_TASK_ID))\"")
