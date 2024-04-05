@@ -1060,7 +1060,7 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
       if(exists("env")){
         if(!is.environment(env)){
           env <-readRDS(file=env)
-          append_env(to=environment(),from=.env$child.envs[[select]])
+          append_env(to=environment(),from=env$child.envs[[select]])
         }else{
           append_env(to=environment(),from=env)
         }
