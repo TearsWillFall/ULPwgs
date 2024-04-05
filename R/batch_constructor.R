@@ -317,7 +317,7 @@ buildCall.batch.init=function(){
   if(bypass){
     batch_code=paste0(batch_code," -P crag7day ")
   }
-  
+
   append_env(from=environment(),to=parent.frame())
 }
 
@@ -1077,7 +1077,6 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
               .env=environment(),
               mc.cores=parallel::detectCores()-1
         )
-        runEnv.self()
       }
 
 
