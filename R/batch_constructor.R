@@ -253,7 +253,7 @@ wait_scheduler=function(){
 
 
 buildCall=function(){
-  UseMethod("buildCaller")
+  UseMethod("buildCall")
 }
 
 
@@ -280,7 +280,7 @@ buildCall.init=function(){
           exec_code=paste0("Rscript -e \" invisible(",
           ns,"::",fn,"(env=\\\"",parent_file,
           "\\\",select=$SGE_TASK_ID))\"")
-          buildCaller.batch()
+          buildCall.batch()
 
     }else{
       stop("Unkown mode type")
@@ -296,30 +296,6 @@ buildCall.batch=function(){
     append_env(from=environment(),to=parent.frame())
 }
 
-buildCall.batch.ini=function(){
-    append_env(to=environment(),from=parent.frame())
-    buildCall.batch.init()
-    exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
-    ";",exec_code,"'|",batch_code)
-    append_env(from=environment(),to=parent.frame())
-}
-
-
-
-
-
-
-#' Build job executor in SGE
-#'
-#' @param job Name of job or jobs.
-#' @param time Time in seconds between checks. Default 10.
-#' @param output_dir [OPTIONAL] PATH to output directory. 
-#' @param verbose [OPTIONAL] Enables progress messages. Default False.
-#' @param threads [OPTIONAL] Number of threads to use to. Default 3.
-#' @param ram  [OPTIONAL] RAM memory per thread requested. Default 4.
-#' @param hold Job IDs to hold job.
-#' 
-#' @export
 
 buildCall.batch.init=function(){
   append_env(to=environment(),from=parent.frame())
@@ -342,6 +318,7 @@ buildCall.batch.init=function(){
     batch_code=paste0(batch_code," -P crag7day ")
   }
   
+  append_env(from=environment(),to=parent.frame())
 }
 
 
@@ -424,7 +401,6 @@ set_inputs<-function(){
 runEnv=function(){
   UseMethod("runEnv")
 }
-
 
 runEnv.parent=function(){
   append_env(to=environment(),from=parent.frame())
@@ -1101,6 +1077,7 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
               .env=environment(),
               mc.cores=parallel::detectCores()-1
         )
+        runEnv.self()
       }
 
 
