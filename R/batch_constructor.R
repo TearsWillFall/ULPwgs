@@ -561,10 +561,7 @@ runEnv.consolidate=function(){
         env[[var]]=paste0(var_dir,"/",basename(var_value))
       },
       env=.base.env,
-      mc.cores=ifelse(
-        (parallel::detectCores()-1)<1,
-        1,(parallel::detectCores()-1)
-      )
+      mc.cores=1
     )
 }
 
