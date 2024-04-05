@@ -903,6 +903,11 @@ buildEnv.parent.set=function(){
 
 
 dumpInfo<-function(){
+  UseMethod("dumpInfo")
+}
+
+
+dumpInfo.set<-function(){
   append_env(to=environment(),from=parent.frame())
 
   ### TRACING CHILDREN CAN BE DIFFICULT
@@ -925,9 +930,8 @@ dumpInfo<-function(){
   )
 
   append_env(from=environment(),to=parent.frame())
-  
-  UseMethod("dumpInfo")
 }
+
 
 dumpInfo.append=function(){
   append_env(to=environment(),from=parent.frame())
