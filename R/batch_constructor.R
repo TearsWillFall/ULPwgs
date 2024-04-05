@@ -264,7 +264,7 @@ buildCall.init=function(){
     if(mode=="local"){
           exec_code=paste0("Rscript -e \" invisible(parallel::mclapply(1:",n_inputs,
           ",FUN=function(select){",ns,"::",fn,"(env=\\\"",
-          parent_file,"\\\",select=select)},mc.cores=",threads-1,"))\"")
+          parent_file,"\\\",select=select)},mc.cores=",ifelse((threads-1)<1,1,threads-1),"))\"")
     }else if(mode=="batch"){
           exec_code=paste0("Rscript -e \" invisible(",
           ns,"::",fn,"(env=\\\"",parent_file,
