@@ -1056,9 +1056,10 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
       ## WE CHECK IF WE ARE INHERITING A PARENT ENVIROMENT
       ## ELSE WE CREATE A PARENT ENVIROMENT
 
-      print(env)
-      if(exists("env")){
-        if(!is.environment(env)){
+ 
+      if(exists(".env")){
+        print(.env)
+        if(!is.environment(.env)){
           .env <-readRDS(file=.env)
         }else{
           append_env(to=environment(),from=.env)
