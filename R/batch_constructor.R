@@ -263,15 +263,15 @@ buildCall.init=function(){
     
     if(mode=="local"){
           exec_code=paste0("Rscript -e \" invisible(lapply(1:",n_inputs,
-          ",FUN=function(select){",ns,"::",fn,"(inherit=\\\"",
+          ",FUN=function(select){",ns,"::",fn,"(.env=\\\"",
           parent_file,"\\\",select=select)}))\"")
     }else if(mode=="local_parallel"){
           exec_code=paste0("Rscript -e \" invisible(parallel::mclapply(1:",n_inputs,
-          ",FUN=function(select){",ns,"::",fn,"(inherit=\\\"",
+          ",FUN=function(select){",ns,"::",fn,"(.env=\\\"",
           parent_file,"\\\",select=select)},mc.cores=",threads-1,"))\"")
     }else if(mode=="batch"){
           exec_code=paste0("Rscript -e \" invisible(",
-          ns,"::",fn,"(inherit=\\\"",parent_file,
+          ns,"::",fn,"(.env=\\\"",parent_file,
           "\\\",select=$SGE_TASK_ID))\"")
           buildCaller.batch()
 
@@ -797,7 +797,7 @@ buildEnv.parent=function(
   user=NULL,
   password=NULL,
   sheet=NULL,
-  inherit=NULL,
+  env=NULL,
   select=NULL,
   err_msg=NULL,
   remote=FALSE,
@@ -1056,13 +1056,14 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
       ## WE CHECK IF WE ARE INHERITING A PARENT ENVIROMENT
       ## ELSE WE CREATE A PARENT ENVIROMENT
 
-      if(exists("inherit")){
-        if(!is.environment(inherit)){
-          inherit <-readRDS(file=inherit)
+      print(env)
+      if(exists("env")){
+        if(!is.environment(env)){
+          .env <-readRDS(file=.env)
         }else{
-          append_env(to=environment(),from=inherit)
+          append_env(to=environment(),from=.env)
         }
-        append_env(to=environment(),from=inherit$child.envs[[select]])
+        append_env(to=environment(),from=.env$child.envs[[select]])
       }else{
         ### WE BUILD THE PARENT ENVIRONMENT
         
@@ -1097,10 +1098,8 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
       }else{
         runEnv.child()
       }
-      
-      append_env(from=environment(),to=parent.frame())
-      
 
+      append_env(from=environment(),to=parent.frame())
       
 
     }
