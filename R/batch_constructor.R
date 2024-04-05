@@ -273,8 +273,7 @@ buildCall.init=function(){
           rjobs=floor(cores/threads)
           exec_code=paste0("Rscript -e \" invisible(parallel::mclapply(1:",n_inputs,
           ",FUN=function(select){",ns,"::",fn,"(env=\\\"",
-          parent_file,"\\\",select=select)},mc.cores=",rjobs,
-          floor((parallel::detectCores-1)/threads),"))\"")
+          parent_file,"\\\",select=select)},mc.cores=",rjobs,"))\"")
     }else if(mode=="batch"){
           ### IN BATCH WE ASSUME INFINITE RESOURCES 
 
