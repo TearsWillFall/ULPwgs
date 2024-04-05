@@ -452,7 +452,7 @@ runEnv.child=function(){
 
   append_env(to=environment(),from=parent.frame())
   
-  print("This is a child")
+
   ### WE SET VARS TO COLLECT INFO FROM CHILD
   setVars.child()
   

@@ -319,7 +319,7 @@ cp_data=function(
       if(is.null(origin)){
         stop("origin argument is required.")
       }
-      
+
       if(is.null(target)){
         stop("target argument is required.")
       }
@@ -332,9 +332,6 @@ cp_data=function(
       out_files$file=paste0(target,"/",basename(origin))
 
       exec_code=paste("cp -rn ",args,origin," -t ", target)
-      
-      runEnv.child()
-
       append_env(from=environment(),to=parent.frame())
 
     }
