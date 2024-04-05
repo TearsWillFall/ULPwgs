@@ -925,7 +925,8 @@ dumpInfo<-function(){
   )
 
   append_env(from=environment(),to=parent.frame())
-   UseMethod("dumpInfo")
+  
+  UseMethod("dumpInfo")
 }
 
 dumpInfo.append=function(){
