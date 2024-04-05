@@ -356,7 +356,6 @@ setVars.child=function(){
     append_env(to=environment(),from=parent.frame())
     exec_code=""
     error=0
-    out_file=""
     steps=list()
     out_files=list()
     append_env(from=environment(),to=parent.frame())
@@ -458,6 +457,8 @@ runEnv.child=function(){
   
   ### CONSOLIDATE VARIABLES AND PATHS
   runEnv.consolidate()
+  
+  ### WE RUN THE FUNCION
   FUN()
   storeEnv.child.read()
   runEnv.run()
