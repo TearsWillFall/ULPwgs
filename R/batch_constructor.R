@@ -882,7 +882,7 @@ dumpInfo.set<-function(){
 
   write.table(
         file=dump_file,
-        x=as.data.frame(matrix(dump_names,n.row=1)),
+        x=as.data.frame(matrix(dump_names,nrow=1)),
         sep="\t",
         col.names=FALSE,
         row.names=FALSE,
