@@ -452,17 +452,14 @@ runEnv.child=function(){
 
   append_env(to=environment(),from=parent.frame())
   
+  print("This is a child")
   ### WE SET VARS TO COLLECT INFO FROM CHILD
   setVars.child()
-
+  
+  ### CONSOLIDATE VARIABLES AND PATHS
   runEnv.consolidate()
   FUN()
   storeEnv.child.read()
-
-  if(clean){
-    build_clean_exec()
-  }
-
   runEnv.run()
 
   append_env(from=environment(),to=parent.frame())
@@ -876,7 +873,7 @@ dumpInfo.set<-function(){
   ### TRACING CHILDREN CAN BE DIFFICULT
   ### WE DEFINE THE VARIABLES THAT WILL HELP IDENTIFY CHILDREN IN JOB HIERARCHY
 
-  dump_names=c("parent_id","child_order","child_id",fn_vars)
+  dump_names=c("parent_id","child_id","child_order",fn_vars)
   
   ## WE DEFINE A FILE WERE WE WILL DUMP THIS INFO
   
@@ -885,7 +882,7 @@ dumpInfo.set<-function(){
 
   write.table(
         file=dump_file,
-        x=data.frame(dump_names),
+        x=as.data.frame(matrix(dump_names,n.row=1)),
         sep="\t",
         col.names=FALSE,
         row.names=FALSE,
@@ -1093,8 +1090,7 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
               mc.cores=parallel::detectCores()
         )
       }
-      
-      print(as.list(environment()))
+
       ## WE WILL LAUNCH THE PARENT OR THE CHILD FUNCTION
       if(is.null(select)){
         runEnv.parent()
