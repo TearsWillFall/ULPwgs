@@ -913,6 +913,7 @@ dumpInfo.append=function(){
       file=dump_file,
       x=info,
       sep="\t",
+      append=TRUE,
       col.names=FALSE,
       row.names=FALSE,
       quote=FALSE
@@ -1056,9 +1057,7 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
       ## WE CHECK IF WE ARE INHERITING A PARENT ENVIROMENT
       ## ELSE WE CREATE A PARENT ENVIROMENT
 
- 
       if(exists(".env")){
-        print(.env)
         if(!is.environment(.env)){
           .env <-readRDS(file=.env)
         }else{
