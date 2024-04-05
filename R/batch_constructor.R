@@ -496,7 +496,7 @@ runEnv.consolidate.remote.check=function(){
     "sshpass -f ",password,
     " ssh ",paste0(user,
       ifelse(!is.null(user),"@",""),node),
-      "\" realpath -e ",var_value," > /dev/null 2>&1 \" "),intern=TRUE
+      "\" realpath -e ",var_value,"\" "),intern=TRUE
     ))
     append_env(from=environment(),to=parent.frame())
 }
@@ -510,7 +510,7 @@ runEnv.consolidate.remote.get=function(){
   " ssh ",paste0(user,
     ifelse(!is.null(user),"@",""),node),
     "\" cp -rn ",check," -t ",
-    var_dir, "> /dev/null 2>&1\"")
+    var_dir, "\"")
   )
   append_env(from=environment(),to=parent.frame())
 }
