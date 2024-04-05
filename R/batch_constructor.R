@@ -437,7 +437,7 @@ runEnv=function(){
 runEnv.parent=function(){
   append_env(to=environment(),from=parent.frame())
  
-  ### INITITIATE PARENT VARS TO SAVE CALLER INFO
+  ### WE SET VARS TO COLLECT INFO FROM PARENT
   setVars.parent()
 
   ### CREATE RDS OBJECT TO STORE ENVIRONMENT
@@ -462,6 +462,9 @@ runEnv.parent=function(){
 runEnv.child=function(){
 
   append_env(to=environment(),from=parent.frame())
+  
+  ### WE SET VARS TO COLLECT INFO FROM CHILD
+  setVars.child()
 
   runEnv.consolidate()
   FUN()

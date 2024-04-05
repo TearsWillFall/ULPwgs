@@ -315,7 +315,7 @@ cp_data=function(
 
     FUN=function(){
       append_env(to=environment(),from=parent.frame())
-      set_task()
+      
       if(is.null(origin)){
         stop("origin argument is required.")
       }
@@ -379,7 +379,6 @@ ln_data=function(
       .base.env=parent.frame()
       .this.env=environment()
       append_env(to=.this.env,from=.env)
-      set_main()
 
       if(is.null(origin)){
         stop("origin argument is required.")
