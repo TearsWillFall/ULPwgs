@@ -520,6 +520,7 @@ runEnv.consolidate.remote.get=function(){
 runEnv.consolidate=function(){
     ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
     .base.env=parent.frame()
+    append_env(to=environment(),from=.base.env)
     parallel::mclapply(
       fn_vars,
       FUN=function(
