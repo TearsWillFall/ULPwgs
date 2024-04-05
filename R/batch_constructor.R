@@ -518,15 +518,15 @@ runEnv.consolidate.remote.get=function(){
 
 
 runEnv.consolidate=function(){
-    .base.env=environment()
-    append_env(to=environment(),from=parent.frame())
     ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
+    .base.env=parent.frame()
     parallel::mclapply(
       fn_vars,
       FUN=function(
         var,
         .batch.env
       ){
+        append_env(to=environment(),from=env)
         var_value=get(var)
         ### CHECK VARIABLE TYPE
         var_type=typeof(var_value)
@@ -557,9 +557,9 @@ runEnv.consolidate=function(){
             }
           }
         }
-        .base.env[[var]]=paste0(var_dir,"/",basename(var_value))
+        env[[var]]=paste0(var_dir,"/",basename(var_value))
       },
-      .base.env=.base.env,
+      env=.base.env,
       mc.cores=ifelse(
         (parallel::detectCores()-1)<1,
         1,(parallel::detectCores()-1)
