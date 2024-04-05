@@ -390,9 +390,6 @@ qdel=function(jobs){
 }
 
 
-
-
-
 #' Set main enviroment inputs
 #'
 #' @export
@@ -442,10 +439,10 @@ runEnv.parent=function(){
         wait_scheduler()
     }
   }
-
+  
   ### WE UPDATE THE CHILD ENVIROMENTS WITHIN PARENT
   storeEnv.child.read()
-  
+
   append_env(from=environment(),to=parent.frame())
 }
 
@@ -811,8 +808,6 @@ buildEnv.parent=function(
   wait=FALSE,
   hold=NULL
 ){
-
-
     append_env(to=environment(),from=parent.frame())
     ### IF WE INHERIT A RDS FILE READ AND APPEND
     ### WE SAVE RDS FILES WHEN SUBMITTING JOBS TO SCHEDULER OR JOBS RUN LOCALLY IN PARALLEL
@@ -1105,8 +1100,8 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
       }else{
         runEnv.child()
       }
-
-      append_env(from=environment(),to=parent.frame())
+      
+      return(.this.env)
       
     }
 
