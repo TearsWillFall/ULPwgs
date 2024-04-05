@@ -539,7 +539,7 @@ runEnv.consolidate=function(){
           }else{
             ## CHECK MISSING CASES
             ## CHECK IF REMOTE NODE IS GIVEN
-            if(!node){
+            if(!is.null(node)){
               return()
             }
 
