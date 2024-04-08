@@ -416,7 +416,6 @@ callFUN.checkArgs<-function(){
    .this.env=environment()
     append_env(to=.this.env,from=parent.frame())
 
-   
     if(exists("def_args")){
       types=def_args$types
       required=def_args$required
