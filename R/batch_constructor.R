@@ -424,18 +424,18 @@ callFUN.checkArgs<-function(){
       for (arg in names(types)){
         if(!exists(arg)){
           stop(paste0("Variable : ",arg,
-          "( type : ",types[arg]," ) -> Value: Not defined. Define a value."))
+          "( type : ",types[[arg]]," ) -> Value: Not defined. Define a value."))
         }
 
         if(is.null(.this.env[[arg]])&required[[arg]]){
           stop(paste0("Variable : ",arg,
-          "( type : ",types[arg]," ) -> Value: NULL (type: NULL). Define a non-NULL value."))
+          "( type : ",types[[arg]]," ) -> Value: NULL (type: NULL). Define a non-NULL value."))
         }
 
         if(typeof(.this.env[[arg]])!=types[arg]&required[[arg]]){
           stop(paste0("Variable :",arg,
-          "( type : ",types[arg]," ) -> Value: ",.this.env[[arg]],
-          "( type : ",types[arg]," ).\n Invalid type."))
+          "( type : ",types[[arg]]," ) -> Value: ",.this.env[[arg]],
+          "( type : ",types[[arg]]," ).\n Invalid type."))
         }
       } 
   }
