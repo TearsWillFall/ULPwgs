@@ -469,9 +469,24 @@ callFUN.runSelf=function(){
   ### READ CHILD ENVIRONMENTS
   callFUN.readEnv()
 
-  if(!self){
-     system(paste0("rm ",parent_dir))
-  }
+  ### REMOVE WORK DIRECTORIES IF PROCESS FINISHED
+  callFUN.rmDir()
+    
+  append_env(from=environment(),to=parent.frame())
+}
+
+
+callFUN.rmDir=function(){
+    append_env(to=environment(),from=parent.frame())
+    if(!self){
+    if(preserve=="partial"){
+        if(error!=0){
+            system(paste0("rm -rf ",parent_dir))
+          }
+    }else if (preserve=="none"){
+        system(paste0("rm -rf ",parent_dir))
+      }
+    }
 
   append_env(from=environment(),to=parent.frame())
 }
@@ -863,6 +878,7 @@ callFUN.buildParent=function(
   mode="local",
   time="48:0:0",
   bypass=FALSE,
+  preserve="partial",
   node=NULL,
   user=NULL,
   password=NULL,
