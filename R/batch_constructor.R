@@ -715,7 +715,7 @@ callFUN.readEnv=function(){
 callFUN.buildId=function(){
   append_env(to=environment(),from=parent.frame())
 
-  if(exists("job_id")){
+  if(!exists("job_id")){
     ### IF parent ID IS NOT GIVEN WE CREATE AN UNIQUE NAME USING THE FUNCTION ID
     if(is.null(parent_id)){
       parent_id <- make_unique_id(fn)
@@ -726,6 +726,7 @@ callFUN.buildId=function(){
     job_id <- build_job(
       parent_id=parent_id
     )
+
   }else{
     ### WE CREATE A JOB ID FOR EACH CHILD
     ### CHILDREN SHALL WORK!!
@@ -817,7 +818,6 @@ callFUN.buildChild=function(){
   callFUN.buildId()
 
   ## CREATE ERROR MESSAGE FOR EACH CHILD
-
   callFUN.buildError()
 
   append_env(from=environment(),to=parent.frame())
