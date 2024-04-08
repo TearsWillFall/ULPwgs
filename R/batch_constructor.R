@@ -869,7 +869,7 @@ callFUN.buildParent=function(
     ### WE APPEND THIS ENV AND STOP
 
     ### CREATE VARIABLES FOR THE ENVIRONMENT
-    callFUN.setSelf()
+    callFUN.buildSelf()
       
     ### CREATE JOB ID FOR THE PARENT FUNCTION
     callFUN.buildId()
