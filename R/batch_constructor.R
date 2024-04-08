@@ -715,7 +715,7 @@ callFUN.readEnv=function(){
 callFUN.buildId=function(){
   append_env(to=environment(),from=parent.frame())
 
-  if(is.null(job_id)){
+  if(exists("job_id")){
     ### IF parent ID IS NOT GIVEN WE CREATE AN UNIQUE NAME USING THE FUNCTION ID
     if(is.null(parent_id)){
       parent_id <- make_unique_id(fn)
