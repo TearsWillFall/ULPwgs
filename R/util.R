@@ -311,18 +311,10 @@ cp_data=function(
   target=NULL,
   force=FALSE,
   ...
-){
+){  
 
     FUN=function(){
       append_env(to=environment(),from=parent.frame())
-      
-      if(is.null(origin)){
-        stop("origin argument is required.")
-      }
-
-      if(is.null(target)){
-        stop("target argument is required.")
-      }
 
       args=""
       if(force){
@@ -336,7 +328,13 @@ cp_data=function(
 
     }
 
-    call_function(FUN=FUN,...=...)
+    call_function(...,
+        arg_types=list(
+          origin="character",
+          target="character",
+          force="logical"
+      )
+    )
   
 }
 

@@ -181,46 +181,6 @@ check_job_limit=function(job_limit=1000000){
 }
 
 
-storeEnv=function(){
-  UseMethod("storeEnv")
-}
-
-storeEnv.parent.write=function(){
-  append_env(to=environment(),from=parent.frame())
-  parent_file=paste0(env_dir,"/",parent_id,".parent.RData")
-  saveRDS(environment(),file = parent_file)
-  append_env(from=environment(),to=parent.frame())
-}
-
-
-storeEnv.child.write=function(){
-  append_env(to=environment(),from=parent.frame())
-  child_file=paste0(env_dir,"/",child_id,".child.RData")
-  saveRDS(environment(),file=child_file)
-  append_env(from=environment(),to=parent.frame())
-}
-
-storeEnv.child.read=function(){
-  append_env(to=environment(),from=parent.frame())
-  ### Reads mains and updates values for enviroments with data
-  child.envs=lapply(1:n_inputs,function(n){
-        child.env=readRDS(child.envs[[n]]$child_file)}
-  )
-  append_env(from=environment(),to=parent.frame())
-}
-
-
-storeEnv.parent.read=function(){
-  append_env(from=readRDS(parent_file),to=parent.frame())
-}
-
-
- append_env(to=environment(),from=parent.frame())
-
-  
-
-  append_env(from=environment(),to=parent.frame())
-
 
 
 #' Build execution innit for function to execute
@@ -252,99 +212,6 @@ wait_scheduler=function(){
 
 
 
-buildCall=function(){
-  UseMethod("buildCall")
-}
-
-
-buildCall.init=function(){
-    append_env(to=environment(),from=parent.frame())
-    ### Use SGE TASK ID if mode is set to batch otherwise use value
-    
-
-    ## WE ASSUME WE HAVE INFINITE CORES AND CAN RUN INFINITE JOBS 
-    cores=Inf
-    rjobs=Inf
-    if(mode=="local"){
-          ### LOCALLY WE ARE LIMITED IN NUMBER OF CORES
-          cores=parallel::detectCores()-1
-        
-          ### WE ASSIGN A REASONABLE NUMBER OF JOBS FoR THE REQUESTED NUMBER OF THREADS 
-          rjobs=floor(cores/threads)
-          exec_code=paste0("Rscript -e \" invisible(parallel::mclapply(1:",n_inputs,
-          ",FUN=function(select){",ns,"::",fn,"(env=\\\"",
-          parent_file,"\\\",select=select)},mc.cores=",rjobs,"))\"")
-    }else if(mode=="batch"){
-          ### IN BATCH WE ASSUME INFINITE RESOURCES 
-
-          exec_code=paste0("Rscript -e \" invisible(",
-          ns,"::",fn,"(env=\\\"",parent_file,
-          "\\\",select=$SGE_TASK_ID))\"")
-          buildCall.batch()
-
-    }else{
-      stop("Unkown mode type")
-    }
-
-    append_env(from=environment(),to=parent.frame())
-}
-
-buildCall.batch=function(){
-    append_env(to=environment(),from=parent.frame())
-    buildCall.batch.init()
-    exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
-    ";",exec_code,"'|",batch_code)
-    append_env(from=environment(),to=parent.frame())
-}
-
-
-buildCall.batch.init=function(){
-  append_env(to=environment(),from=parent.frame())
-  batch_code=paste(
-        "qsub -V ", 
-  paste0("-N ",job_id),
-  paste0(" -t 1-",n_inputs),
-  paste0(" -l h_rt=",time),
-  paste0(" -l mem=",ram,"G"),
-  paste0(" -pe smp ",threads), 
-  paste0(" -wd ",getwd()), 
-  paste0(" -o ",batch_dir,"/",job_id,".std_out"),
-  paste0(" -e ",batch_dir,"/",job_id,".std_error"))
-
-  if(!is.null(hold)){
-    batch_code=paste0(batch_code,paste0(" -hold_jid ",paste0(hold,collapse=",")))
-  }
-
-  if(bypass){
-    batch_code=paste0(batch_code," -P crag7day ")
-  }
-
-  append_env(from=environment(),to=parent.frame())
-}
-
-
-setVars=function(){
-  UseMethod("setVars")
-}
-
-setVars.parent=function(){
-    append_env(to=environment(),from=parent.frame())
-    error=0
-    parent_file=""
-    main_code=""
-    exec_code=""
-    batch_code=""
-    append_env(from=environment(),to=parent.frame())
-}
-
-setVars.child=function(){
-    append_env(to=environment(),from=parent.frame())
-    exec_code=""
-    error=0
-    steps=list()
-    out_files=list()
-    append_env(from=environment(),to=parent.frame())
-}
 
 
 
@@ -399,594 +266,8 @@ set_inputs<-function(){
 
 
 
-runEnv=function(){
-  UseMethod("runEnv")
-}
 
-runEnv.parent=function(){
-  append_env(to=environment(),from=parent.frame())
- 
-  ### WE SET VARS TO COLLECT INFO FROM PARENT
-  setVars.parent()
 
-  ### CREATE RDS OBJECT TO STORE ENVIRONMENT
-  storeEnv.parent.write()
-
-  ### CREATE CALLER
-  buildCall.init()
-
-  runEnv.run()
-  
-
-  ### WAIT FOR SCHEDULER TO FINISH
-  if(mode=="batch"){
-    if(wait){
-        wait_scheduler()
-    }
-  }
-
-
-  
-  append_env(from=environment(),to=parent.frame())
-}
-
-
-runEnv.child=function(){
-
-  append_env(to=environment(),from=parent.frame())
-  
-
-  ### WE SET VARS TO COLLECT INFO FROM CHILD
-  setVars.child()
-  
-  ### CONSOLIDATE VARIABLES AND PATHS
-  runEnv.consolidate()
-  
-  ### WE RUN THE USER DEFINED FUNCTION
-  FUN()
-
-  ### WE RUN THE ENVIROMENT
-  runEnv.run()
-  
-  ### WE WRITE RESULTS FOR CHILD TO RDS
-  storeEnv.child.write()
-
-  append_env(from=environment(),to=parent.frame())
-
-}
-
-runEnv.run=function(){
-  append_env(to=environment(),from=parent.frame())
- 
-  ### PRODUCE VERBOSE
-  if(verbose){
-        print_verbose(job=job_id,
-          arg=as.list(environment())[names(environment()) %in% dump_names],
-          exec_code=exec_code
-        )
-  }
-
-  #Read .bashrc to import all envriomental variables
-  error=system(paste0(". $HOME/.bashrc;",exec_code))
-  ### RETURN ERROR MESSAGEchild_order
-  if(error!=0){
-      stop(err_msg)
-  }
-
-  append_env(from=environment(),to=parent.frame())
-}
-
-
-
-runEnv.consolidate.symlink=function(){
-    append_env(to=environment(),from=parent.frame())
-    var_value=normalizePath(var_value)
-    ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE 
-    ## TEMP DIRECTORY FOR EACH VARIABLE
-    var_dir=set_dir(dir=ln_dir,name=var)
-    system(paste("ln -fs ",var_value, var_dir," > /dev/null 2>&1 "))
-    ### UPDATE THE VARIABLE TO THE SYMLINK
-    append_env(from=environment(),to=parent.frame())
-}
-
-
-runEnv.consolidate.remote.check=function(){
-    append_env(to=environment(),from=parent.frame())
-    check=suppressWarnings(system(paste(
-    "sshpass -f ",password,
-    " ssh ",paste0(user,
-      ifelse(!is.null(user),"@",""),node),
-      "\" realpath -e ",var_value,"\" "),intern=TRUE
-    ))
-    append_env(from=environment(),to=parent.frame())
-}
-
-runEnv.consolidate.remote.get=function(){
-  append_env(to=environment(),from=parent.frame())
-  var_dir=set_dir(dir=rmt_dir,name=var)
-  ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
-  system(paste(
-  "sshpass -f ",password,
-  " ssh ",paste0(user,
-    ifelse(!is.null(user),"@",""),node),
-    "\" cp -rn ",check," -t ",
-    var_dir, "\"")
-  )
-  append_env(from=environment(),to=parent.frame())
-}
-
-
-
-runEnv.consolidate=function(){
-    ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
-    .base.env=parent.frame()
-    append_env(to=environment(),from=.base.env)
-    parallel::mclapply(
-      fn_vars,
-      FUN=function(
-        var,
-        env
-      ){
-        append_env(to=environment(),from=env)
-        var_value=get(var)
-        ### CHECK VARIABLE TYPE
-        var_type=typeof(var_value)
-        ### IF VARIABLE TYPE IS CHARACTER
-        if(var_type=="character"){
-          ## WE CHECK IF VARIABLE CONTAINS A PATH
-          if(file.exists(var_value)){
-            runEnv.consolidate.symlink()
-          }else{
-            ## CHECK MISSING CASES
-            ## CHECK IF REMOTE NODE IS GIVEN
-            if(is.null(node)){
-              return()
-            }
-            print(node)
-
-            ### CHECK IF VARIABLE PATH EXIST IN REMOTE
-            runEnv.consolidate.remote.check()
-            print(check)
-
-            if(length(check)==0){
-              return()
-            }
-
-            ### GET REMOTE PATH
-            runEnv.consolidate.remote.get()
-            var_value=paste0(var_dir,"/",basename(check))     
-      
-            ### We CREATE A SYMLINK TO THE DATA
-            runEnv.consolidate.symlink()   
-          }
-          env[[var]]=normalizePath(paste0(var_dir,"/",basename(var_value)))
-
-          }
-      },
-      env=.base.env,
-      mc.cores=1
-    )
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-buildDirs=function(){
-    UseMethod("buildDirs")
-}
-
-buildDirs.parent=function(){
-      append_env(
-        to=environment(),
-        from=parent.frame()
-      )
-
-      ### CREATE MAIN WORKING DIRECTORY
-      out_file_dir <- set_dir(
-          dir=output_dir
-      )
-
-
-      ### CREATE MAIN WORKING DIRECTORY
-      parent_dir <- set_dir(
-          dir=out_file_dir,
-          name=parent_id
-      )
-
-      ### CREATE TMP DIRECTORY
-      ### WE WILL STORE TMP FILES FOR ALL FUNCTIONS HERE 
-      if(is.null(tmp_dir)){
-          tmp_dir <- set_dir(
-            dir=parent_dir,
-            name="tmp"
-        )
-      }
-      
-      ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE SYMLINK OF FILES
-      ### WE WILL STORE SYMLINK FILES FOR LOCAL FILES
-      if(is.null(ln_dir)){
-          ln_dir <- set_dir(
-            dir=tmp_dir,
-            name="ln"
-        )
-      }
-
-      ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE REMOTE FILES
-      ### WE WILL STORE REMOTE DOWNLOAD FILES HERE
-      if(is.null(rmt_dir)){
-          rmt_dir <- set_dir(
-            dir=tmp_dir,
-            name="rmt"
-        )
-      }
-
-      ### CREATE DIRECTORY TO STORE ENVIROMENT DATA
-      ### WE WILL STORE R ENVIRONMENT DATA HERE
-      if(is.null(env_dir)){
-            env_dir<- set_dir(
-              dir=parent_dir,
-              name="env"
-          )
-        }
-
-      ### CREATE DIRECTORY TO BATCH DATA
-      ### WE WILL STORE SCHEDULER DATA HERE
-      if(is.null(batch_dir)){
-          batch_dir<- set_dir(
-            dir=parent_dir,
-            name="batch"
-        )
-      }
-
-    ### WE APPEND NEW VARIABLES BACK TO THE MAIN FUNCTION
-    append_env(from=environment(),to=parent.frame())
-}
-
-
-buildDirs.child=function(){
-      append_env(
-        to=environment(),
-        from=parent.frame()
-      )
-
-      ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE SYMLINK OF FILES
-      ### WE WILL STORE SYMLINK FILES FOR LOCAL FILES
-    
-      ln_dir <- set_dir(
-        dir=ln_dir,
-        name=child_id
-      )
-
-
-      ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE REMOTE FILES
-      ### WE WILL STORE REMOTE DOWNLOAD FILES HERE
-      
-      rmt_dir <- set_dir(
-          dir=rmt_dir,
-          name=child_id
-      )
-      
-
-      ### CREATE DIRECTORY TO STORE ENVIROMENT DATA
-      ### WE WILL STORE R ENVIRONMENT DATA HERE
-    
-      env_dir<- set_dir(
-          dir=env_dir,
-          name=child_id
-      )
-        
-
-      ### CREATE DIRECTORY TO BATCH DATA
-      ### WE WILL STORE SCHEDULER DATA HERE
-   
-      batch_dir<- set_dir(
-        dir=batch_dir,
-        name=child_id
-      )
-
-
-    ### WE APPEND NEW VARIABLES BACK TO THE MAIN FUNCTION
-    append_env(from=environment(),to=parent.frame())
-}
-
-
-
-
-buildId=function(){
-      UseMethods("buildId")
-}
-
-buildId.child=function(){
-  append_env(to=environment(),from=parent.frame())
-  
-  ### WE CREATE A JOB ID FOR EACH CHILD
-  ### CHILDREN SHALL WORK!!
-
-  child_id <- make_unique_id(fn)
-  
-  job_id <- build_job(
-    parent_id=parent_id,
-    child_id=child_id
-  )
-
-   append_env(from=environment(),to=parent.frame())
-}
-
-buildId.parent=function(){
-  append_env(to=environment(),from=parent.frame())
-  
-  ### IF parent ID IS NOT GIVEN WE CREATE AN UNIQUE NAME USING THE FUNCTION ID
-    if(is.null(parent_id)){
-      parent_id <- make_unique_id(fn)
-    }
-
-    ### WE ASSIGN A JOB ID TO THE CALLER FUNCTION
-
-    job_id <- build_job(
-      parent_id=parent_id
-    )
-
-   append_env(from=environment(),to=parent.frame())
-}
-
-
-
-buildEnv<-function(){
-          UseMethods("buildEnv")
-    }
-
-buildEnv.reassign<-function(){
-  append_env(to=environment(),from=parent.frame())
-
-  ### REASSIGN VAR VALUES IN SHEET TO ENVIRONMENT
-  for (col in 1:n_vars){
-    assign(names(sheet)[col],sheet[row,col])
-  }
-  append_env(from=environment(),to=parent.frame())
-
-}
-
-
-buildEnv.child=function(){
-  append_env(to=environment(),from=parent.frame())
-
-  ### USING THE VAR SHEET WE REASSIGN THE VALUES OF EACH VARIABLE
-  buildEnv.reassign()
-
-  ### CREATE CHILD JOB ID
-  buildId.child()
-
-  ## CREATE ERROR MESSAGE FOR EACH CHILD
-
-  buildErrorMessage.child()
-
-  ### CREATE RDS FORMAT
-  storeEnv.child.write()
-
-  append_env(from=environment(),to=parent.frame())
-
-}
-
-buildEnv.parent=function(
-  vars=NULL,
-  fn=NULL,
-  fn_id=NULL,
-  fn_vars=NULL,
-  output_dir=".",
-  tmp_dir=NULL,
-  ln_dir=NULL,
-  rmt_dir=NULL,
-  env_dir=NULL,
-  batch_dir=NULL,
-  output_name=NULL,
-  verbose=FALSE,
-  bgzip_index=FALSE,
-  index_format="tbi",
-  license_dir=build_default_license_list()$dir,
-  clean=FALSE,
-  batch_config=build_default_preprocess_config(),
-  threads=1,
-  ram=4,
-  ns="ULPwgs",
-  mode="local",
-  time="48:0:0",
-  bypass=FALSE,
-  node=NULL,
-  user=NULL,
-  password=NULL,
-  sheet=NULL,
-  env=NULL,
-  select=NULL,
-  err_msg=NULL,
-  complimentary=FALSE,
-  parent_id=NULL,
-  wait=FALSE,
-  hold=NULL
-){
-    append_env(to=environment(),from=parent.frame())
-    ### IF WE INHERIT A RDS FILE READ AND APPEND
-    ### WE SAVE RDS FILES WHEN SUBMITTING JOBS TO SCHEDULER OR JOBS RUN LOCALLY IN PARALLEL
-    ### SELECT VARIABLE DEFINES WHICH ENV WE ARE RUNNING
-    ### WE APPEND THIS ENV AND STOP
-
-    ### CREATE VARIABLES FOR THE ENVIRONMENT
-    buildEnv.parent.set()
-      
-    ### CREATE JOB ID FOR THE PARENT FUNCTION
-    buildId.parent()
-
-    ### CREATE WORK DIRECTORIES
-    buildDirs.parent()
-    
-    ### CREATE SHEET WITH VARIABLES
-    buildSheet.create()
-    
-    ### CREATE AN ERROR MESSAGE TO TRACK WHERE JOB FAILS
-    buildErrorMessage.parent()
-
-    append_env(from=environment(),to=parent.frame())
-}
-
-
-
-buildEnv.parent.set=function(){
-  append_env(to=environment(),from=parent.frame())
-   ## IF NOT SET UP BY THE USER WE WILL GET THE MAIN FUNCTION NAME
-    
-  if(is.null(fn)){
-    ## GET CALLER FUNCTION NAME
-    fn <- sub(".*::","",sub("\\(.*","",
-      paste0(deparse(sys.calls()[[sys.nframe()-3]]),collapse=","))
-    )
-  }
-
-  #### IF FUNCTION ID IS NOT GIVE WE USE FN NAME AS ID
-  #### OTHERWISE WE APPEND FUNCTION ID
-  if(is.null(fn_id)){
-    fn_id<-fn
-  }else{
-    fn_id<-paste0(fn,".",fn_id)
-  }
-
-
-
-  append_env(from=environment(),to=parent.frame())
-}
-
-
-
-
-dumpInfo<-function(){
-  UseMethod("dumpInfo")
-}
-
-
-dumpInfo.set<-function(){
-  append_env(to=environment(),from=parent.frame())
-
-  ### TRACING CHILDREN CAN BE DIFFICULT
-  ### WE DEFINE THE VARIABLES THAT WILL HELP IDENTIFY CHILDREN IN JOB HIERARCHY
-
-  dump_names=c("parent_id","child_id","child_order",fn_vars)
-  
-  ## WE DEFINE A FILE WERE WE WILL DUMP THIS INFO
-  
-  dump_file=paste0(parent_dir,"/",parent_id,".dump")
-  ### WE CREATE AN ENVIRONMENT FOR EACH INPUT VALUE
-
-  write.table(
-        file=dump_file,
-        x=as.data.frame(matrix(dump_names,nrow=1)),
-        sep="\t",
-        col.names=FALSE,
-        row.names=FALSE,
-        quote=FALSE
-  )
-
-  append_env(from=environment(),to=parent.frame())
-}
-
-
-dumpInfo.append=function(){
-  append_env(to=environment(),from=parent.frame())
-  
-  
-  ### WE APPEND THE CHILDREN INFO TO THE DUMP FILE
-
-  info=data.frame(
-      parent_id=parent_id,
-      child_id=child_id,
-      child_order=row,
-      sheet[row,]
-  )
-
-    write.table(
-      file=dump_file,
-      x=info,
-      sep="\t",
-      append=TRUE,
-      col.names=FALSE,
-      row.names=FALSE,
-      quote=FALSE
-  )          
-}
-
-
-buildSheet=function(){
-  UseMethod("buildSheet")
-}
-
-buildSheet.create=function(){
-  append_env(to=environment(),from=parent.frame())
-  ### CHECK IF VARIABLE SHEET IS GIVEN
-  ### IF SHEET IS GIVEN WE ASSIGN THE VARIABLES AND QUIT
-  if (!is.null(sheet)){
-      ### READ VARIABLE SHEET
-       sheet=read.delim(sheet,header=TRUE)
-  }else{
-  ### SET CREATE A SHEET FROM THE FUNCTION VARIABLES
-      sheet=as.data.frame(as.list(parent.frame())[fn_vars])
-  }
-
-  buildSheet.ascertain()
-
-  append_env(from=environment(),to=parent.frame())
-
-}
-
-buildSheet.ascertain=function(){
-  append_env(to=environment(),from=parent.frame())
-  n_total<-nrow(sheet)
-  sheet=sheet %>% dplyr::distinct()
-  n_inputs<-nrow(sheet)
-  n_vars<-ncol(sheet)
-  n_dup=n_total-n_inputs
-  if(n_dup>0){
-    warning(paste0(n_dup, " were duplicated in sheet"))
-  }
-  append_env(from=environment(),to=parent.frame())
-}
-
-
-
-
-
-
-
-
-
-
-buildErrorMessage<-function(){
-    UseMethod("buildErrorMessage")
-}
-
-buildErrorMessage.child<-function(){
-  append_env(to=environment(),from=parent.frame())
-  err_msg <- paste0(err_msg ,fn," (",job_id,") "," -> ")
-  append_env(from=environment(),to=parent.frame())
-}
-
-buildErrorMessage.parent<-function(){
-  append_env(to=environment(),from=parent.frame())
-  if(is.null(err_msg)){
-    err_msg <- paste0("CRITICAL ERROR: ",fn," (",job_id,") "," -> ")
-  }
-  append_env(from=environment(),to=parent.frame())
-}
 
 
 
@@ -1037,83 +318,748 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
       rep(cat("    \n"),ws)
 }
 
-#' Caller function within routine
-#' 
-#' @param FUN Function to call
-#' @export
 
- call_function=function(
-    FUN=NULL,
-    ...
- ){
-      if(is.null(FUN)){
-        stop("Please define a function to run")
-      }
-      .this.env=environment()
-      .base.env=parent.frame()
-      ### ADD OTHER VARIABLES TO BASE ENV
-      list2env(x=list(...),envir=.base.env)
+callerFUN<-function(){
+  UseMethod("callerFUN")
+}
 
-      ## GET VARIABLE NAMES
-      fn_vars=names(.base.env)[!grepl("\\.|FUN",names(.base.env))]
+callerFUN.call<-function(...){
+    .this.env=environment()
+    .base.env=parent.frame()
+    ### ADD OTHER VARIABLES TO BASE ENV
+    list2env(x=list(...),envir=.base.env)
 
-      append_env(to=environment(),from=parent.frame())
+    ## GET VARIABLE NAMES
+    fn_vars=names(.base.env)[!grepl("\\.|FUN",names(.base.env))]
 
-      ## WE CHECK IF WE ARE INHERITING A PARENT ENVIROMENT
-      ## ELSE WE CREATE A PARENT ENVIROMENT
+    append_env(to=.this.env,from=.base.env)
 
-      if(exists("env")){
-        if(!is.environment(env)){
-          env <-readRDS(file=env)
-          append_env(to=environment(),from=env$child.envs[[select]])
-        }else{
-          append_env(to=environment(),from=env)
-        }
-        env<-NULL
+    ## WE VALIDATE USER DEFINED VARIABLE FOR PARENT FUNCTION
+    callerFUN.checkArgs()
+
+    ## WE SET THE ENVIROMENT TO CALLER FUNCTION
+    callerFUN.setEnv()
+
+    ## WE WILL RUN SELF OR A PROCESS
+    if(is.null(select)){
+    
+      callerFUN.runSelf()
+  
+    }else{
+      callerFUN.runProcess()
+    }
+
+    return(.this.env)
+}
+
+
+callerFUN.setEnv<-function(){
+
+    append_env(to=environment(),from=parent.frame())
+    
+    ## WE CHECK IF WE ARE INHERITING A PARENT ENVIROMENT
+    ## ELSE WE CREATE A PARENT ENVIROMENT
+
+    if(exists("env")){
+      if(!is.environment(env)){
+        env <-readRDS(file=env)
+        append_env(to=environment(),from=env$child.envs[[select]])
       }else{
-        ### WE BUILD THE PARENT ENVIRONMENT
-        
-        buildEnv.parent()
+        append_env(to=environment(),from=env)
+      }
+      env<-NULL
 
-        ### WE SET THE DUMPSTER WHERE TO PUT CHILDREN INFO
-        dumpInfo.set()
+    }else{
+      self<-TRUE
 
-        ### FROM THE PARENT ENVIRONMENT WE CREATE A NEW ENVIRONMENT FOR EACH UNIQUE INPUT
-        child.envs=parallel::mclapply(
-            1:n_inputs,
-            function(row,.env){
+      ### WE BUILD THE PARENT ENVIRONMENT
+      
+      buildEnv.parent()
 
-              append_env(to=environment(),from=.env)
+      ### WE SET THE DUMPSTER WHERE TO PUT CHILDREN INFO
+      callerFUN.dumpInfo()
+
+      ### FROM THE PARENT ENVIRONMENT WE CREATE A NEW ENVIRONMENT FOR EACH UNIQUE INPUT
+      child.envs=parallel::mclapply(
+          1:n_inputs,
+          function(row,.env){
+
+            append_env(to=environment(),from=.env)
 
 
-              ### WE BUILD THE CHILD ENV
-              buildEnv.child()
+            ### WE BUILD THE CHILD ENV
+            buildEnv.child()
 
-              ### WE DUMP CHILDREN INFO
-              dumpInfo.append()
+            ### WE DUMP CHILDREN INFO
+            callerFUN.dumpInfo()
 
-              return(environment())
-              },
-              .env=environment(),
-              mc.cores=ifelse(
+            return(environment())
+            },
+            .env=environment(),
+            mc.cores=ifelse(
+              (parallel::detectCores()-1)<1,
+              1,
+              (parallel::detectCores()-1)
+        )
+      )
+    }
+
+    append_env(from=environment(),to=parent.frame())
+
+}
+
+callerFUN.checkArgs<-function(){
+   .this.env=environment()
+    append_env(to=.this.env,from=parent.frame())
+
+    for (arg in names(arg_types)){
+      if(!exists(.this.env[[arg]])){
+        stop(paste0("Variable:",arg,
+        "(type:",arg_types[arg],") -> Value: Not defined.\nDefine a value."))
+      }
+
+      if(is.null(.this.env[[arg]])){
+        stop(paste0("Variable:",arg," -> Value: NULL (type: NULL).\nDefine a non-NULL value."))
+      }
+
+      if(typeof(.this.env[[arg]])!=arg_types[arg]){
+        stop(paste0("Variable:",arg,
+        "(type:",arg_types[arg],") -> Value: ",.this.env[[arg]],
+        "(type:",arg_types[arg],").\n Invalid type."))
+      }
+  } 
+}
+
+
+
+callerFUN.runSelf=function(){
+  append_env(to=environment(),from=parent.frame())
+ 
+
+  ### WE WRITE PARENT ENVIROMENT
+  callerFUN.writeEnv()
+
+  ### CREATE CALLER
+  callerFUN.buildCall()
+
+  ### RUN CALL
+  callerFUN.runCall()
+  
+  ### WAIT FOR SCHEDULER TO FINISH
+  if(mode=="batch"){
+    if(wait){
+        wait_scheduler()
+    }
+  }
+
+  ### READ CHILD ENVIROMENTS
+  callerFUN.readEnv()
+
+  append_env(from=environment(),to=parent.frame())
+}
+
+
+callerFUN.runProcess=function(){
+
+  append_env(to=environment(),from=parent.frame())
+
+  ### WE WRITE CHILDREN ENV
+  callerFUN.writeEnv()
+  
+  ### GET ALL DATA BEFORE RUNNING ENV
+  callerFUN.collectData()
+
+  ### CREATE CALLER
+  callerFUN.buildCall()
+
+  ### WE RUN THE ENVIROMENT
+  callerFUN.runCall()
+  
+  ### WE WRITE RESULTS FOR CHILD TO RDS
+  callerFUN.writeEnv()
+
+  append_env(from=environment(),to=parent.frame())
+
+}
+
+callerFUN.runCall=function(FUN=NULL){
+  append_env(to=environment(),from=parent.frame())
+  ### PRODUCE VERBOSE
+  if(verbose){
+        print_verbose(job=job_id,
+          arg=as.list(environment())[names(environment()) %in% dump_names],
+          exec_code=exec_code
+        )
+  }
+
+  #Read .bashrc to import all envriomental variables
+  error=system(paste0(". $HOME/.bashrc;",exec_code))
+  ### RETURN ERROR MESSAGE
+  if(error!=0){
+      stop(err_msg)
+  }
+
+  append_env(from=environment(),to=parent.frame())
+}
+
+
+
+callerFUN.collectData.createLink=function(){
+    append_env(to=environment(),from=parent.frame())
+    var_value=normalizePath(var_value)
+    ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE 
+    ## TEMP DIRECTORY FOR EACH VARIABLE
+    var_dir=set_dir(dir=ln_dir,name=var)
+    system(paste("ln -fs ",var_value, var_dir," > /dev/null 2>&1 "))
+    ### UPDATE THE VARIABLE TO THE SYMLINK
+    append_env(from=environment(),to=parent.frame())
+}
+
+
+callerFUN.collectData.remoteCheck=function(){
+    append_env(to=environment(),from=parent.frame())
+    check=suppressWarnings(system(paste(
+    "sshpass -f ",password,
+    " ssh ",paste0(user,
+      ifelse(!is.null(user),"@",""),node),
+      "\" realpath -e ",var_value,"\" "),intern=TRUE
+    ))
+    append_env(from=environment(),to=parent.frame())
+}
+
+callerFUN.collectData.remoteGet=function(){
+  append_env(to=environment(),from=parent.frame())
+  var_dir=set_dir(dir=rmt_dir,name=var)
+  ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
+  system(paste(
+  "sshpass -f ",password,
+  " ssh ",paste0(user,
+    ifelse(!is.null(user),"@",""),node),
+    "\" cp -rn ",check," -t ",
+    var_dir, "\"")
+  )
+  append_env(from=environment(),to=parent.frame())
+}
+
+callerFUN.collectData=function(){
+    ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
+    .base.env=parent.frame()
+    append_env(to=environment(),from=.base.env)
+    parallel::mclapply(
+      fn_vars,
+      FUN=function(
+        var,
+        env
+      ){
+        append_env(to=environment(),from=env)
+        var_value=get(var)
+        ### CHECK VARIABLE TYPE
+        var_type=typeof(var_value)
+        ### IF VARIABLE TYPE IS CHARACTER
+        if(var_type=="character"){
+          ## WE CHECK IF VARIABLE CONTAINS A PATH LOCALLY
+          if(file.exists(var_value)){
+            callerFUN.collectData.createLink()
+          }else{
+            ## CHECK IF REMOTE NODE IS GIVEN
+            if(is.null(node)){
+              return()
+            }
+          
+
+            ### CHECK IF VARIABLE PATH EXIST IN REMOTE
+            callerFUN.collectData.remoteCheck()
+
+            ### WE STOP FUNCTION IF FILE IS NOT FOUND REMOTELY
+            ### WE STOP FUNCTION IF FILE IS NOT FOUND REMOTELY
+            if(length(check)==0){
+              return()
+            }
+
+            ### GET REMOTE PATH
+            callerFUN.collectData.remoteGet()
+            var_value=paste0(var_dir,"/",basename(check))     
+      
+            ### We CREATE A SYMLINK TO THE DATA
+            callerFUN.collectData.createLink()
+          }
+          env[[var]]=normalizePath(paste0(var_dir,"/",basename(var_value)))
+
+          }
+      },
+      env=.base.env,
+      mc.cores=ifelse(
                 (parallel::detectCores()-1)<1,
                 1,
                 (parallel::detectCores()-1)
+      )
+    )
+}
+
+
+
+
+callerFUN.buildCall=function(){
+    append_env(to=environment(),from=parent.frame())
+    ### Use SGE TASK ID if mode is set to batch otherwise use value
+   
+    callerFUN.setCall()
+  
+    ### CHECK IF WE ARE IN A CHILD ENVIROMENT
+    if(is.null(child_id)){
+
+      if(self){
+          exec_code=paste0("Rscript -e \"",ns,"::",fn,"(env=\\\"",
+            env_file,"\\\")})\""
           )
+      }
+    
+      ## WE ASSUME WE HAVE INFINITE CORES AND CAN RUN INFINITE JOBS 
+      if(mode=="local"){
+            ### LOCALLY WE ARE LIMITED IN NUMBER OF CORES
+            cores=parallel::detectCores()-1
+            ### WE ASSIGN A REASONABLE NUMBER OF JOBS FoR THE REQUESTED NUMBER OF THREADS 
+            rjobs=floor(cores/threads)
+            exec_code=paste0("Rscript -e \" invisible(parallel::mclapply(1:",n_inputs,
+            ",FUN=function(select){",ns,"::",fn,"(env=\\\"",
+            env_file,"\\\",select=select)},mc.cores=",rjobs,"))\"")
+      
+      }else if(mode=="batch"){
+
+            cores=Inf
+            rjobs=Inf
+            ### IN BATCH WE ASSUME INFINITE RESOURCES 
+            exec_code=paste0("Rscript -e \" invisible(",
+            ns,"::",fn,"(env=\\\"",env_file,
+            "\\\",select=$SGE_TASK_ID))\"")
+          
+
+            ### WE CREATE SCHEDULER SPECIFIC VARIABLES
+
+            batch_code=paste(
+                  "qsub -V ", 
+            paste0("-N ",job_id),
+            paste0(" -t 1-",n_inputs),
+            paste0(" -l h_rt=",time),
+            paste0(" -l mem=",ram,"G"),
+            paste0(" -pe smp ",threads), 
+            paste0(" -wd ",getwd()), 
+            paste0(" -o ",batch_dir,"/",job_id,".std_out"),
+            paste0(" -e ",batch_dir,"/",job_id,".std_error"))
+
+            if(!is.null(hold)){
+              batch_code=paste0(batch_code,paste0(" -hold_jid ",paste0(hold,collapse=",")))
+            }
+
+            if(bypass){
+              batch_code=paste0(batch_code," -P crag7day ")
+            }
+
+            ### WE APPEND CONFIG EXEC CODE AND BATCH CODE DATA
+
+            exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
+            ";",exec_code,"'|",batch_code)
+      }else{
+        stop("Unkown mode type")
+      }
+
+       
+    }else{
+      ### OF THIS IS A CHILD ENVIROMENT WE DIRECTLY RUN USER DEFINED FUNCTION
+      FUN()
+    }
+
+    append_env(from=environment(),to=parent.frame())
+}
+
+
+callerFUN.setCall=function(){
+  append_env(to=environment(),from=parent.frame())
+  cores=1
+  rjobs=1
+  error=0
+  exec_code=NULL
+  batch_code=NULL
+  steps=list()
+  out_files=list()
+  append_env(from=environment(),to=parent.frame())
+}
+
+
+callerFUN.writeEnv=function(){
+  append_env(to=environment(),from=parent.frame())
+  if(!is.null(parent_id)&!is.null(child_id)){
+      env_file=paste0(env_dir,"/",child_id,".child.RData")
+      saveRDS(environment(),file=env_file)
+  }else{
+      self<-FALSE
+      env_file=paste0(env_dir,"/",parent_id,".parent.RData")
+      saveRDS(environment(),file = env_file)
+  }
+  append_env(from=environment(),to=parent.frame())
+}
+
+
+callerFUN.readEnv=function(){
+  append_env(to=environment(),from=parent.frame())
+  child.envs=lapply(1:n_inputs,function(n){
+        child.env=readRDS(child.envs[[n]]$env_file)}
+  )
+  append_env(from=environment(),to=parent.frame())
+}
+
+
+
+callerFUN.buildId=function(){
+  append_env(to=environment(),from=parent.frame())
+
+  if(is.null(job_id)){
+    ### IF parent ID IS NOT GIVEN WE CREATE AN UNIQUE NAME USING THE FUNCTION ID
+    if(is.null(parent_id)){
+      parent_id <- make_unique_id(fn)
+    }
+
+    ### WE ASSIGN A JOB ID TO THE CALLER FUNCTION
+
+    job_id <- build_job(
+      parent_id=parent_id
+    )
+  }else{
+    ### WE CREATE A JOB ID FOR EACH CHILD
+    ### CHILDREN SHALL WORK!!
+
+    child_id <- make_unique_id(fn)
+    
+    job_id <- build_job(
+      parent_id=parent_id,
+      child_id=child_id
+    )
+  }
+  
+  append_env(from=environment(),to=parent.frame())
+}
+
+
+
+
+callerFUN.buildError<-function(){
+  append_env(to=environment(),from=parent.frame())
+  if(!is.null(err_msg)){
+     err_msg <- paste0(err_msg ,fn," (",job_id,") "," -> ")
+  }else{
+     err_msg <- paste0("CRITICAL ERROR: ",fn," (",job_id,") "," -> ")
+  }
+  append_env(from=environment(),to=parent.frame())
+}
+
+
+
+
+callerFUN.reassignArgs<-function(){
+  append_env(to=environment(),from=parent.frame())
+  ### REASSIGN VAR VALUES IN SHEET TO ENVIRONMENT
+  for (col in 1:n_vars){
+    assign(names(sheet)[col],sheet[row,col])
+  }
+  append_env(from=environment(),to=parent.frame())
+
+}
+
+
+
+
+callerFUN.buildSheet=function(){
+  append_env(to=environment(),from=parent.frame())
+  ### CHECK IF VARIABLE SHEET IS GIVEN
+  ### IF SHEET IS GIVEN WE ASSIGN THE VARIABLES AND QUIT
+  if (!is.null(sheet)){
+      ### READ VARIABLE SHEET
+       sheet=read.delim(sheet,header=TRUE)
+  }else{
+  ### SET CREATE A SHEET FROM THE FUNCTION VARIABLES
+      sheet=as.data.frame(as.list(parent.frame())[fn_vars])
+  }
+
+  callerFUN.setSheet()
+
+  append_env(from=environment(),to=parent.frame())
+
+}
+
+callerFUN.setSheet=function(){
+  append_env(to=environment(),from=parent.frame())
+  n_total<-nrow(sheet)
+  sheet=sheet %>% dplyr::distinct()
+  n_inputs<-nrow(sheet)
+  n_vars<-ncol(sheet)
+  n_dup=n_total-n_inputs
+  if(n_dup>0){
+    warning(paste0(n_dup, " were duplicated in sheet"))
+  }
+  append_env(from=environment(),to=parent.frame())
+}
+
+
+
+
+
+
+
+callerFUN.buildChild=function(){
+  append_env(to=environment(),from=parent.frame())
+
+  ### USING THE VAR SHEET WE REASSIGN THE VALUES OF EACH VARIABLE
+  callerFUN.reassignArgs()
+
+  ### CREATE CHILD JOB ID
+  callerFUN.buildId()
+
+  ## CREATE ERROR MESSAGE FOR EACH CHILD
+
+  callerFUN.buildError()
+
+  append_env(from=environment(),to=parent.frame())
+
+}
+
+
+
+callerFUN.buildParent=function(
+  vars=NULL,
+  fn=NULL,
+  fn_id=NULL,
+  fn_vars=NULL,
+  output_dir=".",
+  tmp_dir=NULL,
+  ln_dir=NULL,
+  rmt_dir=NULL,
+  env_dir=NULL,
+  batch_dir=NULL,
+  output_name=NULL,
+  verbose=FALSE,
+  bgzip_index=FALSE,
+  index_format="tbi",
+  license_dir=build_default_license_list()$dir,
+  clean=FALSE,
+  batch_config=build_default_preprocess_config(),
+  threads=1,
+  ram=4,
+  ns="ULPwgs",
+  mode="local",
+  time="48:0:0",
+  bypass=FALSE,
+  node=NULL,
+  user=NULL,
+  password=NULL,
+  sheet=NULL,
+  env=NULL,
+  select=NULL,
+  err_msg=NULL,
+  complimentary=FALSE,
+  parent_id=NULL,
+  wait=FALSE,
+  hold=NULL
+){
+    append_env(to=environment(),from=parent.frame())
+    ### IF WE INHERIT A RDS FILE READ AND APPEND
+    ### WE SAVE RDS FILES WHEN SUBMITTING JOBS TO SCHEDULER OR JOBS RUN LOCALLY IN PARALLEL
+    ### SELECT VARIABLE DEFINES WHICH ENV WE ARE RUNNING
+    ### WE APPEND THIS ENV AND STOP
+
+    ### CREATE VARIABLES FOR THE ENVIRONMENT
+    callerFUN.setSelf()
+      
+    ### CREATE JOB ID FOR THE PARENT FUNCTION
+    callerFUN.buildId()
+
+    ### CREATE WORK DIRECTORIES
+    callerFUN.buildDirs()
+    
+    ### CREATE SHEET WITH VARIABLES
+    callerFUN.buildSheet()
+    
+    ### CREATE AN ERROR MESSAGE TO TRACK WHERE JOB FAILS
+    callerFUN.buildError()
+
+    append_env(from=environment(),to=parent.frame())
+}
+
+
+callerFUN.buildSelf=function(){
+  append_env(to=environment(),from=parent.frame())
+   ## IF NOT SET UP BY THE USER WE WILL GET THE MAIN FUNCTION NAME
+    
+  if(is.null(fn)){
+    ## GET CALLER FUNCTION NAME
+    fn <- sub(".*::","",sub("\\(.*","",
+      paste0(deparse(sys.calls()[[sys.nframe()-3]]),collapse=","))
+    )
+  }
+
+  #### IF FUNCTION ID IS NOT GIVE WE USE FN NAME AS ID
+  #### OTHERWISE WE APPEND FUNCTION ID
+
+  if(is.null(fn_id)){
+    fn_id<-fn
+  }else{
+    fn_id<-paste0(fn,".",fn_id)
+  }
+
+  append_env(from=environment(),to=parent.frame())
+}
+
+
+
+
+callerFUN.buildDirs=function(){
+      append_env(
+        to=environment(),
+        from=parent.frame()
+      )
+
+      ### CREATE MAIN WORKING DIRECTORY
+      out_file_dir <- set_dir(
+          dir=output_dir
+      )
+
+
+      ### CREATE MAIN WORKING DIRECTORY
+      parent_dir <- set_dir(
+          dir=out_file_dir,
+          name=parent_id
+      )
+
+      ### CREATE TMP DIRECTORY
+      ### WE WILL STORE TMP FILES FOR ALL FUNCTIONS HERE 
+      if(is.null(tmp_dir)){
+          tmp_dir <- set_dir(
+            dir=parent_dir,
+            name="tmp"
+        )
+      }
+      
+      ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE SYMLINK OF FILES
+      ### WE WILL STORE SYMLINK FILES FOR LOCAL FILES
+      if(is.null(ln_dir)){
+          ln_dir <- set_dir(
+            dir=tmp_dir,
+            name="ln"
+        )
+      }else{
+        ln_dir <- set_dir(
+          dir=ln_dir,
+          name=child_id
         )
       }
 
-
-      ## WE WILL LAUNCH THE PARENT OR THE CHILD FUNCTION
-      if(is.null(select)){
-        runEnv.parent()
+      ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE REMOTE FILES
+      ### WE WILL STORE REMOTE DOWNLOAD FILES HERE
+      if(is.null(rmt_dir)){
+          rmt_dir <- set_dir(
+            dir=tmp_dir,
+            name="rmt"
+        )
       }else{
-        runEnv.child()
+          rmt_dir <- set_dir(
+            dir=rmt_dir,
+            name=child_id
+        )
       }
 
-      return(.this.env)
+      ### CREATE DIRECTORY TO STORE ENVIROMENT DATA
+      ### WE WILL STORE R ENVIRONMENT DATA HERE
+      if(is.null(env_dir)){
+            env_dir<- set_dir(
+              dir=parent_dir,
+              name="env"
+          )
+      }else{
+            env_dir<- set_dir(
+              dir=env_dir,
+              name=child_id
+          )
+      }
 
-    }
+      ### CREATE DIRECTORY TO BATCH DATA
+      ### WE WILL STORE SCHEDULER DATA HERE
+      if(is.null(batch_dir)){
+          batch_dir<- set_dir(
+            dir=parent_dir,
+            name="batch"
+        )
+      }else{
+          batch_dir<- set_dir(
+            dir=batch_dir,
+            name=child_id
+          )
+
+      }
+
+    ### WE APPEND NEW VARIABLES BACK TO THE MAIN FUNCTION
+    append_env(from=environment(),to=parent.frame())
+}
+
+
+
+callerFUN.dumpInfo<-function(){
+  append_env(to=environment(),from=parent.frame())
+
+
+
+  if(is.null(dump_file)){
+    ### TRACING CHILDREN CAN BE DIFFICULT
+    ### WE DEFINE THE VARIABLES THAT WILL HELP IDENTIFY CHILDREN IN JOB HIERARCHY
+
+    dump_names=c("parent_id","child_id","child_order",fn_vars)
+    
+    ## WE DEFINE A FILE WERE WE WILL DUMP THIS INFO
+    
+    dump_file=paste0(parent_dir,"/",parent_id,".dump")
+    ### WE CREATE AN ENVIRONMENT FOR EACH INPUT VALUE
+
+    write.table(
+          file=dump_file,
+          x=as.data.frame(matrix(dump_names,nrow=1)),
+          sep="\t",
+          col.names=FALSE,
+          row.names=FALSE,
+          quote=FALSE
+    )
+  }else{
+
+    ### WE APPEND THE CHILDREN INFO TO THE DUMP FILE
+
+    write.table(
+      file=dump_file,
+      x=data.frame(
+      parent_id=parent_id,
+      child_id=child_id,
+      child_order=row,
+      sheet[row,]),
+      sep="\t",
+      append=TRUE,
+      col.names=FALSE,
+      row.names=FALSE,
+      quote=FALSE
+    )          
+  }
+  append_env(from=environment(),to=parent.frame())
+}
+
+
+dumpInfo.append=function(){
+  append_env(to=environment(),from=parent.frame())
+  
+  
+  
+}
+
+
+
+
+
+
+
 
 
 
