@@ -328,7 +328,7 @@ cp_data=function(
 
     }
 
-    call_function(...,
+    callFUN.call(...,
         arg_types=list(
           origin="character",
           target="character",

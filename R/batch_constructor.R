@@ -319,11 +319,11 @@ print_verbose=function(exec_code,arg=NULL,job,ws=1){
 }
 
 
-callerFUN<-function(){
-  UseMethod("callerFUN")
+callFUN<-function(){
+  UseMethod("callFUN")
 }
 
-callerFUN.call<-function(...){
+callFUN.call<-function(...){
     .this.env=environment()
     .base.env=parent.frame()
     ### ADD OTHER VARIABLES TO BASE ENV
@@ -335,25 +335,25 @@ callerFUN.call<-function(...){
     append_env(to=.this.env,from=.base.env)
 
     ## WE VALIDATE USER DEFINED VARIABLE FOR PARENT FUNCTION
-    callerFUN.checkArgs()
+    callFUN.checkArgs()
 
     ## WE SET THE ENVIROMENT TO CALLER FUNCTION
-    callerFUN.setEnv()
+    callFUN.setEnv()
 
     ## WE WILL RUN SELF OR A PROCESS
     if(is.null(select)){
     
-      callerFUN.runSelf()
+      callFUN.runSelf()
   
     }else{
-      callerFUN.runProcess()
+      callFUN.runProcess()
     }
 
     return(.this.env)
 }
 
 
-callerFUN.setEnv<-function(){
+callFUN.setEnv<-function(){
 
     append_env(to=environment(),from=parent.frame())
     
@@ -377,7 +377,7 @@ callerFUN.setEnv<-function(){
       buildEnv.parent()
 
       ### WE SET THE DUMPSTER WHERE TO PUT CHILDREN INFO
-      callerFUN.dumpInfo()
+      callFUN.dumpInfo()
 
       ### FROM THE PARENT ENVIRONMENT WE CREATE A NEW ENVIRONMENT FOR EACH UNIQUE INPUT
       child.envs=parallel::mclapply(
@@ -391,7 +391,7 @@ callerFUN.setEnv<-function(){
             buildEnv.child()
 
             ### WE DUMP CHILDREN INFO
-            callerFUN.dumpInfo()
+            callFUN.dumpInfo()
 
             return(environment())
             },
@@ -408,7 +408,7 @@ callerFUN.setEnv<-function(){
 
 }
 
-callerFUN.checkArgs<-function(){
+callFUN.checkArgs<-function(){
    .this.env=environment()
     append_env(to=.this.env,from=parent.frame())
 
@@ -432,18 +432,18 @@ callerFUN.checkArgs<-function(){
 
 
 
-callerFUN.runSelf=function(){
+callFUN.runSelf=function(){
   append_env(to=environment(),from=parent.frame())
  
 
   ### WE WRITE PARENT ENVIROMENT
-  callerFUN.writeEnv()
+  callFUN.writeEnv()
 
   ### CREATE CALLER
-  callerFUN.buildCall()
+  callFUN.buildCall()
 
   ### RUN CALL
-  callerFUN.runCall()
+  callFUN.runCall()
   
   ### WAIT FOR SCHEDULER TO FINISH
   if(mode=="batch"){
@@ -453,36 +453,36 @@ callerFUN.runSelf=function(){
   }
 
   ### READ CHILD ENVIROMENTS
-  callerFUN.readEnv()
+  callFUN.readEnv()
 
   append_env(from=environment(),to=parent.frame())
 }
 
 
-callerFUN.runProcess=function(){
+callFUN.runProcess=function(){
 
   append_env(to=environment(),from=parent.frame())
 
   ### WE WRITE CHILDREN ENV
-  callerFUN.writeEnv()
+  callFUN.writeEnv()
   
   ### GET ALL DATA BEFORE RUNNING ENV
-  callerFUN.collectData()
+  callFUN.collectData()
 
   ### CREATE CALLER
-  callerFUN.buildCall()
+  callFUN.buildCall()
 
   ### WE RUN THE ENVIROMENT
-  callerFUN.runCall()
+  callFUN.runCall()
   
   ### WE WRITE RESULTS FOR CHILD TO RDS
-  callerFUN.writeEnv()
+  callFUN.writeEnv()
 
   append_env(from=environment(),to=parent.frame())
 
 }
 
-callerFUN.runCall=function(FUN=NULL){
+callFUN.runCall=function(FUN=NULL){
   append_env(to=environment(),from=parent.frame())
   ### PRODUCE VERBOSE
   if(verbose){
@@ -504,7 +504,7 @@ callerFUN.runCall=function(FUN=NULL){
 
 
 
-callerFUN.collectData.createLink=function(){
+callFUN.collectData.createLink=function(){
     append_env(to=environment(),from=parent.frame())
     var_value=normalizePath(var_value)
     ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE 
@@ -516,7 +516,7 @@ callerFUN.collectData.createLink=function(){
 }
 
 
-callerFUN.collectData.remoteCheck=function(){
+callFUN.collectData.remoteCheck=function(){
     append_env(to=environment(),from=parent.frame())
     check=suppressWarnings(system(paste(
     "sshpass -f ",password,
@@ -527,7 +527,7 @@ callerFUN.collectData.remoteCheck=function(){
     append_env(from=environment(),to=parent.frame())
 }
 
-callerFUN.collectData.remoteGet=function(){
+callFUN.collectData.remoteGet=function(){
   append_env(to=environment(),from=parent.frame())
   var_dir=set_dir(dir=rmt_dir,name=var)
   ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
@@ -541,7 +541,7 @@ callerFUN.collectData.remoteGet=function(){
   append_env(from=environment(),to=parent.frame())
 }
 
-callerFUN.collectData=function(){
+callFUN.collectData=function(){
     ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
     .base.env=parent.frame()
     append_env(to=environment(),from=.base.env)
@@ -559,7 +559,7 @@ callerFUN.collectData=function(){
         if(var_type=="character"){
           ## WE CHECK IF VARIABLE CONTAINS A PATH LOCALLY
           if(file.exists(var_value)){
-            callerFUN.collectData.createLink()
+            callFUN.collectData.createLink()
           }else{
             ## CHECK IF REMOTE NODE IS GIVEN
             if(is.null(node)){
@@ -568,7 +568,7 @@ callerFUN.collectData=function(){
           
 
             ### CHECK IF VARIABLE PATH EXIST IN REMOTE
-            callerFUN.collectData.remoteCheck()
+            callFUN.collectData.remoteCheck()
 
             ### WE STOP FUNCTION IF FILE IS NOT FOUND REMOTELY
             ### WE STOP FUNCTION IF FILE IS NOT FOUND REMOTELY
@@ -577,11 +577,11 @@ callerFUN.collectData=function(){
             }
 
             ### GET REMOTE PATH
-            callerFUN.collectData.remoteGet()
+            callFUN.collectData.remoteGet()
             var_value=paste0(var_dir,"/",basename(check))     
       
             ### We CREATE A SYMLINK TO THE DATA
-            callerFUN.collectData.createLink()
+            callFUN.collectData.createLink()
           }
           env[[var]]=normalizePath(paste0(var_dir,"/",basename(var_value)))
 
@@ -599,11 +599,11 @@ callerFUN.collectData=function(){
 
 
 
-callerFUN.buildCall=function(){
+callFUN.buildCall=function(){
     append_env(to=environment(),from=parent.frame())
     ### Use SGE TASK ID if mode is set to batch otherwise use value
    
-    callerFUN.setCall()
+    callFUN.setCall()
   
     ### CHECK IF WE ARE IN A CHILD ENVIROMENT
     if(is.null(child_id)){
@@ -673,7 +673,7 @@ callerFUN.buildCall=function(){
 }
 
 
-callerFUN.setCall=function(){
+callFUN.setCall=function(){
   append_env(to=environment(),from=parent.frame())
   cores=1
   rjobs=1
@@ -686,7 +686,7 @@ callerFUN.setCall=function(){
 }
 
 
-callerFUN.writeEnv=function(){
+callFUN.writeEnv=function(){
   append_env(to=environment(),from=parent.frame())
   if(!is.null(parent_id)&!is.null(child_id)){
       env_file=paste0(env_dir,"/",child_id,".child.RData")
@@ -700,7 +700,7 @@ callerFUN.writeEnv=function(){
 }
 
 
-callerFUN.readEnv=function(){
+callFUN.readEnv=function(){
   append_env(to=environment(),from=parent.frame())
   child.envs=lapply(1:n_inputs,function(n){
         child.env=readRDS(child.envs[[n]]$env_file)}
@@ -710,7 +710,7 @@ callerFUN.readEnv=function(){
 
 
 
-callerFUN.buildId=function(){
+callFUN.buildId=function(){
   append_env(to=environment(),from=parent.frame())
 
   if(is.null(job_id)){
@@ -742,7 +742,7 @@ callerFUN.buildId=function(){
 
 
 
-callerFUN.buildError<-function(){
+callFUN.buildError<-function(){
   append_env(to=environment(),from=parent.frame())
   if(!is.null(err_msg)){
      err_msg <- paste0(err_msg ,fn," (",job_id,") "," -> ")
@@ -755,7 +755,7 @@ callerFUN.buildError<-function(){
 
 
 
-callerFUN.reassignArgs<-function(){
+callFUN.reassignArgs<-function(){
   append_env(to=environment(),from=parent.frame())
   ### REASSIGN VAR VALUES IN SHEET TO ENVIRONMENT
   for (col in 1:n_vars){
@@ -768,7 +768,7 @@ callerFUN.reassignArgs<-function(){
 
 
 
-callerFUN.buildSheet=function(){
+callFUN.buildSheet=function(){
   append_env(to=environment(),from=parent.frame())
   ### CHECK IF VARIABLE SHEET IS GIVEN
   ### IF SHEET IS GIVEN WE ASSIGN THE VARIABLES AND QUIT
@@ -780,13 +780,13 @@ callerFUN.buildSheet=function(){
       sheet=as.data.frame(as.list(parent.frame())[fn_vars])
   }
 
-  callerFUN.setSheet()
+  callFUN.setSheet()
 
   append_env(from=environment(),to=parent.frame())
 
 }
 
-callerFUN.setSheet=function(){
+callFUN.setSheet=function(){
   append_env(to=environment(),from=parent.frame())
   n_total<-nrow(sheet)
   sheet=sheet %>% dplyr::distinct()
@@ -805,18 +805,18 @@ callerFUN.setSheet=function(){
 
 
 
-callerFUN.buildChild=function(){
+callFUN.buildChild=function(){
   append_env(to=environment(),from=parent.frame())
 
   ### USING THE VAR SHEET WE REASSIGN THE VALUES OF EACH VARIABLE
-  callerFUN.reassignArgs()
+  callFUN.reassignArgs()
 
   ### CREATE CHILD JOB ID
-  callerFUN.buildId()
+  callFUN.buildId()
 
   ## CREATE ERROR MESSAGE FOR EACH CHILD
 
-  callerFUN.buildError()
+  callFUN.buildError()
 
   append_env(from=environment(),to=parent.frame())
 
@@ -824,7 +824,7 @@ callerFUN.buildChild=function(){
 
 
 
-callerFUN.buildParent=function(
+callFUN.buildParent=function(
   vars=NULL,
   fn=NULL,
   fn_id=NULL,
@@ -867,25 +867,25 @@ callerFUN.buildParent=function(
     ### WE APPEND THIS ENV AND STOP
 
     ### CREATE VARIABLES FOR THE ENVIRONMENT
-    callerFUN.setSelf()
+    callFUN.setSelf()
       
     ### CREATE JOB ID FOR THE PARENT FUNCTION
-    callerFUN.buildId()
+    callFUN.buildId()
 
     ### CREATE WORK DIRECTORIES
-    callerFUN.buildDirs()
+    callFUN.buildDirs()
     
     ### CREATE SHEET WITH VARIABLES
-    callerFUN.buildSheet()
+    callFUN.buildSheet()
     
     ### CREATE AN ERROR MESSAGE TO TRACK WHERE JOB FAILS
-    callerFUN.buildError()
+    callFUN.buildError()
 
     append_env(from=environment(),to=parent.frame())
 }
 
 
-callerFUN.buildSelf=function(){
+callFUN.buildSelf=function(){
   append_env(to=environment(),from=parent.frame())
    ## IF NOT SET UP BY THE USER WE WILL GET THE MAIN FUNCTION NAME
     
@@ -911,7 +911,7 @@ callerFUN.buildSelf=function(){
 
 
 
-callerFUN.buildDirs=function(){
+callFUN.buildDirs=function(){
       append_env(
         to=environment(),
         from=parent.frame()
@@ -1001,7 +1001,7 @@ callerFUN.buildDirs=function(){
 
 
 
-callerFUN.dumpInfo<-function(){
+callFUN.dumpInfo<-function(){
   append_env(to=environment(),from=parent.frame())
 
 
