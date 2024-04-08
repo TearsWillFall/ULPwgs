@@ -387,7 +387,7 @@ callFUN.setEnv<-function(){
 
 
             ### WE BUILD THE CHILD ENV
-            buildEnv.child()
+            callFUN.buildChild()
 
             ### WE DUMP CHILDREN INFO
             callFUN.dumpInfo()
