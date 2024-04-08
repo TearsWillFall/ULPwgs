@@ -434,8 +434,8 @@ callFUN.checkArgs<-function(){
 
         if(typeof(.this.env[[arg]])!=types[arg]&required[[arg]]){
           stop(paste0("Variable :",arg,
-          "( type : ",types[[arg]]," ) -> Value: ",.this.env[[arg]],
-          "( type : ",types[[arg]]," ).\n Invalid type."))
+          " ( type : ",types[[arg]]," ) -> Value: ",typeof(.this.env[[arg]]),
+          " ( type : ",types[[arg]]," ).\n Invalid type."))
         }
       } 
   }
