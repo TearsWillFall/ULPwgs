@@ -1008,7 +1008,7 @@ callFUN.dumpInfo<-function(){
 
 
 
-  if(is.null(dump_file)){
+  if(!exists("dump_file")){
     ### TRACING CHILDREN CAN BE DIFFICULT
     ### WE DEFINE THE VARIABLES THAT WILL HELP IDENTIFY CHILDREN IN JOB HIERARCHY
 
