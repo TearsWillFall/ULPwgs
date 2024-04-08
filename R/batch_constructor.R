@@ -421,23 +421,24 @@ callFUN.checkArgs<-function(){
     if(exists("def_args")){
       types=def_args$types
       required=def_args$required
+
       for (arg in names(types)){
-      if(!exists(arg)){
-        stop(paste0("Variable : ",arg,
-        "( type: ",arg_types[arg]," ) -> Value: Not defined. Define a value."))
-      }
+        if(!exists(arg)){
+          stop(paste0("Variable : ",arg,
+          "( type: ",arg_types[arg]," ) -> Value: Not defined. Define a value."))
+        }
 
-      if(is.null(.this.env[[arg]])& required[arg]){
-        stop(paste0("Variable : ",arg,
-        "( type: ",arg_types[arg]," ) -> Value: NULL (type: NULL). Define a non-NULL value."))
-      }
+        if(is.null(.this.env[[arg]])&required[[arg]]){
+          stop(paste0("Variable : ",arg,
+          "( type: ",arg_types[arg]," ) -> Value: NULL (type: NULL). Define a non-NULL value."))
+        }
 
-      if(typeof(.this.env[[arg]])!=arg_types[arg]){
-        stop(paste0("Variable :",arg,
-        "( type : ",arg_types[arg]," ) -> Value: ",.this.env[[arg]],
-        "( type : ",arg_types[arg]," ).\n Invalid type."))
-      }
-    } 
+        if(typeof(.this.env[[arg]])!=arg_types[arg]){
+          stop(paste0("Variable :",arg,
+          "( type : ",arg_types[arg]," ) -> Value: ",.this.env[[arg]],
+          "( type : ",arg_types[arg]," ).\n Invalid type."))
+        }
+      } 
   }
     
 }
