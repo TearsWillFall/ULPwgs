@@ -466,8 +466,12 @@ callFUN.runSelf=function(){
     }
   }
 
-  ### READ CHILD ENVIROMENTS
+  ### READ CHILD ENVIRONMENTS
   callFUN.readEnv()
+
+  if(!self){
+     system(paste0("rm ",parent_dir))
+  }
 
   append_env(from=environment(),to=parent.frame())
 }
