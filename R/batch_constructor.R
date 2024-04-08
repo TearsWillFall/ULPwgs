@@ -640,7 +640,7 @@ callFUN.buildCall=function(){
       if(self){
           exec_code=paste0("Rscript -e \"",
             ns,"::",fn,"(env=\\\"",
-            env_file,"\\\")})\""
+            env_file,"\\\")\""
           )
       }else{
         ## WE ASSUME WE HAVE INFINITE CORES AND CAN RUN INFINITE JOBS 
@@ -652,16 +652,15 @@ callFUN.buildCall=function(){
               exec_code=paste0("Rscript -e \" invisible(parallel::mclapply(1:",n_inputs,
               ",FUN=function(select){",ns,"::",fn,"(env=\\\"",
               env_file,"\\\",select=select)},mc.cores=",rjobs,"))\"")
-        
         }else if(mode=="batch"){
               cores=Inf
               rjobs=Inf
+
               ### IN BATCH WE ASSUME INFINITE RESOURCES 
               exec_code=paste0("Rscript -e \" invisible(",
               ns,"::",fn,"(env=\\\"",env_file,
               "\\\",select=$SGE_TASK_ID))\"")
-            
-
+  
               ### WE CREATE SCHEDULER SPECIFIC VARIABLES
 
               batch_code=paste(
