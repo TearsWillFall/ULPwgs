@@ -412,7 +412,6 @@ callFUN.setEnv<-function(){
 
 
 
-
 callFUN.checkArgs<-function(){
    .this.env=environment()
     append_env(to=.this.env,from=parent.frame())
