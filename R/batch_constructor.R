@@ -337,9 +337,6 @@ callFUN.call<-function(
 
     append_env(to=.this.env,from=.base.env)
 
-    ## WE VALIDATE USER DEFINED VARIABLE FOR PARENT FUNCTION
-    callFUN.checkArgs()
-
     ## WE SET THE ENVIROMENT TO CALLER FUNCTION
     callFUN.setEnv()
 
@@ -370,10 +367,14 @@ callFUN.setEnv<-function(){
       }else{
         append_env(to=environment(),from=env)
       }
+      callFUN.checkArgs()
       env<-NULL
 
     }else{
       self<-TRUE
+
+      ## WE VALIDATE USER DEFINED VARIABLE FOR PARENT FUNCTION
+      callFUN.checkArgs()
 
       ### WE BUILD THE PARENT ENVIRONMENT
       callFUN.buildParent()
@@ -617,7 +618,7 @@ callFUN.buildCall=function(){
   
     ### CHECK IF WE ARE IN A CHILD ENVIROMENT
     if(!exists("child_id")){
-      
+
       if(self){
           exec_code=paste0("Rscript -e \"",
             ns,"::",fn,"(env=\\\"",
@@ -636,7 +637,6 @@ callFUN.buildCall=function(){
             env_file,"\\\",select=select)},mc.cores=",rjobs,"))\"")
       
       }else if(mode=="batch"){
-
             cores=Inf
             rjobs=Inf
             ### IN BATCH WE ASSUME INFINITE RESOURCES 
@@ -701,7 +701,7 @@ callFUN.writeEnv=function(){
   append_env(to=environment(),from=parent.frame())
   if(exists("child_id")){
       env_file=paste0(env_dir,"/",child_id,".child.RData")
-      saveRDS(environment(),file=env_file)
+      saveRDS(environment(),file= env_file)
   }else{
       self<-FALSE
       env_file=paste0(env_dir,"/",parent_id,".parent.RData")
