@@ -329,10 +329,17 @@ cp_data=function(
     }
 
     callFUN.call(...,
-        arg_types=list(
-          origin="character",
-          target="character",
-          force="logical"
+        def_args=list(
+          types=list(
+            origin="character",
+            target="character",
+            force="logical"
+        ),
+        required=list(
+          origin=TRUE,
+          target=TRUE,
+          force=FALSE
+        )
       )
     )
   

@@ -323,14 +323,17 @@ callFUN<-function(){
   UseMethod("callFUN")
 }
 
-callFUN.call<-function(...){
+callFUN.call<-function(
+  ...,
+  args
+  ){
     .this.env=environment()
     .base.env=parent.frame()
     ### ADD OTHER VARIABLES TO BASE ENV
     list2env(x=list(...),envir=.base.env)
 
     ## GET VARIABLE NAMES
-    fn_vars=names(.base.env)[!grepl("\\.|FUN",names(.base.env))]
+    fn_vars=names(.base.env)[!grepl("\\.|args",names(.base.env))]
 
     append_env(to=.this.env,from=.base.env)
 
@@ -414,22 +417,29 @@ callFUN.checkArgs<-function(){
    .this.env=environment()
     append_env(to=.this.env,from=parent.frame())
 
-    for (arg in names(arg_types)){
+   
+    if(exists("def_args")){
+      types=def_args$types
+      required=def_args$required
+      for (arg in names(types)){
       if(!exists(arg)){
-        stop(paste0("Variable: ",arg,
+        stop(paste0("Variable : ",arg,
         "( type: ",arg_types[arg]," ) -> Value: Not defined. Define a value."))
       }
 
-      if(is.null(.this.env[[arg]])){
-        stop(paste0("Variable : ",arg," -> Value: NULL (type: NULL). Define a non-NULL value."))
+      if(is.null(.this.env[[arg]])& required[arg]){
+        stop(paste0("Variable : ",arg,
+        "( type: ",arg_types[arg]," ) -> Value: NULL (type: NULL). Define a non-NULL value."))
       }
 
       if(typeof(.this.env[[arg]])!=arg_types[arg]){
-        stop(paste0("Variable:",arg,
+        stop(paste0("Variable :",arg,
         "( type : ",arg_types[arg]," ) -> Value: ",.this.env[[arg]],
         "( type : ",arg_types[arg]," ).\n Invalid type."))
       }
-  } 
+    } 
+  }
+    
 }
 
 
