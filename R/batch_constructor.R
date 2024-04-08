@@ -365,15 +365,11 @@ callFUN.setEnv<-function(){
       if(!is.environment(env)){
         env <-readRDS(file=env)
         if(!exists("select")){
-          append_env(to=environment(),from=env$child.envs[[select]])
-        }else{
-          append_env(to=environment(),from=env)
-        }    
-      }else{
-        append_env(to=environment(),from=env)
+          env <- env$child.envs[[select]]
+        }
       }
+      append_env(to=environment(),from=env)
       env<-NULL
-
     }else{
       self<-FALSE
       ## WE VALIDATE USER DEFINED VARIABLE FOR PARENT FUNCTION
