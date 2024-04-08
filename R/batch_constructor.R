@@ -388,12 +388,14 @@ callFUN.setEnv<-function(){
 
             append_env(to=environment(),from=.env)
 
-
             ### WE BUILD THE CHILD ENV
             callFUN.buildChild()
 
             ### WE DUMP CHILDREN INFO
             callFUN.dumpInfo()
+
+            ### WE WRITE CHILDREN ENV
+            callFUN.writeEnv()
 
             return(environment())
             },
@@ -423,18 +425,18 @@ callFUN.checkArgs<-function(){
       for (arg in names(types)){
         if(!exists(arg)){
           stop(paste0("Variable : ",arg,
-          "( type : ",types[[arg]]," ) -> Value: Not defined. Define a value"))
+          " ( type : ",types[[arg]]," ) -> Value: Not defined. Define a value"))
         }
 
         if(is.null(.this.env[[arg]])&required[[arg]]){
           stop(paste0("Variable : ",arg,
-          "( type : ",types[[arg]]," ) -> Value: NULL (type: NULL). Define a non-NULL value"))
+          " ( type : ",types[[arg]]," ) -> Value: NULL (type: NULL). Define a non-NULL value"))
         }
 
         if(typeof(.this.env[[arg]])!=types[arg]&required[[arg]]){
-          stop(paste0("Variable :",arg,
+          stop(paste0("Variable : ",arg,
           " ( type : ",types[[arg]]," ) -> Value: ",.this.env[[arg]],
-          "( type : ",typeof(.this.env[[arg]])," ). Invalid type"))
+          " ( type : ",typeof(.this.env[[arg]])," ). Invalid type"))
         }
       } 
   }
@@ -473,9 +475,6 @@ callFUN.runSelf=function(){
 callFUN.runProcess=function(){
 
   append_env(to=environment(),from=parent.frame())
-
-  ### WE WRITE CHILDREN ENV
-  callFUN.writeEnv()
   
   ### GET ALL DATA BEFORE RUNNING ENV
   callFUN.collectData()
@@ -504,7 +503,7 @@ callFUN.runCall=function(FUN=NULL){
   }
 
   #Read .bashrc to import all envriomental variables
-  error=system(paste0(". $HOME/.bashrc;",exec_code))
+  error=system(paste0(". $HOME/.bashrc;",exec_code),wait=wait)
   ### RETURN ERROR MESSAGE
   if(error!=0){
       stop(err_msg)
