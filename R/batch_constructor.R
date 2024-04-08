@@ -690,7 +690,7 @@ callFUN.setCall=function(){
 
 callFUN.writeEnv=function(){
   append_env(to=environment(),from=parent.frame())
-  if(!is.null(parent_id)&!is.null(child_id)){
+  if(exists("child_id")){
       env_file=paste0(env_dir,"/",child_id,".child.RData")
       saveRDS(environment(),file=env_file)
   }else{
@@ -894,7 +894,7 @@ callFUN.buildSelf=function(){
   if(is.null(fn)){
     ## GET CALLER FUNCTION NAME
     fn <- sub(".*::","",sub("\\(.*","",
-      paste0(deparse(sys.calls()[[sys.nframe()-3]]),collapse=","))
+      paste0(deparse(sys.calls()[[sys.nframe()-4]]),collapse=","))
     )
   }
 
