@@ -359,6 +359,7 @@ callFUN.setEnv<-function(){
     
     ## WE CHECK IF WE ARE INHERITING A PARENT ENVIROMENT
     ## ELSE WE CREATE A PARENT ENVIROMENT
+    ## WHEN INHERITING WE DON'T CHECK ARG TYPES AGAIN
 
     if(exists("env")){
       if(!is.environment(env)){
@@ -367,7 +368,6 @@ callFUN.setEnv<-function(){
       }else{
         append_env(to=environment(),from=env)
       }
-      callFUN.checkArgs()
       env<-NULL
 
     }else{
