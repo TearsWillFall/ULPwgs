@@ -642,56 +642,58 @@ callFUN.buildCall=function(){
             ns,"::",fn,"(env=\\\"",
             env_file,"\\\")})\""
           )
+      }else{
+        ## WE ASSUME WE HAVE INFINITE CORES AND CAN RUN INFINITE JOBS 
+        if(mode=="local"){
+              ### LOCALLY WE ARE LIMITED IN NUMBER OF CORES
+              cores=parallel::detectCores()-1
+              ### WE ASSIGN A REASONABLE NUMBER OF JOBS FoR THE REQUESTED NUMBER OF THREADS 
+              rjobs=floor(cores/threads)
+              exec_code=paste0("Rscript -e \" invisible(parallel::mclapply(1:",n_inputs,
+              ",FUN=function(select){",ns,"::",fn,"(env=\\\"",
+              env_file,"\\\",select=select)},mc.cores=",rjobs,"))\"")
+        
+        }else if(mode=="batch"){
+              cores=Inf
+              rjobs=Inf
+              ### IN BATCH WE ASSUME INFINITE RESOURCES 
+              exec_code=paste0("Rscript -e \" invisible(",
+              ns,"::",fn,"(env=\\\"",env_file,
+              "\\\",select=$SGE_TASK_ID))\"")
+            
+
+              ### WE CREATE SCHEDULER SPECIFIC VARIABLES
+
+              batch_code=paste(
+                    "qsub -V ", 
+              paste0("-N ",job_id),
+              paste0(" -t 1-",n_inputs),
+              paste0(" -l h_rt=",time),
+              paste0(" -l mem=",ram,"G"),
+              paste0(" -pe smp ",threads), 
+              paste0(" -wd ",getwd()), 
+              paste0(" -o ",batch_dir,"/",job_id,".std_out"),
+              paste0(" -e ",batch_dir,"/",job_id,".std_error"))
+
+              if(!is.null(hold)){
+                batch_code=paste0(batch_code,paste0(" -hold_jid ",paste0(hold,collapse=",")))
+              }
+
+              if(bypass){
+                batch_code=paste0(batch_code," -P crag7day ")
+              }
+
+              ### WE APPEND CONFIG EXEC CODE AND BATCH CODE DATA
+
+              exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
+              ";",exec_code,"'|",batch_code)
+        }else{
+          stop("Unkown mode type")
+        }
+
       }
     
-      ## WE ASSUME WE HAVE INFINITE CORES AND CAN RUN INFINITE JOBS 
-      if(mode=="local"){
-            ### LOCALLY WE ARE LIMITED IN NUMBER OF CORES
-            cores=parallel::detectCores()-1
-            ### WE ASSIGN A REASONABLE NUMBER OF JOBS FoR THE REQUESTED NUMBER OF THREADS 
-            rjobs=floor(cores/threads)
-            exec_code=paste0("Rscript -e \" invisible(parallel::mclapply(1:",n_inputs,
-            ",FUN=function(select){",ns,"::",fn,"(env=\\\"",
-            env_file,"\\\",select=select)},mc.cores=",rjobs,"))\"")
       
-      }else if(mode=="batch"){
-            cores=Inf
-            rjobs=Inf
-            ### IN BATCH WE ASSUME INFINITE RESOURCES 
-            exec_code=paste0("Rscript -e \" invisible(",
-            ns,"::",fn,"(env=\\\"",env_file,
-            "\\\",select=$SGE_TASK_ID))\"")
-          
-
-            ### WE CREATE SCHEDULER SPECIFIC VARIABLES
-
-            batch_code=paste(
-                  "qsub -V ", 
-            paste0("-N ",job_id),
-            paste0(" -t 1-",n_inputs),
-            paste0(" -l h_rt=",time),
-            paste0(" -l mem=",ram,"G"),
-            paste0(" -pe smp ",threads), 
-            paste0(" -wd ",getwd()), 
-            paste0(" -o ",batch_dir,"/",job_id,".std_out"),
-            paste0(" -e ",batch_dir,"/",job_id,".std_error"))
-
-            if(!is.null(hold)){
-              batch_code=paste0(batch_code,paste0(" -hold_jid ",paste0(hold,collapse=",")))
-            }
-
-            if(bypass){
-              batch_code=paste0(batch_code," -P crag7day ")
-            }
-
-            ### WE APPEND CONFIG EXEC CODE AND BATCH CODE DATA
-
-            exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
-            ";",exec_code,"'|",batch_code)
-      }else{
-        stop("Unkown mode type")
-      }
-
        
     }else{
       ### OF THIS IS A CHILD ENVIROMENT WE DIRECTLY RUN USER DEFINED FUNCTION
