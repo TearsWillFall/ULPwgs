@@ -364,7 +364,7 @@ callFUN.setEnv<-function(){
     if(exists("env")){
       if(!is.environment(env)){
         env <-readRDS(file=env)
-        if(!exists("select")){
+        if(exists("select")){
           env <- env$child.envs[[select]]
         }
       }
