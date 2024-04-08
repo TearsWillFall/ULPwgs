@@ -373,7 +373,7 @@ callFUN.setEnv<-function(){
       self<-TRUE
 
       ### WE BUILD THE PARENT ENVIRONMENT
-      callerFUN.buildParent()
+      callFUN.buildParent()
 
       ### WE SET THE DUMPSTER WHERE TO PUT CHILDREN INFO
       callFUN.dumpInfo()
