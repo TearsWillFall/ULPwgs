@@ -371,8 +371,6 @@ callFUN.setEnv<-function(){
       env<-NULL
 
     }else{
-      self<-TRUE
-
       ## WE VALIDATE USER DEFINED VARIABLE FOR PARENT FUNCTION
       callFUN.checkArgs()
 
@@ -407,6 +405,10 @@ callFUN.setEnv<-function(){
               (parallel::detectCores()-1)
         )
       )
+      ### WE WRITE PARENT ENVIROMENT
+      callFUN.writeEnv()
+
+      self<-TRUE
     }
 
     append_env(from=environment(),to=parent.frame())
@@ -449,10 +451,6 @@ callFUN.checkArgs<-function(){
 callFUN.runSelf=function(){
   append_env(to=environment(),from=parent.frame())
  
-
-  ### WE WRITE PARENT ENVIROMENT
-  callFUN.writeEnv()
-
   ### CREATE CALLER
   callFUN.buildCall()
 
@@ -479,13 +477,13 @@ callFUN.runSelf=function(){
 callFUN.rmDir=function(){
     append_env(to=environment(),from=parent.frame())
     if(!self){
-    if(preserve=="partial"){
-        if(error!=0){
-            system(paste0("rm -rf ",parent_dir))
-          }
-    }else if (preserve=="none"){
-        system(paste0("rm -rf ",parent_dir))
-      }
+      if(preserve=="partial"){
+          if(error!=0){
+              system(paste0("rm -rf ",parent_dir))
+            }
+      }else if (preserve=="none"){
+          system(paste0("rm -rf ",parent_dir))
+        }
     }
 
   append_env(from=environment(),to=parent.frame())
