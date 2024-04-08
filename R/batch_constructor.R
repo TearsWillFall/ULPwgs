@@ -333,7 +333,7 @@ callFUN.call<-function(
     list2env(x=list(...),envir=.base.env)
 
     ## GET VARIABLE NAMES
-    fn_vars=names(.base.env)[!grepl("\\.|args",names(.base.env))]
+    fn_vars=names(.base.env)[!grepl("\\.|def_args|FUN",names(.base.env))]
 
     append_env(to=.this.env,from=.base.env)
 
