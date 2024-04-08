@@ -608,7 +608,7 @@ callFUN.buildCall=function(){
     callFUN.setCall()
   
     ### CHECK IF WE ARE IN A CHILD ENVIROMENT
-    if(is.null(child_id)){
+    if(exists("child_id")){
 
       if(self){
           exec_code=paste0("Rscript -e \"",ns,"::",fn,"(env=\\\"",
