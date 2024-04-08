@@ -408,24 +408,27 @@ callFUN.setEnv<-function(){
 
 }
 
+
+
+
 callFUN.checkArgs<-function(){
    .this.env=environment()
     append_env(to=.this.env,from=parent.frame())
 
     for (arg in names(arg_types)){
-      if(!exists(.this.env[[arg]])){
-        stop(paste0("Variable:",arg,
-        "(type:",arg_types[arg],") -> Value: Not defined.\nDefine a value."))
+      if(!exists(arg)){
+        stop(paste0("Variable: ",arg,
+        "( type: ",arg_types[arg]," ) -> Value: Not defined. Define a value."))
       }
 
       if(is.null(.this.env[[arg]])){
-        stop(paste0("Variable:",arg," -> Value: NULL (type: NULL).\nDefine a non-NULL value."))
+        stop(paste0("Variable : ",arg," -> Value: NULL (type: NULL). Define a non-NULL value."))
       }
 
       if(typeof(.this.env[[arg]])!=arg_types[arg]){
         stop(paste0("Variable:",arg,
-        "(type:",arg_types[arg],") -> Value: ",.this.env[[arg]],
-        "(type:",arg_types[arg],").\n Invalid type."))
+        "( type : ",arg_types[arg]," ) -> Value: ",.this.env[[arg]],
+        "( type : ",arg_types[arg]," ).\n Invalid type."))
       }
   } 
 }
