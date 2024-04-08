@@ -371,6 +371,7 @@ callFUN.setEnv<-function(){
       env<-NULL
 
     }else{
+      self<-FALSE
       ## WE VALIDATE USER DEFINED VARIABLE FOR PARENT FUNCTION
       callFUN.checkArgs()
 
@@ -720,7 +721,6 @@ callFUN.writeEnv=function(){
       env_file=paste0(env_dir,"/",child_id,".child.RData")
       saveRDS(environment(),file= env_file)
   }else{
-      self<-FALSE
       env_file=paste0(env_dir,"/",parent_id,".parent.RData")
       saveRDS(environment(),file = env_file)
   }
