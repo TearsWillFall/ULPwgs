@@ -1008,7 +1008,7 @@ callFUN.buildDirs=function(){
         env_dir<- set_dir(
           dir=parent_dir,
           name="env"
-  
+        )
  
 
       ### CREATE DIRECTORY TO BATCH DATA
@@ -1017,7 +1017,7 @@ callFUN.buildDirs=function(){
         batch_dir<- set_dir(
           dir=parent_dir,
           name="batch"
-     
+      )
 
    
     ### WE APPEND NEW VARIABLES BACK TO THE MAIN FUNCTION
