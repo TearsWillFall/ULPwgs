@@ -415,6 +415,47 @@ callFUN.setEnv<-function(){
 
 
 
+
+callFUN.createLink=function(){
+    append_env(to=environment(),from=parent.frame())
+    arg_value=normalizePath(arg_value)
+    ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE 
+    ## TEMP DIRECTORY FOR EACH VARIABLE
+    arg_dir=set_dir(dir=ln_dir,name=arg)
+    system(paste("ln -fs ",arg_value, arg_dir," > /dev/null 2>&1 "))
+    ### UPDATE THE VARIABLE TO THE SYMLINK
+    append_env(from=environment(),to=parent.frame())
+}
+
+
+callFUN.remoteCheck=function(){
+    append_env(to=environment(),from=parent.frame())
+    check=suppressWarnings(system(paste(
+    "sshpass -f ",password,
+    " ssh ",paste0(user,
+      ifelse(!is.null(user),"@",""),node),
+      "\" realpath -e ",arg_value,"\" "),intern=TRUE
+    ))
+    append_env(from=environment(),to=parent.frame())
+}
+
+
+callFUN.remoteGet=function(){
+  append_env(to=environment(),from=parent.frame())
+  arg_dir=set_dir(dir=rmt_dir,name=arg)
+  ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
+  system(paste(
+  "sshpass -f ",password,
+  " ssh ",paste0(user,
+    ifelse(!is.null(user),"@",""),node),
+    "\" cp -rn ",check," -t ",
+    arg_dir, "\"")
+  )
+  arg_value=paste0(arg_dir,"/",basename(check))   
+  append_env(from=environment(),to=parent.frame())
+}
+
+
 callFUN.checkArgs<-function(){
    .this.env=environment()
    .base.env=parent.frame()
@@ -576,44 +617,6 @@ callFUN.runCall=function(FUN=NULL){
 
 
 
-callFUN.createLink=function(){
-    append_env(to=environment(),from=parent.frame())
-    arg_value=normalizePath(arg_value)
-    ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE 
-    ## TEMP DIRECTORY FOR EACH VARIABLE
-    arg_dir=set_dir(dir=ln_dir,name=arg)
-    system(paste("ln -fs ",arg_value, arg_dir," > /dev/null 2>&1 "))
-    ### UPDATE THE VARIABLE TO THE SYMLINK
-    append_env(from=environment(),to=parent.frame())
-}
-
-
-callFUN.remoteCheck=function(){
-    append_env(to=environment(),from=parent.frame())
-    check=suppressWarnings(system(paste(
-    "sshpass -f ",password,
-    " ssh ",paste0(user,
-      ifelse(!is.null(user),"@",""),node),
-      "\" realpath -e ",arg_value,"\" "),intern=TRUE
-    ))
-    append_env(from=environment(),to=parent.frame())
-}
-
-
-callFUN.remoteGet=function(){
-  append_env(to=environment(),from=parent.frame())
-  arg_dir=set_dir(dir=rmt_dir,name=arg)
-  ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
-  system(paste(
-  "sshpass -f ",password,
-  " ssh ",paste0(user,
-    ifelse(!is.null(user),"@",""),node),
-    "\" cp -rn ",check," -t ",
-    arg_dir, "\"")
-  )
-  arg_value=paste0(arg_dir,"/",basename(check))   
-  append_env(from=environment(),to=parent.frame())
-}
 
 
 callFUN.buildCall=function(){
