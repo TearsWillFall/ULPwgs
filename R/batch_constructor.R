@@ -955,13 +955,10 @@ callFUN.buildDirs=function(){
       out_file_dir <- set_dir(
           dir=output_dir
       )
-
-
-   
-
+      
       ### CREATE MAIN WORKING DIRECTORY
       
-      if(!exists("parent_dir")){
+      if(is.null(parent_dir)){
           parent_dir <- set_dir(
               dir=out_file_dir,
               name=parent_id
