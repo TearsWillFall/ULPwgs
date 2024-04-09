@@ -417,7 +417,8 @@ callFUN.setEnv<-function(){
 
 callFUN.checkArgs<-function(){
    .this.env=environment()
-    append_env(to=.this.env,from=parent.frame())
+   .base.env=parent.frame()
+    append_env(to=.this.env,from=.base.env)
 
     if(exists("def_args")){
       types=def_args$types
@@ -425,31 +426,73 @@ callFUN.checkArgs<-function(){
       required=def_args$required
 
       for (arg in names(types)){
+        arg_value=.this.env[[arg]]
+        arg_type=types[[arg]]
+        arg_subtype=subtypes[[arg]]
+        arg_required=required[[arg]]
+
         if(!exists(arg)){
           stop(paste0("Variable : ",arg,
-          " ( type : ",types[[arg]]," ) -> Value: Not defined. Define a value"))
+          " ( type : ",arg_type,
+          " ) -> Value: Not defined. Define a value"))
         }
 
-        if(is.null(.this.env[[arg]])&required[[arg]]){
+        if(is.null(arg_value)&arg_required){
           stop(paste0("Variable : ",arg,
-          " ( type : ",types[[arg]]," ) -> Value: NULL (type: NULL). Define a non-NULL value"))
+          " ( type : ",arg_type,
+          " ) -> Value: NULL (type: NULL). Define a non-NULL value"))
         }
 
-        if(typeof(.this.env[[arg]])!=types[arg]&required[[arg]]){
+        if(typeof(arg_value)!=arg_type&arg_required){
           stop(paste0("Variable : ",arg,
-          " ( type : ",types[[arg]]," ) -> Value: ",.this.env[[arg]],
-          " ( type : ",typeof(.this.env[[arg]])," ). Invalid type"))
+          " ( type : ",arg_type," ) -> Value: ",arg_value,
+          " ( type : ",typeof(arg_value),
+          " ). Invalid type"))
         }
+
+        if(arg_subtype=="path"){
+          if(!file.exists(arg_value)){
+            ###CHECK IF REMOTE LOCATION HAS BEEN DEFINED
+            if(is.null(node)){
+              stop(paste0("Variable : ",arg,
+                  " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",,
+                  " ( type : ",typeof(arg_value),
+                  " ) [ subtype : NULL ] . Path doesn't exist in locally")
+              )
+              }else{
+                  callFUN.remoteCheck()
+  
+                  if(length(check)==0){
+                    stop(paste0("Variable : ",arg,
+                      " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
+                      " ( type : ",typeof(arg_value),
+                      " ) [ subtype : NULL ] . Path doesn't in locally or remotely")
+                    )
+                  
+                  }else{
+
+                     callerFUN.remoteGet()
+
+                  }
+              }
+          }
+
+          callerFUN.createLink()
+          
+          ## WE REASSIGN THE VALUE OF ARGUMENT TO THE LOCAL/REMOTE
+          .base.env[[arg]]=normalizePath(paste0(arg_dir,"/",basename(arg_value)))
+        
+        }
+        
       }
 
     }
 
-    ### GET ALL DATA BEFORE RUNNING ENV
-  callFUN.collectData()
+}
+
 
 
     
-}
 
 
 
@@ -534,99 +577,44 @@ callFUN.runCall=function(FUN=NULL){
 
 
 
-callFUN.collectData.createLink=function(){
+callFUN.createLink=function(){
     append_env(to=environment(),from=parent.frame())
-    var_value=normalizePath(var_value)
+    arg_value=normalizePath(arg_value)
     ## IF FILE EXISTS LOCALLY WE CREATE A SYMLINK IN THE 
     ## TEMP DIRECTORY FOR EACH VARIABLE
-    var_dir=set_dir(dir=ln_dir,name=var)
-    system(paste("ln -fs ",var_value, var_dir," > /dev/null 2>&1 "))
+    arg_dir=set_dir(dir=ln_dir,name=arg)
+    system(paste("ln -fs ",arg_value, arg_dir," > /dev/null 2>&1 "))
     ### UPDATE THE VARIABLE TO THE SYMLINK
     append_env(from=environment(),to=parent.frame())
 }
 
 
-callFUN.collectData.remoteCheck=function(){
+callFUN.remoteCheck=function(){
     append_env(to=environment(),from=parent.frame())
     check=suppressWarnings(system(paste(
     "sshpass -f ",password,
     " ssh ",paste0(user,
       ifelse(!is.null(user),"@",""),node),
-      "\" realpath -e ",var_value,"\" "),intern=TRUE
+      "\" realpath -e ",arg_value,"\" "),intern=TRUE
     ))
     append_env(from=environment(),to=parent.frame())
 }
 
-callFUN.collectData.remoteGet=function(){
+
+callFUN.remoteGet=function(){
   append_env(to=environment(),from=parent.frame())
-  var_dir=set_dir(dir=rmt_dir,name=var)
+  arg_dir=set_dir(dir=rmt_dir,name=arg)
   ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
   system(paste(
   "sshpass -f ",password,
   " ssh ",paste0(user,
     ifelse(!is.null(user),"@",""),node),
     "\" cp -rn ",check," -t ",
-    var_dir, "\"")
+    arg_dir, "\"")
   )
+  arg_value=paste0(arg_dir,"/",basename(check))   
   append_env(from=environment(),to=parent.frame())
 }
-
-callFUN.collectData=function(){
-    ## WE LOOP THROUGH ALL VARIABLES FOR MAIN FUNCTION
-    .base.env=parent.frame()
-    append_env(to=environment(),from=.base.env)
-    parallel::mclapply(
-      fn_vars,
-      FUN=function(
-        var,
-        env
-      ){
-        append_env(to=environment(),from=env)
-        var_value=get(var)
-        ### CHECK VARIABLE TYPE
-        var_type=typeof(var_value)
-        ### IF VARIABLE TYPE IS CHARACTER
-        if(var_type=="character"){
-          ## WE CHECK IF VARIABLE CONTAINS A PATH LOCALLY
-          if(file.exists(var_value)){
-            callFUN.collectData.createLink()
-          }else{
-            ## CHECK IF REMOTE NODE IS GIVEN
-            if(is.null(node)){
-              return()
-            }
-          
-
-            ### CHECK IF VARIABLE PATH EXIST IN REMOTE
-            callFUN.collectData.remoteCheck()
-
-            ### WE STOP FUNCTION IF FILE IS NOT FOUND REMOTELY
-            ### WE STOP FUNCTION IF FILE IS NOT FOUND REMOTELY
-            if(length(check)==0){
-              return()
-            }
-
-            ### GET REMOTE PATH
-            callFUN.collectData.remoteGet()
-            var_value=paste0(var_dir,"/",basename(check))     
-      
-            ### We CREATE A SYMLINK TO THE DATA
-            callFUN.collectData.createLink()
-          }
-          env[[var]]=normalizePath(paste0(var_dir,"/",basename(var_value)))
-
-          }
-      },
-      env=.base.env,
-      mc.cores=ifelse(
-                (parallel::detectCores()-1)<1,
-                1,
-                (parallel::detectCores()-1)
-      )
-    )
-}
-
-
 
 
 callFUN.buildCall=function(){
