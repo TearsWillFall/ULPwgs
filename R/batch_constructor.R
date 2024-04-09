@@ -420,10 +420,10 @@ callFUN.checkArgs<-function(){
    .base.env=parent.frame()
     append_env(to=.this.env,from=.base.env)
 
-    if(exists("def_args")){
-      types=def_args$types
-      subtypes=def_args$types
-      required=def_args$required
+    if(exists("args")){
+      types=args$types
+      subtypes=args$types
+      required=args$required
 
       for (arg in names(types)){
         arg_value=.this.env[[arg]]
@@ -449,6 +449,7 @@ callFUN.checkArgs<-function(){
           " ( type : ",typeof(arg_value),
           " ). Invalid type"))
         }
+      
 
         if(arg_subtype=="path"){
           if(!file.exists(arg_value)){
