@@ -341,7 +341,7 @@ callFUN.call<-function(
     callFUN.setEnv()
 
     ## WE WILL RUN SELF OR A PROCESS
-    if(is.null(select)){
+    if(exists("select")){
     
       callFUN.runSelf()
   
@@ -372,9 +372,7 @@ callFUN.setEnv<-function(){
       env<-NULL
     }else{
       self<-FALSE
-      ## WE VALIDATE USER DEFINED VARIABLE FOR PARENT FUNCTION
-      callFUN.checkArgs()
-
+  
       ### WE BUILD THE PARENT ENVIRONMENT
       callFUN.buildParent()
 
@@ -424,6 +422,7 @@ callFUN.checkArgs<-function(){
 
     if(exists("def_args")){
       types=def_args$types
+      subtypes=def_args$types
       required=def_args$required
 
       for (arg in names(types)){
@@ -442,8 +441,14 @@ callFUN.checkArgs<-function(){
           " ( type : ",types[[arg]]," ) -> Value: ",.this.env[[arg]],
           " ( type : ",typeof(.this.env[[arg]])," ). Invalid type"))
         }
-      } 
-  }
+      }
+
+    }
+
+    ### GET ALL DATA BEFORE RUNNING ENV
+  callFUN.collectData()
+
+
     
 }
 
@@ -495,9 +500,6 @@ callFUN.runProcess=function(){
 
   append_env(to=environment(),from=parent.frame())
   
-  ### GET ALL DATA BEFORE RUNNING ENV
-  callFUN.collectData()
-
   ### CREATE CALLER
   callFUN.buildCall()
 
@@ -854,23 +856,17 @@ callFUN.buildChild=function(){
 
 
 callFUN.buildParent=function(
-  vars=NULL,
-  fn=NULL,
   fn_id=NULL,
   fn_vars=NULL,
   output_dir=".",
-  tmp_dir=NULL,
-  ln_dir=NULL,
-  rmt_dir=NULL,
-  env_dir=NULL,
-  batch_dir=NULL,
+  parent_dir=NULL,
   output_name=NULL,
   verbose=FALSE,
-  bgzip_index=FALSE,
-  index_format="tbi",
-  license_dir=build_default_license_list()$dir,
+  bgzip_idx=FALSE,
+  vcf_idx_fmt="tbi",
+  lic_dir=build_default_license_list()$dir,
   clean=FALSE,
-  batch_config=build_default_preprocess_config(),
+  batch_cfg=build_default_preprocess_config(),
   threads=1,
   ram=4,
   ns="ULPwgs",
@@ -883,18 +879,27 @@ callFUN.buildParent=function(
   password=NULL,
   sheet=NULL,
   env=NULL,
-  select=NULL,
   err_msg=NULL,
-  complimentary=FALSE,
+  compl=FALSE,
   parent_id=NULL,
   wait=FALSE,
   hold=NULL
 ){
+  
+
     append_env(to=environment(),from=parent.frame())
     ### IF WE INHERIT A RDS FILE READ AND APPEND
     ### WE SAVE RDS FILES WHEN SUBMITTING JOBS TO SCHEDULER OR JOBS RUN LOCALLY IN PARALLEL
     ### SELECT VARIABLE DEFINES WHICH ENV WE ARE RUNNING
     ### WE APPEND THIS ENV AND STOP
+
+
+    ### WE APPEND USER DEFINED VARIABLES AND DEFAULT 
+    def_args=appendList(def_args,build_default_variable_list())
+    
+    ## WE VALIDATE VARIABLES
+    callFUN.checkArgs()
+
 
     ### CREATE VARIABLES FOR THE ENVIRONMENT
     callFUN.buildSelf()
@@ -919,7 +924,7 @@ callFUN.buildSelf=function(){
   append_env(to=environment(),from=parent.frame())
    ## IF NOT SET UP BY THE USER WE WILL GET THE MAIN FUNCTION NAME
     
-  if(is.null(fn)){
+  if(exists("fn")){
     ## GET CALLER FUNCTION NAME
     fn <- sub(".*::","",sub("\\(.*","",
       paste0(deparse(sys.calls()[[sys.nframe()-4]]),collapse=","))
@@ -948,83 +953,73 @@ callFUN.buildDirs=function(){
       )
 
       ### CREATE MAIN WORKING DIRECTORY
+      
       out_file_dir <- set_dir(
           dir=output_dir
       )
 
 
+   
+
       ### CREATE MAIN WORKING DIRECTORY
-      parent_dir <- set_dir(
-          dir=out_file_dir,
-          name=parent_id
-      )
+      
+      if(!exists("parent_dir")){
+          parent_dir <- set_dir(
+              dir=out_file_dir,
+              name=parent_id
+          )
+      }else{
+          parent_dir <- set_dir(
+              dir=parent_dir,
+              name=parent_id
+          )
+      }
 
       ### CREATE TMP DIRECTORY
       ### WE WILL STORE TMP FILES FOR ALL FUNCTIONS HERE 
-      if(is.null(tmp_dir)){
-          tmp_dir <- set_dir(
+     
+        tmp_dir <- set_dir(
             dir=parent_dir,
             name="tmp"
         )
-      }
+    
       
       ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE SYMLINK OF FILES
       ### WE WILL STORE SYMLINK FILES FOR LOCAL FILES
-      if(is.null(ln_dir)){
-          ln_dir <- set_dir(
-            dir=tmp_dir,
-            name="ln"
-        )
-      }else{
+   
         ln_dir <- set_dir(
-          dir=ln_dir,
-          name=child_id
+          dir=tmp_dir,
+          name="ln"
         )
-      }
+   
+      
 
       ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE REMOTE FILES
       ### WE WILL STORE REMOTE DOWNLOAD FILES HERE
-      if(is.null(rmt_dir)){
-          rmt_dir <- set_dir(
-            dir=tmp_dir,
-            name="rmt"
+      
+        rmt_dir <- set_dir(
+          dir=tmp_dir,
+          name="rmt"
         )
-      }else{
-          rmt_dir <- set_dir(
-            dir=rmt_dir,
-            name=child_id
-        )
-      }
 
       ### CREATE DIRECTORY TO STORE ENVIROMENT DATA
       ### WE WILL STORE R ENVIRONMENT DATA HERE
-      if(is.null(env_dir)){
-            env_dir<- set_dir(
-              dir=parent_dir,
-              name="env"
-          )
-      }else{
-            env_dir<- set_dir(
-              dir=env_dir,
-              name=child_id
-          )
-      }
+      
+        env_dir<- set_dir(
+          dir=parent_dir,
+          name="env"
+  
+ 
 
       ### CREATE DIRECTORY TO BATCH DATA
       ### WE WILL STORE SCHEDULER DATA HERE
-      if(is.null(batch_dir)){
-          batch_dir<- set_dir(
-            dir=parent_dir,
-            name="batch"
-        )
-      }else{
-          batch_dir<- set_dir(
-            dir=batch_dir,
-            name=child_id
-          )
+     
+        batch_dir<- set_dir(
+          dir=parent_dir,
+          name="batch"
+     
 
-      }
-
+   
     ### WE APPEND NEW VARIABLES BACK TO THE MAIN FUNCTION
     append_env(from=environment(),to=parent.frame())
 }

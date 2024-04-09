@@ -334,20 +334,34 @@ cp_data=function(
             origin="character",
             target="character",
             force="logical"
-        ),
-        required=list(
-          origin=TRUE,
-          target=TRUE,
-          force=FALSE
-        )
+          ),
+          subtypes=list(
+            origin="path",
+            target="path",
+            force=NULL
+          ),
+          required=list(
+            origin=TRUE,
+            target=TRUE,
+            force=FALSE
+          )
       )
     )
-  
 }
 
 
 
-
+appendList <- function (x, val) 
+{
+    stopifnot(is.list(x), is.list(val))
+    xnames <- names(x)
+    for (v in names(val)) {
+        x[[v]] <- if (v %in% xnames && is.list(x[[v]]) && is.list(val[[v]])) 
+            appendList(x[[v]], val[[v]])
+        else c(x[[v]], val[[v]])
+    }
+    x
+}
 
 
 
