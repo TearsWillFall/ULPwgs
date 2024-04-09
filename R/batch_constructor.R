@@ -860,6 +860,7 @@ callFUN.buildParent=function(
   ns="ULPwgs",
   mode="local",
   time="48:0:0",
+  work_dir=".",
   bypass=FALSE,
   preserve="partial",
   node=NULL,
@@ -947,17 +948,10 @@ callFUN.buildDirs=function(){
       
       ### CREATE MAIN WORKING DIRECTORY
       
-      if(is.null(parent_dir)){
-          parent_dir <- set_dir(
-              dir=out_file_dir,
+      parent_dir <- set_dir(
+              dir=work_dir,
               name=parent_id
-          )
-      }else{
-          parent_dir <- set_dir(
-              dir=parent_dir,
-              name=parent_id
-          )
-      }
+      )
 
       ### CREATE TMP DIRECTORY
       ### WE WILL STORE TMP FILES FOR ALL FUNCTIONS HERE 
