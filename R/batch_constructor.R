@@ -269,9 +269,6 @@ set_inputs<-function(){
 
 
 
-
-
-
 #' Set default environment ID
 #' 
 #' @param inputs Input file/s
@@ -490,9 +487,19 @@ callFUN.checkArgs<-function(){
           " ( type : ",typeof(arg_value),
           " ). Invalid type"))
         }
-      
 
-        if(arg_subtype=="path"){
+        if(arg_subtype=="dir"){
+          if(!file.exists(arg_value)){
+            stop(paste0("Variable : ",arg,
+                  " ( type : ",arg_type," ) [ subtype : dir ] -> Value: ",arg_value,
+                  " ( type : ",typeof(arg_value),
+                  " ) [ subtype : NULL ] . Directory doesn't exist locally")
+            )
+          }
+        }
+
+
+       if(arg_subtype=="path"){
           if(!file.exists(arg_value)){
             ###CHECK IF REMOTE LOCATION HAS BEEN DEFINED
             if(is.null(node)){
@@ -502,7 +509,7 @@ callFUN.checkArgs<-function(){
                   " ) [ subtype : NULL ] . Path doesn't exist locally")
               )
               }else{
-
+                  ## WE CHECK IF PATH IS IN REMOTE
                   callFUN.remoteCheck()
 
                   if(length(check)==0){
@@ -512,27 +519,26 @@ callFUN.checkArgs<-function(){
                       " ) [ subtype : NULL ] . Path doesn't locally and remotely")
                     )
                   
-                  }else{
-
-                     callFUN.remoteGet()
-
                   }
+                  ### WE GET THE REMOTE PATH
+                  callFUN.remoteGet()
               }
           }
-
+    
+       
           callFUN.createLink()
 
           ## WE REASSIGN THE VALUE OF ARGUMENT TO THE LOCAL/REMOTE
           .base.env[[arg]]=normalizePath(paste0(arg_dir,"/",basename(arg_value)))
         
         }
+
         
       }
 
     }
 
 }
-
 
 
     
@@ -860,9 +866,9 @@ callFUN.buildParent=function(
   ns="ULPwgs",
   mode="local",
   time="48:0:0",
-  work_dir=".",
   bypass=FALSE,
   preserve="partial",
+  work_dir=".",
   node=NULL,
   user=NULL,
   password=NULL,
@@ -884,10 +890,18 @@ callFUN.buildParent=function(
 
     ### WE APPEND USER DEFINED VARIABLES AND DEFAULT 
     args=appendList(args,build_default_variable_list())
-    
+
+    ### CREATE WORK DIRECTORIES
+    callFUN.buildWorkDir()
+
     ## WE VALIDATE VARIABLES
     callFUN.checkArgs()
-    
+
+    ### CREATE WORK DIRECTORIES
+    callFUN.buildOutputDir()
+
+    ## WE VALIDATE
+    callFUN.checkArgs()
   
     ### CREATE VARIABLES FOR THE ENVIRONMENT
     callFUN.buildSelf()
@@ -895,8 +909,7 @@ callFUN.buildParent=function(
     ### CREATE JOB ID FOR THE PARENT FUNCTION
     callFUN.buildId()
 
-    ### CREATE WORK DIRECTORIES
-    callFUN.buildDirs()
+
     
     ### CREATE SHEET WITH VARIABLES
     callFUN.buildSheet()
@@ -931,21 +944,16 @@ callFUN.buildSelf=function(){
   append_env(from=environment(),to=parent.frame())
 }
 
-
-
-
-callFUN.buildDirs=function(){
-      append_env(
+callFUN.buildWorkDir=function(){
+    append_env(
         to=environment(),
         from=parent.frame()
       )
 
-      ### CREATE MAIN WORKING DIRECTORY
-      
-      out_file_dir <- set_dir(
-          dir=output_dir
-      )
-      
+      if(!file.exists(work_dir)){
+        stop("Can't create working directory. Change working directory using the work_dir argument")
+      }
+
       ### CREATE MAIN WORKING DIRECTORY
       
       parent_dir <- set_dir(
@@ -956,51 +964,73 @@ callFUN.buildDirs=function(){
       ### CREATE TMP DIRECTORY
       ### WE WILL STORE TMP FILES FOR ALL FUNCTIONS HERE 
      
-        tmp_dir <- set_dir(
-            dir=parent_dir,
-            name="tmp"
-        )
-    
+      tmp_dir <- set_dir(
+          dir=parent_dir,
+          name="tmp"
+      )
+  
       
       ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE SYMLINK OF FILES
       ### WE WILL STORE SYMLINK FILES FOR LOCAL FILES
    
-        ln_dir <- set_dir(
-          dir=tmp_dir,
-          name="ln"
-        )
-   
+      ln_dir <- set_dir(
+        dir=tmp_dir,
+        name="ln"
+      )
+  
       
 
       ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE REMOTE FILES
       ### WE WILL STORE REMOTE DOWNLOAD FILES HERE
-      
-        rmt_dir <- set_dir(
-          dir=tmp_dir,
-          name="rmt"
-        )
+    
+      rmt_dir <- set_dir(
+        dir=tmp_dir,
+        name="rmt"
+      )
 
       ### CREATE DIRECTORY TO STORE ENVIROMENT DATA
       ### WE WILL STORE R ENVIRONMENT DATA HERE
       
-        env_dir<- set_dir(
-          dir=parent_dir,
-          name="env"
-        )
- 
+      env_dir<- set_dir(
+        dir=parent_dir,
+        name="env"
+      )
+
 
       ### CREATE DIRECTORY TO BATCH DATA
       ### WE WILL STORE SCHEDULER DATA HERE
      
-        batch_dir<- set_dir(
-          dir=parent_dir,
-          name="batch"
+      batch_dir<- set_dir(
+        dir=parent_dir,
+        name="batch"
       )
 
-   
-    ### WE APPEND NEW VARIABLES BACK TO THE MAIN FUNCTION
-    append_env(from=environment(),to=parent.frame())
+
+      ### WE APPEND NEW VARIABLES BACK TO THE MAIN FUNCTION
+      append_env(from=environment(),to=parent.frame())
+
 }
+
+
+
+callFUN.buildOutputDir=function(){
+
+      append_env(
+        to=environment(),
+        from=parent.frame()
+      )
+
+
+      out_file_dir <- set_dir(
+          dir=output_dir
+      )
+      
+      ### WE APPEND NEW VARIABLES BACK TO THE MAIN FUNCTION
+      append_env(from=environment(),to=parent.frame())
+
+}
+
+
 
 
 
