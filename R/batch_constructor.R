@@ -882,6 +882,12 @@ callFUN.buildParent=function(
     ### WE APPEND USER DEFINED VARIABLES AND DEFAULT 
     args=appendList(args,build_default_variable_list())
 
+    ### CREATE VARIABLES FOR THE ENVIRONMENT
+    callFUN.buildSelf()
+    
+    ### CREATE JOB ID FOR THE PARENT FUNCTION
+    callFUN.buildId()
+
     ### CREATE WORK DIRECTORIES
     callFUN.buildWorkDir()
 
@@ -890,14 +896,6 @@ callFUN.buildParent=function(
 
     ### CREATE WORK DIRECTORIES
     callFUN.buildOutputDir()
-
-  
-    ### CREATE VARIABLES FOR THE ENVIRONMENT
-    callFUN.buildSelf()
-      
-    ### CREATE JOB ID FOR THE PARENT FUNCTION
-    callFUN.buildId()
-
 
     
     ### CREATE SHEET WITH VARIABLES
