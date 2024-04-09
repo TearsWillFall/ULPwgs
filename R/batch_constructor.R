@@ -878,7 +878,7 @@ callFUN.buildParent=function(
     ### WE APPEND THIS ENV AND STOP
 
     ### WE APPEND USER DEFINED VARIABLES AND DEFAULT 
-    def_args=appendList(args,build_default_variable_list())
+    args=appendList(args,build_default_variable_list())
     
     ## WE VALIDATE VARIABLES
     callFUN.checkArgs()
