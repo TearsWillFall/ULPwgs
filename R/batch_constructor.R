@@ -458,7 +458,7 @@ callFUN.checkArgs<-function(){
               stop(paste0("Variable : ",arg,
                   " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
                   " ( type : ",typeof(arg_value),
-                  " ) [ subtype : NULL ] . Path doesn't exist in locally")
+                  " ) [ subtype : NULL ] . Path doesn't exist locally")
               )
               }else{
 
@@ -468,7 +468,7 @@ callFUN.checkArgs<-function(){
                     stop(paste0("Variable : ",arg,
                       " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
                       " ( type : ",typeof(arg_value),
-                      " ) [ subtype : NULL ] . Path doesn't in locally or remotely")
+                      " ) [ subtype : NULL ] . Path doesn't locally and remotely")
                     )
                   
                   }else{
