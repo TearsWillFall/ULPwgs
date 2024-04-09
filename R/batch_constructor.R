@@ -422,7 +422,7 @@ callFUN.checkArgs<-function(){
 
     if(exists("args")){
       types=args$types
-      subtypes=args$types
+      subtypes=args$subtypes
       required=args$required
 
       for (arg in names(types)){
