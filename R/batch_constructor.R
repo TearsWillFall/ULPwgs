@@ -888,9 +888,7 @@ callFUN.buildParent=function(
 
     ### CREATE WORK DIRECTORIES
     callFUN.buildOutputDir()
-
-    ## WE VALIDATE
-    callFUN.checkArgs()
+    
   
     ### CREATE VARIABLES FOR THE ENVIRONMENT
     callFUN.buildSelf()
