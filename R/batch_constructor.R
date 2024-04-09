@@ -456,13 +456,14 @@ callFUN.checkArgs<-function(){
             ###CHECK IF REMOTE LOCATION HAS BEEN DEFINED
             if(is.null(node)){
               stop(paste0("Variable : ",arg,
-                  " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",,
+                  " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
                   " ( type : ",typeof(arg_value),
                   " ) [ subtype : NULL ] . Path doesn't exist in locally")
               )
               }else{
+
                   callFUN.remoteCheck()
-  
+
                   if(length(check)==0){
                     stop(paste0("Variable : ",arg,
                       " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
