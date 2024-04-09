@@ -478,7 +478,7 @@ callFUN.checkArgs<-function(){
           }
 
           callerFUN.createLink()
-          
+
           ## WE REASSIGN THE VALUE OF ARGUMENT TO THE LOCAL/REMOTE
           .base.env[[arg]]=normalizePath(paste0(arg_dir,"/",basename(arg_value)))
         
@@ -493,9 +493,6 @@ callFUN.checkArgs<-function(){
 
 
     
-
-
-
 callFUN.runSelf=function(){
   append_env(to=environment(),from=parent.frame())
  
