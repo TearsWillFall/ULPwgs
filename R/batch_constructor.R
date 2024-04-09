@@ -333,7 +333,7 @@ callFUN.call<-function(
     list2env(x=list(...),envir=.base.env)
 
     ## GET VARIABLE NAMES
-    fn_vars=names(.base.env)[!grepl("\\.|def_args|FUN",names(.base.env))]
+    fn_vars=names(.base.env)[!grepl("\\.|args|FUN",names(.base.env))]
 
     append_env(to=.this.env,from=.base.env)
 
@@ -865,7 +865,6 @@ callFUN.buildParent=function(
   bgzip_idx=FALSE,
   vcf_idx_fmt="tbi",
   lic_dir=build_default_license_list()$dir,
-  clean=FALSE,
   batch_cfg=build_default_preprocess_config(),
   threads=1,
   ram=4,
@@ -893,14 +892,13 @@ callFUN.buildParent=function(
     ### SELECT VARIABLE DEFINES WHICH ENV WE ARE RUNNING
     ### WE APPEND THIS ENV AND STOP
 
-
     ### WE APPEND USER DEFINED VARIABLES AND DEFAULT 
-    def_args=appendList(def_args,build_default_variable_list())
+    def_args=appendList(args,build_default_variable_list())
     
     ## WE VALIDATE VARIABLES
     callFUN.checkArgs()
-
-
+    
+  
     ### CREATE VARIABLES FOR THE ENVIRONMENT
     callFUN.buildSelf()
       
@@ -924,7 +922,7 @@ callFUN.buildSelf=function(){
   append_env(to=environment(),from=parent.frame())
    ## IF NOT SET UP BY THE USER WE WILL GET THE MAIN FUNCTION NAME
     
-  if(exists("fn")){
+  if(!exists("fn")){
     ## GET CALLER FUNCTION NAME
     fn <- sub(".*::","",sub("\\(.*","",
       paste0(deparse(sys.calls()[[sys.nframe()-4]]),collapse=","))
