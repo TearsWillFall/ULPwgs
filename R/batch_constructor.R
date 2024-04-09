@@ -487,42 +487,42 @@ callFUN.checkArgs<-function(){
           " ( type : ",typeof(arg_value),
           " ). Invalid type"))
         }
+        if(!is.null(arg_subtype)){
+           if(arg_subtype=="path"){
+              if(!file.exists(arg_value)){
+                ###CHECK IF REMOTE LOCATION HAS BEEN DEFINED
+                if(is.null(node)){
+                  stop(paste0("Variable : ",arg,
+                      " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
+                      " ( type : ",typeof(arg_value),
+                      " ) [ subtype : NULL ] . Path doesn't exist locally")
+                  )
+                  }else{
+                      ## WE CHECK IF PATH IS IN REMOTE
+                      callFUN.remoteCheck()
 
-        if(arg_subtype=="path"){
-            if(!file.exists(arg_value)){
-              ###CHECK IF REMOTE LOCATION HAS BEEN DEFINED
-              if(is.null(node)){
-                stop(paste0("Variable : ",arg,
-                    " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
-                    " ( type : ",typeof(arg_value),
-                    " ) [ subtype : NULL ] . Path doesn't exist locally")
-                )
-                }else{
-                    ## WE CHECK IF PATH IS IN REMOTE
-                    callFUN.remoteCheck()
-
-                    if(length(check)==0){
-                      stop(paste0("Variable : ",arg,
-                        " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
-                        " ( type : ",typeof(arg_value),
-                        " ) [ subtype : NULL ] . Path doesn't locally and remotely")
-                      )
-                    
-                    }
-                    ### WE GET THE REMOTE PATH
-                    callFUN.remoteGet()
-                }
-            }
-    
-       
-          callFUN.createLink()
-
-          ## WE REASSIGN THE VALUE OF ARGUMENT TO THE LOCAL/REMOTE
-          .base.env[[arg]]=normalizePath(paste0(arg_dir,"/",basename(arg_value)))
+                      if(length(check)==0){
+                        stop(paste0("Variable : ",arg,
+                          " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
+                          " ( type : ",typeof(arg_value),
+                          " ) [ subtype : NULL ] . Path doesn't locally and remotely")
+                        )
+                      
+                      }
+                      ### WE GET THE REMOTE PATH
+                      callFUN.remoteGet()
+                  }
+              }
+      
         
+            callFUN.createLink()
+
+            ## WE REASSIGN THE VALUE OF ARGUMENT TO THE LOCAL/REMOTE
+            .base.env[[arg]]=normalizePath(paste0(arg_dir,"/",basename(arg_value)))
+          
+          }
+
         }
-
-        
       }
 
     }
