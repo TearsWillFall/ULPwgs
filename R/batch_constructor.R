@@ -514,13 +514,13 @@ callFUN.checkArgs<-function(){
                   
                   }else{
 
-                     callerFUN.remoteGet()
+                     callFUN.remoteGet()
 
                   }
               }
           }
 
-          callerFUN.createLink()
+          callFUN.createLink()
 
           ## WE REASSIGN THE VALUE OF ARGUMENT TO THE LOCAL/REMOTE
           .base.env[[arg]]=normalizePath(paste0(arg_dir,"/",basename(arg_value)))
