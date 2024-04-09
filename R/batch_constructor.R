@@ -341,8 +341,7 @@ callFUN.call<-function(
     callFUN.setEnv()
 
     ## WE WILL RUN SELF OR A PROCESS
-    if(exists("select")){
-    
+    if(!exists("select")){
       callFUN.runSelf()
   
     }else{
