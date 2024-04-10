@@ -941,7 +941,7 @@ callFUN.buildParent=function(){
     ### WE APPEND THIS ENV AND STOP
 
     ### WE BUILD THE PROCESS AND THE ERROR MESSAGES
-    callFUN.buildProcess()
+    callFUN.setProcess()
     
 
     ### WE IMPORT AND/OR CREATE SHEET TO APOINT VARIABLES
@@ -952,9 +952,6 @@ callFUN.buildParent=function(){
 
     ### CHECK IF WE REQUIRE REMOTE DATA
     callFUN.remoteValidate()
-
- 
-
 
     ### CREATE WORK DIRECTORIES
     callFUN.buildDir()
@@ -984,7 +981,7 @@ callFUN.buildSelf=function(){
   }
 
   ### WE BUILD THE PROCESS AND THE ERROR MESSAGES
-  callFUN.buildProcess()
+  callFUN.setProcess()
 
 
   ### CREATE SHEET WITH VARIABLES
