@@ -550,8 +550,8 @@ callFUN.runSelf=function(){
   
   ### WAIT FOR SCHEDULER TO FINISH
   if(mode=="batch"){
-    if(wait){
-        wait_scheduler()
+    if(await){
+        await_scheduler()
     }
   }
 
@@ -622,10 +622,10 @@ callFUN.runCall=function(FUN=NULL){
   }
 
   #Read .bashrc to import all envriomental variables
-  error=system(paste0(". $HOME/.bashrc;",exec_code),wait=wait)
+  error=system(paste0(". $HOME/.bashrc;",exec_code),wait=await)
   ### RETURN ERROR MESSAGE
   if(error!=0){
-      stop(paste0(err_msg," -> Execution halted due to internal error"))
+      stop(paste0(err_msg," Execution halted due to internal error"))
   }
 
   append_env(from=environment(),to=parent.frame())
@@ -694,7 +694,7 @@ callFUN.buildCall=function(){
               exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
               ";",exec_code,"'|",batch_code)
         }else{
-          stop(err_msg, " -> Unknown process mode ")
+          stop(err_msg, " Unknown process mode ")
         }
 
       }
