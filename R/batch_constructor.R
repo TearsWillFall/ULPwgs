@@ -449,14 +449,14 @@ callFUN.checkTypes<-function(){
         if(!exists(arg)){
           stop(paste0(err_msg," -> Variable : ",arg,
           " ( type : ",arg_type,
-          " ) -> Value: Not defined. Define a value"))
+          " ) -> Value: Not defined . Define a value"))
         }
 
         if(typeof(arg_value)!=arg_type){
           stop(paste0(err_msg,"-> Variable : ",arg,
           " ( type : ",arg_type," ) -> Value: ",arg_value,
           " ( type : ",typeof(arg_value),
-          " ). Invalid type"))
+          " ) . Invalid type"))
         }
       }
     }
