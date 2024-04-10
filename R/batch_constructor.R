@@ -1051,7 +1051,7 @@ callFUN.setSelf<-function(){
 
 
 callFUN.buildSelf=function(){
-  ppend_env(to=environment(),from=parent.frame())
+  append_env(to=environment(),from=parent.frame())
 
   ### WE SET THE DEFAULT VARIABLES
   callFUN.setSelf()
