@@ -1039,6 +1039,13 @@ callFUN.setSelf<-function(){
     rds=list(node="transfer02",user="regmova", password = "/lustre/scratch/scratch/regmova/password")
   }
 
+  if(!exists("work_dir")){
+        if(verbose){
+          cat(crayon::yellow(paste0("Variable: work_dir has not beed provided. Setting default working directory to ",getwd()," \n")))
+        }
+        work_dir<-"."
+      }
+
  append_env(from=environment(),to=parent.frame())
 }
 
@@ -1067,12 +1074,6 @@ callFUN.buildDir=function(){
       )
 
       if(!exists("child_id")&!exists("parent_id")){
-        if(!exists("work_dir")){
-          if(verbose){
-            cat(crayon::yellow(paste0("Variable: work_dir has not beed provided. Setting default working directory to ",getwd()," \n")))
-          }
-          work_dir<-"."
-        }
           self_dir <- set_dir(
                 dir=work_dir,
                 name=self_id
