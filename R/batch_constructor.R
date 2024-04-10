@@ -970,7 +970,7 @@ callFUN.buildSelf=function(){
   if(!exists("fn")){
     ## GET CALLER FUNCTION NAME
     fn <- sub(".*::","",sub("\\(.*","",
-      paste0(deparse(sys.calls()[[sys.nframe()-4]]),collapse=","))
+      paste0(deparse(sys.calls()[[sys.nframe()-3]]),collapse=","))
     )
   }
 
