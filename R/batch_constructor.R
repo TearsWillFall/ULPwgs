@@ -350,30 +350,7 @@ callFUN.call<-function(
 
 
 callFUN.setEnv<-function(
-    fn_id=NULL,
-    fn_vars=NULL,
-    output_dir=".",
-    parent_dir=NULL,
-    output_name=NULL,
-    verbose=FALSE,
-    bgzip_idx=FALSE,
-    vcf_idx_fmt="tbi",
-    lic_dir=build_default_license_list()$dir,
-    batch_cfg=build_default_preprocess_config(),
-    threads=1,
-    ram=4,
-    ns="ULPwgs",
-    mode="local",
-    time="48:0:0",
-    bypass=FALSE,
-    preserve="partial",
-    node=NULL,
-    user=NULL,
-    password=NULL,
-    remotes=NULL,
-    compl=FALSE,
-    wait=FALSE,
-    hold=NULL
+   
 ){
 
     append_env(to=environment(),from=parent.frame())
@@ -545,8 +522,8 @@ callFUN.checkSubtypes=function(){
         if(!is.null(arg_subtype)){
            if(arg_subtype=="path"){
               if(!is.null(arg_value)){
-                if(!is.null(remotes)){
-                  if(!any(remotes %in% arg)){
+                if(exists("remote")){
+                  if(!any(remote %in% arg)){
                     if(!file.exists(arg_value)){
                               stop(paste0(err_msg," -> Variable : ",arg,
                             " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
@@ -715,7 +692,7 @@ callFUN.buildCall=function(){
               paste0(" -o ",batch_dir,"/",job_id,".std_out"),
               paste0(" -e ",batch_dir,"/",job_id,".std_error"))
 
-              if(!is.null(hold)){
+              if(exists("hold")){
                 batch_code=paste0(batch_code,paste0(" -hold_jid ",paste0(hold,collapse=",")))
               }
 
@@ -949,8 +926,11 @@ callFUN.buildParent=function(){
     ### WE CHECK VARIABLE TYPES
     callFUN.checkTypes()
 
-    ### CHECK IF WE REQUIRE REMOTE DATA
-    callFUN.remoteValidate()
+    if(exists("remote")){
+       ### CHECK IF WE REQUIRE REMOTE DATA
+      callFUN.remoteValidate()
+    }
+   
 
     ### CREATE WORK DIRECTORIES
     callFUN.buildDir()
@@ -961,23 +941,120 @@ callFUN.buildParent=function(){
 
 callFUN.buildSelf=function(){
   append_env(to=environment(),from=parent.frame())
-   ## IF NOT SET UP BY THE USER WE WILL GET THE MAIN FUNCTION NAME
-    
-  if(!exists("fn")){
-    ## GET CALLER FUNCTION NAME
-    fn <- sub(".*::","",sub("\\(.*","",
-      paste0(deparse(sys.calls()[[sys.nframe()-3]]),collapse=","))
-    )
-  }
+
+  ## SET NAMESPACE
+  ns <- "ULPwgs"
+  
+  ## WE DEFINE THE MAIN NAME FOR THE RUNNING FUNCTION
+  fn <- sub(".*::","",sub("\\(.*","",
+    paste0(deparse(sys.calls()[[sys.nframe()-3]]),collapse=","))
+  )
 
   #### IF FUNCTION ID IS NOT GIVE WE USE FN NAME AS ID
   #### OTHERWISE WE APPEND FUNCTION ID
 
-  if(is.null(fn_id)){
+
+
+  if(!exists("fn_id")){
     fn_id<-fn
   }else{
     fn_id<-paste0(fn,".",fn_id)
   }
+
+  if(!exists("verbose")){
+    verbose<-FALSE
+  }
+
+  ### CHECK IF RUN MODE VARIABLE EXISTS
+  if(!exists("mode")){
+    if(verbose){
+        cat(crayon::yellow(paste0("Variable: mode has not been provided. Setting default run mode to : local ")))
+        ## IF NOT SET TO LOCAL
+    }
+    mode<-"local"
+  }
+
+  ## ASCERTAIN RUN MODE TYPE
+  if(any(c("local","batch") %in% mode)){
+      stop(paste0(err_msg," -> Unknown run mode selected : ",mode,". Only `local` and `batch` run modes are allowed"))
+  }
+
+  if(!exists("threads")){
+    if(verbose){
+       cat(crayon::yellow(paste0("Variable: threads has not been provided. Setting default threads to : 1 ")))
+    }
+    threads<-1
+  }
+
+  if(mode=="batch"){
+    if(!exists("time")){
+      if(verbose){
+        cat(crayon::yellow(paste0("Variable: time has not been provided. Setting default run time to : 48:00:00 ")))
+      }
+      time<-"48:0:0"
+    }
+    
+    if(){
+      if(verbose){
+        cat(crayon::yellow(paste0("Variable: ram has not been provided. Setting default ram (Gb) to : 1 ")))
+      }
+      ram<-1
+    }
+
+    if(!exists("bypass")){
+      if(verbose){
+        cat(crayon::yellow(paste0("Variable: bypass has not been provided. Setting default wallclock bypass to : FALSE ")))
+      }
+      bypass<-FALSE
+    }
+  }
+
+   
+
+  if(!exists("await")){
+    if(verbose){
+      cat(crayon::yellow(paste0("Variable: wait has not been provided. Setting default strategy to await for parent : TRUE")))
+    }
+    await<-TRUE
+  }
+
+
+  if(!exists("lic_dir")){
+    if(verbose){
+      cat(crayon::yellow(paste0("Variable: lic_dir has not been provided. Setting default license directory to : ",build_default_license_list()$dir)))
+    }
+    lic_dir<-build_default_license_list()$dir
+  }
+
+
+  if(!exists("batch_cfg")){
+    if(verbose){
+      cat(crayon::yellow(paste0("Variable: batch_cfg has not been provided. Setting default config for batch mode to : ",build_default_preprocess_config())))
+    }
+    batch_cfg<-build_default_preprocess_config()
+  }
+
+  if(!exists("preserve")){
+    if(verbose){
+      cat(crayon::yellow(paste0("Variable: preserve has not been provided. Setting default strategy to deal with working directory  to : preserve")))
+    }
+    preserve<-"partial"
+  }
+
+  if(!exists("compl")){
+    if(verbose){
+      cat(crayon::yellow(paste0("Variable: compl has not been provided. Setting default strategy to deal with complementary files : [ `bai` , `tbi` ]")))
+    }
+    compl<-c(".bai",".tbi")
+  }
+
+  if(!exists("rds")){
+    if(rds){
+      cat(crayon::yellow(paste0("Variable: rds has not been provided. Setting default RDS login details : [ node : `transfer02` ; user: `regmova` ; password : `/lustre/scratch/scratch/regmova/password` ]")))
+    }
+    rds=list(node="transfer02",user="regmova", password : '/lustre/scratch/scratch/regmova/password')
+  }
+
 
   ### WE BUILD THE PROCESS AND THE ERROR MESSAGES
   callFUN.setProcess()
@@ -997,7 +1074,7 @@ callFUN.buildDir=function(){
       )
 
       if(!exists("child_id")&!exists("parent_id")){
-        if(!xists("work_dir")){
+        if(!exists("work_dir")){
           if(verbose){
             cat(crayon::yellow(paste0("Variable: work_dir has not beed provided. Setting default working directory to ",getwd())))
           }
@@ -1007,11 +1084,6 @@ callFUN.buildDir=function(){
                 dir=work_dir,
                 name=self_id
           )
-     
-       
-        
-        
-        
       }else if(!exists("child_id")&exists("parent_id")){
 
         ### CREATE MAIN WORKING DIRECTORY
@@ -1143,28 +1215,26 @@ callFUN.remoteValidate=function(){
       to=environment(),
       from=parent.frame()
     )
+    if(exists("remote")){
+      ip_remote=paste0(rds$user,paste0(ifelse(!is.null(rds$user),"@",""),rds$node))
+      password=rds$password
+      ### WE PING THE REMOTE SERVER TO SEE IF AVAILABLE
 
-    ip_remote=paste0(user,paste0(ifelse(!is.null(user),"@",""),node))
+      check=system(paste0("sshpass -f ",rds$password,
+              " ssh -q ", ip_remote," exit"
+        ),intern=TRUE
+      )
 
-    ### WE PING THE REMOTE SERVER TO SEE IF AVAILABLE
-
-    check=system(paste0("sshpass -f ",password,
-            " ssh -q ", ip_remote," exit"
-      ),intern=TRUE
-    )
-
-    ### IF SERVER DOESN'T RESPOND WE RETURN ERROR 
-    if(check==255){
-      stop(paste0(err_msg," -> "," [ ",node," ] " ,"  Server  not accessible. Wrong IP or server currently unavailable"))
-    }else if(
-      check==5
-    ){
-      stop(paste0(err_msg," -> "," [ ",node," ] " ," -> Failed to log into remote server. Incorrect login details"))
+      ### IF SERVER DOESN'T RESPOND WE RETURN ERROR 
+      if(check==255){
+        stop(paste0(err_msg," -> "," [ ",node," ] " ,"  Server  not accessible. Wrong IP or server currently unavailable"))
+      }else if(
+        check==5
+      ){
+        stop(paste0(err_msg," -> "," [ ",node," ] " ," -> Failed to log into remote server. Incorrect login details"))
+      }
     }
 
-    ## WE CHECK IF THE REMOTE VARIABLES PROVIDED ARE INPUTS OR/AND OUTPUT DIR
-    remotes_input=remotes[!remotes %in% "output_dir"]
-    remotes_output=remotes[remotes %in% "output_dir"]
     
     append_env(from=environment(),to=parent.frame())
 }
