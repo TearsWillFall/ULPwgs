@@ -446,13 +446,13 @@ callFUN.checkTypes<-function(){
         arg_subtype=subtypes[[arg]]
         arg_required=required[[arg]]
 
-        if(!exists(arg)&arg_required){
+        if(!exists(arg)){
           stop(paste0("Variable : ",arg,
           " ( type : ",arg_type,
           " ) -> Value: Not defined. Define a value"))
         }
 
-        if(typeof(arg_value)!=arg_type&arg_required){
+        if(typeof(arg_value)!=arg_type){
           stop(paste0("Variable : ",arg,
           " ( type : ",arg_type," ) -> Value: ",arg_value,
           " ( type : ",typeof(arg_value),
@@ -1052,6 +1052,10 @@ callFUN.setSelf<-function(){
         }
         output_dir<-getwd()
   }
+
+  
+
+
 
  append_env(from=environment(),to=parent.frame())
 }

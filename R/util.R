@@ -339,11 +339,6 @@ cp_data=function(
             origin="path",
             target="path",
             force=NULL
-          ),
-          required=list(
-            origin=TRUE,
-            target=TRUE,
-            force=FALSE
           )
       )
     )
