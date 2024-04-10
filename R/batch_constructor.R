@@ -1120,17 +1120,16 @@ callFUN.buildDir=function(){
 
       }else if (exists("child_id")){
 
-        if(!remote_output){
+        if(!remote){
            ### CREATE OUTPUT DIR
         
           out_file_dir <- set_dir(
                   dir=output_dir
           )
-        }else{
-  
+        }else if(any(remote %in% "output_dir")){
           callFUN.remoteCreateDir()
         }
-       
+          
 
         child_dir <- set_dir(
             dir=tmp_dir,
@@ -1212,6 +1211,8 @@ callFUN.remoteValidate=function(){
       ){
         stop(paste0(err_msg," -> "," [ ",node," ] " ," -> Failed to log into remote server. Incorrect login details"))
       }
+    }else{
+      remote<-FALSE
     }
 
     
