@@ -994,7 +994,7 @@ callFUN.buildSelf=function(){
       time<-"48:0:0"
     }
     
-    if(){
+    if(!exists("ram")){
       if(verbose){
         cat(crayon::yellow(paste0("Variable: ram has not been provided. Setting default ram (Gb) to : 1 ")))
       }
