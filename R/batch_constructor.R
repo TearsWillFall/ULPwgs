@@ -919,9 +919,11 @@ callFUN.buildParent=function(){
       callFUN.remoteValidate()
     }
    
-
-    ### CREATE WORK DIRECTORIES
+    ## CREATE WORK DIRECTORIES
     callFUN.buildDir()
+
+    callFUN.buildChilds()
+
 
     append_env(from=environment(),to=parent.frame())
 }
@@ -1027,9 +1029,6 @@ callFUN.setSelf<-function(){
         cat(crayon::yellow(paste0("Variable: `output_dir` has not beed provided. Setting default output directory to `",getwd(),"` \n")))
         output_dir<-getwd()
   }
-
-  
-
 
 
  append_env(from=environment(),to=parent.frame())
