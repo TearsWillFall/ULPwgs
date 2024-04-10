@@ -408,7 +408,7 @@ callFUN.remoteCheck=function(){
     append_env(to=environment(),from=parent.frame())
     check=suppressWarnings(system(paste(
     "sshpass -f ",password,
-    " ssh ",ip_remote,
+    " ssh ",ip_address,
       "\" realpath -e ",arg_value,"\" "),intern=TRUE
     ))
     append_env(from=environment(),to=parent.frame())
@@ -421,7 +421,7 @@ callFUN.remoteGet=function(){
   ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
   system(paste(
   "sshpass -f ",password,
-  " ssh ",ip_remote,
+  " ssh ",ip_address,
     "\" cp -rn ",check," -t ",
     arg_dir, "\"")
   )
@@ -1130,7 +1130,6 @@ callFUN.buildDir=function(){
           callFUN.remoteCreateDir()
         }
           
-
         child_dir <- set_dir(
             dir=tmp_dir,
             name=child_id
@@ -1153,8 +1152,7 @@ callFUN.remoteCreateDir=function(){
     )
 
     check=system(paste0("sshpass -f ",password,
-            " ssh ",paste0(user,
-              ifelse(!is.null(user),"@",""),node),
+            " ssh ",ip_address,
               "\" mkdir ",out_file_dir,"; echo $? \""
       )
     )
@@ -1162,7 +1160,9 @@ callFUN.remoteCreateDir=function(){
     if(check!=0){
        stop(paste0(err_msg," -> Failed to create remote output directory : [ ",out_file_dir, " ] " ))
     }
-   
+
+    cat(crayon::yellow(paste0(" Succesfully created remote output directory: `", out_file_dir,"`  \n")))
+
     append_env(from=environment(),to=parent.frame())
 }
 
@@ -1173,7 +1173,7 @@ callFUN.remoteScpDir=function(){
       from=parent.frame()
     )
     check=system(paste0("sshpass -f ",password,
-            " scp -r ",paste0(child_dir,"/*"),ip_remote,":",out_file_dir, "; echo $?" 
+            " scp -r ",paste0(child_dir,"/*"),ip_address,":",out_file_dir, "; echo $?" 
       ),intern=TRUE
     )
 
@@ -1194,23 +1194,27 @@ callFUN.remoteValidate=function(){
       from=parent.frame()
     )
     if(exists("remote")){
-      ip_remote=paste0(rds$user,paste0(ifelse(!is.null(rds$user),"@",""),rds$node))
+      ip_address=paste0(rds$user,paste0(ifelse(!is.null(rds$user),"@",""),rds$node))
       password=rds$password
       ### WE PING THE REMOTE SERVER TO SEE IF AVAILABLE
 
       check=system(paste0("sshpass -f ",rds$password,
-              " ssh -q ", ip_remote," exit"
+              " ssh -q ", ip_address," exit"
         ),intern=TRUE
       )
 
       ### IF SERVER DOESN'T RESPOND WE RETURN ERROR 
       if(check==255){
-        stop(paste0(err_msg," -> "," [ ",node," ] " ,"  Server  not accessible. Wrong IP or server currently unavailable"))
+        stop(paste0(err_msg," -> "," [ ",node," ] " ,"  Server not accessible. Wrong IP or server currently unavailable"))
       }else if(
         check==5
       ){
-        stop(paste0(err_msg," -> "," [ ",node," ] " ," -> Failed to log into remote server. Incorrect login details"))
+        stop(paste0(err_msg," -> "," [ ",node," ] " ,"  Failed to log in remote server. Incorrect login details"))
       }
+
+    
+      cat(crayon::yellow(paste0(" Remote server available : `", ip_address,"`  \n")))
+
     }else{
       remote<-FALSE
     }
