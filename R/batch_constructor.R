@@ -1069,7 +1069,7 @@ callFUN.buildDir=function(){
       if(!exists("child_id")&!exists("parent_id")){
         if(!exists("work_dir")){
           if(verbose){
-            cat(crayon::yellow(paste0("Variable: work_dir has not beed provided. Setting default working directory to ",getwd())))
+            cat(crayon::yellow(paste0("Variable: work_dir has not beed provided. Setting default working directory to ",getwd()," \n")))
           }
           work_dir<-"."
         }
