@@ -349,7 +349,33 @@ callFUN.call<-function(
 }
 
 
-callFUN.setEnv<-function(){
+callFUN.setEnv<-function(
+    fn_id=NULL,
+    fn_vars=NULL,
+    output_dir=".",
+    parent_dir=NULL,
+    output_name=NULL,
+    verbose=FALSE,
+    bgzip_idx=FALSE,
+    vcf_idx_fmt="tbi",
+    lic_dir=build_default_license_list()$dir,
+    batch_cfg=build_default_preprocess_config(),
+    threads=1,
+    ram=4,
+    ns="ULPwgs",
+    mode="local",
+    time="48:0:0",
+    bypass=FALSE,
+    preserve="partial",
+    node=NULL,
+    user=NULL,
+    password=NULL,
+    remotes=NULL,
+    compl=FALSE,
+    parent_id=NULL,
+    wait=FALSE,
+    hold=NULL
+){
 
     append_env(to=environment(),from=parent.frame())
     
@@ -368,38 +394,20 @@ callFUN.setEnv<-function(){
       env<-NULL
     }else{
       self<-FALSE
-  
+
+      args=appendList(args,build_default_variable_list())
+
+
+      ### CREATE VARIABLES FOR THE ENVIRONMENT
+      callFUN.buildSelf()
+
       ### WE BUILD THE PARENT ENVIRONMENT
       callFUN.buildParent()
 
-      ### WE SET THE DUMPSTER WHERE TO PUT CHILDREN INFO
-      callFUN.dumpInfo()
 
-      ### FROM THE PARENT ENVIRONMENT WE CREATE A NEW ENVIRONMENT FOR EACH UNIQUE INPUT
-      child.envs=parallel::mclapply(
-          1:n_inputs,
-          function(row,.env){
 
-            append_env(to=environment(),from=.env)
 
-            ### WE BUILD THE CHILD ENV
-            callFUN.buildChild()
-
-            ### WE DUMP CHILDREN INFO
-            callFUN.dumpInfo()
-
-            ### WE WRITE CHILDREN ENV
-            callFUN.writeEnv()
-
-            return(environment())
-            },
-            .env=environment(),
-            mc.cores=ifelse(
-              (parallel::detectCores()-1)<1,
-              1,
-              (parallel::detectCores()-1)
-        )
-      )
+     
       ### WE WRITE PARENT ENVIROMENT
       callFUN.writeEnv()
 
@@ -429,8 +437,7 @@ callFUN.remoteCheck=function(){
     append_env(to=environment(),from=parent.frame())
     check=suppressWarnings(system(paste(
     "sshpass -f ",password,
-    " ssh ",paste0(user,
-      ifelse(!is.null(user),"@",""),node),
+    " ssh ",ip_remote,
       "\" realpath -e ",arg_value,"\" "),intern=TRUE
     ))
     append_env(from=environment(),to=parent.frame())
@@ -443,8 +450,7 @@ callFUN.remoteGet=function(){
   ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
   system(paste(
   "sshpass -f ",password,
-  " ssh ",paste0(user,
-    ifelse(!is.null(user),"@",""),node),
+  " ssh ",ip_remote,
     "\" cp -rn ",check," -t ",
     arg_dir, "\"")
   )
@@ -453,7 +459,7 @@ callFUN.remoteGet=function(){
 }
 
 
-callFUN.checkArgs<-function(){
+callFUN.checkTypes<-function(){
    .this.env=environment()
    .base.env=parent.frame()
     append_env(to=.this.env,from=.base.env)
@@ -487,54 +493,89 @@ callFUN.checkArgs<-function(){
           " ( type : ",typeof(arg_value),
           " ). Invalid type"))
         }
+      }
+    }
+}
+     
+  
+          #       #   ###CHECK IF REMOTE LOCATION HAS BEEN DEFINED
+          #       #   if(is.null(node)){
+           
+          #       #     )
+          #       #     }else{
+          #       #         ## WE CHECK IF PATH IS IN REMOTE
+          #       #         callFUN.remoteCheck()
+
+          #       #         if(length(check)==0){
+          #       #           stop(paste0("Variable : ",arg,
+          #       #             " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
+          #       #             " ( type : ",typeof(arg_value),
+          #       #             " ) [ subtype : NULL ] . Path doesn't locally and remotely")
+          #       #           )
+                        
+          #       #         }
+          #       #         ### WE GET THE REMOTE PATH
+          #       #         callFUN.remoteGet()
+          #       #     }
+          #       # }
+          
+          #   callFUN.createLink()
+
+          #   ## WE REASSIGN THE VALUE OF ARGUMENT TO THE LOCAL/REMOTE
+          #   .base.env[[arg]]=normalizePath(paste0(arg_dir,"/",basename(arg_value)))
+          #   }
+          # }
+
+
+callFUN.checkSubtypes=function(){
+   .this.env=environment()
+   .base.env=parent.frame()
+    append_env(to=.this.env,from=.base.env)
+
+    if(exists("args")){
+      types=args$types
+      subtypes=args$subtypes
+      required=args$required
+
+      for (arg in names(subtypes[!is.null(subtypes)])){
+        arg_value=.this.env[[arg]]
+        arg_type=types[[arg]]
+        arg_subtype=subtypes[[arg]]
+        arg_required=required[[arg]]
+
         if(!is.null(arg_subtype)){
            if(arg_subtype=="path"){
               if(!is.null(arg_value)){
-                if(!file.exists(arg_value)){
-                  ###CHECK IF REMOTE LOCATION HAS BEEN DEFINED
-                  if(is.null(node)){
-                    stop(paste0("Variable : ",arg,
-                        " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
-                        " ( type : ",typeof(arg_value),
-                        " ) [ subtype : NULL ] . Path doesn't exist locally")
-                    )
-                    }else{
-                        ## WE CHECK IF PATH IS IN REMOTE
-                        callFUN.remoteCheck()
-
-                        if(length(check)==0){
-                          stop(paste0("Variable : ",arg,
+                if(!is.null(remotes)){
+                  if(!any(remotes %in% arg)){
+                    if(!file.exists(arg_value)){
+                              stop(paste0(err_msg," -> Variable : ",arg,
                             " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
                             " ( type : ",typeof(arg_value),
-                            " ) [ subtype : NULL ] . Path doesn't locally and remotely")
-                          )
-                        
-                        }
-                        ### WE GET THE REMOTE PATH
-                        callFUN.remoteGet()
+                            " ) [ subtype : NULL ] . Path doesn't exist locally"))
                     }
+                  }else{
+                    callFUN.remoteCheck()
+                    if(length(check)==0){
+                        stop(paste0(err_msg," -> Variable : ",arg,
+                              " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
+                              " ( type : ",typeof(arg_value),
+                              " ) [ subtype : NULL ] . Path doesn't exist remotely"))
+                    }
+                  }
                 }
-          
-        
-        
-            callFUN.createLink()
-
-            ## WE REASSIGN THE VALUE OF ARGUMENT TO THE LOCAL/REMOTE
-            .base.env[[arg]]=normalizePath(paste0(arg_dir,"/",basename(arg_value)))
             }
           }
-
         }
       }
-
     }
-
-}
+  }
 
 
     
 callFUN.runSelf=function(){
   append_env(to=environment(),from=parent.frame())
+
  
   ### CREATE CALLER
   callFUN.buildCall()
@@ -588,9 +629,22 @@ callFUN.runProcess=function(){
   ### WE WRITE RESULTS FOR CHILD TO RDS
   callFUN.writeEnv()
 
+  ### WE MOVE DATA TO RESULTS DIRECTORY
+  callFUN.moveData()
+
+
   append_env(from=environment(),to=parent.frame())
 
 }
+
+
+callFUN.moveData=function(){
+  append_env(to=environment(),from=parent.frame())
+  system(paste0("mv ",child_dir,out_file_dir))
+  append_env(from=environment(),to=parent.frame())
+}
+
+
 
 callFUN.runCall=function(FUN=NULL){
   append_env(to=environment(),from=parent.frame())
@@ -606,7 +660,7 @@ callFUN.runCall=function(FUN=NULL){
   error=system(paste0(". $HOME/.bashrc;",exec_code),wait=wait)
   ### RETURN ERROR MESSAGE
   if(error!=0){
-      stop(err_msg)
+      stop(paste0(err_msg," -> Execution halted due to internal error"))
   }
 
   append_env(from=environment(),to=parent.frame())
@@ -675,7 +729,7 @@ callFUN.buildCall=function(){
               exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
               ";",exec_code,"'|",batch_code)
         }else{
-          stop("Unkown mode type")
+          stop(err_msg, " -> Unknown process mode ")
         }
 
       }
@@ -726,22 +780,22 @@ callFUN.readEnv=function(){
 }
 
 
-
 callFUN.buildId=function(){
   append_env(to=environment(),from=parent.frame())
 
-  if(!exists("job_id")){
+  if(!exists("self_id")){
+    self_id=make_unique_id(fn)
+  }else if(!exists("job_id")&exists("self_id")){
+    
     ### IF parent ID IS NOT GIVEN WE CREATE AN UNIQUE NAME USING THE FUNCTION ID
-    if(is.null(parent_id)){
-      parent_id <- make_unique_id(fn)
-    }
-
+    parent_id <- make_unique_id(fn)
+  
     ### WE ASSIGN A JOB ID TO THE CALLER FUNCTION
 
     job_id <- build_job(
-      parent_id=parent_id
+      parent_id=self_id,
+      child_id=parent_id
     )
-
   }else{
     ### WE CREATE A JOB ID FOR EACH CHILD
     ### CHILDREN SHALL WORK!!
@@ -762,26 +816,15 @@ callFUN.buildId=function(){
 
 callFUN.buildError<-function(){
   append_env(to=environment(),from=parent.frame())
-  if(!is.null(err_msg)){
+  if(exists("err_msg")){
      err_msg <- paste0(err_msg ,fn," (",job_id,") "," -> ")
   }else{
-     err_msg <- paste0("CRITICAL ERROR: ",fn," (",job_id,") "," -> ")
+     err_msg <- paste0("CRITICAL ERROR: ",fn," (",self_id,") "," -> ")
   }
   append_env(from=environment(),to=parent.frame())
 }
 
 
-
-
-callFUN.reassignArgs<-function(){
-  append_env(to=environment(),from=parent.frame())
-  ### REASSIGN VAR VALUES IN SHEET TO ENVIRONMENT
-  for (col in 1:n_vars){
-    assign(names(sheet)[col],sheet[row,col])
-  }
-  append_env(from=environment(),to=parent.frame())
-
-}
 
 
 
@@ -790,21 +833,20 @@ callFUN.buildSheet=function(){
   append_env(to=environment(),from=parent.frame())
   ### CHECK IF VARIABLE SHEET IS GIVEN
   ### IF SHEET IS GIVEN WE ASSIGN THE VARIABLES AND QUIT
-  if (!is.null(sheet)){
+  if (exists("sheet")){
+    if(file.exists(sheet)){
       ### READ VARIABLE SHEET
-       sheet=read.delim(sheet,header=TRUE)
+      sheet=read.delim(sheet,header=TRUE)
+    }
   }else{
   ### SET CREATE A SHEET FROM THE FUNCTION VARIABLES
       sheet=as.data.frame(as.list(parent.frame())[fn_vars])
   }
-
-  callFUN.setSheet()
-
   append_env(from=environment(),to=parent.frame())
 
 }
 
-callFUN.setSheet=function(){
+callFUN.assignSheetParent=function(){
   append_env(to=environment(),from=parent.frame())
   n_total<-nrow(sheet)
   sheet=sheet %>% dplyr::distinct()
@@ -814,95 +856,108 @@ callFUN.setSheet=function(){
   if(n_dup>0){
     warning(paste0(n_dup, " were duplicated in sheet"))
   }
+
   append_env(from=environment(),to=parent.frame())
 }
 
 
 
-
-
-
-
-callFUN.buildChild=function(){
+callFUN.assignSheetChild=function(){
   append_env(to=environment(),from=parent.frame())
+  for (col in 1:n_inputs){
+    assign(names(sheet)[col],sheet[row,col])
+  }  
+  append_env(from=environment(),to=parent.frame())
+}
 
-  ### USING THE VAR SHEET WE REASSIGN THE VALUES OF EACH VARIABLE
-  callFUN.reassignArgs()
 
+callFUN.setProcess=function(){
+  append_env(to=environment(),from=parent.frame())
   ### CREATE CHILD JOB ID
   callFUN.buildId()
 
   ## CREATE ERROR MESSAGE FOR EACH CHILD
   callFUN.buildError()
 
+  ## CREATE DIRECTORIES FOR HANDLE PROCESS
+  callFUN.buildDir()
+
+  append_env(from=environment(),to=parent.frame())
+}
+
+
+callFUN.buildChilds<-function(){
+
+      append_env(to=environment(),from=parent.frame())
+
+      ### WE SET THE DUMPSTER WHERE TO PUT CHILDREN INFO
+      callFUN.dumpInfo()
+
+      ### FROM THE PARENT ENVIRONMENT WE CREATE A NEW ENVIRONMENT FOR EACH UNIQUE INPUT
+
+      child.envs=list()
+      for(row in 1:n_inputs){
+        get_child_env=function(row){
+           append_env(to=environment(),from=parent.frame())
+           ### USING THE VAR SHEET WE REASSIGN THE VALUES OF EACH VARIABLE
+           callFUN.assignSheetChild()
+           callFUN.buildChild()
+           return(environment())
+        }
+        child.envs[[row]]<-get_child_env(row)
+       }
+
+      append_env(from=environment(),to=parent.frame())
+
+}
+
+callFUN.buildChild=function(){
+  append_env(to=environment(),from=parent.frame())
+
+  ### SET PROCESSS
+  callFUN.setProcess()
+  
+  ### CHECK VARIABLE SUBTYPES
+  callFUN.checkSubtypes()
+
+  ### WE DUMP CHILDREN INFO
+  callFUN.dumpInfo()
+
+  ### WE WRITE CHILDREN ENV
+  callFUN.writeEnv()
+
   append_env(from=environment(),to=parent.frame())
 
 }
 
 
 
-callFUN.buildParent=function(
-  fn_id=NULL,
-  fn_vars=NULL,
-  output_dir=".",
-  parent_dir=NULL,
-  output_name=NULL,
-  verbose=FALSE,
-  bgzip_idx=FALSE,
-  vcf_idx_fmt="tbi",
-  lic_dir=build_default_license_list()$dir,
-  batch_cfg=build_default_preprocess_config(),
-  threads=1,
-  ram=4,
-  ns="ULPwgs",
-  mode="local",
-  time="48:0:0",
-  bypass=FALSE,
-  preserve="partial",
-  work_dir=".",
-  node=NULL,
-  user=NULL,
-  password=NULL,
-  sheet=NULL,
-  env=NULL,
-  err_msg=NULL,
-  compl=FALSE,
-  parent_id=NULL,
-  wait=FALSE,
-  hold=NULL
-){
+callFUN.buildParent=function(){
   
-
     append_env(to=environment(),from=parent.frame())
     ### IF WE INHERIT A RDS FILE READ AND APPEND
     ### WE SAVE RDS FILES WHEN SUBMITTING JOBS TO SCHEDULER OR JOBS RUN LOCALLY IN PARALLEL
     ### SELECT VARIABLE DEFINES WHICH ENV WE ARE RUNNING
     ### WE APPEND THIS ENV AND STOP
 
-    ### WE APPEND USER DEFINED VARIABLES AND DEFAULT 
-    args=appendList(args,build_default_variable_list())
-
-    ### CREATE VARIABLES FOR THE ENVIRONMENT
-    callFUN.buildSelf()
+    ### WE BUILD THE PROCESS AND THE ERROR MESSAGES
+    callFUN.buildProcess()
     
-    ### CREATE JOB ID FOR THE PARENT FUNCTION
-    callFUN.buildId()
+
+    ### WE IMPORT AND/OR CREATE SHEET TO APOINT VARIABLES
+    callFUN.assignSheetParent()
+
+    ### WE CHECK VARIABLE TYPES
+    callFUN.checkTypes()
+
+    ### CHECK IF WE REQUIRE REMOTE DATA
+    callFUN.remoteValidate()
+
+ 
+
 
     ### CREATE WORK DIRECTORIES
-    callFUN.buildWorkDir()
-
-    ## WE VALIDATE VARIABLES
-    callFUN.checkArgs()
-
-    ### CREATE WORK DIRECTORIES
-    callFUN.buildOutputDir()
-
-    
-    ### CREATE SHEET WITH VARIABLES
-    callFUN.buildSheet()
-    
-    ### CREATE AN ERROR MESSAGE TO TRACK WHERE JOB FAILS
-    callFUN.buildError()
+    callFUN.buildDir()
 
     append_env(from=environment(),to=parent.frame())
 }
@@ -928,103 +983,192 @@ callFUN.buildSelf=function(){
     fn_id<-paste0(fn,".",fn_id)
   }
 
+  ### WE BUILD THE PROCESS AND THE ERROR MESSAGES
+  callFUN.buildProcess()
+
+
+  ### CREATE SHEET WITH VARIABLES
+  callFUN.buildSheet()
+  
+
   append_env(from=environment(),to=parent.frame())
 }
 
-callFUN.buildWorkDir=function(){
+callFUN.buildDir=function(){
     append_env(
         to=environment(),
         from=parent.frame()
       )
 
-      if(!file.exists(work_dir)){
-        stop("Can't create working directory. Change working directory using the work_dir argument")
-      }
+      if(!exists("child_id")&!exists("parent_id")){
+        
+        self_dir <- set_dir(
+                dir=work_dir,
+                name=self_id
+        )
+        
+      }else if(!exists("child_id")&exists("parent_id")){
 
-      ### CREATE MAIN WORKING DIRECTORY
-      
-      parent_dir <- set_dir(
-              dir=work_dir,
-              name=parent_id
-      )
+        ### CREATE MAIN WORKING DIRECTORY
+        
+        parent_dir <- set_dir(
+                dir=self_dir,
+                name=parent_id
+        )
 
-      ### CREATE TMP DIRECTORY
-      ### WE WILL STORE TMP FILES FOR ALL FUNCTIONS HERE 
-     
-      tmp_dir <- set_dir(
-          dir=parent_dir,
-          name="tmp"
-      )
-  
       
-      ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE SYMLINK OF FILES
-      ### WE WILL STORE SYMLINK FILES FOR LOCAL FILES
-   
-      ln_dir <- set_dir(
-        dir=tmp_dir,
-        name="ln"
-      )
-  
+        ### CREATE TMP DIRECTORY
+        ### WE WILL STORE TMP FILES FOR ALL FUNCTIONS HERE 
       
-
-      ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE REMOTE FILES
-      ### WE WILL STORE REMOTE DOWNLOAD FILES HERE
+        tmp_dir <- set_dir(
+            dir=parent_dir,
+            name="tmp"
+        )
     
-      rmt_dir <- set_dir(
-        dir=tmp_dir,
-        name="rmt"
-      )
+        
+        ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE SYMLINK OF FILES
+        ### WE WILL STORE SYMLINK FILES FOR LOCAL FILES
+    
+        ln_dir <- set_dir(
+          dir=tmp_dir,
+          name="ln"
+        )
+    
+        
 
-      ### CREATE DIRECTORY TO STORE ENVIROMENT DATA
-      ### WE WILL STORE R ENVIRONMENT DATA HERE
+        ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE REMOTE FILES
+        ### WE WILL STORE REMOTE DOWNLOAD FILES HERE
       
-      env_dir<- set_dir(
-        dir=parent_dir,
-        name="env"
-      )
+        rmt_dir <- set_dir(
+          dir=tmp_dir,
+          name="rmt"
+        )
+
+        ### CREATE DIRECTORY TO STORE ENVIROMENT DATA
+        ### WE WILL STORE R ENVIRONMENT DATA HERE
+        
+        env_dir<- set_dir(
+          dir=parent_dir,
+          name="env"
+        )
 
 
-      ### CREATE DIRECTORY TO BATCH DATA
-      ### WE WILL STORE SCHEDULER DATA HERE
-     
-      batch_dir<- set_dir(
-        dir=parent_dir,
-        name="batch"
-      )
+        ### CREATE DIRECTORY TO BATCH DATA
+        ### WE WILL STORE SCHEDULER DATA HERE
+      
+        batch_dir<- set_dir(
+          dir=parent_dir,
+          name="batch"
+        )
+
+
+      }else if (exists("child_id")){
+
+        if(!remote_output){
+           ### CREATE OUTPUT DIR
+        
+          out_file_dir <- set_dir(
+                  dir=output_dir
+          )
+        }else{
+  
+          callFUN.remoteCreateDir()
+        }
+       
+
+        child_dir <- set_dir(
+            dir=tmp_dir,
+            name=child_id
+        )
+    }
 
 
       ### WE APPEND NEW VARIABLES BACK TO THE MAIN FUNCTION
-      append_env(from=environment(),to=parent.frame())
-
+        append_env(from=environment(),to=parent.frame())
 }
 
 
 
-callFUN.buildOutputDir=function(){
 
-      append_env(
-        to=environment(),
-        from=parent.frame()
+
+callFUN.remoteCreateDir=function(){
+    append_env(
+      to=environment(),
+      from=parent.frame()
+    )
+
+    check=system(paste0("sshpass -f ",password,
+            " ssh ",paste0(user,
+              ifelse(!is.null(user),"@",""),node),
+              "\" mkdir ",out_file_dir,"; echo $? \""
       )
+    )
 
-
-      out_file_dir <- set_dir(
-          dir=output_dir
-      )
-      
-      ### WE APPEND NEW VARIABLES BACK TO THE MAIN FUNCTION
-      append_env(from=environment(),to=parent.frame())
-
+    if(check!=0){
+       stop(paste0(err_msg," -> Failed to create remote output directory : [ ",out_file_dir, " ] " ))
+    }
+   
+    append_env(from=environment(),to=parent.frame())
 }
 
+
+callFUN.remoteScpDir=function(){
+    append_env(
+      to=environment(),
+      from=parent.frame()
+    )
+    check=system(paste0("sshpass -f ",password,
+            " scp -r ",paste0(child_dir,"/*"),ip_remote,":",out_file_dir, "; echo $?" 
+      ),intern=TRUE
+    )
+
+    if(check!=0){
+       stop(paste0(err_msg," -> Failed to move data to remote output directory : [ ",out_file_dir, " ] " ))
+    }
+   
+
+    append_env(from=environment(),to=parent.frame())
+}
+
+
+
+callFUN.remoteValidate=function(){
+
+    append_env(
+      to=environment(),
+      from=parent.frame()
+    )
+
+    ip_remote=paste0(user,paste0(ifelse(!is.null(user),"@",""),node))
+
+    ### WE PING THE REMOTE SERVER TO SEE IF AVAILABLE
+
+    check=system(paste0("sshpass -f ",password,
+            " ssh -q ", ip_remote," exit"
+      ),intern=TRUE
+    )
+
+    ### IF SERVER DOESN'T RESPOND WE RETURN ERROR 
+    if(check==255){
+      stop(paste0(err_msg," -> "," [ ",node," ] " ,"  Server  not accessible. Wrong IP or server currently unavailable"))
+    }else if(
+      check==5
+    ){
+      stop(paste0(err_msg," -> "," [ ",node," ] " ," -> Failed to log into remote server. Incorrect login details"))
+    }
+
+    ## WE CHECK IF THE REMOTE VARIABLES PROVIDED ARE INPUTS OR/AND OUTPUT DIR
+    remotes_input=remotes[!remotes %in% "output_dir"]
+    remotes_output=remotes[remotes %in% "output_dir"]
+    
+    append_env(from=environment(),to=parent.frame())
+}
 
 
 
 
 callFUN.dumpInfo<-function(){
   append_env(to=environment(),from=parent.frame())
-
-
 
   if(!exists("dump_file")){
     ### TRACING CHILDREN CAN BE DIFFICULT
@@ -1067,12 +1211,6 @@ callFUN.dumpInfo<-function(){
 }
 
 
-dumpInfo.append=function(){
-  append_env(to=environment(),from=parent.frame())
-  
-  
-  
-}
 
 
 

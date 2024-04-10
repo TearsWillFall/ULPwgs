@@ -6,48 +6,44 @@
 \usage{
 build_default_variable_list(
   def_args = list(subtypes = list(fn_id = NULL, ns = NULL, output_name = NULL, parent_id
-    = NULL, sheet = "path", env = "path", output_dir = "path", parent_dir = "path",
-    lic_dir = "path", verbose = NULL, err_msg = NULL, bgzip_idx = NULL, vcf_idx_fmt =
-    NULL, batch_cfg = NULL, preserve = NULL, compl = NULL, wait = NULL, threads = NULL,
-    ram = NULL, mode = NULL, time = NULL, bypass = NULL, hold = NULL, node = NULL, user =
-    NULL, password = NULL), types = list(fn_id = "character", ns = "character",
-    output_name = "character", 
-     parent_id = "character", sheet = "character", env =
-    "character", output_dir = "character", parent_dir = "character", lic_dir =
-    "character", verbose = "logical", err_msg = "character", bgzip_idx = "logical",
-    vcf_idx_fmt = "character", batch_cfg = "character", preserve = "logical", compl =
-    "logical", wait = "logical", threads = "numeric", ram = "numeric", mode =
-    "character", time = "character", bypass = "logical", hold = "character", node =
-    "character", user = "character", password = "character"), 
-     required = list(fn_id
-    = FALSE, ns = FALSE, output_name = FALSE, parent_id = FALSE, sheet = FALSE, env =
-    FALSE, output_dir = TRUE, parent_dir = FALSE, lic_dir = TRUE, verbose = TRUE, err_msg
-    = FALSE, bgzip_idx = TRUE, vcf_idx_fmt = TRUE, batch_cfg = FALSE, preserve = TRUE,
-    compl = TRUE, wait = TRUE, threads = TRUE, ram = TRUE, mode = TRUE, time = TRUE,
-    bypass = TRUE, hold = FALSE, node = FALSE, user = FALSE, password = FALSE))
+    = NULL, output_dir = "path", lic_dir = "path", verbose = NULL, err_msg = NULL,
+    bgzip_idx = NULL, vcf_idx_fmt = NULL, batch_cfg = NULL, preserve = NULL, compl =
+    NULL, wait = NULL, threads = NULL, ram = NULL, mode = NULL, time = NULL, bypass =
+    NULL, hold = NULL, node = NULL, user = NULL, password = NULL), types = list(fn_id =
+    "character", ns = "character", output_name = "character", parent_id = "character",
+    output_dir = "character", 
+     lic_dir = "character", verbose = "logical", err_msg =
+    "character", bgzip_idx = "logical", vcf_idx_fmt = "character", batch_cfg =
+    "character", preserve = "character", compl = "logical", wait = "logical", threads =
+    "double", ram = "double", mode = "character", time = "character", bypass = "logical",
+    hold = "character", node = "character", user = "character", password = "character"),
+    required = list(fn_id = FALSE, ns = FALSE, output_name = FALSE, parent_id = FALSE,
+    output_dir = TRUE, lic_dir = TRUE, 
+     verbose = TRUE, err_msg = FALSE, bgzip_idx =
+    TRUE, vcf_idx_fmt = TRUE, batch_cfg = FALSE, preserve = TRUE, compl = TRUE, wait =
+    TRUE, threads = TRUE, ram = TRUE, mode = TRUE, time = TRUE, bypass = TRUE, hold =
+    FALSE, node = FALSE, user = FALSE, password = FALSE))
 )
 
 build_default_variable_list(
   def_args = list(subtypes = list(fn_id = NULL, ns = NULL, output_name = NULL, parent_id
-    = NULL, sheet = "path", env = "path", output_dir = "path", parent_dir = "path",
-    lic_dir = "path", verbose = NULL, err_msg = NULL, bgzip_idx = NULL, vcf_idx_fmt =
-    NULL, batch_cfg = NULL, preserve = NULL, compl = NULL, wait = NULL, threads = NULL,
-    ram = NULL, mode = NULL, time = NULL, bypass = NULL, hold = NULL, node = NULL, user =
-    NULL, password = NULL), types = list(fn_id = "character", ns = "character",
-    output_name = "character", 
-     parent_id = "character", sheet = "character", env =
-    "character", output_dir = "character", parent_dir = "character", lic_dir =
-    "character", verbose = "logical", err_msg = "character", bgzip_idx = "logical",
-    vcf_idx_fmt = "character", batch_cfg = "character", preserve = "logical", compl =
-    "logical", wait = "logical", threads = "numeric", ram = "numeric", mode =
-    "character", time = "character", bypass = "logical", hold = "character", node =
-    "character", user = "character", password = "character"), 
-     required = list(fn_id
-    = FALSE, ns = FALSE, output_name = FALSE, parent_id = FALSE, sheet = FALSE, env =
-    FALSE, output_dir = TRUE, parent_dir = FALSE, lic_dir = TRUE, verbose = TRUE, err_msg
-    = FALSE, bgzip_idx = TRUE, vcf_idx_fmt = TRUE, batch_cfg = FALSE, preserve = TRUE,
-    compl = TRUE, wait = TRUE, threads = TRUE, ram = TRUE, mode = TRUE, time = TRUE,
-    bypass = TRUE, hold = FALSE, node = FALSE, user = FALSE, password = FALSE))
+    = NULL, output_dir = "path", lic_dir = "path", verbose = NULL, err_msg = NULL,
+    bgzip_idx = NULL, vcf_idx_fmt = NULL, batch_cfg = NULL, preserve = NULL, compl =
+    NULL, wait = NULL, threads = NULL, ram = NULL, mode = NULL, time = NULL, bypass =
+    NULL, hold = NULL, node = NULL, user = NULL, password = NULL), types = list(fn_id =
+    "character", ns = "character", output_name = "character", parent_id = "character",
+    output_dir = "character", 
+     lic_dir = "character", verbose = "logical", err_msg =
+    "character", bgzip_idx = "logical", vcf_idx_fmt = "character", batch_cfg =
+    "character", preserve = "character", compl = "logical", wait = "logical", threads =
+    "double", ram = "double", mode = "character", time = "character", bypass = "logical",
+    hold = "character", node = "character", user = "character", password = "character"),
+    required = list(fn_id = FALSE, ns = FALSE, output_name = FALSE, parent_id = FALSE,
+    output_dir = TRUE, lic_dir = TRUE, 
+     verbose = TRUE, err_msg = FALSE, bgzip_idx =
+    TRUE, vcf_idx_fmt = TRUE, batch_cfg = FALSE, preserve = TRUE, compl = TRUE, wait =
+    TRUE, threads = TRUE, ram = TRUE, mode = TRUE, time = TRUE, bypass = TRUE, hold =
+    FALSE, node = FALSE, user = FALSE, password = FALSE))
 )
 }
 \arguments{
