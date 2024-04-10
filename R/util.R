@@ -307,8 +307,8 @@ check_file_path=function(
 
 
 cp_data=function(
-  origin=NULL,
-  target=NULL,
+  origin,
+  target,
   force=FALSE,
   ...
 ){  

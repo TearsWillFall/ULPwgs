@@ -446,16 +446,10 @@ callFUN.checkTypes<-function(){
         arg_subtype=subtypes[[arg]]
         arg_required=required[[arg]]
 
-        if(!exists(arg)){
+        if(!exists(arg)&arg_required){
           stop(paste0("Variable : ",arg,
           " ( type : ",arg_type,
           " ) -> Value: Not defined. Define a value"))
-        }
-
-        if(is.null(arg_value)&arg_required){
-          stop(paste0("Variable : ",arg,
-          " ( type : ",arg_type,
-          " ) -> Value: NULL (type: NULL). Define a non-NULL value"))
         }
 
         if(typeof(arg_value)!=arg_type&arg_required){
