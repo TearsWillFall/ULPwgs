@@ -549,7 +549,7 @@ callFUN.runSelf=function(){
   callFUN.runCall()
   
   ### WAIT FOR SCHEDULER TO FINISH
-  if(mode=="batch"){
+  if(rmode=="batch"){
     if(await){
         await_scheduler()
     }
@@ -651,7 +651,7 @@ callFUN.buildCall=function(){
           )
       }else{
         ## WE ASSUME WE HAVE INFINITE CORES AND CAN RUN INFINITE JOBS 
-        if(mode=="local"){
+        if(rmode=="local"){
               ### LOCALLY WE ARE LIMITED IN NUMBER OF CORES
               cores=parallel::detectCores()-1
               ### WE ASSIGN A REASONABLE NUMBER OF JOBS FoR THE REQUESTED NUMBER OF THREADS 
@@ -659,7 +659,7 @@ callFUN.buildCall=function(){
               exec_code=paste0("Rscript -e \" invisible(parallel::mclapply(1:",n_inputs,
               ",FUN=function(select){",ns,"::",fn,"(env=\\\"",
               env_file,"\\\",select=select)},mc.cores=",rjobs,"))\"")
-        }else if(mode=="batch"){
+        }else if(rmode=="batch"){
               cores=Inf
               rjobs=Inf
 
@@ -694,7 +694,7 @@ callFUN.buildCall=function(){
               exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
               ";",exec_code,"'|",batch_code)
         }else{
-          stop(err_msg, " Unknown process mode ")
+          stop(err_msg, " Unknown running mode selected. Available mode include: `local` and `batch` ")
         }
 
       }
