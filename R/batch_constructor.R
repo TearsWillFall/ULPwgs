@@ -447,13 +447,13 @@ callFUN.checkTypes<-function(){
         arg_required=required[[arg]]
 
         if(!exists(arg)){
-          stop(paste0("Variable : ",arg,
+          stop(paste0(err_msg," -> Variable : ",arg,
           " ( type : ",arg_type,
           " ) -> Value: Not defined. Define a value"))
         }
 
         if(typeof(arg_value)!=arg_type){
-          stop(paste0("Variable : ",arg,
+          stop(paste0(err_msg,"-> Variable : ",arg,
           " ( type : ",arg_type," ) -> Value: ",arg_value,
           " ( type : ",typeof(arg_value),
           " ). Invalid type"))
