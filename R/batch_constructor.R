@@ -373,16 +373,11 @@ callFUN.setEnv<-function(
 
       args=appendList(args,build_default_variable_list())
 
-
       ### CREATE VARIABLES FOR THE ENVIRONMENT
       callFUN.buildSelf()
 
       ### WE BUILD THE PARENT ENVIRONMENT
       callFUN.buildParent()
-
-
-
-
      
       ### WE WRITE PARENT ENVIROMENT
       callFUN.writeEnv()
@@ -919,7 +914,6 @@ callFUN.buildParent=function(){
     ### WE BUILD THE PROCESS AND THE ERROR MESSAGES
     callFUN.setProcess()
     
-
     ### WE IMPORT AND/OR CREATE SHEET TO APOINT VARIABLES
     callFUN.assignSheetParent()
 
@@ -939,8 +933,8 @@ callFUN.buildParent=function(){
 }
 
 
-callFUN.setVars<-function(){
-   append_env(to=environment(),from=parent.frame())
+callFUN.setSelf<-function(){
+  append_env(to=environment(),from=parent.frame())
 
   ## SET NAMESPACE
   ns <- "ULPwgs"
@@ -1057,14 +1051,13 @@ callFUN.setVars<-function(){
 
 
 callFUN.buildSelf=function(){
+  ppend_env(to=environment(),from=parent.frame())
 
   ### WE SET THE DEFAULT VARIABLES
-  callFUN.setVars()
+  callFUN.setSelf()
  
-
   ### WE BUILD THE PROCESS AND THE ERROR MESSAGES
   callFUN.setProcess()
-
 
   ### CREATE SHEET WITH VARIABLES
   callFUN.buildSheet()
