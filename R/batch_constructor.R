@@ -372,7 +372,6 @@ callFUN.setEnv<-function(
     password=NULL,
     remotes=NULL,
     compl=FALSE,
-    parent_id=NULL,
     wait=FALSE,
     hold=NULL
 ){
@@ -1002,7 +1001,7 @@ callFUN.buildDir=function(){
         self_dir <- set_dir(
                 dir=work_dir,
                 name=self_id
-        )
+      )
         
       }else if(!exists("child_id")&exists("parent_id")){
 
