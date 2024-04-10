@@ -447,13 +447,13 @@ callFUN.checkTypes<-function(){
         arg_required=required[[arg]]
 
         if(!exists(arg)){
-          stop(paste0(err_msg," -> Variable : ",arg,
+          stop(paste0(err_msg," Variable : ",arg,
           " ( type : ",arg_type,
           " ) -> Value: Not defined . Define a value"))
         }
 
         if(typeof(arg_value)!=arg_type){
-          stop(paste0(err_msg,"-> Variable : ",arg,
+          stop(paste0(err_msg," Variable : ",arg,
           " ( type : ",arg_type," ) -> Value: ",arg_value,
           " ( type : ",typeof(arg_value),
           " ) . Invalid type"))
@@ -514,7 +514,7 @@ callFUN.checkSubtypes=function(){
                 if(exists("remote")){
                   if(!any(remote %in% arg)){
                     if(!file.exists(arg_value)){
-                              stop(paste0(err_msg," -> Variable : ",arg,
+                              stop(paste0(err_msg," Variable : ",arg,
                             " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
                             " ( type : ",typeof(arg_value),
                             " ) [ subtype : NULL ] . Path doesn't exist locally"))
@@ -522,7 +522,7 @@ callFUN.checkSubtypes=function(){
                   }else{
                     callFUN.remoteCheck()
                     if(length(check)==0){
-                        stop(paste0(err_msg," -> Variable : ",arg,
+                        stop(paste0(err_msg," Variable : ",arg,
                               " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
                               " ( type : ",typeof(arg_value),
                               " ) [ subtype : NULL ] . Path doesn't exist remotely"))
@@ -784,7 +784,7 @@ callFUN.buildError<-function(){
   if(exists("err_msg")){
      err_msg <- paste0(err_msg ,fn," (",job_id,") "," -> ")
   }else{
-     err_msg <- paste0("CRITICAL ERROR: ",fn," (",self_id,") "," -> ")
+     err_msg <- paste0("CRITICAL ERROR: ",fn," (",paste0("self.",self_id),") "," -> ")
   }
   append_env(from=environment(),to=parent.frame())
 }
@@ -914,13 +914,11 @@ callFUN.buildParent=function(){
     ### WE CHECK VARIABLE TYPES
     callFUN.checkTypes()
 
-    if(exists("remote")){
-       ### CHECK IF WE REQUIRE REMOTE DATA
-      callFUN.remoteValidate()
-    }
+  
+    ### CHECK IF WE REQUIRE REMOTE DATA
+    callFUN.remoteValidate()
+
    
-    ## CREATE WORK DIRECTORIES
-    callFUN.buildDir()
 
     callFUN.buildChilds()
 
@@ -1158,7 +1156,7 @@ callFUN.remoteCreateDir=function(){
     )
 
     if(check!=0){
-       stop(paste0(err_msg," -> Failed to create remote output directory : [ ",out_file_dir, " ] " ))
+       stop(paste0(err_msg," Failed to create remote output directory : [ ",out_file_dir, " ] " ))
     }
 
     cat(crayon::yellow(paste0(" Succesfully created remote output directory: `", out_file_dir,"`  \n")))
@@ -1178,7 +1176,7 @@ callFUN.remoteScpDir=function(){
     )
 
     if(check!=0){
-       stop(paste0(err_msg," -> Failed to move data to remote output directory : [ ",out_file_dir, " ] " ))
+       stop(paste0(err_msg," Failed to move data to remote output directory : [ ",out_file_dir, " ] " ))
     }
    
 
@@ -1205,11 +1203,11 @@ callFUN.remoteValidate=function(){
 
       ### IF SERVER DOESN'T RESPOND WE RETURN ERROR 
       if(check==255){
-        stop(paste0(err_msg," -> "," [ ",node," ] " ,"  Server not accessible. Wrong IP or server currently unavailable"))
+        stop(paste0(err_msg," [ ",node," ] " ,"  Server not accessible. Wrong IP or server currently unavailable"))
       }else if(
         check==5
       ){
-        stop(paste0(err_msg," -> "," [ ",node," ] " ,"  Failed to log in remote server. Incorrect login details"))
+        stop(paste0(err_msg,," [ ",node," ] " ,"  Failed to log in remote server. Incorrect login details"))
       }
 
     
