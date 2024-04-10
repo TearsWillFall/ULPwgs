@@ -997,11 +997,19 @@ callFUN.buildDir=function(){
       )
 
       if(!exists("child_id")&!exists("parent_id")){
-        
-        self_dir <- set_dir(
+        if(work_dir){
+          if(verbose){
+            cat(crayon::yellow(paste0("Variable: work_dir has not beed provided. Setting default working directory to ",getwd())))
+          }
+        }
+          self_dir <- set_dir(
                 dir=work_dir,
                 name=self_id
-      )
+          )
+     
+       
+        
+        
         
       }else if(!exists("child_id")&exists("parent_id")){
 
