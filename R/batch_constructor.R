@@ -1043,14 +1043,14 @@ callFUN.setSelf<-function(){
         if(verbose){
           cat(crayon::yellow(paste0("Variable: `work_dir` has not beed provided. Setting default working directory to ",getwd()," \n")))
         }
-        work_dir<-"."
+        work_dir<-getwd()
       }
 
   if(!exists("output_dir")){
         if(verbose){
           cat(crayon::yellow(paste0("Variable: `output_dir` has not beed provided. Setting default output directory to ",getwd()," \n")))
         }
-        output_dir<-"."
+        output_dir<-getwd()
   }
 
  append_env(from=environment(),to=parent.frame())
