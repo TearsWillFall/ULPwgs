@@ -957,7 +957,7 @@ callFUN.setSelf<-function(){
   ### CHECK IF RUN MODE VARIABLE EXISTS
   if(!exists("rmode")){
     if(verbose){
-        cat(crayon::yellow(paste0("Variable: rmode has not been provided. Setting default run mode to : local \n")))
+        cat(crayon::yellow(paste0("Variable: `rmode` has not been provided. Setting default run mode to : `local` \n")))
         ## IF NOT SET TO LOCAL
     }
     rmode<-"local"
@@ -966,7 +966,7 @@ callFUN.setSelf<-function(){
 
   if(!exists("threads")){
     if(verbose){
-       cat(crayon::yellow(paste0("Variable: threads has not been provided. Setting default threads to : 1 \n")))
+       cat(crayon::yellow(paste0("Variable: `threads` has not been provided. Setting default threads to : `1` \n")))
     }
     threads<-1
   }
@@ -974,21 +974,21 @@ callFUN.setSelf<-function(){
   if(rmode=="batch"){
     if(!exists("time")){
       if(verbose){
-        cat(crayon::yellow(paste0("Variable: time has not been provided. Setting default run time to : 48:00:00 \n")))
+        cat(crayon::yellow(paste0("Variable: `time` has not been provided. Setting default run time to : `48:00:00` \n")))
       }
       time<-"48:0:0"
     }
     
     if(!exists("ram")){
       if(verbose){
-        cat(crayon::yellow(paste0("Variable: ram has not been provided. Setting default ram (Gb) to : 1 \n")))
+        cat(crayon::yellow(paste0("Variable: `ram` has not been provided. Setting default ram (Gb) to : `1` \n")))
       }
       ram<-1
     }
 
     if(!exists("bypass")){
       if(verbose){
-        cat(crayon::yellow(paste0("Variable: bypass has not been provided. Setting default wallclock bypass to : FALSE \n")))
+        cat(crayon::yellow(paste0("Variable: `bypass` has not been provided. Setting default wallclock bypass to : `FALSE` \n")))
       }
       bypass<-FALSE
     }
@@ -997,7 +997,7 @@ callFUN.setSelf<-function(){
    
   if(!exists("await")){
     if(verbose){
-      cat(crayon::yellow(paste0("Variable: await has not been provided. Setting default strategy to await for parent : TRUE \n")))
+      cat(crayon::yellow(paste0("Variable: `await` has not been provided. Setting default strategy to await for parent : `TRUE` \n")))
     }
     await<-TRUE
   }
@@ -1005,7 +1005,7 @@ callFUN.setSelf<-function(){
 
   if(!exists("lic_dir")){
     if(verbose){
-      cat(crayon::yellow(paste0("Variable: lic_dir has not been provided. Setting default license directory to : ",build_default_license_list()$dir, "\n")))
+      cat(crayon::yellow(paste0("Variable: `lic_dir` has not been provided. Setting default license directory to : `",build_default_license_list()$dir, "`\n")))
     }
     lic_dir<-build_default_license_list()$dir
   }
@@ -1013,38 +1013,45 @@ callFUN.setSelf<-function(){
 
   if(!exists("batch_cfg")){
     if(verbose){
-      cat(crayon::yellow(paste0("Variable: batch_cfg has not been provided. Setting default config for batch mode to : ",build_default_preprocess_config(), "\n")))
+      cat(crayon::yellow(paste0("Variable: `batch_cfg` has not been provided. Setting default config for batch mode to : `",build_default_preprocess_config(), "`\n")))
     }
     batch_cfg<-build_default_preprocess_config()
   }
 
   if(!exists("preserve")){
     if(verbose){
-      cat(crayon::yellow(paste0("Variable: preserve has not been provided. Setting default strategy to deal with working directory  to : preserve \n")))
+      cat(crayon::yellow(paste0("Variable: `preserve` has not been provided. Setting default strategy to deal with working directory  to : `preserve` \n")))
     }
     preserve<-"partial"
   }
 
   if(!exists("compl")){
     if(verbose){
-      cat(crayon::yellow(paste0("Variable: compl has not been provided. Setting default strategy to deal with complementary files : [ `bai` , `tbi` ] \n")))
+      cat(crayon::yellow(paste0("Variable: `compl` has not been provided. Setting default strategy to deal with complementary files : [ `bai` , `tbi` ] \n")))
     }
     compl<-c(".bai",".tbi")
   }
 
   if(!exists("rds")){
     if(verbose){
-      cat(crayon::yellow(paste0("Variable: rds has not been provided. Setting default RDS login details : [ node : `transfer02` ; user: `regmova` ; password : `/lustre/scratch/scratch/regmova/password` ] \n")))
+      cat(crayon::yellow(paste0("Variable: `rds` has not been provided. Setting default RDS login details : [ node : `transfer02` ; user: `regmova` ; password : `/lustre/scratch/scratch/regmova/password` ] \n")))
     }
     rds=list(node="transfer02",user="regmova", password = "/lustre/scratch/scratch/regmova/password")
   }
 
   if(!exists("work_dir")){
         if(verbose){
-          cat(crayon::yellow(paste0("Variable: work_dir has not beed provided. Setting default working directory to ",getwd()," \n")))
+          cat(crayon::yellow(paste0("Variable: `work_dir` has not beed provided. Setting default working directory to ",getwd()," \n")))
         }
         work_dir<-"."
       }
+
+  if(!exists("output_dir")){
+        if(verbose){
+          cat(crayon::yellow(paste0("Variable: `output_dir` has not beed provided. Setting default output directory to ",getwd()," \n")))
+        }
+        output_dir<-"."
+  }
 
  append_env(from=environment(),to=parent.frame())
 }
