@@ -1019,6 +1019,7 @@ build_default_variable_list=function(
      def_args=
       list(
         subtypes=list(
+            verbose=NULL,
             rmode=NULL,
             threads=NULL,
             await=NULL,
@@ -1031,6 +1032,7 @@ build_default_variable_list=function(
             output_dir="path"
         ),
         types=list(
+            verbose="logical",
             rmode="character",
             threads="double",
             await="logical",
