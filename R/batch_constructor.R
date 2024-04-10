@@ -1020,7 +1020,7 @@ callFUN.setSelf<-function(){
 
   if(!exists("preserve")){
     if(verbose){
-      cat(crayon::yellow(paste0("Variable: `preserve` has not been provided. Setting default strategy to deal with working directory  to : `preserve` \n")))
+      cat(crayon::yellow(paste0("Variable: `preserve` has not been provided. Setting default strategy to deal with working directory  to : `partial` \n")))
     }
     preserve<-"partial"
   }
@@ -1041,14 +1041,14 @@ callFUN.setSelf<-function(){
 
   if(!exists("work_dir")){
         if(verbose){
-          cat(crayon::yellow(paste0("Variable: `work_dir` has not beed provided. Setting default working directory to ",getwd()," \n")))
+          cat(crayon::yellow(paste0("Variable: `work_dir` has not beed provided. Setting default working directory to `",getwd(),"` \n")))
         }
         work_dir<-getwd()
       }
 
   if(!exists("output_dir")){
         if(verbose){
-          cat(crayon::yellow(paste0("Variable: `output_dir` has not beed provided. Setting default output directory to ",getwd()," \n")))
+          cat(crayon::yellow(paste0("Variable: `output_dir` has not beed provided. Setting default output directory to `",getwd(),"` \n")))
         }
         output_dir<-getwd()
   }
