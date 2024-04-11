@@ -440,17 +440,18 @@ callFUN.checkTypes<-function(){
         arg_required=required[[arg]]
 
         if(!exists(arg)){
-          callFUN.callError(text=paste0(" Variable : ",arg,
+          mssg=paste0(" Variable : ",arg,
           " ( type : ",arg_type,
-          " ) -> Value: Not defined . Define a value"))
+          " ) -> Value: Not defined . Define a value")
+          callFUN.callError()
         }
 
         if(typeof(arg_value)!=arg_type){
-
-          callFUN.callError(text=paste0(" Variable : ",arg,
+          mssg=paste0(" Variable : ",arg,
           " ( type : ",arg_type," ) -> Value: ",arg_value,
           " ( type : ",typeof(arg_value),
-          " ) . Invalid type"))
+          " ) . Invalid type")
+          callFUN.callError()
         }
       }
     }
@@ -508,22 +509,21 @@ callFUN.checkSubtypes=function(){
                 if(exists("remote")){
                   if(!any(remote %in% arg)){
                     if(!file.exists(arg_value)){
-                           callFUN.callError(
-                            text=paste0(" Variable : ",arg,
+                       mssg=paste0(" Variable : ",arg,
                               " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
                               " ( type : ",typeof(arg_value),
                               " ) [ subtype : NULL ] . Path doesn't exist locally")
-                           )
+                           callFUN.callError()
                            
                     }
                   }else{
                     callFUN.remoteCheck()
                     if(length(check)==0){
-                      callFUN.callError(
-                              text=paste0(" Variable : ",arg,
+                      mssg=paste0(" Variable : ",arg,
                               " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
                               " ( type : ",typeof(arg_value),
-                              " ) [ subtype : NULL ] . Path doesn't exist remotely"))
+                              " ) [ subtype : NULL ] . Path doesn't exist remotely")
+                      callFUN.callError()
                     }
                     
                   }
@@ -628,9 +628,9 @@ callFUN.moveData=function(){
   }
 
   if(check!=0){
-    callFUN.callError(
-      text=paste0(" File already exists. To overwrite the files in `output_dir` set variable `overwrite` to : TRUE ")
-    )
+    
+    mssg=paste0(" File already exists. To overwrite the files in `output_dir` set variable `overwrite` to : TRUE ")
+    callFUN.callError()
   }
   append_env(from=environment(),to=parent.frame())
 }
@@ -646,8 +646,8 @@ callFUN.runCall=function(FUN=NULL){
   error=system(paste0(". $HOME/.bashrc;",exec_code),wait=await)
   ### RETURN ERROR MESSAGE
   if(error!=0){
-    callFUN.callError(
-      text=paste0(" Execution of environment : ",name_env," ( ",env_id," ) halted due to internal error "))
+    mssg=paste0(" Execution of environment : ",name_env," ( ",env_id," ) halted due to internal error ")
+    callFUN.callError()
   }
 
   append_env(from=environment(),to=parent.frame())
@@ -712,15 +712,15 @@ callFUN.buildCall=function(){
               exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
               ";",exec_code,"'|",batch_code)
         }else{
-           callFUN.callError(
-            text="Incorrect run mode selected. Available run modes include: `local` and `batch` "
-           )
+           mssg="Incorrect run mode selected. Available run modes include: `local` and `batch` "
+           callFUN.callError()
         }
     }else if(name_env=="child"){
       ### OF THIS IS A CHILD ENVIROMENT WE DIRECTLY RUN USER DEFINED FUNCTION
       FUN()
     }else{
-      callFUN.callError(text=paste0(" Unknown environment : " , name_env))
+      mssg=paste0(" Unknown environment : " , name_env)
+      callFUN.callError()
     }
 
     append_env(from=environment(),to=parent.frame())
@@ -752,7 +752,8 @@ callFUN.writeEnv=function(){
       env_file=paste0(work_dir,"/",env_id,".child.RData")
       saveRDS(environment(),file= env_file)
   }else{
-      callFUN.callError(text=paste0(" Unknown environment : " , name_env))
+    mssg=paste0(" Unknown environment : " , name_env)
+    callFUN.callError()
   }
   append_env(from=environment(),to=parent.frame())
 }
@@ -798,14 +799,14 @@ callFUN.buildError<-function(){
 }
 
 
-callFUN.callError<-function(text){
+callFUN.callError<-function(){
   append_env(to=environment(),from=parent.frame())
-  stop(paste0(" [ ",Sys.time()," ] ", " [ ",name_env," ( ",env_id," ) ] ",err_msg, text ))
+  stop(paste0(" [ ",Sys.time()," ] ", " [ ",name_env," ( ",env_id," ) ] ",err_msg, mssg ))
 }
 
-callFUN.callWarning<-function(text){
+callFUN.callWarning<-function(){
   append_env(to=environment(),from=parent.frame())
-  cat(crayon::yellow(paste0(" [ ",Sys.time()," ] ", " [ ",name_env," ( ",env_id," ) ] ", text )))
+  cat(crayon::yellow(paste0(" [ ",Sys.time()," ] ", " [ ",name_env," ( ",env_id," ) ] ", mssg )))
 }
 
 
@@ -1159,10 +1160,13 @@ callFUN.remoteCreateDir=function(){
     )
 
     if(check!=0){
-       callFUN.callError(text=paste0(" Failed to create remote output directory : [ ",out_file_dir, " ] " ))
+       mssg=paste0(" Failed to create remote output directory : [ ",out_file_dir, " ] " )
+       callFUN.callError()
     }
 
-    callFUN.callWarning(text=paste0(" Succesfully created remote output directory: `", out_file_dir,"`  \n"))
+    mssg=paste0(" Succesfully created remote output directory: `", out_file_dir,"`  \n")
+    callFUN.callWarning()
+    
 
     append_env(from=environment(),to=parent.frame())
 }
@@ -1179,7 +1183,8 @@ callFUN.remoteScpDir=function(){
     )
 
     if(check!=0){
-        callFUN.callError(text=paste0(" Failed to copy data to remote output directory : [ ",out_file_dir, " ] " ))
+        mssg=paste0(" Failed to copy data to remote output directory : [ ",out_file_dir, " ] " )
+        callFUN.callError()
     }
    
 
@@ -1206,14 +1211,17 @@ callFUN.remoteValidate=function(){
 
       ### IF SERVER DOESN'T RESPOND WE RETURN ERROR 
       if(check==255){
-        callFUN.callError(text=paste0(" Remote server not accessible : `",ip_address,"`"))
+        mssg=paste0(" Remote server not accessible : `",ip_address,"`")
+        callFUN.callError()
       }else if(
         check==5
       ){
-        callFUN.callError(text=paste0(" Failed to log in remote server :`",ip_address,"`"))
-      }
 
-      callFUN.callWarning(text=paste0(" Remote server available : `", ip_address,"`  \n"))
+        mssg=paste0(" Failed to log in remote server :`",ip_address,"`")
+        callFUN.callError()
+      }
+      mssg=paste0(" Remote server available : `", ip_address,"`  \n")
+      callFUN.callWarning()
 
 
     }else{
