@@ -317,14 +317,14 @@ cp_data=function(
     FUN=function(){
       append_env(to=environment(),from=parent.frame())
 
-      add_arg=""
-      if(force){
-        add_args=" -f "
-      }
-
       callFUN.setOutput(
         file=basename(origin)
       )
+
+      add_args=""
+      if(force){
+        add_args=" -f "
+      }
 
       exec_code=paste(
         "cp -rn ",add_args,origin,out_dir
