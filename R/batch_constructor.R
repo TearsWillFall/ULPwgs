@@ -782,7 +782,7 @@ callFUN.buildId=function(){
   append_env(to=environment(),from=parent.frame())
 
   if(name_env=="self"){
-    env_id<-make_hash_id(name=name_env,fn=fn)
+    env_id<-make_hash_id(name=name_env,fn=fn,vars=environment())
   }else if(name_env=="parent"){
     ### IF parent ID IS NOT GIVEN WE CREATE AN UNIQUE NAME USING THE FUNCTION ID
     env_id <-make_hash_id(name=name_env,fn=fn,vars=sheet)
@@ -1010,13 +1010,13 @@ callFUN.setSelf<-function(){
 
 
   if(!exists("lic_dir")){
-     callFUN.callWarning(text="Variable: `lic_dir` has not been provided. Setting default license directory to : `",build_default_license_list()$dir, "`\n")
+     callFUN.callWarning(text=paste0("Variable: `lic_dir` has not been provided. Setting default license directory to : `",build_default_license_list()$dir, "`\n"))
     lic_dir<-build_default_license_list()$dir
   }
 
 
   if(!exists("batch_cfg")){
-     callFUN.callWarning(text="Variable: `batch_cfg` has not been provided. Setting default config for batch mode to : `",build_default_preprocess_config(), "`\n")
+     callFUN.callWarning(text=paste0("Variable: `batch_cfg` has not been provided. Setting default config for batch mode to : `",build_default_preprocess_config(), "`\n"))
     batch_cfg<-build_default_preprocess_config()
   }
 
@@ -1036,12 +1036,12 @@ callFUN.setSelf<-function(){
   }
 
   if(!exists("work_dir")){
-         callFUN.callWarning(text="Variable: `work_dir` has not beed provided. Setting default working directory to `",getwd(),"` \n")
+         callFUN.callWarning(text=paste0("Variable: `work_dir` has not beed provided. Setting default working directory to `",getwd(),"` \n"))
         work_dir<-getwd()
       }
 
   if(!exists("output_dir")){
-         callFUN.callWarning(text="Variable: `output_dir` has not beed provided. Setting default output directory to `",getwd(),"` \n")
+         callFUN.callWarning(text=paste0("Variable: `output_dir` has not beed provided. Setting default output directory to `",getwd(),"` \n"))
         output_dir<-getwd()
   }
 
