@@ -643,7 +643,7 @@ callFUN.runCall=function(FUN=NULL){
   callFUN.verbose()
 
   #Read .bashrc to import all envriomental variables
-  error=system(paste0(". $HOME/.bashrc;",exec_code),wait=await,ignore.stderr = TRUE)
+  error=system(paste0(". $HOME/.bashrc;",exec_code),wait=await)
   ### RETURN ERROR MESSAGE
   if(error!=0){
     mssg=paste0("Execution of environment : ",name_env," ( ",env_id," ) halted due to internal error ")
