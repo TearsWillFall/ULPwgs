@@ -844,9 +844,20 @@ callFUN.setProcess=function(){
 }
 
 
+test=function(){
+  smt="yes"
+  test2=function(){
+      assign(smt,"smt",envir=parent.frame())
+  }
+  test2()
+  print(smt)
+}
+
+test()
 
 callFUN.buildChild=function(){
-  append_env(to=environment(),from=parent.frame())
+  .base.env=parent.frame()
+  append_env(to=environment(),from=.base.env)
   
   name_env<-"child"
 
@@ -864,7 +875,7 @@ callFUN.buildChild=function(){
   ### WE WRITE CHILDREN ENV
   callFUN.writeEnv()
 
-  parent.frame()$child.env[[row]]<-environment()
+  return(environment())
 
 }
 
@@ -899,13 +910,13 @@ callFUN.buildParent=function(){
     ### FROM THE PARENT ENVIRONMENT WE CREATE A NEW ENVIRONMENT FOR EACH UNIQUE INPUT
     child.env=list()
     for(row in 1:n_inputs){
-        callFUN.buildChild()
+        child.env[row]<-callFUN.buildChild()
     }
 
     ### WE WRITE PARENT ENV
     callFUN.writeEnv()
-
-    parent.frame()$parent_env=environment()
+    
+    return(environment())
 }
 
 
@@ -1037,7 +1048,7 @@ callFUN.buildSelf=function(){
   callFUN.writeEnv()
 
   ### WE BUILD THE PARENT ENVIRONMENT
-  callFUN.buildParent()
+  parent.env=callFUN.buildParent()
 
   append_env(from=environment(),to=parent.frame())
 }
