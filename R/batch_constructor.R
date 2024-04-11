@@ -808,6 +808,7 @@ callFUN.callError<-function(){
   append_env(to=environment(),from=parent.frame())
   cat(crayon::red(paste0("[ ",Sys.time()," ] ", " [ ",name_env," ( ",env_id," ) ] ",err_msg, mssg, "\n\n")))
   quit(ask="no")
+}
 
 callFUN.callWarning<-function(){
   append_env(to=environment(),from=parent.frame())
@@ -1307,10 +1308,5 @@ callFUN.setOutput=function(...){
       }
       append_env(from=environment(),to=parent.frame())
   }
-
-
-
-
-
 
 
