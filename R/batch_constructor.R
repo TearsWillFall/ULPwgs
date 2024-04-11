@@ -861,8 +861,6 @@ callFUN.assignSheetChild=function(){
 
 callFUN.setProcess=function(){
   append_env(to=environment(),from=parent.frame())
-  ### CREATE CHILD JOB ID
-  callFUN.buildId()
 
   ## CREATE ERROR MESSAGE FOR EACH CHILD
   callFUN.buildError()
@@ -894,6 +892,9 @@ callFUN.buildChild=function(){
   
   name_env<-"child"
   await<-TRUE
+
+  ### CREATE CHILD JOB ID
+  callFUN.buildId()
 
   callFUN.assignSheetChild()
 
@@ -927,6 +928,9 @@ callFUN.buildParent=function(){
 
     await<-TRUE
 
+    ### CREATE CHILD JOB ID
+    callFUN.buildId()
+
     ### WE BUILD THE PROCESS AND THE ERROR MESSAGES
     callFUN.setProcess()
     
@@ -959,24 +963,6 @@ callFUN.buildParent=function(){
 callFUN.setSelf<-function(){
   append_env(to=environment(),from=parent.frame())
 
-  ## SET NAMESPACE
-  ns <- "ULPwgs"
-  
-  ## WE DEFINE THE MAIN NAME FOR THE RUNNING FUNCTION
-  fn <- sub(".*::","",sub("\\(.*","",
-    paste0(deparse(sys.calls()[[1]]),collapse=","))
-  )
-
-  #### IF FUNCTION ID IS NOT GIVE WE USE FN NAME AS ID
-  #### OTHERWISE WE APPEND FUNCTION ID
-
-  
-
-  if(!exists("fn_id")){
-    fn_id<-fn
-  }else{
-    fn_id<-paste0(fn,".",fn_id)
-  }
 
   if(!exists("verbose")){
     verbose<-FALSE
@@ -1072,9 +1058,30 @@ callFUN.buildSelf=function(){
 
   name_env<-"self"
 
+  ## SET NAMESPACE
+  ns <- "ULPwgs"
+  
+  ## WE DEFINE THE MAIN NAME FOR THE RUNNING FUNCTION
+  fn <- sub(".*::","",sub("\\(.*","",
+    paste0(deparse(sys.calls()[[1]]),collapse=","))
+  )
+
+  #### IF FUNCTION ID IS NOT GIVE WE USE FN NAME AS ID
+  #### OTHERWISE WE APPEND FUNCTION ID
+
+  if(!exists("fn_id")){
+    fn_id<-fn
+  }else{
+    fn_id<-paste0(fn,".",fn_id)
+  }
+
+
+  ### CREATE CHILD JOB ID
+  callFUN.buildId()
+
   ### WE SET THE DEFAULT VARIABLES
   callFUN.setSelf()
- 
+
   ### WE BUILD THE PROCESS AND THE ERROR MESSAGES
   callFUN.setProcess()
 
