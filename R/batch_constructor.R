@@ -618,7 +618,7 @@ callFUN.moveData=function(){
   append_env(to=environment(),from=parent.frame())
 
   if(length(out_files)!=0){
-    check=system(paste("mv ",ifelse(overwrite," -f ",""),paste0(out_dir,"/*"),out_file_dir, "; echo $?"),intern=TRUE)
+    check=system(paste("mv ",ifelse(overwrite," -f ",""),paste0(out_dir,"/*"),out_file_dir, " 2> /dev/null ; echo $?"),intern=TRUE)
   }
 
   if(check!=0){
@@ -638,7 +638,7 @@ callFUN.runCall=function(FUN=NULL){
   error=system(paste0(". $HOME/.bashrc;",exec_code),wait=await)
   ### RETURN ERROR MESSAGE
   if(error!=0){
-      stop(paste0(err_msg," Execution halted due to internal error"))
+      stop(paste0(err_msg," Execution of environment : ",name_env," ( ",env_id," ) halted due to internal error "))
   }
 
   append_env(from=environment(),to=parent.frame())
@@ -703,7 +703,8 @@ callFUN.buildCall=function(){
               exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
               ";",exec_code,"'|",batch_code)
         }else{
-          stop(err_msg, " Unknown running mode selected. Available mode include: `local` and `batch` ")
+           callFUN.completeError()
+           stop(paste0(err_msg,"Incorrect run mode selected. Available run modes include: `local` and `batch` "))
         }
     }else if(name_env=="child"){
       ### OF THIS IS A CHILD ENVIROMENT WE DIRECTLY RUN USER DEFINED FUNCTION
@@ -741,6 +742,7 @@ callFUN.writeEnv=function(){
       env_file=paste0(work_dir,"/",env_id,".child.RData")
       saveRDS(environment(),file= env_file)
   }else{
+      callFUN.completeError()
       stop(paste0(err_msg," Unknown environment : " , name_env))
   }
   append_env(from=environment(),to=parent.frame())
@@ -792,10 +794,24 @@ callFUN.buildId=function(){
 callFUN.buildError<-function(){
   append_env(to=environment(),from=parent.frame())
   if(exists("err_msg")){
-     err_msg <- paste0(err_msg ,fn," (",env_id,") "," -> ")
+     err_msg <- paste0(err_msg ,name_env," ( ",env_id," ) "," -> ")
   }else{
-     err_msg <- paste0("CRITICAL ERROR: ",fn," (",paste0("self.",env_id),") "," -> ")
+     err_msg <- paste0("CRITICAL ERROR: ",name_env," ( ", env_id," ) "," -> ")
   }
+  append_env(from=environment(),to=parent.frame())
+}
+
+
+callFUN.completeError<-function(){
+  append_env(to=environment(),from=parent.frame())
+  err_msg <- paste0(" [ ",Sys.time()," ] ", " [ ",name_env," ( ",env_id," ) ] ",err_msg )
+  append_env(from=environment(),to=parent.frame())
+}
+
+
+callFUN.buildMssg<-function(){
+  append_env(to=environment(),from=parent.frame())
+  msg <- paste0("[ ",name_env," ] "," [ ",env_id," ] ")
   append_env(from=environment(),to=parent.frame())
 }
 
@@ -847,6 +863,9 @@ callFUN.setProcess=function(){
 
   ## CREATE ERROR MESSAGE FOR EACH CHILD
   callFUN.buildError()
+
+    ## CREATE ERROR MESSAGE FOR EACH CHILD
+  callFUN.buildMssg()
 
   ## CREATE DIRECTORIES FOR HANDLE PROCESS
   callFUN.buildDir()
@@ -1147,6 +1166,7 @@ callFUN.remoteCreateDir=function(){
     )
 
     if(check!=0){
+       callFUN.completeError()
        stop(paste0(err_msg," Failed to create remote output directory : [ ",out_file_dir, " ] " ))
     }
 
@@ -1167,6 +1187,7 @@ callFUN.remoteScpDir=function(){
     )
 
     if(check!=0){
+       callFUN.completeError()
        stop(paste0(err_msg," Failed to move data to remote output directory : [ ",out_file_dir, " ] " ))
     }
    
@@ -1194,10 +1215,12 @@ callFUN.remoteValidate=function(){
 
       ### IF SERVER DOESN'T RESPOND WE RETURN ERROR 
       if(check==255){
+        callFUN.completeError()
         stop(paste0(err_msg," [ ",node," ] " ,"  Server not accessible. Wrong IP or server currently unavailable"))
       }else if(
         check==5
       ){
+         callFUN.completeError()
         stop(paste0(err_msg,," [ ",node," ] " ,"  Failed to log in remote server. Incorrect login details"))
       }
 
