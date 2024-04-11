@@ -616,8 +616,13 @@ callFUN.runProcess=function(){
 
 callFUN.moveData=function(){
   append_env(to=environment(),from=parent.frame())
+
   if(length(out_files)!=0){
-    system(paste("mv ",paste0(out_dir,"/*"),out_file_dir))
+    check=system(paste("mv ",ifelse(overwrite," -f ",""),paste0(out_dir,"/*"),out_file_dir),intern=TRUE)
+  }
+
+  if(check!=0){
+    stop(paste0(err_msg," File already exists. To overwrite the files in `output_dir` set variable `overwrite` to : TRUE "))
   }
   append_env(from=environment(),to=parent.frame())
 }
@@ -1028,6 +1033,11 @@ callFUN.setSelf<-function(){
   if(!exists("output_dir")){
         cat(crayon::yellow(paste0("Variable: `output_dir` has not beed provided. Setting default output directory to `",getwd(),"` \n")))
         output_dir<-getwd()
+  }
+
+  if(!exists("overwrite")){
+    cat(crayon::yellow(paste0("Variable: `overwrite` has not been provided. Setting default to overwrite the output_dir: FALSE \n")))
+    rds=list(node="transfer02",user="regmova", password = "/lustre/scratch/scratch/regmova/password")
   }
 
 

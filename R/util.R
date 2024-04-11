@@ -309,7 +309,6 @@ check_file_path=function(
 
 cp_data=function(
   origin,
-  force=FALSE,
   ...
 ){  
 
@@ -337,12 +336,10 @@ cp_data=function(
     callFUN.call(...,
         args=list(
           types=list(
-            origin="character",
-            force="logical"
+            origin="character"
           ),
           subtypes=list(
-            origin="path",
-            force=NULL
+            origin="path"
           )
       )
     )
