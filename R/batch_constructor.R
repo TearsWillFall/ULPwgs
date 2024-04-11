@@ -581,10 +581,10 @@ callFUN.rmDir=function(){
     if(!self){
       if(preserve=="partial"){
           if(error!=0){
-              system(paste0("rm -rf ",parent_dir))
+              system(paste0("rm -rf ",work_dir))
             }
       }else if (preserve=="none"){
-          system(paste0("rm -rf ",parent_dir))
+          system(paste0("rm -rf ",work_dir))
         }
     }
 
@@ -676,14 +676,14 @@ callFUN.buildCall=function(){
 
               batch_code=paste(
                     "qsub -V ", 
-              paste0("-N ",job_id),
+              paste0("-N ",env_id),
               paste0(" -t 1-",n_inputs),
               paste0(" -l h_rt=",time),
               paste0(" -l mem=",ram,"G"),
               paste0(" -pe smp ",threads), 
               paste0(" -wd ",getwd()), 
-              paste0(" -o ",parent_id,"/",job_id,".std_out"),
-              paste0(" -e ",parent_id,"/",job_id,".std_error"))
+              paste0(" -o ",work_dir,"/",env_id,".std_out"),
+              paste0(" -e ",work_dir,"/",env_id,".std_error"))
 
               if(exists("hold")){
                 batch_code=paste0(batch_code,paste0(" -hold_jid ",paste0(hold,collapse=",")))
@@ -727,13 +727,13 @@ callFUN.setCall=function(){
 callFUN.writeEnv=function(){
   append_env(to=environment(),from=parent.frame())
   if(name_env=="self"){
-      env_file=paste0(self_dir,"/",self_id,".self.RData")
+      env_file=paste0(work_dir,"/",env_id,".self.RData")
       saveRDS(environment(),file = env_file)
   }else if (name_env=="parent"){
-      env_file=paste0(parent_dir,"/",parent_id,".parent.RData")
+      env_file=paste0(work_dir,"/",env_id,".parent.RData")
       saveRDS(environment(),file = env_file)
   }else if(name_env=="child"){
-      env_file=paste0(child_dir,"/",child_id,".child.RData")
+      env_file=paste0(work_dir,"/",env_id,".child.RData")
       saveRDS(environment(),file= env_file)
   }else{
       stop(paste0(err_msg," Unknown environment : " , name_env))
@@ -766,28 +766,16 @@ callFUN.buildId=function(){
   append_env(to=environment(),from=parent.frame())
 
   if(name_env=="self"){
-    self_id<-make_hash_id(name=name_env,fn=fn)
-    job_id <- build_job(
-      parent_id=self_id,
-      child_id=parent_id
-    )
+    env_id<-make_hash_id(name=name_env,fn=fn)
   }else if(name_env=="parent"){
     ### IF parent ID IS NOT GIVEN WE CREATE AN UNIQUE NAME USING THE FUNCTION ID
-    parent_id <-make_hash_id(name=name_env,fn=fn,vars=sheet)
-  
+    env_id <-make_hash_id(name=name_env,fn=fn,vars=sheet)
     ### WE ASSIGN A JOB ID TO THE CALLER FUNCTION
-
- 
   }else if (name_env=="child"){
     ### WE CREATE A JOB ID FOR EACH CHILD
     ### CHILDREN SHALL WORK!!
-
-    child_id <-make_hash_id(name=name_env,fn=fn,vars=sheet)
+    env_id <-make_hash_id(name=name_env,fn=fn,vars=sheet)
     
-    job_id <- build_job(
-      parent_id=parent_id,
-      child_id=child_id
-    )
   }
   
   append_env(from=environment(),to=parent.frame())
@@ -799,9 +787,9 @@ callFUN.buildId=function(){
 callFUN.buildError<-function(){
   append_env(to=environment(),from=parent.frame())
   if(exists("err_msg")){
-     err_msg <- paste0(err_msg ,fn," (",job_id,") "," -> ")
+     err_msg <- paste0(err_msg ,fn," (",env_id,") "," -> ")
   }else{
-     err_msg <- paste0("CRITICAL ERROR: ",fn," (",paste0("self.",self_id),") "," -> ")
+     err_msg <- paste0("CRITICAL ERROR: ",fn," (",paste0("self.",env_id),") "," -> ")
   }
   append_env(from=environment(),to=parent.frame())
 }
@@ -1077,73 +1065,57 @@ callFUN.buildDir=function(){
         from=parent.frame()
       )
 
-      if(name_env=="self"){
-          self_dir <- set_dir(
+        work_dir=set_dir(
                 dir=work_dir,
-                name=self_id
+                name=env_id
           )
-      }else if(name_env=="parent"){
 
-        ### CREATE MAIN WORKING DIRECTORY
-        
-        parent_dir <- set_dir(
-                dir=self_dir,
-                name=parent_id
-        )
-      }else if (name_env=="child"){
-
-        if(!remote){
-           ### CREATE OUTPUT DIR
-        
-          out_file_dir <- set_dir(
-                  dir=output_dir
-          )
-        }else if(any(remote %in% "output_dir")){
-          callFUN.remoteCreateDir()
-        }
+      
+      if (name_env=="child"){
+          if(!remote){
+            ### CREATE OUTPUT DIR
           
-        child_dir <- set_dir(
-            dir=parent_dir,
-            name=child_id
-        )
+            out_file_dir <- set_dir(
+                    dir=output_dir
+            )
+          }else if(any(remote %in% "output_dir")){
+            callFUN.remoteCreateDir()
+          }
+              
+          tmp_dir <- set_dir(
+              dir=work_dir,
+              name="tmp"
+          )
 
-        ### CREATE TMP DIRECTORY
-        ### WE WILL STORE TMP FILES FOR ALL FUNCTIONS HERE 
+
+          ### CREATE TMP DIRECTORY
+          ### WE WILL STORE TMP FILES FOR ALL FUNCTIONS HERE 
+        
+          out_dir <- set_dir(
+              dir=tmp_dir,
+              name="out"
+          )
+    
+          ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE SYMLINK OF FILES
+          ### WE WILL STORE SYMLINK FILES FOR LOCAL FILES
       
-        tmp_dir <- set_dir(
-            dir=child_dir,
-            name="tmp"
-        )
-
-
-        ### CREATE TMP DIRECTORY
-        ### WE WILL STORE TMP FILES FOR ALL FUNCTIONS HERE 
-      
-        out_dir <- set_dir(
+          ln_dir <- set_dir(
             dir=tmp_dir,
-            name="out"
-        )
-    
-        ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE SYMLINK OF FILES
-        ### WE WILL STORE SYMLINK FILES FOR LOCAL FILES
-    
-        ln_dir <- set_dir(
-          dir=tmp_dir,
-          name="ln"
-        )
+            name="ln"
+          )
     
         
 
-        ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE REMOTE FILES
-        ### WE WILL STORE REMOTE DOWNLOAD FILES HERE
-      
-        rmt_dir <- set_dir(
-          dir=tmp_dir,
-          name="rmt"
-        )
-    } else{
-      stop(paste0(err_msg," Unknown environment : " , name_env))
-    }
+          ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE REMOTE FILES
+          ### WE WILL STORE REMOTE DOWNLOAD FILES HERE
+        
+          rmt_dir <- set_dir(
+            dir=tmp_dir,
+            name="rmt"
+          )
+      } else{
+        stop(paste0(err_msg," Unknown environment : " , name_env))
+      }
 
 
       ### WE APPEND NEW VARIABLES BACK TO THE MAIN FUNCTION
@@ -1182,7 +1154,7 @@ callFUN.remoteScpDir=function(){
       from=parent.frame()
     )
     check=system(paste0("sshpass -f ",password,
-            " scp -r ",paste0(child_dir,"/*"),ip_address,":",out_file_dir, "; echo $?" 
+            " scp -r ",paste0(work_dir,"/*"),ip_address,":",out_file_dir, "; echo $?" 
       ),intern=TRUE
     )
 
@@ -1242,7 +1214,7 @@ callFUN.dumpInfo<-function(){
     ### TRACING CHILDREN CAN BE DIFFICULT
     ### WE DEFINE THE VARIABLES THAT WILL HELP IDENTIFY CHILDREN IN JOB HIERARCHY
 
-    dump_names=c("self_id","parent_id","child_id","child_order",fn_vars)
+    dump_names=c("id","order",fn_vars)
     
     ## WE DEFINE A FILE WERE WE WILL DUMP THIS INFO
     
@@ -1264,10 +1236,8 @@ callFUN.dumpInfo<-function(){
     write.table(
       file=dump_file,
       x=data.frame(
-      self_id=self_id,
-      parent_id=parent_id,
-      child_id=child_id,
-      child_order=row,
+      id=env_id,
+      order=row,
       sheet[row,]),
       sep="\t",
       append=TRUE,
