@@ -985,8 +985,7 @@ callFUN.setSelf<-function(){
 
   ### CHECK IF RUN MODE VARIABLE EXISTS
   if(!exists("rmode")){
-   
-     callFUN.callWarning(text="Variable: `rmode` has not been provided. Setting default run mode to : `local` \n")
+    callFUN.callWarning(text="Variable: `rmode` has not been provided. Setting default run mode to : `local` \n")
     ## IF NOT SET TO LOCAL
     rmode<-"local"
   }
