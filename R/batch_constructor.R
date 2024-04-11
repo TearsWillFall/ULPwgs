@@ -1096,10 +1096,9 @@ callFUN.buildDir=function(){
       
         out_dir <- set_dir(
             dir=tmp_dir,
-            name="tmp"
+            name="out"
         )
     
-        
         ### WITHIN TMP DIRECTORY CREATE DIRECTORY TO STORE SYMLINK OF FILES
         ### WE WILL STORE SYMLINK FILES FOR LOCAL FILES
     
