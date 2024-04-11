@@ -320,13 +320,10 @@ cp_data=function(
         file=basename(origin)
       )
 
-      add_args=""
-      if(force){
-        add_args=" -f "
-      }
+  
 
       exec_code=paste(
-        "cp -rn ",add_args,origin,out_dir
+        "cp -rn ",origin,out_dir
       )
 
       append_env(from=environment(),to=parent.frame())
