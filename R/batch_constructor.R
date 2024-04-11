@@ -806,12 +806,13 @@ callFUN.buildError<-function(){
 
 callFUN.callError<-function(){
   append_env(to=environment(),from=parent.frame())
-  stop(paste0(" [ ",Sys.time()," ] ", " [ ",name_env," ( ",env_id," ) ] ",err_msg, mssg ))
+  cat(crayon::red(paste0("[ ",Sys.time()," ] ", " [ ",name_env," ( ",env_id," ) ] ",err_msg, mssg )))
+  callFUN.exit()
 }
 
 callFUN.callWarning<-function(){
   append_env(to=environment(),from=parent.frame())
-  cat(crayon::yellow(paste0(" [ ",Sys.time()," ] ", " [ ",name_env," ( ",env_id," ) ] ", mssg )))
+  cat(crayon::yellow(paste0("[ ",Sys.time()," ] ", " [ ",name_env," ( ",env_id," ) ] ", mssg )))
 }
 
 
@@ -1313,7 +1314,7 @@ callFUN.setOutput=function(...){
 
 
 
-
+callFUN.exit <- function() { invokeRestart("abort") } 
 
 
 
