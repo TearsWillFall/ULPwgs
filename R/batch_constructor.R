@@ -646,7 +646,7 @@ callFUN.runCall=function(FUN=NULL){
   error=system(paste0(". $HOME/.bashrc;",exec_code),wait=await)
   ### RETURN ERROR MESSAGE
   if(error!=0){
-    mssg=paste0("Execution of environment : ",name_env," ( ",env_id," ) halted due to internal error ")
+    mssg=paste0("Execution of environment halted due to internal error ")
     callFUN.callError()
   }
 
@@ -809,6 +809,8 @@ callFUN.callError<-function(){
   light_red <- crayon::make_style("tomato")
   cat(crayon::red(paste0("[",Sys.time(),"]", "[",name_env,"]","[",env_id,"]\n")))
   cat(light_red(paste0(mssg, "\n\n")))
+   opt <- options(show.error.messages=FALSE)
+  on.exit(options(opt))
   stop()
 
 }
