@@ -618,7 +618,7 @@ callFUN.moveData=function(){
   append_env(to=environment(),from=parent.frame())
 
   if(length(out_files)!=0){
-    check=system(paste("mv ",ifelse(overwrite," -f ",""),paste0(out_dir,"/*"),out_file_dir),intern=TRUE)
+    check=system(paste("mv ",ifelse(overwrite," -f ",""),paste0(out_dir,"/*"),out_file_dir, "; echo $?"),intern=TRUE)
   }
 
   if(check!=0){
