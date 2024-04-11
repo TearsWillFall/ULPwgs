@@ -5,7 +5,7 @@
 \title{cp file/directory
 This function removes/deletes one or multiple files/directories}
 \usage{
-cp_data(origin, force = FALSE, ...)
+cp_data(origin, ...)
 }
 \arguments{
 \item{file}{Path to the file/directory.\link{REQUIRED}}

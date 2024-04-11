@@ -870,16 +870,6 @@ callFUN.setProcess=function(){
 }
 
 
-test=function(){
-  smt="yes"
-  test2=function(){
-      assign(smt,"smt",envir=parent.frame())
-  }
-  test2()
-  print(smt)
-}
-
-test()
 
 callFUN.buildChild=function(){
   .base.env=parent.frame()
