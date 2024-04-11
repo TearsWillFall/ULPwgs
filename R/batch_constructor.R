@@ -617,7 +617,7 @@ callFUN.runProcess=function(){
 callFUN.moveData=function(){
   append_env(to=environment(),from=parent.frame())
   if(length(out_files)!=0){
-    system(paste("mv -r",paste0(out_dir,"/*"),out_file_dir))
+    system(paste("mv ",paste0(out_dir,"/*"),out_file_dir))
   }
   append_env(from=environment(),to=parent.frame())
 }
