@@ -363,7 +363,7 @@ callFUN.setEnv<-function(
       if(!is.environment(env)){
         env <-readRDS(file=env)
         if(exists("select")){
-          env <- env$child.envs[[select]]
+          env <- env$child.env[[select]]
         }
       }
       append_env(to=environment(),from=env)
@@ -594,18 +594,20 @@ callFUN.runProcess=function(){
   ### WE WRITE RESULTS FOR CHILD TO RDS
   callFUN.writeEnv()
 
-  ### WE MOVE DATA TO RESULTS DIRECTORY
+  ### WE MOVE DATA TO OUT_FILE_DIR DIRECTORY
   callFUN.moveData()
-
 
   append_env(from=environment(),to=parent.frame())
 
 }
 
 
+
 callFUN.moveData=function(){
   append_env(to=environment(),from=parent.frame())
-  system(paste0("mv ",child_dir,out_file_dir))
+  if(length(out_files)!=0){
+    system(paste("mv -r",paste0(out_dir,"/*"),out_file_dir))
+  }
   append_env(from=environment(),to=parent.frame())
 }
 
@@ -640,18 +642,14 @@ callFUN.buildCall=function(){
     ### Use SGE TASK ID if mode is set to batch otherwise use value
    
     callFUN.setCall()
-  
-    ### CHECK IF WE ARE IN A CHILD ENVIROMENT
-    if(!exists("child_id")){
 
-      if(self){
-          exec_code=paste0("Rscript -e \"",
+    if(name_env=="self"){
+       exec_code=paste0("Rscript -e \"",
             ns,"::",fn,"(env=\\\"",
             env_file,"\\\")\""
-          )
-      }else{
-        ## WE ASSUME WE HAVE INFINITE CORES AND CAN RUN INFINITE JOBS 
-        if(rmode=="local"){
+      )
+    }else if (name_env=="parent"){
+      if(rmode=="local"){
               ### LOCALLY WE ARE LIMITED IN NUMBER OF CORES
               cores=parallel::detectCores()-1
               ### WE ASSIGN A REASONABLE NUMBER OF JOBS FoR THE REQUESTED NUMBER OF THREADS 
@@ -678,8 +676,8 @@ callFUN.buildCall=function(){
               paste0(" -l mem=",ram,"G"),
               paste0(" -pe smp ",threads), 
               paste0(" -wd ",getwd()), 
-              paste0(" -o ",batch_dir,"/",job_id,".std_out"),
-              paste0(" -e ",batch_dir,"/",job_id,".std_error"))
+              paste0(" -o ",parent_id,"/",job_id,".std_out"),
+              paste0(" -e ",parent_id,"/",job_id,".std_error"))
 
               if(exists("hold")){
                 batch_code=paste0(batch_code,paste0(" -hold_jid ",paste0(hold,collapse=",")))
@@ -696,14 +694,11 @@ callFUN.buildCall=function(){
         }else{
           stop(err_msg, " Unknown running mode selected. Available mode include: `local` and `batch` ")
         }
-
-      }
-    
-      
-       
-    }else{
+    }else if(name_env=="child"){
       ### OF THIS IS A CHILD ENVIROMENT WE DIRECTLY RUN USER DEFINED FUNCTION
       FUN()
+    }else{
+      stop(err_msg, " Trying to run unknown environment ")
     }
 
     append_env(from=environment(),to=parent.frame())
@@ -725,12 +720,17 @@ callFUN.setCall=function(){
 
 callFUN.writeEnv=function(){
   append_env(to=environment(),from=parent.frame())
-  if(exists("child_id")){
-      env_file=paste0(env_dir,"/",child_id,".child.RData")
+  if(name_env=="self"){
+      env_file=paste0(self_id,"/",self_id,".self.RData")
+      saveRDS(environment(),file = env_file)
+  }else if (name_env=="parent"){
+      env_file=paste0(parent_id,"/",parent_id,".parent.RData")
+      saveRDS(environment(),file = env_file)
+  }else if(name_env=="child"){
+      env_file=paste0(child_id,"/",child_id,".child.RData")
       saveRDS(environment(),file= env_file)
   }else{
-      env_file=paste0(env_dir,"/",parent_id,".parent.RData")
-      saveRDS(environment(),file = env_file)
+     stop(err_msg, " Trying to write unknown environment  ")
   }
   append_env(from=environment(),to=parent.frame())
 }
@@ -738,22 +738,32 @@ callFUN.writeEnv=function(){
 
 callFUN.readEnv=function(){
   append_env(to=environment(),from=parent.frame())
-  child.envs=lapply(1:n_inputs,function(n){
-        child.env=readRDS(child.envs[[n]]$env_file)}
+  child.env=lapply(1:n_inputs,function(n){
+        env=readRDS(child.env[[n]]$env_file)}
   )
   append_env(from=environment(),to=parent.frame())
 }
 
 
+make_hash_id=function(name,fn,vars=NULL){
+  hash=rlang::hash(c(name,fn,vars))
+  hash=paste0(fn,".",hash)
+  return(hash)
+}
+
+make_hash_id(name="self_id",fn="this",vars=c("abc","chd","abc"))
+
+
+
+
 callFUN.buildId=function(){
   append_env(to=environment(),from=parent.frame())
 
-  if(!exists("self_id")){
-    self_id=make_unique_id(fn)
-  }else if(!exists("job_id")&exists("self_id")){
-    
+  if(name_env=="self"){
+    self_id<-make_hash_id(name=name_env,fn=fn)
+  }else if(name_env=="parent"){
     ### IF parent ID IS NOT GIVEN WE CREATE AN UNIQUE NAME USING THE FUNCTION ID
-    parent_id <- make_unique_id(fn)
+    parent_id <-make_hash_id(name=name_env,fn=fn,vars=sheet)
   
     ### WE ASSIGN A JOB ID TO THE CALLER FUNCTION
 
@@ -761,11 +771,11 @@ callFUN.buildId=function(){
       parent_id=self_id,
       child_id=parent_id
     )
-  }else{
+  }else if (name_env=="child"){
     ### WE CREATE A JOB ID FOR EACH CHILD
     ### CHILDREN SHALL WORK!!
 
-    child_id <- make_unique_id(fn)
+    child_id <-make_hash_id(name=name_env,fn=fn,vars=sheet)
     
     job_id <- build_job(
       parent_id=parent_id,
@@ -807,12 +817,7 @@ callFUN.buildSheet=function(){
   ### SET CREATE A SHEET FROM THE FUNCTION VARIABLES
       sheet=as.data.frame(as.list(parent.frame())[fn_vars])
   }
-  append_env(from=environment(),to=parent.frame())
 
-}
-
-callFUN.assignSheetParent=function(){
-  append_env(to=environment(),from=parent.frame())
   n_total<-nrow(sheet)
   sheet=sheet %>% dplyr::distinct()
   n_inputs<-nrow(sheet)
@@ -821,16 +826,15 @@ callFUN.assignSheetParent=function(){
   if(n_dup>0){
     warning(paste0(n_dup, " were duplicated in sheet"))
   }
-
   append_env(from=environment(),to=parent.frame())
+
 }
-
-
 
 callFUN.assignSheetChild=function(){
   append_env(to=environment(),from=parent.frame())
+  sheet=sheet[row,]
   for (col in 1:n_inputs){
-    assign(names(sheet)[col],sheet[row,col])
+    assign(names(sheet)[col],sheet[,col])
   }  
   append_env(from=environment(),to=parent.frame())
 }
@@ -851,33 +855,13 @@ callFUN.setProcess=function(){
 }
 
 
-callFUN.buildChilds<-function(){
-
-      append_env(to=environment(),from=parent.frame())
-
-      ### WE SET THE DUMPSTER WHERE TO PUT CHILDREN INFO
-      callFUN.dumpInfo()
-
-      ### FROM THE PARENT ENVIRONMENT WE CREATE A NEW ENVIRONMENT FOR EACH UNIQUE INPUT
-
-      child.envs=list()
-      for(row in 1:n_inputs){
-        get_child_env=function(row){
-           append_env(to=environment(),from=parent.frame())
-           ### USING THE VAR SHEET WE REASSIGN THE VALUES OF EACH VARIABLE
-           callFUN.assignSheetChild()
-           callFUN.buildChild()
-           return(environment())
-        }
-        child.envs[[row]]<-get_child_env(row)
-       }
-
-      append_env(from=environment(),to=parent.frame())
-
-}
 
 callFUN.buildChild=function(){
   append_env(to=environment(),from=parent.frame())
+  
+  name_env<-"child"
+
+  callFUN.assignSheetChild()
 
   ### SET PROCESSS
   callFUN.setProcess()
@@ -891,7 +875,7 @@ callFUN.buildChild=function(){
   ### WE WRITE CHILDREN ENV
   callFUN.writeEnv()
 
-  append_env(from=environment(),to=parent.frame())
+  parent.frame()$child.env[[row]]<-environment()
 
 }
 
@@ -905,11 +889,11 @@ callFUN.buildParent=function(){
     ### SELECT VARIABLE DEFINES WHICH ENV WE ARE RUNNING
     ### WE APPEND THIS ENV AND STOP
 
+    name_env<-"parent"
+
     ### WE BUILD THE PROCESS AND THE ERROR MESSAGES
     callFUN.setProcess()
     
-    ### WE IMPORT AND/OR CREATE SHEET TO APOINT VARIABLES
-    callFUN.assignSheetParent()
 
     ### WE CHECK VARIABLE TYPES
     callFUN.checkTypes()
@@ -920,11 +904,23 @@ callFUN.buildParent=function(){
 
    
 
-    callFUN.buildChilds()
+    ### WE SET THE DUMPSTER WHERE TO PUT CHILDREN INFO
+    callFUN.dumpInfo()
 
+    ### FROM THE PARENT ENVIRONMENT WE CREATE A NEW ENVIRONMENT FOR EACH UNIQUE INPUT
 
-    append_env(from=environment(),to=parent.frame())
+    for(row in 1:n_inputs){
+        callFUN.buildChild()
+    }
+
+    ### WE WRITE PARENT ENV
+    callFUN.writeEnv()
+
+    parent.frame()$parent_env=environment()
 }
+
+
+
 
 
 callFUN.setSelf<-function(){
@@ -1037,6 +1033,8 @@ callFUN.setSelf<-function(){
 callFUN.buildSelf=function(){
   append_env(to=environment(),from=parent.frame())
 
+  name_env<-"self"
+
   ### WE SET THE DEFAULT VARIABLES
   callFUN.setSelf()
  
@@ -1045,7 +1043,9 @@ callFUN.buildSelf=function(){
 
   ### CREATE SHEET WITH VARIABLES
   callFUN.buildSheet()
-  
+
+  ### WRITE SELF ENV
+  callFUN.writeEnv()
 
   append_env(from=environment(),to=parent.frame())
 }
@@ -1056,12 +1056,12 @@ callFUN.buildDir=function(){
         from=parent.frame()
       )
 
-      if(!exists("child_id")&!exists("parent_id")){
+      if(name_env=="self"){
           self_dir <- set_dir(
                 dir=work_dir,
                 name=self_id
           )
-      }else if(!exists("child_id")&exists("parent_id")){
+      }else if(name_env=="parent"){
 
         ### CREATE MAIN WORKING DIRECTORY
         
@@ -1070,12 +1070,38 @@ callFUN.buildDir=function(){
                 name=parent_id
         )
 
-      
+
+      }else if (name_env=="child"){
+
+        if(!remote){
+           ### CREATE OUTPUT DIR
+        
+          out_file_dir <- set_dir(
+                  dir=output_dir
+          )
+        }else if(any(remote %in% "output_dir")){
+          callFUN.remoteCreateDir()
+        }
+          
+        child_dir <- set_dir(
+            dir=tmp_dir,
+            name=child_id
+        )
+
         ### CREATE TMP DIRECTORY
         ### WE WILL STORE TMP FILES FOR ALL FUNCTIONS HERE 
       
         tmp_dir <- set_dir(
-            dir=parent_dir,
+            dir=child_dir,
+            name="tmp"
+        )
+
+
+        ### CREATE TMP DIRECTORY
+        ### WE WILL STORE TMP FILES FOR ALL FUNCTIONS HERE 
+      
+        out_dir <- set_dir(
+            dir=tmp_dir,
             name="tmp"
         )
     
@@ -1096,41 +1122,6 @@ callFUN.buildDir=function(){
         rmt_dir <- set_dir(
           dir=tmp_dir,
           name="rmt"
-        )
-
-        ### CREATE DIRECTORY TO STORE ENVIROMENT DATA
-        ### WE WILL STORE R ENVIRONMENT DATA HERE
-        
-        env_dir<- set_dir(
-          dir=parent_dir,
-          name="env"
-        )
-
-
-        ### CREATE DIRECTORY TO BATCH DATA
-        ### WE WILL STORE SCHEDULER DATA HERE
-      
-        batch_dir<- set_dir(
-          dir=parent_dir,
-          name="batch"
-        )
-
-
-      }else if (exists("child_id")){
-
-        if(!remote){
-           ### CREATE OUTPUT DIR
-        
-          out_file_dir <- set_dir(
-                  dir=output_dir
-          )
-        }else if(any(remote %in% "output_dir")){
-          callFUN.remoteCreateDir()
-        }
-          
-        child_dir <- set_dir(
-            dir=tmp_dir,
-            name=child_id
         )
     }
 
@@ -1235,7 +1226,7 @@ callFUN.dumpInfo<-function(){
     
     ## WE DEFINE A FILE WERE WE WILL DUMP THIS INFO
     
-    dump_file=paste0(parent_dir,"/",parent_id,".dump")
+    dump_file=paste0(self_id,"/",self_id,".dump")
     ### WE CREATE AN ENVIRONMENT FOR EACH INPUT VALUE
 
     write.table(
@@ -1267,6 +1258,18 @@ callFUN.dumpInfo<-function(){
   append_env(from=environment(),to=parent.frame())
 }
 
+
+
+
+
+callFUN.setOutput=function(...){
+      ### WE CREATE ALL OUTPUT VARIABLES WITH THE OUT_FILE_DIR
+      append_env(to=environment(),from=parent.frame())
+      for(var in names(list(...))){
+        out_files[[var]]=paste0(out_file_dir,"/",list(...)[[var]])
+      }
+      append_env(from=environment(),to=parent.frame())
+  }
 
 
 

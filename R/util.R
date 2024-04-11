@@ -302,28 +302,34 @@ check_file_path=function(
 #' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
 #' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
 #' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
-#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
 #' @export
+
 
 
 cp_data=function(
   origin,
-  target,
   force=FALSE,
   ...
 ){  
 
+
     FUN=function(){
       append_env(to=environment(),from=parent.frame())
 
-      args=""
+      add_arg=""
       if(force){
-        args=" -f "
+        add_args=" -f "
       }
 
-      out_files$file=paste0(target,"/",basename(origin))
+      callFUN.setOutput(
+        file=basename(origin)
+      )
 
-      exec_code=paste("cp -rn ",args,origin," -t ", target)
+      exec_code=paste(
+        "cp -rn ",add_args,origin,tmp_dir
+      )
+
       append_env(from=environment(),to=parent.frame())
 
     }
@@ -332,17 +338,16 @@ cp_data=function(
         args=list(
           types=list(
             origin="character",
-            target="character",
             force="logical"
           ),
           subtypes=list(
             origin="path",
-            target="path",
             force=NULL
           )
       )
     )
 }
+
 
 
 

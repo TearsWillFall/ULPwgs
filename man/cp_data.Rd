@@ -5,12 +5,12 @@
 \title{cp file/directory
 This function removes/deletes one or multiple files/directories}
 \usage{
-cp_data(origin = NULL, target = NULL, force = FALSE, ...)
+cp_data(origin, force = FALSE, ...)
 }
 \arguments{
-\item{target}{Path to the file/directory.\link{REQUIRED}}
-
 \item{file}{Path to the file/directory.\link{REQUIRED}}
+
+\item{target}{Path to the file/directory.\link{REQUIRED}}
 
 \item{threads}{\link{OPTIONAL} Number of threads to split the work. Default 4}
 
@@ -32,7 +32,7 @@ cp_data(origin = NULL, target = NULL, force = FALSE, ...)
 
 \item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
 
-\item{hold}{\link{OPTIONAL} HOld job until job is finished. Job ID.}
+\item{hold}{\link{OPTIONAL} Hold job until job is finished. Job ID.}
 }
 \description{
 cp file/directory
