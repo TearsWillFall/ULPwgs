@@ -910,7 +910,7 @@ callFUN.buildParent=function(){
     ### FROM THE PARENT ENVIRONMENT WE CREATE A NEW ENVIRONMENT FOR EACH UNIQUE INPUT
     child.env=list()
     for(row in 1:n_inputs){
-        child.env[row]<-callFUN.buildChild()
+        child.env[[row]]<-callFUN.buildChild()
     }
 
     ### WE WRITE PARENT ENV
@@ -918,7 +918,6 @@ callFUN.buildParent=function(){
     
     return(environment())
 }
-
 
 
 callFUN.setSelf<-function(){
