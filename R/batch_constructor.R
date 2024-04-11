@@ -808,9 +808,9 @@ callFUN.callError<-function(){
   append_env(to=environment(),from=parent.frame())
   light_red <- crayon::make_style("tomato")
   cat(crayon::red(paste0("[",Sys.time(),"]", "[",name_env,"]","[",env_id,"]\n")))
-  cat(light_red(paste0(err_msg, mssg, "\n\n")))
+  cat(light_red(paste0(mssg, "\n\n")))
   stop()
-  
+
 }
 
 callFUN.callWarning<-function(){
@@ -1039,13 +1039,13 @@ callFUN.setSelf<-function(){
   }
 
   if(!exists("work_dir")){
-        mssg=paste0("Variable: `work_dir` has not beed provided. Setting default working directory to `",getwd())
+        mssg=paste0("Variable: `work_dir` has not beed provided. Setting default working directory to `",getwd(),"`")
         callFUN.callWarning()
         work_dir<-getwd()
       }
 
   if(!exists("output_dir")){
-        mssg=paste0("Variable: `output_dir` has not beed provided. Setting default output directory to `",getwd())
+        mssg=paste0("Variable: `output_dir` has not beed provided. Setting default output directory to `",getwd(),"`")
         callFUN.callWarning()
         output_dir<-getwd()
   }
