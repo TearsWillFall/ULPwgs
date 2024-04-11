@@ -806,13 +806,18 @@ callFUN.buildError<-function(){
 
 callFUN.callError<-function(){
   append_env(to=environment(),from=parent.frame())
-  cat(crayon::red(paste0("[ ",Sys.time()," ] ", " [ ",name_env," ( ",env_id," ) ] ",err_msg, mssg, "\n\n")))
-  quit(ask="no")
+  dark_red <- crayon::make_style("red4")
+
+  cat(dark_red(paste0("[",Sys.time(),"]", "[",name_env,"]","[",env_id,"]\n")))
+  cat(crayon::red(paste0(err_msg, mssg, "\n\n")))
+  quit(save="no")
 }
 
 callFUN.callWarning<-function(){
   append_env(to=environment(),from=parent.frame())
-  cat(crayon::yellow(paste0("[ ",Sys.time()," ] ", " [ ",name_env," ( ",env_id," ) ] ", mssg,"\n\n")))
+  orange <- crayon::make_style("orange")
+  cat(orange(paste0("[",Sys.time(),"]", "[",name_env,"]","[",env_id,"]\n")))
+  cat(crayon::yellow(paste0(mssg,"\n\n")))
 }
 
 
