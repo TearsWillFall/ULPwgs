@@ -698,7 +698,7 @@ callFUN.buildCall=function(){
       ### OF THIS IS A CHILD ENVIROMENT WE DIRECTLY RUN USER DEFINED FUNCTION
       FUN()
     }else{
-      stop(err_msg, " Trying to run unknown environment ")
+       stop(paste0(err_msg," Unknown environment : " , name_env))
     }
 
     append_env(from=environment(),to=parent.frame())
@@ -730,7 +730,7 @@ callFUN.writeEnv=function(){
       env_file=paste0(child_id,"/",child_id,".child.RData")
       saveRDS(environment(),file= env_file)
   }else{
-     stop(err_msg, " Trying to write unknown environment  ")
+      stop(paste0(err_msg," Unknown environment : " , name_env))
   }
   append_env(from=environment(),to=parent.frame())
 }
@@ -1084,7 +1084,7 @@ callFUN.buildDir=function(){
         }
           
         child_dir <- set_dir(
-            dir=tmp_dir,
+            dir=parent_dir,
             name=child_id
         )
 
@@ -1123,6 +1123,8 @@ callFUN.buildDir=function(){
           dir=tmp_dir,
           name="rmt"
         )
+    } else{
+      stop(paste0(err_msg," Unknown environment : " , name_env))
     }
 
 
