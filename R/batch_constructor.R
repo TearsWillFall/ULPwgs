@@ -757,7 +757,7 @@ make_hash_id=function(name,fn,vars=NULL){
   return(hash)
 }
 
-make_hash_id(name="self_id",fn="this",vars=c("abc","chd","abc"))
+
 
 
 
@@ -1216,7 +1216,7 @@ callFUN.dumpInfo<-function(){
     
     ## WE DEFINE A FILE WERE WE WILL DUMP THIS INFO
     
-    dump_file=paste0(self_id,"/",self_id,".dump")
+    dump_file=paste0(work_dir,"/",env_id,".dump")
     ### WE CREATE AN ENVIRONMENT FOR EACH INPUT VALUE
 
     write.table(
