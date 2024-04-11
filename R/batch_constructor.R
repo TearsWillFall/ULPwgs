@@ -532,7 +532,7 @@ callFUN.checkSubtypes=function(){
 
 callFUN.verbose=function(){
   append_env(to=environment(),from=parent.frame())
-  if(name_env="self"){
+  if(name_env=="self"){
     if(verbose){
           print_verbose(job=job_id,
             arg=as.list(environment())[names(environment()) %in% fn_vars],
