@@ -750,6 +750,7 @@ callFUN.buildId=function(){
 
   if(name_env=="self"){
     self_id<-make_hash_id(name=name_env,fn=fn)
+    job_id <- paste0("self.",self_id)
   }else if(name_env=="parent"){
     ### IF parent ID IS NOT GIVEN WE CREATE AN UNIQUE NAME USING THE FUNCTION ID
     parent_id <-make_hash_id(name=name_env,fn=fn,vars=sheet)
