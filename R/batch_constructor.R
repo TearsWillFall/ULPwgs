@@ -1037,7 +1037,7 @@ callFUN.setSelf<-function(){
 
   if(!exists("overwrite")){
     cat(crayon::yellow(paste0("Variable: `overwrite` has not been provided. Setting default to overwrite the output_dir: FALSE \n")))
-    rds=list(node="transfer02",user="regmova", password = "/lustre/scratch/scratch/regmova/password")
+    overwrite=FALSE
   }
 
 
