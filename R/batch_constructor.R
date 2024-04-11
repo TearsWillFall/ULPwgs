@@ -865,9 +865,6 @@ callFUN.setProcess=function(){
   ## CREATE ERROR MESSAGE FOR EACH CHILD
   callFUN.buildError()
 
-    ## CREATE ERROR MESSAGE FOR EACH CHILD
-  callFUN.buildMssg()
-
   ## CREATE DIRECTORIES FOR HANDLE PROCESS
   callFUN.buildDir()
 
@@ -892,11 +889,16 @@ callFUN.buildChild=function(){
   
   name_env<-"child"
   await<-TRUE
+  ### CREATE CHILD JOB ID
+  callFUN.buildId()
+
+  ### CREATE SHEET
+  callFUN.assignSheetChild()
+
 
   ### CREATE CHILD JOB ID
   callFUN.buildId()
 
-  callFUN.assignSheetChild()
 
   ### SET PROCESSS
   callFUN.setProcess()
@@ -927,14 +929,15 @@ callFUN.buildParent=function(){
     name_env<-"parent"
 
     await<-TRUE
-
+    
     ### CREATE CHILD JOB ID
     callFUN.buildId()
+
+
 
     ### WE BUILD THE PROCESS AND THE ERROR MESSAGES
     callFUN.setProcess()
     
-
     ### WE CHECK VARIABLE TYPES
     callFUN.checkTypes()
 
@@ -942,7 +945,7 @@ callFUN.buildParent=function(){
     ### CHECK IF WE REQUIRE REMOTE DATA
     callFUN.remoteValidate()
 
-   
+  
 
     ### WE SET THE DUMPSTER WHERE TO PUT CHILDREN INFO
     callFUN.dumpInfo()
@@ -1065,19 +1068,9 @@ callFUN.buildSelf=function(){
   fn <- sub(".*::","",sub("\\(.*","",
     paste0(deparse(sys.calls()[[1]]),collapse=","))
   )
-
-  #### IF FUNCTION ID IS NOT GIVE WE USE FN NAME AS ID
-  #### OTHERWISE WE APPEND FUNCTION ID
-
-  if(!exists("fn_id")){
-    fn_id<-fn
-  }else{
-    fn_id<-paste0(fn,".",fn_id)
-  }
-
-
   ### CREATE CHILD JOB ID
   callFUN.buildId()
+
 
   ### WE SET THE DEFAULT VARIABLES
   callFUN.setSelf()
