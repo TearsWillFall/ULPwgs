@@ -798,7 +798,7 @@ callFUN.buildError<-function(){
   if(exists("err_msg")){
      err_msg <- paste0(err_msg ,name_env," ( ",env_id," ) "," -> ")
   }else{
-     err_msg <- paste0(" CRITICAL ERROR: ",name_env," ( ", env_id," ) "," -> ")
+     err_msg <- paste0("CRITICAL ERROR: ",name_env," ( ", env_id," ) "," -> ")
   }
   append_env(from=environment(),to=parent.frame())
 }
@@ -806,11 +806,11 @@ callFUN.buildError<-function(){
 
 callFUN.callError<-function(){
   append_env(to=environment(),from=parent.frame())
-  dark_red <- crayon::make_style("red4")
-
-  cat(dark_red(paste0("[",Sys.time(),"]", "[",name_env,"]","[",env_id,"]\n")))
-  cat(crayon::red(paste0(err_msg, mssg, "\n\n")))
-  quit(save="no")
+  light_red <- crayon::make_style("tomato")
+  cat(crayon::red(paste0("[",Sys.time(),"]", "[",name_env,"]","[",env_id,"]\n")))
+  cat(light_red(paste0(err_msg, mssg, "\n\n")))
+  stop()
+  
 }
 
 callFUN.callWarning<-function(){
