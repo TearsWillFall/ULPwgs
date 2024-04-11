@@ -338,13 +338,11 @@ callFUN.call<-function(
     callFUN.setEnv()
 
     ## WE WILL RUN SELF OR A PROCESS
-    if(!exists("select")){
+    if(name_env!="child"){
       callFUN.runSelf()
-  
-    }else{
+    }{
       callFUN.runProcess()
     }
-
     return(.this.env)
 }
 
@@ -369,20 +367,17 @@ callFUN.setEnv<-function(
       append_env(to=environment(),from=env)
       env<-NULL
     }else{
-      self<-FALSE
-
+     
       args=appendList(args,build_default_variable_list())
 
       ### CREATE VARIABLES FOR THE ENVIRONMENT
       callFUN.buildSelf()
 
-      ### WE BUILD THE PARENT ENVIRONMENT
-      callFUN.buildParent()
+  
      
       ### WE WRITE PARENT ENVIROMENT
       callFUN.writeEnv()
 
-      self<-TRUE
     }
 
     append_env(from=environment(),to=parent.frame())
@@ -541,7 +536,6 @@ callFUN.checkSubtypes=function(){
 callFUN.runSelf=function(){
   append_env(to=environment(),from=parent.frame())
 
- 
   ### CREATE CALLER
   callFUN.buildCall()
 
@@ -557,9 +551,6 @@ callFUN.runSelf=function(){
 
   ### READ CHILD ENVIRONMENTS
   callFUN.readEnv()
-
-  ### REMOVE WORK DIRECTORIES IF PROCESS FINISHED
-  callFUN.rmDir()
     
   append_env(from=environment(),to=parent.frame())
 }
@@ -646,7 +637,7 @@ callFUN.buildCall=function(){
     if(name_env=="self"){
        exec_code=paste0("Rscript -e \"",
             ns,"::",fn,"(env=\\\"",
-            env_file,"\\\")\""
+            parent.env$env_file,"\\\")\""
       )
     }else if (name_env=="parent"){
       if(rmode=="local"){
@@ -1047,6 +1038,9 @@ callFUN.buildSelf=function(){
   ### WRITE SELF ENV
   callFUN.writeEnv()
 
+  ### WE BUILD THE PARENT ENVIRONMENT
+  callFUN.buildParent()
+
   append_env(from=environment(),to=parent.frame())
 }
 
@@ -1224,7 +1218,7 @@ callFUN.dumpInfo<-function(){
     ### TRACING CHILDREN CAN BE DIFFICULT
     ### WE DEFINE THE VARIABLES THAT WILL HELP IDENTIFY CHILDREN IN JOB HIERARCHY
 
-    dump_names=c("parent_id","child_id","child_order",fn_vars)
+    dump_names=c("self_id","parent_id","child_id","child_order",fn_vars)
     
     ## WE DEFINE A FILE WERE WE WILL DUMP THIS INFO
     
@@ -1246,6 +1240,7 @@ callFUN.dumpInfo<-function(){
     write.table(
       file=dump_file,
       x=data.frame(
+      self_id=self_id,
       parent_id=parent_id,
       child_id=child_id,
       child_order=row,
