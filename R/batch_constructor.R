@@ -780,20 +780,7 @@ make_hash_id=function(name,fn,vars=NULL){
 
 callFUN.buildId=function(){
   append_env(to=environment(),from=parent.frame())
-
-  if(name_env=="self"){
-    env_id<-make_hash_id(name=name_env,fn=fn,vars=environment())
-  }else if(name_env=="parent"){
-    ### IF parent ID IS NOT GIVEN WE CREATE AN UNIQUE NAME USING THE FUNCTION ID
-    env_id <-make_hash_id(name=name_env,fn=fn,vars=sheet)
-    ### WE ASSIGN A JOB ID TO THE CALLER FUNCTION
-  }else if (name_env=="child"){
-    ### WE CREATE A JOB ID FOR EACH CHILD
-    ### CHILDREN SHALL WORK!!
-    env_id <-make_hash_id(name=name_env,fn=fn,vars=sheet)
-    
-  }
-  
+  env_id<-make_hash_id(name=name_env,fn=fn,vars=sheet)
   append_env(from=environment(),to=parent.frame())
 }
 
@@ -831,6 +818,10 @@ callFUN.buildSheet=function(){
     if(file.exists(sheet)){
       ### READ VARIABLE SHEET
       sheet=read.delim(sheet,header=TRUE)
+    }else{
+      stop(
+        paste0("sheet: ", sheet, "doesn't exist")
+      )
     }
   }else{
   ### SET CREATE A SHEET FROM THE FUNCTION VARIABLES
@@ -1068,18 +1059,18 @@ callFUN.buildSelf=function(){
   fn <- sub(".*::","",sub("\\(.*","",
     paste0(deparse(sys.calls()[[1]]),collapse=","))
   )
+
+  ### CREATE SHEET WITH VARIABLES
+  callFUN.buildSheet()
+
   ### CREATE CHILD JOB ID
   callFUN.buildId()
-
 
   ### WE SET THE DEFAULT VARIABLES
   callFUN.setSelf()
 
   ### WE BUILD THE PROCESS AND THE ERROR MESSAGES
   callFUN.setProcess()
-
-  ### CREATE SHEET WITH VARIABLES
-  callFUN.buildSheet()
 
   ### WRITE SELF ENV
   callFUN.writeEnv()
