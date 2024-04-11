@@ -1113,8 +1113,6 @@ callFUN.buildDir=function(){
             dir=tmp_dir,
             name="rmt"
           )
-      } else{
-        stop(paste0(err_msg," Unknown environment : " , name_env))
       }
 
 
