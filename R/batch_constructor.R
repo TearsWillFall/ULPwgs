@@ -576,9 +576,6 @@ callFUN.runSelf=function(){
 
 
 
-
-
-
 callFUN.rmDir=function(){
     append_env(to=environment(),from=parent.frame())
     if(!self){
@@ -881,6 +878,7 @@ callFUN.buildChild=function(){
   append_env(to=environment(),from=.base.env)
   
   name_env<-"child"
+  await<-TRUE
 
   callFUN.assignSheetChild()
 
@@ -911,6 +909,8 @@ callFUN.buildParent=function(){
     ### WE APPEND THIS ENV AND STOP
 
     name_env<-"parent"
+
+    await<-TRUE
 
     ### WE BUILD THE PROCESS AND THE ERROR MESSAGES
     callFUN.setProcess()
