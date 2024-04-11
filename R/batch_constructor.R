@@ -806,13 +806,13 @@ callFUN.buildError<-function(){
 
 callFUN.callError<-function(){
   append_env(to=environment(),from=parent.frame())
-  cat(crayon::red(paste0("[ ",Sys.time()," ] ", " [ ",name_env," ( ",env_id," ) ] ",err_msg, mssg )))
+  cat(crayon::red(paste0("[ ",Sys.time()," ] ", " [ ",name_env," ( ",env_id," ) ] ",err_msg, mssg, "\n\n")))
   callFUN.exit()
 }
 
 callFUN.callWarning<-function(){
   append_env(to=environment(),from=parent.frame())
-  cat(crayon::yellow(paste0("[ ",Sys.time()," ] ", " [ ",name_env," ( ",env_id," ) ] ", mssg )))
+  cat(crayon::yellow(paste0("[ ",Sys.time()," ] ", " [ ",name_env," ( ",env_id," ) ] ", mssg,"\n\n")))
 }
 
 
@@ -972,7 +972,7 @@ callFUN.setSelf<-function(){
 
   ### CHECK IF RUN MODE VARIABLE EXISTS
   if(!exists("rmode")){
-    mssg="Variable: `rmode` has not been provided. Setting default run mode to : `local` \n"
+    mssg="Variable: `rmode` has not been provided. Setting default run mode to : `local`"
     callFUN.callWarning()
     ## IF NOT SET TO LOCAL
     rmode<-"local"
@@ -980,83 +980,83 @@ callFUN.setSelf<-function(){
 
 
   if(!exists("threads")){
-     mssg="Variable: `threads` has not been provided. Setting default threads to : `1` \n"
+     mssg="Variable: `threads` has not been provided. Setting default threads to : `1` "
      callFUN.callWarning()
     threads<-1
   }
 
   if(rmode=="batch"){
     if(!exists("time")){
-       mssg="Variable: `time` has not been provided. Setting default run time to : `48:00:00` \n"
+       mssg="Variable: `time` has not been provided. Setting default run time to : `48:00:00` "
        callFUN.callWarning()
       time<-"48:0:0"
     }
     
     if(!exists("ram")){
-       mssg="Variable: `ram` has not been provided. Setting default ram (Gb) to : `1` \n"
+       mssg="Variable: `ram` has not been provided. Setting default ram (Gb) to : `1` "
        callFUN.callWarning()
       ram<-1
     }
 
     if(!exists("bypass")){
-       mssg="Variable: `bypass` has not been provided. Setting default wallclock bypass to : `FALSE` \n"
+       mssg="Variable: `bypass` has not been provided. Setting default wallclock bypass to : `FALSE` "
        callFUN.callWarning()
     }
   }
 
    
   if(!exists("await")){
-     mssg="Variable: `await` has not been provided. Setting default strategy to await for parent : `TRUE` \n"
+     mssg="Variable: `await` has not been provided. Setting default strategy to await for parent : `TRUE`"
      callFUN.callWarning()
     await<-TRUE
   }
 
 
   if(!exists("lic_dir")){
-    mssg=text=paste0("Variable: `lic_dir` has not been provided. Setting default license directory to : `",build_default_license_list()$dir, "`\n")
+    mssg=text=paste0("Variable: `lic_dir` has not been provided. Setting default license directory to : `",build_default_license_list()$dir)
      callFUN.callWarning()
     lic_dir<-build_default_license_list()$dir
   }
 
 
   if(!exists("batch_cfg")){
-    mssg=paste0("Variable: `batch_cfg` has not been provided. Setting default config for batch mode to : `",build_default_preprocess_config(), "`\n")
+    mssg=paste0("Variable: `batch_cfg` has not been provided. Setting default config for batch mode to : `",build_default_preprocess_config())
      callFUN.callWarning()
     batch_cfg<-build_default_preprocess_config()
   }
 
   if(!exists("preserve")){
-     mssg="Variable: `preserve` has not been provided. Setting default strategy to deal with working directory  to : `partial` \n"
+     mssg="Variable: `preserve` has not been provided. Setting default strategy to deal with working directory  to : `partial` "
      callFUN.callWarning()
     preserve<-"partial"
   }
 
   if(!exists("compl")){
-     mssg="Variable: `compl` has not been provided. Setting default strategy to deal with complementary files : [ `bai` , `tbi` ] \n"
+     mssg="Variable: `compl` has not been provided. Setting default strategy to deal with complementary files : [ `bai` , `tbi` ] "
      callFUN.callWarning()
     compl<-c(".bai",".tbi")
   }
 
   if(!exists("rds")){
-     mssg="Variable: `rds` has not been provided. Setting default RDS login details : [ node : `transfer02` ; user: `regmova` ; password : `/lustre/scratch/scratch/regmova/password` ] \n"
+     mssg="Variable: `rds` has not been provided. Setting default RDS login details : [ node : `transfer02` ; user: `regmova` ; password : `/lustre/scratch/scratch/regmova/password` ]"
      callFUN.callWarning()
     rds=list(node="transfer02",user="regmova", password = "/lustre/scratch/scratch/regmova/password")
   }
 
   if(!exists("work_dir")){
-        mssg=paste0("Variable: `work_dir` has not beed provided. Setting default working directory to `",getwd(),"` \n")
+        mssg=paste0("Variable: `work_dir` has not beed provided. Setting default working directory to `",getwd())
         callFUN.callWarning()
         work_dir<-getwd()
       }
 
   if(!exists("output_dir")){
-        mssg=paste0("Variable: `output_dir` has not beed provided. Setting default output directory to `",getwd(),"` \n")
+        mssg=paste0("Variable: `output_dir` has not beed provided. Setting default output directory to `",getwd())
         callFUN.callWarning()
         output_dir<-getwd()
   }
 
   if(!exists("overwrite")){
-     mssg="Variable: `overwrite` has not been provided. Setting default to overwrite the output_dir: FALSE \n"
+     mssg="Variable: `overwrite` has not been provided. Setting default to overwrite the output_dir: FALSE "
      callFUN.callWarning()
     overwrite=FALSE
   }
