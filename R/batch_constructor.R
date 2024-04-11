@@ -372,8 +372,6 @@ callFUN.setEnv<-function(
 
       ### CREATE VARIABLES FOR THE ENVIRONMENT
       callFUN.buildSelf()
-
-  
      
       ### WE WRITE PARENT ENVIROMENT
       callFUN.writeEnv()
@@ -712,13 +710,13 @@ callFUN.setCall=function(){
 callFUN.writeEnv=function(){
   append_env(to=environment(),from=parent.frame())
   if(name_env=="self"){
-      env_file=paste0(self_id,"/",self_id,".self.RData")
+      env_file=paste0(self_dir,"/",self_id,".self.RData")
       saveRDS(environment(),file = env_file)
   }else if (name_env=="parent"){
-      env_file=paste0(parent_id,"/",parent_id,".parent.RData")
+      env_file=paste0(parent_dir,"/",parent_id,".parent.RData")
       saveRDS(environment(),file = env_file)
   }else if(name_env=="child"){
-      env_file=paste0(child_id,"/",child_id,".child.RData")
+      env_file=paste0(child_dir,"/",child_id,".child.RData")
       saveRDS(environment(),file= env_file)
   }else{
       stop(paste0(err_msg," Unknown environment : " , name_env))
@@ -1063,8 +1061,6 @@ callFUN.buildDir=function(){
                 dir=self_dir,
                 name=parent_id
         )
-
-
       }else if (name_env=="child"){
 
         if(!remote){
