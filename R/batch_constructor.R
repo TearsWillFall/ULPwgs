@@ -807,8 +807,7 @@ callFUN.buildError<-function(){
 callFUN.callError<-function(){
   append_env(to=environment(),from=parent.frame())
   cat(crayon::red(paste0("[ ",Sys.time()," ] ", " [ ",name_env," ( ",env_id," ) ] ",err_msg, mssg, "\n\n")))
-  callFUN.exit()
-}
+  quit(ask="no")
 
 callFUN.callWarning<-function(){
   append_env(to=environment(),from=parent.frame())
@@ -1311,10 +1310,6 @@ callFUN.setOutput=function(...){
 
 
 
-
-
-
-callFUN.exit <- function() { invokeRestart("abort") } 
 
 
 
