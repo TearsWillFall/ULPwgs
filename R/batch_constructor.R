@@ -624,7 +624,7 @@ callFUN.moveData=function(){
   append_env(to=environment(),from=parent.frame())
 
   if(length(out_files)!=0){
-    check=system(paste("mv ",ifelse(overwrite," -f ",""),paste0(out_dir,"/*"),out_file_dir, " 2> /dev/null ; echo $?"),intern=TRUE)
+    check=system(paste("mv ",ifelse(overwrite," -n ",""),paste0(out_dir,"/*"),out_file_dir, " 2> /dev/null ; echo $?"),intern=TRUE)
   }
 
   if(check!=0){
@@ -761,9 +761,14 @@ callFUN.writeEnv=function(){
 
 callFUN.readEnv=function(){
   append_env(to=environment(),from=parent.frame())
-  child.env=lapply(1:n_inputs,function(n){
+  if(name_env=="self"){
+    parent.env=readRDS(parent.env$env_file)
+  }else if(name_env=="parent"){
+    child.env=lapply(1:n_inputs,function(n){
         env=readRDS(child.env[[n]]$env_file)}
-  )
+    )
+  }
+  
   append_env(from=environment(),to=parent.frame())
 }
 
