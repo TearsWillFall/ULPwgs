@@ -340,7 +340,7 @@ callFUN.call<-function(
     ## WE WILL RUN SELF OR A PROCESS
     if(name_env!="child"){
       callFUN.runSelf()
-    }{
+    }else{
       callFUN.runProcess()
     }
     return(.this.env)
