@@ -534,14 +534,14 @@ callFUN.verbose=function(){
   append_env(to=environment(),from=parent.frame())
   if(name_env=="self"){
     if(verbose){
-          print_verbose(job=job_id,
+          print_verbose(job=env_id,
             arg=as.list(environment())[names(environment()) %in% fn_vars],
             exec_code=exec_code
           )
     }
   }else{
     if(verbose){
-          print_verbose(job=job_id,
+          print_verbose(job=env_id,
             arg=as.list(environment())[names(environment()) %in% dump_names],
             exec_code=exec_code
           )
