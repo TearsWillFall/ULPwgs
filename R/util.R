@@ -327,7 +327,7 @@ cp_data=function(
       )
 
       exec_code=paste(
-        "cp -rn ",add_args,origin,tmp_dir
+        "cp -rn ",add_args,origin,out_dir
       )
 
       append_env(from=environment(),to=parent.frame())
