@@ -530,12 +530,32 @@ callFUN.checkSubtypes=function(){
   }
 
 
+callFUN.verbose=function(){
+  append_env(to=environment(),from=parent.frame())
+  if(name_env="self"){
+    if(verbose){
+          print_verbose(job=job_id,
+            arg=as.list(environment())[names(environment()) %in% fn_vars],
+            exec_code=exec_code
+          )
+    }
+  }else{
+    if(verbose){
+          print_verbose(job=job_id,
+            arg=as.list(environment())[names(environment()) %in% dump_names],
+            exec_code=exec_code
+          )
+    }
+  }
+}
+
     
 callFUN.runSelf=function(){
   append_env(to=environment(),from=parent.frame())
 
   ### CREATE CALLER
   callFUN.buildCall()
+
 
   ### RUN CALL
   callFUN.runCall()
@@ -552,6 +572,11 @@ callFUN.runSelf=function(){
     
   append_env(from=environment(),to=parent.frame())
 }
+
+
+
+
+
 
 
 callFUN.rmDir=function(){
@@ -604,13 +629,8 @@ callFUN.moveData=function(){
 
 callFUN.runCall=function(FUN=NULL){
   append_env(to=environment(),from=parent.frame())
-  ### PRODUCE VERBOSE
-  if(verbose){
-        print_verbose(job=job_id,
-          arg=as.list(environment())[names(environment()) %in% dump_names],
-          exec_code=exec_code
-        )
-  }
+
+  callFUN.verbose()
 
   #Read .bashrc to import all envriomental variables
   error=system(paste0(". $HOME/.bashrc;",exec_code),wait=await)
@@ -750,17 +770,17 @@ callFUN.buildId=function(){
 
   if(name_env=="self"){
     self_id<-make_hash_id(name=name_env,fn=fn)
-    job_id <- paste0("self.",self_id)
+    job_id <- build_job(
+      parent_id=self_id,
+      child_id=parent_id
+    )
   }else if(name_env=="parent"){
     ### IF parent ID IS NOT GIVEN WE CREATE AN UNIQUE NAME USING THE FUNCTION ID
     parent_id <-make_hash_id(name=name_env,fn=fn,vars=sheet)
   
     ### WE ASSIGN A JOB ID TO THE CALLER FUNCTION
 
-    job_id <- build_job(
-      parent_id=self_id,
-      child_id=parent_id
-    )
+ 
   }else if (name_env=="child"){
     ### WE CREATE A JOB ID FOR EACH CHILD
     ### CHILDREN SHALL WORK!!
