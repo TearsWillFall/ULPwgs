@@ -846,8 +846,8 @@ callFUN.assignSheetChild=function(){
   .base.env=parent.frame()
   append_env(to=environment(),from=)
   sheet=sheet[row,]
+  assign("sheet",sheet)
   for (col in 1:n_inputs){
-    assign("sheet",sheet)
     assign(names(sheet)[col],sheet[,col],envir=.base.env)
   }
 }
