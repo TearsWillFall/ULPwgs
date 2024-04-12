@@ -398,7 +398,7 @@ callFUN.createLink=function(){
 
 
 
-callFUN.remoteGet=function(){
+callFUN.remoteCheck=function(){
   append_env(to=environment(),from=parent.frame())
   arg_dir=set_dir(dir=rmt_dir,name=arg)
   ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
