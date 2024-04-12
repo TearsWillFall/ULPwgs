@@ -752,7 +752,7 @@ callFUN.writeEnv=function(){
       env_file=paste0(work_dir,"/",env_id,".child.RData")
       saveRDS(environment(),file= env_file)
   }else{
-    mssg=paste0(" Unknown environment : " , name_env)
+    mssg=paste0("Unknown environment : " , name_env)
     callFUN.callError()
   }
   append_env(from=environment(),to=parent.frame())
@@ -1058,6 +1058,16 @@ callFUN.setSelf<-function(){
     overwrite=FALSE
   }
 
+  if(!exists("rds")){
+      rds$user=Sys.getenv("RDS_USER")
+      rds$password=Sys.getenv("RDS_PASS")
+      rds$node=Sys.getenv("RDS_NODE")
+      mssg=paste0("Variable: `rds` has not been provided. Setting default RDS config using enviromental variables: 
+      `$RDS_USER`:" Sys.getenv("RDS_USER"),"\n",
+     "`$RDS_PASS`:", Sys.getenv("RDS_PASS"),"\n",
+     "`$RDS_NODE`:", Sys.getenv("RDS_NODE"))
+      callFUN.callWarning()
+  }
 
  append_env(from=environment(),to=parent.frame())
 }
@@ -1193,7 +1203,7 @@ callFUN.remoteScpDir=function(){
       to=environment(),
       from=parent.frame()
     )
-    check=system(paste0("sshpass -f ",password,
+    check=system(paste0("sshpass -e ",password,
             " scp -r ",paste0(work_dir,"/*"),ip_address,":",out_file_dir, "; echo $?" 
       ),intern=TRUE
     )
@@ -1208,20 +1218,23 @@ callFUN.remoteScpDir=function(){
 }
 
 
-
 callFUN.remoteValidate=function(){
-
     append_env(
       to=environment(),
       from=parent.frame()
     )
     if(exists("remote")){
-      ip_address=paste0(rds$user,paste0(ifelse(!is.null(rds$user),"@",""),rds$node))
-      password=rds$password
+      
+      node=ifelse(rds$node=="",NULL,rds$node)
+      user=ifelse(rds$user=="",NULL,rds$user)
+      password=ifelse(rds$password=="",NULL,rds$password)
+      ip_address=paste0(ifelse(!is.null(user),"@",""),node)
+    
+      Sys.setenv("SSHPASS"=password)
       ### WE PING THE REMOTE SERVER TO SEE IF AVAILABLE
 
-      check=system(paste0("sshpass -f ",rds$password,
-              " ssh -q ", ip_address," exit"
+      check=system(paste0("sshpass -e ",
+              " ssh -Y ", ip_address," \"test;echo 0\""
         ),intern=TRUE
       )
 
@@ -1229,11 +1242,11 @@ callFUN.remoteValidate=function(){
       if(check==255){
         mssg=paste0("Remote server not accessible : `",ip_address,"`")
         callFUN.callError()
-      }else if(
-        check==5
-      ){
-
+      }else if(check==5){
         mssg=paste0("Failed to log in remote server :`",ip_address,"`")
+        callFUN.callError()
+      }else if(check!=0){
+        mssg=paste0("Unknown error with remote server :`",ip_address,"`")
         callFUN.callError()
       }
       mssg=paste0("Remote server available : `", ip_address,"`  \n")
