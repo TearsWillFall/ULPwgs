@@ -1064,7 +1064,7 @@ callFUN.setSelf<-function(){
       callFUN.callWarning()
   }else{
       if(is.null(rds$user)){
-        mssg=paste0("Variable: `rds` has been provided but `user` not given. Setting default RDS user from enviromental variable :\n"
+        mssg=paste0("Variable: `rds` has been provided but `user` not given. Setting default RDS user from enviromental variable :\n",
         "\t`$RDS_USER` : ", Sys.getenv("RDS_USER"))
         rds$user<-Sys.getenv("RDS_USER")
         callFUN.callWarning()
