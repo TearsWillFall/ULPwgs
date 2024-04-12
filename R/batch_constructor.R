@@ -928,6 +928,8 @@ callFUN.buildParent=function(){
     ### WE SET THE DUMPSTER WHERE TO PUT CHILDREN INFO
     callFUN.dumpInfo()
 
+    print(sheet)
+
     ### FROM THE PARENT ENVIRONMENT WE CREATE A NEW ENVIRONMENT FOR EACH UNIQUE INPUT
     child.env=list()
     for(row in 1:n_inputs){
