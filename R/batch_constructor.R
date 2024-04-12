@@ -404,7 +404,7 @@ callFUN.remoteCheck=function(){
   ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
   check=system(paste(
   "sshpass -e ssh -Y ",ip_address,
-    "\" realpath -e ",arg_value,"\"")
+    "\" realpath -e ",arg_value,"\""),intern=TRUE
   )  
   append_env(from=environment(),to=parent.frame())
 }
