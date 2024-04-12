@@ -465,7 +465,6 @@ callFUN.checkTypes<-function(){
 
 
 callFUN.checkSubtypes=function(){
-
     .this.env=environment()
     append_env(to=environment(),from=parent.frame())
  
@@ -843,12 +842,14 @@ callFUN.buildSheet=function(){
 }
 
 callFUN.assignSheetChild=function(){
-  append_env(to=environment(),from=parent.frame())
+  .this.env=environment()
+  .base.env=parent.frame()
+  append_env(to=environment(),from=)
   sheet=sheet[row,]
   for (col in 1:n_inputs){
-    assign(names(sheet)[col],unlist(sheet[,col]))
-  }  
-  append_env(from=environment(),to=parent.frame())
+    assign("sheet",sheet)
+    assign(names(sheet)[col],sheet[,col],envir=.base.env)
+  }
 }
 
 
