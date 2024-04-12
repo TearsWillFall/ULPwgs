@@ -1034,12 +1034,6 @@ callFUN.setSelf<-function(){
     compl<-c(".bai",".tbi")
   }
 
-  if(!exists("rds")){
-     mssg="Variable: `rds` has not been provided. Setting default RDS login details : [ node : `transfer02` ; user: `regmova` ; password : `/lustre/scratch/scratch/regmova/password` ]"
-     callFUN.callWarning()
-    rds=list(node="transfer02",user="regmova", password = "/lustre/scratch/scratch/regmova/password")
-  }
-
   if(!exists("work_dir")){
         mssg=paste0("Variable: `work_dir` has not beed provided. Setting default working directory to `",getwd(),"`")
         callFUN.callWarning()

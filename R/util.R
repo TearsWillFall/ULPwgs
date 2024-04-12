@@ -412,10 +412,6 @@ ln_data=function(
 }
 
 
-
-
-
-
 #' scp file/directory
 #' This function scp files from local to remote machine
 #'
