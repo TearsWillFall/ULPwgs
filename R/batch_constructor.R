@@ -1058,35 +1058,34 @@ callFUN.setSelf<-function(){
       rds$password=Sys.getenv("RDS_PASS")
       rds$node=Sys.getenv("RDS_NODE")
       mssg=paste0("Variable: `rds` has not been provided. Setting default RDS config using enviromental variables :\n", 
-     "\t`$RDS_USER` : ", Sys.getenv("RDS_USER"),"\n",
-     "\t`$RDS_PASS` : ", Sys.getenv("RDS_PASS"),"\n",
-     "\t`$RDS_NODE` : ", Sys.getenv("RDS_NODE"))
+     "\t`$RDS_USER` : ", rds$user,"\n",
+     "\t`$RDS_PASS` : ", rds$password,"\n",
+     "\t`$RDS_NODE` : ", rds$node)
       callFUN.callWarning()
   }else{
       if(is.null(rds$user)){
-        mssg=paste0("Variable: `rds` has been provided but `user` not given. Setting default RDS user from enviromental variable :\n",
-        "\t`$RDS_USER` : ", Sys.getenv("RDS_USER"))
         rds$user<-Sys.getenv("RDS_USER")
+        mssg=paste0("Variable: `rds` has been provided but `user` not given. Setting default RDS user from enviromental variable :\n",
+        "\t`$RDS_USER` : ",  rds$user)
         callFUN.callWarning()
       }
       if(is.null(rds$password)){
+          rds$password<-Sys.getenv("RDS_PASS")
         mssg=paste0("Variable: `rds` has been provided but `password` not given. Setting default RDS user from enviromental variable :\n", 
-        "\t`$RDS_PASS` : ", Sys.getenv("RDS_PASS"))
-        rds$password<-Sys.getenv("RDS_PASS")
+        "\t`$RDS_PASS` : ", rds$password)
         callFUN.callWarning()
       }
 
       if(is.null(rds$node)){
-         mssg=paste0("Variable: `rds` has been provided but `password` not given. Setting default RDS user from enviromental variable :\n", 
-        "\t`$RDS_NODE` : ", Sys.getenv("RDS_PASS"))
         rds$node<-Sys.getenv("RDS_NODE")
+         mssg=paste0("Variable: `rds` has been provided but `node` not given. Setting default RDS user from enviromental variable :\n", 
+        "\t`$RDS_NODE` : ",rds$node)
         callFUN.callWarning()
       }
   }
 
  append_env(from=environment(),to=parent.frame())
 }
-
 
 
 callFUN.buildSelf=function(){
@@ -1239,7 +1238,7 @@ callFUN.remoteValidate=function(){
       from=parent.frame()
     )
     if(exists("remote")){
-      
+
       node=ifelse(rds$node=="",NULL,rds$node)
       user=ifelse(rds$user=="",NULL,rds$user)
       password=ifelse(rds$password=="",NULL,rds$password)
