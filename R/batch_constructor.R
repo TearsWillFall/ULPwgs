@@ -1242,7 +1242,7 @@ callFUN.remoteValidate=function(){
       node=ifelse(rds$node=="",NULL,rds$node)
       user=ifelse(rds$user=="",NULL,rds$user)
       password=ifelse(rds$password=="",NULL,rds$password)
-      ip_address=paste0(ifelse(!is.null(user),"@",""),node)
+      ip_address=paste0(user,ifelse(!is.null(user),"@",""),node)
     
       Sys.setenv("SSHPASS"=password)
       ### WE PING THE REMOTE SERVER TO SEE IF AVAILABLE
