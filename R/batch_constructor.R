@@ -1246,21 +1246,7 @@ callFUN.remoteValidate=function(){
         ),intern=TRUE
       )
 
-      ### IF SERVER DOESN'T RESPOND WE RETURN ERROR 
-      if(check==255){
-        mssg=paste0("Remote server not accessible : `",ip_address,"`")
-        callFUN.callError()
-      }else if(check==5){
-        mssg=paste0("Failed to log in remote server :`",ip_address,"`")
-        callFUN.callError()
-      }else if(check!=0){
-        mssg=paste0("Unknown error with remote server :`",ip_address,"`")
-        callFUN.callError()
-      }
-      mssg=paste0("Remote server available : `", ip_address,"`")
-      callFUN.callWarning()
-
-
+      callFUN.checkRemote()
     }
     
     append_env(from=environment(),to=parent.frame())
@@ -1319,4 +1305,27 @@ callFUN.setOutput=function(...){
         out_files[[var]]=paste0(out_file_dir,"/",list(...)[[var]])
       }
       append_env(from=environment(),to=parent.frame())
+  }
+
+
+callFUN.checkRemote=function(){
+      append_env(
+        to=environment(),
+        from=parent.frame()
+      )
+    ### IF SERVER DOESN'T RESPOND WE RETURN ERROR 
+    if(check==255){
+      mssg=paste0("Remote server not accessible : `",ip_address,"`")
+      callFUN.callError()
+    }else if(check==5){
+      mssg=paste0("Failed to log in remote server :`",ip_address,"`")
+      callFUN.callError()
+    }else if(check!=0){
+      mssg=paste0("Unknown error with remote server :`",ip_address,"`")
+      callFUN.callError()
+    }
+    mssg=paste0("Remote server available : `", ip_address,"`")
+    callFUN.callWarning()
+
+    append_env(from=environment(),to=parent.frame())
   }
