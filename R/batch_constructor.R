@@ -1057,26 +1057,28 @@ callFUN.setSelf<-function(){
       rds$user=Sys.getenv("RDS_USER")
       rds$password=Sys.getenv("RDS_PASS")
       rds$node=Sys.getenv("RDS_NODE")
-      mssg=paste0("Variable: `rds` has not been provided. Setting default RDS config using enviromental variables: 
-      `$RDS_USER`:", Sys.getenv("RDS_USER"),"\n",
-     "`$RDS_PASS`:", Sys.getenv("RDS_PASS"),"\n",
-     "`$RDS_NODE`:", Sys.getenv("RDS_NODE"))
+      mssg=paste0("Variable: `rds` has not been provided. Setting default RDS config using enviromental variables :\n", 
+     "\t`$RDS_USER` : ", Sys.getenv("RDS_USER"),"\n",
+     "\t`$RDS_PASS` : ", Sys.getenv("RDS_PASS"),"\n",
+     "\t`$RDS_NODE` : ", Sys.getenv("RDS_NODE"))
       callFUN.callWarning()
   }else{
       if(is.null(rds$user)){
-        mssg=paste0("Variable: `rds` has been provided but `user` not given. Setting default RDS user from enviromental variable: 
-        `$RDS_USER`:", Sys.getenv("RDS_USER"))
+        mssg=paste0("Variable: `rds` has been provided but `user` not given. Setting default RDS user from enviromental variable :\n"
+        "\t`$RDS_USER` : ", Sys.getenv("RDS_USER"))
         rds$user<-Sys.getenv("RDS_USER")
         callFUN.callWarning()
       }
       if(is.null(rds$password)){
-        mssg=paste0("Variable: `rds` has been provided but `password` not given. Setting default RDS user from enviromental variable: 
-        `$RDS_PASS`:", Sys.getenv("RDS_PASS"))
+        mssg=paste0("Variable: `rds` has been provided but `password` not given. Setting default RDS user from enviromental variable :\n", 
+        "\t`$RDS_PASS` : ", Sys.getenv("RDS_PASS"))
         rds$password<-Sys.getenv("RDS_PASS")
         callFUN.callWarning()
       }
 
       if(is.null(rds$node)){
+         mssg=paste0("Variable: `rds` has been provided but `password` not given. Setting default RDS user from enviromental variable :\n", 
+        "\t`$RDS_NODE` : ", Sys.getenv("RDS_PASS"))
         rds$node<-Sys.getenv("RDS_NODE")
         callFUN.callWarning()
       }
