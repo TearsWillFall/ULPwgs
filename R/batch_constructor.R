@@ -1191,16 +1191,16 @@ callFUN.remoteCreateDir=function(){
 
     check=system(paste0("sshpass -f ",password,
             " ssh ",ip_address,
-              "\" mkdir ",out_file_dir,"; echo $? \""
-      )
+              "\" mkdir -p ",output_dir,";exit 0\""
+      ),intern=TRUE
     )
 
     if(check!=0){
-       mssg=paste0("Failed to create remote output directory : [ ",out_file_dir, " ] " )
+       mssg=paste0("Failed to create remote output directory : `",output_dir, "`" )
        callFUN.callError()
     }
 
-    mssg=paste0("Succesfully created remote output directory: `", out_file_dir,"`  \n")
+    mssg=paste0("Succesfully created remote output directory : `",output_dir,"`")
     callFUN.callWarning()
     
 
@@ -1259,7 +1259,7 @@ callFUN.remoteValidate=function(){
         mssg=paste0("Unknown error with remote server :`",ip_address,"`")
         callFUN.callError()
       }
-      mssg=paste0("Remote server available : `", ip_address,"`  \n")
+      mssg=paste0("Remote server available : `", ip_address,"`")
       callFUN.callWarning()
 
 
