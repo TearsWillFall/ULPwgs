@@ -465,8 +465,10 @@ callFUN.checkTypes<-function(){
 
 
 callFUN.checkSubtypes=function(){
-
+ 
     append_env(to=environment(),from=parent.frame())
+    
+    .this.env=environment()
 
     if(exists("args")){
       types=args$types
@@ -540,125 +542,7 @@ callFUN.runSelf=function(){
   callFUN.buildCall()
 
 
-  ### RUN CALL
-  callFUN.runCall()
-  
-  ### WAIT FOR SCHEDULER TO FINISH
-  if(rmode=="batch"){
-    if(await){
-        await_scheduler()
-    }
-  }
-
-  ### READ CHILD ENVIRONMENTS
-  callFUN.readEnv()
-    
-  append_env(from=environment(),to=parent.frame())
-}
-
-
-
-
-callFUN.rmDir=function(){
-    append_env(to=environment(),from=parent.frame())
-    if(!self){
-      if(preserve=="partial"){
-          if(error!=0){
-              system(paste0("rm -rf ",work_dir))
-            }
-      }else if (preserve=="none"){
-          system(paste0("rm -rf ",work_dir))
-        }
-    }
-
-  append_env(from=environment(),to=parent.frame())
-}
-
-
-callFUN.runProcess=function(){
-
-  append_env(to=environment(),from=parent.frame())
-  
-  ### CREATE CALLER
-  callFUN.buildCall()
-
-  ### WE RUN THE ENVIROMENT
-  callFUN.runCall()
-  
-  ### WE WRITE RESULTS FOR CHILD TO RDS
-  callFUN.writeEnv()
-
-  ### WE MOVE DATA TO OUT_FILE_DIR DIRECTORY
-  callFUN.moveData()
-
-  append_env(from=environment(),to=parent.frame())
-
-}
-
-
-
-callFUN.moveData=function(){
-  append_env(to=environment(),from=parent.frame())
-
-  if(!exists("remote")){
-    if(length(out_files)!=0){
-      check=system(paste("mv ",ifelse(overwrite," -n ",""),paste0(out_dir,"/*"),out_file_dir, " 2> /dev/null ; echo $?"),intern=TRUE)
-    }
-  }else{
-     check=system(
-      paste("sshpass -e ssh -Y ",ip_address, " \" mv ",
-      ifelse(overwrite," -n ",""),
-      paste0(out_dir,"/*"),
-      out_file_dir,";echo 0\"" ),intern=TRUE
-    )
-  }
-  if(check!=0){
-    mssg=paste0("Files exist. To overwrite the files in `output_dir` set variable `overwrite` to : TRUE ")
-    callFUN.callError()
-  }
-
-  mssg=paste0("Files moved from : ",work_dir," to ", ifelse(exists("remote"),"remote", "local")," directory  `output_dir` : `",out_file_dir,"'")
-  append_env(from=environment(),to=parent.frame())
-}
-
-
-
-callFUN.runCall=function(FUN=NULL){
-  append_env(to=environment(),from=parent.frame())
-
-  callFUN.verbose()
-
-  #Read .bashrc to import all envriomental variables
-  error=system(paste0(". $HOME/.bashrc;",exec_code),wait=await)
-  ### RETURN ERROR MESSAGE
-  if(error!=0){
-    mssg=paste0("Execution of environment halted due to internal error ")
-    callFUN.callError()
-  }
-
-  append_env(from=environment(),to=parent.frame())
-}
-
-
-
-
-
-callFUN.buildCall=function(){
-    append_env(to=environment(),from=parent.frame())
-    ### Use SGE TASK ID if mode is set to batch otherwise use value
-   
-    callFUN.setCall()
-
-    if(name_env=="self"){
-       exec_code=paste0("Rscript -e \" invisible(",
-            ns,"::",fn,"(env=\\\"",
-            parent.env$env_file,"\\\"))\""
-      )
-    }else if (name_env=="parent"){
-      if(rmode=="local"){
-              ### LOCALLY WE ARE LIMITED IN NUMBER OF CORES
-              cores=parallel::detectCores()-1
-              ### WE ASSIGN A REASONABLE NUMBER OF JOBS FoR THE REQUESTED NUMBER OF THREADS 
+  ### RUN CALLCASSIGN A REASONABLE NUMBER OF JOBS FoR THE REQUESTED NUMBER OF THREADS 
               rjobs=floor(cores/threads)
               exec_code=paste0("Rscript -e \" invisible(parallel::mclapply(1:",n_inputs,
               ",FUN=function(select){",ns,"::",fn,"(env=\\\"",
