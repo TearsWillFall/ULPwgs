@@ -465,9 +465,8 @@ callFUN.checkTypes<-function(){
 
 
 callFUN.checkSubtypes=function(){
-   .this.env=environment()
-   .base.env=parent.frame()
-    append_env(to=.this.env,from=.base.env)
+
+    append_env(to=environment(),from=parent.frame())
 
     if(exists("args")){
       types=args$types
@@ -485,6 +484,7 @@ callFUN.checkSubtypes=function(){
               if(!is.null(arg_value)){
                 if(exists("remote")){
                   if(!any(remote %in% arg)){
+                    print(arg_value)
                     if(!file.exists(arg_value)){
                        mssg=paste0("Variable : ",arg,
                               " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
@@ -844,7 +844,7 @@ callFUN.assignSheetChild=function(){
   append_env(to=environment(),from=parent.frame())
   sheet=sheet[row,]
   for (col in 1:n_inputs){
-    assign(names(sheet)[col],sheet[,col])
+    assign(names(sheet)[col],unlist(sheet[,col]))
   }  
   append_env(from=environment(),to=parent.frame())
 }
