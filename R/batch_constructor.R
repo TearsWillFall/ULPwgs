@@ -876,13 +876,11 @@ callFUN.buildChild=function(){
   ### CREATE SHEET
   callFUN.assignSheetChild()
 
-
-  ### CREATE CHILD JOB ID
-  callFUN.buildId()
-
+  print(sheet)
 
   ### SET PROCESSS
   callFUN.setProcess()
+  
   
   ### CHECK VARIABLE SUBTYPES
   callFUN.checkSubtypes()
@@ -1178,7 +1176,7 @@ callFUN.remoteCreateDir=function(){
     )
 
     check=system(paste0("sshpass -e ssh -Y ",ip_address,
-              " \" mkdir -p ",output_dir,";echo 0\""
+              " \" mkdir -p ",output_dir," 2>/dev/null ;echo 0\""
       ),intern=TRUE
     )
 
