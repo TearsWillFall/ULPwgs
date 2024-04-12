@@ -397,14 +397,16 @@ callFUN.createLink=function(){
 }
 
 
-callFUN.remoteCheck=function(){
-    append_env(to=environment(),from=parent.frame())
-    check=suppressWarnings(system(paste(
-    "sshpass -f ",password,
-    " ssh ",ip_address,
-      "\" realpath -e ",arg_value,"\" "),intern=TRUE
-    ))
-    append_env(from=environment(),to=parent.frame())
+
+callFUN.remoteGet=function(){
+  append_env(to=environment(),from=parent.frame())
+  arg_dir=set_dir(dir=rmt_dir,name=arg)
+  ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
+  check=system(paste(
+  "sshpass -e ssh -Y ",ip_address,
+    "\" realpath -e ",arg_value,"\"")
+  )  
+  append_env(from=environment(),to=parent.frame())
 }
 
 
@@ -413,14 +415,16 @@ callFUN.remoteGet=function(){
   arg_dir=set_dir(dir=rmt_dir,name=arg)
   ### COPY REMOTE FILE TO LOCAL TMP DIR IF REMOTE FILE EXISTS
   system(paste(
-  "sshpass -f ",password,
-  " ssh ",ip_address,
-    "\" cp -rn ",check," -t ",
+  "sshpass -e ssh -Y ",ip_address,
+    "\" cp -r ",arg_value," -t ",
     arg_dir, "\"")
   )
-  arg_value=paste0(arg_dir,"/",basename(check))   
+  arg_value=paste0(arg_dir,"/",basename(arg_value))   
   append_env(from=environment(),to=parent.frame())
 }
+
+
+
 
 
 callFUN.checkTypes<-function(){
@@ -458,33 +462,6 @@ callFUN.checkTypes<-function(){
 }
      
   
-          #       #   ###CHECK IF REMOTE LOCATION HAS BEEN DEFINED
-          #       #   if(is.null(node)){
-           
-          #       #     )
-          #       #     }else{
-          #       #         ## WE CHECK IF PATH IS IN REMOTE
-          #       #         callFUN.remoteCheck()
-
-          #       #         if(length(check)==0){
-          #       #           stop(paste0("Variable : ",arg,
-          #       #             " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
-          #       #             " ( type : ",typeof(arg_value),
-          #       #             " ) [ subtype : NULL ] . Path doesn't locally and remotely")
-          #       #           )
-                        
-          #       #         }
-          #       #         ### WE GET THE REMOTE PATH
-          #       #         callFUN.remoteGet()
-          #       #     }
-          #       # }
-          
-          #   callFUN.createLink()
-
-          #   ## WE REASSIGN THE VALUE OF ARGUMENT TO THE LOCAL/REMOTE
-          #   .base.env[[arg]]=normalizePath(paste0(arg_dir,"/",basename(arg_value)))
-          #   }
-          # }
 
 
 callFUN.checkSubtypes=function(){
