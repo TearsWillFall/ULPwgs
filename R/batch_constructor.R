@@ -650,9 +650,9 @@ callFUN.buildCall=function(){
     callFUN.setCall()
 
     if(name_env=="self"){
-       exec_code=paste0("Rscript -e \" try({invisible(",
+       exec_code=paste0("Rscript -e \" invisible(",
             ns,"::",fn,"(env=\\\"",
-            parent.env$env_file,"\\\"))},silent=TRUE)\""
+            parent.env$env_file,"\\\"))\""
       )
     }else if (name_env=="parent"){
       if(rmode=="local"){
@@ -660,17 +660,17 @@ callFUN.buildCall=function(){
               cores=parallel::detectCores()-1
               ### WE ASSIGN A REASONABLE NUMBER OF JOBS FoR THE REQUESTED NUMBER OF THREADS 
               rjobs=floor(cores/threads)
-              exec_code=paste0("Rscript -e \" try({invisible(parallel::mclapply(1:",n_inputs,
+              exec_code=paste0("Rscript -e \" invisible(parallel::mclapply(1:",n_inputs,
               ",FUN=function(select){",ns,"::",fn,"(env=\\\"",
-              env_file,"\\\",select=select)},mc.cores=",rjobs,"))},silent=TRUE)\"")
+              env_file,"\\\",select=select)},mc.cores=",rjobs,"))\"")
         }else if(rmode=="batch"){
               cores=Inf
               rjobs=Inf
 
               ### IN BATCH WE ASSUME INFINITE RESOURCES 
-              exec_code=paste0("Rscript -e \" try({invisible(",
+              exec_code=paste0("Rscript -e \" invisible(",
               ns,"::",fn,"(env=\\\"",env_file,
-              "\\\",select=$SGE_TASK_ID))},silent=TRUE)\"")
+              "\\\",select=$SGE_TASK_ID))\"")
   
               ### WE CREATE SCHEDULER SPECIFIC VARIABLES
 
