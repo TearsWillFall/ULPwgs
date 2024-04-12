@@ -1187,6 +1187,7 @@ callFUN.remoteCreateDir=function(){
 
     mssg=paste0("Succesfully created remote output directory : `",output_dir,"`")
     callFUN.callWarning()
+    out_file_dir<-output_dir
     
     append_env(from=environment(),to=parent.frame())
 }
