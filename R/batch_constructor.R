@@ -623,15 +623,24 @@ callFUN.runProcess=function(){
 callFUN.moveData=function(){
   append_env(to=environment(),from=parent.frame())
 
-  if(length(out_files)!=0){
-    check=system(paste("mv ",ifelse(overwrite," -n ",""),paste0(out_dir,"/*"),out_file_dir, " 2> /dev/null ; echo $?"),intern=TRUE)
+  if(!exists("remote")){
+    if(length(out_files)!=0){
+      check=system(paste("mv ",ifelse(overwrite," -n ",""),paste0(out_dir,"/*"),out_file_dir, " 2> /dev/null ; echo $?"),intern=TRUE)
+    }
+  }else{
+     check=system(
+      paste("sshpass -e ssh -Y ",ip_address, " \" mv ",
+      ifelse(overwrite," -n ",""),
+      paste0(out_dir,"/*"),
+      out_file_dir,";echo 0\"" ),intern=TRUE
+    )
   }
-
   if(check!=0){
-    
-    mssg=paste0("File already exists. To overwrite the files in `output_dir` set variable `overwrite` to : TRUE ")
+    mssg=paste0("Files exist. To overwrite the files in `output_dir` set variable `overwrite` to : TRUE ")
     callFUN.callError()
   }
+
+  mssg=paste0("Files moved from : ",work_dir," to ", ifelse(exists("remote"),"remote", "local")," directory  `output_dir` : `",out_file_dir,"'")
   append_env(from=environment(),to=parent.frame())
 }
 
