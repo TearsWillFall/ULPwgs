@@ -1189,8 +1189,8 @@ callFUN.remoteCreateDir=function(){
       from=parent.frame()
     )
 
-    check=system(paste0("sshpass -e ssh ",ip_address,
-              " \" mkdir -p ",output_dir,";exit 0\""
+    check=system(paste0("sshpass -e ssh -Y ",ip_address,
+              " \" mkdir -p ",output_dir,";echo 0\""
       ),intern=TRUE
     )
 
