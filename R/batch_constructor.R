@@ -928,8 +928,6 @@ callFUN.buildParent=function(){
     ### CREATE CHILD JOB ID
     callFUN.buildId()
 
-
-
     ### WE BUILD THE PROCESS AND THE ERROR MESSAGES
     callFUN.setProcess()
     
@@ -940,7 +938,6 @@ callFUN.buildParent=function(){
     ### CHECK IF WE REQUIRE REMOTE DATA
     callFUN.remoteValidate()
 
-  
 
     ### WE SET THE DUMPSTER WHERE TO PUT CHILDREN INFO
     callFUN.dumpInfo()
@@ -1133,9 +1130,8 @@ callFUN.buildDir=function(){
                 name=env_id
           )
 
-      
       if (name_env=="child"){
-          if(!remote){
+          if(!exists("remote")){
             ### CREATE OUTPUT DIR
           
             out_file_dir <- set_dir(
@@ -1267,10 +1263,7 @@ callFUN.remoteValidate=function(){
       callFUN.callWarning()
 
 
-    }else{
-      remote<-FALSE
     }
-
     
     append_env(from=environment(),to=parent.frame())
 }
