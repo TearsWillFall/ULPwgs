@@ -1189,9 +1189,8 @@ callFUN.remoteCreateDir=function(){
       from=parent.frame()
     )
 
-    check=system(paste0("sshpass -f ",password,
-            " ssh ",ip_address,
-              "\" mkdir -p ",output_dir,";exit 0\""
+    check=system(paste0("sshpass -e ssh ",ip_address,
+              " \" mkdir -p ",output_dir,";exit 0\""
       ),intern=TRUE
     )
 
@@ -1203,7 +1202,6 @@ callFUN.remoteCreateDir=function(){
     mssg=paste0("Succesfully created remote output directory : `",output_dir,"`")
     callFUN.callWarning()
     
-
     append_env(from=environment(),to=parent.frame())
 }
 
@@ -1314,9 +1312,6 @@ callFUN.dumpInfo<-function(){
 }
 
 
-
-
-
 callFUN.setOutput=function(...){
       ### WE CREATE ALL OUTPUT VARIABLES WITH THE OUT_FILE_DIR
       append_env(to=environment(),from=parent.frame())
@@ -1325,5 +1320,3 @@ callFUN.setOutput=function(...){
       }
       append_env(from=environment(),to=parent.frame())
   }
-
-
