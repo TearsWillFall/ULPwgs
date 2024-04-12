@@ -1053,6 +1053,7 @@ callFUN.setSelf<-function(){
   }
 
   if(!exists("rds")){
+      rds=list()
       rds$user=Sys.getenv("RDS_USER")
       rds$password=Sys.getenv("RDS_PASS")
       rds$node=Sys.getenv("RDS_NODE")
@@ -1065,18 +1066,19 @@ callFUN.setSelf<-function(){
       if(is.null(rds$user)){
         mssg=paste0("Variable: `rds` has been provided but `user` not given. Setting default RDS user from enviromental variable: 
         `$RDS_USER`:", Sys.getenv("RDS_USER"))
-  
-        callFUN.callWarning()
         rds$user<-Sys.getenv("RDS_USER")
+        callFUN.callWarning()
       }
       if(is.null(rds$password)){
         mssg=paste0("Variable: `rds` has been provided but `password` not given. Setting default RDS user from enviromental variable: 
         `$RDS_PASS`:", Sys.getenv("RDS_PASS"))
         rds$password<-Sys.getenv("RDS_PASS")
+        callFUN.callWarning()
       }
 
       if(is.null(rds$node)){
         rds$node<-Sys.getenv("RDS_NODE")
+        callFUN.callWarning()
       }
   }
 
