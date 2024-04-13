@@ -706,7 +706,7 @@ callFUN.buildCall=function(){
 
               ### WE APPEND CONFIG EXEC CODE AND BATCH CODE DATA
 
-              exec_code=paste0("echo '. $HOME/.bashrc;",batch_config,
+              exec_code=paste0("echo '. $HOME/.bashrc;",batch_cfg,
               ";",exec_code,"'|",batch_code)
         }else{
            mssg="Incorrect run mode selected. Available run modes include: `local` and `batch` "
@@ -1010,6 +1010,7 @@ callFUN.setSelf<-function(
     if(is.null(bypass)){
        mssg="Variable: `bypass` has not been provided. Setting default wallclock bypass to : `FALSE` "
        callFUN.callWarning()
+       bypass<-FALSE
     }
   }
 
