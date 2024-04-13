@@ -5,10 +5,10 @@
 \title{Build default myriad module list}
 \usage{
 build_default_myriad_module_list(
-  modules = list(core = list("rcps-core/1.0.0"), compilers = list(mpi = "compilers mpi",
-    gcc = "compilers mpi gcc-libs", intel = "compilers/intel/2018/update3", openblas =
-    list(v0214 = "openblas/0.2.14/gnu-4.9.2", v0370 =
-    "openblas/0.3.7-serial/gnu-4.9.2")), python3 = list(v3910 = "python/3.9.10",
+  modules = list(core = list("rcps-core/1.0.0"), compilers = list(mpi =
+    "compilers mpi", gcc = "compilers mpi gcc-libs", intel =
+    "compilers/intel/2018/update3", openblas = list(v0214 = "openblas/0.2.14/gnu-4.9.2",
+    v0370 = "openblas/0.3.7-serial/gnu-4.9.2")), python3 = list(v3910 = "python/3.9.10",
     recommended = "python3/recommended"), r = list(recommended = "r/recommended"), java =
     list(default = "java/1.8.0_92", v17 = "java/temurin-17/17.0.2+8"))
 )

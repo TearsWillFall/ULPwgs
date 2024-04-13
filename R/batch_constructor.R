@@ -330,7 +330,7 @@ callFUN.call<-function(
     list2env(x=list(...),envir=.base.env)
 
     ## GET VARIABLE NAMES
-    fn_vars=names(.base.env)[!grepl("\\.|args|FUN",names(.base.env))]
+    fn_vars=names(.base.env)[!grepl("\\.|args|FUN|remote",names(.base.env))]
 
     append_env(to=.this.env,from=.base.env)
 
@@ -474,6 +474,7 @@ callFUN.checkSubtypes=function(){
       subtypes=args$subtypes
       required=args$required
 
+
       for (arg in names(subtypes[!is.null(subtypes)])){
         arg_value=.this.env[[arg]]
         arg_type=types[[arg]]
@@ -483,35 +484,44 @@ callFUN.checkSubtypes=function(){
         if(!is.null(arg_subtype)){
            if(arg_subtype=="path"){
               if(!is.null(arg_value)){
-                if(exists("remote")){
-                  if(!any(remote %in% arg)){
-                    print(arg_value)
-                    if(!file.exists(arg_value)){
-                       mssg=paste0("Variable : ",arg,
-                              " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
-                              " ( type : ",typeof(arg_value),
-                              " ) [ subtype : NULL ] . Path doesn't exist locally")
-                           callFUN.callError()
-                           
+                  if(exists("remote")){
+                       if(any(remote %in% arg)){
+                         callFUN.remoteCheck()
+                         if(length(check)==0){
+                            mssg=paste0("Variable : ",arg,
+                                    " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
+                                    " ( type : ",typeof(arg_value),
+                                    " ) [ subtype : NULL ] . Path doesn't exist remotely")
+                            callFUN.callError()
+                         }
+                            
+                      }else{
+                        if(!file.exists(arg_value)){
+                        mssg=paste0("Variable : ",arg,
+                                " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
+                                " ( type : ",typeof(arg_value),
+                                " ) [ subtype : NULL ] . Path doesn't exist locally")
+                        callFUN.callError()
+                            
+                      }else{
+
+                        if(!file.exists(arg_value)){
+                        mssg=paste0("Variable : ",arg,
+                                " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
+                                " ( type : ",typeof(arg_value),
+                                " ) [ subtype : NULL ] . Path doesn't exist locally")
+                        callFUN.callError()
+                            
+                      }
                     }
-                  }else{
-                    callFUN.remoteCheck()
-                    if(length(check)==0){
-                      mssg=paste0("Variable : ",arg,
-                              " ( type : ",arg_type," ) [ subtype : path ] -> Value: ",arg_value,
-                              " ( type : ",typeof(arg_value),
-                              " ) [ subtype : NULL ] . Path doesn't exist remotely")
-                      callFUN.callError()
-                    }
-                    
                   }
                 }
-            }
-          }
+              }
+           }
         }
       }
     }
-  }
+}
 
 
 callFUN.verbose=function(){
@@ -679,7 +689,7 @@ callFUN.buildCall=function(){
                     "qsub -V ", 
               paste0("-N ",env_id),
               paste0(" -t 1-",n_inputs),
-              paste0(" -l h_rt=",time),
+              paste0(" -l h_rt=",rtime),
               paste0(" -l mem=",ram,"G"),
               paste0(" -pe smp ",threads), 
               paste0(" -wd ",getwd()), 
@@ -844,10 +854,12 @@ callFUN.buildSheet=function(){
 callFUN.assignSheetChild=function(){
   .this.env=environment()
   .base.env=parent.frame()
-  append_env(to=environment(),from=)
+  append_env(to=.this.env,from=.base.env)
   .base.env[["sheet"]]<-sheet[row,]
-  for (col in 1:n_inputs){
-    .base.env[col]<-sheet[,col]
+
+  for (col in 1:n_vars){
+    .base.env[[names(sheet)[col]]]<-sheet[row,col]
+
   }
 }
 
@@ -872,13 +884,12 @@ callFUN.buildChild=function(){
   
   name_env<-"child"
   await<-TRUE
-  ### CREATE CHILD JOB ID
-  callFUN.buildId()
 
   ### CREATE SHEET
   callFUN.assignSheetChild()
-
-  print(sheet)
+ 
+  ### CREATE CHILD JOB ID
+  callFUN.buildId()
 
   ### SET PROCESSS
   callFUN.setProcess()
@@ -896,6 +907,7 @@ callFUN.buildChild=function(){
   return(environment())
 
 }
+
 
 
 
@@ -928,7 +940,7 @@ callFUN.buildParent=function(){
     ### WE SET THE DUMPSTER WHERE TO PUT CHILDREN INFO
     callFUN.dumpInfo()
 
-    print(sheet)
+  
 
     ### FROM THE PARENT ENVIRONMENT WE CREATE A NEW ENVIRONMENT FOR EACH UNIQUE INPUT
     child.env=list()
@@ -943,17 +955,32 @@ callFUN.buildParent=function(){
 }
 
 
-callFUN.setSelf<-function(){
+callFUN.setSelf<-function(
+  verbose=FALSE,
+  rmode=NULL,
+  rtime=NULL,
+  threads=NULL,
+  ram=NULL,
+  bypass=NULL,
+  await=NULL,
+  lic_dir=NULL,
+  batch_cfg=NULL,
+  preserve=NULL,
+  compl=NULL,
+  work_dir=NULL,
+  output_dir=NULL,
+  overwrite=NULL,
+  rds=NULL
+){
   append_env(to=environment(),from=parent.frame())
 
+  ### CHECK IF RUN MODE VARIABLE EXISTS
 
-  if(!exists("verbose")){
+  if(is.null(verbose)){
     verbose<-FALSE
   }
 
-
-  ### CHECK IF RUN MODE VARIABLE EXISTS
-  if(!exists("rmode")){
+  if(is.null(rmode)){
     mssg="Variable: `rmode` has not been provided. Setting default run mode to : `local`"
     callFUN.callWarning()
     ## IF NOT SET TO LOCAL
@@ -961,83 +988,83 @@ callFUN.setSelf<-function(){
   }
 
 
-  if(!exists("threads")){
+  if(is.null(threads)){
      mssg="Variable: `threads` has not been provided. Setting default threads to : `1` "
      callFUN.callWarning()
     threads<-1
   }
 
   if(rmode=="batch"){
-    if(!exists("time")){
-       mssg="Variable: `time` has not been provided. Setting default run time to : `48:00:00` "
+    if(is.null(rtime)){
+       mssg="Variable: `rtime` has not been provided. Setting default run time to : `48:0:0` "
        callFUN.callWarning()
-      time<-"48:0:0"
+       rtime<-"48:0:0"
     }
     
-    if(!exists("ram")){
+    if(is.null(ram)){
        mssg="Variable: `ram` has not been provided. Setting default ram (Gb) to : `1` "
        callFUN.callWarning()
       ram<-1
     }
 
-    if(!exists("bypass")){
+    if(is.null(bypass)){
        mssg="Variable: `bypass` has not been provided. Setting default wallclock bypass to : `FALSE` "
        callFUN.callWarning()
     }
   }
 
    
-  if(!exists("await")){
+  if(is.null(await)){
      mssg="Variable: `await` has not been provided. Setting default strategy to await for parent : `TRUE`"
      callFUN.callWarning()
     await<-TRUE
   }
 
 
-  if(!exists("lic_dir")){
+  if(is.null(lic_dir)){
     mssg=text=paste0("Variable: `lic_dir` has not been provided. Setting default license directory to : `",build_default_license_list()$dir)
      callFUN.callWarning()
     lic_dir<-build_default_license_list()$dir
   }
 
 
-  if(!exists("batch_cfg")){
+  if(is.null(batch_cfg)){
     mssg=paste0("Variable: `batch_cfg` has not been provided. Setting default config for batch mode to : `",build_default_preprocess_config())
      callFUN.callWarning()
     batch_cfg<-build_default_preprocess_config()
   }
 
-  if(!exists("preserve")){
+  if(is.null(preserve)){
      mssg="Variable: `preserve` has not been provided. Setting default strategy to deal with working directory  to : `partial` "
      callFUN.callWarning()
     preserve<-"partial"
   }
 
-  if(!exists("compl")){
+  if(is.null(compl)){
      mssg="Variable: `compl` has not been provided. Setting default strategy to deal with complementary files : [ `bai` , `tbi` ] "
      callFUN.callWarning()
     compl<-c(".bai",".tbi")
   }
 
-  if(!exists("work_dir")){
+  if(is.null(work_dir)){
         mssg=paste0("Variable: `work_dir` has not beed provided. Setting default working directory to `",getwd(),"`")
         callFUN.callWarning()
         work_dir<-getwd()
       }
 
-  if(!exists("output_dir")){
+  if(is.null(output_dir)){
         mssg=paste0("Variable: `output_dir` has not beed provided. Setting default output directory to `",getwd(),"`")
         callFUN.callWarning()
         output_dir<-getwd()
   }
 
-  if(!exists("overwrite")){
+  if(is.null(overwrite)){
      mssg="Variable: `overwrite` has not been provided. Setting default to overwrite the output_dir: FALSE "
      callFUN.callWarning()
-    overwrite=FALSE
+     overwrite=FALSE
   }
 
-  if(!exists("rds")){
+  if(is.null(rds)){
       rds=list()
       rds$user=Sys.getenv("RDS_USER")
       rds$password=Sys.getenv("RDS_PASS")

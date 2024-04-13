@@ -5,8 +5,9 @@
 \title{Build default tools binaries config}
 \usage{
 build_default_tool_binary_list(
-  binaries = list(bin_fastqc = "/lustre/scratch/scratch/regmova/tools/FastQC/bin/fastqc",
-    bin_skewer = "/lustre/scratch/scratch/regmova/tools/skewer/skewer", bin_fastqc =
+  binaries = list(bin_fastqc =
+    "/lustre/scratch/scratch/regmova/tools/FastQC/bin/fastqc", bin_skewer =
+    "/lustre/scratch/scratch/regmova/tools/skewer/skewer", bin_fastqc =
     "/lustre/scratch/scratch/regmova/tools/FastQC/bin/fastqc", bin_bcftools =
     "/lustre/scratch/scratch/regmova/tools/bcftools/bcftools", bin_bgzip =
     "/lustre/scratch/scratch/regmova/tools/htslib/bin/bgzip", bin_tabix =

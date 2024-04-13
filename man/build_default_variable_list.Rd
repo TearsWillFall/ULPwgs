@@ -5,21 +5,23 @@
 \title{Build default binaries config}
 \usage{
 build_default_variable_list(
-  def_args = list(subtypes = list(overwrite = NULL, verbose = NULL, rmode = NULL, threads
-    = NULL, await = NULL, lic_dir = NULL, batch_cfg = NULL, preserve = NULL, compl =
-    NULL, rds = NULL, work_dir = "path", output_dir = "path"), types = list(overwrite =
-    "logical", verbose = "logical", rmode = "character", threads = "double", await =
-    "logical", lic_dir = "character", batch_cfg = "character", preserve = "character",
-    compl = "character", rds = "list", work_dir = "character", output_dir = "character"))
+  def_args = list(subtypes = list(overwrite = NULL, verbose = NULL, rmode = NULL,
+    threads = NULL, await = NULL, lic_dir = "path", batch_cfg = NULL, preserve = NULL,
+    compl = NULL, rds = NULL, work_dir = "path", output_dir = "path"), types =
+    list(overwrite = "logical", verbose = "logical", rmode = "character", threads =
+    "double", await = "logical", lic_dir = "character", batch_cfg = "character", preserve
+    = "character", compl = "character", rds = "list", work_dir = "character", output_dir
+    = "character"))
 )
 
 build_default_variable_list(
-  def_args = list(subtypes = list(overwrite = NULL, verbose = NULL, rmode = NULL, threads
-    = NULL, await = NULL, lic_dir = NULL, batch_cfg = NULL, preserve = NULL, compl =
-    NULL, rds = NULL, work_dir = "path", output_dir = "path"), types = list(overwrite =
-    "logical", verbose = "logical", rmode = "character", threads = "double", await =
-    "logical", lic_dir = "character", batch_cfg = "character", preserve = "character",
-    compl = "character", rds = "list", work_dir = "character", output_dir = "character"))
+  def_args = list(subtypes = list(overwrite = NULL, verbose = NULL, rmode = NULL,
+    threads = NULL, await = NULL, lic_dir = "path", batch_cfg = NULL, preserve = NULL,
+    compl = NULL, rds = NULL, work_dir = "path", output_dir = "path"), types =
+    list(overwrite = "logical", verbose = "logical", rmode = "character", threads =
+    "double", await = "logical", lic_dir = "character", batch_cfg = "character", preserve
+    = "character", compl = "character", rds = "list", work_dir = "character", output_dir
+    = "character"))
 )
 }
 \arguments{

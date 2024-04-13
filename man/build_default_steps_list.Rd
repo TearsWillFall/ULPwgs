@@ -5,8 +5,9 @@
 \title{Build default tool configuration}
 \usage{
 build_default_steps_list(
-  steps = list(pre_fastqc = list(order = 1, step = build_default_step_list()$pre_fastqc,
-    threads = build_default_step_threads_list()$pre_fastqc, ram =
+  steps = list(pre_fastqc = list(order = 1, step =
+    build_default_step_list()$pre_fastqc, threads =
+    build_default_step_threads_list()$pre_fastqc, ram =
     build_default_step_ram_list()$pre_fastqc, batch_config =
     build_default_preprocess_config(), mode = build_default_step_mode_list()$pre_fastqc,
     verbose = build_default_step_verbose_list()$pre_fastqc, time =
