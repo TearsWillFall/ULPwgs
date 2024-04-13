@@ -188,7 +188,7 @@ check_job_limit=function(job_limit=1000000){
 #' @param .env List of objects to save in RData object
 #' @export
 
-wait_scheduler=function(){
+await_scheduler=function(){
     append_env(to=environment(),from=parent.frame())
     check=TRUE
     while(check){
@@ -196,7 +196,7 @@ wait_scheduler=function(){
       jobs_in_queue=suppressWarnings(system("qstat -r | grep  \"jobname\"",intern=TRUE))
       if(length(jobs_in_queue)>0){
          jobs_in_queue=gsub(".* ","",jobs_in_queue)
-         if(!any(jobs_in_queue %in% job_id)){
+         if(!any(jobs_in_queue %in% env_id)){
             check=FALSE
          }
       }else{
@@ -204,8 +204,6 @@ wait_scheduler=function(){
       }
      
     }
-    return()
-
 }
 
 
@@ -330,7 +328,7 @@ callFUN.call<-function(
     list2env(x=list(...),envir=.base.env)
 
     ## GET VARIABLE NAMES
-    fn_vars=names(.base.env)[!grepl("\\.|args|FUN|remote",names(.base.env))]
+    fn_vars=names(.base.env)[!grepl("\\.|args|FUN|remote|await|verbose|rmode",names(.base.env))]
 
     append_env(to=.this.env,from=.base.env)
 
@@ -556,10 +554,9 @@ callFUN.runSelf=function(){
   
   ### WAIT FOR SCHEDULER TO FINISH
   if(rmode=="batch"){
-    if(await){
-        await_scheduler()
-    }
+    await_scheduler()
   }
+
 
   ### READ CHILD ENVIRONMENTS
   callFUN.readEnv()
@@ -820,6 +817,16 @@ callFUN.callWarning<-function(){
 }
 
 
+callFUN.callMessage<-function(){
+  append_env(to=environment(),from=parent.frame())
+  light_green <- crayon::make_style("palegreen")
+  cat(crayon::green(paste0("[",Sys.time(),"]", "[",name_env,"]","[",env_id,"]\n")))
+  cat(light_green(paste0(mssg,"\n\n")))
+}
+
+
+
+
 
 callFUN.buildSheet=function(){
   append_env(to=environment(),from=parent.frame())
@@ -883,6 +890,7 @@ callFUN.buildChild=function(){
   append_env(to=environment(),from=.base.env)
   
   name_env<-"child"
+    
   await<-TRUE
 
   ### CREATE SHEET
@@ -890,6 +898,10 @@ callFUN.buildChild=function(){
  
   ### CREATE CHILD JOB ID
   callFUN.buildId()
+
+  mssg=paste0("Building Child Environment [",env_id,"]")
+  
+  callFUN.callMessage()
 
   ### SET PROCESSS
   callFUN.setProcess()
@@ -919,12 +931,21 @@ callFUN.buildParent=function(){
     ### SELECT VARIABLE DEFINES WHICH ENV WE ARE RUNNING
     ### WE APPEND THIS ENV AND STOP
 
+    
     name_env<-"parent"
 
+ 
+
     await<-TRUE
+
     
     ### CREATE CHILD JOB ID
     callFUN.buildId()
+
+    mssg=paste0("Building Parent Environment [",env_id,"]")
+
+    callFUN.callMessage()
+  
 
     ### WE BUILD THE PROCESS AND THE ERROR MESSAGES
     callFUN.setProcess()
@@ -1105,7 +1126,7 @@ callFUN.buildSelf=function(){
   append_env(to=environment(),from=parent.frame())
 
   name_env<-"self"
-
+ 
   ## SET NAMESPACE
   ns <- "ULPwgs"
   
@@ -1119,6 +1140,11 @@ callFUN.buildSelf=function(){
 
   ### CREATE CHILD JOB ID
   callFUN.buildId()
+
+  mssg=paste0("Building Self Environment [",env_id,"]")
+
+  ### WE SEND MESSAGE
+  callFUN.callMessage()
 
   ### WE SET THE DEFAULT VARIABLES
   callFUN.setSelf()
