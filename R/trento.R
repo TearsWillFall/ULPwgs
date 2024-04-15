@@ -392,6 +392,8 @@ new_clonet_trento=function(
         out_file_dir=set_dir(dir=out_file_dir,name=patient_id)
         out_file_dir=set_dir(dir=out_file_dir,name="clonet_reports")
         out_file_dir=set_dir(dir=out_file_dir,name=input_id)
+        tmp_dir=set_dir(dir=tmp_dir,name=patient_id)
+        tmp_dir=set_dir(dir=tmp_dir,name=input_id)
 
         set_main(.env=.this.env)
       
