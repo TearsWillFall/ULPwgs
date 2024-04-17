@@ -55,6 +55,7 @@ build_instrument_id = function(instruments=list(
 
 build_flowcell_id=function(flowcells=list(
     instrument=c(
+      "MiSeq",
       "HiSeq 1500",
       "HiSeq 2000",
       "HiSeq 2500",
@@ -86,11 +87,10 @@ build_flowcell_id=function(flowcells=list(
       "NovaSeq 6000",
       "NovaSeq 6000",
       "NovaSeq 6000",
-      "NovaSeq 6000",
-      "NovaSeq 6000",
       "NovaSeq 6000"
 
     ),flowcell=c(
+      "MiSeq flow cell",
       "High Output (8-lane) v4 flow cell",
       "High Output (8-lane) v4 flow cell",
       "High Output (8-lane) v4 flow cell",
@@ -122,14 +122,13 @@ build_flowcell_id=function(flowcells=list(
         "S4 flow cell",
         "S4 flow cell",
         "S4 flow cell",
-        "SP flow cell",
-        "SP flow cell",
         "SP flow cell"
 
         
 
 
     ),pattern=c(
+      "000000000-[A-Z][A-Z][A-Z][A-Z][A-Z]$",
       "C[A-Z,0-9]{4}ANXX$",
       "C[A-Z,0-9]{4}ANXX$",
       "C[A-Z,0-9]{4}ANXX$",
@@ -161,9 +160,8 @@ build_flowcell_id=function(flowcells=list(
       "H[A-Z,0-9]{4}DSXX$",
       "H[A-Z,0-9]{4}DSX[1-9]$",
       "H[A-Z,0-9]{4}DSXY$",
-      "H[A-Z,0-9]{4}DRXX$",
-      "H[A-Z,0-9]{4}DRX2$",
-      "H[A-Z,0-9]{4}DRXY$"
+      "H[A-Z,0-9]{4}DRX[0-9,A-Z]$"
+
     )
   )
   ) {
