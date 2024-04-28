@@ -71,12 +71,9 @@ myriad_module=function(mode="load",module="",force=FALSE){
 
 build_default_preprocess_config=function(
    modules=list(
-    gcc=unlist(build_default_myriad_module_list()$compilers$gcc),
-    r=unlist(build_default_myriad_module_list()$r))
+    r=myriad_module(mode="load",module=build_default_myriad_module_list()$r))
 ){
-    return(paste0(c(myriad_module(
-        mode="unload",module=modules$gcc,force=TRUE),
-        myriad_module(mode="load",module=modules$r)),collapse=";"))
+    return(paste0(modules,collapse=";"))
 }
 
 
