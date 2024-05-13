@@ -21,10 +21,11 @@ read_vcf=function(vcf=NULL,sep="\t",threads=1){
       raw_header=header[-length(header)]
       col_names=as.character(read.table(text=sub("#","",col_names),
       stringsAsFactors = FALSE,colClasses="character"))
-      tryCatch({body=data.table::fread(cmd=paste0("gunzip -c ",vcf," | grep -v ^# "),
-      nThread=threads,colClasses="character",header=FALSE,sep="\t");
-      names(body)<-col_names
-      },
+      body<-tryCatch({
+        body=data.table::fread(cmd=paste0("gunzip -c ",vcf," | grep -v ^# "),
+        nThread=threads,colClasses="character",header=FALSE,sep="\t");
+        names(body)<-col_names
+        },
       error=function(e){
          body=setNames(data.table::data.table(matrix(nrow = 0, ncol = length(col_names))),col_names)
       })
@@ -35,12 +36,12 @@ read_vcf=function(vcf=NULL,sep="\t",threads=1){
       raw_header=header[-length(header)]
       col_names=as.character(read.table(text=sub("#","",col_names),
       stringsAsFactors = FALSE,colClasses="character"))
-      tryCatch({
-        body=data.table::fread(cmd=paste0("grep -v ^# ",vcf),
+      body<-tryCatch({
+        body<-data.table::fread(cmd=paste0("grep -v ^# ",vcf),
         nThread=threads,colClasses="character",header=FALSE,sep="\t");
         names(body)<-col_names
       },error=function(e){
-         body=setNames(data.table::data.table(matrix(nrow = 0, ncol = length(col_names))),col_names)
+         body<-setNames(data.table::data.table(matrix(nrow = 0, ncol = length(col_names))),col_names)
       })
   }
  
