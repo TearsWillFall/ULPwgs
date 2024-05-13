@@ -16,19 +16,36 @@ read_vcf=function(vcf=NULL,sep="\t",threads=1){
   if(is.null(vcf)){
     stop("vcf arguments is of type NULL")
   }else if(check_if_compressed(vcf)){
-      body=data.table::fread(cmd=paste0("gunzip -c ",vcf," | grep -v ^# "),
-      nThread=threads,colClasses="character",header=FALSE,sep="\t")
       header=system(paste0("gunzip -c ",vcf, "| grep ^#" ),intern=TRUE)
+      col_names=header[length(header)]
+      raw_header=header[-length(header)]
+      col_names=as.character(read.table(text=sub("#","",col_names),
+      stringsAsFactors = FALSE,colClasses="character"))
+      tryCatch({body=data.table::fread(cmd=paste0("gunzip -c ",vcf," | grep -v ^# "),
+      nThread=threads,colClasses="character",header=FALSE,sep="\t");
+      names(body)<-col_names
+      },
+      error=function(e){
+         body=setNames(data.table::data.table(matrix(nrow = 0, ncol = length(col_names))),col_names)
+      })
+      
   }else{
-      body=data.table::fread(cmd=paste0("grep -v ^# ",vcf),
-      nThread=threads,colClasses="character",header=FALSE,sep="\t")
       header=system(paste0("grep ^# ",vcf),intern=TRUE)
+      col_names=header[length(header)]
+      raw_header=header[-length(header)]
+      col_names=as.character(read.table(text=sub("#","",col_names),
+      stringsAsFactors = FALSE,colClasses="character"))
+      tryCatch({
+        body=data.table::fread(cmd=paste0("grep -v ^# ",vcf),
+        nThread=threads,colClasses="character",header=FALSE,sep="\t");
+        names(body)<-col_names
+      },error=function(e){
+         body=setNames(data.table::data.table(matrix(nrow = 0, ncol = length(col_names))),col_names)
+      })
   }
-  col_names=header[length(header)]
-  raw_header=header[-length(header)]
+ 
   descriptors=extract_descriptors_vcf(raw_header)
-  names(body)=as.character(read.table(text=sub("#","",col_names),
-  stringsAsFactors = FALSE,colClasses="character"))
+
   samples=setdiff(names(body),cols)
   body=extract_body_vcf(body,samples)
   body$POS=as.numeric(body$POS)
