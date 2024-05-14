@@ -1198,9 +1198,15 @@ tabulate_vcf=function(
 
         ignore=TRUE
         #### Catch empty VCF 
-        tryCatch({vcf=read_vcf(input,threads=threads);ignore=FALSE},error=function(error){
+        tryCatch({
+          vcf=read_vcf(input,threads=threads);ignore=FALSE
+        },error=function(error){
             warning("No variants detected in VCF. Ignoring input VCF.")
-        })
+        }) 
+        if(nrow(vcf$body)==0){
+            warning("No variants detected in VCF. Ignoring input VCF.");
+            ignore=TRUE
+        }
 
 
         if(ignore){
