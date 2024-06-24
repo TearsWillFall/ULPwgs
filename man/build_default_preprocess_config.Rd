@@ -5,8 +5,8 @@
 \title{Build default config for preprocessing step}
 \usage{
 build_default_preprocess_config(
-  modules = list(gcc = unlist(build_default_myriad_module_list()$compilers$gcc), r =
-    unlist(build_default_myriad_module_list()$r))
+  modules = list(r = myriad_module(mode = "load", module =
+    build_default_myriad_module_list()$r))
 )
 }
 \arguments{
