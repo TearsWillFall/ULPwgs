@@ -991,7 +991,7 @@ new_reheader_bam_samtools=function(
 
     new_header=paste0("\"@RG\\tID:",id_tag,"\\tPL:",pl_tag,"\\tPU:",pu_tag,"\\tLB:",lb_tag,"\\tSM:",sm_tag,"\"")
 
-    .main$exec_code=paste0(
+    .main$exec_code=paste(
       bin_samtools,
       " addreplacerg -r ", new_header,
       " -O BAM ",
