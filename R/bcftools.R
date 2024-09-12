@@ -279,6 +279,7 @@ mpileup_bcftools<-function(
     bam=NULL,
     regions=NULL,
     output_name=NULL,
+    ...
 ){
     run_main=function(
         .env
