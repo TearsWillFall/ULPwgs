@@ -1618,7 +1618,9 @@ merge_vcf=function(
 
         vcf=read_vcf(vcfs[[1]],threads)
         body=lapply(1:length(vcfs),FUN=function(x){
-          read_vcf(vcf=vcfs[[x]],threads=threads)$body})
+          return(ULPwgs::read_vcf(vcf=vcfs[[x]],threads=threads)$body)
+          }
+        )
         body=dplyr::bind_rows(body)
         body[,-c(1:7)]<-"."
      
