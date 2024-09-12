@@ -1600,9 +1600,82 @@ concat_vcf=function(vcfs=NULL){
       body=lapply(1:lenght(vcfs),FUN=function(x){vcfs[[x]]$body})
       body=dplyr::bind_rows(body)
       vcf$body=body
-      
   }
 
+}
+
+#' Merge VCF file and return union of all unique VCF rows
+#'
+#' @param bin_bgzip Path to bgzip executable.
+#' @param bin_tabix Path to TABIX executable.
+#' @param vcfs Path to VCF files
+#' @param output_name Name of the output file
+#' @export
+
+
+merge_vcf=function(
+  bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+  bin_tabix=build_default_tool_binary_list()$bin_tabix,
+  output_name=NULL,
+  vcfs=NULL,
+  ...
+){
+    run_main=function(
+      .env
+    ){
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+
+        set_main(.env=.this.env)
+        .main$steps[[fn_id]]<-.this.env
+        .main.step=.main$steps[[fn_id]]
+
+        samples<-paste0(vcfs,collapse=",")
+
+        vcfs=lapply(vcfs,read_vcf,threads=threads)
+        vcf=vcfs[[1]]
+        body=lapply(1:lenght(vcfs),FUN=function(x){vcfs[[x]]$body})
+        body=dplyr::bind_rows(body)
+        body[-c(1:7),]="."
+        body=body %>% dplyr::distinct()
+        vcf$body=body
+
+        vcf$descriptor$merged_vcf<-samples
+        
+        
+        .main$steps[[fn_id]]$steps <- append(
+          .main$steps[[fn_id]]$steps,
+          write_vcf(
+            bin_bgzip=bin_bgzip,
+            bin_tabix=bin_tabix,
+            vcf=vcf,
+            output_name=paste0(out_file_dir,"/",input_id,".merged.vcf"),
+            output_dir=out_file_dir,
+            tmp_dir=tmp_dir,
+            env_dir=env_dir,
+            batch_dir=batch_dir,
+            err_msg=err_msg,
+            threads=threads,
+            ram=ram,
+            executor=task_id
+          )
+        )
+
+        .this.step=.main.step$steps$write_vcf
+        .main.step$out_files=.this.step$out_files
+        .env$.main<-.main
+
+      }
+
+
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="output_name"
+    )
+  
+    launch(.env=.base.env)
 }
 
 

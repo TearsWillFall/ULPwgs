@@ -1028,6 +1028,96 @@ new_reheader_bam_samtools=function(
 
 
 
+
+#' Update BAM headers
+#'
+#'
+#' @param bam Path to the input file with the sequence.
+#' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param threads Number of threads. Default 3
+#' @param ram RAM per thread to use. Default 4.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor Job EXECUTOR ID. Default "mardupsGATK"
+#' @param task_name Name of the task. Default "mardupsGATK"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] Hold job until job is finished. Job ID. 
+#' @export
+
+
+
+new_merge_bam_samtools=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  id_tag=NULL,
+  pu_tag=NULL,
+  pl_tag=NULL,
+  lb_tag=NULL,
+  sm_tag=NULL,
+  bam=NULL,
+  index=TRUE,
+  ...
+){
+
+  
+  run_main=function(
+    .env
+  ){
+
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+
+
+    set_main(.env=.this.env)
+   
+
+    .main$out_file=paste0(
+      out_file_dir,"/",
+      input_id,".merged.bam"
+    )
+
+    new_header=NULL
+
+    new_header=paste0("\"@RG\\tID:",id_tag,"\\tPL:",pl_tag,"\\tPU:",pu_tag,"\\tLB:",lb_tag,"\\tSM:",sm_tag,"\"")
+
+    .main$exec_code=paste(
+      bin_samtools,
+      " merge -r ", new_header,
+      " -O BAM ",
+      " -@ ",
+      threads, ifelse(index," --write-index",""),
+      " -o ",.main$out_file,input
+    
+    )
+
+    run_job(.env=.this.env)
+
+    .main.step=.main$steps[[fn_id]]
+
+    .main.step$out_files$flag_stats <- .main$out_file
+
+    .env$.main <- .main
+
+  }
+
+
+  .base.env=environment()
+  list2env(list(...),envir=.base.env)
+  set_env_vars(
+    .env= .base.env,
+    vars="bam"
+  )
+ 
+   launch(.env=.base.env)
+
+
+  
+}
+
+
+
 #' Generate BAM file indexstats
 #'
 #'
@@ -2401,6 +2491,7 @@ sample_bam_samtools=function(
       .main$out_file
     )
 
+    
       run_job(.env=.this.env)
 
       .main.step=.main$steps[[fn_id]]
