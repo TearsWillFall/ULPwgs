@@ -1618,7 +1618,7 @@ merge_vcf=function(
 
         vcfs=lapply(vcfs,read_vcf,threads=threads)
         vcf=vcfs[[1]]
-        body=lapply(1:lenght(vcfs),FUN=function(x){vcfs[[x]]$body})
+        body=lapply(1:length(vcfs),FUN=function(x){vcfs[[x]]$body})
         body=dplyr::bind_rows(body)
         body[-c(1:7),]="."
         body=body %>% dplyr::distinct()
