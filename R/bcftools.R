@@ -260,4 +260,63 @@ if(clean){
 
 }
 
+#' Generate mpileup report using bcftools
+#'
+#' @param bin_bgzip Path to bgzip executable.
+#' @param bin_bcftools Path to bcftools executable.
+#' @param bin_tabix Path to TABIX executable.
+#' @param ref_genome Path to the reference genome.
+#' @param bam Path to BAM or list of BAM files to analyse. If list of BAM is provided variants will be called for all BAMS
+#' @param targets Path to file with target regions
+#' @param output_name Output file name
+#' @export
 
+mpileup_bcftools<-function(
+    bin_bcftools=build_default_tool_binary_list()$bin_bcftools,
+    bin_bgzip=build_default_tool_binary_list()$bin_bgzip,
+    bin_tabix=build_default_tool_binary_list()$bin_tabix,
+    ref_genome=build_default_reference_list()$HG19$reference$genome,
+    bam=NULL,
+    regions=NULL,
+    output_name=NULL,
+){
+    run_main=function(
+        .env
+    ){
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+   
+        set_main(.env=.this.env)
+
+        add=""
+        if(!is.null(targets)){
+          add=paste("-T ",targets)
+        }
+
+        .main$out_files$mpileup_vcf<-paste0(out_file_dir,"/",input_id,".vcf")
+        .main$exec_code=paste(
+          bin_bcftools,
+          " mpileup ", paste(bams),
+          " -f ", ref_genome,
+          add,
+          " --max-depth " max_depth,
+          " --max-idepth", max_depth,
+          " -Ou  --annotate INFO/AD ",
+          " | ", bin_bcftools, 
+          " call -mv -o ",
+            .main$out_files$mpileup_vcf
+        )
+        run_job(.env=.this.env)
+        .env$.main <- .main
+    }
+
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env=.base.env,
+      vars="output_name"
+    )
+
+
+
+}
