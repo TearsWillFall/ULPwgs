@@ -279,6 +279,7 @@ mpileup_bcftools<-function(
     bam=NULL,
     regions=NULL,
     output_name=NULL,
+    max_detph=1000000,
     ...
 ){
     run_main=function(
@@ -300,7 +301,7 @@ mpileup_bcftools<-function(
           " mpileup ", paste(bams),
           " -f ", ref_genome,
           add,
-          " --max-depth " max_depth,
+          " --max-depth ", max_depth,
           " --max-idepth", max_depth,
           " -Ou  --annotate INFO/AD ",
           " | ", bin_bcftools, 
