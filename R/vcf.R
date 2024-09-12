@@ -1588,22 +1588,6 @@ write_vcf=function(
 }
 
 
-concat_vcf=function(vcfs=NULL){
-
-  options(scipen=999)
-
-  run_main=function(
-    .env
-  ){
-      vcfs=lapply(vcfs,read_vcf,threads=threads)
-      vcf=vcfs[[1]]
-      body=lapply(1:lenght(vcfs),FUN=function(x){vcfs[[x]]$body})
-      body=dplyr::bind_rows(body)
-      vcf$body=body
-  }
-
-}
-
 #' Merge VCF file and return union of all unique VCF rows
 #'
 #' @param bin_bgzip Path to bgzip executable.
