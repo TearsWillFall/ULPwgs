@@ -1620,7 +1620,11 @@ merge_vcf=function(
         vcf=vcfs[[1]]
         body=lapply(1:length(vcfs),FUN=function(x){vcfs[[x]]$body})
         body=dplyr::bind_rows(body)
-        body[,-c(1:7)]="."
+        for (col in 8:length(body)){
+          body[,col]<-"."
+        }
+       
+     
         body=body %>% dplyr::distinct()
         vcf$body=body
 

@@ -279,7 +279,7 @@ mpileup_bcftools<-function(
     bam=NULL,
     regions=NULL,
     output_name=NULL,
-    max_detph=1000000,
+    max_depth=1000000,
     ...
 ){
     run_main=function(
@@ -291,8 +291,8 @@ mpileup_bcftools<-function(
         set_main(.env=.this.env)
 
         add=""
-        if(!is.null(targets)){
-          add=paste("-T ",targets)
+        if(!is.null(regions)){
+          add=paste("-T ",regions)
         }
 
         .main$out_files$mpileup_vcf<-paste0(out_file_dir,"/",input_id,".vcf")
