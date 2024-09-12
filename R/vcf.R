@@ -1622,7 +1622,7 @@ merge_vcf=function(
           }
         )
         body=dplyr::bind_rows(body)
-        samples=body$SAMPLES
+        samples=body$SAMPLE
         body[,-c(1:7)]<-"."
         body$SAMPLES=samples
         body=body %>% dplyr::distinct()
