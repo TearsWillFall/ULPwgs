@@ -1616,14 +1616,11 @@ merge_vcf=function(
 
         samples<-paste0(vcfs,collapse=",")
 
-        vcfs=lapply(vcfs,read_vcf,threads=threads)
-        vcf=vcfs[[1]]
-        body=lapply(1:length(vcfs),FUN=function(x){vcfs[[x]]$body})
+        vcf=read_vcf(vcfs[[1]],threads)
+        body=lapply(1:length(vcfs),FUN=function(x){
+          read_vcf(vcf=vcfs[[x]],threads=threads)$body})
         body=dplyr::bind_rows(body)
-        for (col in 8:length(body)){
-          body[,col]<-"."
-        }
-       
+        body[,-c(1:7)]<-"."
      
         body=body %>% dplyr::distinct()
         vcf$body=body
