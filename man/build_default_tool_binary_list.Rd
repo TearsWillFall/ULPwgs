@@ -44,7 +44,8 @@ build_default_tool_binary_list(
     bin_samtools = "/lustre/scratch/scratch/regmova/tools/samtools/samtools", bin_picard
     = "/lustre/scratch/scratch/regmova/tools/picard/build/libs/picard.jar", bin_bedtools
     = "/lustre/scratch/scratch/regmova/tools/bedtools2/bin/bedtools", bin_ciri_quant =
-    "/lustre/scratch/scratch/regmova/tools/CIRIquant/bin/CIRIquant")
+    "/lustre/scratch/scratch/regmova/tools/CIRIquant/bin/CIRIquant", bin_msing =
+    "/lustre/scratch/scratch/regmova/tools/msings/scripts/run_msings.sh")
 )
 }
 \arguments{

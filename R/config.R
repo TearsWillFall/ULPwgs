@@ -579,7 +579,8 @@ build_default_tool_binary_list=function(
                 bin_samtools="/lustre/scratch/scratch/regmova/tools/samtools/samtools",
                 bin_picard="/lustre/scratch/scratch/regmova/tools/picard/build/libs/picard.jar",
                 bin_bedtools="/lustre/scratch/scratch/regmova/tools/bedtools2/bin/bedtools",
-                bin_ciri_quant="/lustre/scratch/scratch/regmova/tools/CIRIquant/bin/CIRIquant"
+                bin_ciri_quant="/lustre/scratch/scratch/regmova/tools/CIRIquant/bin/CIRIquant",
+                bin_msing="/lustre/scratch/scratch/regmova/tools/msings/scripts/run_msings.sh"
         )
     ){
          return(binaries)
@@ -651,7 +652,8 @@ build_default_python_enviroment_list=function(
                 env_circlemap="/lustre/home/regmova/miniconda3/envs/circle-map",
                 env_hatchet="/lustre/home/regmova/miniconda3/envs/hatchet",
                 env_cov="/lustre/home/regmova/miniconda3/envs/cov",
-                env_medicc2="/lustre/home/regmova/miniconda3/envs/medicc_env"
+                env_medicc2="/lustre/home/regmova/miniconda3/envs/medicc_env",
+                env_msing="/lustre/scratch/scratch/regmova/tools/msings/msings-env/bin"
         )
     ){
          return(enviroments)
@@ -956,6 +958,10 @@ build_default_reference_list=function(
                         ),
                         annotation=list(
                             genes="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/genes.bed")
+                        ),
+                        msi=list(
+                            bed="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/msi/regions.bed",
+                            baseline="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/msi/baseline.txt"
                         )
 
                 ),

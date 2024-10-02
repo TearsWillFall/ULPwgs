@@ -12,7 +12,7 @@ mpileup_bcftools(
   bam = NULL,
   regions = NULL,
   output_name = NULL,
-  max_detph = 1e+06,
+  max_depth = 1e+06,
   ...
 )
 }

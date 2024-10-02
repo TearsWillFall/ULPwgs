@@ -132,28 +132,32 @@ build_default_reference_list(
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/battenberg/rt.txt")),
     
      annotation = list(genes =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/genes.bed"))), rnaseq =
-    list(intervals = list(ri =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/genes.bed")), msi =
+    list(bed =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/msi/regions.bed",
+    baseline =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/msi/baseline.txt")),
+    rnaseq = list(intervals = list(ri =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/rnaseq//intervals/rRNA.interval_list"),
     reference = list(ref_flat =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/rnaseq/reference/refFlat.txt")),
-    variant = list(germ_reference =
+    
+     variant = list(germ_reference =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/af-only-gnomad.raw.sites.vcf",
     biallelic_reference =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/small_exac_common_3.vcf",
-    
-     hapmap_reference =
+    hapmap_reference =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/hapmap_3.3.b37.vcf",
     mills_reference =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/Mills_and_1000G_gold_standard.indels.b37.vcf")),
     HG19_ALT = list(reference = list(genome =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19_alt/reference/human_g1k_v37.fasta")),
-    HG38 = list(reference = list(genome =
+    
+     HG38 = list(reference = list(genome =
     "/lustre/scratch/scratch/regmova/PCF/references/hg38/reference/ucsc.hg38.fa"), panel
     = list(PCF_V3 = list(intervals = list(bi =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19_alt/panel/v3/cap_tg.interval_list",
-    
-     ti =
+    ti =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19_alt/panel/v3/prim_tg.interval_list"))),
     database = list(all_snps =
     "/lustre/scratch/scratch/regmova/PCF/references/hg38/database/00-All.vcf.gz",
