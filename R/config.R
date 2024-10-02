@@ -957,11 +957,11 @@ build_default_reference_list=function(
                             )
                         ),
                         annotation=list(
-                            genes="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/genes.bed")
-                        ),
+                            genes="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/genes.bed"),
                         msi=list(
                             bed="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/msi/regions.bed",
                             baseline="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/msi/baseline.txt"
+                        )
                         )
 
                 ),
