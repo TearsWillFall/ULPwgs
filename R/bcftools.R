@@ -282,6 +282,7 @@ mpileup_bcftools<-function(
     max_depth=1000000,
     ...
 ){
+    options(scipen = 999)
     run_main=function(
         .env
     ){
