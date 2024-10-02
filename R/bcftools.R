@@ -298,7 +298,7 @@ mpileup_bcftools<-function(
         .main$out_files$mpileup_vcf<-paste0(out_file_dir,"/",input_id,".vcf")
         .main$exec_code=paste(
           bin_bcftools,
-          " mpileup ", paste(bams),
+          " mpileup ", paste(bam),
           " -f ", ref_genome,
           add,
           " --max-depth ", max_depth,
