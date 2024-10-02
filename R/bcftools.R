@@ -319,6 +319,6 @@ mpileup_bcftools<-function(
       vars="output_name"
     )
 
-
+     launch(.env=.base.env)
 
 }
