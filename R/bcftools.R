@@ -298,7 +298,7 @@ mpileup_bcftools<-function(
 
         .main$out_files$mpileup_vcf<-paste0(out_file_dir,"/",input_id,".vcf")
         .main$exec_code=paste(
-          paste0("export BCFTOOLS_PLUGINS=",dirname(bin_bcftools),";"),
+          paste0("export BCFTOOLS_PLUGINS=",paste0(dirname(bin_bcftools),"/plugins"),";"),
           bin_bcftools,
           " mpileup ", paste0(bam,collapse=" "),
           " -f ", ref_genome,
