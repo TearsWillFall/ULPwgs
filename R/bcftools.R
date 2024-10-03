@@ -298,6 +298,7 @@ mpileup_bcftools<-function(
 
         .main$out_files$mpileup_vcf<-paste0(out_file_dir,"/",input_id,".vcf")
         .main$exec_code=paste(
+          paste0("export BCFTOOLS_PLUGINS=",dirname(bin_bcftools),";"),
           bin_bcftools,
           " mpileup ", paste0(bam,collapse=" "),
           " -f ", ref_genome,
@@ -305,7 +306,7 @@ mpileup_bcftools<-function(
           " --max-depth ", max_depth,
           " --max-idepth", max_depth,
           " -Ou  -a FORMAT/AD,FORMAT/ADF,FORMAT/ADR,FORMAT/DP,FORMAT/SP,INFO/AD,INFO/ADF,INFO/ADR ",
-          " | ",bin_bcftools, " +fill-tags -- -t all |",     
+          " | ",bin_bcftools, " +fill-tags -- -t FORMAT/VAF |",     
            bin_bcftools, 
           " call -mv -o ",
             .main$out_files$mpileup_vcf
