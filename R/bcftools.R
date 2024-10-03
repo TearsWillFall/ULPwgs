@@ -305,7 +305,7 @@ mpileup_bcftools<-function(
           add,
           " --max-depth ", max_depth,
           " --max-idepth", max_depth,
-          " -Ou  -a FORMAT/AD,FORMAT/ADF,FORMAT/ADR,FORMAT/DP,FORMAT/SP,INFO/AD,INFO/ADF,INFO/ADR ",
+          " -Ou  -a \"FORMAT/AD,FORMAT/ADF,FORMAT/ADR,FORMAT/DP,FORMAT/SP,INFO/AD,INFO/ADF,INFO/ADR\" ",
           " | ",bin_bcftools, " +fill-tags -- -t \"FORMAT/VAF\"|",     
            bin_bcftools, 
           " call -mv -o ",
