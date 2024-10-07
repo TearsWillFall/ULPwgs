@@ -310,7 +310,7 @@ mpileup_bcftools<-function(
            bin_bcftools, 
           " call -mv -Ou |",
            bin_bcftools, 
-          " norm -m -both -o ",
+          " norm -a --atom-overlaps . -m -both -o ",
             .main$out_files$mpileup_vcf
         )
         run_job(.env=.this.env)
