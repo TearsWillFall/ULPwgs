@@ -308,7 +308,9 @@ mpileup_bcftools<-function(
           " -Ou  -a \"FORMAT/AD,FORMAT/ADF,FORMAT/ADR,FORMAT/DP,FORMAT/SP,INFO/AD,INFO/ADF,INFO/ADR\" ",
           " | ",bin_bcftools, " +fill-tags -- -t \"FORMAT/VAF\"|",     
            bin_bcftools, 
-          " call -mv -o ",
+          " call -mv -Ou |",
+           bin_bcftools, 
+          " norm -m +both -o "
             .main$out_files$mpileup_vcf
         )
         run_job(.env=.this.env)
