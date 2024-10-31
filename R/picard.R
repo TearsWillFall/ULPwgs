@@ -818,3 +818,106 @@ new_tg_summary_metrics_bam_picard=function(
 
       launch(.env=.base.env)
 }
+
+
+#' Generate Artifact Metrics BAM picard
+#'
+#'
+#' @param bam Path to the input file with the sequence.
+#' @param bin_picard Path to bwa executable. Default path tools/samtools/samtools.
+#' @param ref_genome Path to the reference genome.
+#' @export
+
+
+artifact_metrics_bam_picard=function(
+  bin_picard=build_default_tool_binary_list()$bin_picard,
+  bam=NULL,
+  ref_genome=build_default_reference_list()$HG19$reference$genome,
+  ...
+  ){
+
+      run_main=function(
+              .env
+          ){
+              .this.env=environment()
+              append_env(to=.this.env,from=.env)
+              
+
+              set_main(.env=.this.env)
+              
+              out_file=paste0(out_file_dir,"/",input_id)
+              .main$out_files$bait_bias_detail_metrics=paste0(out_file,".bait_bias_detail_metrics")
+              .main$out_files$bait_bias_summary_metrics=paste0(out_file,".bait_bias_summary_metrics")
+              .main$out_files$error_summary_metrics=paste0(out_file,".error_summary_metrics")
+              .main$out_files$pre_adapter_detail_metrics=paste0(out_file,".pre_adapter_detail_metrics")
+              .main$out_files$pre_adapter_summary_metrics=paste0(out_file,".pre_adapter_summary_metrics")
+
+              .main$exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir,
+              " -jar ",bin_picard," CollectSequencingArtifactMetrics VALIDATION_STRINGENCY=SILENT",
+              " I=",input," O=",out_file,
+              " R=",ref_genome," TMP_DIR=",tmp_dir)
+
+              run_job(
+                .env=.this.env
+              )
+
+              .env$.main<-.main
+          }
+
+      .base.env=environment()
+      list2env(list(...),envir=.base.env)
+      set_env_vars(
+          .env=.base.env,
+          vars="bam"
+      )
+
+      launch(.env=.base.env)
+}
+
+#' Generate OxoG Metrics BAM picard
+#'
+#' @param bam Path to the input file with the sequence.
+#' @param bin_picard Path to bwa executable. Default path tools/samtools/samtools.
+#' @param ref_genome Path to the reference genome.
+#' @export
+
+
+
+oxo_metrics_bam_picard=function(
+  bin_picard=build_default_tool_binary_list()$bin_picard,
+  bam=NULL,
+  ref_genome=build_default_reference_list()$HG19$reference$genome
+  ...
+  ){
+      run_main=function(
+              .env
+          ){
+              .this.env=environment()
+              append_env(to=.this.env,from=.env)
+              
+
+              set_main(.env=.this.env)
+              
+              .main$out_files$metrics=paste0(out_file_dir,"/",input_id,".picard_CollectOxoGMetrics.report")
+  
+              .main$exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir,
+              " -jar ",bin_picard," CollectOxoGMetrics VALIDATION_STRINGENCY=SILENT",
+              " I=",input," O=",.main$out_files$metrics,
+              " R=",ref_genome," TMP_DIR=",tmp_dir)
+
+              run_job(
+                .env=.this.env
+              )
+
+              .env$.main<-.main
+          }
+
+      .base.env=environment()
+      list2env(list(...),envir=.base.env)
+      set_env_vars(
+          .env=.base.env,
+          vars="bam"
+      )
+
+      launch(.env=.base.env)
+}
