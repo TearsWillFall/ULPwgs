@@ -883,10 +883,10 @@ artifact_metrics_bam_picard=function(
 
 
 
-oxo_metrics_bam_picard=function(
+oxog_metrics_bam_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bam=NULL,
-  ref_genome=build_default_reference_list()$HG19$reference$genome
+  ref_genome=build_default_reference_list()$HG19$reference$genome,
   ...
   ){
       run_main=function(

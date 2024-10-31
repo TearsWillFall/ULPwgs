@@ -132,11 +132,11 @@ build_default_reference_list(
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/battenberg/rt.txt")),
     
      annotation = list(genes =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/genes.bed")), msi =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/genes.bed"), msi =
     list(bed =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/msi/regions.bed",
     baseline =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/msi/baseline.txt")),
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/msi/baseline.txt"))),
     rnaseq = list(intervals = list(ri =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/rnaseq//intervals/rRNA.interval_list"),
     reference = list(ref_flat =
