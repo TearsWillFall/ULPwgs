@@ -664,17 +664,17 @@ set_env_vars=function(
     inputs_id <- output_name
     inputs_ext <- NULL
     
-  
+    
  
     if(!is.null(vars)){
         if(is.list(vars)){
-          cat(paste0(orange("WARNING: Multiple parallel arguments available: "),paste0(orange(vars)$underline,collapse=", ")))
+          cat(paste0(orange("WARNING: Multiple parallel arguments available: "),paste0(orange_u(vars),collapse=", ")))
           check=check_vars_if_list(.env=.this.env)
           if(sum(check)>1){
             cat(orange(
               paste0(orange("ERROR: Many parallel argument have been selected ("),
               paste0(vars[check],collapse=", "),
-              ") for function ",orange(fn)$underline,orange(" but only one is supported"))
+              ") for function ",orange_u(fn),orange(" but only one is supported"))
               )
             )
             stop(err_msg)
@@ -684,8 +684,8 @@ set_env_vars=function(
             No further parallelization outside the function will be applied"))
           }
         }else{
-           cat(paste0(orange("WARNING: Parallel variable "), orange(vars)$underline,
-            orange(" was selected"))) 
+           cat(paste0(orange("WARNING: Parallel variable "), orange_u(vars),
+            orange("was selected"))) 
         }  
         
     }
