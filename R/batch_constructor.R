@@ -677,14 +677,12 @@ set_env_vars=function(
               )
             )
             stop(err_msg)
-          }
-          if(sum(check)==0){
+          }else if(sum(check)==0){
             vars=vars[1]
-            cat(orange("WARNING: No parallel argument was selected. No further parallelization outside the function will be applied","\n"))
-          }else{
+            cat(orange("WARNING: No parallel argument was selected. No further parallelization outside the scope of this function will be applied","\n"))
+          }else if(check==1){
               vars=unlist(vars[check])
           }
-  
         }else{
            cat(paste0(orange("WARNING: Parallel variable "), orange_u(vars),
             orange(" was selected","\n"))) 
