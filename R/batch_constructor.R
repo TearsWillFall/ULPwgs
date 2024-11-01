@@ -569,8 +569,8 @@ qdel=function(jobs){
 check_vars_if_list=function(.env){
            .this.env=environment()
            append_env(to=.this.env,from=.env)
-           sapply(vars,FUN=function(vars){
-            is.list(get(vars))
+           sapply(vars,FUN=function(var){
+            is.list(get(var))
           })
 }
 
