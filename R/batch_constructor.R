@@ -670,7 +670,8 @@ set_env_vars=function(
         if(is.list(vars)){
           cat(paste0(orange("WARNING: Multiple parallel arguments available for command ",fn," : "),
           paste0(orange_u(vars),collapse=", "),"\n"))
-          check=check_vars_if_list(.env=.env)
+          check=check_vars_if_list(.env=.this.env)
+          print(check)
           if(sum(check)>1){
             cat(orange(
               paste0(crayon::red("ERROR: Many parallel argument have been selected but only one is supported" ),"\n")
