@@ -269,7 +269,7 @@ new_generate_bqsr_gatk=function(
                 "singularity exec -H ",
                 getwd(),":/home ",sif_gatk,
                 " /gatk/gatk BaseRecalibrator -I ",bam,
-                " -R ", ref_genome, dbsnp,
+                " -R ", ref_genome, add,
                 reg," -O ",  .main$out_files$recal_table,paste0(" --tmp-dir ",tmp_dir)
             )
 
