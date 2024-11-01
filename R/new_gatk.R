@@ -320,32 +320,33 @@ new_generate_bqsr_gatk=function(
 #' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
 #' @export
 
-gather_BQSR_reports_gatk=function(
+gather_bqsr_reports_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
-  report="",output_name="Report",clean=FALSE,
-  output_dir=".",tmp_dir=".",verbose=FALSE,
-  executor_id=make_unique_id("gatherBQSR"),
-  task_name="gatherBQSR",
-  batch_config=build_default_preprocess_config(),
-  mode="local",time="48:0:0",
-  threads=4,ram=4,update_time=60,wait=FALSE,hold=NULL){
+  report=NULL,
+  output_name=NULL,
+  clean=FALSE,
+  ...
+  ){
 
-  argg <- as.list(environment())
-  task_id=make_unique_id(task_name)
-  out_file_dir=set_dir(dir=output_dir)
+   run_main=function(
+              .env
+          ){
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
 
-  if(tmp_dir!=""){
-    tmp_dir=paste0(" --tmp-dir ",tmp_dir)
+        set_main(.env=.this.env)
+
+        .main$out_files$merged_recal=paste0(out_file_dir,output_name,".recal.table")
+        .main$exec_code=paste0("singularity exec -H ",getwd(),":/home " ,sif_gatk,
+        " /gatk/gatk GatherBQSRReports ",paste(" -I ",report,collapse=" "),
+            " -O ",out_file,paste0(" --tmp-dir ",tmp_dir))
+
+
+        if(clean){
+            exec_code=paste(exec_code," && rm",paste(report,collapse=" "))
+        }
+
+          }
   }
-  out_file=paste0(out_file_dir,output_name,".recal.table")
-  exec_code=paste0("singularity exec -H ",getwd(),":/home " ,sif_gatk,
-  " /gatk/gatk GatherBQSRReports ",paste(" -I ",report,collapse=" "),
-    " -O ",out_file,tmp_dir)
-
-
-  if(clean){
-    exec_code=paste(exec_code," && rm",paste(report,collapse=" "))
-  }
-}
 
 
