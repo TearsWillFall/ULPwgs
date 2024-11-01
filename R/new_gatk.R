@@ -276,10 +276,11 @@ new_generate_bqsr_gatk=function(
             run_job(
                 .env=.this.env
             )
+            
+            .env$.main<-.main
 
     } 
 
-    .env$.main<-.main
 
         .base.env=environment()
         list2env(list(...),envir=.base.env)
