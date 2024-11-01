@@ -570,7 +570,9 @@ check_vars_if_list=function(.env){
            .this.env=environment()
            append_env(to=.this.env,from=.env)
            sapply(vars,FUN=function(var){
-            is.list(get(var))
+              .this.env=environment()
+              append_env(to=.this.env,from=.env)
+              is.list(get(var))
           })
 }
 
