@@ -559,7 +559,20 @@ qdel=function(jobs){
 }
 
 
+#' Check if variable in enviroment is a list
+#' 
+#' @param envir Inherit current enviroment.
+#' @export
 
+
+
+check_vars_if_list=function(.env){
+           .this.env=environment()
+           append_env(to=.this.env,from=.env)
+           sapply(vars,FUN=function(vars){
+            is.list(get(vars))
+          })
+}
 
 
 
@@ -653,6 +666,26 @@ set_env_vars=function(
 
 
     if(!is.null(vars)){
+      cat(crayon::orange(paste0("WARNING: Multiple parallel arguments available: ",paste0(vars,collapse=", "))))
+        if(is.list(vars)){
+          check=check_vars_if_list(.env=.this.env)
+          if(sum(check)>1){
+            cat(crayon::orange(
+              paste0("ERROR: Many parallel argument have been selected (",
+              paste0(vars[check],collapse=", "),
+              ") for function ",fn," but only one is supported")
+              )
+            )
+            stop()
+          }
+          if(sum(check)==0){
+            paste0("WARNING: No parallel argument was selected. 
+            No further parallelization outside the function will be applied")
+          }
+        }    
+    }
+  
+
       inputs <- get(vars)
       n_inputs <- length(inputs)
 
@@ -674,7 +707,7 @@ set_env_vars=function(
         executor_id=executor_id,
         task_id=task_ids
       )
-    }
+    
     
    
     out_file_dir <- set_dir(
