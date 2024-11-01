@@ -270,7 +270,7 @@ new_generate_bqsr_gatk=function(
                 getwd(),":/home ",sif_gatk,
                 " /gatk/gatk BaseRecalibrator -I ",bam,
                 " -R ", ref_genome, dbsnp,
-                reg," -O ",out_file,paste0(" --tmp-dir ",tmp_dir)
+                reg," -O ",  .main$out_files$recal_table,paste0(" --tmp-dir ",tmp_dir)
             )
 
             run_job(
