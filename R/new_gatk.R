@@ -229,28 +229,26 @@ new_recal_gatk=function(
 #' @param hold [OPTIONAL] HOld job until job is finished. Job ID.
 #' @export
 
-new_generate_BQSR_gatk=function(
-  region=NULL,
+new_generate_bqsr_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
   bam=NULL,
+  region=NULL,
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   dbsnp=build_default_reference_list()$HG19$database$all_common,
   ...
 ){  
 
- 
       run_main=function(
               .env
           ){
               .this.env=environment()
               append_env(to=.this.env,from=.env)
-              
-
+        
               set_main(.env=.this.env)
                
-            if (is.null(region)){
+              if (is.null(region)){
                 .main$out_files$recal_table=paste0(out_file_dir,"/",input_id,".recal.table")
-            }else{
+              }else{
                 if(is.list(region)){
                     region=input
                 }else{
@@ -258,7 +256,7 @@ new_generate_BQSR_gatk=function(
                 }
                 reg=paste0(" -L ",region)
                 .main$out_files$recal_table=paste0(out_file_dir,"/",get_file_name(bam),".",region,".recal.table")
-            }
+             }
 
             ## Multiple vcf with snps can be given
             
@@ -279,17 +277,18 @@ new_generate_BQSR_gatk=function(
                 .env=.this.env
             )
 
-            .env$.main<-.main
+    } 
 
-            .base.env=environment()
-            list2env(list(...),envir=.base.env)
-            set_env_vars(
-                .env= .base.env,
-                vars=list("bam","region")
-            )
+    .env$.main<-.main
 
-            launch(.env=.base.env)
-    }   
+        .base.env=environment()
+        list2env(list(...),envir=.base.env)
+        set_env_vars(
+            .env= .base.env,
+            vars=list("bam","region")
+        )
+
+        launch(.env=.base.env)  
 
 }
 

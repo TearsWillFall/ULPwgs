@@ -668,11 +668,12 @@ set_env_vars=function(
  
     if(!is.null(vars)){
         if(is.list(vars)){
-          cat(paste0(orange("WARNING: Multiple parallel arguments available: "),paste0(orange_u(vars),collapse=", ")))
+          cat(paste0(orange("WARNING: Multiple parallel arguments available: "),
+          paste0(orange_u(vars),collapse=", ")))
           check=check_vars_if_list(.env=.this.env)
           if(sum(check)>1){
             cat(orange(
-              paste0(orange("ERROR: Many parallel argument have been selected ("),
+              paste0(orange("ERROR: Many parallel argument have been selected ( "),
               paste0(vars[check],collapse=", "),
               ") for function ",orange_u(fn),orange(" but only one is supported"))
               )
@@ -685,9 +686,8 @@ set_env_vars=function(
           }
         }else{
            cat(paste0(orange("WARNING: Parallel variable "), orange_u(vars),
-            orange("was selected"))) 
+            orange(" was selected"))) 
         }  
-        
     }
   
 
