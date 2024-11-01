@@ -293,3 +293,59 @@ new_generate_BQSR_gatk=function(
 
 }
 
+
+
+#' Wrapper around gatk GatherBQSRReports function
+#'
+#' This functions collects the Recalibration reports generated from scattered parallel_generate_BQSR output
+#' This function wraps around gatk GatherBQSRReports function.
+#' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360036829851-GatherBQSRReports
+#'
+#' @param sif_gatk [REQUIRED] Path to gatk executable. Default tools/gatk/gatk.
+#' @param report [REQUIRED] Path to indivual reports.
+#' @param output_name [OPTIONAL] Name for the output report file.
+#' @param clean Clean input files. Default TRUE.
+#' @param executor_id Task EXECUTOR ID. Default "gatherBQSR"
+#' @param tmp_dir [OPTIONAL] Path to the temporary directory.
+#' @param task_name Task name. Default "gatherBQSR"
+#' @param output_dir [OPTIONAL] Path to the output directory.
+#' @param tmp_dir [OPTIONAL] Path to temporary directory.
+#' @param verbose [OPTIONAL] Enables progress messages. Default False.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param threads Number of threads to split the work. Default 3
+#' @param ram [OPTIONAL] If batch mode. RAM memory in GB per job. Default 1
+#' @param update_time [OPTIONAL] If batch mode. Show job updates every update time. Default 60
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+gather_BQSR_reports_gatk=function(
+  sif_gatk=build_default_sif_list()$sif_gatk,
+  report="",output_name="Report",clean=FALSE,
+  output_dir=".",tmp_dir=".",verbose=FALSE,
+  executor_id=make_unique_id("gatherBQSR"),
+  task_name="gatherBQSR",
+  batch_config=build_default_preprocess_config(),
+  mode="local",time="48:0:0",
+  threads=4,ram=4,update_time=60,wait=FALSE,hold=NULL){
+
+  argg <- as.list(environment())
+  task_id=make_unique_id(task_name)
+  out_file_dir=set_dir(dir=output_dir)
+
+  if(tmp_dir!=""){
+    tmp_dir=paste0(" --tmp-dir ",tmp_dir)
+  }
+  out_file=paste0(out_file_dir,output_name,".recal.table")
+  exec_code=paste0("singularity exec -H ",getwd(),":/home " ,sif_gatk,
+  " /gatk/gatk GatherBQSRReports ",paste(" -I ",report,collapse=" "),
+    " -O ",out_file,tmp_dir)
+
+
+  if(clean){
+    exec_code=paste(exec_code," && rm",paste(report,collapse=" "))
+  }
+}
+
+
