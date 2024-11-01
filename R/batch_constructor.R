@@ -570,8 +570,6 @@ check_vars_if_list=function(.env){
            .this.env=environment()
            append_env(to=.this.env,from=.env)
            sapply(vars,FUN=function(var){
-              .this.env=environment()
-              append_env(to=.this.env,from=.env)
               is.list(get(var))
           })
 }
@@ -682,6 +680,7 @@ set_env_vars=function(
             stop(err_msg)
           }
           if(sum(check)==0){
+            vars=vars[1]
             cat(orange("WARNING: No parallel argument was selected. No further parallelization outside the function will be applied","\n"))
           }
           vars=unlist(vars[check])
