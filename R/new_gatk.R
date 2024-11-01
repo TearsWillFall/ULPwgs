@@ -281,7 +281,6 @@ new_generate_BQSR_gatk=function(
 
             .env$.main<-.main
 
-
             .base.env=environment()
             list2env(list(...),envir=.base.env)
             set_env_vars(

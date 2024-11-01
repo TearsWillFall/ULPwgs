@@ -666,11 +666,11 @@ set_env_vars=function(
 
 
     if(!is.null(vars)){
-      cat(crayon::orange(paste0("WARNING: Multiple parallel arguments available: ",paste0(vars,collapse=", "))))
+      cat(orange(paste0("WARNING: Multiple parallel arguments available: ",paste0(vars,collapse=", "))))
         if(is.list(vars)){
           check=check_vars_if_list(.env=.this.env)
           if(sum(check)>1){
-            cat(crayon::orange(
+            cat(orange(
               paste0("ERROR: Many parallel argument have been selected (",
               paste0(vars[check],collapse=", "),
               ") for function ",fn," but only one is supported")
@@ -679,7 +679,7 @@ set_env_vars=function(
             stop()
           }
           if(sum(check)==0){
-            paste0("WARNING: No parallel argument was selected. 
+            cat("WARNING: No parallel argument was selected. 
             No further parallelization outside the function will be applied")
           }
         }    
