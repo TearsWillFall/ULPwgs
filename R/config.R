@@ -580,7 +580,8 @@ build_default_tool_binary_list=function(
                 bin_picard="/lustre/scratch/scratch/regmova/tools/picard/build/libs/picard.jar",
                 bin_bedtools="/lustre/scratch/scratch/regmova/tools/bedtools2/bin/bedtools",
                 bin_ciri_quant="/lustre/scratch/scratch/regmova/tools/CIRIquant/bin/CIRIquant",
-                bin_msing="/lustre/scratch/scratch/regmova/tools/msings/scripts/run_msings.sh"
+                bin_msing="/lustre/scratch/scratch/regmova/tools/msings/scripts/run_msings.sh",
+                bin_gangstr="/lustre/scratch/scratch/regmova/tools/GangSTR/bin/GangSTR"
         )
     ){
          return(binaries)
@@ -841,6 +842,7 @@ build_default_reference_list=function(
     references=list(
             HG19=list(
                 reference=list(
+                    chrx_tr="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/chrX_TR_database.bed",
                     genome="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.fa",
                     access_5k="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.access-5k-mappable.bed",
                     access_10k="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.access-10k-mappable.bed"
