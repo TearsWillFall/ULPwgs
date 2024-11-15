@@ -49,7 +49,7 @@ call_gangstr=function(
 
               .main$exec_code=paste0(
                     bin_gangstr, 
-                    " --bam ",bam,
+                    " --quiet --bam ",bam,
                     " --ref ", ref_genome,
                     " --regions ", regions,
                     " --out ", paste0(out_file_dir,"/",ULPwgs::get_file_name(bam)),
