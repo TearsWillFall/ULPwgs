@@ -42,7 +42,11 @@ call_gangstr=function(
               if(!is.null(chromosomes)){
                 add=paste(" --chrom ",paste0(chromosomes,collapse=","))
               }
-              
+              .main$out_files$vcf=paste0(out_file_dir,"/",ULPwgs::get_file_name(bam),".vcf")
+              .main$out_files$ins_data=paste0(out_file_dir,"/",ULPwgs::get_file_name(bam),".insdata.tab")
+              .main$out_files$samplestats=paste0(out_file_dir,"/",ULPwgs::get_file_name(bam),".samplestats.tab")
+
+
               .main$exec_code=paste0(
                     bin_gangstr, 
                     " --bam ",bam,
@@ -50,7 +54,8 @@ call_gangstr=function(
                     " --regions ", regions,
                     " --out ", paste0(out_file_dir,"/",ULPwgs::get_file_name(bam)),
                     " --bam-samps ", ULPwgs::get_file_name(bam),
-                    add
+                    add, "; sed -e 's/\r//g' -i ",
+                    .main$out_files$vcf
              )
 
             run_job(
