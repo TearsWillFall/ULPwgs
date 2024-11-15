@@ -5,16 +5,17 @@
 \title{Build default references}
 \usage{
 build_default_reference_list(
-  references = list(HG19 = list(reference = list(genome =
-    "/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.fa", access_5k
-    =
+  references = list(HG19 = list(reference = list(chrx_tr =
+    "/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/chrX_TR_database.bed",
+    genome = "/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.fa",
+    access_5k =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.access-5k-mappable.bed",
     access_10k =
     "/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.access-10k-mappable.bed"),
     phasing = list(G1000 = list(old = list(haplotype =
     paste0("/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/old/1000GP_Phase3/1000GP_Phase3_chr",
-    c(1:22, "X"), 
-     ".hap.gz"), legend =
+    
+     c(1:22, "X"), ".hap.gz"), legend =
     paste0("/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/old/1000GP_Phase3/1000GP_Phase3_chr",
     c(1:22, "X"), ".legend.gz"), gmap =
     paste0("/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/old/1000GP_Phase3/genetic_map_chr",
