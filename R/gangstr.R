@@ -40,7 +40,7 @@ call_gangstr=function(
 
               add=""
               if(!is.null(chromosomes)){
-                add=paste(" --chrom ",paste0(chromosomes,collpase=","))
+                add=paste(" --chrom ",paste0(chromosomes,collapse=","))
               }
               
               .main$exec_code=paste0(
