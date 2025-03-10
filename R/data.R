@@ -20,7 +20,9 @@ build_instrument_id = function(instruments=list(
   "NextSeq",
   "NextSeq",
   "MiniSeq",
-  "NovaSeq 6000"
+  "NovaSeq 6000",
+  "NovaSeq X Plus"
+
 ),
   pattern=c(
     "HWI-M[0-9]{4}$",
@@ -37,7 +39,8 @@ build_instrument_id = function(instruments=list(
     "NB[0-9]{6}$",
     "NS[0-9]{6}$",
     "MN[0-9]{5}$",
-    "A[0-9]{5}$"
+    "A[0-9]{5}$",
+    "LH[0-9]{5}$"
   )
 )){
     data.frame(instruments,stringsAsFactors = FALSE)
@@ -88,7 +91,8 @@ build_flowcell_id=function(flowcells=list(
       "NovaSeq 6000",
       "NovaSeq 6000",
       "NovaSeq 6000",
-      "NovaSeq 6000"
+      "NovaSeq 6000",
+      "NovaSeq X Plus"
 
     ),flowcell=c(
       "MiSeq flow cell",
@@ -124,7 +128,8 @@ build_flowcell_id=function(flowcells=list(
         "S4 flow cell",
         "S4 flow cell",
         "S4 flow cell",
-        "SP flow cell"
+        "SP flow cell",
+        "S4 flow cell"
 
         
 
@@ -163,7 +168,9 @@ build_flowcell_id=function(flowcells=list(
       "H[A-Z,0-9]{4}DSX[1-9]$",
       "H[A-Z,0-9]{4}DSXY$",
       "H[A-Z,0-9]{4}DSXC$",
-      "H[A-Z,0-9]{4}DRX[0-9,A-Z]$"
+      "H[A-Z,0-9]{4}DRX[0-9,A-Z]$",
+      "[0-9][0-9][A-Z,0-9]{7}"
+
 
     )
   )

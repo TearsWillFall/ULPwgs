@@ -1859,7 +1859,6 @@ plot_cnvkit=function(
 ){
 
 
-
       out_file_dir=set_dir(dir=output_dir)
 
       cnr_dat=dplyr::bind_rows(mclapply_os(X=cnr,FUN=function(x){dat=read.csv(x,sep="\t");dat$id=ULPwgs::get_file_name(x);dat},mc.cores=threads))
@@ -1975,7 +1974,7 @@ plot_cnvkit=function(
           
 
             if(save){
-              ggsave(units="px",limitsize = FALSE,filename=paste0( out_file_dir,"/",s_id,".",chrom,".",output_name),plot=plt,
+              ggsave(units="px",limitsize = FALSE,filename=paste0( out_file_dir,"/all_sample.",chrom,".",output_name),plot=plt,
               heigh=length(unique(cnr_dat$id))*plot_height,
               width=plot_width*length(unique(cnr_dat$chromosome)))
 
