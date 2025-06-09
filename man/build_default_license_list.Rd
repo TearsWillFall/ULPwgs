@@ -5,9 +5,9 @@
 \title{Build default license list}
 \usage{
 build_default_license_list(
-  licenses = list(dir = "/lustre/home/regmova/lic", licenses = list(mosek =
-    "/lustre/home/regmova/lic/mosek.lic", gurobi =
-    "/lustre/home/regmova/lic/gurobi.lic"))
+  licenses = list(dir = "/myriadfs/home/regmova/lic", licenses = list(mosek =
+    "/myriadfs/home/regmova/lic/mosek.lic", gurobi =
+    "/myriadfs/home/regmova/lic/gurobi.lic"))
 )
 }
 \arguments{

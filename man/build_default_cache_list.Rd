@@ -5,7 +5,7 @@
 \title{Build default cache list}
 \usage{
 build_default_cache_list(
-  cache = list(cache_vep = "/lustre/scratch/scratch/regmova/tools/ensembl-vep/.vep")
+  cache = list(cache_vep = "/myriadfs/home/regmova/Scratch/tools/ensembl-vep/.vep")
 )
 }
 \arguments{

@@ -9,20 +9,18 @@ build_default_sample_sheet(
     "TR002", "TR002"), sample_id = c("ID1", "ID1", "ID2", "ID1", "ID2"), sequencing_type
     = "BULK", method_type = "CAPTURE", method_version = "PCF_V3", reference = "HG19",
     library_id = "LB1", R1 =
-    c("/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P1_S1_L1_R1.fq.gz",
-    "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P1_S1_L2_R1.fq.gz",
-    "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P1_S2_L1_R1.fq.gz", 
- 
-       "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P2_S1_L1_R1.fq.gz",
-    "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P2_S2_L1_R1.fq.gz"),
-    R2 =
-    c("/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P1_S1_L1_R2.fq.gz",
-    "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P1_S1_L2_R2.fq.gz",
-    "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P1_S2_L1_R2.fq.gz",
-    "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P2_S1_L1_R2.fq.gz", 
- 
-      
-    "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P2_S2_L1_R2.fq.gz"),
+    c("/myriadfs/home/regmova/Scratch/PCF/test/test_data/multi_lane/P1_S1_L1_R1.fq.gz",
+    "/myriadfs/home/regmova/Scratch/PCF/test/test_data/multi_lane/P1_S1_L2_R1.fq.gz",
+    "/myriadfs/home/regmova/Scratch/PCF/test/test_data/multi_lane/P1_S2_L1_R1.fq.gz", 
+  
+      "/myriadfs/home/regmova/Scratch/PCF/test/test_data/multi_lane/P2_S1_L1_R1.fq.gz",
+    "/myriadfs/home/regmova/Scratch/PCF/test/test_data/multi_lane/P2_S2_L1_R1.fq.gz"), R2
+    = c("/myriadfs/home/regmova/Scratch/PCF/test/test_data/multi_lane/P1_S1_L1_R2.fq.gz",
+    "/myriadfs/home/regmova/Scratch/PCF/test/test_data/multi_lane/P1_S1_L2_R2.fq.gz",
+    "/myriadfs/home/regmova/Scratch/PCF/test/test_data/multi_lane/P1_S2_L1_R2.fq.gz",
+    "/myriadfs/home/regmova/Scratch/PCF/test/test_data/multi_lane/P2_S1_L1_R2.fq.gz", 
+  
+      "/myriadfs/home/regmova/Scratch/PCF/test/test_data/multi_lane/P2_S2_L1_R2.fq.gz"),
     step = collapse_step_list(build_default_step_list()), threads =
     collapse_step_list(build_default_step_threads_list()), ram =
     collapse_step_list(build_default_step_ram_list()), batch_config =

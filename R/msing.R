@@ -39,7 +39,7 @@ call_msing=function(
         .main$out_files$msi<-paste0(out_file_dir,"/",input_id,"/",input_id,".msi.txt")
         .main$out_files$mpileup<-paste0(out_file_dir,"/",input_id,"/",input_id,".mpileup.txt")
         .main$exec_code=paste(
-                "bash ",
+                ". ",
                 bin_msing,
                 env_msing,
                 input,

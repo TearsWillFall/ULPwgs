@@ -5,48 +5,46 @@
 \title{Build default tools binaries config}
 \usage{
 build_default_tool_binary_list(
-  binaries = list(bin_fastqc =
-    "/lustre/scratch/scratch/regmova/tools/FastQC/bin/fastqc", bin_skewer =
-    "/lustre/scratch/scratch/regmova/tools/skewer/skewer", bin_fastqc =
-    "/lustre/scratch/scratch/regmova/tools/FastQC/bin/fastqc", bin_bcftools =
-    "/lustre/scratch/scratch/regmova/tools/bcftools/bcftools", bin_bgzip =
-    "/lustre/scratch/scratch/regmova/tools/htslib/bin/bgzip", bin_tabix =
-    "/lustre/scratch/scratch/regmova/tools/htslib/bin/tabix", bin_htsfile =
-    "/lustre/scratch/scratch/regmova/tools/htslib/bin/htsfile", 
-     bin_nextflow =
-    "/lustre/home/regmova/bin/nextflow", bin_aasuite =
-    "/lustre/scratch/scratch/regmova/tools/AmpliconSuite-pipeline/singularity/run_paa_singularity.py",
-    bin_bwa = "/lustre/scratch/scratch/regmova/tools/bwa/bwa", bin_shapeit =
-    "/lustre/scratch/scratch/regmova/tools/shapeit4/bin/shapeit", bin_allele_counter =
-    "/lustre/scratch/scratch/regmova/tools/alleleCount/bin/alleleCounter", bin_strelka =
+  binaries = list(bin_fastqc = "/myriadfs/home/regmova/Scratch/tools/FastQC/bin/fastqc",
+    bin_skewer = "/myriadfs/home/regmova/Scratch/tools/skewer/skewer", bin_fastqc =
+    "/myriadfs/home/regmova/Scratch/tools/FastQC/bin/fastqc", bin_bcftools =
+    "/myriadfs/home/regmova/Scratch/tools/bcftools/bcftools", bin_bgzip =
+    "/myriadfs/home/regmova/Scratch/tools/htslib/bin/bgzip", bin_tabix =
+    "/myriadfs/home/regmova/Scratch/tools/htslib/bin/tabix", bin_htsfile =
+    "/myriadfs/home/regmova/Scratch/tools/htslib/bin/htsfile", bin_nextflow =
+    "/myriadfs/home/regmova/bin/nextflow", 
+     bin_aasuite =
+    "/myriadfs/home/regmova/Scratch/tools/AmpliconSuite-pipeline/singularity/run_paa_singularity.py",
+    bin_bwa = "/myriadfs/home/regmova/Scratch/tools/bwa/bwa", bin_shapeit =
+    "/myriadfs/home/regmova/Scratch/tools/shapeit4/bin/shapeit", bin_allele_counter =
+    "/myriadfs/home/regmova/Scratch/tools/alleleCount/bin/alleleCounter", bin_strelka =
     list(somatic =
-    "/lustre/scratch/scratch/regmova/tools/strelka-2.9.10/bin/configureStrelkaSomaticWorkflow.py",
+    "/myriadfs/home/regmova/Scratch/tools/strelka-2.9.10/bin/configureStrelkaSomaticWorkflow.py",
+    germline =
+    "/myriadfs/home/regmova/Scratch/tools/strelka-2.9.10/bin/configureStrelkaGermlineWorkflow.py"),
     
-         germline =
-    "/lustre/scratch/scratch/regmova/tools/strelka-2.9.10/bin/configureStrelkaGermlineWorkflow.py"),
-    bin_ucsc = list(bigBedToBed =
-    "/lustre/scratch/scratch/regmova/tools/OtherTools/bigBedToBed", bedToBigBed =
-    "/lustre/scratch/scratch/regmova/tools/OtherTools/bedToBigBed", liftOver =
-    "/lustre/scratch/scratch/regmova/tools/OtherTools/liftOver"), bin_sshpass =
-    "/lustre/scratch/scratch/regmova/tools/sshpass/sshpass", bin_vep =
-    "/lustre/scratch/scratch/regmova/tools/ensembl-vep/vep", bin_manta =
-    "/lustre/scratch/scratch/regmova/tools/manta-1.6.0/bin/configManta.py", 
-    
-    bin_ichor_pon =
-    "/lustre/scratch/scratch/regmova/tools/ichorCNA/scripts/createPanelOfNormals.R",
-    bin_ichor = "/lustre/scratch/scratch/regmova/tools/ichorCNA/scripts/runIchorCNA.R",
-    bin_samtools = "/lustre/scratch/scratch/regmova/tools/samtools/samtools", bin_gatk =
-    "/lustre/scratch/scratch/regmova/tools/gatk/gatk", bin_readcount =
-    "/lustre/scratch/scratch/regmova/tools/hmmcopy_utils/bin/readCounter", bin_ciri =
-    "/lustre/scratch/scratch/regmova/tools/CIRI/CIRI_Full_v2.1.1.jar", bin_picard =
-    "/lustre/scratch/scratch/regmova/tools/picard/build/libs/picard.jar", 
-    
-    bin_samtools = "/lustre/scratch/scratch/regmova/tools/samtools/samtools", bin_picard
-    = "/lustre/scratch/scratch/regmova/tools/picard/build/libs/picard.jar", bin_bedtools
-    = "/lustre/scratch/scratch/regmova/tools/bedtools2/bin/bedtools", bin_ciri_quant =
-    "/lustre/scratch/scratch/regmova/tools/CIRIquant/bin/CIRIquant", bin_msing =
-    "/lustre/scratch/scratch/regmova/tools/msings/scripts/run_msings.sh", bin_gangstr =
-    "/lustre/scratch/scratch/regmova/tools/GangSTR/bin/GangSTR")
+     bin_ucsc = list(bigBedToBed =
+    "/myriadfs/home/regmova/Scratch/tools/OtherTools/bigBedToBed", bedToBigBed =
+    "/myriadfs/home/regmova/Scratch/tools/OtherTools/bedToBigBed", liftOver =
+    "/myriadfs/home/regmova/Scratch/tools/OtherTools/liftOver"), bin_sshpass =
+    "/myriadfs/home/regmova/Scratch/tools/sshpass/sshpass", bin_vep =
+    "/myriadfs/home/regmova/Scratch/tools/ensembl-vep/vep", bin_manta =
+    "/myriadfs/home/regmova/Scratch/tools/manta-1.6.0/bin/configManta.py", bin_ichor_pon
+    = "/myriadfs/home/regmova/Scratch/tools/ichorCNA/scripts/createPanelOfNormals.R", 
+  
+      bin_ichor = "/myriadfs/home/regmova/Scratch/tools/ichorCNA/scripts/runIchorCNA.R",
+    bin_samtools = "/myriadfs/home/regmova/Scratch/tools/samtools/samtools", bin_gatk =
+    "/myriadfs/home/regmova/Scratch/tools/gatk/gatk", bin_readcount =
+    "/myriadfs/home/regmova/Scratch/tools/hmmcopy_utils/bin/readCounter", bin_ciri =
+    "/myriadfs/home/regmova/Scratch/tools/CIRI/CIRI_Full_v2.1.1.jar", bin_picard =
+    "/myriadfs/home/regmova/Scratch/tools/picard/build/libs/picard.jar", bin_samtools =
+    "/myriadfs/home/regmova/Scratch/tools/samtools/samtools", 
+     bin_picard =
+    "/myriadfs/home/regmova/Scratch/tools/picard/build/libs/picard.jar", bin_bedtools =
+    "/myriadfs/home/regmova/Scratch/tools/bedtools2/bin/bedtools", bin_ciri_quant =
+    "/myriadfs/home/regmova/Scratch/tools/CIRIquant/bin/CIRIquant", bin_msing =
+    "/myriadfs/home/regmova/Scratch/tools/msings/scripts/run_msings.sh", bin_gangstr =
+    "/myriadfs/home/regmova/Scratch/tools/GangSTR/bin/GangSTR")
 )
 }
 \arguments{

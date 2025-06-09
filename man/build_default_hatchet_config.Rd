@@ -7,12 +7,12 @@
 build_default_hatchet_config(
   configs = list(download_panel = list(run = FALSE, config = list(ref_panel =
     "1000GP_Phase3", refpaneldir =
-    "/lustre/scratch/scratch/regmova/TRIALS/HATCHET/reference/panel")), genotype_snps =
+    "/myriadfs/home/regmova/Scratch/TRIALS/HATCHET/reference/panel")), genotype_snps =
     list(run = TRUE, config = list(mincov = 8, maxcov = 300, reference_version = "hg19",
     chr_notation = "False")), count_alleles = list(run = TRUE, config = list(mincov = 8,
     maxcov = 300)), count_reads = list(run = TRUE, config = list()), phase_snps =
     list(run = TRUE, config = list(refpaneldir =
-    "/lustre/scratch/scratch/regmova/TRIALS/HATCHET/reference/panel")), 
+    "/myriadfs/home/regmova/Scratch/TRIALS/HATCHET/reference/panel")), 
     
     combine_counts = list(run = TRUE, config = list(msr = 3000, mtr = 5000)),
     cluster_bins = list(run = TRUE, config = list(diploidbaf = 0.1, minK = 2, maxK = 30,

@@ -309,17 +309,17 @@ build_default_sample_sheet=function(
         reference="HG19",
         library_id="LB1",
         R1=c(
-        "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P1_S1_L1_R1.fq.gz",
-        "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P1_S1_L2_R1.fq.gz",
-        "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P1_S2_L1_R1.fq.gz",
-        "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P2_S1_L1_R1.fq.gz",
-        "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P2_S2_L1_R1.fq.gz"),
+        "/myriadfs/home/regmova/Scratch/PCF/test/test_data/multi_lane/P1_S1_L1_R1.fq.gz",
+        "/myriadfs/home/regmova/Scratch/PCF/test/test_data/multi_lane/P1_S1_L2_R1.fq.gz",
+        "/myriadfs/home/regmova/Scratch/PCF/test/test_data/multi_lane/P1_S2_L1_R1.fq.gz",
+        "/myriadfs/home/regmova/Scratch/PCF/test/test_data/multi_lane/P2_S1_L1_R1.fq.gz",
+        "/myriadfs/home/regmova/Scratch/PCF/test/test_data/multi_lane/P2_S2_L1_R1.fq.gz"),
         R2=c(
-        "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P1_S1_L1_R2.fq.gz",
-        "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P1_S1_L2_R2.fq.gz",
-        "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P1_S2_L1_R2.fq.gz",
-        "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P2_S1_L1_R2.fq.gz",
-        "/lustre/scratch/scratch/regmova/PCF/test/test_data/multi_lane/P2_S2_L1_R2.fq.gz"),
+        "/myriadfs/home/regmova/Scratch/PCF/test/test_data/multi_lane/P1_S1_L1_R2.fq.gz",
+        "/myriadfs/home/regmova/Scratch/PCF/test/test_data/multi_lane/P1_S1_L2_R2.fq.gz",
+        "/myriadfs/home/regmova/Scratch/PCF/test/test_data/multi_lane/P1_S2_L1_R2.fq.gz",
+        "/myriadfs/home/regmova/Scratch/PCF/test/test_data/multi_lane/P2_S1_L1_R2.fq.gz",
+        "/myriadfs/home/regmova/Scratch/PCF/test/test_data/multi_lane/P2_S2_L1_R2.fq.gz"),
         step=collapse_step_list(build_default_step_list()),
         threads=collapse_step_list(build_default_step_threads_list()),
         ram=collapse_step_list(build_default_step_ram_list()),
@@ -545,43 +545,43 @@ build_default_binary_list=function(
 build_default_tool_binary_list=function(
     binaries=
         list(
-                bin_fastqc="/lustre/scratch/scratch/regmova/tools/FastQC/bin/fastqc",
-                bin_skewer="/lustre/scratch/scratch/regmova/tools/skewer/skewer",
-                bin_fastqc="/lustre/scratch/scratch/regmova/tools/FastQC/bin/fastqc",
-                bin_bcftools="/lustre/scratch/scratch/regmova/tools/bcftools/bcftools",
-                bin_bgzip="/lustre/scratch/scratch/regmova/tools/htslib/bin/bgzip",
-                bin_tabix="/lustre/scratch/scratch/regmova/tools/htslib/bin/tabix",
-                bin_htsfile="/lustre/scratch/scratch/regmova/tools/htslib/bin/htsfile",
-                bin_nextflow="/lustre/home/regmova/bin/nextflow",
-                bin_aasuite="/lustre/scratch/scratch/regmova/tools/AmpliconSuite-pipeline/singularity/run_paa_singularity.py",
-                bin_bwa="/lustre/scratch/scratch/regmova/tools/bwa/bwa",
-                bin_shapeit="/lustre/scratch/scratch/regmova/tools/shapeit4/bin/shapeit",
-                bin_allele_counter="/lustre/scratch/scratch/regmova/tools/alleleCount/bin/alleleCounter",
+                bin_fastqc="/myriadfs/home/regmova/Scratch/tools/FastQC/bin/fastqc",
+                bin_skewer="/myriadfs/home/regmova/Scratch/tools/skewer/skewer",
+                bin_fastqc="/myriadfs/home/regmova/Scratch/tools/FastQC/bin/fastqc",
+                bin_bcftools="/myriadfs/home/regmova/Scratch/tools/bcftools/bcftools",
+                bin_bgzip="/myriadfs/home/regmova/Scratch/tools/htslib/bin/bgzip",
+                bin_tabix="/myriadfs/home/regmova/Scratch/tools/htslib/bin/tabix",
+                bin_htsfile="/myriadfs/home/regmova/Scratch/tools/htslib/bin/htsfile",
+                bin_nextflow="/myriadfs/home/regmova/bin/nextflow",
+                bin_aasuite="/myriadfs/home/regmova/Scratch/tools/AmpliconSuite-pipeline/singularity/run_paa_singularity.py",
+                bin_bwa="/myriadfs/home/regmova/Scratch/tools/bwa/bwa",
+                bin_shapeit="/myriadfs/home/regmova/Scratch/tools/shapeit4/bin/shapeit",
+                bin_allele_counter="/myriadfs/home/regmova/Scratch/tools/alleleCount/bin/alleleCounter",
                 bin_strelka=list(
-                    somatic="/lustre/scratch/scratch/regmova/tools/strelka-2.9.10/bin/configureStrelkaSomaticWorkflow.py",
-                    germline="/lustre/scratch/scratch/regmova/tools/strelka-2.9.10/bin/configureStrelkaGermlineWorkflow.py"
+                    somatic="/myriadfs/home/regmova/Scratch/tools/strelka-2.9.10/bin/configureStrelkaSomaticWorkflow.py",
+                    germline="/myriadfs/home/regmova/Scratch/tools/strelka-2.9.10/bin/configureStrelkaGermlineWorkflow.py"
                 ),
                 bin_ucsc=list(
-                    bigBedToBed="/lustre/scratch/scratch/regmova/tools/OtherTools/bigBedToBed",
-                    bedToBigBed="/lustre/scratch/scratch/regmova/tools/OtherTools/bedToBigBed",
-                    liftOver="/lustre/scratch/scratch/regmova/tools/OtherTools/liftOver"
+                    bigBedToBed="/myriadfs/home/regmova/Scratch/tools/OtherTools/bigBedToBed",
+                    bedToBigBed="/myriadfs/home/regmova/Scratch/tools/OtherTools/bedToBigBed",
+                    liftOver="/myriadfs/home/regmova/Scratch/tools/OtherTools/liftOver"
                 ),
-                bin_sshpass="/lustre/scratch/scratch/regmova/tools/sshpass/sshpass",
-                bin_vep="/lustre/scratch/scratch/regmova/tools/ensembl-vep/vep",    
-                bin_manta="/lustre/scratch/scratch/regmova/tools/manta-1.6.0/bin/configManta.py",
-                bin_ichor_pon="/lustre/scratch/scratch/regmova/tools/ichorCNA/scripts/createPanelOfNormals.R",
-                bin_ichor="/lustre/scratch/scratch/regmova/tools/ichorCNA/scripts/runIchorCNA.R",
-                bin_samtools="/lustre/scratch/scratch/regmova/tools/samtools/samtools",
-                bin_gatk="/lustre/scratch/scratch/regmova/tools/gatk/gatk",
-                bin_readcount="/lustre/scratch/scratch/regmova/tools/hmmcopy_utils/bin/readCounter",
-                bin_ciri="/lustre/scratch/scratch/regmova/tools/CIRI/CIRI_Full_v2.1.1.jar",
-                bin_picard="/lustre/scratch/scratch/regmova/tools/picard/build/libs/picard.jar",
-                bin_samtools="/lustre/scratch/scratch/regmova/tools/samtools/samtools",
-                bin_picard="/lustre/scratch/scratch/regmova/tools/picard/build/libs/picard.jar",
-                bin_bedtools="/lustre/scratch/scratch/regmova/tools/bedtools2/bin/bedtools",
-                bin_ciri_quant="/lustre/scratch/scratch/regmova/tools/CIRIquant/bin/CIRIquant",
-                bin_msing="/lustre/scratch/scratch/regmova/tools/msings/scripts/run_msings.sh",
-                bin_gangstr="/lustre/scratch/scratch/regmova/tools/GangSTR/bin/GangSTR"
+                bin_sshpass="/myriadfs/home/regmova/Scratch/tools/sshpass/sshpass",
+                bin_vep="/myriadfs/home/regmova/Scratch/tools/ensembl-vep/vep",    
+                bin_manta="/myriadfs/home/regmova/Scratch/tools/manta-1.6.0/bin/configManta.py",
+                bin_ichor_pon="/myriadfs/home/regmova/Scratch/tools/ichorCNA/scripts/createPanelOfNormals.R",
+                bin_ichor="/myriadfs/home/regmova/Scratch/tools/ichorCNA/scripts/runIchorCNA.R",
+                bin_samtools="/myriadfs/home/regmova/Scratch/tools/samtools/samtools",
+                bin_gatk="/myriadfs/home/regmova/Scratch/tools/gatk/gatk",
+                bin_readcount="/myriadfs/home/regmova/Scratch/tools/hmmcopy_utils/bin/readCounter",
+                bin_ciri="/myriadfs/home/regmova/Scratch/tools/CIRI/CIRI_Full_v2.1.1.jar",
+                bin_picard="/myriadfs/home/regmova/Scratch/tools/picard/build/libs/picard.jar",
+                bin_samtools="/myriadfs/home/regmova/Scratch/tools/samtools/samtools",
+                bin_picard="/myriadfs/home/regmova/Scratch/tools/picard/build/libs/picard.jar",
+                bin_bedtools="/myriadfs/home/regmova/Scratch/tools/bedtools2/bin/bedtools",
+                bin_ciri_quant="/myriadfs/home/regmova/Scratch/tools/CIRIquant/bin/CIRIquant",
+                bin_msing="/myriadfs/home/regmova/Scratch/tools/msings/scripts/run_msings.sh",
+                bin_gangstr="/myriadfs/home/regmova/Scratch/tools/GangSTR/bin/GangSTR"
         )
     ){
          return(binaries)
@@ -623,11 +623,11 @@ build_default_nf_list=function(
 
 build_default_license_list=function(
     licenses=list(
-        dir="/lustre/home/regmova/lic",
+        dir="/myriadfs/home/regmova/lic",
         licenses=
         list(
-            mosek="/lustre/home/regmova/lic/mosek.lic",
-            gurobi="/lustre/home/regmova/lic/gurobi.lic"
+            mosek="/myriadfs/home/regmova/lic/mosek.lic",
+            gurobi="/myriadfs/home/regmova/lic/gurobi.lic"
         )
     )
     ){
@@ -650,11 +650,11 @@ build_default_license_list=function(
 build_default_python_enviroment_list=function(
     enviroments=
         list(
-                env_circlemap="/lustre/home/regmova/miniconda3/envs/circle-map",
-                env_hatchet="/lustre/home/regmova/miniconda3/envs/hatchet",
-                env_cov="/lustre/home/regmova/miniconda3/envs/cov",
-                env_medicc2="/lustre/home/regmova/miniconda3/envs/medicc_env",
-                env_msing="/lustre/scratch/scratch/regmova/tools/msings/msings-env/bin/activate"
+                env_circlemap="/myriadfs/home/regmova/miniconda3/envs/circle-map",
+                env_hatchet="/myriadfs/home/regmova/miniconda3/envs/hatchet",
+                env_cov="/myriadfs/home/regmova/miniconda3/envs/cov",
+                env_medicc2="/myriadfs/home/regmova/miniconda3/envs/medicc_env",
+                env_msing="/myriadfs/home/regmova/Scratch/tools/msings/msings-env/bin/activate"
         )
     ){
          return(enviroments)
@@ -695,13 +695,13 @@ build_default_sif_list=function(
     sifs=
         list(
             sif_clonet=list(
-                V2="/lustre/scratch/scratch/regmova/Singularity_Images/pcf_select_v2_14_11_2022.sif",
-                V3="/lustre/scratch/scratch/regmova/Singularity_Images/pcf_select_v3_14_11_2022.sif"
+                V2="/myriadfs/home/regmova/Scratch/Singularity_Images/pcf_select_v2_14_11_2022.sif",
+                V3="/myriadfs/home/regmova/Scratch/Singularity_Images/pcf_select_v3_14_11_2022.sif"
             ),
-            sif_preprocess="/lustre/scratch/scratch/regmova/Singularity_Images/preProcess_latest.sif",
-            sif_aa="/lustre/scratch/scratch/regmova/Singularity_Images/ampliconsuite-pipeline.sif",
-            sif_gatk="/lustre/scratch/scratch/regmova/Singularity_Images/gatk_latest.sif",
-            sif_cnvkit="/lustre/scratch/scratch/regmova/Singularity_Images/cnvkit_latest.sif"
+            sif_preprocess="/myriadfs/home/regmova/Scratch/Singularity_Images/preProcess_latest.sif",
+            sif_aa="/myriadfs/home/regmova/Scratch/Singularity_Images/ampliconsuite-pipeline.sif",
+            sif_gatk="/myriadfs/home/regmova/Scratch/Singularity_Images/gatk_latest.sif",
+            sif_cnvkit="/myriadfs/home/regmova/Scratch/Singularity_Images/cnvkit_latest.sif"
         )
     ){
          return(sifs)
@@ -824,7 +824,7 @@ build_default_option_list=function(
 
 build_default_cache_list=function(
     cache=list(
-        cache_vep="/lustre/scratch/scratch/regmova/tools/ensembl-vep/.vep"
+        cache_vep="/myriadfs/home/regmova/Scratch/tools/ensembl-vep/.vep"
     )
 ){
     return(cache)
@@ -842,170 +842,170 @@ build_default_reference_list=function(
     references=list(
             HG19=list(
                 reference=list(
-                    chrx_tr="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/chrX_TR_database.bed",
-                    genome="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.fa",
-                    access_5k="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.access-5k-mappable.bed",
-                    access_10k="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/hs37d5.access-10k-mappable.bed"
+                    chrx_tr="/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/chrX_TR_database.bed",
+                    genome="/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/hs37d5.fa",
+                    access_5k="/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/hs37d5.access-5k-mappable.bed",
+                    access_10k="/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/hs37d5.access-10k-mappable.bed"
                 ),
                 phasing=list(
                     G1000=list(
                         old=list(
-                            haplotype=paste0("/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/old/1000GP_Phase3/1000GP_Phase3_chr",c(1:22,"X"),".hap.gz"),
-                            legend=paste0("/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/old/1000GP_Phase3/1000GP_Phase3_chr",c(1:22,"X"),".legend.gz"),
-                            gmap=paste0("/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/old/1000GP_Phase3/genetic_map_chr",c(1:22,"X"),"_combined_b37.txt"),
-                            sample="/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/old/1000GP_Phase3/1000GP_Phase3.sample"
+                            haplotype=paste0("/myriadfs/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/old/1000GP_Phase3/1000GP_Phase3_chr",c(1:22,"X"),".hap.gz"),
+                            legend=paste0("/myriadfs/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/old/1000GP_Phase3/1000GP_Phase3_chr",c(1:22,"X"),".legend.gz"),
+                            gmap=paste0("/myriadfs/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/old/1000GP_Phase3/genetic_map_chr",c(1:22,"X"),"_combined_b37.txt"),
+                            sample="/myriadfs/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/old/1000GP_Phase3/1000GP_Phase3.sample"
                         ),
                         new=list(
-                            vcf=paste0("/home/regmova/Scratch/PCF/references/hg19/phasing/ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chr",c(1:22,"X"),".phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz"),
-                            gmap=paste0("/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/new/chr",c(1:22,"X"),".b37.gmap.gz")
+                            vcf=paste0("/myriadfs/home/regmova/Scratch/PCF/references/hg19/phasing/ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chr",c(1:22,"X"),".phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz"),
+                            gmap=paste0("/myriadfs/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/new/chr",c(1:22,"X"),".b37.gmap.gz")
                         )
                     )
                 ),
                 aa=list(
-                    dir="/lustre/home/regmova/aa"
+                    dir="/myriadfs/home/regmova/aa"
                 ),
                 database=list(
-                    all_snps="/lustre/scratch/scratch/regmova/PCF/references/hg19/database/00-All.vcf.gz",
-                    all_common="/lustre/scratch/scratch/regmova/PCF/references/hg19/database/00-common_all.vcf.gz"
+                    all_snps="/myriadfs/home/regmova/Scratch/PCF/references/hg19/database/00-All.vcf.gz",
+                    all_common="/myriadfs/home/regmova/Scratch/PCF/references/hg19/database/00-common_all.vcf.gz"
                 ),
                 annotation=list(
-                    reflat="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/refFlat.txt",
-                    genes="/lustre/scratch/scratch/regmova/PCF/references/hg19/reference/genes.txt"
+                    reflat="/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/refFlat.txt",
+                    genes="/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/genes.txt"
                 ),
                 wgs=list(
                     binned=list(
-                            target_1k="/lustre/scratch/scratch/regmova/PCF/references/hg19/wgs/reference_1k/hs37d5.access-5k-mappable.target.bed",
-                            target_5k="/lustre/scratch/scratch/regmova/PCF/references/hg19/wgs/reference_5k/hs37d5.access-5k-mappable.target.bed",
-                            target_50k="/lustre/scratch/scratch/regmova/PCF/references/hg19/wgs/reference_50k/hs37d5.access-5k-mappable.target.bed"
+                            target_1k="/myriadfs/home/regmova/Scratch/PCF/references/hg19/wgs/reference_1k/hs37d5.access-5k-mappable.target.bed",
+                            target_5k="/myriadfs/home/regmova/Scratch/PCF/references/hg19/wgs/reference_5k/hs37d5.access-5k-mappable.target.bed",
+                            target_50k="/myriadfs/home/regmova/Scratch/PCF/references/hg19/wgs/reference_50k/hs37d5.access-5k-mappable.target.bed"
                     ),
                     variant=list(
-                        pon_cn_1k="/lustre/scratch/scratch/regmova/PCF/references/hg19/wgs/reference_1k/pon_trails_wgs.target_1000.pon.cnn",
-                        pon_cn_5k="/lustre/scratch/scratch/regmova/PCF/references/hg19/wgs/reference_5k/pon_trails_wgs.target_5000.pon.cnn",
-                        pon_cn_50k="/lustre/scratch/scratch/regmova/PCF/references/hg19/wgs/reference_50k/pon_trails_wgs.target_50000.pon.cnn"
+                        pon_cn_1k="/myriadfs/home/regmova/Scratch/PCF/references/hg19/wgs/reference_1k/pon_trails_wgs.target_1000.pon.cnn",
+                        pon_cn_5k="/myriadfs/home/regmova/Scratch/PCF/references/hg19/wgs/reference_5k/pon_trails_wgs.target_5000.pon.cnn",
+                        pon_cn_50k="/myriadfs/home/regmova/Scratch/PCF/references/hg19/wgs/reference_50k/pon_trails_wgs.target_50000.pon.cnn"
                     ),
                     ichorcna=list(
-                        pon_500k="/lustre/scratch/scratch/regmova/tools/ichorCNA/inst/extdata/HD_ULP_PoN_500kb_median_normAutosome_mapScoreFiltered_median.rds",
-                        gc_500k="/lustre/scratch/scratch/regmova/tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",
-                        map_500k="/lustre/scratch/scratch/regmova/tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",
-                        centromere="/lustre/scratch/scratch/regmova/tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt"
+                        pon_500k="/myriadfs/home/regmova/Scratch/tools/ichorCNA/inst/extdata/HD_ULP_PoN_500kb_median_normAutosome_mapScoreFiltered_median.rds",
+                        gc_500k="/myriadfs/home/regmova/Scratch/tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",
+                        map_500k="/myriadfs/home/regmova/Scratch/tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",
+                        centromere="/myriadfs/home/regmova/Scratch/tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt"
                     )
                 ),
                 panel=list(
                     PCF_V2=list(
                         intervals=list(
-                            bi="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/cap_tg.interval_list",
-                            ti="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/prim_tg.interval_list"
+                            bi="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/cap_tg.interval_list",
+                            ti="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/prim_tg.interval_list"
                         ),
                         bed=list(
-                            bait="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/cap_tg.bed",
-                            target="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/prim_tg.bed"
+                            bait="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/cap_tg.bed",
+                            target="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/prim_tg.bed"
                         ),
                         variant=list(
-                            pon_cn="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon_seg/pon_seg.cnn",
-                            pon_cn_male="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon_seg/pon_seg_male.cnn",
-                            pon_muts="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/pon_var/pon_gatkPoN.vcf.gz"
+                            pon_cn="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/pon_seg/pon_seg.cnn",
+                            pon_cn_male="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/pon_seg/pon_seg_male.cnn",
+                            pon_muts="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/pon_var/pon_gatkPoN.vcf.gz"
                         ),
                         binned=list(
-                            target="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/cap_tg.binned.targets.bed",
-                            antitarget="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/cap_tg.binned.antitargets.bed"
+                            target="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/cap_tg.binned.targets.bed",
+                            antitarget="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/cap_tg.binned.antitargets.bed"
                         ),
                          ascat=list(
                             G1000=list(
-                                allele="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/G1000/alleleData_chr",
-                                loci="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/G1000/loci_chr",
-                                gc="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/G1000/gc.txt",
-                                rt="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/G1000/rt.txt"
+                                allele="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/ascat/G1000/alleleData_chr",
+                                loci="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/ascat/G1000/loci_chr",
+                                gc="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/ascat/G1000/gc.txt",
+                                rt="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/ascat/G1000/rt.txt"
                             ),
                             battenberg=list(
-                                allele="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/battenberg/alleleData_chr",
-                                loci="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/battenberg/loci_chr",
-                                gc="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/battenberg/gc.txt",
-                                rt="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/ascat/battenberg/rt.txt"
+                                allele="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/ascat/battenberg/alleleData_chr",
+                                loci="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/ascat/battenberg/loci_chr",
+                                gc="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/ascat/battenberg/gc.txt",
+                                rt="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/ascat/battenberg/rt.txt"
                             )
                         ),
                           annotation=list(
-                            genes="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v2/genes.bed")
+                            genes="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/genes.bed")
                     ),
                     PCF_V3=list(
                         intervals=list(
-                            bi="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/cap_tg.interval_list",
-                            ti="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/prim_tg.interval_list"
+                            bi="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/cap_tg.interval_list",
+                            ti="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/prim_tg.interval_list"
                         ),
                         bed=list(
-                            bait="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/cap_tg.bed",
-                            target="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/prim_tg.bed"
+                            bait="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/cap_tg.bed",
+                            target="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/prim_tg.bed"
                         ),
                         variant=list(
-                            pon_cn="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/pon_seg/pon_seg.cnn",
-                            pon_cn_male="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/pon_seg/pon_seg_male.cnn",
-                            pon_muts="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/pon_var/pon_gatkPoN.vcf.gz"
+                            pon_cn="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/pon_seg/pon_seg.cnn",
+                            pon_cn_male="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/pon_seg/pon_seg_male.cnn",
+                            pon_muts="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/pon_var/pon_gatkPoN.vcf.gz"
                         ),
                         binned=list(
-                            target="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/cap_tg.binned.targets.bed",
-                            antitarget="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/cap_tg.binned.antitargets.bed"
+                            target="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/cap_tg.binned.targets.bed",
+                            antitarget="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/cap_tg.binned.antitargets.bed"
                         ),
                         ascat=list(
                             G1000=list(
-                                allele="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/G1000/alleleData_chr",
-                                loci="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/G1000/loci_chr",
-                                gc="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/G1000/gc.txt",
-                                rt="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/G1000/rt.txt"
+                                allele="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/ascat/G1000/alleleData_chr",
+                                loci="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/ascat/G1000/loci_chr",
+                                gc="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/ascat/G1000/gc.txt",
+                                rt="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/ascat/G1000/rt.txt"
                             ),
                             battenberg=list(
-                                allele="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/battenberg/alleleData_chr",
-                                loci="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/battenberg/loci_chr",
-                                gc="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/battenberg/gc.txt",
-                                rt="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/ascat/battenberg/rt.txt"
+                                allele="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/ascat/battenberg/alleleData_chr",
+                                loci="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/ascat/battenberg/loci_chr",
+                                gc="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/ascat/battenberg/gc.txt",
+                                rt="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/ascat/battenberg/rt.txt"
                             )
                         ),
                         annotation=list(
-                            genes="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/genes.bed"),
+                            genes="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/genes.bed"),
                         msi=list(
-                            bed="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/msi/regions.bed",
-                            baseline="/lustre/scratch/scratch/regmova/PCF/references/hg19/panel/v3/msi/baseline.txt"
+                            bed="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/msi/regions.bed",
+                            baseline="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/msi/baseline.txt"
                         )
                         )
 
                 ),
                 rnaseq=list(
                     intervals=list(
-                        ri="/lustre/scratch/scratch/regmova/PCF/references/hg19/rnaseq//intervals/rRNA.interval_list"
+                        ri="/myriadfs/home/regmova/Scratch/PCF/references/hg19/rnaseq//intervals/rRNA.interval_list"
                     ),
                     reference=list(
-                        ref_flat="/lustre/scratch/scratch/regmova/PCF/references/hg19/rnaseq/reference/refFlat.txt"
+                        ref_flat="/myriadfs/home/regmova/Scratch/PCF/references/hg19/rnaseq/reference/refFlat.txt"
                     )
                 ),
                 variant=list(
-                    germ_reference="/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/af-only-gnomad.raw.sites.vcf",
-                    biallelic_reference="/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/small_exac_common_3.vcf",
-                    hapmap_reference="/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/hapmap_3.3.b37.vcf",
-                    mills_reference="/lustre/scratch/scratch/regmova/PCF/references/hg19/variant/Mills_and_1000G_gold_standard.indels.b37.vcf"
+                    germ_reference="/myriadfs/home/regmova/Scratch/PCF/references/hg19/variant/af-only-gnomad.raw.sites.vcf",
+                    biallelic_reference="/myriadfs/home/regmova/Scratch/PCF/references/hg19/variant/small_exac_common_3.vcf",
+                    hapmap_reference="/myriadfs/home/regmova/Scratch/PCF/references/hg19/variant/hapmap_3.3.b37.vcf",
+                    mills_reference="/myriadfs/home/regmova/Scratch/PCF/references/hg19/variant/Mills_and_1000G_gold_standard.indels.b37.vcf"
                 )
             ),
             HG19_ALT=list(
                 reference=list(
-                    genome="/lustre/scratch/scratch/regmova/PCF/references/hg19_alt/reference/human_g1k_v37.fasta"
+                    genome="/myriadfs/home/regmova/Scratch/PCF/references/hg19_alt/reference/human_g1k_v37.fasta"
                 )
 
 
             ),
             HG38=list(
                 reference=list(
-                    genome="/lustre/scratch/scratch/regmova/PCF/references/hg38/reference/ucsc.hg38.fa"
+                    genome="/myriadfs/home/regmova/Scratch/PCF/references/hg38/reference/ucsc.hg38.fa"
                     
                 ),
                 panel=list(
                     PCF_V3=list(
                         intervals=list(
-                            bi="/lustre/scratch/scratch/regmova/PCF/references/hg19_alt/panel/v3/cap_tg.interval_list",
-                            ti="/lustre/scratch/scratch/regmova/PCF/references/hg19_alt/panel/v3/prim_tg.interval_list"
+                            bi="/myriadfs/home/regmova/Scratch/PCF/references/hg19_alt/panel/v3/cap_tg.interval_list",
+                            ti="/myriadfs/home/regmova/Scratch/PCF/references/hg19_alt/panel/v3/prim_tg.interval_list"
                         )
                     )
                 ),
 
                 database=list(
-                    all_snps="/lustre/scratch/scratch/regmova/PCF/references/hg38/database/00-All.vcf.gz",
-                    all_common="/lustre/scratch/scratch/regmova/PCF/references/hg38/database/00-common_all.vcf.gz"
+                    all_snps="/myriadfs/home/regmova/Scratch/PCF/references/hg38/database/00-All.vcf.gz",
+                    all_common="/myriadfs/home/regmova/Scratch/PCF/references/hg38/database/00-common_all.vcf.gz"
                 )
             )
         )
@@ -1028,7 +1028,7 @@ build_default_hatchet_config=function(
             run=FALSE,
             config=list(
                 ref_panel = "1000GP_Phase3",
-                refpaneldir = "/lustre/scratch/scratch/regmova/TRIALS/HATCHET/reference/panel"
+                refpaneldir = "/myriadfs/home/regmova/Scratch/TRIALS/HATCHET/reference/panel"
             )
         ),
         genotype_snps=list(
@@ -1055,7 +1055,7 @@ build_default_hatchet_config=function(
         phase_snps=list(
             run=TRUE,
             config=list(
-                refpaneldir = "/lustre/scratch/scratch/regmova/TRIALS/HATCHET/reference/panel"
+                refpaneldir = "/myriadfs/home/regmova/Scratch/TRIALS/HATCHET/reference/panel"
             )
         ),
         combine_counts=list(

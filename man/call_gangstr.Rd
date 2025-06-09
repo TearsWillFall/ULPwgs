@@ -5,7 +5,7 @@
 \title{Wrapper of BaseRecalibrator function from gatk}
 \usage{
 call_gangstr(
-  bin_gangstr = build_default_tool_binary_list$bin_gangstr,
+  bin_gangstr = build_default_tool_binary_list()$bin_gangstr,
   bam = NULL,
   regions = build_default_reference_list()$HG19$reference$chrx_tr,
   ref_genome = build_default_reference_list()$HG19$reference$genome,

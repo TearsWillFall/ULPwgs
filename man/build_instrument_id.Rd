@@ -7,10 +7,11 @@
 build_instrument_id(
   instruments = list(instrument = c("MiSeq", "Genome Analyzer IIx", "MiSeq",
     "HiSeq 1500", "HiSeq 1500", "HiSeq 2500", "HiSeq 2500", "HiSeq 3000", "HiSeq 3000",
-    "HiSeq 4000", "HiSeq X", "NextSeq", "NextSeq", "MiniSeq", "NovaSeq 6000"), pattern =
-    c("HWI-M[0-9]{4}$", "HWUSI", "M[0-9]{5}$", "HWI-C[0-9]{5}$", "C[0-9]{5}$",
-    "HWI-D[0-9]{5}$", "D[0-9]{5}$", "J[0-9]{5}$", "K[0-9]{5}$", "K[0-9]{5}$",
-    "E[0-9]{5}$", "NB[0-9]{6}$", "NS[0-9]{6}$", "MN[0-9]{5}$", "A[0-9]{5}$"))
+    "HiSeq 4000", "HiSeq X", "NextSeq", "NextSeq", "MiniSeq", "NovaSeq 6000",
+    "NovaSeq X Plus"), pattern = c("HWI-M[0-9]{4}$", "HWUSI", "M[0-9]{5}$",
+    "HWI-C[0-9]{5}$", "C[0-9]{5}$", "HWI-D[0-9]{5}$", "D[0-9]{5}$", "J[0-9]{5}$",
+    "K[0-9]{5}$", "K[0-9]{5}$", "E[0-9]{5}$", "NB[0-9]{6}$", "NS[0-9]{6}$",
+    "MN[0-9]{5}$", "A[0-9]{5}$", "LH[0-9]{5}$"))
 )
 }
 \arguments{
