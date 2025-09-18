@@ -163,6 +163,7 @@ new_sort_and_index_bam_samtools=function(
               bin_samtools=bin_samtools,
               bam=input,
               output_dir=out_file_dir,
+              output_name=input_id,
               tmp_dir=tmp_dir,
               env_dir=env_dir,
               batch_dir=batch_dir,
@@ -186,6 +187,7 @@ new_sort_and_index_bam_samtools=function(
             new_index_bam_samtools(
               bin_samtools=bin_samtools,
               bam=input,
+              output_name=input_id,
               stats=stats,
               tmp_dir=tmp_dir,
               env_dir=env_dir,
