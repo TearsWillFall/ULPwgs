@@ -13,11 +13,16 @@
 #' @export
 
 query_bam_bamql=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
   sif_bamql=build_default_sif_list()$sif_bamql,
   bam=NULL,
   query=NULL,
   accepted_id="accepted",
   rejected_id="rejected",
+  sort=TRUE,
+  coord_sort=TRUE,
+  index=TRUE,
+  stats=TRUE,
   ...
 ){
 
@@ -28,21 +33,70 @@ query_bam_bamql=function(
     append_env(to=.this.env,from=.env)
     set_main(.env=.this.env)
 
+    .main$steps[[fn_id]]<-.this.env
+    .main.step=.main$steps[[fn_id]]
+
     if(is.null(query)){
         stop("Provide a query")
     }
 
-    .main$out_files$accepted_reads_bam=paste0(out_file_dir,"/",input_id,".",accepted_id,".bam")
-    .main$out_files$rejected_reads_bam=paste0(out_file_dir,"/",input_id,".",rejected_id,".bam")
+    .main$out_files$accepted_reads_bam$unsorted=paste0(out_file_dir,"/",input_id,".",accepted_id,".bam")
+    .main$out_files$rejected_reads_bam$unsorted=paste0(out_file_dir,"/",input_id,".",rejected_id,".bam")
     .main$exec_code=paste(
       "singularity exec -H ",paste0(getwd(),":/home "),sif_bamql,
       " bamql -b -f ",input, 
-      " -o ", .main$out_files$accepted_reads_bam, 
-      " -O ", .main$out_files$rejected_reads_bam,
-      ,"\'",query,"\'"
+      " -o ", .main$out_files$accepted_reads_bam$unsorted, 
+      " -O ", .main$out_files$rejected_reads_bam$unsorted,
+      "\'",query,"\'"
     )
 
     run_job(.env=.this.env)
+
+    if(sort){
+        .main.step$steps <-append(
+          .main.step$steps ,new_sort_and_index_bam_samtools(
+              bin_samtools = bin_samtools,
+              bam=.main$out_files$accepted_reads_bam$unsorted,
+              index=index,
+              stats=stats,
+              tmp_dir=tmp_dir,
+              env_dir=env_dir,
+              batch_dir=batch_dir,
+              ram=ram,
+              verbose=verbose,
+              threads=threads,
+              coord_sort=coord_sort,
+              err_msg=err_msg,
+              clean=clean,
+              executor_id=task_id,
+              fn_id="new_sort_and_index_bam_samtools_accepted"
+            )
+        )
+        .this.step=.main.step$steps$new_sort_and_index_bam_samtools_accepted
+        .main.step$out_files$accepted_reads_bam$sorted=.this.step$out_files
+
+        .main.step$steps <-append(
+        .main.step$steps ,new_sort_and_index_bam_samtools(
+            bin_samtools = bin_samtools,
+            bam=.main$out_files$rejected_reads_bam$unsorted,
+            index=index,
+            stats=stats,
+            tmp_dir=tmp_dir,
+            env_dir=env_dir,
+            batch_dir=batch_dir,
+            ram=ram,
+            verbose=verbose,
+            threads=threads,
+            coord_sort=coord_sort,
+            err_msg=err_msg,
+            clean=clean,
+            executor_id=task_id,
+            fn_id="new_sort_and_index_bam_samtools_rejected"
+          )
+      )
+      .this.step=.main.step$steps$new_sort_and_index_bam_samtools_rejected
+      .main.step$out_files$rejected_reads_bam$sorted=.this.step$out_files
+    }
     .env$.main<-.main
   }
 
