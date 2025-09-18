@@ -1,18 +1,15 @@
 
 
-
-#' Variant Trench Filtering using GATK
+#' BAM Querying using BAMQL
 #'
-#' This function filters variant tranches calls generated using CNNScoreVariants method
-#' 
-#' For more information read:
-#' https://gatk.broadinstitute.org/hc/en-us/articles/360051308071-FilterVariantTranches
+#' This function queries a BAM file using BAMQL and separates reads into accepted
+#' and rejected BAM files based on the provided BAMQL query.
 #'
 #' @param sif_bamql [REQUIRED] Path to bamql sif file.
 #' @param bam [REQUIRED] Path to BAM file.
 #' @param query [REQUIRED] BAM query in BAMQL format.
-#' @param accepted_tag [OPTIONAL] Id to use for accepted reads.
-#' @param rejected_tag [OPTIONAL] Id to use for rejected reads.
+#' @param accepted_id [OPTIONAL] Id to use for accepted reads.
+#' @param rejected_id [OPTIONAL] Id to use for rejected reads.
 #' @export
 
 query_bam_bamql=function(
