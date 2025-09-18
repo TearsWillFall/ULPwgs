@@ -70,7 +70,7 @@ query_bam_bamql=function(
               err_msg=err_msg,
               clean=clean,
               executor_id=task_id,
-              fn_id="new_sort_and_index_bam_samtools_accepted"
+              fn_id="accepted"
             )
         )
         .this.step=.main.step$steps$new_sort_and_index_bam_samtools.accepted
@@ -93,7 +93,7 @@ query_bam_bamql=function(
             err_msg=err_msg,
             clean=clean,
             executor_id=task_id,
-            fn_id="new_sort_and_index_bam_samtools_rejected"
+            fn_id="rejected"
           )
       )
       .this.step=.main.step$steps$new_sort_and_index_bam_samtools.rejected
