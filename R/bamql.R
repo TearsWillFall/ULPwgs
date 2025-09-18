@@ -40,8 +40,8 @@ query_bam_bamql=function(
         stop("Provide a query")
     }
 
-    .main$out_files$accepted_reads_bam$unsorted=paste0(tmp_dir,"/",input_id,".",accepted_id,".bam")
-    .main$out_files$rejected_reads_bam$unsorted=paste0(tmp_dir,"/",input_id,".",rejected_id,".bam")
+    .main$out_files$accepted_reads_bam$unsorted=paste0(tmp_dir,"/",input_id,".",accepted_id,".",input_ext,".bam")
+    .main$out_files$rejected_reads_bam$unsorted=paste0(tmp_dir,"/",input_id,".",rejected_id,".",input_ext,".bam")
     .main$exec_code=paste0(
       "singularity exec ",sif_bamql,
       " bamql -b -f ",input, 
