@@ -40,14 +40,14 @@ query_bam_bamql=function(
         stop("Provide a query")
     }
 
-    .main$out_files$accepted_reads_bam$unsorted=paste0(out_file_dir,"/",input_id,".",accepted_id,".bam")
-    .main$out_files$rejected_reads_bam$unsorted=paste0(out_file_dir,"/",input_id,".",rejected_id,".bam")
-    .main$exec_code=paste(
-      "singularity exec -H ",paste0(getwd(),":/home "),sif_bamql,
+    .main$out_files$accepted_reads_bam$unsorted=paste0(tmp_dir,"/",input_id,".",accepted_id,".bam")
+    .main$out_files$rejected_reads_bam$unsorted=paste0(tmp_dir,"/",input_id,".",rejected_id,".bam")
+    .main$exec_code=paste0(
+      "singularity exec ",sif_bamql,
       " bamql -b -f ",input, 
       " -o ", .main$out_files$accepted_reads_bam$unsorted, 
       " -O ", .main$out_files$rejected_reads_bam$unsorted,
-      "\'",query,"\'"
+      " \'",query,"\'"
     )
 
     run_job(.env=.this.env)
@@ -60,6 +60,7 @@ query_bam_bamql=function(
               index=index,
               stats=stats,
               tmp_dir=tmp_dir,
+              output_dir=out_file_dir,
               env_dir=env_dir,
               batch_dir=batch_dir,
               ram=ram,
@@ -82,6 +83,7 @@ query_bam_bamql=function(
             index=index,
             stats=stats,
             tmp_dir=tmp_dir,
+            output_dir=out_file_dir,
             env_dir=env_dir,
             batch_dir=batch_dir,
             ram=ram,
