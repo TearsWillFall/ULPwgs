@@ -163,7 +163,6 @@ new_sort_and_index_bam_samtools=function(
               bin_samtools=bin_samtools,
               bam=input,
               output_dir=out_file_dir,
-              output_name=input_id,
               tmp_dir=tmp_dir,
               env_dir=env_dir,
               batch_dir=batch_dir,
@@ -187,7 +186,6 @@ new_sort_and_index_bam_samtools=function(
             new_index_bam_samtools(
               bin_samtools=bin_samtools,
               bam=input,
-              output_name=input_id,
               stats=stats,
               tmp_dir=tmp_dir,
               env_dir=env_dir,
@@ -377,7 +375,6 @@ new_sort_bam_samtools=function(
                   bam=.main$out_file,
                   stats=stats,
                   tmp_dir=tmp_dir,
-                  output_name=input_id,
                   env_dir=env_dir,
                   batch_dir=batch_dir,
                   verbose=verbose,
@@ -399,7 +396,6 @@ new_sort_bam_samtools=function(
                   bin_samtools=bin_samtools,
                   bam=.main$out_file,
                   stats="flag",
-                  output_name=input_id,
                   verbose=verbose,
                   threads=threads,
                   err_msg=err_msg,
@@ -580,7 +576,6 @@ new_index_bam_samtools=function(
                   bin_samtools=bin_samtools,
                   bam=input,
                   output_dir=paste0(dirname(input),"/stats"),
-                  output_name=input_id,
                   tmp_dir=tmp_dir,
                   env_dir=env_dir,
                   batch_dir=batch_dir,
@@ -908,7 +903,7 @@ new_flag_stats_samtools=function(
 
     .main$out_file=paste0(
       out_file_dir,"/",
-      input_id,".flagstat.txt"
+      sub(".bam","",bam),".flagstat.txt"
     )
     .main$exec_code=paste0(
       bin_samtools," flagstat ",
@@ -1239,7 +1234,7 @@ new_index_stats_samtools=function(
   
 
     .main$out_file=paste0(
-      out_file_dir,"/",input_id,".idxstats.txt"
+      out_file_dir,"/",sub(".bam","",bam),".idxstats.txt"
     )
 
     .main$exec_code=paste0(
