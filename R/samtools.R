@@ -903,7 +903,7 @@ new_flag_stats_samtools=function(
 
     .main$out_file=paste0(
       out_file_dir,"/",
-      sub(".bam","",bam),".flagstat.txt"
+      sub(".bam$","",input),".flagstat.txt"
     )
     .main$exec_code=paste0(
       bin_samtools," flagstat ",
@@ -1149,7 +1149,7 @@ stats_index_samtools=function(
   task_id=make_unique_id(task_name)
   out_file_dir=set_dir(dir=output_dir,name="index")
 
-  out_file=paste0(out_file_dir,"/",get_file_name(bam),".idxstats.txt")
+  out_file=paste0(out_file_dir,"/",sub(".bam$","",bam),".idxstats.txt")
   exec_code=paste0(bin_samtools," idxstats ",bam," > ",out_file)
 
 
@@ -1234,7 +1234,7 @@ new_index_stats_samtools=function(
   
 
     .main$out_file=paste0(
-      out_file_dir,"/",sub(".bam","",bam),".idxstats.txt"
+      out_file_dir,"/",sub(".bam","",input),".idxstats.txt"
     )
 
     .main$exec_code=paste0(
