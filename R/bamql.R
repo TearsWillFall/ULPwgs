@@ -52,6 +52,9 @@ query_bam_bamql=function(
 
     run_job(.env=.this.env)
 
+    
+    .main.step<-.main$steps[[fn_id]]
+
     if(sort){
         .main.step$steps <-append(
           .main.step$steps ,new_sort_and_index_bam_samtools(
@@ -99,7 +102,6 @@ query_bam_bamql=function(
       .this.step=.main.step$steps$new_sort_and_index_bam_samtools.rejected
       .main.step$out_files$rejected_reads_bam$sorted=.this.step$out_files
     }
-    .env$.main<-.main
   }
 
   .base.env=environment()
