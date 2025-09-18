@@ -903,7 +903,7 @@ new_flag_stats_samtools=function(
 
     .main$out_file=paste0(
       out_file_dir,"/",
-      sub(".bam$","",input),".flagstat.txt"
+      input_id,".flagstat.txt"
     )
     .main$exec_code=paste0(
       bin_samtools," flagstat ",
@@ -1234,7 +1234,7 @@ new_index_stats_samtools=function(
   
 
     .main$out_file=paste0(
-      out_file_dir,"/",sub(".bam","",input),".idxstats.txt"
+      out_file_dir,"/",input_id,".idxstats.txt"
     )
 
     .main$exec_code=paste0(
