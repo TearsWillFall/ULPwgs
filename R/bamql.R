@@ -102,6 +102,7 @@ query_bam_bamql=function(
       .this.step=.main.step$steps$new_sort_and_index_bam_samtools.rejected
       .main.step$out_files$rejected_reads_bam$sorted=.this.step$out_files
     }
+    .env$.main<-.main
   }
 
   .base.env=environment()
