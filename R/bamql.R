@@ -39,7 +39,7 @@ query_bam_bamql=function(
       " bamql -b -f ",input, 
       " -o ", .main$out_files$accepted_reads_bam, 
       " -O ", .main$out_files$rejected_reads_bam,
-      query
+      ,"\'",query,"\'"
     )
 
     run_job(.env=.this.env)
