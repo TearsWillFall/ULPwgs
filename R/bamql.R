@@ -73,7 +73,7 @@ query_bam_bamql=function(
               fn_id="new_sort_and_index_bam_samtools_accepted"
             )
         )
-        .this.step=.main.step$steps$new_sort_and_index_bam_samtools_accepted
+        .this.step=.main.step$steps$new_sort_and_index_bam_samtools.accepted
         .main.step$out_files$accepted_reads_bam$sorted=.this.step$out_files
 
         .main.step$steps <-append(
@@ -96,7 +96,7 @@ query_bam_bamql=function(
             fn_id="new_sort_and_index_bam_samtools_rejected"
           )
       )
-      .this.step=.main.step$steps$new_sort_and_index_bam_samtools_rejected
+      .this.step=.main.step$steps$new_sort_and_index_bam_samtools.rejected
       .main.step$out_files$rejected_reads_bam$sorted=.this.step$out_files
     }
     .env$.main<-.main
