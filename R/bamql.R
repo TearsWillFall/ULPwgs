@@ -129,7 +129,7 @@ query_bam_bamql=function(
 
 
 
-insert_info_bamql=function(
+insert_info_site_bamql=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   sif_bamql=build_default_sif_list()$sif_bamql,
