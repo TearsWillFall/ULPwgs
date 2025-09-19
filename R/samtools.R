@@ -2517,7 +2517,7 @@ sample_bam_samtools=function(
 #' @return No direct return value. Output files are written to disk and tracked in the environment.
 #' @export
 
-extract_reads_region_samtools=function(
+reads_region_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam=NULL,
   region=NULL,
@@ -2628,7 +2628,7 @@ extract_reads_region_samtools=function(
 #' @export
 
 
-extract_and_fragment_size_samtools=function(
+insert_info_region_samtools=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam=NULL,
@@ -2651,7 +2651,7 @@ extract_and_fragment_size_samtools=function(
     .main.step=.main$steps[[fn_id]]
 
     .main.step$steps=append(
-        .main.step$steps,extract_reads_region_samtools(
+        .main.step$steps,reads_region_samtools(
           bin_samtools=bin_samtools,
           bam=bam,
           region=region,
@@ -2669,14 +2669,15 @@ extract_and_fragment_size_samtools=function(
           executor_id=task_id
       ) 
     )
-      .this.step=.main.step$steps$extract_reads_region_samtools
+      .this.step=.main.step$steps$reads_region_samtools
       .main.step$out_files=.this.step$out_files
    
       .main.step$steps=append(
           .main.step$steps ,
-          new_insertsize_metrics_bam_picard(
+           insert_info_samtools(
             bin_picard=bin_picard,
             bam=.main.step$out_files$accepted_reads_bam$sorted$srt_bam,
+            kmers=kmers,
             deviations=deviations,
             min_width=min_width,
             width=width,
@@ -2693,14 +2694,15 @@ extract_and_fragment_size_samtools=function(
             fn_id="accepted"
         ) 
       )
-      .this.step=.main.step$steps$new_insertsize_metrics_bam_picard.accepted
+      .this.step=.main.step$steps$insert_info_samtools.accepted
       .main.step$out_files$fragments$accepted=.this.step$out_files
 
        .main.step$steps=append(
           .main.step$steps ,
-          new_insertsize_metrics_bam_picard(
+          insert_info_samtools(
             bin_picard=bin_picard,
             bam=.main.step$out_files$rejected_reads_bam$sorted$srt_bam,
+            kmers=kmers,
             deviations=deviations,
             min_width=min_width,
             width=width,
@@ -2717,7 +2719,7 @@ extract_and_fragment_size_samtools=function(
             fn_id="rejected"
         ) 
       )
-      .this.step=.main.step$steps$new_insertsize_metrics_bam_picard.rejected
+      .this.step=.main.step$steps$insert_info_samtools.rejected
       .main.step$out_files$fragments$rejected=.this.step$out_files
   
       .env$.main <- .main
@@ -2747,7 +2749,7 @@ extract_and_fragment_size_samtools=function(
 #' @export
 
 
-extract_insert_ends_samtools=function(
+insert_ends_samtools=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam=NULL,
@@ -2811,7 +2813,7 @@ extract_insert_ends_samtools=function(
 #' @return No direct return value. Output files for insert size metrics and fragment end motif counts are written to disk and tracked in the environment.
 #' @export
 
-extract_insert_info_samtools=function(
+insert_info_samtools=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam=NULL,
@@ -2858,7 +2860,7 @@ extract_insert_info_samtools=function(
 
           .main.step$steps=append(
               .main.step$steps ,
-              extract_insert_ends_samtools(
+              insert_ends_samtools(
                 bin_picard=bin_picard,
                 bin_samtools=bin_samtools,
                 bam=input,
@@ -2876,7 +2878,7 @@ extract_insert_info_samtools=function(
                 executor_id=task_id
             ) 
           )
-          .this.step=.main.step$steps$extract_insert_ends_samtools
+          .this.step=.main.step$steps$insert_ends_samtools
           .main.step$out_files$inserts=.this.step$out_files
           .env$.main <- .main
     }

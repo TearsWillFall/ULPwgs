@@ -129,7 +129,7 @@ query_bam_bamql=function(
 
 
 
-site_fragment_info_bamql=function(
+insert_info_bamql=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   sif_bamql=build_default_sif_list()$sif_bamql,
@@ -179,7 +179,7 @@ site_fragment_info_bamql=function(
    
       .main.step$steps=append(
           .main.step$steps ,
-          extract_insert_info_samtools(
+          insert_info_samtools(
             bin_samtools=bin_samtools,
             bin_picard=bin_picard,
             bam=.main.step$out_files$accepted_reads_bam$sorted$srt_bam,
@@ -200,12 +200,12 @@ site_fragment_info_bamql=function(
             fn_id="accepted"
         ) 
       )
-      .this.step=.main.step$steps$extract_insert_info.accepted
+      .this.step=.main.step$steps$insert_info_samtools.accepted
       .main.step$out_files$inserts$accepted=.this.step$out_files
 
        .main.step$steps=append(
           .main.step$steps ,
-          extract_insert_info_samtools(
+          insert_info_samtools(
             bin_samtools=bin_samtools,
             bin_picard=bin_picard,
             bam=.main.step$out_files$rejected_reads_bam$sorted$srt_bam,
@@ -226,7 +226,7 @@ site_fragment_info_bamql=function(
             fn_id="rejected"
         ) 
       )
-      .this.step=.main.step$steps$extract_insert_info.rejected
+      .this.step=.main.step$steps$insert_info_samtools.rejected
       .main.step$out_files$inserts$rejected=.this.step$out_files
   
       .env$.main <- .main
@@ -261,7 +261,7 @@ site_fragment_info_bamql=function(
 #' @return No direct return value. Output files and metrics are written to disk and tracked in the environment.
 #' @export
 
-context_specific_fragment_info_bamql=function(
+context_specific_insert_info_bamql=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   sif_bamql=build_default_sif_list()$sif_bamql,
@@ -297,7 +297,7 @@ context_specific_fragment_info_bamql=function(
       ### Run Picard Metrics on all reads
       .main.step$steps=append(
           .main.step$steps ,
-          extract_insert_info_samtools(
+          insert_info_samtools(
             bin_picard=bin_picard,
             bin_samtools=bin_samtools,
             bam=input,
@@ -318,13 +318,13 @@ context_specific_fragment_info_bamql=function(
             fn_id="genome"
         ) 
       )
-      .this.step=.main.step$steps$extract_insert_info_samtools.genome
+      .this.step=.main.step$steps$insert_info_samtools.genome
       .main.step$out_files$context$genome$inserts=.this.step$out_files
 
       ### Subset regions within a region e.g. AR amplification
 
       .main.step$steps <-append(
-      .main.step$steps,region_fragment_info_samtools(
+      .main.step$steps,insert_info_region_samtools(
         bin_picard=build_default_tool_binary_list()$bin_picard,
         bin_samtools=build_default_tool_binary_list()$bin_samtools,
         bam=input,
@@ -347,12 +347,12 @@ context_specific_fragment_info_bamql=function(
         executor_id=task_id
         )
       )
-      .this.step=.main.step$steps$region_fragment_info_samtools
+      .this.step=.main.step$steps$insert_info_region_samtools
       .main.step$out_files$context$local$region=.this.step$out_files
 
 
       .main.step$steps <-append(
-        .main.step$steps,site_fragment_info_bamql(
+        .main.step$steps,insert_info_site_bamql(
           bin_picard=build_default_tool_binary_list()$bin_picard,
           bin_samtools=build_default_tool_binary_list()$bin_samtools,
           sif_bamql=build_default_sif_list()$sif_bamql,
@@ -376,7 +376,7 @@ context_specific_fragment_info_bamql=function(
           executor_id=task_id
         )
       )
-      .this.step=.main.step$steps$site_fragment_info_bamql
+      .this.step=.main.step$steps$insert_info_site_bamql
       .main.step$out_files$context$local$region$site=.this.step$out_files
       .env$.main <- .main
     }
