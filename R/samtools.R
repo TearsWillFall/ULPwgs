@@ -2451,11 +2451,6 @@ call_get_insert_size_samtools=function(
 
 
 
-
-
-
-
-
 #' Sort and index a sequence file
 #' 
 #'
@@ -2510,24 +2505,26 @@ sample_bam_samtools=function(
 }
 
 
-
-#' Sort and index a sequence file
-#' 
+#' Extract Reads from a Specific Genomic Region in BAM File
 #'
-#' Wrapper around index_bam_samtools and sort_bam_samtools functions
-#' 
-#' @param bin_samtools Path to samtools executable. Default path tools/samtools/samtools.
-#' @param bam Path to BAM file.
-#' @param read_fraction Fraction of reads to subsample.
+#' This function extracts reads from a specified genomic region in a BAM file using samtools. The extracted reads are written to a new BAM file, which is then sorted and indexed. The output files are tracked in the environment.
+#'
+#' @param bin_samtools Path to samtools executable. Default: from build_default_tool_binary_list().
+#' @param bam Path to the input BAM file. (Required)
+#' @param region Genomic region to extract (e.g., "1:10000-1000000"). (Required)
+#' @param ... Additional arguments passed to environment setup and job execution.
+#'
+#' @return No direct return value. Output files are written to disk and tracked in the environment.
 #' @export
 
-sample_bam_samtools=function(
+extract_reads_region_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam=NULL,
-  read_fraction=NULL,
+  region=NULL,
+  accepted_id="accepted",
+  rejected_id="rejected",
   ...
 ){
-
 
   run_main=function(
     .env
@@ -2537,22 +2534,71 @@ sample_bam_samtools=function(
 
     set_main(.env=.this.env)
 
-    .main$out_files$sampled_bam<- paste0(out_file_dir,"/",input_id,".subsampled_",read_fraction,".bam")
-     .main$exec_code=paste0(
-      bin_samtools," view -b -s ",
-      read_fraction,
-      input," -@ ",
-      threads," > ",
-      .main$out_file
-    )
-
-      run_job(.env=.this.env)
-
-      .main.step=.main$steps[[fn_id]]
-      .env$.main <- .main
+      if(is.null(region)){
+        stop("Region must be provided e.g. 1:10000-1000000")
     }
 
-  
+    .main$out_files$accepted_reads_bam$unsorted$bam=paste0(tmp_dir,"/",input_id,".",accepted_id,"_",region,".",input_ext)
+    .main$out_files$rejected_reads_bam$unsorted$bam=paste0(tmp_dir,"/",input_id,".",rejected_id,"_",region,".",input_ext)
+     .main$exec_code=paste(
+      bin_samtools," view -b ",
+      input," -@ ",
+      threads,
+      " -o ",.main$out_files$accepted_reads_bam$unsorted$bam,
+      " -U ",.main$out_files$rejected_reads_bam$unsorted$bam,
+      region
+    )
+
+    run_job(.env=.this.env)
+
+    .main.step<-.main$steps[[fn_id]]
+
+    .main.step$steps <-append(
+      .main.step$steps ,new_sort_and_index_bam_samtools(
+          bin_samtools = bin_samtools,
+          bam=.main$out_files$extracted$unsorted,
+          tmp_dir=tmp_dir,
+          output_dir=paste0(out_file_dir,"/accepted/"),
+          env_dir=env_dir,
+          batch_dir=batch_dir,
+          ram=ram,
+          verbose=verbose,
+          threads=threads,
+          err_msg=err_msg,
+          clean=clean,
+          executor_id=task_id,
+          fn_id="accepted"
+        )
+    )
+
+    .this.step=.main.step$steps$new_sort_and_index_bam_samtools.accepted
+    .main.step$out_files$accepted_reads_bam$sorted=.this.step$out_files
+    
+    .main.step$steps <-append(
+      .main.step$steps ,new_sort_and_index_bam_samtools(
+          bin_samtools=bin_samtools,
+          bam=.main$out_files$rejected_reads_bam$unsorted$bam,
+          tmp_dir=tmp_dir,
+          output_dir=paste0(out_file_dir,"/rejected/"),
+          env_dir=env_dir,
+          batch_dir=batch_dir,
+          ram=ram,
+          verbose=verbose,
+          threads=threads,
+          err_msg=err_msg,
+          clean=clean,
+          executor_id=task_id,
+          fn_id="rejected"
+        )
+    )
+
+    .this.step=.main.step$steps$new_sort_and_index_bam_samtools.rejected
+    .main.step$out_files$rejected_reads_bam$sorted=.this.step$out_files
+
+    .env$.main <- .main
+    
+    }
+
     .base.env=environment()
     list2env(list(...),envir=.base.env)
     set_env_vars(
@@ -2561,4 +2607,127 @@ sample_bam_samtools=function(
     )
 
     launch(.env=.base.env)
+}
+
+#' Extract Reads from a Genomic Region and Calculate Fragment Size Metrics
+#'
+#' This function extracts reads from a specified genomic region in a BAM file using samtools, separates them into accepted and rejected BAM files, and then calculates fragment size metrics for both sets using Picard. Output BAM files can be sorted, indexed, and statistics generated as needed.
+#'
+#' @param bin_picard Path to the Picard binary. Default: from build_default_tool_binary_list().
+#' @param bin_samtools Path to the samtools binary. Default: from build_default_tool_binary_list().
+#' @param bam Path to the input BAM file. (Required)
+#' @param region Genomic region to extract (e.g., "1:10000-1000000"). (Required)
+#' @param accepted_id Identifier for accepted reads output file. Default: "accepted".
+#' @param rejected_id Identifier for rejected reads output file. Default: "rejected".
+#' @param deviations Numeric; number of standard deviations for fragment size metrics. Default: NULL.
+#' @param min_width Numeric; minimum fragment width for metrics. Default: NULL.
+#' @param width Numeric; fragment width for metrics. Default: NULL.
+#' @param ... Additional arguments passed to environment setup and job execution.
+#'
+#' @return No direct return value. Output files and metrics are written to disk and tracked in the environment.
+#' @export
+
+
+extract_and_fragment_size_samtools=function(
+  bin_picard=build_default_tool_binary_list()$bin_picard,
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam=NULL,
+  region=NULL,
+  accepted_id="accepted",
+  rejected_id="rejected",
+  deviations=NULL,
+  min_width=NULL,
+  width=NULL,
+  ...
+){
+    run_main=function(
+    .env
+  ){
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+    set_main(.env=.this.env)
+
+    .main$steps[[fn_id]]<-.this.env
+    .main.step=.main$steps[[fn_id]]
+
+    .main.step$steps=append(
+        .main.step$steps,extract_reads_region_samtools(
+          bin_samtools=bin_samtools,
+          bam=bam,
+          region=region,
+          accepted_id=accepted_id,
+          rejected_id=rejected_id,
+          tmp_dir=tmp_dir,
+          output_dir=paste0(out_file_dir,"/bams"),
+          env_dir=env_dir,
+          batch_dir=batch_dir,
+          ram=ram,
+          verbose=verbose,
+          threads=threads,
+          err_msg=err_msg,
+          clean=clean,
+          executor_id=task_id
+      ) 
+    )
+      .this.step=.main.step$steps$extract_reads_region_samtools
+      .main.step$out_files=.this.step$out_files
+   
+      .main.step$steps=append(
+          .main.step$steps ,
+          new_insertsize_metrics_bam_picard(
+            bin_picard=bin_picard,
+            bam=.main.step$out_files$accepted_reads_bam$sorted$srt_bam,
+            deviations=deviations,
+            min_width=min_width,
+            width=width,
+            tmp_dir=tmp_dir,
+            output_dir=paste0(out_file_dir,"/insert_size/accepted"),
+            env_dir=env_dir,
+            batch_dir=batch_dir,
+            ram=ram,
+            verbose=verbose,
+            threads=threads,
+            err_msg=err_msg,
+            clean=clean,
+            executor_id=task_id,
+            fn_id="accepted"
+        ) 
+      )
+      .this.step=.main.step$steps$new_insertsize_metrics_bam_picard.accepted
+      .main.step$out_files$fragments$accepted=.this.step$out_files
+
+       .main.step$steps=append(
+          .main.step$steps ,
+          new_insertsize_metrics_bam_picard(
+            bin_picard=bin_picard,
+            bam=.main.step$out_files$rejected_reads_bam$sorted$srt_bam,
+            deviations=deviations,
+            min_width=min_width,
+            width=width,
+            tmp_dir=tmp_dir,
+            output_dir=paste0(out_file_dir,"/insert_size/rejected"),
+            env_dir=env_dir,
+            batch_dir=batch_dir,
+            ram=ram,
+            verbose=verbose,
+            threads=threads,
+            err_msg=err_msg,
+            clean=clean,
+            executor_id=task_id,
+            fn_id="rejected"
+        ) 
+      )
+      .this.step=.main.step$steps$new_insertsize_metrics_bam_picard.rejected
+      .main.step$out_files$fragments$rejected=.this.step$out_files
+  
+      .env$.main <- .main
+  }
+  .base.env=environment()
+  list2env(list(...),envir=.base.env)
+  set_env_vars(
+      .env= .base.env,
+      vars="bam"
+  )
+  launch(.env=.base.env)
+
 }

@@ -11,10 +11,6 @@ query_bam_bamql(
   query = NULL,
   accepted_id = "accepted",
   rejected_id = "rejected",
-  sort = TRUE,
-  coord_sort = TRUE,
-  index = TRUE,
-  stats = TRUE,
   ...
 )
 }

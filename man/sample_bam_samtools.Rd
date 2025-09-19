@@ -10,13 +10,6 @@ sample_bam_samtools(
   read_fraction = NULL,
   ...
 )
-
-sample_bam_samtools(
-  bin_samtools = build_default_tool_binary_list()$bin_samtools,
-  bam = NULL,
-  read_fraction = NULL,
-  ...
-)
 }
 \arguments{
 \item{bin_samtools}{Path to samtools executable. Default path tools/samtools/samtools.}
@@ -26,7 +19,5 @@ sample_bam_samtools(
 \item{read_fraction}{Fraction of reads to subsample.}
 }
 \description{
-Wrapper around index_bam_samtools and sort_bam_samtools functions
-
 Wrapper around index_bam_samtools and sort_bam_samtools functions
 }

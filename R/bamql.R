@@ -19,10 +19,6 @@ query_bam_bamql=function(
   query=NULL,
   accepted_id="accepted",
   rejected_id="rejected",
-  sort=TRUE,
-  coord_sort=TRUE,
-  index=TRUE,
-  stats=TRUE,
   ...
 ){
 
@@ -37,7 +33,7 @@ query_bam_bamql=function(
     .main.step=.main$steps[[fn_id]]
 
     if(is.null(query)){
-        stop("Provide a query")
+         stop("Provide a query e.g. chr(X) & nt_exact(66931463,A) ")
     }
 
     .main$out_files$accepted_reads_bam$unsorted$bam=paste0(tmp_dir,"/",input_id,".",accepted_id,".",input_ext)
@@ -55,53 +51,46 @@ query_bam_bamql=function(
     
     .main.step<-.main$steps[[fn_id]]
 
-    if(sort){
-        .main.step$steps <-append(
-          .main.step$steps ,new_sort_and_index_bam_samtools(
-              bin_samtools = bin_samtools,
-              bam=.main$out_files$accepted_reads_bam$unsorted$bam,
-              index=index,
-              stats=stats,
-              tmp_dir=tmp_dir,
-              output_dir=paste0(out_file_dir,"/accepted"),
-              env_dir=env_dir,
-              batch_dir=batch_dir,
-              ram=ram,
-              verbose=verbose,
-              threads=threads,
-              coord_sort=coord_sort,
-              err_msg=err_msg,
-              clean=clean,
-              executor_id=task_id,
-              fn_id="accepted"
-            )
+    .main.step$steps <-append(
+      .main.step$steps ,new_sort_and_index_bam_samtools(
+          bin_samtools = bin_samtools,
+          bam=.main$out_files$accepted_reads_bam$unsorted$bam,
+          tmp_dir=tmp_dir,
+          output_dir=paste0(out_file_dir,"/accepted"),
+          env_dir=env_dir,
+          batch_dir=batch_dir,
+          ram=ram,
+          verbose=verbose,
+          threads=threads,
+          err_msg=err_msg,
+          clean=clean,
+          executor_id=task_id,
+          fn_id="accepted"
         )
-        .this.step=.main.step$steps$new_sort_and_index_bam_samtools.accepted
-        .main.step$out_files$accepted_reads_bam$sorted=.this.step$out_files
+    )
+    .this.step=.main.step$steps$new_sort_and_index_bam_samtools.accepted
+    .main.step$out_files$accepted_reads_bam$sorted=.this.step$out_files
 
-        .main.step$steps <-append(
-        .main.step$steps ,new_sort_and_index_bam_samtools(
-            bin_samtools = bin_samtools,
-            bam=.main$out_files$rejected_reads_bam$unsorted$bam,
-            index=index,
-            stats=stats,
-            tmp_dir=tmp_dir,
-            output_dir=paste0(out_file_dir,"/rejected"),
-            env_dir=env_dir,
-            batch_dir=batch_dir,
-            ram=ram,
-            verbose=verbose,
-            threads=threads,
-            coord_sort=coord_sort,
-            err_msg=err_msg,
-            clean=clean,
-            executor_id=task_id,
-            fn_id="rejected"
-          )
+    .main.step$steps <-append(
+    .main.step$steps ,new_sort_and_index_bam_samtools(
+        bin_samtools = bin_samtools,
+        bam=.main$out_files$rejected_reads_bam$unsorted$bam,
+        tmp_dir=tmp_dir,
+        output_dir=paste0(out_file_dir,"/rejected"),
+        env_dir=env_dir,
+        batch_dir=batch_dir,
+        ram=ram,
+        verbose=verbose,
+        threads=threads,
+        err_msg=err_msg,
+        clean=clean,
+        executor_id=task_id,
+        fn_id="rejected"
       )
-      .this.step=.main.step$steps$new_sort_and_index_bam_samtools.rejected
-      .main.step$out_files$rejected_reads_bam$sorted=.this.step$out_files
-    }
+    )
+    .this.step=.main.step$steps$new_sort_and_index_bam_samtools.rejected
+    .main.step$out_files$rejected_reads_bam$sorted=.this.step$out_files
+  
     .env$.main<-.main
   }
 
@@ -111,9 +100,7 @@ query_bam_bamql=function(
       .env=.base.env,
       vars="bam"
   )
-
   launch(.env=.base.env)
-
 }
 
 
@@ -150,10 +137,6 @@ query_and_fragment_size_bamql=function(
   query=NULL,
   accepted_id="accepted",
   rejected_id="rejected",
-  sort=TRUE,
-  coord_sort=TRUE,
-  index=TRUE,
-  stats=TRUE,
   deviations=NULL,
   min_width=NULL,
   width=NULL,
@@ -178,9 +161,6 @@ query_and_fragment_size_bamql=function(
           query=query,
           accepted_id=accepted_id,
           rejected_id=rejected_id,
-          sort=sort,
-          index=index,
-          stats=stats,
           tmp_dir=tmp_dir,
           output_dir=paste0(out_file_dir,"/bams"),
           env_dir=env_dir,
@@ -188,7 +168,6 @@ query_and_fragment_size_bamql=function(
           ram=ram,
           verbose=verbose,
           threads=threads,
-          coord_sort=coord_sort,
           err_msg=err_msg,
           clean=clean,
           executor_id=task_id
@@ -212,7 +191,6 @@ query_and_fragment_size_bamql=function(
             ram=ram,
             verbose=verbose,
             threads=threads,
-            coord_sort=coord_sort,
             err_msg=err_msg,
             clean=clean,
             executor_id=task_id,
@@ -220,7 +198,7 @@ query_and_fragment_size_bamql=function(
         ) 
       )
       .this.step=.main.step$steps$new_insertsize_metrics_bam_picard.accepted
-      .main.step$out_files$fragments=.this.step$out_files
+      .main.step$out_files$fragments$accepted=.this.step$out_files
 
        .main.step$steps=append(
           .main.step$steps ,
@@ -237,7 +215,6 @@ query_and_fragment_size_bamql=function(
             ram=ram,
             verbose=verbose,
             threads=threads,
-            coord_sort=coord_sort,
             err_msg=err_msg,
             clean=clean,
             executor_id=task_id,
@@ -245,7 +222,7 @@ query_and_fragment_size_bamql=function(
         ) 
       )
       .this.step=.main.step$steps$new_insertsize_metrics_bam_picard.rejected
-      .main.step$out_files$fragments=.this.step$out_files
+      .main.step$out_files$fragments$rejected=.this.step$out_files
   
       .env$.main <- .main
   }
@@ -259,4 +236,145 @@ query_and_fragment_size_bamql=function(
 }
 
 
+#' Context-Specific Fragment Size Metrics Using BAMQL and Samtools
+#'
+#' This function calculates fragment size metrics for a BAM file in a context-specific manner. It first runs Picard insert size metrics on all reads, then extracts reads from a specified genomic region using samtools, and finally applies BAMQL queries to further subset reads within the region. Fragment size metrics are calculated for each subset using Picard. Output files and metrics are written to disk and tracked in the environment.
+#'
+#' @param bin_picard Path to the Picard binary. Default: from build_default_tool_binary_list().
+#' @param bin_samtools Path to the samtools binary. Default: from build_default_tool_binary_list().
+#' @param sif_bamql Path to the BAMQL singularity image file. Default: from build_default_sif_list().
+#' @param bam Path to the input BAM file. (Required)
+#' @param region Genomic region to extract (e.g., "1:10000-1000000"). (Required)
+#' @param query BAMQL query string to filter reads. (Required)
+#' @param accepted_id Identifier for accepted reads output file. Default: "accepted".
+#' @param rejected_id Identifier for rejected reads output file. Default: "rejected".
+#' @param deviations Numeric; number of standard deviations for fragment size metrics. Default: NULL.
+#' @param min_width Numeric; minimum fragment width for metrics. Default: NULL.
+#' @param width Numeric; fragment width for metrics. Default: NULL.
+#' @param ... Additional arguments passed to environment setup and job execution.
+#'
+#' @return No direct return value. Output files and metrics are written to disk and tracked in the environment.
+#' @export
+
+context_specific_fragment_size_bamql=function(
+  bin_picard=build_default_tool_binary_list()$bin_picard,
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  sif_bamql=build_default_sif_list()$sif_bamql,
+  bam=NULL,
+  region=NULL,
+  query=NULL,
+  accepted_id="accepted",
+  rejected_id="rejected",
+  deviations=NULL,
+  min_width=NULL,
+  width=NULL,
+  ...
+){
+    run_main=function(
+      .env
+    ){
+      .this.env=environment()
+      append_env(to=.this.env,from=.env)
+      set_main(.env=.this.env)
+
+      .main$steps[[fn_id]]<-.this.env
+      .main.step=.main$steps[[fn_id]]
+
+      if(is.null(query)){
+          stop("Provide a query e.g. chr(X) & nt_exact(66931463,A) ")
+      }
+
+      if(is.null(region)){
+        stop("Region must be provided e.g. 1:10000-1000000")
+      }
+
+      ### Run Picard Metrics on all reads
+      .main.step$steps=append(
+          .main.step$steps ,
+          new_insertsize_metrics_bam_picard(
+            bin_picard=bin_picard,
+            bam=input,
+            deviations=deviations,
+            min_width=min_width,
+            width=width,
+            tmp_dir=tmp_dir,
+            output_dir=paste0(out_file_dir,"/context/genome/insert_size"),
+            env_dir=env_dir,
+            batch_dir=batch_dir,
+            ram=ram,
+            verbose=verbose,
+            threads=threads,
+            err_msg=err_msg,
+            clean=clean,
+            executor_id=task_id,
+            fn_id="genome"
+        ) 
+      )
+      .this.step=.main.step$steps$new_insertsize_metrics_bam_picard.genome
+      .main.step$out_files$context$genome$fragments=.this.step$out_files
+
+      ### Subset regions within a region e.g. AR amplification
+
+      .main.step$steps <-append(
+      .main.step$steps ,extract_and_fragment_size_samtools(
+        bin_picard=build_default_tool_binary_list()$bin_picard,
+        bin_samtools=build_default_tool_binary_list()$bin_samtools,
+        bam=input,
+        region=region,
+        accepted_id=accepted_id,
+        rejected_id=rejected_id,
+        tmp_dir=tmp_dir,
+        output_dir=paste0(out_file_dir,"/context/local/region"),
+        env_dir=env_dir,
+        batch_dir=batch_dir,
+        ram=ram,
+        verbose=verbose,
+        threads=threads,
+        err_msg=err_msg,
+        clean=clean,
+        executor_id=task_id
+        )
+      )
+      .this.step=.main.step$steps$extract_reads_region_samtools
+      .main.step$out_files$context$local$region=.this.step$out_files
+
+
+      .main.step$steps <-append(
+        .main.step$steps,query_and_fragment_size_bamql(
+          bin_picard=build_default_tool_binary_list()$bin_picard,
+          bin_samtools=build_default_tool_binary_list()$bin_samtools,
+          sif_bamql=build_default_sif_list()$sif_bamql,
+          bam= .main.step$out_files$context$local$region$accepted_reads_bam$sorted$srt_bam,
+          query=query,
+          accepted_id=accepted_id,
+          rejected_id=rejected_id,
+          deviations=deviations,
+          min_width=min_width,
+          width=width,
+          tmp_dir=tmp_dir,
+          output_dir=paste0(out_file_dir,"/context/local/region/site"),
+          env_dir=env_dir,
+          batch_dir=batch_dir,
+          ram=ram,
+          verbose=verbose,
+          threads=threads,
+          err_msg=err_msg,
+          clean=clean,
+          executor_id=task_id
+        )
+      )
+      .this.step=.main.step$steps$query_and_fragment_size_bamql
+      .main.step$out_files$context$local$region$site=.this.step$out_files
+      .env$.main <- .main
+    }
+
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="bam"
+    )
+      
+}   
+    
 
