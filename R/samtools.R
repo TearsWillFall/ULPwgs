@@ -2549,9 +2549,9 @@ reads_region_samtools=function(
       bin_samtools," view -b ",
       input," -@ ",
       threads,
-      " -o ",.main$out_files$accepted_reads_bam$unsorted$bam,
+      " -L ",.main$out_files$region_bed,
       " -U ",.main$out_files$rejected_reads_bam$unsorted$bam,
-      " -L ",.main$out_files$region_bed
+      " -o ",.main$out_files$accepted_reads_bam$unsorted$bam
     )
 
     run_job(.env=.this.env)
