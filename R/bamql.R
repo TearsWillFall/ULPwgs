@@ -129,7 +129,7 @@ query_bam_bamql=function(
 
 
 
-query_and_fragment_size_bamql=function(
+site_fragment_info_bamql=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   sif_bamql=build_default_sif_list()$sif_bamql,
@@ -137,6 +137,7 @@ query_and_fragment_size_bamql=function(
   query=NULL,
   accepted_id="accepted",
   rejected_id="rejected",
+  kmers=4,
   deviations=NULL,
   min_width=NULL,
   width=NULL,
@@ -178,14 +179,16 @@ query_and_fragment_size_bamql=function(
    
       .main.step$steps=append(
           .main.step$steps ,
-          new_insertsize_metrics_bam_picard(
+          extract_insert_info_samtools(
+            bin_samtools=bin_samtools,
             bin_picard=bin_picard,
             bam=.main.step$out_files$accepted_reads_bam$sorted$srt_bam,
+            kmers=kmers,
             deviations=deviations,
             min_width=min_width,
             width=width,
             tmp_dir=tmp_dir,
-            output_dir=paste0(out_file_dir,"/insert_size/accepted"),
+            output_dir=paste0(out_file_dir,"/accepted"),
             env_dir=env_dir,
             batch_dir=batch_dir,
             ram=ram,
@@ -197,19 +200,21 @@ query_and_fragment_size_bamql=function(
             fn_id="accepted"
         ) 
       )
-      .this.step=.main.step$steps$new_insertsize_metrics_bam_picard.accepted
-      .main.step$out_files$fragments$accepted=.this.step$out_files
+      .this.step=.main.step$steps$extract_insert_info.accepted
+      .main.step$out_files$inserts$accepted=.this.step$out_files
 
        .main.step$steps=append(
           .main.step$steps ,
-          new_insertsize_metrics_bam_picard(
+          extract_insert_info_samtools(
+            bin_samtools=bin_samtools,
             bin_picard=bin_picard,
             bam=.main.step$out_files$rejected_reads_bam$sorted$srt_bam,
+            kmers=kmers,
             deviations=deviations,
             min_width=min_width,
             width=width,
             tmp_dir=tmp_dir,
-            output_dir=paste0(out_file_dir,"/insert_size/rejected"),
+            output_dir=paste0(out_file_dir,"/rejected"),
             env_dir=env_dir,
             batch_dir=batch_dir,
             ram=ram,
@@ -221,8 +226,8 @@ query_and_fragment_size_bamql=function(
             fn_id="rejected"
         ) 
       )
-      .this.step=.main.step$steps$new_insertsize_metrics_bam_picard.rejected
-      .main.step$out_files$fragments$rejected=.this.step$out_files
+      .this.step=.main.step$steps$extract_insert_info.rejected
+      .main.step$out_files$inserts$rejected=.this.step$out_files
   
       .env$.main <- .main
   }
@@ -256,7 +261,7 @@ query_and_fragment_size_bamql=function(
 #' @return No direct return value. Output files and metrics are written to disk and tracked in the environment.
 #' @export
 
-context_specific_fragment_size_bamql=function(
+context_specific_fragment_info_bamql=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   sif_bamql=build_default_sif_list()$sif_bamql,
@@ -265,6 +270,7 @@ context_specific_fragment_size_bamql=function(
   query=NULL,
   accepted_id="accepted",
   rejected_id="rejected",
+  kmers=4,
   deviations=NULL,
   min_width=NULL,
   width=NULL,
@@ -291,14 +297,16 @@ context_specific_fragment_size_bamql=function(
       ### Run Picard Metrics on all reads
       .main.step$steps=append(
           .main.step$steps ,
-          new_insertsize_metrics_bam_picard(
+          extract_insert_info_samtools(
             bin_picard=bin_picard,
+            bin_samtools=bin_samtools,
             bam=input,
+            kmers=kmers,
             deviations=deviations,
             min_width=min_width,
             width=width,
             tmp_dir=tmp_dir,
-            output_dir=paste0(out_file_dir,"/context/genome/insert_size"),
+            output_dir=paste0(out_file_dir,"/context/genome/"),
             env_dir=env_dir,
             batch_dir=batch_dir,
             ram=ram,
@@ -310,19 +318,20 @@ context_specific_fragment_size_bamql=function(
             fn_id="genome"
         ) 
       )
-      .this.step=.main.step$steps$new_insertsize_metrics_bam_picard.genome
-      .main.step$out_files$context$genome$fragments=.this.step$out_files
+      .this.step=.main.step$steps$extract_insert_info_samtools.genome
+      .main.step$out_files$context$genome$inserts=.this.step$out_files
 
       ### Subset regions within a region e.g. AR amplification
 
       .main.step$steps <-append(
-      .main.step$steps ,extract_and_fragment_size_samtools(
+      .main.step$steps,region_fragment_info_samtools(
         bin_picard=build_default_tool_binary_list()$bin_picard,
         bin_samtools=build_default_tool_binary_list()$bin_samtools,
         bam=input,
         region=region,
         accepted_id=accepted_id,
         rejected_id=rejected_id,
+        kmers=kmers,
         deviations=deviations,
         min_width=min_width,
         width=width,
@@ -338,12 +347,12 @@ context_specific_fragment_size_bamql=function(
         executor_id=task_id
         )
       )
-      .this.step=.main.step$steps$extract_and_fragment_size_samtools
+      .this.step=.main.step$steps$region_fragment_info_samtools
       .main.step$out_files$context$local$region=.this.step$out_files
 
 
       .main.step$steps <-append(
-        .main.step$steps,query_and_fragment_size_bamql(
+        .main.step$steps,site_fragment_info_bamql(
           bin_picard=build_default_tool_binary_list()$bin_picard,
           bin_samtools=build_default_tool_binary_list()$bin_samtools,
           sif_bamql=build_default_sif_list()$sif_bamql,
@@ -351,6 +360,7 @@ context_specific_fragment_size_bamql=function(
           query=query,
           accepted_id=accepted_id,
           rejected_id=rejected_id,
+          kmers=kmers,
           deviations=deviations,
           min_width=min_width,
           width=width,
@@ -366,7 +376,7 @@ context_specific_fragment_size_bamql=function(
           executor_id=task_id
         )
       )
-      .this.step=.main.step$steps$query_and_fragment_size_bamql
+      .this.step=.main.step$steps$site_fragment_info_bamql
       .main.step$out_files$context$local$region$site=.this.step$out_files
       .env$.main <- .main
     }

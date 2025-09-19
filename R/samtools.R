@@ -2747,7 +2747,7 @@ extract_and_fragment_size_samtools=function(
 #' @export
 
 
-extract_fragment_ends_samtools=function(
+extract_insert_ends_samtools=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam=NULL,
@@ -2765,20 +2765,19 @@ extract_fragment_ends_samtools=function(
 
     set_main(.env=.this.env)
 
-    .main$out_files$fragment_ends=paste0(out_file_dir,"/",input_id,".",kmer,"_kmer.txt")
+    .main$out_files$insert_ends=paste0(out_file_dir,"/",input_id,".",kmer,"_kmer.txt")
     .main$exec_code=paste(
       bin_samtools," view ",
       input," -@ ",
       threads,
       paste0(" | awk \'{print substr($10,1,",kmer,")}\' "),
-      " | sort -c | uniq -c | sort -nr"
+      " | sort | uniq -c | sort -nr"
     )
     if(remove_n){
-      .main$exec_code=paste0(.main$exec_code,"| grep -v N")
+      .main$exec_code=paste0(.main$exec_code,"| grep -v N ")
     }
-    .main$exec_code=paste0(.main$exec_code,">",  .main$out_files$fragment_ends)
+    .main$exec_code=paste0(.main$exec_code,">",  .main$out_files$insert_ends)
   
-
 
     run_job(.env=.this.env)
     .env$.main <- .main
@@ -2793,3 +2792,102 @@ extract_fragment_ends_samtools=function(
 
     launch(.env=.base.env)
 }
+
+
+#' Extract Insert Size Metrics and Fragment End Motifs from BAM File
+#'
+#' This function calculates insert size metrics using Picard and extracts fragment end motifs from a BAM file using samtools and awk. Both metrics and motif counts are written to output files for downstream analysis.
+#'
+#' @param bin_picard Path to the Picard binary. Default: from build_default_tool_binary_list().
+#' @param bin_samtools Path to the samtools binary. Default: from build_default_tool_binary_list().
+#' @param bam Path to the input BAM file. (Required)
+#' @param kmer Length of the k-mer to extract from fragment ends. Default: 4.
+#' @param remove_n Remove entries with N-bases. Default: TRUE.
+#' @param deviations Numeric; number of standard deviations for insert size metrics. Default: NULL.
+#' @param min_width Numeric; minimum fragment width for metrics. Default: NULL.
+#' @param width Numeric; fragment width for metrics. Default: NULL.
+#' @param ... Additional arguments passed to environment setup and job execution.
+#'
+#' @return No direct return value. Output files for insert size metrics and fragment end motif counts are written to disk and tracked in the environment.
+#' @export
+
+extract_insert_info_samtools=function(
+  bin_picard=build_default_tool_binary_list()$bin_picard,
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam=NULL,
+  kmer=4,
+  remove_n=TRUE,
+  deviations=NULL,
+  min_width=NULL,
+  width=NULL,
+  ...
+){
+
+    run_main=function(
+      .env
+    ){
+      .this.env=environment()
+      append_env(to=.this.env,from=.env)
+      set_main(.env=.this.env)
+
+      .main$steps[[fn_id]]<-.this.env
+      .main.step=.main$steps[[fn_id]]
+
+      .main.step$steps=append(
+              .main.step$steps ,
+              new_insertsize_metrics_bam_picard(
+                bin_picard=bin_picard,
+                bam=input,
+                deviations=deviations,
+                min_width=min_width,
+                width=width,
+                tmp_dir=tmp_dir,
+                output_dir=paste0(out_file_dir,"/inserts"),
+                env_dir=env_dir,
+                batch_dir=batch_dir,
+                ram=ram,
+                verbose=verbose,
+                threads=threads,
+                err_msg=err_msg,
+                clean=clean,
+                executor_id=task_id
+            ) 
+          )
+          .this.step=.main.step$steps$new_insertsize_metrics_bam_picard
+          .main.step$out_files$inserts=.this.step$out_files
+
+          .main.step$steps=append(
+              .main.step$steps ,
+              extract_insert_ends_samtools(
+                bin_picard=bin_picard,
+                bin_samtools=bin_samtools,
+                bam=input,
+                kmer=kmer,
+                remove_n=remove_n,
+                tmp_dir=tmp_dir,
+                output_dir=paste0(out_file_dir,"/inserts"),
+                env_dir=env_dir,
+                batch_dir=batch_dir,
+                ram=ram,
+                verbose=verbose,
+                threads=threads,
+                err_msg=err_msg,
+                clean=clean,
+                executor_id=task_id
+            ) 
+          )
+          .this.step=.main.step$steps$extract_insert_ends_samtools
+          .main.step$out_files$inserts=.this.step$out_files
+          .env$.main <- .main
+    }
+  .base.env=environment()
+  list2env(list(...),envir=.base.env)
+  set_env_vars(
+      .env= .base.env,
+      vars="bam"
+  )
+  launch(.env=.base.env)
+}
+
+
+
