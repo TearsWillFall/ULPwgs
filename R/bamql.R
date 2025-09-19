@@ -281,7 +281,7 @@ context_specific_fragment_size_bamql=function(
       .main.step=.main$steps[[fn_id]]
 
       if(is.null(query)){
-          stop("Provide a query e.g. chr(X) & nt_exact(66931463,A) ")
+        stop("Provide a query e.g. chr(X) & nt_exact(66931463,A) ")
       }
 
       if(is.null(region)){
@@ -377,6 +377,7 @@ context_specific_fragment_size_bamql=function(
       .env= .base.env,
       vars="bam"
     )
+    launch(.env=.base.env)
       
 }   
     
