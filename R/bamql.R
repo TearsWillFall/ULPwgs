@@ -341,6 +341,8 @@ context_specific_fragment_size_bamql=function(
       .this.step=.main.step$steps$extract_reads_region_samtools
       .main.step$out_files$context$local$region=.this.step$out_files
 
+      print(.main.step$out_files)
+      
 
       .main.step$steps <-append(
         .main.step$steps,query_and_fragment_size_bamql(
