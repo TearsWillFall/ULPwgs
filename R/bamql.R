@@ -179,7 +179,6 @@ query_and_fragment_size_bamql=function(
           accepted_id=accepted_id,
           rejected_id=rejected_id,
           sort=sort,
-          coord_sort=coord_sort,
           index=index,
           stats=stats,
           tmp_dir=tmp_dir,
