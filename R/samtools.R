@@ -2538,15 +2538,20 @@ reads_region_samtools=function(
         stop("Region must be provided e.g. 1:10000-1000000")
     }
 
+
     .main$out_files$accepted_reads_bam$unsorted$bam=paste0(tmp_dir,"/",input_id,".",accepted_id,"_",region,".",input_ext)
     .main$out_files$rejected_reads_bam$unsorted$bam=paste0(tmp_dir,"/",input_id,".",rejected_id,"_",region,".",input_ext)
-     .main$exec_code=paste(
+    .main$out_files$region_bed=paste0(tmp_dir,"/",input_id,".",region)
+    
+     .main$exec_code=paste("echo \'",
+      sub("-","\t",sub(":","\t",region)),"\' > ",
+      .main$out_files$region_bed,";",
       bin_samtools," view -b ",
       input," -@ ",
       threads,
       " -o ",.main$out_files$accepted_reads_bam$unsorted$bam,
       " -U ",.main$out_files$rejected_reads_bam$unsorted$bam,
-      region
+      " -L ",.main$out_files$region_bed
     )
 
     run_job(.env=.this.env)
