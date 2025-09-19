@@ -2731,3 +2731,62 @@ extract_and_fragment_size_samtools=function(
   launch(.env=.base.env)
 
 }
+
+#' Extract Fragment End Motifs from BAM File
+#'
+#' This function extracts the sequence motifs from the ends of fragments in a BAM file using samtools and awk. The motifs are counted, sorted, and written to an output file. Useful for analyzing fragment end composition (e.g., for nucleosome positioning or bias detection).
+#'
+#' @param bin_picard Path to the Picard binary. Default: from build_default_tool_binary_list().
+#' @param bin_samtools Path to the samtools binary. Default: from build_default_tool_binary_list().
+#' @param bam Path to the input BAM file. (Required)
+#' @param kmer Length of the k-mer to extract from fragment ends. Default: 4.
+#' @param remove_n Remove entries with N-bases. Default: TRUE.
+#' @param ... Additional arguments passed to environment setup and job execution.
+#'
+#' @return No direct return value. Output file with fragment end motif counts is written to disk and tracked in the environment.
+#' @export
+
+
+extract_fragment_ends_samtools=function(
+  bin_picard=build_default_tool_binary_list()$bin_picard,
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam=NULL,
+  kmer=4,
+  remove_n=TRUE,
+  ...
+  ){
+
+
+     run_main=function(
+    .env
+  ){
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+
+    set_main(.env=.this.env)
+
+    .main$out_files$fragment_ends=paste0(out_file_dir,"/",input_id,".",kmer,"_kmer.txt")
+    .main$exec_code=paste(
+      bin_samtools," view ",
+      input," -@ ",
+      threads,
+      paste0(" | awk \'{print substr($10,1,",kmer,")}\' | "),
+      " | sort -c | uniq -c | sort -nr"
+    )
+    if(remove_n){
+      .main$exec_code=paste0(.main$exec_code,"| grep -v N")
+    }
+
+    run_job(.env=.this.env)
+    .env$.main <- .main
+  }
+
+   .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="bam"
+    )
+
+    launch(.env=.base.env)
+}
