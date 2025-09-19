@@ -2556,7 +2556,7 @@ extract_reads_region_samtools=function(
     .main.step$steps <-append(
       .main.step$steps ,new_sort_and_index_bam_samtools(
           bin_samtools = bin_samtools,
-          bam=.main$out_files$extracted$unsorted,
+          bam=.main$out_files$accepted_reads_bam$unsorted$bam,
           tmp_dir=tmp_dir,
           output_dir=paste0(out_file_dir,"/accepted/"),
           env_dir=env_dir,
