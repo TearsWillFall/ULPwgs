@@ -2770,12 +2770,15 @@ extract_fragment_ends_samtools=function(
       bin_samtools," view ",
       input," -@ ",
       threads,
-      paste0(" | awk \'{print substr($10,1,",kmer,")}\' | "),
+      paste0(" | awk \'{print substr($10,1,",kmer,")}\' "),
       " | sort -c | uniq -c | sort -nr"
     )
     if(remove_n){
       .main$exec_code=paste0(.main$exec_code,"| grep -v N")
     }
+    .main$exec_code=paste0(.main$exec_code,">",  .main$out_files$fragment_ends)
+  
+
 
     run_job(.env=.this.env)
     .env$.main <- .main
