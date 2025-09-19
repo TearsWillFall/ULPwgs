@@ -5,11 +5,16 @@
 \title{BAM Querying using BAMQL}
 \usage{
 query_bam_bamql(
+  bin_samtools = build_default_tool_binary_list()$bin_samtools,
   sif_bamql = build_default_sif_list()$sif_bamql,
   bam = NULL,
   query = NULL,
   accepted_id = "accepted",
   rejected_id = "rejected",
+  sort = TRUE,
+  coord_sort = TRUE,
+  index = TRUE,
+  stats = TRUE,
   ...
 )
 }
