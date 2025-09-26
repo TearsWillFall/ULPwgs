@@ -25,9 +25,9 @@ extract_svs_lumpy=function(
     .main$out_files$lumpy$vcf=paste0(out_file_dir,"/",input_id,".tmp/",input_id,".lumpy.SV.vcf")
     .main$out_files$lumpy$split_bam=paste0(out_file_dir,"/",input_id,".tmp/",input_id,".lumpy.split.bam")
     .main$out_files$lumpy$disc_bam=paste0(out_file_dir,"/",input_id,".tmp/",input_id,".lumpy.disc.bam")
-    .main$exec_code=paste(
+    .main$exec_code=paste0(
       "conda activate ",env_lumpy,"; lumpyexpress -B ",input,
-      " -T tmp -k",
+      " -T ",input_id,".tmp"," -k ",
       " -o ", .main$out_files$lumpt$vcf
     )
     run_job(.env=.this.env)
