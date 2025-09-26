@@ -2925,7 +2925,7 @@ extract_discordant_reads_samtools=function(
 
     set_main(.env=.this.env)
 
-    .main$out_files$discordant_bam=paste0(out_file_dir,"/",input_id,".",iput_ext)
+    .main$out_files$discordant_bam=paste0(out_file_dir,"/",input_id,".",input_ext)
     .main$exec_code=paste(
       bin_samtools," view -b -F 1294",
       input," -@ ",
@@ -2978,7 +2978,7 @@ extract_split_reads_samtools=function(
 
     set_main(.env=.this.env)
 
-    .main$out_files$split_bam=paste0(out_file_dir,"/",input_id,".",iput_ext)
+    .main$out_files$split_bam=paste0(out_file_dir,"/",input_id,".",input_ext)
     .main$exec_code=paste(
       bin_samtools," view -b -F 2084",
       input," -@ ",
