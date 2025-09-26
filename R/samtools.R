@@ -2922,20 +2922,44 @@ extract_discordant_reads_samtools=function(
   ){
     .this.env=environment()
     append_env(to=.this.env,from=.env)
-
     set_main(.env=.this.env)
+    .main$steps[[fn_id]]<-.this.env
+    .main.step=.main$steps[[fn_id]]
 
-    .main$out_files$discordant_bam=paste0(out_file_dir,"/",input_id,".discordant.",input_ext)
+
+    .main$out_files$unsorted$discordant_bam=paste0(out_file_dir,"/",input_id,".discordant.",input_ext)
     .main$exec_code=paste(
       bin_samtools," view -b -F 1294",
       input," -@ ",
-      threads," ",region
+      threads," ",region,
+      .main$out_files$unsorted$discordant_bam
     )
-    
-    .main$exec_code=paste0(.main$exec_code,">",.main$out_files$discordant_bam)
-  
+
 
     run_job(.env=.this.env)
+
+        
+    .main.step$steps <-append(
+      .main.step$steps ,new_sort_and_index_bam_samtools(
+          bin_samtools=bin_samtools,
+          bam=.main$out_files$unsorted$discordant_bam,
+          tmp_dir=tmp_dir,
+          output_dir=out_file_dir,
+          env_dir=env_dir,
+          batch_dir=batch_dir,
+          ram=ram,
+          verbose=verbose,
+          threads=threads,
+          err_msg=err_msg,
+          clean=clean,
+          executor_id=task_id,
+          fn_id="sorted"
+        )
+    )
+
+    .this.step=.main.step$steps$new_sort_and_index_bam_samtools.sorted
+    .main.step$out_files$sorted=.this.step$out_files
+
     .env$.main <- .main
   }
 
@@ -2975,20 +2999,42 @@ extract_split_reads_samtools=function(
   ){
     .this.env=environment()
     append_env(to=.this.env,from=.env)
-
     set_main(.env=.this.env)
 
-    .main$out_files$split_bam=paste0(out_file_dir,"/",input_id,".split.",input_ext)
+    .main$steps[[fn_id]]<-.this.env
+    .main.step=.main$steps[[fn_id]]
+
+
+    .main$out_files$unsorted$split_bam=paste0(out_file_dir,"/",input_id,".split.",input_ext)
     .main$exec_code=paste(
-      bin_samtools," view -b -F 2084",
-      input," -@ ",
-      threads," ",region
+      bin_samtools," view -h ",
+      input," -@ ", threads, " | grep -E \'^@|SA:Z:\'",
+      "> samtools view -@ ",threads," -b -o ",.main$out_files$unsorted$split_bam
     )
-    
-    .main$exec_code=paste0(.main$exec_code,">",.main$out_files$split_bam)
-  
+
 
     run_job(.env=.this.env)
+
+      .main.step$steps <-append(
+      .main.step$steps ,new_sort_and_index_bam_samtools(
+          bin_samtools=bin_samtools,
+          bam=.main$out_files$unsorted$split_bam,
+          tmp_dir=tmp_dir,
+          output_dir=out_file_dir,
+          env_dir=env_dir,
+          batch_dir=batch_dir,
+          ram=ram,
+          verbose=verbose,
+          threads=threads,
+          err_msg=err_msg,
+          clean=clean,
+          executor_id=task_id,
+          fn_id="sorted"
+        )
+    )
+
+    .this.step=.main.step$steps$new_sort_and_index_bam_samtools.sorted
+    .main.step$out_files$sorted=.this.step$out_files
     .env$.main <- .main
   }
 
