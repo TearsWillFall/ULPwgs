@@ -3006,7 +3006,7 @@ extract_split_reads_samtools=function(
     .main$exec_code=paste(
       bin_samtools," view -h ",
       input," -@ ", threads, " | grep -E \'^@|SA:Z:\'",
-      "> samtools view -@ ",threads," -b -o ",.main$out_files$unsorted$split_bam
+      "| samtools view -@ ",threads," -b -o ",.main$out_files$unsorted$split_bam
     )
 
 
