@@ -2905,7 +2905,6 @@ insert_info_samtools=function(
 #'
 #' @param bin_samtools Path to the samtools executable. Default: from build_default_tool_binary_list().
 #' @param bam Path to the input BAM file. (Required)
-#' @param region Genomic region to extract (e.g., "1:10000-1000000"). Default: NULL (whole BAM).
 #' @param ... Additional arguments passed to environment setup and job execution.
 #'
 #' @return No direct return value. Output BAM file with discordant reads is written to disk and tracked in the environment.
@@ -2931,7 +2930,7 @@ extract_discordant_reads_samtools=function(
     .main$exec_code=paste(
       bin_samtools," view -b -F 1294",
       input," -@ ",
-      threads," ",region,
+      threads,
       .main$out_files$unsorted$discordant_bam
     )
 
@@ -2982,7 +2981,6 @@ extract_discordant_reads_samtools=function(
 #'
 #' @param bin_samtools Path to the samtools executable. Default: from build_default_tool_binary_list().
 #' @param bam Path to the input BAM file. (Required)
-#' @param region Genomic region to extract (e.g., "1:10000-1000000"). Default: NULL (whole BAM).
 #' @param ... Additional arguments passed to environment setup and job execution.
 #'
 #' @return No direct return value. Output BAM file with discordant reads is written to disk and tracked in the environment.
@@ -2991,7 +2989,6 @@ extract_discordant_reads_samtools=function(
 extract_split_reads_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam=NULL,
-  region=NULL,
   ...
   ){
      run_main=function(
