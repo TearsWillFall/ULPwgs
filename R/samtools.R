@@ -2898,3 +2898,109 @@ insert_info_samtools=function(
 
 
 
+
+#' Extract Discordant Reads from BAM File Using Samtools
+#'
+#' This function extracts discordant reads from a BAM file using samtools. Discordant reads are those that do not meet expected pairing criteria (e.g., improper orientation or distance). The extracted reads are written to a new BAM file, optionally restricted to a specific genomic region.
+#'
+#' @param bin_samtools Path to the samtools executable. Default: from build_default_tool_binary_list().
+#' @param bam Path to the input BAM file. (Required)
+#' @param region Genomic region to extract (e.g., "1:10000-1000000"). Default: NULL (whole BAM).
+#' @param ... Additional arguments passed to environment setup and job execution.
+#'
+#' @return No direct return value. Output BAM file with discordant reads is written to disk and tracked in the environment.
+#' @export
+
+extract_discordant_reads_samtools=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam=NULL,
+  region=NULL,
+  ...
+  ){
+     run_main=function(
+    .env
+  ){
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+
+    set_main(.env=.this.env)
+
+    .main$out_files$discordant_bam=paste0(out_file_dir,"/",input_id,".",iput_ext)
+    .main$exec_code=paste(
+      bin_samtools," view -b -F 1294",
+      input," -@ ",
+      threads," ",region
+    )
+    
+    .main$exec_code=paste0(.main$exec_code,">",.main$out_files$discordant_bam)
+  
+
+    run_job(.env=.this.env)
+    .env$.main <- .main
+  }
+
+   .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="bam"
+    )
+
+    launch(.env=.base.env)
+}
+
+
+
+
+#' Extract Split Reads from BAM File Using Samtools
+#'
+#' This function extracts discordant reads from a BAM file using samtools. Discordant reads are those that do not meet expected pairing criteria (e.g., improper orientation or distance). The extracted reads are written to a new BAM file, optionally restricted to a specific genomic region.
+#'
+#' @param bin_samtools Path to the samtools executable. Default: from build_default_tool_binary_list().
+#' @param bam Path to the input BAM file. (Required)
+#' @param region Genomic region to extract (e.g., "1:10000-1000000"). Default: NULL (whole BAM).
+#' @param ... Additional arguments passed to environment setup and job execution.
+#'
+#' @return No direct return value. Output BAM file with discordant reads is written to disk and tracked in the environment.
+#' @export
+
+extract_split_reads_samtools=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam=NULL,
+  region=NULL,
+  ...
+  ){
+     run_main=function(
+    .env
+  ){
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+
+    set_main(.env=.this.env)
+
+    .main$out_files$split_bam=paste0(out_file_dir,"/",input_id,".",iput_ext)
+    .main$exec_code=paste(
+      bin_samtools," view -b -F 2084",
+      input," -@ ",
+      threads," ",region
+    )
+    
+    .main$exec_code=paste0(.main$exec_code,">",.main$out_files$split_bam)
+  
+
+    run_job(.env=.this.env)
+    .env$.main <- .main
+  }
+
+   .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="bam"
+    )
+
+    launch(.env=.base.env)
+}
+
+
+
