@@ -7,7 +7,6 @@
 extract_split_reads_samtools(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = NULL,
-  region = NULL,
   ...
 )
 }
@@ -15,8 +14,6 @@ extract_split_reads_samtools(
 \item{bin_samtools}{Path to the samtools executable. Default: from build_default_tool_binary_list().}
 
 \item{bam}{Path to the input BAM file. (Required)}
-
-\item{region}{Genomic region to extract (e.g., "1:10000-1000000"). Default: NULL (whole BAM).}
 
 \item{...}{Additional arguments passed to environment setup and job execution.}
 }

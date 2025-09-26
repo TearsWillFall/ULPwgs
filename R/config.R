@@ -652,6 +652,7 @@ build_default_python_enviroment_list=function(
         list(
                 env_circlemap="/myriadfs/home/regmova/miniconda3/envs/circle-map",
                 env_hatchet="/myriadfs/home/regmova/miniconda3/envs/hatchet",
+                env_lumpy="/myriadfs/home/regmova/miniconda3/envs/lumpy",
                 env_cov="/myriadfs/home/regmova/miniconda3/envs/cov",
                 env_medicc2="/myriadfs/home/regmova/miniconda3/envs/medicc_env",
                 env_msing="/myriadfs/home/regmova/Scratch/tools/msings/msings-env/bin/activate"

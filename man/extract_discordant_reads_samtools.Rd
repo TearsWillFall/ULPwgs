@@ -16,8 +16,6 @@ extract_discordant_reads_samtools(
 
 \item{bam}{Path to the input BAM file. (Required)}
 
-\item{region}{Genomic region to extract (e.g., "1:10000-1000000"). Default: NULL (whole BAM).}
-
 \item{...}{Additional arguments passed to environment setup and job execution.}
 }
 \value{
