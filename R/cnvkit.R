@@ -591,6 +591,10 @@ access_cnvkit=function(
   run_main=function(
     .env
   ){
+
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+    set_main(.env=.this.env)
     if(!is.null(gender)){
       gender=paste0(" -x ",gender)
     }
