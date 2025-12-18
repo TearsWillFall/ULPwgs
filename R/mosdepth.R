@@ -10,7 +10,7 @@
 #' @export
 #' 
 coverage_wgs_mosdepth=function(
-  bin_mosdepth=build_default_python_enviroment_list()$bin_mosdepth,
+  bin_mosdepth=build_default_tool_binary_list()$bin_mosdepth,
   bam=NULL,
   ...
   ){
