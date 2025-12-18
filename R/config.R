@@ -568,6 +568,7 @@ build_default_tool_binary_list=function(
                 ),
                 bin_sshpass="/myriadfs/home/regmova/Scratch/tools/sshpass/sshpass",
                 bin_vep="/myriadfs/home/regmova/Scratch/tools/ensembl-vep/vep",    
+                bin_mosdepth="/myriadfs/home/regmova/Scratch/tools/mosdepth/mosdepth",
                 bin_manta="/myriadfs/home/regmova/Scratch/tools/manta-1.6.0/bin/configManta.py",
                 bin_ichor_pon="/myriadfs/home/regmova/Scratch/tools/ichorCNA/scripts/createPanelOfNormals.R",
                 bin_ichor="/myriadfs/home/regmova/Scratch/tools/ichorCNA/scripts/runIchorCNA.R",

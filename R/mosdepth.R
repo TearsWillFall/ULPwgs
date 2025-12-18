@@ -1,4 +1,3 @@
-
 #' Extract Structural Variants from BAM File Using LUMPY
 #'
 #' This function calls structural variants (SVs) from a BAM file using LUMPY Express. It generates a VCF file with SV calls, as well as BAM files containing split and discordant reads used for SV detection. Output files are written to disk and tracked in the environment.
@@ -10,8 +9,8 @@
 #' @return No direct return value. Output VCF and BAM files are written to disk and tracked in the environment.
 #' @export
 #' 
-extract_svs_lumpy=function(
-  env_lumpy=build_default_python_enviroment_list()$env_lumpy,
+coverage_wgs_mosdepth=function(
+  bin_mosdepth=build_default_python_enviroment_list()$bin_mosdepth,
   bam=NULL,
   ...
   ){
@@ -22,14 +21,13 @@ extract_svs_lumpy=function(
     append_env(to=.this.env,from=.env)
     set_main(.env=.this.env)
 
-    .main$out_files$lumpy$vcf=paste0(out_file_dir,"/",input_id,".tmp/",input_id,".lumpy.SV.vcf")
-    .main$out_files$lumpy$split_bam=paste0(out_file_dir,"/",input_id,".tmp/",input_id,".lumpy.split.bam")
-    .main$out_files$lumpy$disc_bam=paste0(out_file_dir,"/",input_id,".tmp/",input_id,".lumpy.disc.bam")
+    .main$out_files$mosdepth$dist=paste0(out_file_dir,"/",input_id,".mosdepth.global.dist.txt")
+    .main$out_files$mosdepth$summary=paste0(out_file_dir,"/",input_id,".mosdepth.summary.txt")
     .main$exec_code=paste0(
-      "conda activate ",env_lumpy,"; lumpyexpress -B ",input,
-      " -T ",out_file_dir,"/",input_id,".tmp"," -k ",
-      " -o ", .main$out_files$lumpt$vcf
+        bin_mosdepth," -n --fast-mode -t ",threads," ", 
+        out_file_dir,"/",input_id," ", input
     )
+    
     run_job(.env=.this.env)
     .env$.main <- .main
   }
@@ -42,6 +40,3 @@ extract_svs_lumpy=function(
     )
     launch(.env=.base.env)
 }
-
-
-

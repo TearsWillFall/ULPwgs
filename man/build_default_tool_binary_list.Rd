@@ -28,18 +28,20 @@ build_default_tool_binary_list(
     "/myriadfs/home/regmova/Scratch/tools/OtherTools/bedToBigBed", liftOver =
     "/myriadfs/home/regmova/Scratch/tools/OtherTools/liftOver"), bin_sshpass =
     "/myriadfs/home/regmova/Scratch/tools/sshpass/sshpass", bin_vep =
-    "/myriadfs/home/regmova/Scratch/tools/ensembl-vep/vep", bin_manta =
-    "/myriadfs/home/regmova/Scratch/tools/manta-1.6.0/bin/configManta.py", bin_ichor_pon
-    = "/myriadfs/home/regmova/Scratch/tools/ichorCNA/scripts/createPanelOfNormals.R", 
-  
-      bin_ichor = "/myriadfs/home/regmova/Scratch/tools/ichorCNA/scripts/runIchorCNA.R",
+    "/myriadfs/home/regmova/Scratch/tools/ensembl-vep/vep", bin_mosdepth =
+    "/myriadfs/home/regmova/Scratch/tools/mosdepth/mosdepth", bin_manta =
+    "/myriadfs/home/regmova/Scratch/tools/manta-1.6.0/bin/configManta.py", 
+    
+    bin_ichor_pon =
+    "/myriadfs/home/regmova/Scratch/tools/ichorCNA/scripts/createPanelOfNormals.R",
+    bin_ichor = "/myriadfs/home/regmova/Scratch/tools/ichorCNA/scripts/runIchorCNA.R",
     bin_samtools = "/myriadfs/home/regmova/Scratch/tools/samtools/samtools", bin_gatk =
     "/myriadfs/home/regmova/Scratch/tools/gatk/gatk", bin_readcount =
     "/myriadfs/home/regmova/Scratch/tools/hmmcopy_utils/bin/readCounter", bin_ciri =
     "/myriadfs/home/regmova/Scratch/tools/CIRI/CIRI_Full_v2.1.1.jar", bin_picard =
-    "/myriadfs/home/regmova/Scratch/tools/picard/build/libs/picard.jar", bin_samtools =
-    "/myriadfs/home/regmova/Scratch/tools/samtools/samtools", 
-     bin_picard =
+    "/myriadfs/home/regmova/Scratch/tools/picard/build/libs/picard.jar", 
+    
+    bin_samtools = "/myriadfs/home/regmova/Scratch/tools/samtools/samtools", bin_picard =
     "/myriadfs/home/regmova/Scratch/tools/picard/build/libs/picard.jar", bin_bedtools =
     "/myriadfs/home/regmova/Scratch/tools/bedtools2/bin/bedtools", bin_ciri_quant =
     "/myriadfs/home/regmova/Scratch/tools/CIRIquant/bin/CIRIquant", bin_msing =
