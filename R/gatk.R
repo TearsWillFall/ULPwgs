@@ -535,7 +535,7 @@ gather_BQSR_reports_gatk=function(
     tmp_dir=paste0(" --tmp-dir ",tmp_dir)
   }
   out_file=paste0(out_file_dir,output_name,".recal.table")
-  exec_code=paste0("singularity exec run ",sif_gatk,
+  exec_code=paste0("singularity run ",sif_gatk,
   " /gatk/gatk GatherBQSRReports ",paste(" -I ",report,collapse=" "),
     " -O ",out_file,tmp_dir)
 
