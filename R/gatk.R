@@ -48,7 +48,7 @@ markdups_gatk=function(
     get_file_ext(bam))
     
     out_file_md=paste0(out_file_dir,"/",get_file_name(bam),".gatk_rmdup.txt")
-    exec_code=paste0(" singularity run",sif_gatk," /gatk/gatk MarkDuplicatesSpark -I ",bam, " -O ",  out_file,
+    exec_code=paste0(" singularity run ",sif_gatk," /gatk/gatk MarkDuplicatesSpark -I ",bam, " -O ",  out_file,
     " -M ",out_file_md," ",tmp," --conf \'spark.executor.cores=",threads,"\'", dups)
 
 
