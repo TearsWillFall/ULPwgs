@@ -27,7 +27,7 @@ insertsize_metrics_samtools=function(
    
         set_main(.env=.this.env)
 
-        .main$out_files$insert_ends=paste0(out_file_dir,"/",
+        .main$out_files$insert_size=paste0(out_file_dir,"/",
             input_id,ifelse(is.null(region),
             "",paste0(".",region)),"_insert_size.txt")
     
