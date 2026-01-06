@@ -5,33 +5,24 @@
 \title{Extract Insert Size Metrics and Fragment End Motifs from BAM File}
 \usage{
 insert_info_samtools(
-  bin_picard = build_default_tool_binary_list()$bin_picard,
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = NULL,
+  region = NULL,
   kmer = 4,
   remove_n = TRUE,
-  deviations = NULL,
-  min_width = NULL,
-  width = NULL,
   ...
 )
 }
 \arguments{
-\item{bin_picard}{Path to the Picard binary. Default: from build_default_tool_binary_list().}
-
 \item{bin_samtools}{Path to the samtools binary. Default: from build_default_tool_binary_list().}
 
 \item{bam}{Path to the input BAM file. (Required)}
 
+\item{region}{Optional genomic region to restrict the analysis (e.g., "chr1:1000-2000"). Default is NULL (whole BAM).}
+
 \item{kmer}{Length of the k-mer to extract from fragment ends. Default: 4.}
 
 \item{remove_n}{Remove entries with N-bases. Default: TRUE.}
-
-\item{deviations}{Numeric; number of standard deviations for insert size metrics. Default: NULL.}
-
-\item{min_width}{Numeric; minimum fragment width for metrics. Default: NULL.}
-
-\item{width}{Numeric; fragment width for metrics. Default: NULL.}
 
 \item{...}{Additional arguments passed to environment setup and job execution.}
 }

@@ -5,17 +5,15 @@
 \title{Extract Fragment End Motifs from BAM File}
 \usage{
 insert_ends_samtools(
-  bin_picard = build_default_tool_binary_list()$bin_picard,
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = NULL,
+  region = NULL,
   kmer = 4,
   remove_n = TRUE,
   ...
 )
 }
 \arguments{
-\item{bin_picard}{Path to the Picard binary. Default: from build_default_tool_binary_list().}
-
 \item{bin_samtools}{Path to the samtools binary. Default: from build_default_tool_binary_list().}
 
 \item{bam}{Path to the input BAM file. (Required)}
