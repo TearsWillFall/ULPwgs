@@ -32,14 +32,14 @@ insertsize_metrics_samtools=function(
             "",paste0(".",region)),"_insert_size.txt")
     
         .main$exec_code=paste(
-            "echo \'N\tinsert_size\tregion\tid' > ",
+            "echo \'N insert_size region id' > ",
             .main$out_files$insert_size,";",
             bin_samtools," view ",
             input," -@ ",
             threads,
             region,
             paste0(" | awk \'{print ",
-            "sqrt($9^2)\"\t", ifelse(is.null(region),"genome",region),"\t",input_id),
+            "sqrt($9^2)\" ", ifelse(is.null(region),"genome",region)," ",input_id),
             "\"}\' | sort -n | uniq -c"
         )
 
