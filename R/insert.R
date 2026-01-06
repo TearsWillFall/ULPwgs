@@ -43,7 +43,7 @@ insertsize_metrics_samtools=function(
             "\"\' | sort -n | uniq -c"
         )
 
-        .main$exec_code=paste0(.main$exec_code,">>",.main$out_files$insert_ends)
+        .main$exec_code=paste0(.main$exec_code,">>",.main$out_files$insert_size)
   
 
     run_job(.env=.this.env)
