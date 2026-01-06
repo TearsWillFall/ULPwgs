@@ -39,7 +39,7 @@ insertsize_metrics_samtools=function(
             threads,
             region,
             paste0(" | awk \'{print ",
-            "sqrt($9^2)} \"t", ifelse(is.null(region),"genome",region),""),
+            "sqrt($9^2)} \"\t", ifelse(is.null(region),"genome",region),""),
             "\"\' | sort -n | uniq -c"
         )
 
