@@ -41,7 +41,7 @@ insertsize_metrics_samtools=function(
             paste0(" | awk \'{print ",
             ifelse(is.null(region),"genome",region),
             "\tsqrt($9^2)}\' "),
-            " | sort -n | uniq -c'",
+            " | sort -n | uniq -c'"
         )
 
         .main$exec_code=paste0(.main$exec_code,">>",.main$out_files$insert_ends)
