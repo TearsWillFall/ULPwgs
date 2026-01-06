@@ -5,7 +5,7 @@
 \title{Extract Structural Variants from BAM File Using LUMPY}
 \usage{
 coverage_wgs_mosdepth(
-  bin_mosdepth = build_default_python_enviroment_list()$bin_mosdepth,
+  bin_mosdepth = build_default_tool_binary_list()$bin_mosdepth,
   bam = NULL,
   ...
 )
