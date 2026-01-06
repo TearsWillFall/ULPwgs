@@ -32,7 +32,7 @@ insertsize_metrics_samtools=function(
             "",paste0(".",region)),"_insert_size.txt")
     
         .main$exec_code=paste(
-            "echo \'N insert_size region id' > ",
+            "echo \'N insert_size region id\' > ",
             .main$out_files$insert_size,";",
             bin_samtools," view ",
             input," -@ ",
