@@ -2999,9 +2999,6 @@ insert_ends_samtools=function(
       "\"}\' | sort | uniq -c | sort -nr"
     )
 
-    if(remove_n){
-      .main$exec_code=paste0(.main$exec_code,)
-    }
     .main$exec_code=paste0(.main$exec_code,">>",  .main$out_files$insert_ends)
   
 
