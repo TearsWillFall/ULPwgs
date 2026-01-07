@@ -2992,7 +2992,7 @@ insert_ends_samtools=function(
       input," -@ ",
       threads,
       region,
-      paste0(" | awk \'{print substr($10,1,",kmer,")}'",
+      paste0(" | awk \'{print substr($10,1,",kmer,")}\'",
       ifelse(remove_n," | grep -v N ",""),
       "|awk \'{print $0 \" ",
       ifelse(is.null(region),"genome",region)," ",input_id),
