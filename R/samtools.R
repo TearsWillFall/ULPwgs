@@ -2992,13 +2992,15 @@ insert_ends_samtools=function(
       input," -@ ",
       threads,
       region,
-      paste0(" | awk \'{print substr($10,1,",kmer,") \"",
+      paste0(" | awk \'{print substr($10,1,",kmer,")}'",
+      ifelse(remove_n," | grep -v N ",""),
+      "|awk \'{print $0 \" ",
       ifelse(is.null(region),"genome",region)," ",input_id),
       "\"}\' | sort | uniq -c | sort -nr"
     )
 
     if(remove_n){
-      .main$exec_code=paste0(.main$exec_code,"| grep -v N ")
+      .main$exec_code=paste0(.main$exec_code,)
     }
     .main$exec_code=paste0(.main$exec_code,">>",  .main$out_files$insert_ends)
   
