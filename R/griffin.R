@@ -35,7 +35,7 @@ genome_GC_frequency_griffin=function(
       .main$out_files$gc_frequency=paste0(
         out_file_dir,"/",
         sub(".bed","",mappable_bed),".",
-        range,".bp.GC_frequency.tsv")
+        input,".bp.GC_frequency.tsv")
 
       build_griffin_config_snakemake(.env=.main)
   
@@ -78,7 +78,7 @@ build_griffin_config_snakemake=function(.env=NULL){
     out_file_dir=paste0(out_file_dir,"/results")
     out_file_dir_cfg=paste0(out_file_dir,"/config")
   
-    out_files$config=paste0(out_file_dir_cfg,"/griffin_GC_frequency_config.yaml")
+    out_files$config=paste0(out_file_dir_cfg,"/griffin_GC_frequency_config.",input,".yaml")
     dir.create(out_file_dir_cfg,showWarnings = FALSE,recursive = TRUE)
 
     cat(x=
@@ -88,7 +88,7 @@ build_griffin_config_snakemake=function(.env=NULL){
         "reference_genome: ", ref_genome,"\n\n",
         "chrom_sizes: ", chrom_size,"\n\n",
         "out_dir: ",  out_file_dir,"\n\n",
-        "size_range: ", "[",paste0(c(min(range),max), collapse = ","),"]\n\n",
+        "size_range: ", "[",paste0(c(min(input),max(input)), collapse = ","),"]\n\n",
         "read_length: ", read_length
     ),
     file=out_files$config
