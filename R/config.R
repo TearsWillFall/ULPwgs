@@ -592,6 +592,28 @@ build_default_tool_binary_list=function(
 
 
 
+#' Build default tools binaries config
+#' 
+#'
+#' @param snakefile List with snakefiles and paths 
+#' @export
+
+
+build_default_tool_snakemake_list=function(
+    snakefile=
+        list(
+            sf_genome_gc="/myriadfs/home/regmova/Scratch/tools/Griffin/snakemakes/griffin_genome_GC_frequency/griffin_genome_GC_frequency.snakefile",
+            sf_gc_correction="/myriadfs/home/regmova/Scratch/tools/Griffin/snakemakes/griffin_GC_and_mappability_correction/griffin_GC_and_mappability_correction.snakefile",
+            sf_nucleosome_profiling="/myriadfs/home/regmova/Scratch/tools/Griffin/snakemakes/griffin_nucleosome_profiling/griffin_nucleosome_profiling.snakefile"
+        )
+    ){
+         return(snakefile)
+}
+
+
+
+
+
 
 
 #' Build default nf-core pipeline list

@@ -13,18 +13,19 @@
 #'
 #' @return No direct return value. Output TSV files are written to disk and tracked in the environment under .main$out_files$gc_frequency.
 #' @export
-#' 
-#' 
+
+
 genome_GC_frequency_griffin=function(
   env_griffin=build_default_python_enviroment_list()$env_griffin,
   bin_griffin=build_default_tool_binary_list()$bin_griffin,
+  sf_genome_gc=build_default_tool_snakemake_list()$sf_genome_gc,
   mappable_bed=build_default_reference_list()$HG19$reference$mappable_bed_100bp,
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   chrom_size=build_default_reference_list()$HG19$reference$chrom_size,
   range=c(1:501),
   read_length=100,
   ...
-  ){
+){
      run_main=function(
     .env
     ){
@@ -42,9 +43,10 @@ genome_GC_frequency_griffin=function(
      
       
       .main$exec_code=paste0(
-        paste0("conda activate ",env_griffin,
-          "; snakemake -s ",
-          .main$out_files$config, " --cores ",threads)
+        paste0(
+          "conda activate ",env_griffin,
+          "; snakemake -s ",sf_genome_gc,
+          " -C ",.main$out_files$config, " --cores ",threads)
         )
 
       
