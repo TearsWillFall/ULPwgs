@@ -37,7 +37,7 @@ genome_GC_frequency_griffin=function(
         sub(".bed","",mappable_bed),".",
         range,".bp.GC_frequency.tsv")
 
-      build_griffin_config_snakemake(.env=.main.env)
+      build_griffin_config_snakemake(.env=.main)
   
      
       
