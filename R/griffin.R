@@ -44,7 +44,7 @@ genome_GC_frequency_griffin=function(
       .main$exec_code=paste0(
         paste0("conda activate ",env_griffin,
           "; snakemake -s ",
-          ,main$out_files$config, "--cores ",threads)
+          ,.main$out_files$config, "--cores ",threads)
         )
 
       
