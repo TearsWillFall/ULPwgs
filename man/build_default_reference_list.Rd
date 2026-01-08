@@ -2,73 +2,79 @@
 % Please edit documentation in R/config.R
 \name{build_default_reference_list}
 \alias{build_default_reference_list}
-\title{Build default references}
+\title{Build default references
+env}
 \usage{
 build_default_reference_list(
   references = list(HG19 = list(reference = list(chrx_tr =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/chrX_TR_database.bed",
     genome = "/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/hs37d5.fa",
+    mappable_bed_100bp =
+    "/myriadfs/home/regmova/Scratch/tools/Griffin/Ref/hg19/100_minus_exclusion_lists.mappable_regions.hg19.bed",
+    chrom_size =
+    "/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/hs37d5.standard.chrom.sizes",
     access_5k =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/hs37d5.access-5k-mappable.bed",
-    access_10k =
+    
+     access_10k =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/hs37d5.access-10k-mappable.bed"),
     phasing = list(G1000 = list(old = list(haplotype =
     paste0("/myriadfs/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/old/1000GP_Phase3/1000GP_Phase3_chr",
-    
-     c(1:22, "X"), ".hap.gz"), legend =
+    c(1:22, "X"), ".hap.gz"), legend =
     paste0("/myriadfs/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/old/1000GP_Phase3/1000GP_Phase3_chr",
     c(1:22, "X"), ".legend.gz"), gmap =
     paste0("/myriadfs/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/old/1000GP_Phase3/genetic_map_chr",
-    c(1:22, "X"), "_combined_b37.txt"), sample =
+    
+     c(1:22, "X"), "_combined_b37.txt"), sample =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/old/1000GP_Phase3/1000GP_Phase3.sample"),
     new = list(vcf =
     paste0("/myriadfs/home/regmova/Scratch/PCF/references/hg19/phasing/ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chr",
-    
-     c(1:22, "X"),
-    ".phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz"), gmap =
+    c(1:22, "X"), ".phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz"),
+    gmap =
     paste0("/myriadfs/home/regmova/Scratch/PCF/references/hg19/phasing/G1000/new/chr",
-    c(1:22, "X"), ".b37.gmap.gz")))), aa = list(dir = "/myriadfs/home/regmova/aa"),
+    c(1:22, "X"), ".b37.gmap.gz")))), 
+     aa = list(dir = "/myriadfs/home/regmova/aa"),
     database = list(all_snps =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/database/00-All.vcf.gz",
     all_common =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/database/00-common_all.vcf.gz"),
     annotation = list(reflat =
-    "/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/refFlat.txt", 
-    
-    genes = "/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/genes.txt"),
-    wgs = list(binned = list(target_1k =
+    "/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/refFlat.txt", genes =
+    "/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/genes.txt"), wgs =
+    list(binned = list(target_1k =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/wgs/reference_1k/hs37d5.access-5k-mappable.target.bed",
-    target_5k =
+    
+         target_5k =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/wgs/reference_5k/hs37d5.access-5k-mappable.target.bed",
     target_50k =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/wgs/reference_50k/hs37d5.access-5k-mappable.target.bed"),
     variant = list(pon_cn_1k =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/wgs/reference_1k/pon_trails_wgs.target_1000.pon.cnn",
-    
-     pon_cn_5k =
+    pon_cn_5k =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/wgs/reference_5k/pon_trails_wgs.target_5000.pon.cnn",
-    pon_cn_50k =
+    
+         pon_cn_50k =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/wgs/reference_50k/pon_trails_wgs.target_50000.pon.cnn"),
     ichorcna = list(pon_500k =
     "/myriadfs/home/regmova/Scratch/tools/ichorCNA/inst/extdata/HD_ULP_PoN_500kb_median_normAutosome_mapScoreFiltered_median.rds",
     gc_500k =
     "/myriadfs/home/regmova/Scratch/tools/ichorCNA/inst/extdata/gc_hg19_500kb.wig",
     map_500k =
-    "/myriadfs/home/regmova/Scratch/tools/ichorCNA/inst/extdata/map_hg19_500kb.wig", 
-   
-     centromere =
+    "/myriadfs/home/regmova/Scratch/tools/ichorCNA/inst/extdata/map_hg19_500kb.wig",
+    centromere =
     "/myriadfs/home/regmova/Scratch/tools/ichorCNA/inst/extdata/GRCh37.p13_centromere_UCSC-gapTable.txt")),
-    panel = list(PCF_V2 = list(intervals = list(bi =
+    
+     panel = list(PCF_V2 = list(intervals = list(bi =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/cap_tg.interval_list",
     ti =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/prim_tg.interval_list"),
     bed = list(bait =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/cap_tg.bed", target =
-    "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/prim_tg.bed"), 
-    
-    variant = list(pon_cn =
-    "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/pon_seg/pon_seg.cnn",
-    pon_cn_male =
+    "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/prim_tg.bed"), variant =
+    list(pon_cn =
+    "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/pon_seg/pon_seg.cnn", 
+ 
+           pon_cn_male =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/pon_seg/pon_seg_male.cnn",
     pon_muts =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/pon_var/pon_gatkPoN.vcf.gz"),
@@ -76,54 +82,53 @@ build_default_reference_list(
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/cap_tg.binned.targets.bed",
     antitarget =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/cap_tg.binned.antitargets.bed"),
-    
-     ascat = list(G1000 = list(allele =
+    ascat = list(G1000 = list(allele =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/ascat/G1000/alleleData_chr",
-    loci =
+    
+         loci =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/ascat/G1000/loci_chr",
     gc =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/ascat/G1000/gc.txt", rt
     = "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/ascat/G1000/rt.txt"),
     battenberg = list(allele =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/ascat/battenberg/alleleData_chr",
-    
-         loci =
+    loci =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/ascat/battenberg/loci_chr",
     gc =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/ascat/battenberg/gc.txt",
-    rt =
+    
+         rt =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/ascat/battenberg/rt.txt")),
     annotation = list(genes =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v2/genes.bed")), PCF_V3 =
     list(intervals = list(bi =
-    "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/cap_tg.interval_list", 
-
-        ti =
+    "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/cap_tg.interval_list",
+    ti =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/prim_tg.interval_list"),
     bed = list(bait =
-    "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/cap_tg.bed", target =
-    "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/prim_tg.bed"), variant =
-    list(pon_cn =
+    "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/cap_tg.bed", 
+        
+    target = "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/prim_tg.bed"),
+    variant = list(pon_cn =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/pon_seg/pon_seg.cnn",
     pon_cn_male =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/pon_seg/pon_seg_male.cnn",
     pon_muts =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/pon_var/pon_gatkPoN.vcf.gz"),
-    
-     binned = list(target =
+    binned = list(target =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/cap_tg.binned.targets.bed",
-    antitarget =
+    
+         antitarget =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/cap_tg.binned.antitargets.bed"),
     ascat = list(G1000 = list(allele =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/ascat/G1000/alleleData_chr",
     loci =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/ascat/G1000/loci_chr",
     gc =
-    "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/ascat/G1000/gc.txt", 
-  
-          rt =
-    "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/ascat/G1000/rt.txt"),
-    battenberg = list(allele =
+    "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/ascat/G1000/gc.txt", rt
+    = "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/ascat/G1000/rt.txt"),
+    
+         battenberg = list(allele =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/ascat/battenberg/alleleData_chr",
     loci =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/ascat/battenberg/loci_chr",
@@ -133,8 +138,8 @@ build_default_reference_list(
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/ascat/battenberg/rt.txt")),
     annotation = list(genes =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/genes.bed"), 
-     msi =
-    list(bed =
+        
+    msi = list(bed =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/msi/regions.bed",
     baseline =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/msi/baseline.txt"))),
@@ -145,7 +150,7 @@ build_default_reference_list(
     variant = list(germ_reference =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/variant/af-only-gnomad.raw.sites.vcf",
     
-     biallelic_reference =
+         biallelic_reference =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/variant/small_exac_common_3.vcf",
     hapmap_reference =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/variant/hapmap_3.3.b37.vcf",
@@ -171,4 +176,5 @@ build_default_reference_list(
 }
 \description{
 Build default references
+env
 }

@@ -567,7 +567,8 @@ build_default_tool_binary_list=function(
                     liftOver="/myriadfs/home/regmova/Scratch/tools/OtherTools/liftOver"
                 ),
                 bin_sshpass="/myriadfs/home/regmova/Scratch/tools/sshpass/sshpass",
-                bin_vep="/myriadfs/home/regmova/Scratch/tools/ensembl-vep/vep",    
+                bin_vep="/myriadfs/home/regmova/Scratch/tools/ensembl-vep/vep",
+                bin_griffin="/myriadfs/home/regmova/Scratch/tools/Griffin/scripts",    
                 bin_mosdepth="/myriadfs/home/regmova/Scratch/tools/mosdepth/mosdepth",
                 bin_manta="/myriadfs/home/regmova/Scratch/tools/manta-1.6.0/bin/configManta.py",
                 bin_ichor_pon="/myriadfs/home/regmova/Scratch/tools/ichorCNA/scripts/createPanelOfNormals.R",
@@ -655,6 +656,7 @@ build_default_python_enviroment_list=function(
                 env_hatchet="/myriadfs/home/regmova/miniconda3/envs/hatchet",
                 env_lumpy="/myriadfs/home/regmova/miniconda3/envs/lumpy",
                 env_cov="/myriadfs/home/regmova/miniconda3/envs/cov",
+                env_griffin="/myriadfs/home/regmova/miniconda3/envs/griffin",
                 env_medicc2="/myriadfs/home/regmova/miniconda3/envs/medicc_env",
                 env_msing="/myriadfs/home/regmova/Scratch/tools/msings/msings-env/bin/activate"
         )
@@ -837,7 +839,7 @@ build_default_cache_list=function(
 
 
 #' Build default references
-#' 
+#' env
 #'
 #' @param references List with reference files
 #' @export
@@ -848,6 +850,8 @@ build_default_reference_list=function(
                 reference=list(
                     chrx_tr="/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/chrX_TR_database.bed",
                     genome="/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/hs37d5.fa",
+                    mappable_bed_100bp="/myriadfs/home/regmova/Scratch/tools/Griffin/Ref/hg19/100_minus_exclusion_lists.mappable_regions.hg19.bed",
+                    chrom_size="/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/hs37d5.standard.chrom.sizes",
                     access_5k="/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/hs37d5.access-5k-mappable.bed",
                     access_10k="/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/hs37d5.access-10k-mappable.bed"
                 ),
