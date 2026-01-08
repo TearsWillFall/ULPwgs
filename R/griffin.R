@@ -94,8 +94,7 @@ build_griffin_config_snakemake=function(.env=NULL){
     file=out_files$config
     )
 
-    .env$out_files <- out_files
-    .env$out_file_dir <- out_file_dir
+  append_env(to=.env,from=.this.env)
 
 }
 
