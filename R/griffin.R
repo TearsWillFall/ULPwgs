@@ -31,12 +31,15 @@ genome_GC_frequency_griffin=function(
       .this.env=environment()
       append_env(to=.this.env,from=.env)
       set_main(.env=.this.env)
-      build_griffin_config_snakemake(.env=.this.env)
-  
+      
       .main$out_files$gc_frequency=paste0(
         out_file_dir,"/",
         sub(".bed","",mappable_bed),".",
         range,".bp.GC_frequency.tsv")
+
+      build_griffin_config_snakemake(.env=.main.env)
+  
+     
       
       .main$exec_code=paste0(
         paste0("conda activate ",env_griffin,
