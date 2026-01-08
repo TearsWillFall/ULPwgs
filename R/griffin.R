@@ -17,7 +17,7 @@
 #' 
 genome_GC_frequency_griffin=function(
   env_griffin=build_default_python_enviroment_list()$env_griffin,
-  bin_griffin=build_default_binary_list()$bin_griffin,
+  bin_griffin=build_default_tool_binary_list()$bin_griffin,
   mappable_bed=build_default_reference_list()$HG19$reference$mappable_bed_100bp,
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   chrom_size=build_default_reference_list()$HG19$reference$chrom_size,
@@ -42,7 +42,7 @@ genome_GC_frequency_griffin=function(
      
       
       .main$exec_code=paste0(
-        paste0("conda activate ",env_griffin,
+        paste0("conda activate ",bin_griffin,
           "; snakemake -s ",
           .main$out_files$config, " --cores ",threads)
         )
