@@ -2946,7 +2946,7 @@ insertsize_metrics_samtools=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
         .env= .base.env,
-        vars="bam"
+        vars="region"
     )
     launch(.env=.base.env)
 }
@@ -3009,7 +3009,7 @@ insert_ends_samtools=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env= .base.env,
-      vars="bam"
+      vars="region"
     )
 
     launch(.env=.base.env)
@@ -3095,7 +3095,7 @@ insert_info_samtools=function(
             ) 
           )
           .this.step=.main.step$steps
-          .main.step$out_files$insert_ends=.this.step=.main.step$steps
+          .main.step$out_files$insert_ends=get_variable_env(env=.this.step)
           .env$.main <- .main
     }
   .base.env=environment()
