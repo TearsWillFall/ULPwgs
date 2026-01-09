@@ -899,6 +899,11 @@ set_main_env=function(.env){
           input_id<-inputs_id[n]
           input_ext<-inputs_ext[n]
           job_id<-job_ids[n]
+
+          if(mode=="local_parallel"){
+              threads=1
+          }
+  
       
           err_msg <- paste0(err_msg ,fn," (",job_id,") "," -> ")
           
