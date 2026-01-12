@@ -877,6 +877,7 @@ build_default_reference_list=function(
                     access_5k="/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/hs37d5.access-5k-mappable.bed",
                     access_10k="/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/hs37d5.access-10k-mappable.bed"
                 ),
+                griffin_gc="/myriadfs/home/regmova/Scratch/tools/Griffin/Ref/hg19/griffin_hg19/results",
                 phasing=list(
                     G1000=list(
                         old=list(
@@ -1024,6 +1025,7 @@ build_default_reference_list=function(
                     genome="/myriadfs/home/regmova/Scratch/PCF/references/hg38/reference/ucsc.hg38.fa"
                     
                 ),
+                griffin_gc="/myriadfs/home/regmova/Scratch/tools/Griffin/Ref/genome_GC_frequency",
                 panel=list(
                     PCF_V3=list(
                         intervals=list(
