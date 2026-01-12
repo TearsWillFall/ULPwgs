@@ -2263,8 +2263,8 @@ filter_tabulated_vcf=function(
 get_variable_env=function(envs,variable="out_files"){
   variables=unlist(lapply(
       1:length(envs),FUN=function(x){
-        envs[[x]][1][[variable]]
+        envs[[x]][[1]][[variable]]
       }
     ))
-  variables
+  return(variables)
 }
