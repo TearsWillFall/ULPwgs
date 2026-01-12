@@ -2927,9 +2927,9 @@ insertsize_metrics_samtools=function(
             bin_samtools," view ",
             bam," -@ ",
             threads,
-            region,
+            input,
             paste0(" | awk \'{print ",
-            "sqrt($9^2)\" ", ifelse(is.null(region),"genome",region)," ",input_id),
+            "sqrt($9^2)\" ", ifelse(is.null(input),"genome",input)," ",input_id),
             "\"}\' | sort -n | uniq -c"
         )
 
@@ -2990,11 +2990,11 @@ insert_ends_samtools=function(
       bin_samtools," view ",
       bam," -@ ",
       threads,
-      region,
+      input,
       paste0(" | awk \'{print substr($10,1,",kmer,")}\'",
       ifelse(remove_n," | grep -v N ",""),
       "|awk \'{print $0 \" ",
-      ifelse(is.null(region),"genome",region)," ",input_id),
+      ifelse(is.null(input),"genome",input)," ",input_id),
       "\"}\' | sort | uniq -c | sort -nr"
     )
 
