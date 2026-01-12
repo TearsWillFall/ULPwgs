@@ -187,6 +187,7 @@ GC_bias_correction_griffin=function(
   gc_frequency=build_default_reference_list()$HG19$gc_frequency,
   chrom_size=build_default_reference_list()$HG19$reference$chrom_size,
   range=c(15:500),
+  bam=NULL,
   ...
 ){
      run_main=function(
