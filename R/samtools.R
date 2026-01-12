@@ -3058,7 +3058,7 @@ insert_info_samtools=function(
                 bam=input,
                 region=region,
                 tmp_dir=tmp_dir,
-                output_dir=paste0(out_file_dir,"/inserts"),
+                output_dir=paste0(out_file_dir,"/",input_id,"/inserts"),
                 env_dir=env_dir,
                 batch_dir=batch_dir,
                 ram=ram,
@@ -3070,7 +3070,7 @@ insert_info_samtools=function(
                 executor_id=task_id
             ) 
           )
-          .this.step=.main.step$steps
+          .this.step=.main.step$steps$insertsize_metrics_samtools
           .main.step$out_files$insert_size=get_variable_env(env=.this.step)
 
           .main.step$steps=append(
@@ -3082,7 +3082,7 @@ insert_info_samtools=function(
                 kmer=kmer,
                 remove_n=remove_n,
                 tmp_dir=tmp_dir,
-                output_dir=paste0(out_file_dir,"/inserts"),
+                output_dir=paste0(out_file_dir,"/",input_id,"/inserts"),
                 env_dir=env_dir,
                 batch_dir=batch_dir,
                 mode="local_parallel",
@@ -3094,7 +3094,7 @@ insert_info_samtools=function(
                 executor_id=task_id
             ) 
           )
-          .this.step=.main.step$steps
+          .this.step=.main.step$steps$insertsize_metrics_samtools
           .main.step$out_files$insert_ends=get_variable_env(env=.this.step)
           .env$.main <- .main
     }
