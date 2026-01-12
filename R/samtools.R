@@ -3147,20 +3147,20 @@ insert_info_tss_samtools=function(
         steps=50
       ){
         dat=data.table::fread(tss,sep="\t",header=FALSE) %>% 
-        mutate(V1=sub("chr","",V1)) %>%
+        dplyr::mutate(V1=sub("chr","",V1)) %>%
         dplyr::mutate(
             gid=paste0(V1,":",V2,"-",V3),
             chrom=V1,
             gpos=round((V2+V3)/2,0)
            )
-        dat=dat %>% group_by_all() %>%
+        dat=dat %>% dplyr::group_by_all() %>%
           dplyr::reframe(
             pos_relative_to_tfbs=seq(-distance,distance,steps)) %>%
-          mutate(
+          dplyr::mutate(
             start=gpos+pos_relative_to_tfbs-25,
             end=gpos+pos_relative_to_tfbs+25
             ) %>%
-          mutate(gid2=paste0(chrom,":",start,"-",end)) %>%
+          dplyr::mutate(gid2=paste0(chrom,":",start,"-",end)) %>%
           dplyr::select(gid,chrom,start,end,pos_relative_to_tfbs,gid2)
           return(dat)
         } 
