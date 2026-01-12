@@ -3052,8 +3052,7 @@ insert_info_samtools=function(
       .main$steps[[fn_id]]<-.this.env
       .main.step=.main$steps[[fn_id]]
 
-      .main.step$steps=append(
-              .main.step$steps ,
+      .main.step$steps$insert_size_metrics_samtools=
               insertsize_metrics_samtools(
                 bam=input,
                 region=region,
@@ -3069,13 +3068,11 @@ insert_info_samtools=function(
                 clean=clean,
                 executor_id=task_id
             ) 
-          )
 
-          .this.step=.main.step$steps
+          .this.step=.main.step$steps$insert_size_metrics_samtools
           .main.step$out_files$insert_size=get_variable_env(env=.this.step)
 
-          .main.step$steps=append(
-              .main.step$steps,
+          .main.step$steps$insert_ends_samtools=
               insert_ends_samtools(
                 bin_samtools=bin_samtools,
                 bam=input,
@@ -3094,8 +3091,8 @@ insert_info_samtools=function(
                 clean=clean,
                 executor_id=task_id
             ) 
-          )
-          .this.step=.main.step$steps
+      
+          .this.step=.main.step$steps$insert_ends_samtools
           .main.step$out_files$insert_ends=get_variable_env(env=.this.step)
           .env$.main <- .main
     }
