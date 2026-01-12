@@ -3071,7 +3071,7 @@ insert_info_samtools=function(
             ) 
           )
 
-          .this.step=.main.step$steps$insertsize_metrics_samtools
+          .this.step=.main.step$steps
           .main.step$out_files$insert_size=get_variable_env(env=.this.step)
 
           .main.step$steps=append(
@@ -3095,7 +3095,7 @@ insert_info_samtools=function(
                 executor_id=task_id
             ) 
           )
-          .this.step=.main.step$steps$insertsize_metrics_samtools
+          .this.step=.main.step$steps
           .main.step$out_files$insert_ends=get_variable_env(env=.this.step)
           .env$.main <- .main
     }

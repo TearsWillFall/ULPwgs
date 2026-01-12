@@ -2263,8 +2263,12 @@ filter_tabulated_vcf=function(
 get_variable_env=function(envs,variable="out_files"){
   variables=unlist(lapply(
       1:length(envs),FUN=function(x){
-        envs[[x]][[variable]]
+        envs[[x]][1][[variable]]
       }
     ))
-  return(variables)
+  tmp=data.frame(name=names(variables),value=variables) %>%
+    dplyr::group_by(name) %>% dplyr::summarise(value=list(value))
+  tmp_loc=tmp$value
+  names(tmp_loc)=tmp$name
+  return(tmp_loc)
 }
