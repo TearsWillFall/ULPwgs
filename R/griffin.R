@@ -120,7 +120,7 @@ build_griffin_gc_config_snakemake=function(.env=NULL){
     out_file_dir=paste0(out_file_dir,"/results")
     out_file_dir_cfg=paste0(out_file_dir,"/config")
   
-    out_files$config=paste0(out_file_dir_cfg,"/griffin_GC_bias_config.",input,".yaml")
+    out_files$config=paste0(out_file_dir_cfg,"/griffin_GC_bias_config.",input_id,".yaml")
     dir.create(out_file_dir_cfg,showWarnings = FALSE,recursive = TRUE)
 
     cat(x=
