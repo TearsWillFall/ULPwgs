@@ -141,7 +141,9 @@ build_griffin_gc_config_snakemake=function(.env=NULL){
         "genome_GC_frequency: ",gc_frequency,"\n\n",
         "size_range: ", paste0(c(min(input),max(input)), collapse = " "),"\n\n",
         "samples:
-          sample_name_1:", input,"\n\n"
+          sample_name_1:", input,"\n\n",
+        "GC_counts:
+          ncpus: ",threads,"\n\n"
     ),
     file=out_files$config
     )
