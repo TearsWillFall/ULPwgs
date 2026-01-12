@@ -3071,7 +3071,6 @@ insert_info_samtools=function(
             ) 
           )
 
-          print(.main.step$steps)
           .this.step=.main.step$steps$insertsize_metrics_samtools
           .main.step$out_files$insert_size=get_variable_env(env=.this.step)
 
