@@ -3070,11 +3070,13 @@ insert_info_samtools=function(
                 executor_id=task_id
             ) 
           )
+
+          print(.main.step$steps)
           .this.step=.main.step$steps$insertsize_metrics_samtools
           .main.step$out_files$insert_size=get_variable_env(env=.this.step)
 
           .main.step$steps=append(
-              .main.step$steps ,
+              .main.step$steps,
               insert_ends_samtools(
                 bin_samtools=bin_samtools,
                 bam=input,
