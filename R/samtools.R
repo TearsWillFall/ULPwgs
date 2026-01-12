@@ -3057,7 +3057,7 @@ insert_info_samtools=function(
                 bam=input,
                 region=region,
                 tmp_dir=tmp_dir,
-                output_dir=paste0(out_file_dir,"/",input_id,"/inserts"),
+                output_dir=paste0(out_file_dir,"/length"),
                 env_dir=env_dir,
                 batch_dir=batch_dir,
                 ram=ram,
@@ -3069,32 +3069,32 @@ insert_info_samtools=function(
                 executor_id=task_id
             ) 
 
-          .this.step=.main.step$steps$insert_size_metrics_samtools
-          .main.step$out_files$insert_size=get_variable_env(env=.this.step)
+      .this.step=.main.step$steps$insert_size_metrics_samtools
+      .main.step$out_files$insert_size=get_variable_env(env=.this.step)
 
-          .main.step$steps$insert_ends_samtools=
-              insert_ends_samtools(
-                bin_samtools=bin_samtools,
-                bam=input,
-                region=region,
-                kmer=kmer,
-                remove_n=remove_n,
-                tmp_dir=tmp_dir,
-                output_dir=paste0(out_file_dir,"/",input_id,"/inserts"),
-                env_dir=env_dir,
-                batch_dir=batch_dir,
-                mode="local_parallel",
-                ram=ram,
-                verbose=verbose,
-                threads=threads,
-                err_msg=err_msg,
-                clean=clean,
-                executor_id=task_id
-            ) 
-      
-          .this.step=.main.step$steps$insert_ends_samtools
-          .main.step$out_files$insert_ends=get_variable_env(env=.this.step)
-          .env$.main <- .main
+      .main.step$steps$insert_ends_samtools=
+          insert_ends_samtools(
+            bin_samtools=bin_samtools,
+            bam=input,
+            region=region,
+            kmer=kmer,
+            remove_n=remove_n,
+            tmp_dir=tmp_dir,
+            output_dir=paste0(out_file_dir,"/end"),
+            env_dir=env_dir,
+            batch_dir=batch_dir,
+            mode="local_parallel",
+            ram=ram,
+            verbose=verbose,
+            threads=threads,
+            err_msg=err_msg,
+            clean=clean,
+            executor_id=task_id
+        ) 
+  
+      .this.step=.main.step$steps$insert_ends_samtools
+      .main.step$out_files$insert_ends=get_variable_env(env=.this.step)
+      .env$.main <- .main
     }
   .base.env=environment()
   list2env(list(...),envir=.base.env)
@@ -3125,6 +3125,7 @@ insert_info_tss_samtools=function(
   bam=NULL,
   tss=NULL,
   distance=5000,
+  steps=50,
   kmer=4,
   remove_n=TRUE,
   ...
@@ -3140,13 +3141,44 @@ insert_info_tss_samtools=function(
       .main$steps[[fn_id]]<-.this.env
       .main.step=.main$steps[[fn_id]]
 
+
+      generate_tss_region=function(tss,
+        distance=5000,
+        steps=50
+      ){
+        dat=data.table::fread(tss,sep="\t",header=FALSE) %>% 
+        mutate(V1=sub("chr","",V1)) %>%
+        dplyr::mutate(
+            gid=paste0(V1,":",V2,"-",V3),
+            chrom=V1,
+            gpos=round((V2+V3)/2,0)
+           )
+        dat=dat %>% group_by_all() %>%
+          dplyr::reframe(
+            pos_relative_to_tfbs=seq(-distance,distance,steps)) %>%
+          mutate(
+            start=gpos+pos_relative_to_tfbs-25,
+            end=gpos+pos_relative_to_tfbs+25
+            ) %>%
+          mutate(gid2=paste0(chrom,":",start,"-",end)) %>%
+          dplyr::select(gid,chrom,start,end,pos_relative_to_tfbs,gid2)
+          return(dat)
+        } 
+
+      region=generate_tss_regions(
+        tss=tss,
+        distance=distance,
+        steps=steps
+      )
+  
+ 
       .main.step$steps=append(
               .main.step$steps ,
-              insert_info_tss_samtools(
+              insert_info_samtools(
                 bam=input,
-                region=region,
+                region=region$gid2,
                 tmp_dir=tmp_dir,
-                output_dir=paste0(out_file_dir,"/inserts"),
+                output_dir=paste0(out_file_dir,"/",input_id,"/",get_file_name(tss),"/inserts"),
                 env_dir=env_dir,
                 batch_dir=batch_dir,
                 ram=ram,
@@ -3157,8 +3189,8 @@ insert_info_tss_samtools=function(
                 executor_id=task_id
             ) 
           )
-          .this.step=.main.step$steps$insertsize_metrics_samtools
-          .main.step$out_files$inserts=.this.step$out_files
+          .this.step=.main.step$steps
+          .main.step$out_files$inserts=get_variable_env(env=.this.step)
 
           .env$.main <- .main
     }

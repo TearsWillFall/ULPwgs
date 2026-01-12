@@ -10,9 +10,10 @@ GC_bias_correction_griffin(
   sf_gc_correction = build_default_tool_snakemake_list()$sf_gc_correction,
   mappable_bed = build_default_reference_list()$HG19$reference$mappable_bed_100bp,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
-  gc_frequency = build_default_reference_list()$HG19$gc_frequency,
+  gc_frequency = build_default_reference_list()$HG19$griffin_gc,
   chrom_size = build_default_reference_list()$HG19$reference$chrom_size,
   range = c(15:500),
+  map_quality = 20,
   bam = NULL,
   ...
 )

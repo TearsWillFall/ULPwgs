@@ -9,6 +9,7 @@ insert_info_tss_samtools(
   bam = NULL,
   tss = NULL,
   distance = 5000,
+  steps = 50,
   kmer = 4,
   remove_n = TRUE,
   ...
