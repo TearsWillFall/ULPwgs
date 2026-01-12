@@ -3165,7 +3165,7 @@ insert_info_tss_samtools=function(
           return(dat)
         } 
 
-      region=generate_tss_regions(
+      region=generate_tss_region(
         tss=tss,
         distance=distance,
         steps=steps
