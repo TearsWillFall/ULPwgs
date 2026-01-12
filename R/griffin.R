@@ -139,7 +139,7 @@ build_griffin_gc_config_snakemake=function(.env=NULL){
         "chrom_sizes: ", chrom_size,"\n\n",
         "out_dir: ",  out_file_dir,"\n\n",
         "genome_GC_frequency: ",gc_frequency,"\n\n",
-        "size_range: ", paste0(c(min(input),max(input)), collapse = " "),"\n\n",
+        "GC_bias_size_range: ", paste0(c(min(range),max(range)), collapse = " "),"\n\n",
         "samples:
           sample_name_1:", input,"\n\n",
         "GC_counts:
