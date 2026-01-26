@@ -2929,7 +2929,7 @@ insertsize_metrics_samtools=function(
             threads,
             input,
             paste0(" | awk \'{print ",
-            "sqrt($9^2)\" ", ifelse(is.null(input),"genome",input)," ",input_id),
+            "sqrt($9^2)\" ", ifelse(is.null(input),"genome",input)," ",get_file_name(bam)),
             "\"}\' | sort -n | uniq -c"
         )
 
@@ -2994,7 +2994,7 @@ insert_ends_samtools=function(
       paste0(" | awk \'{print substr($10,1,",kmer,")}\'",
       ifelse(remove_n," | grep -v N ",""),
       "|awk \'{print $0 \" ",
-      ifelse(is.null(input),"genome",input)," ",input_id),
+      ifelse(is.null(input),"genome",input)," ",get_file_name(bam)),
       "\"}\' | sort | uniq -c | sort -nr"
     )
 

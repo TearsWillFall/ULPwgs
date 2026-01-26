@@ -579,6 +579,7 @@ build_default_tool_binary_list=function(
                 bin_ciri="/myriadfs/home/regmova/Scratch/tools/CIRI/CIRI_Full_v2.1.1.jar",
                 bin_picard="/myriadfs/home/regmova/Scratch/tools/picard/build/libs/picard.jar",
                 bin_samtools="/myriadfs/home/regmova/Scratch/tools/samtools/samtools",
+                bin_triton="/myriadfs/home/regmova/Scratch/tools/Triton/Triton/Triton.py",
                 bin_picard="/myriadfs/home/regmova/Scratch/tools/picard/build/libs/picard.jar",
                 bin_bedtools="/myriadfs/home/regmova/Scratch/tools/bedtools2/bin/bedtools",
                 bin_ciri_quant="/myriadfs/home/regmova/Scratch/tools/CIRIquant/bin/CIRIquant",
@@ -679,6 +680,7 @@ build_default_python_enviroment_list=function(
                 env_lumpy="/myriadfs/home/regmova/miniconda3/envs/lumpy",
                 env_cov="/myriadfs/home/regmova/miniconda3/envs/cov",
                 env_griffin="/myriadfs/home/regmova/miniconda3/envs/griffin",
+                env_triton="/myriadfs/home/regmova/miniconda3/envs/triton",
                 env_medicc2="/myriadfs/home/regmova/miniconda3/envs/medicc_env",
                 env_msing="/myriadfs/home/regmova/Scratch/tools/msings/msings-env/bin/activate"
         )
@@ -868,6 +870,7 @@ build_default_cache_list=function(
 
 build_default_reference_list=function(
     references=list(
+            OTHER=list(nc_fitting="/myriadfs/home/regmova/Scratch/tools/Triton/nc_fitting/NCDict.pkl"),
             HG19=list(
                 reference=list(
                     chrx_tr="/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/chrX_TR_database.bed",

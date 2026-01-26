@@ -153,15 +153,6 @@ build_griffin_gc_config_snakemake=function(.env=NULL){
 
 
 
-
-
-
-
-
-
-
-
-
 #' Calculate GC Frequency Distribution from Reference Genome Using GRIFFIN
 #'
 #' This function computes the GC frequency distribution across mappable regions of a reference genome using GRIFFIN. It generates TSV files containing GC frequency data for specified genomic size ranges. The function uses a Snakemake workflow to process the mappable regions and produce frequency statistics at the specified bin sizes.
@@ -227,4 +218,8 @@ GC_bias_correction_griffin=function(
     )
     launch(.env=.base.env)
 }
+
+
+
+
 
