@@ -57,7 +57,7 @@ run_triton=function(
       .main$exec_code=paste0(
         paste0(
           "conda activate ", env_triton,
-          "; ", bin_triton,
+          "; python3 ", bin_triton,
           " -n ", get_file_name(input$bam),
           " -i ", input$bam,
           " -b ", input$gc_bias,
