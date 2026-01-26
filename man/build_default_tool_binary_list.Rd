@@ -41,12 +41,14 @@ build_default_tool_binary_list(
     "/myriadfs/home/regmova/Scratch/tools/CIRI/CIRI_Full_v2.1.1.jar", 
      bin_picard =
     "/myriadfs/home/regmova/Scratch/tools/picard/build/libs/picard.jar", bin_samtools =
-    "/myriadfs/home/regmova/Scratch/tools/samtools/samtools", bin_picard =
+    "/myriadfs/home/regmova/Scratch/tools/samtools/samtools", bin_triton =
+    "/myriadfs/home/regmova/Scratch/tools/Triton/Triton/Triton.py", bin_picard =
     "/myriadfs/home/regmova/Scratch/tools/picard/build/libs/picard.jar", bin_bedtools =
     "/myriadfs/home/regmova/Scratch/tools/bedtools2/bin/bedtools", bin_ciri_quant =
     "/myriadfs/home/regmova/Scratch/tools/CIRIquant/bin/CIRIquant", bin_msing =
-    "/myriadfs/home/regmova/Scratch/tools/msings/scripts/run_msings.sh", bin_gangstr =
-    "/myriadfs/home/regmova/Scratch/tools/GangSTR/bin/GangSTR")
+    "/myriadfs/home/regmova/Scratch/tools/msings/scripts/run_msings.sh", 
+    
+    bin_gangstr = "/myriadfs/home/regmova/Scratch/tools/GangSTR/bin/GangSTR")
 )
 }
 \arguments{

@@ -6,17 +6,19 @@
 env}
 \usage{
 build_default_reference_list(
-  references = list(HG19 = list(reference = list(chrx_tr =
+  references = list(OTHER = list(nc_fitting =
+    "/myriadfs/home/regmova/Scratch/tools/Triton/nc_fitting/NCDict.pkl"), HG19 =
+    list(reference = list(chrx_tr =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/chrX_TR_database.bed",
     genome = "/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/hs37d5.fa",
     mappable_bed_100bp =
     "/myriadfs/home/regmova/Scratch/tools/Griffin/Ref/hg19/100_minus_exclusion_lists.mappable_regions.hg19.bed",
     chrom_size =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/hs37d5.standard.chrom.sizes",
-    access_5k =
-    "/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/hs37d5.access-5k-mappable.bed",
     
-     access_10k =
+     access_5k =
+    "/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/hs37d5.access-5k-mappable.bed",
+    access_10k =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/reference/hs37d5.access-10k-mappable.bed"),
     griffin_gc =
     "/myriadfs/home/regmova/Scratch/tools/Griffin/Ref/hg19/griffin_hg19/results", phasing

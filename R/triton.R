@@ -1,5 +1,20 @@
 
 
+#' Run Triton Analysis on BAM Files
+#'
+#' This function executes Triton, a tool for analyzing chromatin fragmentation profiles and signal profiles from BAM files. It sets up the necessary environment, constructs the command line for Triton, and runs the analysis job.
+#'
+#' @param env_triton Character string specifying the conda environment for Triton. Defaults to the standard Triton environment from the default list.
+#' @param bin_triton Character string specifying the path to the Triton binary. Defaults to the standard Triton binary from the default list.
+#' @param ref_genome Character string specifying the reference genome file. Defaults to HG19 reference genome.
+#' @param nc_dict Character string specifying the non-coding fitting dictionary. Defaults to the standard nc_fitting from the reference list.
+#' @param bam_gc Character string specifying the BAM file for GC bias correction. If NULL, no GC bias correction is applied.
+#' @param bed Character string specifying the BED file for regions of interest. If NULL, no specific regions are targeted.
+#' @param method Character string specifying the analysis method. Defaults to "region".
+#' @param ... Additional arguments passed to the function, which may include input BAM files, output directories, threads, etc.
+#'
+#' @return The function runs the Triton analysis job and returns the environment object containing the job details and output file paths. Output files include skipped sites, Triton features, fragmentation profiles, and signal profiles.
+#' @export
 
 run_triton=function(
   env_triton=build_default_python_enviroment_list()$env_triton,
@@ -38,11 +53,7 @@ run_triton=function(
         get_file_name(input$bam),"_TritonSignalProfiles.npz"
     )
 
-    
-
-    
-
-
+  
       .main$exec_code=paste0(
         paste0(
           "conda activate ",env_triton,
@@ -58,8 +69,6 @@ run_triton=function(
           " -a ", bed
           )
         )
-
-       
       
       run_job(.env=.this.env)
       .env$.main <- .main
