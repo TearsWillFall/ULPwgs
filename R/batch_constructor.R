@@ -897,13 +897,9 @@ set_main_env=function(.env){
           .env$self.envs <- .this.env
 
           ### Check if list of lists
-          if(n_inputs==1&is.list(inputs)){
-            input<-inputs[[1]]
-          }else{
-            input<-inputs[n]
-          }
 
-    
+       
+          input<-input[[n]]
           n_inputs<- 1
           input_id<-inputs_id[n]
           input_ext<-inputs_ext[n]
