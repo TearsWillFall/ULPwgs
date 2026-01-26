@@ -56,20 +56,20 @@ run_triton=function(
   
       .main$exec_code=paste0(
         paste0(
-          "conda activate ",env_triton,
-          "; ",bin_triton,
-          " -n ",get_file_name(input$bam),
-          " -i ",input$bam,
-          " -b ",input$gc_bias,
-          " -g ",ref_genome,
-          " -r ",out_file_dir,
+          "conda activate ", env_triton,
+          "; ", bin_triton,
+          " -n ", get_file_name(input$bam),
+          " -i ", input$bam,
+          " -b ", input$gc_bias,
+          " -g ", ref_genome,
+          " -r ", out_file_dir,
           " -m ", method,
           " -c ", threads,
           " -d ", nc_dict,
           " -a ", bed
           )
         )
-      
+
       run_job(.env=.this.env)
       .env$.main <- .main
     }

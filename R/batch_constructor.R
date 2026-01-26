@@ -692,6 +692,8 @@ set_env_vars=function(
 
       inputs <- get(vars)
       n_inputs <- length(inputs)
+   
+
 
       inputs_id <- set_input_id(
           inputs=inputs,
@@ -893,6 +895,11 @@ set_main_env=function(.env){
           append_env(to=.this.env,from=.env)
 
           .env$self.envs <- .this.env
+
+          ### Check if list of lists
+          if(n_inputs==1&is.list(inputs)){
+              input<-inputs[[1]]
+          }
 
           input<-inputs[n]
           n_inputs<- 1
