@@ -707,7 +707,7 @@ process_sample=function(rdata=""){
 
 preprocess_umi=function(
     sif_gatk=build_default_sif_list()$sif_gatk,
-    env_fgbio=build_default_python_enviroment_list()$env_fg_bio,
+    env_fgbio=build_default_python_enviroment_list()$env_fgbio,
     env_fastp=build_default_python_enviroment_list()$env_fastp,
     bin_bwa=build_default_binary_list()$alignment$bin_bwa,
     bin_samtools=build_default_binary_list()$alignment$bin_samtool,
