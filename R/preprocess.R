@@ -707,7 +707,7 @@ process_sample=function(rdata=""){
 
 preprocess_umi=function(
     sif_gatk=build_default_sif_list()$sif_gatk,
-    env_fgbio=build_default_python_enviroment_list()$env_fgbio,
+    env_fgbio=build_default_python_enviroment_list()$env_fg_bio,
     env_fastp=build_default_python_enviroment_list()$env_fastp,
     bin_bwa=build_default_binary_list()$alignment$bin_bwa,
     bin_samtools=build_default_binary_list()$alignment$bin_samtool,
@@ -738,25 +738,6 @@ preprocess_umi=function(
         append_env(to=.this.env,from=.env)
 
 
-        out_file_dir=set_dir(
-            out_file_dir,
-            name=paste0(
-                project_id,"/",
-                patient_id,"/",
-                sample_id,"/",
-                sequencing_type,"/",
-                method_type,"/",
-                method_version,"/",
-                reference,"/",
-                library_id,"/",
-                run_id,"/",
-                flowcell_id,"/",
-                lane_id
-            )
-        )
-
-
-
         ### Validate required variables
         for(id in c("project_id",
                     "patient_id",
@@ -782,6 +763,25 @@ preprocess_umi=function(
             )
         }
         
+        output_dir=set_dir(
+            output_dir,
+            name=paste0(
+                project_id,"/",
+                patient_id,"/",
+                sample_id,"/",
+                sequencing_type,"/",
+                method_type,"/",
+                method_version,"/",
+                reference,"/",
+                library_id,"/",
+                run_id,"/",
+                flowcell_id,"/",
+                lane_id
+            )
+        )
+
+
+            set_main(.env=.this.env)
 
             .main$steps[[fn_id]]<-.this.env
             .main.step=.main$steps[[fn_id]]
