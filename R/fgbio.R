@@ -15,7 +15,7 @@
 #' 
 
 extract_umi_fgbio=function(
-  env_fgbio=build_default_python_enviroment_list()$env_fg_bio,
+  env_fgbio=build_default_python_enviroment_list()$env_fgbio,
   bam=NULL,
   ...
 ){
@@ -88,7 +88,7 @@ extract_umi_fgbio=function(
 #' 
 
 group_by_umi_fgbio=function(
-  env_fgbio=build_default_python_enviroment_list()$env_fg_bio,
+  env_fgbio=build_default_python_enviroment_list()$env_fgbio,
   bam=NULL,
   ...
 ){
@@ -169,7 +169,7 @@ group_by_umi_fgbio=function(
 #' 
 
 call_consensus_fgbio=function(
-  env_fgbio=build_default_python_enviroment_list()$env_fg_bio,
+  env_fgbio=build_default_python_enviroment_list()$env_fgbio,
   bam=NULL,
   ...
 ){
