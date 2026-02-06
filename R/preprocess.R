@@ -738,6 +738,25 @@ preprocess_umi=function(
         append_env(to=.this.env,from=.env)
 
 
+        out_file_dir=set_dir(
+            out_file_dir,
+            name=paste0(
+                project_id,"/",
+                patient_id,"/",
+                sample_id,"/",
+                sequencing_type,"/",
+                method_type,"/",
+                method_version,"/",
+                reference,"/",
+                library_id,"/",
+                run_id,"/",
+                flowcell_id,"/",
+                lane_id
+            )
+        )
+
+
+
         ### Validate required variables
         for(id in c("project_id",
                     "patient_id",
@@ -763,23 +782,6 @@ preprocess_umi=function(
             )
         }
         
-        out_file_dir=set_dir(
-            out_file_dir,
-            name=paste0(
-                out_file_dir,"/",
-                project_id,"/",
-                patient_id,"/",
-                sample_id,"/",
-                sequencing_type,"/",
-                method_type,"/",
-                method_version,"/",
-                reference,"/",
-                library_id,"/",
-                run_id,"/",
-                flowcell_id,"/",
-                lane_id
-            )
-        )
 
             .main$steps[[fn_id]]<-.this.env
             .main.step=.main$steps[[fn_id]]
