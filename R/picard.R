@@ -793,7 +793,6 @@ new_tg_summary_metrics_bam_picard=function(
 
               set_main(.env=.this.env)
               
-        
               .main$out_files$ts=paste0(out_file_dir,"/",input_id,".picard_TS.txt")
               .main$out_files$metrics=paste0(out_file_dir,"/",input_id,".picard_CollectHSmetrics.txt")
   

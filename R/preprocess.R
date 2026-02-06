@@ -975,6 +975,7 @@ preprocess_umi=function(
                             .main.step$steps,
                             merge_bam_umi_gatk(
                                     sif_gatk=sif_gatk,
+                                    bin_samtools = bin_samtools,
                                     ref_genome=ref_genome,
                                     bam=list(list(
                                         mapped=.main.step$out_files$raw$bam$mapped$untagged,
@@ -1001,6 +1002,7 @@ preprocess_umi=function(
                     .main.step$out_files$raw$bam$mapped$tagged$raw=.this.step$out_files$bam
 
                 }
+
 
                 ### STEP 7
 
@@ -1155,6 +1157,7 @@ preprocess_umi=function(
                     .main.step$steps,
                     merge_bam_umi_gatk(
                             sif_gatk=sif_gatk,
+                            bin_samtools = bin_samtools,
                             ref_genome=reference_genome,
                             bam=list(
                                 mapped=.main.step$out_files$consensus$bam$mapped$untagged,
