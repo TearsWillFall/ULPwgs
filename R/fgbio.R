@@ -106,9 +106,9 @@ group_by_umi_fgbio=function(
       "; fgbio GroupReadsByUmi --input=",input,
       " --output=",.main$out_files$bam,
       " --strategy=adjacency",
-      "--edits=1"
-      " -t RX"
-      "-f ",.main$out_files$family_size_counts
+      " --edits=1",
+      " -t RX",
+      " -f ",.main$out_files$family_size_counts
     )
 
      run_job(.env=.this.env)
