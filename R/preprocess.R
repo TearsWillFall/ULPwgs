@@ -992,7 +992,7 @@ preprocess_umi=function(
                                     verbose=verbose,
                                     threads=threads,
                                     ram=ram,
-                                    fn.id="raw",
+                                    fn_id="raw",
                                     executor_id=task_id
                             )
                     )
@@ -1137,7 +1137,7 @@ preprocess_umi=function(
                                 verbose=verbose,
                                 threads=threads,
                                 ram=ram,
-                                fn.id="consensus",
+                                fn_id="consensus",
                                 executor_id=task_id
                                 )
                         )
@@ -1172,7 +1172,7 @@ preprocess_umi=function(
                             verbose=verbose,
                             threads=threads,
                             ram=ram,
-                            fn.id="consensus",
+                            fn_id="consensus",
                             executor_id=task_id
                             )
                     )
