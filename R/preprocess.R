@@ -763,7 +763,7 @@ preprocess_umi=function(
             )
         }
         
-        output_dir=set_dir(
+        out_file_dir=set_dir(
             output_dir,
             name=paste0(
                 project_id,"/",
