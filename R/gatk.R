@@ -3853,7 +3853,7 @@ sam_to_fastq_gatk=function(
       " /gatk/gatk  SamToFastq -F",.main$out_files$fastq_r1,
       " -F2 ",.main$out_files$fastq_r2,
       " -I ", input,
-      ifelse(clipping_attribute=," --CLIPPING_ATTRIBUTE XT --CLIPPING_ACTION 2 "," ")
+      ifelse(clipping_attribute," --CLIPPING_ATTRIBUTE XT --CLIPPING_ACTION 2 "," ")
 
     )
 

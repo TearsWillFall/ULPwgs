@@ -745,6 +745,8 @@ preprocess_umi=function(
         }
         
         fastq=list(file_r1=file_r1,file_r2=file_r2)
+        input_id=sample_id
+        
         info=new_check_seq_info(fastq=fastq)
         
         ### Add information for library, run, flowcell and lana if not provided 
@@ -754,8 +756,6 @@ preprocess_umi=function(
             )
         }
         
-        input_id=sample_id
-       
         out_file_dir=set_dir(
             out_file_dir,
             name=paste0(
