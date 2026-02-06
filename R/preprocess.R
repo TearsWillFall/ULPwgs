@@ -943,7 +943,7 @@ preprocess_umi=function(
                             .main.step$steps,
                             new_alignment_bwa(
                                     bin_bwa=bin_bwa,
-                                    bin_samtools=bin_samtool,
+                                    bin_samtools=bin_samtools,
                                     ref_genome=ref_genome,
                                     fastq=.main.step$out_files$raw$fastq$trimmed,
                                     tags=NULL,

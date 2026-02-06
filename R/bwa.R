@@ -211,7 +211,7 @@ index_ref_bwa=function(
 #' https://github.com/lh3/bwa
 #'
 #' @param bin_bwa [REQUIRED] Path to BWA executable. Default: from build_default_binary_list().
-#' @param bin_samtools [REQUIRED] Path to samtools executable. Default: from build_default_binary_list().
+#' @param bin_samtool [REQUIRED] Path to samtools executable. Default: from build_default_binary_list().
 #' @param ref_genome [REQUIRED] Path to indexed reference genome. Default: HG19 from build_default_reference_list().
 #' @param fastq [REQUIRED] Path to paired-end FASTQ files or data structure containing R1 and R2 file paths.
 #' @param tags [OPTIONAL] Read group tags as a list with elements:
