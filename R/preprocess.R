@@ -1194,7 +1194,7 @@ preprocess_umi=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
         .env= .base.env,
-        vars="bam"
+        vars="fastq"
     )
 
     launch(.env=.base.env)
