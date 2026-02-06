@@ -3793,7 +3793,7 @@ fastq_to_sam_gatk=function(
       " -F1", input$fastq_r1,
       " -F2 ",input$fastq_r2,
       " -O ",.main$out_files$bam,
-      " -SM ",intersect_file_name(input$fastq_r1,input$fastq_r2)
+      " -SM ",input_id
     )
 
      run_job(.env=.this.env)

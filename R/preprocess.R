@@ -736,7 +736,7 @@ preprocess_umi=function(
 
         .this.env=environment()
         append_env(to=.this.env,from=.env)
-        set_main(.env=.this.env)
+
 
         ### Validate required variables
         for(id in c("project_id",
@@ -763,10 +763,10 @@ preprocess_umi=function(
             )
         }
         
-        output_dir=set_dir(
+        out_file_dir=set_dir(
             out_file_dir,
             name=paste0(
-                output_dir,"/",
+                out_file_dir,"/",
                 project_id,"/",
                 patient_id,"/",
                 sample_id,"/",
