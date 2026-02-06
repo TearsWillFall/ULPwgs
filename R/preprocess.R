@@ -738,7 +738,7 @@ preprocess_umi=function(
         set_main(.env=.this.env)
 
         ### Validate required variables
-        for(id in c("project_id","patient_id","sample_id","sequencing_type","method_type","method_version","reference")){
+        for(id in c("project_id","patient_id","sample_id","sequencing_type","method_type","method_version","reference","library_id")){
                 if(is.null(get(id))){
                         stop("Variable ",id, " required to continue. Please assign a value")}
         }
