@@ -827,6 +827,66 @@ vars_list=build_default_variable_list()){
 }
 
 
+#' Quick consistency check for paired FASTQ sequencing metadata
+#'
+#' Runs a lightweight verification of sequencing metadata inferred from
+#' paired-end FASTQ files (R1 and R2). The function uses
+#' `infer_sequencing_info()` to extract basic attributes from each read
+#' file (e.g. instrument, flowcell, lane, library) and ensures that the
+#' corresponding fields for R1 and R2 match. This helps detect swapped or
+#' mismatched FASTQ pairs early in preprocessing.
+#'
+#' @param fastq Named list or object containing FASTQ paths. Expected to
+#'   contain elements `fastq_r1` and `fastq_r2` (paths to R1 and R2 files).
+#' @param bin_samtools Path to the samtools binary to use in
+#'   `infer_sequencing_info()`. Defaults to the value from
+#'   `build_default_binary_list()`.
+#'
+#' @return A data.frame with inferred metadata for R1 and R2 and a logical
+#'   `match` column indicating whether each named attribute is equal
+#'   between read pairs. If any field does not match, the function stops
+#'   with an informative error message.
+#'
+#' @examples
+#' \dontrun{
+#' fastq <- list(fastq_r1 = "sample_R1.fastq.gz",
+#'               fastq_r2 = "sample_R2.fastq.gz")
+#' new_check_seq_info(fastq)
+#' }
+#'
+#' @export
+new_check_seq_info=function(
+    fastq=NULL,
+    bin_samtools=build_default_binary_list()$alignment$bin_samtool
+){
+    r1=infer_sequencing_info(bin_samtools=bin_samtools,file_path=fastq$fastq_r1)
+    r1_info=data.frame(r1=unlist(r1),names=names(r1))
+    r2=infer_sequencing_info(bin_samtools=bin_samtools,file_path=fastq$fastq_r1)
+    r2_info=data.frame(r2=unlist(r2),names=names(r2))
+    merg_read_info=dplyr::left_join(r1_info,r2_info,by=name) %>%
+    group_by(name) %>%
+    mutate(
+        match=r1==r2
+    )
+
+    if(!all(merg_read_info$match)){
+      bad <- merg_read_info %>% dplyr::filter(!match)
+      r1_path <- if(!is.null(fastq$fastq_r1)) fastq$fastq_r1 else "<R1>"
+      r2_path <- if(!is.null(fastq$fastq_r2)) fastq$fastq_r2 else "<R2>"
+      bad_txt <- paste(utils::capture.output(print(bad$name)), collapse = "\n")
+      stop_msg <- paste0(
+        "Mismatch between R1 and R2 sequencing metadata detected.\n",
+        "R1 file: ", r1_path, "\n",
+        "R2 file: ", r2_path, "\n\n",
+        "Mismatched fields and values:\n", bad_txt, "\n\n",
+        "Please verify these FASTQ files belong to the same library and are not swapped or corrupted."
+      )
+      stop(stop_msg)
+    }
+    return(merg_read_info)
+}
+
+
 
 
 

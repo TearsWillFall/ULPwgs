@@ -12,94 +12,89 @@ preprocess_umi(
   bin_samtools = build_default_binary_list()$alignment$bin_samtool,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   fastq = NULL,
+  project_id = NULL,
+  patient_id = NULL,
+  sample_id = NULL,
+  sequencing_type = NULL,
+  method_type = NULL,
+  method_version = NULL,
+  reference = NULL,
+  library_id = NULL,
+  run_id = NULL,
+  flowcell_id = NULL,
+  lane_id = NULL,
   ...
 )
 }
 \arguments{
-\item{sif_gatk}{Path to GATK Singularity image file.
-Default: from \code{build_default_sif_list()}. Must exist on filesystem.}
+\item{sif_gatk}{Path to the GATK Singularity image (used for GATK-based helpers).
+Defaults to \code{build_default_sif_list()$sif_gatk}.}
 
-\item{env_fgbio}{Python environment for fgbio tools.
-Default: from \code{build_default_python_enviroment_list()}}
+\item{env_fgbio}{Python environment identifier for fgbio tools. Defaults to
+\code{build_default_python_enviroment_list()$env_fg_bio}.}
 
-\item{env_fastp}{Python environment for fastp adapter trimming.
-Default: from \code{build_default_python_enviroment_list()}}
+\item{env_fastp}{Python environment identifier for fastp. Defaults to
+\code{build_default_python_enviroment_list()$env_fastp}.}
 
-\item{bin_bwa}{Path to BWA alignment binary.
-Default: from \code{build_default_binary_list()}}
+\item{bin_bwa}{Path or identifier for the BWA binary. Defaults to
+\code{build_default_binary_list()$alignment$bin_bwa}.}
 
-\item{bin_samtools}{Path to samtools binary.
-Default: from \code{build_default_binary_list()}}
+\item{bin_samtools}{Path or identifier for the samtools binary. Defaults to
+\code{build_default_binary_list()$alignment$bin_samtool}.}
 
-\item{ref_genome}{Path to reference genome FASTA file.
-Default: HG19 from \code{build_default_reference_list()}. Must exist on filesystem.}
+\item{ref_genome}{Path to the reference genome FASTA used for alignments.
+Defaults to \code{build_default_reference_list()$HG19$reference$genome}.}
 
-\item{fastq}{Path to input FASTQ file(s) or list containing paths.
-Can be single-end (single file) or paired-end (R1 and R2).}
+\item{fastq}{Named list or object with FASTQ file paths. Expected keys are
+\code{fastq_r1} and \code{fastq_r2} (or a single fastq value for single-end).}
 
-\item{...}{Additional arguments passed to internal processing functions,
-typically including: \code{output_dir}, \code{input_id}, \code{patient_id},
-\code{tmp_dir}, \code{batch_dir}, \code{threads}, \code{ram}, \code{verbose},
-\code{executor_id}, and \code{batch_config}}
+\item{project_id}{Optional project identifier used when constructing output
+directory structure.}
+
+\item{patient_id}{Optional patient identifier used when constructing output
+directory structure and read-group tags.}
+
+\item{sample_id}{Optional sample identifier; used as \code{input_id} when
+building output filenames and read-group tags.}
+
+\item{sequencing_type}{method_type,method_version,reference Optional strings
+describing sequencing assay details (used in output path creation).}
+
+\item{library_id, run_id, flowcell_id, lane_id}{Optional run/library identifiers.
+If not provided the function attempts to infer them from the FASTQ files
+using \code{new_check_seq_info}.}
+
+\item{...}{Additional arguments forwarded to internal helper functions (for
+example \code{tmp_dir}, \code{batch_dir}, \code{threads}, \code{ram},
+\code{verbose}, \code{executor_id} and \code{batch_config}).}
 }
 \value{
-List containing step-by-step processing results with structure:
-\describe{
-\item{$steps}{Named list of results from each processing step}
-\item{$out_files}{Organized output files by category (raw/consensus,
-bam/fastq, unmapped/mapped/tagged)}
-}
+Invisibly returns the internal \code{.main} object containing pipeline
+steps and collected output paths; the function primarily writes files and
+job reports to the specified output directories.
 }
 \description{
-Processes Unique Molecular Identifier (UMI) tagged sequencing data through
-a comprehensive 12-step pipeline. The pipeline extracts UMI tags from raw reads,
-trims adapters, maps reads to a reference genome, groups reads by UMI, generates
-consensus sequences from UMI groups, and remaps consensus sequences. This approach
-reduces sequencing errors and artifacts by collapsing duplicates generated from
-the same DNA molecule.
+Processes sequencing data that include Unique Molecular Identifiers (UMIs).
+The function runs a multi-step pipeline that extracts UMIs, trims adapters,
+aligns reads, groups reads by UMI, collapses UMIs to consensus sequences and
+remaps consensus reads. It is intended to reduce PCR and sequencing errors
+by collapsing reads originating from the same original molecule.
 }
 \details{
-\strong{Pipeline Overview:}
-The function executes the following steps in sequence:
-\enumerate{
-\item \strong{raw_fastq_to_bam}: Convert input FASTQ files to unmapped BAM format
-\item \strong{extract_umi}: Extract UMI sequences from reads and add as BAM tags
-\item \strong{raw_bam_to_fastq}: Convert UMI-tagged BAM back to FASTQ format
-\item \strong{trim_adapt}: Trim adapter sequences using fastp
-\item \strong{map_trimmed}: Align trimmed reads to reference genome with BWA
-\item \strong{tag_trimmed}: Merge mapped and unmapped BAMs, preserving UMI tags
-\item \strong{filter_paired}: Filter for properly paired reads (SAM flag 2)
-\item \strong{group_umi}: Group reads by UMI identifier
-\item \strong{collapse_consensus}: Generate consensus sequences from UMI groups
-\item \strong{consensus_bam_to_fastq}: Convert consensus BAM to FASTQ
-\item \strong{remap_consensus}: Realign consensus sequences to reference genome
-\item \strong{tag_consensus}: Merge remapped and unmapped consensus BAMs with tags
-}
+The pipeline performs the following logical stages (implemented as ordered
+steps in the function): extraction of UMIs, read trimming, mapping of
+trimmed reads, tagging/merging to preserve UMI information, grouping by UMI,
+consensus calling (with fgbio), conversion between BAM/FASTQ where necessary,
+remapping consensus reads and final tagging/merging.
 
-\strong{Error Handling:}
-Each step is wrapped in error handling. If any step fails, the function stops
-with a descriptive error message indicating which step failed.
-
-\strong{Requirements:}
-GATK Singularity image and reference genome files must be accessible on the system.
-All binary tools (bwa, samtools) must be properly configured.
+Each step logs progress and is wrapped in error handling so failures report
+which pipeline step failed and abort early.
 }
 \examples{
 \dontrun{
-# Process UMI-tagged paired-end sequencing data
-result <- preprocess_umi(
-  fastq = "path/to/sample.fastq",
-  output_dir = "./umi_results",
-  input_id = "sample_001",
-  patient_id = "patient_1",
-  threads = 8,
-  ram = 32,
-  verbose = TRUE
-)
+fastq <- list(fastq_r1 = "sample_R1.fastq.gz", fastq_r2 = "sample_R2.fastq.gz")
+preprocess_umi(fastq = fastq, patient_id = "P001", sample_id = "S001",
+               output_dir = "./results", threads = 8, ram = 16)
 }
 
-}
-\seealso{
-\code{\link{preprocess_seq}} for standard sequencing preprocessing,
-\code{\link{for_id}} for variable-level iteration framework
 }

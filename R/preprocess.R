@@ -647,81 +647,60 @@ process_sample=function(rdata=""){
 }
 #' Process UMI-tagged sequencing data
 #'
-#' Processes Unique Molecular Identifier (UMI) tagged sequencing data through
-#' a comprehensive 12-step pipeline. The pipeline extracts UMI tags from raw reads,
-#' trims adapters, maps reads to a reference genome, groups reads by UMI, generates
-#' consensus sequences from UMI groups, and remaps consensus sequences. This approach
-#' reduces sequencing errors and artifacts by collapsing duplicates generated from
-#' the same DNA molecule.
+#' Processes sequencing data that include Unique Molecular Identifiers (UMIs).
+#' The function runs a multi-step pipeline that extracts UMIs, trims adapters,
+#' aligns reads, groups reads by UMI, collapses UMIs to consensus sequences and
+#' remaps consensus reads. It is intended to reduce PCR and sequencing errors
+#' by collapsing reads originating from the same original molecule.
 #'
 #' @details
-#' \strong{Pipeline Overview:}
-#' The function executes the following steps in sequence:
-#' \enumerate{
-#'   \item \strong{raw_fastq_to_bam}: Convert input FASTQ files to unmapped BAM format
-#'   \item \strong{extract_umi}: Extract UMI sequences from reads and add as BAM tags
-#'   \item \strong{raw_bam_to_fastq}: Convert UMI-tagged BAM back to FASTQ format
-#'   \item \strong{trim_adapt}: Trim adapter sequences using fastp
-#'   \item \strong{map_trimmed}: Align trimmed reads to reference genome with BWA
-#'   \item \strong{tag_trimmed}: Merge mapped and unmapped BAMs, preserving UMI tags
-#'   \item \strong{filter_paired}: Filter for properly paired reads (SAM flag 2)
-#'   \item \strong{group_umi}: Group reads by UMI identifier
-#'   \item \strong{collapse_consensus}: Generate consensus sequences from UMI groups
-#'   \item \strong{consensus_bam_to_fastq}: Convert consensus BAM to FASTQ
-#'   \item \strong{remap_consensus}: Realign consensus sequences to reference genome
-#'   \item \strong{tag_consensus}: Merge remapped and unmapped consensus BAMs with tags
-#' }
-#' 
-#' \strong{Error Handling:}
-#' Each step is wrapped in error handling. If any step fails, the function stops
-#' with a descriptive error message indicating which step failed.
-#' 
-#' \strong{Requirements:}
-#' GATK Singularity image and reference genome files must be accessible on the system.
-#' All binary tools (bwa, samtools) must be properly configured.
+#' The pipeline performs the following logical stages (implemented as ordered
+#' steps in the function): extraction of UMIs, read trimming, mapping of
+#' trimmed reads, tagging/merging to preserve UMI information, grouping by UMI,
+#' consensus calling (with fgbio), conversion between BAM/FASTQ where necessary,
+#' remapping consensus reads and final tagging/merging.
 #'
-#' @param sif_gatk Path to GATK Singularity image file. 
-#'   Default: from \code{build_default_sif_list()}. Must exist on filesystem.
-#' @param env_fgbio Python environment for fgbio tools.
-#'   Default: from \code{build_default_python_enviroment_list()}
-#' @param env_fastp Python environment for fastp adapter trimming.
-#'   Default: from \code{build_default_python_enviroment_list()}
-#' @param bin_bwa Path to BWA alignment binary.
-#'   Default: from \code{build_default_binary_list()}
-#' @param bin_samtools Path to samtools binary.
-#'   Default: from \code{build_default_binary_list()}
-#' @param ref_genome Path to reference genome FASTA file.
-#'   Default: HG19 from \code{build_default_reference_list()}. Must exist on filesystem.
-#' @param fastq Path to input FASTQ file(s) or list containing paths.
-#'   Can be single-end (single file) or paired-end (R1 and R2).
-#' @param ... Additional arguments passed to internal processing functions,
-#'   typically including: \code{output_dir}, \code{input_id}, \code{patient_id},
-#'   \code{tmp_dir}, \code{batch_dir}, \code{threads}, \code{ram}, \code{verbose},
-#'   \code{executor_id}, and \code{batch_config}
+#' Each step logs progress and is wrapped in error handling so failures report
+#' which pipeline step failed and abort early.
 #'
-#' @return List containing step-by-step processing results with structure:
-#'   \describe{
-#'     \item{$steps}{Named list of results from each processing step}
-#'     \item{$out_files}{Organized output files by category (raw/consensus, 
-#'       bam/fastq, unmapped/mapped/tagged)}
-#'   }
+#' @param sif_gatk Path to the GATK Singularity image (used for GATK-based helpers).
+#'   Defaults to \code{build_default_sif_list()$sif_gatk}.
+#' @param env_fgbio Python environment identifier for fgbio tools. Defaults to
+#'   \code{build_default_python_enviroment_list()$env_fg_bio}.
+#' @param env_fastp Python environment identifier for fastp. Defaults to
+#'   \code{build_default_python_enviroment_list()$env_fastp}.
+#' @param bin_bwa Path or identifier for the BWA binary. Defaults to
+#'   \code{build_default_binary_list()$alignment$bin_bwa}.
+#' @param bin_samtools Path or identifier for the samtools binary. Defaults to
+#'   \code{build_default_binary_list()$alignment$bin_samtool}.
+#' @param ref_genome Path to the reference genome FASTA used for alignments.
+#'   Defaults to \code{build_default_reference_list()$HG19$reference$genome}.
+#' @param fastq Named list or object with FASTQ file paths. Expected keys are
+#'   \code{fastq_r1} and \code{fastq_r2} (or a single fastq value for single-end).
+#' @param project_id Optional project identifier used when constructing output
+#'   directory structure.
+#' @param patient_id Optional patient identifier used when constructing output
+#'   directory structure and read-group tags.
+#' @param sample_id Optional sample identifier; used as \code{input_id} when
+#'   building output filenames and read-group tags.
+#' @param sequencing_type method_type,method_version,reference Optional strings
+#'   describing sequencing assay details (used in output path creation).
+#' @param library_id,run_id,flowcell_id,lane_id Optional run/library identifiers.
+#'   If not provided the function attempts to infer them from the FASTQ files
+#'   using \code{new_check_seq_info}.
+#' @param ... Additional arguments forwarded to internal helper functions (for
+#'   example \code{tmp_dir}, \code{batch_dir}, \code{threads}, \code{ram},
+#'   \code{verbose}, \code{executor_id} and \code{batch_config}).
 #'
-#' @seealso
-#'   \code{\link{preprocess_seq}} for standard sequencing preprocessing,
-#'   \code{\link{for_id}} for variable-level iteration framework
+#' @return Invisibly returns the internal `.main` object containing pipeline
+#'   steps and collected output paths; the function primarily writes files and
+#'   job reports to the specified output directories.
 #'
 #' @examples
 #' \dontrun{
-#' # Process UMI-tagged paired-end sequencing data
-#' result <- preprocess_umi(
-#'   fastq = "path/to/sample.fastq",
-#'   output_dir = "./umi_results",
-#'   input_id = "sample_001",
-#'   patient_id = "patient_1",
-#'   threads = 8,
-#'   ram = 32,
-#'   verbose = TRUE
-#' )
+#' fastq <- list(fastq_r1 = "sample_R1.fastq.gz", fastq_r2 = "sample_R2.fastq.gz")
+#' preprocess_umi(fastq = fastq, patient_id = "P001", sample_id = "S001",
+#'                output_dir = "./results", threads = 8, ram = 16)
 #' }
 #'
 #' @export
@@ -734,30 +713,64 @@ preprocess_umi=function(
     bin_samtools=build_default_binary_list()$alignment$bin_samtool,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     fastq=NULL,
+    project_id=NULL,
+    patient_id=NULL,
+    sample_id=NULL,
+    sequencing_type=NULL,
+    method_type=NULL,
+    method_version=NULL,
+    reference=NULL,
+    library_id=NULL,
+    run_id=NULL,
+    flowcell_id=NULL,
+    lane_id=NULL,
     ...
 ){
     
-    # Input validation: Check for required GATK tools and genome reference
-    if(is.na(sif_gatk) || !file.exists(sif_gatk)){
-        stop("GATK Singularity image not found. Check sif_gatk parameter.")
-    }
-    
-    if(is.na(ref_genome) || !file.exists(ref_genome)){
-        stop("Reference genome file not found. Check ref_genome parameter.")
-    }
+
 
       run_main=function(
             .env
       ){
 
-            .this.env=environment()
-            append_env(to=.this.env,from=.env)
-            out_file_dir=set_dir(
-                out_file_dir,
-                name=paste0(patient_id,"/insert_size_reports/",input_id)
-            )
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+        set_main(.env=.this.env)
 
-            set_main(.env=.this.env)
+        ### Validate required variables
+        for(id in c("project_id","patient_id","sample_id","sequencing_type","method_type","method_version","reference")){
+                if(is.null(var(id))){
+                        stop("Variable ",id, " required to continue. Please assign a value")}
+        }
+        
+        info=new_check_seq_info(fastq=fastq)
+        
+        ### Add information for library, run, flowcell and lana if not provided 
+        for(id in c("library_id","run_id","flowcell_id","lane_id")){
+            var(id)<- ifelse(is.null(var(id)),
+                    (info %>%filter(name==id))$r1,var(id)
+            )
+        }
+        
+        input_id=sample_id
+       
+        out_file_dir=set_dir(
+            out_file_dir,
+            name=paste0(
+                out_file_dir,"/",
+                project_id,"/",
+                patient_id,"/",
+                sample_id,"/",
+                sequencing_type,"/",
+                method_type,"/",
+                method_version,"/",
+                reference,"/",
+                library_id,"/",
+                run_id,"/",
+                flowcell_id,"/",
+                lane_id
+            )
+        )
 
             .main$steps[[fn_id]]<-.this.env
             .main.step=.main$steps[[fn_id]]
@@ -797,12 +810,10 @@ preprocess_umi=function(
             # Total number of steps (useful for progress reporting)
             total_steps=length(steps)
 
-            step_count=0
-            for(step in steps){
-                step_count=step_count+1
+            for(step in 1:total_steps){
                 
                 # Log step progress with step count
-                logger(paste("Running step", step_count, "of", total_steps, ":", step))
+                logger(paste("Running step", step, "of", total_steps, ":", steps[step]))
                 
                 # Wrap step execution in error handling
                 tryCatch({
@@ -815,7 +826,7 @@ preprocess_umi=function(
                         .main.step$steps,
                         fastq_to_sam_gatk(
                                 sif_gatk=sif_gatk,
-                                fastq=input,
+                                fastq=fastq,
                                 output_dir=paste0(out_file_dir,"/raw/fastq_to_bam"),
                                 output_name=paste0(input_id,".unmapped"),
                                 tmp_dir=tmp_dir,
@@ -1099,10 +1110,10 @@ preprocess_umi=function(
                                 ref_genome=ref_genome,
                                 fastq=.main.step$out_files$consensus$fastq,
                                 tags=list(
-                                    id_tag="NA",
-                                    pu_tag="NA",
+                                    id_tag=patient_id,
+                                    pu_tag="TPU",
                                     pl_tag="ILLUMINA",
-                                    lb_tag="NA",
+                                    lb_tag=library_id,
                                     sm_tag=input_id
                                 ),
                                 output_dir=paste0(out_file_dir,"/consensus/mapped/bwa/untagged"),
@@ -1159,12 +1170,12 @@ preprocess_umi=function(
                 }
 
                     # Log successful step completion
-                    logger(paste("Completed step", step_count, "of", total_steps, ":", step))
+                    logger(paste("Completed step", step, "of", total_steps, ":", steps[step]))
                     
                 }, error=function(e){
                     # Handle step execution errors with informative message
-                    logger(paste("ERROR in step", step_count, ":", step))
-                    stop(paste("Step '" , step, "' failed. Error:", e$message,
+                    logger(paste("ERROR in step", step, ":", steps[step]))
+                    stop(paste("Step '" , steps[step], "' failed. Error:", e$message,
                               "\nReview input files and parameters before retrying."))
                 })
         
