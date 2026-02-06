@@ -864,8 +864,8 @@ new_check_seq_info=function(
     r2=infer_sequencing_info(bin_samtools=bin_samtools,file_path=fastq$fastq_r1)
     r2_info=data.frame(r2=unlist(r2),names=names(r2))
     merg_read_info=dplyr::left_join(r1_info,r2_info,by=name) %>%
-    group_by(name) %>%
-    mutate(
+    dplyr::group_by(name) %>%
+    dplyr::mutate(
         match=r1==r2
     )
 

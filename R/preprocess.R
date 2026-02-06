@@ -739,7 +739,7 @@ preprocess_umi=function(
 
         ### Validate required variables
         for(id in c("project_id","patient_id","sample_id","sequencing_type","method_type","method_version","reference")){
-                if(is.null(var(id))){
+                if(is.null(get(id))){
                         stop("Variable ",id, " required to continue. Please assign a value")}
         }
         
@@ -747,8 +747,8 @@ preprocess_umi=function(
         
         ### Add information for library, run, flowcell and lana if not provided 
         for(id in c("library_id","run_id","flowcell_id","lane_id")){
-            var(id)<- ifelse(is.null(var(id)),
-                    (info %>%filter(name==id))$r1,var(id)
+            assign(id,ifelse(is.null(get(id)),
+                    (info %>% dplyr::filter(name==id))$r1,get(id))
             )
         }
         
