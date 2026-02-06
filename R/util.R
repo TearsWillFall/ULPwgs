@@ -860,9 +860,9 @@ new_check_seq_info=function(
     bin_samtools=build_default_binary_list()$alignment$bin_samtool
 ){
     r1=infer_sequencing_info(bin_samtools=bin_samtools,file_path=fastq$fastq_r1)
-    r1_info=data.frame(r1=unlist(r1),names=names(r1))
+    r1_info=data.frame(r1=unlist(r1),name=names(r1))
     r2=infer_sequencing_info(bin_samtools=bin_samtools,file_path=fastq$fastq_r1)
-    r2_info=data.frame(r2=unlist(r2),names=names(r2))
+    r2_info=data.frame(r2=unlist(r2),name=names(r2))
     merg_read_info=dplyr::left_join(r1_info,r2_info,by=name) %>%
     dplyr::group_by(name) %>%
     dplyr::mutate(
