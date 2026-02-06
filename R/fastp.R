@@ -55,8 +55,8 @@ trim_umi_fastp=function(
     .main$exec_code=paste(
         "conda activate ",env_fastp,
         "; fastp -i ", input$fastq_r1, "-I ", input$fastq_r2, 
-        " -o ", .main$out_files$trim_fastq_r1,
-        " -o ", .main$out_files$trim_fastq_r2,
+        " -o ", .main$out_files$fastq_r1,
+        " -o ", .main$out_files$fastq_r2,
         " -g -W 5 -q 20 -u 40 -x -3 -l 75 -c",
         " -j ",.main$out_files$fastp_json,
         " -h ",.main$out_files$fastp_html, 
