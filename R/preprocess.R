@@ -975,9 +975,9 @@ preprocess_umi=function(
                             merge_bam_umi_gatk(
                                     sif_gatk=sif_gatk,
                                     ref_genome=ref_genome,
-                                    bam=list(
+                                    bam=list(list(
                                         mapped=.main.step$out_files$raw$bam$mapped$untagged,
-                                        unmapped=.main.step$out_files$raw$bam$unmapped$umi),
+                                        unmapped=.main.step$out_files$raw$bam$unmapped$umi)),
                                     attributes=c("XO","NM","MD"),
                                     sort_order="queryname",
                                     aligned_reads_only=TRUE,
