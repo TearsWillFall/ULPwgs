@@ -3946,7 +3946,7 @@ merge_bam_umi_gatk=function(
 
     .main$exec_code=paste(
       "singularity exec ",sif_gatk,
-      " /gatk/gatk  gatk MergeBamAlignment",
+      " /gatk/gatk MergeBamAlignment",
       paste(" --ATTRIBUTES_TO_RETAIN ",attributes,collapse=" "),
       " --ALIGNED_BAM ", input$mapped,
       " --UNMAPPED_BAM ", input$unmapped, 
