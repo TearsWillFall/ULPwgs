@@ -835,7 +835,7 @@ preprocess_umi=function(
                         .main.step$steps,
                         fastq_to_sam_gatk(
                                 sif_gatk=sif_gatk,
-                                fastq=fastq,
+                                fastq=list(fastq),
                                 output_dir=paste0(out_file_dir,"/raw/fastq_to_bam"),
                                 output_name=paste0(input_id,".unmapped"),
                                 tmp_dir=tmp_dir,
@@ -916,7 +916,7 @@ preprocess_umi=function(
                             .main.step$steps,
                         trim_umi_fastp(
                                 env_fastp=env_fastp,
-                                fastq=.main.step$out_files$raw$fastq$untrimmed,
+                                fastq=list(.main.step$out_files$raw$fastq$untrimmed),
                                 output_dir=paste0(out_file_dir,"/raw/fastp"),
                                 output_name=paste0(input_id,".unmapped.umi"),
                                 tmp_dir=tmp_dir,
