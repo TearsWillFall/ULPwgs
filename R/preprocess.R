@@ -763,10 +763,10 @@ preprocess_umi=function(
             )
         }
         
-        out_file_dir=set_dir(
+        output_dir=set_dir(
             out_file_dir,
             name=paste0(
-                out_file_dir,"/",
+                output_dir,"/",
                 project_id,"/",
                 patient_id,"/",
                 sample_id,"/",
