@@ -829,7 +829,7 @@ preprocess_umi=function(
 
 
                 ### Step 1
-                if(step=="raw_fastq_to_bam"){
+                if(steps[step]=="raw_fastq_to_bam"){
                     
                     .main.step$steps <-append(
                         .main.step$steps,
@@ -854,7 +854,7 @@ preprocess_umi=function(
                     .main.step$out_files$raw$bam$unmapped=.this.step$out_files
                 }
 
-                if(step=="extract_umi"){
+                if(steps[step]=="extract_umi"){
 
                
 
@@ -883,7 +883,7 @@ preprocess_umi=function(
 
                 ### STEP 3
 
-                if(step=="raw_bam_to_fastq"){
+                if(steps[step]=="raw_bam_to_fastq"){
 
                     .main.step$steps <-append(
                         .main.step$steps,
@@ -910,7 +910,7 @@ preprocess_umi=function(
 
                 ### STEP 4
 
-                if(step=="trim_adapt"){
+                if(steps[step]=="trim_adapt"){
                 
                     .main.step$steps <-append(
                             .main.step$steps,
@@ -935,7 +935,7 @@ preprocess_umi=function(
                 }
                 ### STEP 5
 
-                if(step=="mapped_trimmed"){
+                if(steps[step]=="mapped_trimmed"){
                 
                     .main.step$steps <-append(
                             .main.step$steps,
@@ -966,7 +966,7 @@ preprocess_umi=function(
                 ### STEP 6
 
                 
-                if(step=="tag_trimmed"){
+                if(steps[step]=="tag_trimmed"){
                 
                     .main.step$steps <-append(
                             .main.step$steps,
@@ -1001,7 +1001,7 @@ preprocess_umi=function(
 
                 ### STEP 7
 
-                if(step=="filter_paired"){
+                if(steps[step]=="filter_paired"){
 
                     .main.step$steps <-append(
                         .main.step$steps,
@@ -1029,7 +1029,7 @@ preprocess_umi=function(
 
                 ### STEP 8
 
-                if(step=="group_umi"){
+                if(steps[step]=="group_umi"){
                     
                     .main.step$steps <-append(
                         .main.step$steps,
@@ -1054,7 +1054,7 @@ preprocess_umi=function(
                 }
                 ### STEP 9
 
-                if(step=="collapse_consensus"){
+                if(steps[step]=="collapse_consensus"){
                     
                     .main.step$steps <-append(
                     .main.step$steps,
@@ -1082,7 +1082,7 @@ preprocess_umi=function(
                 ### STEP 10
 
 
-                if(step=="consensus_bam_to_fastq"){
+                if(steps[step]=="consensus_bam_to_fastq"){
                 
                     .main.step$steps <-append(
                         .main.step$steps,
@@ -1109,7 +1109,7 @@ preprocess_umi=function(
 
                 ### STEP 11
 
-                if(step=="remap_consensus"){
+                if(steps[step]=="remap_consensus"){
 
                     .main.step$steps <-append(
                     .main.step$steps,
@@ -1146,7 +1146,7 @@ preprocess_umi=function(
 
                 ### STEP 12
 
-                if(step=="tag_consensus_bam"){
+                if(steps[step]=="tag_consensus_bam"){
 
                     .main.step$steps <-append(
                     .main.step$steps,
