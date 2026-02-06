@@ -186,3 +186,110 @@ index_ref_bwa=function(
   return(job_report)
 
 }
+
+
+
+
+
+
+#' Align Paired-End FASTQ Files using BWA
+#'
+#' This function aligns paired-end FASTQ files to a reference genome using the BWA mem algorithm.
+#' It generates a BAM file and supports read group tagging for sample/library identification.
+#'
+#' The alignment is performed with the following options:
+#' \itemize{
+#'   \item Algorithm: BWA mem (suitable for reads > 70bp)
+#'   \item Mark shorter split hits as secondary (-M flag)
+#'   \item Verbose level: 2
+#'   \item Pipe output directly to samtools view for BAM conversion
+#' }
+#'
+#' Read group tags follow SAM format specification and are essential for multi-sample analysis.
+#'
+#' For more information on BWA:
+#' https://github.com/lh3/bwa
+#'
+#' @param bin_bwa [REQUIRED] Path to BWA executable. Default: from build_default_binary_list().
+#' @param bin_samtools [REQUIRED] Path to samtools executable. Default: from build_default_binary_list().
+#' @param ref_genome [REQUIRED] Path to indexed reference genome. Default: HG19 from build_default_reference_list().
+#' @param fastq [REQUIRED] Path to paired-end FASTQ files or data structure containing R1 and R2 file paths.
+#' @param tags [OPTIONAL] Read group tags as a list with elements:
+#'   \describe{
+#'     \item{id_tag}{(ID) Read group identifier}
+#'     \item{pu_tag}{(PU) Platform unit (flowcell.lane.barcode)}
+#'     \item{pl_tag}{(PL) Platform (default: ILLUMINA)}
+#'     \item{lb_tag}{(LB) Library name}
+#'     \item{sm_tag}{(SM) Sample name}
+#'   }
+#' @param soft_clipping_supplementary [OPTIONAL] Enable soft-clipping of supplementary alignments 
+#'   (-Y flag). Default: FALSE.
+#' @param ... Additional arguments passed to internal functions for environment setup and job execution.
+#'
+#' @return Aligned BAM file. Output path tracked in job report.
+#'
+#' @seealso
+#'   \link{sort_and_index_bam_samtools} for sorting and indexing the resulting BAM file
+#'
+#' @export
+
+new_alignment_bwa=function(
+  bin_bwa=build_default_binary_list()$alignment$bin_bwa,
+  bin_samtools=build_default_binary_list()$alignment$bin_samtool,
+  ref_genome=build_default_reference_list()$HG19$reference$genome,
+  fastq=NULL,
+  tags=list(
+    id_tag="NA",
+    pu_tag="NA",
+    pl_tag="ILLUMINA",
+    lb_tag="NA",
+    sm_tag="NA"),
+  soft_clipping_supplementary=FALSE,
+  ...
+){
+
+  
+  run_main=function(
+    .env
+  ){
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+    set_main(.env=.this.env)
+
+    .main$out_files$bam=paste0(out_file_dir,"/",input_id,".bam")
+
+    if(!is.null(tags)){
+        tag_annot=paste0(
+          " -R \"@RG\\tID:",tags$id_tag,
+          "\\tPL:",tags$pl_tag,
+          "\\tPU:",tags$pu_tag,
+          "\\tLB:",tags$lb_tag,
+          "\\tSM:",tags$sm_tag,"\""
+          )
+    }
+
+    .main$exec_code=paste(
+      bin_bwa," mem -t ",threads,
+      " -v 2 ", ifelse(!is.null(tags),tags_annot,""),
+      ifelse(soft_clipping_supplementary," -Y ",""),
+      " -M ",ref_genome,
+      input$fastq_r1,input$fastq_r2, " | ",
+      bin_samtools, " view -bh >",  
+      .main$out_files$bam
+    )
+
+     run_job(.env=.this.env)
+
+    .env$.main<-.main
+  } 
+    
+   .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="fastq"
+    )
+
+    launch(.env=.base.env)
+}
+

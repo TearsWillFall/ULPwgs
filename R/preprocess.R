@@ -645,7 +645,551 @@ process_sample=function(rdata=""){
         save(report,file=paste0(out_file_dir_job_report,"/",new_name,".job_report.RData"))
        
 }
+#' Process UMI-tagged sequencing data
+#'
+#' Processes Unique Molecular Identifier (UMI) tagged sequencing data through
+#' a comprehensive 12-step pipeline. The pipeline extracts UMI tags from raw reads,
+#' trims adapters, maps reads to a reference genome, groups reads by UMI, generates
+#' consensus sequences from UMI groups, and remaps consensus sequences. This approach
+#' reduces sequencing errors and artifacts by collapsing duplicates generated from
+#' the same DNA molecule.
+#'
+#' @details
+#' \strong{Pipeline Overview:}
+#' The function executes the following steps in sequence:
+#' \enumerate{
+#'   \item \strong{raw_fastq_to_bam}: Convert input FASTQ files to unmapped BAM format
+#'   \item \strong{extract_umi}: Extract UMI sequences from reads and add as BAM tags
+#'   \item \strong{raw_bam_to_fastq}: Convert UMI-tagged BAM back to FASTQ format
+#'   \item \strong{trim_adapt}: Trim adapter sequences using fastp
+#'   \item \strong{map_trimmed}: Align trimmed reads to reference genome with BWA
+#'   \item \strong{tag_trimmed}: Merge mapped and unmapped BAMs, preserving UMI tags
+#'   \item \strong{filter_paired}: Filter for properly paired reads (SAM flag 2)
+#'   \item \strong{group_umi}: Group reads by UMI identifier
+#'   \item \strong{collapse_consensus}: Generate consensus sequences from UMI groups
+#'   \item \strong{consensus_bam_to_fastq}: Convert consensus BAM to FASTQ
+#'   \item \strong{remap_consensus}: Realign consensus sequences to reference genome
+#'   \item \strong{tag_consensus}: Merge remapped and unmapped consensus BAMs with tags
+#' }
+#' 
+#' \strong{Error Handling:}
+#' Each step is wrapped in error handling. If any step fails, the function stops
+#' with a descriptive error message indicating which step failed.
+#' 
+#' \strong{Requirements:}
+#' GATK Singularity image and reference genome files must be accessible on the system.
+#' All binary tools (bwa, samtools) must be properly configured.
+#'
+#' @param sif_gatk Path to GATK Singularity image file. 
+#'   Default: from \code{build_default_sif_list()}. Must exist on filesystem.
+#' @param env_fgbio Python environment for fgbio tools.
+#'   Default: from \code{build_default_python_enviroment_list()}
+#' @param env_fastp Python environment for fastp adapter trimming.
+#'   Default: from \code{build_default_python_enviroment_list()}
+#' @param bin_bwa Path to BWA alignment binary.
+#'   Default: from \code{build_default_binary_list()}
+#' @param bin_samtools Path to samtools binary.
+#'   Default: from \code{build_default_binary_list()}
+#' @param ref_genome Path to reference genome FASTA file.
+#'   Default: HG19 from \code{build_default_reference_list()}. Must exist on filesystem.
+#' @param fastq Path to input FASTQ file(s) or list containing paths.
+#'   Can be single-end (single file) or paired-end (R1 and R2).
+#' @param ... Additional arguments passed to internal processing functions,
+#'   typically including: \code{output_dir}, \code{input_id}, \code{patient_id},
+#'   \code{tmp_dir}, \code{batch_dir}, \code{threads}, \code{ram}, \code{verbose},
+#'   \code{executor_id}, and \code{batch_config}
+#'
+#' @return List containing step-by-step processing results with structure:
+#'   \describe{
+#'     \item{$steps}{Named list of results from each processing step}
+#'     \item{$out_files}{Organized output files by category (raw/consensus, 
+#'       bam/fastq, unmapped/mapped/tagged)}
+#'   }
+#'
+#' @seealso
+#'   \code{\link{preprocess_seq}} for standard sequencing preprocessing,
+#'   \code{\link{for_id}} for variable-level iteration framework
+#'
+#' @examples
+#' \dontrun{
+#' # Process UMI-tagged paired-end sequencing data
+#' result <- preprocess_umi(
+#'   fastq = "path/to/sample.fastq",
+#'   output_dir = "./umi_results",
+#'   input_id = "sample_001",
+#'   patient_id = "patient_1",
+#'   threads = 8,
+#'   ram = 32,
+#'   verbose = TRUE
+#' )
+#' }
+#'
+#' @export
 
+preprocess_umi=function(
+    sif_gatk=build_default_sif_list()$sif_gatk,
+    env_fgbio=build_default_python_enviroment_list()$env_fg_bio,
+    env_fastp=build_default_python_enviroment_list()$env_fastp,
+    bin_bwa=build_default_binary_list()$alignment$bin_bwa,
+    bin_samtools=build_default_binary_list()$alignment$bin_samtool,
+    ref_genome=build_default_reference_list()$HG19$reference$genome,
+    fastq=NULL,
+    ...
+){
+    
+    # Input validation: Check for required GATK tools and genome reference
+    if(is.na(sif_gatk) || !file.exists(sif_gatk)){
+        stop("GATK Singularity image not found. Check sif_gatk parameter.")
+    }
+    
+    if(is.na(ref_genome) || !file.exists(ref_genome)){
+        stop("Reference genome file not found. Check ref_genome parameter.")
+    }
+
+      run_main=function(
+            .env
+      ){
+
+            .this.env=environment()
+            append_env(to=.this.env,from=.env)
+            out_file_dir=set_dir(
+                out_file_dir,
+                name=paste0(patient_id,"/insert_size_reports/",input_id)
+            )
+
+            set_main(.env=.this.env)
+
+            .main$steps[[fn_id]]<-.this.env
+            .main.step=.main$steps[[fn_id]]
+
+            # Record pipeline start time for elapsed time tracking
+            start_time <- Sys.time()
+            
+            # Logging utility with timestamped output and elapsed time tracking
+            logger=function(message){
+                    elapsed <- as.numeric(difftime(Sys.time(), start_time, units="secs"))
+                    elapsed_str <- sprintf("%.1f", elapsed)
+                    cat("\t\n")
+                    cat(crayon::green(crayon::bold(paste(
+                        paste0("[",Sys.time(),"] [Elapsed: ", elapsed_str, "s]"),
+                        message,"\n"
+                    ))))
+                    cat("\t\n")
+            }
+
+            # Define UMI processing pipeline steps in execution order
+            # Each step name should correspond to a conditional block below
+            steps=c(
+                "raw_fastq_to_bam",        # Step 1: Convert FASTQ to unmapped BAM
+                "extract_umi",              # Step 2: Extract UMI tags from reads
+                "raw_bam_to_fastq",         # Step 3: Convert BAM back to FASTQ
+                "trim_adapt",               # Step 4: Trim adapters with fastp
+                "map_trimmed",              # Step 5: Align reads with BWA
+                "tag_trimmed",              # Step 6: Merge and tag BAM files
+                "filter_paired",            # Step 7: Filter for properly paired reads
+                "group_umi",                # Step 8: Group reads by UMI
+                "collapse_consensus",       # Step 9: Generate consensus sequences
+                "consensus_bam_to_fastq",   # Step 10: Convert consensus BAM to FASTQ
+                "remap_consensus",          # Step 11: Realign consensus sequences
+                "tag_consensus"             # Step 12: Tag final consensus BAM
+            )
+            
+            # Total number of steps (useful for progress reporting)
+            total_steps=length(steps)
+
+            step_count=0
+            for(step in steps){
+                step_count=step_count+1
+                
+                # Log step progress with step count
+                logger(paste("Running step", step_count, "of", total_steps, ":", step))
+                
+                # Wrap step execution in error handling
+                tryCatch({
+
+
+                ### Step 1
+                if(step=="raw_fastq_to_bam"){
+                    
+                    .main.step$steps <-append(
+                        .main.step$steps,
+                        fastq_to_sam_gatk(
+                                sif_gatk=sif_gatk,
+                                fastq=input,
+                                output_dir=paste0(out_file_dir,"/raw/fastq_to_bam"),
+                                output_name=paste0(input_id,".unmapped"),
+                                tmp_dir=tmp_dir,
+                                env_dir=env_dir,
+                                batch_dir=batch_dir,
+                                err_msg=err_msg,
+                                verbose=verbose,
+                                threads=threads,
+                                fn_id="raw",
+                                ram=ram,
+                                executor_id=task_id
+                        )
+                    )
+
+                    .this.step=.main.step$steps$fastq_to_sam_gatk.raw
+                    .main.step$out_files$raw$bam$unmapped=.this.step$out_files
+                }
+
+                if(step=="extract_umi"){
+
+               
+
+                    ### STEP 2
+                    .main.step$steps <-append(
+                    .main.step$steps,
+                    extract_umi_fgbio(
+                        env_fgbio = env_fgbio,
+                        bam=.main.step$out_files$raw$bam$unmapped,
+                        output_dir=paste0(out_file_dir,"/raw/extract_umi"),
+                        output_name=paste0(input_id,".unmapped"),
+                        tmp_dir=tmp_dir,
+                        env_dir=env_dir,
+                        batch_dir=batch_dir,
+                        err_msg=err_msg,
+                        verbose=verbose,
+                        threads=threads,
+                        ram=ram,
+                        executor_id=task_id
+                        )
+                    )
+
+                    .this.step=.main.step$steps$extract_umi_fgbio
+                    .main.step$out_files$raw$bam$unmapped$umi=.this.step$out_files
+                }
+
+                ### STEP 3
+
+                if(step=="raw_bam_to_fastq"){
+
+                    .main.step$steps <-append(
+                        .main.step$steps,
+                        sam_to_fastq_gatk(
+                                sif_gatk=sif_gatk,
+                                bam=.main.step$out_files$raw$bam$unmapped$umi,
+                                output_dir=paste0(out_file_dir,"/raw/bam_to_fastq"),
+                                output_name=paste0(input_id,".unmapped.umi"),
+                                tmp_dir=tmp_dir,
+                                env_dir=env_dir,
+                                batch_dir=batch_dir,
+                                err_msg=err_msg,
+                                verbose=verbose,
+                                threads=threads,
+                                fn_id="raw",
+                                ram=ram,
+                                executor_id=task_id
+                        )
+                    )
+
+                    .this.step=.main.step$steps$sam_to_fastq_gatk.raw
+                    .main.step$out_files$raw$fastq$untrimmed=.this.step$out_files
+                }
+
+                ### STEP 4
+
+                if(step=="trim_adapt"){
+                
+                    .main.step$steps <-append(
+                            .main.step$steps,
+                        trim_umi_fastp(
+                                env_fastp=env_fastp,
+                                fastq=.main.step$out_files$raw$fastq$untrimmed,
+                                output_dir=paste0(out_file_dir,"/raw/fastp"),
+                                output_name=paste0(input_id,".unmapped.umi"),
+                                tmp_dir=tmp_dir,
+                                env_dir=env_dir,
+                                batch_dir=batch_dir,
+                                err_msg=err_msg,
+                                verbose=verbose,
+                                threads=threads,
+                                ram=ram,
+                                executor_id=task_id
+                        )
+                    )
+
+                    .this.step=.main.step$steps$trim_umi_fastp
+                    .main.step$out_files$raw$fastq$trimmed=.this.step$out_files
+                }
+                ### STEP 5
+
+                if(step=="mapped_trimmed"){
+                
+                    .main.step$steps <-append(
+                            .main.step$steps,
+                            new_alignment_bwa(
+                                    bin_bwa=bin_bwa,
+                                    bin_samtools=bin_samtool,
+                                    ref_genome=ref_genome,
+                                    fastq=.main.step$out_files$raw$fastq$trimmed,
+                                    tags=NULL,
+                                    output_dir=paste0(out_file_dir,"/raw/bwa"),
+                                    output_name=paste0(input_id,".mapped.umi"),
+                                    tmp_dir=tmp_dir,
+                                    env_dir=env_dir,
+                                    batch_dir=batch_dir,
+                                    err_msg=err_msg,
+                                    verbose=verbose,
+                                    threads=threads,
+                                    ram=ram,
+                                    fn.id="raw",
+                                    executor_id=task_id
+                            )
+                    )
+
+                    .this.step=.main.step$steps$new_alignment_bwa.raw
+                    .main.step$out_files$raw$bam$mapped$untagged=.this.step$out_files$bam
+                }
+
+                ### STEP 6
+
+                
+                if(step=="tag_trimmed"){
+                
+                    .main.step$steps <-append(
+                            .main.step$steps,
+                            merge_bam_umi_gatk(
+                                    sif_gatk=sif_gatk,
+                                    ref_genome=reference_genome,
+                                    bam=list(
+                                        mapped=.main.step$out_files$raw$bam$mapped$untagged,
+                                        unmapped=.main.step$out_files$raw$bam$unmapped$umi),
+                                    attributes=c("XO","NM","MD"),
+                                    sort_order="queryname",
+                                    aligned_reads_only=TRUE,
+                                    add_mate_cigar=FALSE,
+                                    output_dir=paste0(out_file_dir,"/raw/bwa/tagged"),
+                                    output_name=sub(".bam","",.main.step$out_files$raw$bam$mapped$untagged),
+                                    tmp_dir=tmp_dir,
+                                    env_dir=env_dir,
+                                    batch_dir=batch_dir,
+                                    err_msg=err_msg,
+                                    verbose=verbose,
+                                    threads=threads,
+                                    ram=ram,
+                                    fn.id="raw",
+                                    executor_id=task_id
+                            )
+                    )
+
+                    .this.step=.main.step$steps$merge_bam_umi_gatk.raw
+                    .main.step$out_files$raw$bam$mapped$tagged$raw=.this.step$out_files$bam
+
+                }
+
+                ### STEP 7
+
+                if(step=="filter_paired"){
+
+                    .main.step$steps <-append(
+                        .main.step$steps,
+                        filter_samtools(
+                                bin_samtools=bin_samtools,
+                                bam=.main.step$out_files$raw$bam$mapped$tagged$raw,
+                                flag=2,
+                                output_dir=paste0(out_file_dir,"/raw/bwa/tagged/filtered"),
+                                output_name=sub(".bam","",.main.step$out_files$raw$bam$mapped$tagged$raw),
+                                tmp_dir=tmp_dir,
+                                env_dir=env_dir,
+                                batch_dir=batch_dir,
+                                err_msg=err_msg,
+                                verbose=verbose,
+                                threads=threads,
+                                ram=ram,
+                                executor_id=task_id
+                        )
+                    )
+                    
+                    .this.step=.main.step$steps$filter_samtools
+                    .main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped=.this.step$out_files$bam
+
+                }
+
+                ### STEP 8
+
+                if(step=="group_umi"){
+                    
+                    .main.step$steps <-append(
+                        .main.step$steps,
+                        group_by_umi_fgbio(
+                                env_fgbio=env_fgbio,
+                                bam=.main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped,
+                                output_dir=paste0(out_file_dir,"/raw/bwa/tagged/filtered/grouped_umi"),
+                                output_name=sub(".bam","",.main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped),
+                                tmp_dir=tmp_dir,
+                                env_dir=env_dir,
+                                batch_dir=batch_dir,
+                                err_msg=err_msg,
+                                verbose=verbose,
+                                threads=threads,
+                                ram=ram,
+                                executor_id=task_id
+                        )
+                    )
+                    
+                    .this.step=.main.step$steps$group_by_umi_fgbio
+                    .main.step$out_files$raw$bam$mapped$tagged$filtered$grouped=.this.step$out_files
+                }
+                ### STEP 9
+
+                if(step=="collapse_consensus"){
+                    
+                    .main.step$steps <-append(
+                    .main.step$steps,
+                        call_consensus_fgbio(
+                                env_fgbio=env_fgbio,
+                                bam=.main.step$out_files$raw$bam$mapped$tagged$filtered$grouped,
+                                output_dir=paste0(out_file_dir,"/consensus/unmapped"),
+                                output_name=paste0(input_id),
+                                tmp_dir=tmp_dir,
+                                env_dir=env_dir,
+                                batch_dir=batch_dir,
+                                err_msg=err_msg,
+                                verbose=verbose,
+                                threads=threads,
+                                ram=ram,
+                                executor_id=task_id
+                        )
+                    )
+                    
+                    .this.step=.main.step$steps$call_consensus_fgbio
+                    .main.step$out_files$consensus$bam$unmapped=.this.step$out_files
+                }
+
+
+                ### STEP 10
+
+
+                if(step=="consensus_bam_to_fastq"){
+                
+                    .main.step$steps <-append(
+                        .main.step$steps,
+                    sam_to_fastq_gatk(
+                                sif_gatk=sif_gatk,
+                                bam= .main.step$out_files$consensus$bam$unmapped$bam,
+                                output_dir=paste0(out_file_dir,"/consensus/unmapped/bam_to_fastq"),
+                                output_name=paste0(input_id,".consensus"),
+                                tmp_dir=tmp_dir,
+                                env_dir=env_dir,
+                                batch_dir=batch_dir,
+                                err_msg=err_msg,
+                                verbose=verbose,
+                                threads=threads,
+                                fn_id="consensus",
+                                ram=ram,
+                                executor_id=task_id
+                        )
+                    )
+
+                    .this.step=.main.step$steps$sam_to_fastq_gatk.consensus
+                    .main.step$out_files$consensus$fastq=.this.step$out_files
+                }
+
+                ### STEP 11
+
+                if(step=="remap_consensus"){
+
+                    .main.step$steps <-append(
+                    .main.step$steps,
+                        new_alignment_bwa(
+                                bin_bwa=bin_bwa,
+                                bin_samtools=bin_samtool,
+                                ref_genome=ref_genome,
+                                fastq=.main.step$out_files$consensus$fastq,
+                                tags=list(
+                                    id_tag="NA",
+                                    pu_tag="NA",
+                                    pl_tag="ILLUMINA",
+                                    lb_tag="NA",
+                                    sm_tag=input_id
+                                ),
+                                output_dir=paste0(out_file_dir,"/consensus/mapped/bwa/untagged"),
+                                output_name=paste0(input_id,".consensus.mapped.untagged"),
+                                tmp_dir=tmp_dir,
+                                env_dir=env_dir,
+                                batch_dir=batch_dir,
+                                err_msg=err_msg,
+                                verbose=verbose,
+                                threads=threads,
+                                ram=ram,
+                                fn.id="consensus",
+                                executor_id=task_id
+                                )
+                        )
+
+                    .this.step=.main.step$steps$new_alignment_bwa.consensus
+                    .main.step$out_files$consensus$bam$mapped$untagged=.this.step$out_files
+                }
+        
+
+                ### STEP 12
+
+                if(step=="tag_consensus_bam"){
+
+                    .main.step$steps <-append(
+                    .main.step$steps,
+                    merge_bam_umi_gatk(
+                            sif_gatk=sif_gatk,
+                            ref_genome=reference_genome,
+                            bam=list(
+                                mapped=.main.step$out_files$consensus$bam$mapped$untagged,
+                                unmapped=.main.step$out_files$consensus$bam$unmapped),
+                            attributes=c("X0","RX"),
+                            sort_order="coordinate",
+                            aligned_reads_only=FALSE,
+                            add_mate_cigar=TRUE,
+                            output_dir=paste0(out_file_dir,"/consensus/bwa/tagged"),
+                            output_name=paste0(input_id,".consensus.mapped.tagged"),
+                            tmp_dir=tmp_dir,
+                            env_dir=env_dir,
+                            batch_dir=batch_dir,
+                            err_msg=err_msg,
+                            verbose=verbose,
+                            threads=threads,
+                            ram=ram,
+                            fn.id="consensus",
+                            executor_id=task_id
+                            )
+                    )
+
+                    .this.step=.main.step$steps$merge_bam_umi_gatk.consensus
+                    .main.step$out_files$consensus$bam$mapped$tagged=.this.step$out_files
+                }
+
+                    # Log successful step completion
+                    logger(paste("Completed step", step_count, "of", total_steps, ":", step))
+                    
+                }, error=function(e){
+                    # Handle step execution errors with informative message
+                    logger(paste("ERROR in step", step_count, ":", step))
+                    stop(paste("Step '" , step, "' failed. Error:", e$message,
+                              "\nReview input files and parameters before retrying."))
+                })
+        
+        }
+            
+        # Log pipeline completion with total runtime
+        total_elapsed <- as.numeric(difftime(Sys.time(), start_time, units="secs"))
+        total_elapsed_str <- sprintf("%.1f", total_elapsed)
+        logger(paste("UMI processing pipeline completed successfully."))
+        logger(paste("Total steps executed:", total_steps, "| Total runtime:", total_elapsed_str, "seconds"))
+          
+        .env$.main <- .main
+
+    }
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+        .env= .base.env,
+        vars="bam"
+    )
+
+    launch(.env=.base.env)
+        
+
+}
 
 
         

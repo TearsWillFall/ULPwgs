@@ -3207,3 +3207,82 @@ insert_info_tss_samtools=function(
 
 
 
+
+
+#' Filter BAM File by SAM Flags
+#'
+#' This function filters a BAM file based on specified SAM flags using samtools view.
+#' It allows selective extraction of reads matching specific criteria (e.g., properly paired reads,
+#' forward strand, mapped reads, etc.).
+#'
+#' Common SAM flag combinations:
+#' \itemize{
+#'   \item 0: All reads
+#'   \item 1: Paired in sequencing
+#'   \item 2: Properly paired
+#'   \item 4: Unmapped
+#'   \item 8: Next segment unmapped
+#'   \item 16: Reverse strand
+#'   \item 32: Next segment reverse strand
+#'   \item 64: First in pair
+#'   \item 128: Second in pair
+#'   \item 256: Secondary alignment
+#'   \item 512: QC failure
+#'   \item 1024: Duplicate
+#' }
+#'
+#' @param bin_samtools [REQUIRED] Path to samtools executable. Default: from build_default_tool_binary_list().
+#' @param bam [REQUIRED] Path to input BAM file to filter.
+#' @param flag [OPTIONAL] SAM flag(s) to filter by. Reads matching this flag(s) will be included in output.
+#'   Uses samtools view -f option for flag filtering. If NULL, all reads are included.
+#' @param ... Additional arguments passed to internal functions for environment setup and job execution.
+#'
+#' @return Filtered BAM file is written to output directory. Output path tracked in job report.
+#'
+#' @seealso
+#'   \link{sort_and_index_bam_samtools} for sorting and indexing filtered BAM files
+#'
+#' @export
+
+
+filter_samtools=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  bam=NULL,
+  flag=NULL,
+  ...
+  ){
+
+     run_main=function(
+    .env
+  ){
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+    set_main(.env=.this.env)
+
+    .main$out_files$filtered_bam=paste0(out_file_dir,"/",input_id,".filtered.bam")
+    .main$exec_code=paste(
+      bin_samtools," view ",
+      bam," -@ ",
+      threads,
+      ifelse(!is.null(flag),paste0(" -f ",flag),flag),
+      input, " -bh > ", .main$out_files$filtered_bam
+    
+    )
+    
+    run_job(.env=.this.env)
+    .env$.main <- .main
+  }
+
+   .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="bam"
+    )
+
+    launch(.env=.base.env)
+}
+
+
+
+

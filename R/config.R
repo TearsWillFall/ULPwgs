@@ -661,10 +661,6 @@ build_default_license_list=function(
 
 
 
-
-
-
-
 #' Build default python enviroment list
 #' 
 #'
@@ -682,7 +678,9 @@ build_default_python_enviroment_list=function(
                 env_griffin="/myriadfs/home/regmova/miniconda3/envs/griffin",
                 env_triton="/myriadfs/home/regmova/miniconda3/envs/triton",
                 env_medicc2="/myriadfs/home/regmova/miniconda3/envs/medicc_env",
-                env_msing="/myriadfs/home/regmova/Scratch/tools/msings/msings-env/bin/activate"
+                env_msing="/myriadfs/home/regmova/Scratch/tools/msings/msings-env/bin/activate",
+                env_fgbio="/myriadfs/home/regmova/miniconda3/envs/fgbio",
+                env_fastp="/myriadfs/home/regmova/miniconda3/envs/fastp"
         )
     ){
          return(enviroments)

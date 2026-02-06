@@ -3751,3 +3751,234 @@ filter_variant_tranches_gatk=function(
   launch(.env=.base.env)
 
 }
+
+
+
+
+
+
+#' Convert FASTQ files to unmapped SAM/BAM format using GATK
+#'
+#' This function converts paired-end FASTQ files to unmapped SAM/BAM format.
+#' The output is an unmapped BAM file that can be used as input for alignment and variant calling pipelines.
+#' Sample name is automatically extracted from the intersection of R1 and R2 file names.
+#' 
+#' For more information read:
+#' https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-FastqToSam
+#'
+#' @param sif_gatk [REQUIRED] Path to gatk sif file.
+#' @param fastq [REQUIRED] Path to fastq files in list format with R1 and R2 paired reads.
+#' @export
+#' 
+fastq_to_sam_gatk=function(
+  sif_gatk=build_default_sif_list()$sif_gatk,
+  fastq=NULL,
+  ...
+){
+
+   run_main=function(
+    .env
+  ){
+
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+    set_main(.env=.this.env)
+
+    .main$out_files$bam=paste0(out_file_dir,"/",input_id,".bam")
+
+
+    .main$exec_code=paste(
+      "singularity exec ",sif_gatk,
+      " /gatk/gatk  FastqToSam",
+      " -F1", input$fastq_r1,
+      " -F2 ",input$fastq_r2,
+      " -O ",.main$out_files$bam,
+      " -SM ",intersect_file_name(input$fastq_r1,input$fastq_r2)
+    )
+
+     run_job(.env=.this.env)
+
+    .env$.main<-.main
+  } 
+    
+   .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="fastq"
+    )
+
+    launch(.env=.base.env)
+
+}
+
+
+
+
+
+#' Convert SAM/BAM files to paired-end FASTQ format using GATK
+#'
+#' This function converts SAM/BAM files to paired-end FASTQ format.
+#' The output are paired-end FASTQ files (R1 and R2) that can be used for downstream analysis.
+#' Clipping attributes can be applied to filter reads based on quality scores.
+#' 
+#' For more information read:
+#' https://gatk.broadinstitute.org/hc/en-us/articles/360036883491-SamToFastq
+#'
+#' @param sif_gatk [REQUIRED] Path to gatk sif file.
+#' @param bam [REQUIRED] Path to input BAM/SAM file to convert to FASTQ format.
+#' @param clipping_attribute [OPTIONAL] Apply clipping attributes during conversion. Default TRUE.
+#' @export
+#' 
+sam_to_fastq_gatk=function(
+  sif_gatk=build_default_sif_list()$sif_gatk,
+  bam=NULL,
+  clipping_attribute=TRUE,
+  ...
+){
+
+   run_main=function(
+    .env
+  ){
+
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+    set_main(.env=.this.env)
+
+    .main$out_files$fastq_r1=paste0(out_file_dir,"/",input_id,"_R1.fastq")
+    .main$out_files$fastq_r2=paste0(out_file_dir,"/",input_id,"_R2.fastq")
+
+    .main$exec_code=paste(
+      "singularity exec ",sif_gatk,
+      " /gatk/gatk  SamToFastq -F",.main$out_files$fastq_r1,
+      " -F2 ",.main$out_files$fastq_r2,
+      " -I ", input,
+      ifelse(clipping_attribute=," --CLIPPING_ATTRIBUTE XT --CLIPPING_ACTION 2 "," ")
+
+    )
+
+     run_job(.env=.this.env)
+
+    .env$.main<-.main
+  } 
+    
+   .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="bam"
+    )
+
+    launch(.env=.base.env)
+}
+
+
+
+
+
+#' Merge Aligned and Unmapped BAM Files using GATK
+#'
+#' Merge Aligned and Unmapped BAM Files using GATK
+#'
+#' This function merges aligned and unmapped BAM files using GATK's MergeBamAlignment tool.
+#' It is typically used after UMI extraction and alignment workflows to combine the aligned
+#' reads with the original unmapped reads, preserving UMI and other metadata.
+#'
+#' The function provides configurable options for:
+#' \itemize{
+#'   \item Attribute retention/removal (default: retain X0, remove NM and MD)
+#'   \item BAM sort order (default: queryname)
+#'   \item Including/excluding aligned reads only
+#'   \item Adding mate CIGAR information for paired reads
+#'   \item Primary alignment strategy: MostDistant
+#'   \item Proper pair flags alignment enabled
+#'   \item Overlapping reads not clipped
+#'   \item No limit on insertions/deletions (-1)
+#' }
+#'
+#' For more information read:
+#' https://gatk.broadinstitute.org/hc/en-us/articles/360036452392-MergeBamAlignment
+#'
+#' @param sif_gatk [REQUIRED] Path to GATK Singularity container image. 
+#'   Default: from build_default_sif_list()$sif_gatk.
+#' @param ref_genome [REQUIRED] Path to reference genome FASTA file. 
+#'   Default: HG19 reference from build_default_reference_list().
+#' @param bam [REQUIRED] BAM file(s) to merge. Should contain mapped and unmapped BAM information 
+#'   accessible via input$mapped and input$unmapped.
+#' @param output_name [OPTIONAL] Name for the output files. Default: "sample".
+#' @param attributes [OPTIONAL] Character vector of BAM tags to retain. 
+#'   Default: c("XO","NM","MD"). Tags listed here will be retained from input BAM files.
+#' @param sort_order [OPTIONAL] Output sort order for merged BAM. 
+#'   Options: "queryname", "coordinate". Default: "queryname".
+#' @param aligned_reads_only [OPTIONAL] Include only aligned reads in output. Default: TRUE.
+#' @param add_mate_cigar [OPTIONAL] Add CIGAR information for mate in MC tag. Default: TRUE.
+#' @param ... Additional arguments passed to internal functions for environment setup and job execution.
+#'
+#' @return Merged BAM file with original reads and alignments combined. Output path tracked in job report.
+#'   Output BAM is accessible via .main$out_files$merged_bam.
+#'
+#' @seealso
+#'   \link{group_by_umi_fgbio} for grouping reads by UMI before consensus calling
+#'
+#' @export
+#' 
+merge_bam_umi_gatk=function(
+  sif_gatk=build_default_sif_list()$sif_gatk,
+  ref_genome=build_default_reference_list()$HG19$reference$genome,
+  bam=NULL,
+  output_name="sample",
+  attributes=c("X0","NM","MD"),
+  sort_order="queryname",
+  aligned_reads_only=TRUE,
+  add_mate_cigar=FALSE,
+  ...
+){
+
+   run_main=function(
+    .env
+  ){
+
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+    set_main(.env=.this.env)
+
+    .main$out_files$bam=paste0(out_file_dir,"/",input_id,".merged.bam")
+    .main$exec_code=paste(
+      "singularity exec ",sif_gatk,
+      " /gatk/gatk  gatk MergeBamAlignment",
+      paste(" --ATTRIBUTES_TO_RETAIN ",attributes),
+      " --ALIGNED_BAM ", input$mapped,
+      " --UNMAPPED_BAM ", input$unmapped, 
+      " --OUTPUT ", .main$out_files$bam,
+      " --REFERENCE_SEQUENCE ", ref_genome,
+      " --SORT_ORDER ",sort_order,
+      ifelse(aligned_reads_only," --ALIGNED_READS_ONLY true  ",""),
+      ifelse(add_mate_cigar," --ADD_MATE_CIGAR true ",""),
+      "--MAX_INSERTIONS_OR_DELETIONS -1  
+      --PRIMARY_ALIGNMENT_STRATEGY MostDistant  
+      --ALIGNER_PROPER_PAIR_FLAGS true
+      --CLIP_OVERLAPPING_READS false "
+      )
+
+     run_job(.env=.this.env)
+
+    .env$.main<-.main
+  } 
+    
+   .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="bam"
+    )
+
+    launch(.env=.base.env)
+}
+
+
+
+
+
+
+
+
