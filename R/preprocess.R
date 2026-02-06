@@ -974,7 +974,7 @@ preprocess_umi=function(
                             .main.step$steps,
                             merge_bam_umi_gatk(
                                     sif_gatk=sif_gatk,
-                                    ref_genome=reference_genome,
+                                    ref_genome=ref_genome,
                                     bam=list(
                                         mapped=.main.step$out_files$raw$bam$mapped$untagged,
                                         unmapped=.main.step$out_files$raw$bam$unmapped$umi),
