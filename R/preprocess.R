@@ -712,7 +712,8 @@ preprocess_umi=function(
     bin_bwa=build_default_binary_list()$alignment$bin_bwa,
     bin_samtools=build_default_binary_list()$alignment$bin_samtool,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
-    fastq=NULL,
+    file_r1=NULL,
+    file_r2=NULL,
     project_id=NULL,
     patient_id=NULL,
     sample_id=NULL,
@@ -743,7 +744,8 @@ preprocess_umi=function(
                         stop("Variable ",id, " required to continue. Please assign a value")}
         }
         
-        info=new_check_seq_info(fastq=input)
+        fastq=list(file_r1=file_r1,file_r2=file_r2)
+        info=new_check_seq_info(fastq=fastq)
         
         ### Add information for library, run, flowcell and lana if not provided 
         for(id in c("library_id","run_id","flowcell_id","lane_id")){
@@ -1194,7 +1196,7 @@ preprocess_umi=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
         .env= .base.env,
-        vars="fastq"
+        vars="file_r1"
     )
 
     launch(.env=.base.env)
