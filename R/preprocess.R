@@ -937,7 +937,7 @@ preprocess_umi=function(
                 }
                 ### STEP 5
 
-                if(steps[step]=="mapped_trimmed"){
+                if(steps[step]=="map_trimmed"){
                 
                     .main.step$steps <-append(
                             .main.step$steps,
