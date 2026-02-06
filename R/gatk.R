@@ -3933,6 +3933,7 @@ merge_bam_umi_gatk=function(
   aligned_reads_only=TRUE,
   add_mate_cigar=FALSE,
   index=TRUE,
+  stats=TRUE,
   ...
 ){
 
