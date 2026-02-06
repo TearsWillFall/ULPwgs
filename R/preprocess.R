@@ -712,8 +712,8 @@ preprocess_umi=function(
     bin_bwa=build_default_binary_list()$alignment$bin_bwa,
     bin_samtools=build_default_binary_list()$alignment$bin_samtool,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
-    file_r1=NULL,
-    file_r2=NULL,
+    fastq_r1=NULL,
+    fastq_r2=NULL,
     project_id=NULL,
     patient_id=NULL,
     sample_id=NULL,
@@ -739,12 +739,19 @@ preprocess_umi=function(
         set_main(.env=.this.env)
 
         ### Validate required variables
-        for(id in c("project_id","patient_id","sample_id","sequencing_type","method_type","method_version","reference","library_id")){
+        for(id in c("project_id",
+                    "patient_id",
+                    "sample_id",
+                    "sequencing_type",
+                    "method_type",
+                    "method_version",
+                    "reference",
+                    "library_id")){
                 if(is.null(get(id))){
                         stop("Variable ",id, " required to continue. Please assign a value")}
         }
         
-        fastq=list(file_r1=file_r1,file_r2=file_r2)
+        fastq=list(fastq_r1=fastq_r1,fastq_r2=fastq_r2)
         input_id=sample_id
         
         info=new_check_seq_info(fastq=fastq)
