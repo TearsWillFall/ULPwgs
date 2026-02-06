@@ -3924,7 +3924,6 @@ sam_to_fastq_gatk=function(
 #' 
 merge_bam_umi_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
-  bin_samtools=build_default_binary_list()$alignment$bin_samtool,
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   bam=NULL,
   output_name="sample",
@@ -3932,8 +3931,6 @@ merge_bam_umi_gatk=function(
   sort_order="queryname",
   aligned_reads_only=TRUE,
   add_mate_cigar=FALSE,
-  index=TRUE,
-  stats=TRUE,
   ...
 ){
 
@@ -3965,28 +3962,6 @@ merge_bam_umi_gatk=function(
       )
 
      run_job(.env=.this.env)
-
-
-      .main.step=.main$steps[[fn_id]]
-
-    if(index){
-        .main.step$steps  <-append(
-          .main.step$steps ,
-            new_index_bam_samtools(
-              bin_samtools=bin_samtools,
-              bam=.main$out_files$bam,
-              stats=stats,
-              tmp_dir=tmp_dir,
-              env_dir=env_dir,
-              batch_dir=batch_dir,
-              verbose=verbose,
-              err_msg=err_msg,
-              threads=threads,
-              executor_id=task_id
-           )
-     )
-    }
-
 
     .env$.main<-.main
   } 
