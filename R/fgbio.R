@@ -105,10 +105,10 @@ group_by_umi_fgbio=function(
       "conda activate ",env_fgbio,
       "; fgbio GroupReadsByUmi --input=",input,
       " --output=",.main$out_files$bam,
-      " --strategy=adjacency
-      --edits=1
-      -t RX
-      -f ",.main$out_files$family_size_counts
+      " --strategy=adjacency",
+      "--edits=1"
+      " -t RX"
+      "-f ",.main$out_files$family_size_counts
     )
 
      run_job(.env=.this.env)
@@ -186,13 +186,13 @@ call_consensus_fgbio=function(
       "conda activate ",env_fgbio,
       "; fgbio CallMolecularConsensusReads --input=" ,input,
       " --output=",.main$out_files$bam,
-      " --error-rate-post-umi 40
-        --error-rate-pre-umi 45
-        --output-per-base-tags false
-        --min-reads 2
-        --max-reads 50
-        --min-input-base-quality 20
-        --read-name-prefix=\'consensus\'"
+      " --error-rate-post-umi 40 ",
+      " --error-rate-pre-umi 45 ",
+      " --output-per-base-tags false ",
+      " --min-reads 2 ",
+      " --max-reads 50 ",
+      " --min-input-base-quality 20 ",
+      " --read-name-prefix=\'consensus\'"
     )
 
      run_job(.env=.this.env)
