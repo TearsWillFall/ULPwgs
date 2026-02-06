@@ -3262,10 +3262,10 @@ filter_samtools=function(
     .main$out_files$filtered_bam=paste0(out_file_dir,"/",input_id,".filtered.bam")
     .main$exec_code=paste(
       bin_samtools," view ",
-      bam," -@ ",
+      input," -@ ",
       threads,
       ifelse(!is.null(flag),paste0(" -f ",flag),flag),
-      input, " -bh > ", .main$out_files$filtered_bam
+      " -bh > ", .main$out_files$filtered_bam
     
     )
     
