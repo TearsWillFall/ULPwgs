@@ -743,7 +743,7 @@ preprocess_umi=function(
                         stop("Variable ",id, " required to continue. Please assign a value")}
         }
         
-        info=new_check_seq_info(fastq=fastq)
+        info=new_check_seq_info(fastq=input)
         
         ### Add information for library, run, flowcell and lana if not provided 
         for(id in c("library_id","run_id","flowcell_id","lane_id")){
