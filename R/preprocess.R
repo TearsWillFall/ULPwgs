@@ -963,6 +963,8 @@ preprocess_umi=function(
 
                     .this.step=.main.step$steps$new_alignment_bwa.raw
                     .main.step$out_files$raw$bam$mapped$untagged=.this.step$out_files
+
+                    print(.this.step$out_files)
                 }
 
                 ### STEP 6

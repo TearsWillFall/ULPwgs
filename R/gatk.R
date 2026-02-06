@@ -3943,10 +3943,11 @@ merge_bam_umi_gatk=function(
     set_main(.env=.this.env)
 
     .main$out_files$bam=paste0(out_file_dir,"/",input_id,".merged.bam")
+
     .main$exec_code=paste(
       "singularity exec ",sif_gatk,
       " /gatk/gatk  gatk MergeBamAlignment",
-      paste(" --ATTRIBUTES_TO_RETAIN ",attributes),
+      paste(" --ATTRIBUTES_TO_RETAIN ",attributes,collapse=" "),
       " --ALIGNED_BAM ", input$mapped,
       " --UNMAPPED_BAM ", input$unmapped, 
       " --OUTPUT ", .main$out_files$bam,
