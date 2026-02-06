@@ -956,15 +956,14 @@ preprocess_umi=function(
                                     verbose=verbose,
                                     threads=threads,
                                     ram=ram,
-                                    fn.id="raw",
+                                    fn_id="raw",
                                     executor_id=task_id
                             )
                     )
 
                     .this.step=.main.step$steps$new_alignment_bwa.raw
-                    .main.step$out_files$raw$bam$mapped$untagged=.this.step$out_files
+                    .main.step$out_files$raw$bam$mapped$untagged=.this.step$out_files$bam
 
-                    print(.this.step$out_files)
                 }
 
                 ### STEP 6

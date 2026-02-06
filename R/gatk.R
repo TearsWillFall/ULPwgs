@@ -3953,12 +3953,12 @@ merge_bam_umi_gatk=function(
       " --OUTPUT ", .main$out_files$bam,
       " --REFERENCE_SEQUENCE ", ref_genome,
       " --SORT_ORDER ",sort_order,
-      ifelse(aligned_reads_only," --ALIGNED_READS_ONLY true  ",""),
+      paste(ifelse(aligned_reads_only," --ALIGNED_READS_ONLY true  ",""),
       ifelse(add_mate_cigar," --ADD_MATE_CIGAR true ",""),
       "--MAX_INSERTIONS_OR_DELETIONS -1  
       --PRIMARY_ALIGNMENT_STRATEGY MostDistant  
       --ALIGNER_PROPER_PAIR_FLAGS true
-      --CLIP_OVERLAPPING_READS false "
+      --CLIP_OVERLAPPING_READS false ",collapse=" ")
       )
 
      run_job(.env=.this.env)
