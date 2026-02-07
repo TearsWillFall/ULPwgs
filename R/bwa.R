@@ -270,7 +270,7 @@ new_alignment_bwa=function(
 
     .main$exec_code=paste(
       bin_bwa," mem -t ",threads,
-      " -v 2 ", ifelse(!is.null(tags),tags_annot,""),
+      " -v 2 ", ifelse(!is.null(tags),tag_annot,""),
       ifelse(soft_clipping_supplementary," -Y ",""),
       " -M ",ref_genome,
       input$fastq_r1,input$fastq_r2, " | ",
