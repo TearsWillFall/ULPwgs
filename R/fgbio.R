@@ -185,8 +185,9 @@ call_consensus_fgbio=function(
    
     .main$exec_code=paste(
       "conda activate ",env_fgbio,
-      "; fgbio CallMolecularConsensusReads --input=" ,input,
-      " --output=",.main$out_files$bam,
+      "; fgbio CallMolecularConsensusReads ", 
+      paste0(" --input=" ,input),
+      paste0(" --output=",.main$out_files$bam),
       " --error-rate-post-umi 40 ",
       " --error-rate-pre-umi 45 ",
       " --output-per-base-tags false ",
