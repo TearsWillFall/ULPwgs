@@ -3259,13 +3259,13 @@ filter_samtools=function(
     append_env(to=.this.env,from=.env)
     set_main(.env=.this.env)
 
-    .main$out_files$filtered_bam=paste0(out_file_dir,"/",input_id,".filtered.bam")
+    .main$out_files$bam=paste0(out_file_dir,"/",input_id,".filtered.bam")
     .main$exec_code=paste(
       bin_samtools," view ",
       input," -@ ",
       threads,
       ifelse(!is.null(flag),paste0(" -f ",flag),flag),
-      " -bh > ", .main$out_files$filtered_bam
+      " -bh > ", .main$out_files$bam
     
     )
     
