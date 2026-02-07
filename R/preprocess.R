@@ -1065,7 +1065,7 @@ preprocess_umi=function(
                     .main.step$steps,
                         call_consensus_fgbio(
                                 env_fgbio=env_fgbio,
-                                bam=.main.step$out_files$raw$bam$mapped$tagged$filtered$grouped,
+                                bam=.main.step$out_files$raw$bam$mapped$tagged$filtered$grouped$bam,
                                 output_dir=paste0(out_file_dir,"/consensus/unmapped"),
                                 output_name=paste0(input_id),
                                 tmp_dir=tmp_dir,
