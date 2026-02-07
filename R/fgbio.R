@@ -103,8 +103,9 @@ group_by_umi_fgbio=function(
     .main$out_files$family_size_counts=paste0(out_file_dir,"/",input_id,".family_size_counts.txt")
     .main$exec_code=paste(
       "conda activate ",env_fgbio,
-      "; fgbio GroupReadsByUmi --input=",input,
-      " --output=",.main$out_files$bam,
+      "; fgbio GroupReadsByUmi ",
+      paste0(" --input=",input),
+      paste0(" --output=",.main$out_files$bam),
       " --strategy=adjacency",
       " --edits=1",
       " -t RX",
