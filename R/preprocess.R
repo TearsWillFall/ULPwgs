@@ -1120,7 +1120,7 @@ preprocess_umi=function(
                     .main.step$steps,
                         new_alignment_bwa(
                                 bin_bwa=bin_bwa,
-                                bin_samtools=bin_samtool,
+                                bin_samtools=bin_samtools,
                                 ref_genome=ref_genome,
                                 fastq=.main.step$out_files$consensus$fastq,
                                 tags=list(
@@ -1158,7 +1158,7 @@ preprocess_umi=function(
                     merge_bam_umi_gatk(
                             sif_gatk=sif_gatk,
                             bin_samtools = bin_samtools,
-                            ref_genome=reference_genome,
+                            ref_genome=ref_genome,
                             bam=list(
                                 mapped=.main.step$out_files$consensus$bam$mapped$untagged,
                                 unmapped=.main.step$out_files$consensus$bam$unmapped),
