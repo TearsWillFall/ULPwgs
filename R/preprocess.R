@@ -1151,7 +1151,7 @@ preprocess_umi=function(
 
                 ### STEP 12
 
-                if(steps[step]=="tag_consensus_bam"){
+                if(steps[step]=="tag_consensus"){
 
                     .main.step$steps <-append(
                     .main.step$steps,
