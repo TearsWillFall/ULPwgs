@@ -4475,8 +4475,7 @@ new_generate_BQSR_gatk=function(
         tmp_dir=paste0(" --tmp-dir ",tmp_dir)
       }
 
-    
-
+  
       reg=paste0(" -L ",input)
       .main$out_files$recal_table=paste0(out_file_dir,"/",get_file_name(bam),".",input,".recal.table")
 
@@ -4494,6 +4493,12 @@ new_generate_BQSR_gatk=function(
         " -O ", .main$out_files$recal_table,tmp_dir
 
       )
+
+
+
+        
+      run_job(.env=.this.env)
+      .env$.main <- .main
 
     }
 
@@ -4576,6 +4581,10 @@ new_apply_BQSR_gatk=function(
         " --bqsr-recal-file ", recal ,reg,
         " -O ", .main$out_files$recal_bam,tmp_dir
       )
+
+        
+      run_job(.env=.this.env)
+      .env$.main <- .main
 
     }
 
