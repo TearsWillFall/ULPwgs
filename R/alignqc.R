@@ -162,7 +162,7 @@ new_metrics_alignqc=function(
 
                     ### STEP 2
 
-                    if(step[step]=="summary_qc"){
+                    if(steps[step]=="summary_qc"){
 
                                     .main.step$steps <-append(
                                     .main.step$steps,
@@ -190,7 +190,7 @@ new_metrics_alignqc=function(
                     ### STEP 3
 
 
-                    if(step[step]=="insert_size"){
+                    if(steps[step]=="insert_size"){
                                     .main.step$steps <-append(
                                     .main.step$steps,
                                     new_insertsize_metrics_bam_picard(
@@ -214,7 +214,7 @@ new_metrics_alignqc=function(
                     }
 
                     ### STEP 4
-                    if(step[step]=="artifact"){
+                    if(steps[step]=="artifact"){
                                     .main.step$steps <-append(
                                     .main.step$steps,
                                     artifact_metrics_bam_picard(
@@ -237,7 +237,7 @@ new_metrics_alignqc=function(
                     }
 
                     ### STEP 5
-                    if(step[step]=="oxog"){
+                    if(steps[step]=="oxog"){
                                     .main.step$steps <-append(
                                     .main.step$steps,
                                     oxog_metrics_bam_picard(
@@ -261,7 +261,7 @@ new_metrics_alignqc=function(
 
 
                     ### STEP 6
-                    if(step[step]=="tg_qc"){
+                    if(steps[step]=="tg_qc"){
                             .main.step$steps <-append(
                                     .main.step$steps,
                                     new_tg_summary_metrics_bam_picard(
@@ -285,7 +285,7 @@ new_metrics_alignqc=function(
 
 
                     ### STEP 7
-                    if(step[step]=="wgs_qc"){
+                    if(steps[step]=="wgs_qc"){
                             .main.step$steps <-append(
                                     .main.step$steps,
                                     new_wgs_summary_metrics_bam_picard(
