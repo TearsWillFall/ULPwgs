@@ -299,10 +299,11 @@ new_summary_metrics_bam_picard=function(
 
               .main$out_files$summary_metrics=paste0(out_file_dir,"/",input_id,".picard_summary.txt")
   
-              .main$exec_code=paste("java -Xmx",ram,"g",
+              .main$exec_code=paste0("java -Xmx",ram,"g",
                     " -Djava.io.tmpdir=",tmp_dir,
                     " -jar ",bin_picard," CollectAlignmentSummaryMetrics ",
-                    "VALIDATION_STRINGENCY=SILENT I=",input," O=",.main$out_files$summary_metrics," TMP_DIR=",tmp_dir)
+                    " VALIDATION_STRINGENCY=SILENT I=",input,
+                    " O=",.main$out_files$summary_metrics," TMP_DIR=",tmp_dir)
 
               run_job(
                 .env=.this.env
