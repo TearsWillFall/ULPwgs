@@ -965,6 +965,103 @@ analyze_covariates_gatk=function(
 
 
 
+#' Run GATK AnalyzeCovariates to compare BQSR covariates
+#'
+#' Wrapper for GATK's `AnalyzeCovariates` that runs inside the project's
+#' Singularity image. Use `before` and/or `after` to provide the
+#' pre- and after-recalibration tables (from `BaseRecalibrator`); the
+#' function will create PDF plots and CSV summaries in the task output
+#' directory. If only `before` or `after` is provided, the function will
+#' produce the corresponding single plot; if both are provided, a
+#' before/after comparison is produced.
+#'
+#' @param sif_gatk Path to the Singularity image for GATK. Defaults to
+#'   `build_default_sif_list()$sif_gatk`.
+#' @param before Path to the pre-recalibration table (output of
+#'   `BaseRecalibrator`) for the "before" comparison. Optional.
+#' @param after Path to the after-recalibration table for the "after"
+#'   comparison. Optional.
+#' @param output_name Base name used for output files. Defaults to
+#'   "sample".
+#' @param ... Additional arguments forwarded into the internal job
+#'   environment (for example `output_dir`, `tmp_dir`, `mode`,
+#'   `batch_config`, `threads`, `ram`, `verbose`).
+#'
+#' @return Invisibly returns the job report created by the internal job
+#'   runner and writes PDF and CSV outputs to the task output directory.
+#' @export
+
+
+new_analyze_covariates_gatk=function(
+  sif_gatk=build_default_sif_list()$sif_gatk,
+  before=NULL,
+  after=NULL,
+  output_name="sample",
+  ...
+){
+
+  run_main=function(
+    .env
+  ){
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+    set_main(.env=.this.env)
+
+
+      if(!is.null(tmp_dir)){
+          tmp_dir=paste0(" --tmp-dir ",tmp_dir)
+        }
+
+    if (!is.null(before) & is.null(after)){
+      .main$out_files$before_pdf=paste0(out_file_dir,"/",input_id,
+      "_covariates_analysis_before.pdf")
+
+      .main$out_files$before_csv=paste0(out_file_dir,"/",input_id,
+      "_covariates_analysis_before.csv")
+
+      .main$exec_code=paste0("singularity run ",sif_gatk,
+      " /gatk/gatk  AnalyzeCovariates -bqsr ",before, 
+      " -plots ",.main$out_files$before_pdf,tmp_dir,
+      " -csv ",.main$out_files$before_csv)
+  }else if(is.null(before) & !is.null(after)){
+
+    .main$out_files$after_pdf=paste0(out_file_dir,"/",input_id,
+       "_covariates_analysis_after.pdf")
+
+    .main$out_files$after_csv=paste0(out_file_dir,"/",input_id,
+    "_covariates_analysis_after.csv")
+
+    .main$exec_code=paste0("singularity run ",sif_gatk,
+    " /gatk/gatk AnalyzeCovariates -bqsr ",after, 
+    " -plots ",.main$out_files$after_pdf,tmp_dir,
+    " -csv ",.main$out_files$after_csv)
+  }else{
+    .main$out_files$pdf=paste0(out_file_dir,"/",input_id,"_covariates_analysis.pdf")
+    .main$out_files$csv=paste0(out_file_dir,"/",input_id,"_covariates_analysis.csv")
+    .main$exec_code=paste0("singularity run ",sif_gatk,
+    " /gatk/gatk  AnalyzeCovariates -before ",before," -after ",after,
+      " -plots ",.main$out_files$pdf,tmp_dir," -csv ",.main$out_files$csv)
+  }
+
+    run_job(.env=.this.env)
+    .env$.main <- .main
+  }
+
+   .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="output_name"
+    )
+
+    launch(.env=.base.env)
+
+}
+
+
+
+
+
 #' Variant Calling using Mutect2
 #'
 #' This function functions calls Mutect2 for variant calling.
@@ -3978,6 +4075,528 @@ merge_bam_umi_gatk=function(
 
 
 
+
+
+
+
+
+#' GATK Base Quality Score Recalibration (BQSR) workflow
+#'
+#' High-level wrapper that runs GATK's BaseRecalibrator and ApplyBQSR steps
+#' following GATK best-practices. The function constructs containerized
+#' commands (via Singularity) and submits them through the package's job
+#' runner. It integrates with the pipeline environment and expects common
+#' runner-managed variables (for example `out_file_dir`, `input`,
+#' `input_id`, and `fn_id`) when called via `launch()`.
+#'
+#' @param bin_samtools Path to the `samtools` binary. Defaults to
+#'   `build_default_tool_binary_list()$bin_samtools`.
+#' @param sif_gatk Path to the Singularity image containing GATK. Defaults
+#'   to `build_default_sif_list()$sif_gatk`.
+#' @param bin_picard Path to the Picard jar. Defaults to
+#'   `build_default_tool_binary_list()$bin_picard`.
+#' @param ref_genome Path to the reference genome FASTA (required for
+#'   recalibration and realignment steps).
+#' @param dbsnp Path to known-sites VCF(s) used by `BaseRecalibrator`.
+#' @param bam Path to the input BAM file to recalibrate.
+#' @param ... Additional named arguments forwarded into the internal job
+#'   environment (commonly: `output_dir`, `tmp_dir`, `threads`, `ram`,
+#'   `mode`, `batch_config`, `verbose`, `clean`, etc.).
+#'
+#' @details
+#' The function implements a two-step BQSR process: it first calls
+#' `BaseRecalibrator` to compute recalibration tables and then calls
+#' `ApplyBQSR` to produce the recalibrated BAM. When invoked with a
+#' `region` argument (via the runner) the function will restrict
+#' recalibration to that interval and name outputs accordingly.
+#'
+#' @return Invisibly returns the job report produced by the internal job
+#'   runner and writes recalibration tables and recalibrated BAM(s) into
+#'   the configured output directory.
+#' @export
+
+
+new_recal_gatk=function(
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
+  sif_gatk=build_default_sif_list()$sif_gatk,
+  bin_picard=build_default_tool_binary_list()$bin_picard,
+  ref_genome=build_default_reference_list()$HG19$reference$genome,
+  dbsnp=build_default_reference_list()$HG19$database$all_common,
+  bam=NULL,
+  ...
+  ){
+
+      run_main=function(
+            .env
+      ){
+
+              # Copy environment variables from parent scope to current environment
+              .this.env=environment()
+              append_env(to=.this.env,from=.env)
+              set_main(.env=.this.env)
+
+              # Store this function's environment in main steps registry
+              .main$steps[[fn_id]]<-.this.env
+              # Reference the current processing step for appending results
+              .main.step=.main$steps[[fn_id]]
+
+              # Record pipeline start time for elapsed time tracking
+              start_time <- Sys.time()
+                  
+        
+        # Define BQSR processing pipeline steps in logical execution order.
+        # Each step name directly corresponds to conditional processing blocks below.
+        # Steps are designed to handle: reference extraction → pre-recal tables → post-recal tables → recalibrated BAM → gather/sort → covariate analysis
+        
+        
+        steps=c(
+            "get_chrom",        # Step 1: Extract chromosome sizes and create genome BED from BAM header
+            "before_bqsr",      # Step 2: Run BaseRecalibrator to compute pre-recalibration tables
+            "apply_bqsr",       # Step 3: Run ApplyBQSR to recalibrate BAM using pre-recal tables
+            "gather_bam",       # Step 4: Gather scattered recalibrated BAMs into single file
+            "sort_bam",         # Step 5: Sort and index the final recalibrated BAM
+            "after_bqsr",       # Step 6: Run BaseRecalibrator again on recalibrated BAM for comparison
+            "analyze_covariates"  # Step 7: Generate covariate analysis plots comparing before/after BQSR
+        )
+        
+        # Total number of BQSR pipeline steps for progress reporting and loop control
+        total_steps=length(steps)
+
+        # Execute each BQSR step sequentially with progress logging
+        for(step in 1:total_steps){
+            
+            # Display pipeline progress: current step number, total steps, and step name
+            logger(paste("Running step", step, "of", total_steps, ":", steps[step]))
+
+
+            tryCatch({
+
+              # --- STEP 1: Extract chromosome sizes and genome structure ---
+
+              if(steps[step]=="get_chrom"){
+                  .main.step$steps <-append(
+                            .main.step$steps,get_ref_from_bam(
+                            bin_samtools=bin_samtools,
+                            bam=input,
+                            output_dir=tmp_dir,
+                            output_name=input_id,
+                            tmp_dir=tmp_dir,
+                            env_dir=env_dir,
+                            batch_dir=batch_dir,
+                            err_msg=err_msg,
+                            verbose=verbose,
+                            threads=threads,
+                            ram=ram,
+                            executor_id=task_id
+                          )
+                  )
+                  .this.step=.main.step$steps$get_ref_from_bam
+                  .main.step$out_files$genome_bed=.this.step$out_files$genome_bed
+                    
+                  regions=read.table(.main.step$out_files$genome_bed,
+                  sep="\t",header=TRUE) %>% mutate(regions=paste(chr,":",start,"-",end))
+
+              }
+
+
+
+                
+
+              # --- STEP 2: Compute base recalibration tables (BaseRecalibrator) ---
+              if(steps[step]=="before_bqsr"){
+
+                  .main.step$steps <-append(
+                            .main.step$steps,
+                              new_generate_BQSR_gatk(
+                              sif_gatk=sif_gatk,
+                              ref_genome=ref_genome,
+                              dbsnp=dbsnp,
+                              bam=input,
+                              region=regions$regions,
+                              output_dir=paste0(out_file_dir,"/before_recal/tables"),
+                              output_name=paste0(input_id),
+                              tmp_dir=tmp_dir,
+                              env_dir=env_dir,
+                              batch_dir=batch_dir,
+                              err_msg=err_msg,
+                              verbose=verbose,
+                              threads=threads,
+                              mode="local_parallel",
+                              ram=ram,
+                              fn_id="before",
+                              executor_id=task_id
+                      )
+                  )
+
+                  .this.step=.main.step$steps$new_generate_BQSR_gatk.before
+                  .main.step$out_files$before_bqsr$table=get_variable_env(env=.this.step)
+              }
+
+
+
+              # --- STEP 3: Apply recalibration to BAM (ApplyBQSR) ---
+              if(steps[step]=="apply_bqsr"){
+                .main.step$steps <-append(
+                          .main.step$steps,
+                            new_apply_BQSR_gatk(
+                            sif_gatk=sif_gatk,
+                            ref_genome=ref_genome,
+                            dbsnp=dbsnp,
+                            bam=input,
+                            region=regions$regions,
+                            rec_table=.main.step$out_files$before_bqsr$table,
+                            output_dir=paste0(out_file_dir,"/before_recal/bam"),
+                            output_name=paste0(input_id),
+                            tmp_dir=tmp_dir,
+                            env_dir=env_dir,
+                            batch_dir=batch_dir,
+                            err_msg=err_msg,
+                            verbose=verbose,
+                            threads=threads,
+                            mode="local_parallel",
+                            ram=ram,
+                            executor_id=task_id
+                    )
+                )
+
+                .this.step=.main.step$steps$new_apply_BQSR_gatk
+                .main.step$out_files$before_bqsr$bam=get_variable_env(env=.this.step)
+              
+              }
+
+              # --- STEP 4: Gather scattered BAMs into single file (Picard) ---
+                if(steps[step]=="gather_bam"){
+                  .main.step$steps <-append(
+                            .main.step$steps,
+                              new_gather_bam_files_picard(
+                              bin_picard = bin_picard,
+                              bam=.main.step$out_files$before_bqsr$bam,
+                              region=regions$regions,
+                              rec_table=.main.step$out_files$before_bqsr$table,
+                              output_dir=paste0(out_file_dir,"/before_recal/bam"),
+                              output_name=paste0(input_id,".recal"),
+                              tmp_dir=tmp_dir,
+                              env_dir=env_dir,
+                              batch_dir=batch_dir,
+                              err_msg=err_msg,
+                              verbose=verbose,
+                              threads=threads,
+                              ram=ram,
+                              executor_id=task_id
+                      )
+                  )
+
+                  .this.step=.main.step$steps$new_gather_bam_files_picard
+                  .main.step$out_files$before_bqsr$bam$unsorted=.this.step$out_files$bam
+                
+              }
+
+
+              ### STEP 5
+
+              if(steps[step]=="sort_bam"){
+
+                  .main.step$steps <-append(
+                      .main.step$steps,
+                          new_sort_and_index_bam_samtools(
+                                  bin_samtools=bin_samtools,
+                                  bam=.main.step$out_files$before_bqsr$bam$unsorted,
+                                  sort=TRUE,
+                                  index=TRUE,
+                                  coord_sort=TRUE,
+                                  stats=TRUE,
+                                  output_dir=paste0(out_file_dir,"/before_recal/bam/sorted"),
+                                  output_name=paste0(input_id,".recal.sorted"),
+                                  tmp_dir=tmp_dir,
+                                  env_dir=env_dir,
+                                  batch_dir=batch_dir,
+                                  err_msg=err_msg,
+                                  verbose=verbose,
+                                  threads=threads,
+                                  ram=ram,
+                                  executor_id=task_id
+                          )
+                    )
+
+                  .this.step=.main.step$steps$new_sort_and_index_bam_samtools
+                  .main.step$out_files$before_bqsr$bam$sorted=.this.step$out_files
+              }
+
+
+
+
+              # --- STEP 6: Re-analyze recalibration on recalibrated BAM (BaseRecalibrator) ---
+
+              if(steps[step]=="after_bqsr"){
+                  .main.step$steps <-append(
+                          .main.step$steps,
+                            new_generate_BQSR_gatk(
+                            sif_gatk=sif_gatk,
+                            ref_genome=ref_genome,
+                            dbsnp=dbsnp,
+                            bam=.main.step$out_files$before_bqsr$bam$sorted$srt_bam,
+                            region=regions$regions,
+                            output_dir=paste0(out_file_dir,"/after_recal/tables"),
+                            output_name=paste0(input_id),
+                            tmp_dir=tmp_dir,
+                            env_dir=env_dir,
+                            batch_dir=batch_dir,
+                            err_msg=err_msg,
+                            verbose=verbose,
+                            threads=threads,
+                            mode="local_parallel",
+                            ram=ram,
+                            fn_id="after",
+                            executor_id=task_id
+                    )
+                )
+
+                .this.step=.main.step$steps$new_generate_BQSR_gatk.after
+                .main.step$out_files$after_bqsr$table=get_variable_env(env=.this.step)
+              }
+
+
+              ###STEP 7
+
+              if(steps[step]=="analyze_covariates"){
+                  .main.step$steps <-append(
+                          .main.step$steps,
+                            new_analyze_covariates_gatk(
+                            sif_gatk=sif_gatk,
+                            before=.main.step$out_files$before_bqsr$table,
+                            afte=.main.step$out_files$after_bqsr$table,
+                            output_dir=paste0(out_file_dir),
+                            output_name=paste0(input_id),
+                            tmp_dir=tmp_dir,
+                            env_dir=env_dir,
+                            batch_dir=batch_dir,
+                            err_msg=err_msg,
+                            verbose=verbose,
+                            threads=threads,
+                            ram=ram,
+                            executor_id=task_id
+                    )
+                )
+
+                .this.step=.main.step$steps$new_analyze_covariates_gatk
+                .main.step$out_files$covariates=.this.step$out_files
+              }
+
+            # Log successful step completion
+            logger(paste("Completed step", step, "of", total_steps, ":", steps[step]))
+          
+
+          }, error=function(e){
+                          # Handle step execution errors with informative message
+                          logger(paste("ERROR in step", step, ":", steps[step]))
+                          stop(paste("Step '" , steps[step], "' failed. Error:", e$message,
+                                    "\nReview input files and parameters before retrying."))
+        
+        })
+
+        # Log pipeline completion with total runtime
+        total_elapsed <- as.numeric(difftime(Sys.time(), start_time, units="secs"))
+        total_elapsed_str <- sprintf("%.1f", total_elapsed)
+        logger(paste("UMI processing pipeline completed successfully."))
+        logger(paste("Total steps executed:", total_steps, "| Total runtime:", total_elapsed_str, "seconds"))
+          
+        # Return main object to parent environment for job tracking and output reporting
+        .env$.main <- .main
+
+      }
+  }
+
+
+
+       # Setup execution environment by copying parent scope variables
+    .base.env=environment()
+    # Merge additional parameters passed via ... into execution environment
+    list2env(list(...),envir=.base.env)
+    # Configure environment variables required for batch processing and temp directories
+    set_env_vars(
+        .env= .base.env,
+        vars="bam"
+    )
+
+    # Launch the UMI processing pipeline with fully prepared environment
+    launch(.env=.base.env)
+  
+
+}
+
+
+
+
+ 
+ 
+ 
+#' Generate GATK BaseRecalibrator (BQSR) table
+#'
+#' Runs GATK BaseRecalibrator inside a Singularity image to produce a BQSR
+#' recalibration table from an input BAM and known-sites VCF(s). Optionally the
+#' operation can be restricted to a genomic region. Additional execution
+#' parameters (tmp dirs, batch settings, threads, ram, etc.) are passed via
+#' the variadic arguments and handled by the internal launch environment.
+#'
+#' @param sif_gatk Path to the GATK Singularity image. Default build_default_sif_list()$sif_gatk.
+#' @param ref_genome Path to the reference genome FASTA. Default build_default_reference_list()$HG19$reference$genome.
+#' @param dbsnp Known-sites VCF(s) used by BaseRecalibrator. May be a vector. Default build_default_reference_list()$HG19$database$all_common.
+#' @param bam Input BAM file to recalibrate. If missing, the function expects a value passed into the internal environment as `input`.
+#' @param region Optional region string to restrict processing (e.g. "chr1:1000-2000"). If provided, the job will be limited to this region.
+#' @param ... Additional arguments forwarded to the internal launch environment (e.g. `tmp_dir`, `out_file_dir`, `executor_id`, `batch_config`, `threads`, `ram`, `mode`, `time`, `update_time`, `wait`, `hold`, `verbose`).
+#' @return A job report list. The generated recalibration table path is available in `out_files$recal_table`.
+#' @details The function builds and runs a command equivalent to:
+#' \code{singularity run <sif_gatk> /gatk/gatk BaseRecalibrator -I <bam> -R <ref_genome> --known-sites <dbsnp> -O <out.recal.table>}.
+#' Multiple known-sites VCFs are passed as repeated \code{--known-sites} arguments.
+#' @export
+
+
+
+
+new_generate_BQSR_gatk=function(
+  sif_gatk=build_default_sif_list()$sif_gatk,
+  ref_genome=build_default_reference_list()$HG19$reference$genome,
+  dbsnp=build_default_reference_list()$HG19$database$all_common,
+  bam=NULL,
+  region=NULL,
+  ...
+){  
+
+   run_main=function(
+      .env
+    ){
+      
+      .this.env=environment()
+      append_env(to=.this.env,from=.env)
+
+      set_main(.env=.this.env)
+
+      if(!is.null(tmp_dir)){
+        tmp_dir=paste0(" --tmp-dir ",tmp_dir)
+      }
+
+      if(is.null(region))
+      if (region==""){
+          bam=input
+          .main$out_files$recal_table=paste0(out_file_dir,"/",input,".recal.table")
+      }else{
+          reg=paste0(" -L ",input)
+          .main$out_files$recal_table=paste0(out_file_dir,"/",get_file_name(bam),".",input,".recal.table")
+      }
+
+      ## Multiple vcf with snps can be given
+
+      if (!is.null(dbsnp)){
+        dbsnp=paste(" --known-sites ",dbsnp,collapse=" ")
+      }
+
+      .main$exec_code=paste0(
+        "singularity run ",sif_gatk, " /gatk/gatk BaseRecalibrator -I ", bam,
+        " -R ", ref_genome, 
+        dbsnp, reg,
+        " -O ", .main$out_files$recal_table,tmp_dir
+
+      )
+
+    }
+
+
+
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+
+    set_env_vars(
+      .env= .base.env,
+      vars=ifelse(!is.null(region),"region","bam")
+    )
+    
+
+    launch(.env=.base.env)
+ 
+}
+
+
+
+
+
+#' Apply GATK Base Quality Score Recalibration (BQSR)
+#'
+#' Run GATK's `ApplyBQSR` using a Singularity image. The function builds
+#' the container command to apply a recalibration table to a BAM file and
+#' writes the recalibrated BAM to the task output directory. When `region`
+#' is provided the function will apply BQSR to the specified region and
+#' name the output accordingly.
+#'
+#' @param sif_gatk Path to the Singularity image for GATK. Defaults to
+#'   `build_default_sif_list()$sif_gatk`.
+#' @param ref_genome Reference genome fasta path. Defaults to
+#'   `build_default_reference_list()$HG19$reference$genome`.
+#' @param dbsnp Path to dbSNP VCF (used by other BQSR steps). Defaults to
+#'   `build_default_reference_list()$HG19$database$all_common`.
+#' @param bam Path to the input BAM to recalibrate.
+#' @param region Optional region string (e.g. "chr1:10000-20000"). If
+#'   provided the command will limit processing to this interval.
+#' @param rec_table Path or vector of recalibration table(s). When `region`
+#'   is given a matching entry will be looked up from `rec_table`.
+#'
+#' @return Invisibly returns the job report created by the internal job
+#'   runner and writes the recalibrated BAM (and/or recalibration table)
+#'   to the task output directory.
+#' @export
+
+new_apply_BQSR_gatk=function(
+  sif_gatk=build_default_sif_list()$sif_gatk,
+  ref_genome=build_default_reference_list()$HG19$reference$genome,
+  dbsnp=build_default_reference_list()$HG19$database$all_common,
+  bam=NULL,
+  region=NULL,
+  rec_table=NULL
+  ){
+
+    run_main=function(
+      .env
+    ){
+      
+      .this.env=environment()
+      append_env(to=.this.env,from=.env)
+
+      set_main(.env=.this.env)
+
+      if(!is.null(tmp_dir)){
+        tmp_dir=paste0(" --tmp-dir ",tmp_dir)
+      }
+
+      if(is.null(region))
+      if (region==""){
+          bam=input
+          .main$out_files$recal_table=paste0(out_file_dir,"/",input,".recal.",get_file_ext(input))
+      }else{
+          reg=paste0(" -L ",input)
+          recal=rec_table[grepl(input,rec_table)]
+          .main$out_files$recal_bam=paste0(out_file_dir,"/",get_file_name(bam),".",input,".recal.",get_file_ext(bam))
+      }
+
+      .main$exec_code=paste0(
+        "singularity run ",sif_gatk, " /gatk/gatk ApplyBQSR -I ", bam,
+        " -R ", ref_genome, 
+        " --bqsr-recal-file ", recal ,reg,
+        " -O ", .main$out_files$recal_bam,tmp_dir
+      )
+
+    }
+
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+
+    set_env_vars(
+      .env= .base.env,
+      vars=ifelse(!is.null(region),"region","bam")
+    )
+    
+
+    launch(.env=.base.env)
+
+}
 
 
 

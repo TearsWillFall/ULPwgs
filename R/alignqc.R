@@ -313,7 +313,7 @@ new_metrics_alignqc=function(
                  # Log pipeline completion with total runtime
                 total_elapsed <- as.numeric(difftime(Sys.time(), start_time, units="secs"))
                 total_elapsed_str <- sprintf("%.1f", total_elapsed)
-                logger(paste("UMI processing pipeline completed successfully."))
+                logger(paste("AlignQC processing pipeline completed successfully."))
                 logger(paste("Total steps executed:", total_steps, "| Total runtime:", total_elapsed_str, "seconds"))
                 
                 # Return main job structure to parent environment

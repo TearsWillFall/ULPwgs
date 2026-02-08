@@ -92,6 +92,81 @@ gather_bam_files_picard=function(
 
 
 
+
+
+
+new_gather_bam_files_picard=function(
+  bin_picard=build_default_tool_binary_list()$bin_picard,
+  bam=NULL,
+  output_name="Sample",
+  clean=TRUE,
+  ...
+){
+
+#' Gather BAM files with Picard
+#'
+#' Wrapper that builds and runs a Picard `GatherBamFiles` command using the
+#' provided Singularity/Java Picard jar. Intended to collect scattered
+#' BQSR/ApplyBQSR outputs into a single BAM for the sample. The function
+#' constructs the command, optionally removes intermediate files when
+#' `clean = TRUE`, and submits the work through the package job runner.
+#'
+#' @param bin_picard Path to the Picard jar. Defaults to
+#'   `build_default_tool_binary_list()$bin_picard`.
+#' @param bam Character vector of BAM paths to gather.
+#' @param output_name Base name for the output BAM file. Default "Sample".
+#' @param clean Logical; when TRUE intermediate input files (and their
+#'   auxiliary files) will be removed after successful gather. Default TRUE.
+#' @param ... Additional arguments forwarded into the internal job
+#'   environment (e.g. `output_dir`, `mode`, `batch_config`, `threads`,
+#'   `ram`, `verbose`).
+#'
+#' @return Invisibly returns the job report produced by the internal job
+#'   runner and writes the gathered BAM to the task output directory as
+#'   `<input_id>.bam`.
+#' @export
+
+
+  
+     run_main=function(
+    .env
+  ){
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+    set_main(.env=.this.env)
+
+    bam=bam[order(as.numeric(lapply(lapply(lapply(lapply(lapply(lapply(basename(bam),
+    FUN=strsplit,split="\\."),FUN="[[",index=1),FUN="[",index=2),
+    FUN=strsplit,split="__"),FUN="[[",index=1),FUN="[",index=1)))]
+
+
+    .main$out_files$bam=paste0(out_file_dir,"/",input_id,".bam")
+    .main$exec_code=paste0("java -jar ",bin_picard," GatherBamFiles ",
+    paste0(" I=",bam,collapse=" ")," O=",.main$out_files$bam)
+
+    if(clean){
+        .main$exec_code=paste(.main$exec_code," && rm",paste(paste0(bam,"*"),collapse=" "))
+    }
+
+    run_job(.env=.this.env)
+    .env$.main <- .main
+  }
+
+   .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="output_name"
+    )
+
+    launch(.env=.base.env)
+
+
+}
+
+
+
+
 #' Mark duplicated reads
 #'
 #' This function marks duplicated reads (artifacts) found in aligned sequences.

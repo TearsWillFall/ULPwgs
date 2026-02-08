@@ -347,7 +347,7 @@ new_sort_bam_samtools=function(
       set_main(.env=.this.env)
       
      
-      .main$out_file=paste0(out_file_dir,"/",input_id,".sorted.",input_ext)
+       .main$out_file=paste0(out_file_dir,"/",input_id,".sorted.",input_ext)
 
     
       .main$exec_code=paste0(

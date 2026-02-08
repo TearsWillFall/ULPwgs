@@ -2328,3 +2328,99 @@ get_variable_env=function(envs,variable="out_files"){
     ))
   return(variables)
 }
+
+
+
+
+
+#' Extract genome BED from a BAM header
+#'
+#' Read the header of a BAM/SAM file and produce a genome BED file
+#' containing contig name, start (0) and contig length (end) for each
+#' sequence record found in the header. The BED file is written to the
+#' function's `out_file_dir` using the name `<input_id>.genome.bed`.
+#'
+#' @param bin_samtools Path to the `samtools` binary. Defaults to
+#'   `build_default_tool_binary_list()$bin_samtools`.
+#' @param bam Path to the input BAM/SAM file.
+#' @param header Logical; if TRUE a column header line (`chr\\tstart\\tend`)
+#'   is prepended to the output BED. Default TRUE.
+#' @param ... Additional arguments forwarded to the pipeline (e.g. batch/mode,
+#'   `verbose`, `threads`, `ram`).
+#'
+#' @return Invisibly returns the job report produced by the internal job
+#'   runner and writes the genome BED file to the task output directory.
+#' @export
+
+get_ref_from_bam=function(
+    bin_samtools=build_default_tool_binary_list()$bin_samtools,
+    bam=NULL,
+    header=TRUE,
+    ...
+  ){
+ 
+    options(scipen = 999)
+
+
+
+    run_main=function(
+      .env
+    ){
+      
+
+      .this.env=environment()
+      append_env(to=.this.env,from=.env)
+      set_main(.env=.this.env)
+      
+
+    
+      .main$out_files$genome_bed=paste0(out_file_dir,"/",input_id,".genome.bed")
+      .main$exec_code=paste0(bin_samtools," view -H ",input,
+      " | grep @SQ| awk -F  \"\\t|:\" \'{print $3\"\\t\"0\"\\t\"$5}\'",
+      ifelse(header," |  awk \'BEGIN{print \"chr\\tstart\\tend\"}1\'","")," >",.main$out_files$genome_bed)
+      
+      run_job(
+        .env=.this.env
+      )
+
+
+      .env$.main <- .main
+
+    }
+
+
+    .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+        .env=.base.env,
+        vars="bam"
+    )
+
+    launch(.env=.base.env)
+}
+
+
+
+
+##' Simple colored logger
+##'
+##' Print a timestamped, colored log message including elapsed time since
+##' the global `start_time`. This helper is used across the pipeline to
+##' produce consistent console messages. It relies on `crayon` for
+##' coloring and on a `start_time` object (typically set at pipeline
+##' start) to compute elapsed seconds.
+##'
+##' @param message Character string to print to stdout.
+##' @return Invisibly returns NULL. Side-effect: prints formatted message.
+##' @export
+
+logger=function(message){
+    elapsed <- as.numeric(difftime(Sys.time(), start_time, units="secs"))
+    elapsed_str <- sprintf("%.1f", elapsed)
+    cat("\t\n")
+    cat(crayon::green(crayon::bold(paste(
+      paste0("[",Sys.time(),"] [Elapsed: ", elapsed_str, "s]"),
+      message,"\n"
+    ))))
+    cat("\t\n")
+}
