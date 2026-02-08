@@ -4475,13 +4475,11 @@ new_generate_BQSR_gatk=function(
         tmp_dir=paste0(" --tmp-dir ",tmp_dir)
       }
 
-      if(is.null(region)){
-          bam=input
-          .main$out_files$recal_table=paste0(out_file_dir,"/",input,".recal.table")
-      }else{
-          reg=paste0(" -L ",input)
-          .main$out_files$recal_table=paste0(out_file_dir,"/",get_file_name(bam),".",input,".recal.table")
-      }
+    
+
+      reg=paste0(" -L ",input)
+      .main$out_files$recal_table=paste0(out_file_dir,"/",get_file_name(bam),".",input,".recal.table")
+
 
       ## Multiple vcf with snps can be given
 
@@ -4506,7 +4504,7 @@ new_generate_BQSR_gatk=function(
 
     set_env_vars(
       .env= .base.env,
-      vars=ifelse(!is.null(region),"region","bam")
+      vars="region"
     )
     
 
@@ -4566,15 +4564,11 @@ new_apply_BQSR_gatk=function(
         tmp_dir=paste0(" --tmp-dir ",tmp_dir)
       }
 
-      if(is.null(region))
-      if (region==""){
-          bam=input
-          .main$out_files$recal_table=paste0(out_file_dir,"/",input,".recal.",get_file_ext(input))
-      }else{
-          reg=paste0(" -L ",input)
-          recal=rec_table[grepl(input,rec_table)]
-          .main$out_files$recal_bam=paste0(out_file_dir,"/",get_file_name(bam),".",input,".recal.",get_file_ext(bam))
-      }
+
+      reg=paste0(" -L ",input)
+      recal=rec_table[grepl(input,rec_table)]
+      .main$out_files$recal_bam=paste0(out_file_dir,"/",get_file_name(bam),".",input,".recal.",get_file_ext(bam))
+  
 
       .main$exec_code=paste0(
         "singularity run ",sif_gatk, " /gatk/gatk ApplyBQSR -I ", bam,
@@ -4590,7 +4584,7 @@ new_apply_BQSR_gatk=function(
 
     set_env_vars(
       .env= .base.env,
-      vars=ifelse(!is.null(region),"region","bam")
+      vars="region"
     )
     
 
