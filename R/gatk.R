@@ -4194,7 +4194,7 @@ new_recal_gatk=function(
                   .main.step$out_files$genome_bed=.this.step$out_files$genome_bed
                     
                   regions=read.table(.main.step$out_files$genome_bed,
-                  sep="\t",header=TRUE) %>% dplyr::mutate(regions=paste(chr,":",start,"-",end))
+                  sep="\t",header=TRUE) %>% dplyr::mutate(regions=paste0(chr,":",start+1,"-",end-1))
 
               }
 
@@ -4475,8 +4475,7 @@ new_generate_BQSR_gatk=function(
         tmp_dir=paste0(" --tmp-dir ",tmp_dir)
       }
 
-      if(is.null(region))
-      if (region==""){
+      if(is.null(region)){
           bam=input
           .main$out_files$recal_table=paste0(out_file_dir,"/",input,".recal.table")
       }else{
