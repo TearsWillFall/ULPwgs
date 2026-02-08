@@ -803,18 +803,7 @@ preprocess_umi=function(
 
             # Record pipeline start time for elapsed time tracking
             start_time <- Sys.time()
-            
-            # Logging utility with timestamped output and elapsed time tracking
-            logger=function(message){
-                    elapsed <- as.numeric(difftime(Sys.time(), start_time, units="secs"))
-                    elapsed_str <- sprintf("%.1f", elapsed)
-                    cat("\t\n")
-                    cat(crayon::green(crayon::bold(paste(
-                        paste0("[",Sys.time(),"] [Elapsed: ", elapsed_str, "s]"),
-                        message,"\n"
-                    ))))
-                    cat("\t\n")
-            }
+        
 
             # Define UMI processing pipeline steps in logical execution order
             # Each step name directly corresponds to conditional processing blocks below
@@ -843,7 +832,7 @@ preprocess_umi=function(
             for(step in 1:total_steps){
                 
                 # Log pipeline progress with current step number and name
-                logger(paste("Running step", step, "of", total_steps, ":", steps[step]))
+                logger(paste("Running step", step, "of", total_steps, ":", steps[step]),start_time)
                 
                 # Wrap step execution in error handling to enable graceful failure reporting
                 # If tryCatch catches error, it logs the step and error message, then aborts
@@ -1273,11 +1262,11 @@ preprocess_umi=function(
                 }
 
                     # Log successful step completion
-                    logger(paste("Completed step", step, "of", total_steps, ":", steps[step]))
+                    logger(paste("Completed step", step, "of", total_steps, ":", steps[step]),start_time)
                     
                 }, error=function(e){
                     # Handle step execution errors with informative message
-                    logger(paste("ERROR in step", step, ":", steps[step]))
+                    logger(paste("ERROR in step", step, ":", steps[step]),start_time)
                     stop(paste("Step '" , steps[step], "' failed. Error:", e$message,
                               "\nReview input files and parameters before retrying."))
                 })
@@ -1285,10 +1274,10 @@ preprocess_umi=function(
         }
             
         # Log pipeline completion with total runtime
-        total_elapsed <- as.numeric(difftime(Sys.time(), start_time, units="secs"))
+        total_elapsed <- as.numeric(difftime(Sys.time(), start_time, units="secs"),start_time)
         total_elapsed_str <- sprintf("%.1f", total_elapsed)
-        logger(paste("UMI processing pipeline completed successfully."))
-        logger(paste("Total steps executed:", total_steps, "| Total runtime:", total_elapsed_str, "seconds"))
+        logger(paste("UMI processing pipeline completed successfully."),start_time)
+        logger(paste("Total steps executed:", total_steps, "| Total runtime:", total_elapsed_str, "seconds"),start_time)
           
         # Return main object to parent environment for job tracking and output reporting
         .env$.main <- .main

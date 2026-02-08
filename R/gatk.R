@@ -4166,7 +4166,7 @@ new_recal_gatk=function(
         for(step in 1:total_steps){
             
             # Display pipeline progress: current step number, total steps, and step name
-            logger(paste("Running step", step, "of", total_steps, ":", steps[step]))
+            logger(paste("Running step", step, "of", total_steps, ":", steps[step]),start_time)
 
 
             tryCatch({
@@ -4383,12 +4383,12 @@ new_recal_gatk=function(
               }
 
             # Log successful step completion
-            logger(paste("Completed step", step, "of", total_steps, ":", steps[step]))
+            logger(paste("Completed step", step, "of", total_steps, ":", steps[step]),start_time)
           
 
           }, error=function(e){
                           # Handle step execution errors with informative message
-                          logger(paste("ERROR in step", step, ":", steps[step]))
+                          logger(paste("ERROR in step", step, ":", steps[step]),start_time)
                           stop(paste("Step '" , steps[step], "' failed. Error:", e$message,
                                     "\nReview input files and parameters before retrying."))
         
@@ -4397,8 +4397,8 @@ new_recal_gatk=function(
         # Log pipeline completion with total runtime
         total_elapsed <- as.numeric(difftime(Sys.time(), start_time, units="secs"))
         total_elapsed_str <- sprintf("%.1f", total_elapsed)
-        logger(paste("UMI processing pipeline completed successfully."))
-        logger(paste("Total steps executed:", total_steps, "| Total runtime:", total_elapsed_str, "seconds"))
+        logger(paste("UMI processing pipeline completed successfully."),start_time)
+        logger(paste("Total steps executed:", total_steps, "| Total runtime:", total_elapsed_str, "seconds"),start_time)
           
         # Return main object to parent environment for job tracking and output reporting
         .env$.main <- .main

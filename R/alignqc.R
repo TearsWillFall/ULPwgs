@@ -94,20 +94,7 @@ new_metrics_alignqc=function(
              # Record pipeline start time for elapsed time tracking
             start_time <- Sys.time()
             
-            # Logging utility with timestamped output and elapsed time tracking
-            logger=function(message){
-                    elapsed <- as.numeric(difftime(Sys.time(), start_time, units="secs"))
-                    elapsed_str <- sprintf("%.1f", elapsed)
-                    cat("\t\n")
-                    cat(crayon::green(crayon::bold(paste(
-                        paste0("[",Sys.time(),"] [Elapsed: ", elapsed_str, "s]"),
-                        message,"\n"
-                    ))))
-                    cat("\t\n")
-            }
-
-
-
+      
             steps=c(
                     "mapq_qc",        # Step 1: Calculate MapQ distribution
                     "summary_qc",              # Step 2: Collect WGS summary metrics
@@ -133,7 +120,10 @@ new_metrics_alignqc=function(
             for(step in 1:total_steps){
         
 
+                 # Log pipeline progress with current step number and name
+                logger(paste("Running step", step, "of", total_steps, ":", steps[step]),start_time)
 
+                tryCatch({
                     ### STEP 1
                     if(steps[step]=="mapq_qc"){
                                     .main.step$steps <-append(
@@ -307,14 +297,25 @@ new_metrics_alignqc=function(
                         .this.step=.main.step$steps$new_wgs_summary_metrics_bam_picard
                         .main.step$out_files=append(.main.step$out_files,.this.step$out_files)
                     }
+
+
+                    # Log successful step completion
+                    logger(paste("Completed step", step, "of", total_steps, ":", steps[step]),start_time)
+
+                     }, error=function(e){
+                    # Handle step execution errors with informative message
+                    logger(paste("ERROR in step", step, ":", steps[step]),start_time)
+                    stop(paste("Step '" , steps[step], "' failed. Error:", e$message,
+                              "\nReview input files and parameters before retrying."))
+                        })
                 }
 
 
                  # Log pipeline completion with total runtime
                 total_elapsed <- as.numeric(difftime(Sys.time(), start_time, units="secs"))
                 total_elapsed_str <- sprintf("%.1f", total_elapsed)
-                logger(paste("AlignQC processing pipeline completed successfully."))
-                logger(paste("Total steps executed:", total_steps, "| Total runtime:", total_elapsed_str, "seconds"))
+                logger(paste("AlignQC processing pipeline completed successfully."),start_time)
+                logger(paste("Total steps executed:", total_steps, "| Total runtime:", total_elapsed_str, "seconds"),start_time)
                 
                 # Return main job structure to parent environment
                 .env$.main <- .main

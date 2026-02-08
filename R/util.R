@@ -2414,7 +2414,7 @@ get_ref_from_bam=function(
 ##' @return Invisibly returns NULL. Side-effect: prints formatted message.
 ##' @export
 
-logger=function(message){
+logger=function(message,start_time){
     elapsed <- as.numeric(difftime(Sys.time(), start_time, units="secs"))
     elapsed_str <- sprintf("%.1f", elapsed)
     cat("\t\n")
