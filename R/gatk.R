@@ -1007,7 +1007,6 @@ new_analyze_covariates_gatk=function(
     append_env(to=.this.env,from=.env)
     set_main(.env=.this.env)
 
-
       if(!is.null(tmp_dir)){
           tmp_dir=paste0(" --tmp-dir ",tmp_dir)
         }

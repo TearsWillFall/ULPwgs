@@ -822,7 +822,8 @@ preprocess_umi=function(
                 "collapse_consensus",       # Step 11: Generate consensus sequences from UMI-grouped reads
                 "consensus_bam_to_fastq",   # Step 12: Convert consensus BAM to FASTQ for remapping
                 "remap_consensus",          # Step 13: Realign consensus sequences to reference genome
-                "tag_consensus"             # Step 14: Merge and tag final consensus BAM with read group info
+                "tag_consensus",           # Step 14: Merge and tag final consensus BAM with read group info
+                "index_consensus"           # Step 15: Index Tagged Consensus File
             )
             
             # Total number of pipeline steps for progress reporting and loop control
@@ -901,7 +902,7 @@ preprocess_umi=function(
                         sam_to_fastq_gatk(
                                 sif_gatk=sif_gatk,
                                 bam=.main.step$out_files$raw$bam$unmapped$umi,
-                                output_dir=paste0(out_file_dir,"/raw/bam_to_fastq"),
+                                output_dir=out_file_dir,
                                 output_name=paste0(input_id,".unmapped.umi"),
                                 tmp_dir=tmp_dir,
                                 env_dir=env_dir,
@@ -928,7 +929,7 @@ preprocess_umi=function(
                         trim_umi_fastp(
                                 env_fastp=env_fastp,
                                 fastq=list(.main.step$out_files$raw$fastq$untrimmed),
-                                output_dir=paste0(out_file_dir,"/raw/fastp"),
+                                output_dir=paste0(out_file_dir,"/fastp"),
                                 output_name=paste0(input_id,".unmapped.umi"),
                                 tmp_dir=tmp_dir,
                                 env_dir=env_dir,
@@ -956,7 +957,7 @@ preprocess_umi=function(
                                     ref_genome=ref_genome,
                                     fastq=list(.main.step$out_files$raw$fastq$trimmed),
                                     tags=NULL,
-                                    output_dir=paste0(out_file_dir,"/raw/bwa"),
+                                    output_dir=out_file_dir,
                                     output_name=paste0(input_id,".mapped.umi"),
                                     tmp_dir=tmp_dir,
                                     env_dir=env_dir,
@@ -993,7 +994,7 @@ preprocess_umi=function(
                                     sort_order="queryname",
                                     aligned_reads_only=TRUE,
                                     add_mate_cigar=FALSE,
-                                    output_dir=paste0(out_file_dir,"/raw/bwa/tagged"),
+                                    output_dir=out_file_dir,
                                     output_name=paste0(input_id,".mapped.umi"),
                                     tmp_dir=tmp_dir,
                                     env_dir=env_dir,
@@ -1023,7 +1024,7 @@ preprocess_umi=function(
                                 bin_samtools=bin_samtools,
                                 bam=.main.step$out_files$raw$bam$mapped$tagged$raw,
                                 flag=2,
-                                output_dir=paste0(out_file_dir,"/raw/bwa/tagged/filtered"),
+                                output_dir=out_file_dir,
                                 output_name=paste0(input_id,".mapped.umi.tagged"),
                                 tmp_dir=tmp_dir,
                                 env_dir=env_dir,
@@ -1054,7 +1055,7 @@ preprocess_umi=function(
                                     index=TRUE,
                                     coord_sort=TRUE,
                                     stats=TRUE,
-                                    output_dir=paste0(out_file_dir,"/raw/bwa/tagged/filtered/sorted"),
+                                    output_dir=out_file_dir,
                                     output_name=paste0(input_id,".mapped.umi.tagged.filtered"),
                                     tmp_dir=tmp_dir,
                                     env_dir=env_dir,
@@ -1063,11 +1064,12 @@ preprocess_umi=function(
                                     verbose=verbose,
                                     threads=threads,
                                     ram=ram,
+                                    fn_id="pre",
                                     executor_id=task_id
                             )
                      )
 
-                    .this.step=.main.step$steps$new_sort_and_index_bam_samtools
+                    .this.step=.main.step$steps$new_sort_and_index_bam_samtools.pre
                     .main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$sorted=.this.step$out_files
 
                 }
@@ -1118,7 +1120,7 @@ preprocess_umi=function(
                         group_by_umi_fgbio(
                                 env_fgbio=env_fgbio,
                                 bam=.main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$unsorted,
-                                output_dir=paste0(out_file_dir,"/raw/bwa/tagged/filtered/grouped_umi"),
+                                output_dir=out_file_dir,
                                 output_name=paste0(input_id,".mapped.umi.tagged.filtered"),
                                 tmp_dir=tmp_dir,
                                 env_dir=env_dir,
@@ -1143,7 +1145,7 @@ preprocess_umi=function(
                         call_consensus_fgbio(
                                 env_fgbio=env_fgbio,
                                 bam=.main.step$out_files$raw$bam$mapped$tagged$filtered$grouped$bam,
-                                output_dir=paste0(out_file_dir,"/consensus/unmapped"),
+                                output_dir=out_file_dir,
                                 output_name=paste0(input_id),
                                 tmp_dir=tmp_dir,
                                 env_dir=env_dir,
@@ -1171,7 +1173,7 @@ preprocess_umi=function(
                     sam_to_fastq_gatk(
                                 sif_gatk=sif_gatk,
                                 bam= .main.step$out_files$consensus$bam$unmapped$bam,
-                                output_dir=paste0(out_file_dir,"/consensus/unmapped/bam_to_fastq"),
+                                output_dir=out_file_dir,
                                 output_name=paste0(input_id,".consensus"),
                                 tmp_dir=tmp_dir,
                                 env_dir=env_dir,
@@ -1207,7 +1209,7 @@ preprocess_umi=function(
                                     lb_tag=library_id,
                                     sm_tag=input_id
                                 ),
-                                output_dir=paste0(out_file_dir,"/consensus/mapped/bwa/untagged"),
+                                output_dir=out_file_dir,
                                 output_name=paste0(input_id,".consensus.mapped.untagged"),
                                 tmp_dir=tmp_dir,
                                 env_dir=env_dir,
@@ -1243,7 +1245,7 @@ preprocess_umi=function(
                             sort_order="coordinate",
                             aligned_reads_only=FALSE,
                             add_mate_cigar=TRUE,
-                            output_dir=paste0(out_file_dir,"/consensus/bwa/tagged"),
+                            output_dir=out_file_dir,
                             output_name=paste0(input_id,".consensus.mapped.tagged"),
                             tmp_dir=tmp_dir,
                             env_dir=env_dir,
@@ -1260,6 +1262,46 @@ preprocess_umi=function(
                     .this.step=.main.step$steps$merge_bam_umi_gatk.consensus
                     .main.step$out_files$consensus$bam$mapped$tagged=.this.step$out_files
                 }
+
+                
+
+                ### STEP 14
+
+                
+                if(steps[step]=="index_consensus"){
+                     .main.step$steps <-append(
+                        .main.step$steps,
+                            new_sort_and_index_bam_samtools(
+                                    bin_samtools=bin_samtools,
+                                    bam=.main.step$out_files$consensus$bam$mapped$tagged,
+                                    sort=FALSE,
+                                    index=TRUE,
+                                    stats=TRUE,
+                                    output_dir=out_file_dir,
+                                    tmp_dir=tmp_dir,
+                                    env_dir=env_dir,
+                                    batch_dir=batch_dir,
+                                    err_msg=err_msg,
+                                    verbose=verbose,
+                                    threads=threads,
+                                    ram=ram,
+                                    fn_id="post",
+                                    executor_id=task_id
+                            )
+                     )
+
+                    .this.step=.main.step$steps$new_sort_and_index_bam_samtools.post
+                    .main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$sorted=.this.step$out_files
+
+                }
+
+
+
+
+
+
+
+
 
                     # Log successful step completion
                     logger(paste("Completed step", step, "of", total_steps, ":", steps[step]),start_time)
