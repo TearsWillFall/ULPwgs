@@ -6,12 +6,17 @@
 \usage{
 preprocess_umi(
   sif_gatk = build_default_sif_list()$sif_gatk,
-  env_fgbio = build_default_python_enviroment_list()$env_fg_bio,
+  env_fgbio = build_default_python_enviroment_list()$env_fgbio,
   env_fastp = build_default_python_enviroment_list()$env_fastp,
   bin_bwa = build_default_binary_list()$alignment$bin_bwa,
+  bin_picard = build_default_tool_binary_list()$bin_picard,
+  bin_bedtools = build_default_tool_binary_list()$bin_bedtools,
   bin_samtools = build_default_binary_list()$alignment$bin_samtool,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
-  fastq = NULL,
+  bi = build_default_reference_list()$HG19$panel$PCF_V3$intervals$bi,
+  ti = build_default_reference_list()$HG19$panel$PCF_V3$intervals$ti,
+  fastq_r1 = NULL,
+  fastq_r2 = NULL,
   project_id = NULL,
   patient_id = NULL,
   sample_id = NULL,
@@ -45,9 +50,6 @@ Defaults to \code{build_default_sif_list()$sif_gatk}.}
 \item{ref_genome}{Path to the reference genome FASTA used for alignments.
 Defaults to \code{build_default_reference_list()$HG19$reference$genome}.}
 
-\item{fastq}{Named list or object with FASTQ file paths. Expected keys are
-\code{fastq_r1} and \code{fastq_r2} (or a single fastq value for single-end).}
-
 \item{project_id}{Optional project identifier used when constructing output
 directory structure.}
 
@@ -67,6 +69,9 @@ using \code{new_check_seq_info}.}
 \item{...}{Additional arguments forwarded to internal helper functions (for
 example \code{tmp_dir}, \code{batch_dir}, \code{threads}, \code{ram},
 \code{verbose}, \code{executor_id} and \code{batch_config}).}
+
+\item{fastq}{Named list or object with FASTQ file paths. Expected keys are
+\code{fastq_r1} and \code{fastq_r2} (or a single fastq value for single-end).}
 }
 \value{
 Invisibly returns the internal \code{.main} object containing pipeline

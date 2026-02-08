@@ -5,7 +5,7 @@
 \title{Group Reads by UMI using fgbio}
 \usage{
 group_by_umi_fgbio(
-  env_fgbio = build_default_python_enviroment_list()$env_fg_bio,
+  env_fgbio = build_default_python_enviroment_list()$env_fgbio,
   bam = NULL,
   ...
 )

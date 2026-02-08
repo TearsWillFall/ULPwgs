@@ -5,7 +5,7 @@
 \title{Call Molecular Consensus Reads from UMI-Grouped BAM using fgbio}
 \usage{
 call_consensus_fgbio(
-  env_fgbio = build_default_python_enviroment_list()$env_fg_bio,
+  env_fgbio = build_default_python_enviroment_list()$env_fgbio,
   bam = NULL,
   ...
 )

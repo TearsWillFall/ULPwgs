@@ -18,8 +18,6 @@ new_alignment_bwa(
 \arguments{
 \item{bin_bwa}{\link{REQUIRED} Path to BWA executable. Default: from build_default_binary_list().}
 
-\item{bin_samtools}{\link{REQUIRED} Path to samtools executable. Default: from build_default_binary_list().}
-
 \item{ref_genome}{\link{REQUIRED} Path to indexed reference genome. Default: HG19 from build_default_reference_list().}
 
 \item{fastq}{\link{REQUIRED} Path to paired-end FASTQ files or data structure containing R1 and R2 file paths.}
@@ -37,6 +35,8 @@ new_alignment_bwa(
 (-Y flag). Default: FALSE.}
 
 \item{...}{Additional arguments passed to internal functions for environment setup and job execution.}
+
+\item{bin_samtool}{\link{REQUIRED} Path to samtools executable. Default: from build_default_binary_list().}
 }
 \value{
 Aligned BAM file. Output path tracked in job report.

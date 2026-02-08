@@ -11,8 +11,6 @@ new_metrics_alignqc(
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   bi = build_default_reference_list()$HG19$panel$PCF_V3$intervals$bi,
   ti = build_default_reference_list()$HG19$panel$PCF_V3$intervals$ti,
-  ri = build_default_reference_list()$HG19$rnaseq$intervals$ri,
-  ref_flat = build_default_reference_list()$HG19$rnaseq$reference$ref_flat,
   bam = NULL,
   mapq = 0,
   method = "tg",
@@ -32,64 +30,66 @@ new_metrics_alignqc(
 
 \item{ti}{Primary target intervals (Picard interval format). For panel/targeted data.}
 
-\item{ri}{Ribosomal intervals file. Required for RNA-seq analysis.}
-
-\item{ref_flat}{Reference gene model in flat format. Required for RNA-seq analysis.}
-
 \item{bam}{Path to the input BAM file.}
 
 \item{mapq}{Minimum mapping quality threshold for metrics. Default: 0.}
 
-\item{method}{Type of analysis method. Default: "tg". Options: ["wgs", "tg", "rna"].}
+\item{method}{Type of analysis method. Default: "tg". Options: \link{"wgs", "tg", "rna"}.}
 
 \item{...}{Additional parameters passed to launch function, including:
-  \itemize{
-    \item{output_dir}{Path to output directory. Default: "."}
-    \item{verbose}{Enable progress messages. Default: FALSE}
-    \item{batch_config}{Batch configuration settings. Default: build_default_preprocess_config()}
-    \item{threads}{Number of threads for parallel processing. Default: 3}
-    \item{ram}{RAM in GB per thread. Default: 4}
-    \item{executor_id}{Job executor ID. Default: unique ID with "alignQC" prefix}
-    \item{task_name}{Task name for identification. Default: "alignQC"}
-    \item{mode}{Execution mode. Options: ["local", "batch"]. Default: "local"}
-    \item{time}{Max runtime for batch jobs. Default: "48:0:0"}
-    \item{update_time}{Job status update interval in seconds. Default: 60}
-    \item{wait}{Wait for batch job completion. Default: FALSE}
-    \item{hold}{Job ID to hold until completion}
-  }}
+\itemize{
+\item{output_dir}{Path to output directory. Default: "."}
+\item{verbose}{Enable progress messages. Default: FALSE}
+\item{batch_config}{Batch configuration settings. Default: build_default_preprocess_config()}
+\item{threads}{Number of threads for parallel processing. Default: 3}
+\item{ram}{RAM in GB per thread. Default: 4}
+\item{executor_id}{Job executor ID. Default: unique ID with "alignQC" prefix}
+\item{task_name}{Task name for identification. Default: "alignQC"}
+\item{mode}{Execution mode. Options: \link{"local", "batch"}. Default: "local"}
+\item{time}{Max runtime for batch jobs. Default: "48:0:0"}
+\item{update_time}{Job status update interval in seconds. Default: 60}
+\item{wait}{Wait for batch job completion. Default: FALSE}
+\item{hold}{Job ID to hold until completion}
+}}
+
+\item{ri}{Ribosomal intervals file. Required for RNA-seq analysis.}
+
+\item{ref_flat}{Reference gene model in flat format. Required for RNA-seq analysis.}
 }
 \value{
 A job report list containing:
-  \itemize{
-    \item{job_id}{ID of the submitted job}
-    \item{steps}{List of metric results for each QC step}
-    \item{out_files}{Output file paths for generated metrics}
-  }
+\itemize{
+\item{job_id}{ID of the submitted job}
+\item{steps}{List of metric results for each QC step}
+\item{out_files}{Output file paths for generated metrics}
+}
 }
 \description{
-Comprehensive QC metrics generator for aligned BAM files supporting WGS, targeted sequencing (panel), and RNA-seq data.
-Generates multiple metric types including MapQ distribution, insert size, artifact detection, and method-specific metrics.
-}
-\details{
 This function generates comprehensive quality control metrics for an aligned sequence:
-- **WGS metrics**: Generated when no target intervals are specified
-- **Panel/Targeted metrics**: Generated when bait and target intervals are provided
-- **RNA-seq metrics**: Generated when ribosomal intervals and reference flat files are specified
+\itemize{
+\item \strong{WGS metrics}: Generated when no target intervals are specified
+\item \strong{Panel/Targeted metrics}: Generated when bait and target intervals are provided
+\item \strong{RNA-seq metrics}: Generated when ribosomal intervals and reference flat files are specified
+}
 
 Target and bait BEDs can be converted to interval format using Picard's BedToIntervalList:
-\code{java -jar picard.jar BedToIntervalList I=targets.bed O=targets.interval_list SD=reference.fa}
+\verb{java -jar picard.jar BedToIntervalList I=targets.bed O=targets.interval_list SD=reference.fa}
 
 Off-target regions can be generated using bedtools complement:
-\code{bedtools complement -i targets.bed -g reference.fa.fai > offtarget_regions.bed}
+\verb{bedtools complement -i targets.bed -g reference.fa.fai > offtarget_regions.bed}
+}
+\details{
+Comprehensive QC metrics generator for aligned BAM files supporting WGS, targeted sequencing (panel), and RNA-seq data.
+Generates multiple metric types including MapQ distribution, insert size, artifact detection, and method-specific metrics.
 
 The function executes the following QC steps in sequence:
 \enumerate{
-  \item mapq_qc: Distribution of mapping quality scores
-  \item summary_qc: Summary statistics using Picard CollectWgsMetrics
-  \item insert_size: Fragment/insert size distribution
-  \item artifact_metrics: Detection of sequencing artifacts (OxoG, FFPE)
-  \item oxog_metrics: Oxidative guanine metrics
-  \item method-specific: Additional metrics based on method (WGS/Panel/RNA)
+\item \strong{mapq_qc}: Distribution of mapping quality scores
+\item \strong{summary_qc}: Summary statistics using Picard CollectWgsMetrics
+\item \strong{insert_size}: Fragment/insert size distribution
+\item \strong{artifact_metrics}: Detection of sequencing artifacts (OxoG, FFPE)
+\item \strong{oxog_metrics}: Oxidative guanine metrics
+\item \strong{method-specific}: Additional metrics based on method (WGS/Panel/RNA)
 }
 
 Note: BAM file must be sorted and indexed. Reference genome and intervals must use consistent coordinate systems.
