@@ -4194,7 +4194,7 @@ new_recal_gatk=function(
                   .main.step$out_files$genome_bed=.this.step$out_files$genome_bed
                     
                   regions=read.table(.main.step$out_files$genome_bed,
-                  sep="\t",header=TRUE) %>% mutate(regions=paste(chr,":",start,"-",end))
+                  sep="\t",header=TRUE) %>% dplyr::mutate(regions=paste(chr,":",start,"-",end))
 
               }
 
