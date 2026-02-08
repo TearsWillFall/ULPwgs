@@ -267,6 +267,74 @@ if(wait&&mode=="batch"){
   return(job_report)
 }
 
+#' Generate BAM General Summary Metrics
+#'
+#'
+#' @param bam Path to the input file with the sequence.
+#' @param bin_picard Path to picard executable. Default tools/picard/build/libs/picard.jar.
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param ram RAM memory to use in GB. Default 4.
+#' @param tmp_dir Path to TMP directory. Default .
+#' @param executor [OPTIONAL] Task executor name. Default "recalCovariates"
+#' @param task [OPTIONAL] Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+new_summary_metrics_bam_picard=function(
+  bin_picard=build_default_tool_binary_list()$bin_picard,
+  bam=NULL,
+  ...
+){
+
+    run_main=function(
+              .env
+          ){
+              .this.env=environment()
+              append_env(to=.this.env,from=.env)
+              set_main(.env=.this.env)
+
+              .main$out_files$summary_metrics=paste0(out_file_dir,"/",input_id,".picard_summary.txt")
+  
+              .main$exec_code=paste("java -Xmx",ram,"g",
+                    " -Djava.io.tmpdir=",tmp_dir,
+                    " -jar ",bin_picard," CollectAlignmentSummaryMetrics ",
+                    "VALIDATION_STRINGENCY=SILENT I=",input," O=",.main$out_files$summary_metrics," TMP_DIR=",tmp_dir)
+
+              run_job(
+                .env=.this.env
+              )
+
+              .env$.main<-.main
+          }
+
+      .base.env=environment()
+      list2env(list(...),envir=.base.env)
+      set_env_vars(
+          .env=.base.env,
+          vars="bam"
+      )
+
+      launch(.env=.base.env)
+ 
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #' Generate BAM Insert Size Metrics
@@ -626,6 +694,75 @@ job=build_job(executor_id=executor_id,task_id=task_id)
 
 
 
+
+#' Generate BAM Summary for WGS data
+#'
+#'
+#' @param bam Path to the input file with the sequence.
+#' @param bin_picard Path to picard executable. Default path tools/samtools/samtools.
+#' @param ref_genome Path to reference genome.
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param ram RAM memory to use in GB. Default 4.
+#' @param tmp_dir Path to TMP directory. Default .
+#' @param executor [OPTIONAL] Task executor name. Default "recalCovariates"
+#' @param task [OPTIONAL] Task name. Default "recalCovariates"
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param hold [OPTIONAL] HOld job until job is finished. Job ID. 
+#' @export
+
+new_wgs_summary_metrics_bam_picard=function(
+  bin_picard=build_default_tool_binary_list()$bin_picard,
+  ref_genome=build_default_reference_list()$HG19$reference$genome,
+  bam=NULL,mapq=0,
+  ...
+  ){
+    run_main=function(
+              .env
+          ){
+              .this.env=environment()
+              append_env(to=.this.env,from=.env)
+              
+              set_main(.env=.this.env)
+              
+              .main$out_files$metrics=paste0(out_file_dir,"/",input_id,".picard_wgs_q00.txt")
+  
+              .main$exec_code=paste0("java -Xmx",ram,"g", " -Djava.io.tmpdir=",tmp_dir," -jar ",
+                bin_picard," CollectWgsMetrics VALIDATION_STRINGENCY=SILENT MINIMUM_MAPPING_QUALITY=",
+                mapq," I=",bam," O=",out_file, " R=",ref_genome, " TMP=",tmp_dir)
+
+              run_job(
+                .env=.this.env
+              )
+
+              .env$.main<-.main
+          }
+
+      .base.env=environment()
+      list2env(list(...),envir=.base.env)
+      set_env_vars(
+          .env=.base.env,
+          vars="bam"
+      )
+
+      launch(.env=.base.env)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #' Generate BAM Insert Size Metrics
 #'
 #'
@@ -785,12 +922,6 @@ new_tg_summary_metrics_bam_picard=function(
               .this.env=environment()
               append_env(to=.this.env,from=.env)
               
-            
-              out_file_dir=set_dir(
-                  out_file_dir,
-                  name="summary"
-              )
-
               set_main(.env=.this.env)
               
               .main$out_files$ts=paste0(out_file_dir,"/",input_id,".picard_TS.txt")
@@ -879,8 +1010,6 @@ artifact_metrics_bam_picard=function(
 #' @param bin_picard Path to bwa executable. Default path tools/samtools/samtools.
 #' @param ref_genome Path to the reference genome.
 #' @export
-
-
 
 oxog_metrics_bam_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,

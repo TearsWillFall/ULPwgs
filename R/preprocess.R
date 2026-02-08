@@ -710,8 +710,12 @@ preprocess_umi=function(
     env_fgbio=build_default_python_enviroment_list()$env_fgbio,
     env_fastp=build_default_python_enviroment_list()$env_fastp,
     bin_bwa=build_default_binary_list()$alignment$bin_bwa,
+    bin_picard=build_default_tool_binary_list()$bin_picard,
+    bin_bedtools=build_default_tool_binary_list()$bin_bedtools,
     bin_samtools=build_default_binary_list()$alignment$bin_samtool,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
+    bi=build_default_reference_list()$HG19$panel$PCF_V3$intervals$bi,
+    ti=build_default_reference_list()$HG19$panel$PCF_V3$intervals$ti,
     fastq_r1=NULL,
     fastq_r2=NULL,
     project_id=NULL,
@@ -734,11 +738,12 @@ preprocess_umi=function(
             .env
       ){
 
+        # Copy environment variables from parent scope to current environment
         .this.env=environment()
         append_env(to=.this.env,from=.env)
 
-
-        ### Validate required variables
+        # Validate all required metadata parameters are provided
+        # These parameters define the sample hierarchy and processing context
         for(id in c("project_id",
                     "patient_id",
                     "sample_id",
@@ -751,18 +756,26 @@ preprocess_umi=function(
                         stop("Variable ",id, " required to continue. Please assign a value")}
         }
         
+        # Organize input FASTQ files into named list structure
+        # Supports both paired-end (R1/R2) and single-end (fastq_r1 only) sequencing
         fastq=list(fastq_r1=fastq_r1,fastq_r2=fastq_r2)
+        # Use sample_id as the primary identifier for output file naming
         input_id=sample_id
         
+        # Extract sequencing metadata from FASTQ file headers
+        # Infers instrument, run, flowcell, and lane information when available
         info=new_check_seq_info(fastq=fastq)
         
-        ### Add information for library, run, flowcell and lana if not provided 
+        # Auto-populate run metadata from FASTQ headers if not explicitly provided
+        # This enables flexible parameter specification - required fields can be auto-detected
         for(id in c("library_id","run_id","flowcell_id","lane_id")){
             assign(id,ifelse(is.null(get(id)),
                     (info %>% dplyr::filter(name==id))$r1,get(id))
             )
         }
         
+        # Construct hierarchical output directory structure based on sample metadata
+        # Format: project/patient/sample/sequencing_type/method_type/method_version/reference/library/run/flowcell/lane
         out_file_dir=set_dir(
             output_dir,
             name=paste0(
@@ -780,11 +793,13 @@ preprocess_umi=function(
             )
         )
 
+        # Initialize main job structure and set primary execution environment
+        set_main(.env=.this.env)
 
-            set_main(.env=.this.env)
-
-            .main$steps[[fn_id]]<-.this.env
-            .main.step=.main$steps[[fn_id]]
+        # Store this function's environment in main steps registry
+        .main$steps[[fn_id]]<-.this.env
+        # Reference the current processing step for appending results
+        .main.step=.main$steps[[fn_id]]
 
             # Record pipeline start time for elapsed time tracking
             start_time <- Sys.time()
@@ -801,32 +816,37 @@ preprocess_umi=function(
                     cat("\t\n")
             }
 
-            # Define UMI processing pipeline steps in execution order
-            # Each step name should correspond to a conditional block below
+            # Define UMI processing pipeline steps in logical execution order
+            # Each step name directly corresponds to conditional processing blocks below
+            # Steps are designed to handle: raw reads → UMI extraction → trimming → mapping → deduplication → consensus → remapping
             steps=c(
-                "raw_fastq_to_bam",        # Step 1: Convert FASTQ to unmapped BAM
-                "extract_umi",              # Step 2: Extract UMI tags from reads
-                "raw_bam_to_fastq",         # Step 3: Convert BAM back to FASTQ
-                "trim_adapt",               # Step 4: Trim adapters with fastp
-                "map_trimmed",              # Step 5: Align reads with BWA
-                "tag_trimmed",              # Step 6: Merge and tag BAM files
-                "filter_paired",            # Step 7: Filter for properly paired reads
-                "group_umi",                # Step 8: Group reads by UMI
-                "collapse_consensus",       # Step 9: Generate consensus sequences
-                "consensus_bam_to_fastq",   # Step 10: Convert consensus BAM to FASTQ
-                "remap_consensus",          # Step 11: Realign consensus sequences
-                "tag_consensus"             # Step 12: Tag final consensus BAM
+                "raw_fastq_to_bam",        # Step 1: Convert raw FASTQ to unmapped BAM format
+                "extract_umi",              # Step 2: Extract molecular barcodes (UMI) from reads
+                "raw_bam_to_fastq",         # Step 3: Convert UMI-tagged BAM back to FASTQ for processing
+                "trim_adapt",               # Step 4: Trim sequencing adapters and low-quality bases with fastp
+                "map_trimmed",              # Step 5: Align trimmed reads to reference genome with BWA
+                "tag_trimmed",              # Step 6: Merge mapped/unmapped BAM files and tag with attributes
+                "filter_paired",            # Step 7: Filter for properly paired reads (flag -f 2)
+                "sort_filtered",            # Step 8: Sort and index filtered BAM file by coordinate
+                "pre_dedup_qc",             # Step 9: Generate QC metrics before deduplication
+                "group_umi",                # Step 10: Group reads by UMI/molecular barcode for deduplication
+                "collapse_consensus",       # Step 11: Generate consensus sequences from UMI-grouped reads
+                "consensus_bam_to_fastq",   # Step 12: Convert consensus BAM to FASTQ for remapping
+                "remap_consensus",          # Step 13: Realign consensus sequences to reference genome
+                "tag_consensus"             # Step 14: Merge and tag final consensus BAM with read group info
             )
             
-            # Total number of steps (useful for progress reporting)
+            # Total number of pipeline steps for progress reporting and loop control
             total_steps=length(steps)
 
+            # Execute each pipeline step in order with progress logging
             for(step in 1:total_steps){
                 
-                # Log step progress with step count
+                # Log pipeline progress with current step number and name
                 logger(paste("Running step", step, "of", total_steps, ":", steps[step]))
                 
-                # Wrap step execution in error handling
+                # Wrap step execution in error handling to enable graceful failure reporting
+                # If tryCatch catches error, it logs the step and error message, then aborts
                 tryCatch({
 
 
@@ -1028,19 +1048,87 @@ preprocess_umi=function(
                     )
                     
                     .this.step=.main.step$steps$filter_samtools
-                    .main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped=.this.step$out_files$bam
+                    .main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$unsorted=.this.step$out_files$bam
 
                 }
 
                 ### STEP 8
 
+
+                if(steps[step]=="sort_filtered"){
+                     .main.step$steps <-append(
+                        .main.step$steps,
+                            new_sort_and_index_bam_samtools(
+                                    bin_samtools=bin_samtools,
+                                    bam=.main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$unsorted,
+                                    sort=TRUE,
+                                    index=TRUE,
+                                    coord_sort=TRUE,
+                                    stats=TRUE,
+                                    output_dir=paste0(out_file_dir,"/raw/bwa/tagged/filtered/sorted"),
+                                    output_name=paste0(input_id,".mapped.umi.tagged.filtered"),
+                                    tmp_dir=tmp_dir,
+                                    env_dir=env_dir,
+                                    batch_dir=batch_dir,
+                                    err_msg=err_msg,
+                                    verbose=verbose,
+                                    threads=threads,
+                                    ram=ram,
+                                    executor_id=task_id
+                            )
+                     )
+
+                    .this.step=.main.step$steps$new_sort_and_index_bam_samtools
+                    .main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$sorted=.this.step$out_files
+
+                }
+
+
+                ### STEP 9
+                
+                if(steps[step]=="pre_dedup_qc"){
+                     .main.step$steps <-append(
+                        .main.step$steps,
+                            new_metrics_alignqc(
+                                    bin_samtools=bin_samtools,
+                                    bin_picard=bin_picard,
+                                    bin_bedtools=bin_bedtools,
+                                    ref_genome=ref_genome,
+                                    bi=bi,
+                                    ti=ti,
+                                    bam=.main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$sorted$srt_bam,
+                                    mapq=0,
+                                    method=tolower(method_type),
+                                    output_dir=paste0(out_file_dir,"/alignqc/pre_dedup"),
+                                    output_name=paste0(input_id),
+                                    tmp_dir=tmp_dir,
+                                    env_dir=env_dir,
+                                    batch_dir=batch_dir,
+                                    err_msg=err_msg,
+                                    verbose=verbose,
+                                    threads=threads,
+                                    fn_id="raw",
+                                    ram=ram,
+                                    executor_id=task_id
+                            )
+                     )
+
+                    .this.step=.main.step$steps$new_metrics_alignqc.raw
+                    .main.step$out_files$raw$alignqc=.this.step$out_files
+
+                }
+
+
+               
+
+             
                 if(steps[step]=="group_umi"){
                     
                     .main.step$steps <-append(
                         .main.step$steps,
                         group_by_umi_fgbio(
                                 env_fgbio=env_fgbio,
-                                bam=.main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped,
+                                bam=.main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$unsorted,
                                 output_dir=paste0(out_file_dir,"/raw/bwa/tagged/filtered/grouped_umi"),
                                 output_name=paste0(input_id,".mapped.umi.tagged.filtered"),
                                 tmp_dir=tmp_dir,
@@ -1057,7 +1145,7 @@ preprocess_umi=function(
                     .this.step=.main.step$steps$group_by_umi_fgbio
                     .main.step$out_files$raw$bam$mapped$tagged$filtered$grouped=.this.step$out_files
                 }
-                ### STEP 9
+                ### STEP 10
 
                 if(steps[step]=="collapse_consensus"){
                     
@@ -1084,7 +1172,7 @@ preprocess_umi=function(
                 }
 
 
-                ### STEP 10
+                ### STEP 11
 
 
                 if(steps[step]=="consensus_bam_to_fastq"){
@@ -1112,7 +1200,7 @@ preprocess_umi=function(
                     .main.step$out_files$consensus$fastq=.this.step$out_files
                 }
 
-                ### STEP 11
+                ### STEP 12
 
                 if(steps[step]=="remap_consensus"){
 
@@ -1149,7 +1237,7 @@ preprocess_umi=function(
                 }
         
 
-                ### STEP 12
+                ### STEP 13
 
                 if(steps[step]=="tag_consensus"){
 
@@ -1202,16 +1290,22 @@ preprocess_umi=function(
         logger(paste("UMI processing pipeline completed successfully."))
         logger(paste("Total steps executed:", total_steps, "| Total runtime:", total_elapsed_str, "seconds"))
           
+        # Return main object to parent environment for job tracking and output reporting
         .env$.main <- .main
 
     }
+    
+    # Setup execution environment by copying parent scope variables
     .base.env=environment()
+    # Merge additional parameters passed via ... into execution environment
     list2env(list(...),envir=.base.env)
+    # Configure environment variables required for batch processing and temp directories
     set_env_vars(
         .env= .base.env,
         vars="fastq_r1"
     )
 
+    # Launch the UMI processing pipeline with fully prepared environment
     launch(.env=.base.env)
         
 
