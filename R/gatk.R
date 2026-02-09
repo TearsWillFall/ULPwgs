@@ -4552,10 +4552,6 @@ new_recal_gatk=function(
 
 }
 
-
-
-
- 
  
  
 #' Generate GATK BaseRecalibrator (BQSR) table

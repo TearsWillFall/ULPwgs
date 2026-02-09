@@ -142,7 +142,7 @@ new_gather_bam_files_picard=function(
     paste0(" I=",bam,collapse=" ")," O=",.main$out_files$bam)
 
     if(clean_bam){
-        .main$exec_code=paste(.main$exec_code," && rm ",paste(paste0(bam,"*"),collapse=" "))
+        .main$exec_code=paste(.main$exec_code," && rm ",paste(paste0(sub(".bam","",bam),"*"),collapse=" "))
     }
     
 
