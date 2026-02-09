@@ -631,12 +631,12 @@ new_gather_BQSR_reports_gatk=function(
           tmp_dir=paste0(" --tmp-dir ",tmp_dir)
         }
 
-        .main$out_files$recal_table=paste0(out_file_dir,"/",input_id,".recal.table")
+        .main$out_files$rec_table=paste0(out_file_dir,"/",input_id,".recal.table")
 
         .main$exec_code=paste0(
           "singularity run ",sif_gatk, " /gatk/gatk GatherBQSRReports ",
           paste(" -I ",report,collapse=" "),
-          " -O ", .main$out_files$recal_bam,tmp_dir
+          " -O ", .main$out_files$rec_table,tmp_dir
         )
 
         if(clean_reports){
