@@ -4228,7 +4228,9 @@ new_recal_gatk=function(
                   )
 
                   .this.step=.main.step$steps$new_generate_BQSR_gatk.before
+                  print(get_variable_env(env=.this.step))
                   .main.step$out_files$before_bqsr$table=get_variable_env(env=.this.step)
+                
               }
 
 
