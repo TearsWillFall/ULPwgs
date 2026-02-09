@@ -824,7 +824,8 @@ preprocess_umi=function(
                 "remap_consensus",          # Step 13: Realign consensus sequences to reference genome
                 "tag_consensus",            # Step 14: Merge and tag final consensus BAM with read group info
                 "index_consensus",          # Step 15: Index tagged consensus BAM file
-                "recal_bam"                 # Step 16: Perform BQSR on consensus BAM
+                "recal_bam",                # Step 16: Perform BQSR on consensus BAM
+                "post_dedup_qc"             # Step 17: Generate QC metrics after deduplication
             )
             
             # Total number of pipeline steps for progress reporting and loop control
@@ -1101,7 +1102,7 @@ preprocess_umi=function(
 
                 }
 
-             
+                ### STEP 10: Group reads by UMI/molecular barcode for deduplication
                 if(steps[step]=="group_umi"){
                     
                     .main.step$steps <-append(
@@ -1177,8 +1178,8 @@ preprocess_umi=function(
                     .main.step$out_files$consensus$fastq=.this.step$out_files
                 }
 
-                ### STEP 12: Convert consensus BAM to FASTQ for remapping
-                if(steps[step]=="consensus_bam_to_fastq"){
+                ### STEP 13: Realign consensus sequences to reference genome
+                if(steps[step]=="remap_consensus"){
 
                     .main.step$steps <-append(
                     .main.step$steps,
@@ -1213,8 +1214,8 @@ preprocess_umi=function(
                 }
         
 
-                ### STEP 13: Realign consensus sequences to reference genome
-                if(steps[step]=="remap_consensus"){
+                ### STEP 14: Merge and tag final consensus BAM with read group info
+                if(steps[step]=="tag_consensus"){
 
                     .main.step$steps <-append(
                     .main.step$steps,
@@ -1289,6 +1290,7 @@ preprocess_umi=function(
                                     dbsnp=dbsnp,
                                     chromosomes=chromosomes,
                                     bam=.main.step$out_files$consensus$bam$mapped$tagged$bam,
+                                    output_ir=paste0(out_file_dir,"/",)
                                     tmp_dir=tmp_dir,
                                     env_dir=env_dir,
                                     batch_dir=batch_dir,
@@ -1301,10 +1303,43 @@ preprocess_umi=function(
                      )
 
                     .this.step=.main.step$steps$new_recal_bam
-                    .main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$sorted$recal=.this.step$out_files
+                    .main.step$out_files$consensus$bam$mapped$tagged$recal=.this.step$out_files$before_bqsr$bam$sorted$srt_bam
 
                 }
 
+
+                ### STEP 17: Generate QC metrics after deduplication
+                if(steps[step]=="post_dedup_qc"){
+                     .main.step$steps <-append(
+                        .main.step$steps,
+                            new_metrics_alignqc(
+                                    bin_samtools=bin_samtools,
+                                    bin_picard=bin_picard,
+                                    bin_bedtools=bin_bedtools,
+                                    ref_genome=ref_genome,
+                                    bi=bi,
+                                    ti=ti,
+                                    bam=.main.step$out_files$consensus$bam$mapped$tagged$recal,
+                                    mapq=0,
+                                    method=tolower(method_type),
+                                    output_dir=paste0(out_file_dir,"/alignqc/post_dedup"),
+                                    output_name=paste0(input_id),
+                                    tmp_dir=tmp_dir,
+                                    env_dir=env_dir,
+                                    batch_dir=batch_dir,
+                                    err_msg=err_msg,
+                                    verbose=verbose,
+                                    threads=threads,
+                                    fn_id="raw",
+                                    ram=ram,
+                                    executor_id=task_id
+                            )
+                     )
+
+                    .this.step=.main.step$steps$new_metrics_alignqc.raw
+                    .main.step$out_files$raw$alignqc=.this.step$out_files
+
+                }
 
 
                     # Log successful step completion
