@@ -3314,6 +3314,7 @@ filter_samtools=function(
   bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam=NULL,
   flag=NULL,
+  chromosomes=c(1:22,"X","Y"),
   ...
   ){
 
@@ -3330,6 +3331,7 @@ filter_samtools=function(
       input," -@ ",
       threads,
       ifelse(!is.null(flag),paste0(" -f ",flag),flag),
+      paste0(chromosomes,collapse=" "),
       " -bh > ", .main$out_files$bam
     
     )
