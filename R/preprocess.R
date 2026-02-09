@@ -1276,8 +1276,7 @@ preprocess_umi=function(
                                     bam=.main.step$out_files$consensus$bam$mapped$tagged,
                                     sort=FALSE,
                                     index=TRUE,
-                                    stats=TRUE,
-                                    output_dir=out_file_dir,
+                                    stats=FALSE,
                                     tmp_dir=tmp_dir,
                                     env_dir=env_dir,
                                     batch_dir=batch_dir,
@@ -1291,15 +1290,12 @@ preprocess_umi=function(
                      )
 
                     .this.step=.main.step$steps$new_sort_and_index_bam_samtools.post
-                    .main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$sorted=.this.step$out_files
+                    .main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$sorted=append(
+                        .main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$sorted,
+                        .this.step$out_files
+                    )
 
                 }
-
-
-
-
-
-
 
 
 
@@ -1316,7 +1312,7 @@ preprocess_umi=function(
         }
             
         # Log pipeline completion with total runtime
-        total_elapsed <- as.numeric(difftime(Sys.time(), start_time, units="secs"),start_time)
+        total_elapsed <- as.numeric(difftime(Sys.time(), start_time, units="secs"))
         total_elapsed_str <- sprintf("%.1f", total_elapsed)
         logger(paste("UMI processing pipeline completed successfully."),start_time)
         logger(paste("Total steps executed:", total_steps, "| Total runtime:", total_elapsed_str, "seconds"),start_time)
