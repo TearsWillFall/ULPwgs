@@ -4233,7 +4233,7 @@ new_recal_gatk=function(
 
               # --- STEP 3: Apply recalibration to BAM (ApplyBQSR) ---
               if(steps[step]=="apply_bqsr"){
-                .main.step$steps$new_apply_BQSR_gatk<- new_apply_BQSR_gatk
+                .main.step$steps$new_apply_BQSR_gatk<- 
                             new_apply_BQSR_gatk(
                             sif_gatk=sif_gatk,
                             ref_genome=ref_genome,
