@@ -655,6 +655,8 @@ new_gather_BQSR_reports_gatk=function(
         .env= .base.env,
         vars="output_name"
       )
+      
+      launch(.env=.base.env)
     
 }
 
