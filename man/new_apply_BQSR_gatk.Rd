@@ -10,7 +10,8 @@ new_apply_BQSR_gatk(
   dbsnp = build_default_reference_list()$HG19$database$all_common,
   bam = NULL,
   region = NULL,
-  rec_table = NULL
+  rec_table = NULL,
+  ...
 )
 }
 \arguments{

@@ -585,6 +585,81 @@ gather_BQSR_reports_gatk=function(
   return(job_report)
 }
 
+#' Gather multiple BQSR reports with GATK
+#'
+#' Gathers multiple BQSR recalibration reports generated from different genomic regions into a single report.
+#' This function wraps around the GATK GatherBQSRReports function.
+#' For more information about this function: https://gatk.broadinstitute.org/hc/en-us/articles/360036901871-GatherBQSRReports
+#'
+#' @param sif_gatk \link{REQUIRED} Path to GATK singularity image. Default tools/gatk/gatk.
+#' @param report \link{REQUIRED} Path(s) to BQSR recalibration report files to gather.
+#' @param output_name \link{OPTIONAL} Name for the output recalibration report file. Default "Report"
+#' @param clean_reports \link{OPTIONAL} If TRUE, remove the input report files after gathering. Default FALSE
+#' @param verbose \link{OPTIONAL} Enables progress messages. Default False.
+#' @param threads \link{OPTIONAL} Number of threads. Default 3
+#' @param ram \link{OPTIONAL} RAM memory to assign to each thread in GB. Default 1GB
+#' @param output_dir \link{OPTIONAL} Path to the output directory.
+#' @param tmp_dir \link{OPTIONAL} Path to the temporary directory.
+#' @param mode \link{OPTIONAL} Where to parallelize. Default local. Options \link{"local","batch"}
+#' @param executor_id \link{OPTIONAL} Task EXECUTOR ID. Default "gatherBQSR"
+#' @param task_name \link{OPTIONAL} Task name. Default "gatherBQSR"
+#' @param time \link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time \link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.
+#' @param wait \link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE
+#' @param hold \link{OPTIONAL} Hold job until job is finished. Job ID.
+#'
+#' @export
+new_gather_BQSR_reports_gatk=function(
+  sif_gatk=build_default_sif_list()$sif_gatk,
+  report=NULL,
+  output_name="Report",
+  clean_reports=FALSE,
+  ...
+  ){
+
+
+      run_main=function(
+        .env
+      ){
+      
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+
+        set_main(.env=.this.env)
+
+        if(!is.null(tmp_dir)){
+          tmp_dir=paste0(" --tmp-dir ",tmp_dir)
+        }
+
+        .main$out_files$recal_table=paste0(out_file_dir,"/",input_id,".recal.table")
+
+        .main$exec_code=paste0(
+          "singularity run ",sif_gatk, " /gatk/gatk GatherBQSRReports ",
+          paste(" -I ",report,collapse=" "),
+          " -O ", .main$out_files$recal_bam,tmp_dir
+        )
+
+        if(clean_reports){
+          .main$exec_code=paste(.main$exec_code, " && ",paste(paste0(report,"*"),collapse=" "))
+        }
+          
+        run_job(.env=.this.env)
+        .env$.main <- .main
+
+      }
+
+      .base.env=environment()
+      list2env(list(...),envir=.base.env)
+
+      set_env_vars(
+        .env= .base.env,
+        vars="output_name"
+      )
+    
+}
+
+
+
 
 
 #' Wrapper of applyBQSR function gatk
@@ -4152,10 +4227,12 @@ new_recal_gatk=function(
         steps=c(
             "get_chrom",        # Step 1: Extract chromosome sizes and create genome BED from BAM header
             "before_bqsr",      # Step 2: Run BaseRecalibrator to compute pre-recalibration tables
+            "before_merge_bqsr",
             "apply_bqsr",       # Step 3: Run ApplyBQSR to recalibrate BAM using pre-recal tables
             "gather_bam",       # Step 4: Gather scattered recalibrated BAMs into single file
             "sort_bam",         # Step 5: Sort and index the final recalibrated BAM
-            "after_bqsr",       # Step 6: Run BaseRecalibrator again on recalibrated BAM for comparison
+            "after_bqsr", 
+            "after_merge_bqsr",      # Step 6: Run BaseRecalibrator again on recalibrated BAM for comparison
             "analyze_covariates"  # Step 7: Generate covariate analysis plots comparing before/after BQSR
         )
         
@@ -4226,6 +4303,32 @@ new_recal_gatk=function(
 
                   .this.step=.main.step$steps$new_generate_BQSR_gatk.before
                   .main.step$out_files$before_bqsr$table=get_variable_env(env=.this.step)
+              }
+
+             # --- STEP 2: Compute base recalibration tables (BaseRecalibrator) ---
+              if(steps[step]=="before_merge_bqsr"){
+                  .main.step$steps<-append(
+                    .main.step$steps,
+                              new_gather_BQSR_reports_gatk(
+                                sif_gatk=sif_gatk,
+                                report=.main.step$out_files$before_bqsr$table$scattered,
+                                clean_reports=TRUE,
+                                output_dir=paste0(out_file_dir,"/before_recal/tables"),
+                                output_name=paste0(input_id),
+                                tmp_dir=tmp_dir,
+                                env_dir=env_dir,
+                                batch_dir=batch_dir,
+                                err_msg=err_msg,
+                                verbose=verbose,
+                                threads=threads,
+                                ram=ram,
+                                fn_id="before",
+                                executor_id=task_id
+                      )
+                  )
+
+                  .this.step=.main.step$steps$new_gather_BQSR_reports_gatk.before
+                  .main.step$out_files$before_bqsr$table$merged=.this.step$out_files
                 
               }
 
@@ -4240,7 +4343,7 @@ new_recal_gatk=function(
                             dbsnp=dbsnp,
                             bam=input,
                             region=regions$regions,
-                            rec_table=.main.step$out_files$before_bqsr$table,
+                            rec_table=.main.step$out_files$before_bqsr$table$scatter,
                             output_dir=paste0(out_file_dir,"/before_recal/bam"),
                             output_name=paste0(input_id),
                             tmp_dir=tmp_dir,
@@ -4256,7 +4359,6 @@ new_recal_gatk=function(
 
                 .this.step=.main.step$steps$new_apply_BQSR_gatk
                 .main.step$out_files$before_bqsr$bam=get_variable_env(env=.this.step)
-              
               }
 
               # --- STEP 4: Gather scattered BAMs into single file (Picard) ---
@@ -4347,7 +4449,36 @@ new_recal_gatk=function(
               
 
                 .this.step=.main.step$steps$new_generate_BQSR_gatk.after
-                .main.step$out_files$after_bqsr$table=get_variable_env(env=.this.step)
+                .main.step$out_files$after_bqsr$table$scattered=get_variable_env(env=.this.step)
+              }
+
+
+
+              # --- STEP 2: Compute base recalibration tables (BaseRecalibrator) ---
+              if(steps[step]=="after_merge_bqsr"){
+                  .main.step$steps<-append(
+                    .main.step$steps,
+                              new_gather_BQSR_reports_gatk(
+                                sif_gatk=sif_gatk,
+                                report=.main.step$out_files$after_bqsr$table$scattered,
+                                clean_reports=TRUE,
+                                output_dir=paste0(out_file_dir,"/after_recal/tables"),
+                                output_name=paste0(input_id),
+                                tmp_dir=tmp_dir,
+                                env_dir=env_dir,
+                                batch_dir=batch_dir,
+                                err_msg=err_msg,
+                                verbose=verbose,
+                                threads=threads,
+                                ram=ram,
+                                fn_id="after",
+                                executor_id=task_id
+                      )
+                  )
+
+                  .this.step=.main.step$steps$new_gather_BQSR_reports_gatk.after
+                  .main.step$out_files$before_bqsr$table$merged=.this.step$out_files
+                
               }
 
 
@@ -4358,8 +4489,8 @@ new_recal_gatk=function(
                           .main.step$steps,
                             new_analyze_covariates_gatk(
                             sif_gatk=sif_gatk,
-                            before=.main.step$out_files$before_bqsr$table,
-                            afte=.main.step$out_files$after_bqsr$table,
+                            before=.main.step$out_files$before_bqsr$table$merged,
+                            after=.main.step$out_files$after_bqsr$table$merged,
                             output_dir=paste0(out_file_dir),
                             output_name=paste0(input_id),
                             tmp_dir=tmp_dir,

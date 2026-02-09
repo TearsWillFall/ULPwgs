@@ -10,6 +10,7 @@ new_recal_gatk(
   bin_picard = build_default_tool_binary_list()$bin_picard,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
   dbsnp = build_default_reference_list()$HG19$database$all_common,
+  chromosomes = c(1:22, "X", "Y"),
   bam = NULL,
   ...
 )

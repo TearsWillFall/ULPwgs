@@ -8,7 +8,7 @@ new_gather_bam_files_picard(
   bin_picard = build_default_tool_binary_list()$bin_picard,
   bam = NULL,
   output_name = "Sample",
-  clean = TRUE,
+  clean_bam = TRUE,
   ...
 )
 }
@@ -20,12 +20,12 @@ new_gather_bam_files_picard(
 
 \item{output_name}{Base name for the output BAM file. Default "Sample".}
 
-\item{clean}{Logical; when TRUE intermediate input files (and their
-auxiliary files) will be removed after successful gather. Default TRUE.}
-
 \item{...}{Additional arguments forwarded into the internal job
 environment (e.g. \code{output_dir}, \code{mode}, \code{batch_config}, \code{threads},
 \code{ram}, \code{verbose}).}
+
+\item{clean}{Logical; when TRUE intermediate input files (and their
+auxiliary files) will be removed after successful gather. Default TRUE.}
 }
 \value{
 Invisibly returns the job report produced by the internal job

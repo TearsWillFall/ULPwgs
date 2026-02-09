@@ -4,7 +4,7 @@
 \alias{logger}
 \title{Simple colored logger}
 \usage{
-logger(message)
+logger(message, start_time)
 }
 \arguments{
 \item{message}{Character string to print to stdout.}

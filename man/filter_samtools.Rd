@@ -8,6 +8,7 @@ filter_samtools(
   bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = NULL,
   flag = NULL,
+  chromosomes = c(1:22, "X", "Y"),
   ...
 )
 }
