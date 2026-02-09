@@ -99,7 +99,7 @@ new_gather_bam_files_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
   bam=NULL,
   output_name="Sample",
-  clean=TRUE,
+  clean_bam=TRUE,
   ...
 ){
 
@@ -144,11 +144,10 @@ new_gather_bam_files_picard=function(
     .main$exec_code=paste0("java -jar ",bin_picard," GatherBamFiles ",
     paste0(" I=",bam,collapse=" ")," O=",.main$out_files$bam)
 
-    if(clean){
+    if(clean_bam){
         .main$exec_code=paste(.main$exec_code," && rm ",paste(paste0(bam,"*"),collapse=" "))
     }
     
-    clean<-FALSE
 
     run_job(.env=.this.env)
     .env$.main <- .main
