@@ -4204,8 +4204,7 @@ new_recal_gatk=function(
               # --- STEP 2: Compute base recalibration tables (BaseRecalibrator) ---
               if(steps[step]=="before_bqsr"){
 
-                  .main.step$steps <-append(
-                            .main.step$steps,
+                  .main.step$steps$new_generate_BQSR_gatk.before<-
                               new_generate_BQSR_gatk(
                               sif_gatk=sif_gatk,
                               ref_genome=ref_genome,
@@ -4225,10 +4224,8 @@ new_recal_gatk=function(
                               fn_id="before",
                               executor_id=task_id
                       )
-                  )
 
                   .this.step=.main.step$steps$new_generate_BQSR_gatk.before
-                  print(get_variable_env(env=.this.step))
                   .main.step$out_files$before_bqsr$table=get_variable_env(env=.this.step)
                 
               }
@@ -4237,8 +4234,7 @@ new_recal_gatk=function(
 
               # --- STEP 3: Apply recalibration to BAM (ApplyBQSR) ---
               if(steps[step]=="apply_bqsr"){
-                .main.step$steps <-append(
-                          .main.step$steps,
+                .main.step$steps <- new_apply_BQSR_gatk
                             new_apply_BQSR_gatk(
                             sif_gatk=sif_gatk,
                             ref_genome=ref_genome,
@@ -4258,7 +4254,6 @@ new_recal_gatk=function(
                             ram=ram,
                             executor_id=task_id
                     )
-                )
 
                 .this.step=.main.step$steps$new_apply_BQSR_gatk
                 .main.step$out_files$before_bqsr$bam=get_variable_env(env=.this.step)
@@ -4329,8 +4324,7 @@ new_recal_gatk=function(
               # --- STEP 6: Re-analyze recalibration on recalibrated BAM (BaseRecalibrator) ---
 
               if(steps[step]=="after_bqsr"){
-                  .main.step$steps <-append(
-                          .main.step$steps,
+                  .main.step$steps$new_generate_BQSR_gatk.after <-
                             new_generate_BQSR_gatk(
                             sif_gatk=sif_gatk,
                             ref_genome=ref_genome,
@@ -4350,7 +4344,7 @@ new_recal_gatk=function(
                             fn_id="after",
                             executor_id=task_id
                     )
-                )
+              
 
                 .this.step=.main.step$steps$new_generate_BQSR_gatk.after
                 .main.step$out_files$after_bqsr$table=get_variable_env(env=.this.step)
