@@ -4194,12 +4194,10 @@ new_recal_gatk=function(
                   .main.step$out_files$genome_bed=.this.step$out_files$genome_bed
                     
                   regions=read.table(.main.step$out_files$genome_bed,
-                  sep="\t",header=TRUE) %>% dplyr::filter(chr %in% chromosomes) %>% dplyr::mutate(regions=paste0(chr,":",start+1,"-",end-1))
+                  sep="\t",header=TRUE) %>% dplyr::filter(chr %in% chromosomes) %>% 
+                  dplyr::mutate(regions=paste0(chr,":",start+1,"-",end-1))
 
               }
-
-
-
                 
 
               # --- STEP 2: Compute base recalibration tables (BaseRecalibrator) ---
@@ -4235,7 +4233,7 @@ new_recal_gatk=function(
 
               # --- STEP 3: Apply recalibration to BAM (ApplyBQSR) ---
               if(steps[step]=="apply_bqsr"){
-                .main.step$steps <- new_apply_BQSR_gatk
+                .main.step$steps$new_apply_BQSR_gatk<- new_apply_BQSR_gatk
                             new_apply_BQSR_gatk(
                             sif_gatk=sif_gatk,
                             ref_genome=ref_genome,
@@ -4263,6 +4261,7 @@ new_recal_gatk=function(
 
               # --- STEP 4: Gather scattered BAMs into single file (Picard) ---
                 if(steps[step]=="gather_bam"){
+                  
                   .main.step$steps <-append(
                             .main.step$steps,
                               new_gather_bam_files_picard(
