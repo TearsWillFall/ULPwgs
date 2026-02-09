@@ -176,6 +176,7 @@ metrics_alignqc=function(
       bam=bam,output_dir=out_file_dir,
       verbose=verbose,
       tmp_dir=tmp_dir,bi=bi,
+      ref_genome=ref_genome,
       ti=ti,mode=mode,
       batch_config=batch_config,
       executor_id=task_id,
