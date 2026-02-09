@@ -145,8 +145,10 @@ new_gather_bam_files_picard=function(
     paste0(" I=",bam,collapse=" ")," O=",.main$out_files$bam)
 
     if(clean){
-        .main$exec_code=paste(.main$exec_code," && rm",paste(paste0(bam,"*"),collapse=" "))
+        .main$exec_code=paste(.main$exec_code," && rm ",paste(paste0(bam,"*"),collapse=" "))
     }
+    
+    clean<-FALSE
 
     run_job(.env=.this.env)
     .env$.main <- .main
