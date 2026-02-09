@@ -4302,7 +4302,7 @@ new_recal_gatk=function(
                       )
 
                   .this.step=.main.step$steps$new_generate_BQSR_gatk.before
-                  .main.step$out_files$before_bqsr$table=get_variable_env(env=.this.step)
+                  .main.step$out_files$before_bqsr$table$scattered=get_variable_env(env=.this.step)
               }
 
              # --- STEP 2: Compute base recalibration tables (BaseRecalibrator) ---
@@ -4477,7 +4477,7 @@ new_recal_gatk=function(
                   )
 
                   .this.step=.main.step$steps$new_gather_BQSR_reports_gatk.after
-                  .main.step$out_files$before_bqsr$table$merged=.this.step$out_files
+                  .main.step$out_files$after_bqsr$table$merged=.this.step$out_files
                 
               }
 
@@ -4523,7 +4523,7 @@ new_recal_gatk=function(
         # Log pipeline completion with total runtime
         total_elapsed <- as.numeric(difftime(Sys.time(), start_time, units="secs"))
         total_elapsed_str <- sprintf("%.1f", total_elapsed)
-        logger(paste("UMI processing pipeline completed successfully."),start_time)
+        logger(paste("GATK Recalibration pipeline completed successfully."),start_time)
         logger(paste("Total steps executed:", total_steps, "| Total runtime:", total_elapsed_str, "seconds"),start_time)
           
         # Return main object to parent environment for job tracking and output reporting

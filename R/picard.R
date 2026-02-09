@@ -92,17 +92,6 @@ gather_bam_files_picard=function(
 
 
 
-
-
-
-new_gather_bam_files_picard=function(
-  bin_picard=build_default_tool_binary_list()$bin_picard,
-  bam=NULL,
-  output_name="Sample",
-  clean_bam=TRUE,
-  ...
-){
-
 #' Gather BAM files with Picard
 #'
 #' Wrapper that builds and runs a Picard `GatherBamFiles` command using the
@@ -127,7 +116,15 @@ new_gather_bam_files_picard=function(
 #' @export
 
 
-  
+
+new_gather_bam_files_picard=function(
+  bin_picard=build_default_tool_binary_list()$bin_picard,
+  bam=NULL,
+  output_name="Sample",
+  clean_bam=TRUE,
+  ...
+){
+
      run_main=function(
     .env
   ){
