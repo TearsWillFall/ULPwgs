@@ -609,6 +609,8 @@ gather_BQSR_reports_gatk=function(
 #' @param hold \link{OPTIONAL} Hold job until job is finished. Job ID.
 #'
 #' @export
+
+
 new_gather_BQSR_reports_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
   report=NULL,
@@ -617,14 +619,12 @@ new_gather_BQSR_reports_gatk=function(
   ...
   ){
 
-
       run_main=function(
         .env
       ){
       
         .this.env=environment()
         append_env(to=.this.env,from=.env)
-
         set_main(.env=.this.env)
 
         if(!is.null(tmp_dir)){
