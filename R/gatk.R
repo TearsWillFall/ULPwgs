@@ -4229,13 +4229,13 @@ new_recal_gatk=function(
         steps=c(
             "get_chrom",        # Step 1: Extract chromosome sizes and create genome BED from BAM header
             "before_bqsr",      # Step 2: Run BaseRecalibrator to compute pre-recalibration tables
-            "before_merge_bqsr",
-            "apply_bqsr",       # Step 3: Run ApplyBQSR to recalibrate BAM using pre-recal tables
-            "gather_bam",       # Step 4: Gather scattered recalibrated BAMs into single file
-            "sort_bam",         # Step 5: Sort and index the final recalibrated BAM
-            "after_bqsr", 
-            "after_merge_bqsr",      # Step 6: Run BaseRecalibrator again on recalibrated BAM for comparison
-            "analyze_covariates"  # Step 7: Generate covariate analysis plots comparing before/after BQSR
+            "before_merge_bqsr",# Step 3: Merge scattered BQSR reports (GatherBQSRReports)
+            "apply_bqsr",       # Step 4: Run ApplyBQSR to recalibrate BAM using pre-recal tables
+            "gather_bam",       # Step 5: Gather scattered recalibrated BAMs into single file
+            "sort_bam",         # Step 6: Sort and index the final recalibrated BAM
+            "after_bqsr",       # Step 7: Run BaseRecalibrator again on recalibrated BAM for comparison
+            "after_merge_bqsr", # Step 8: Merge scattered BQSR reports from recalibrated BAM (GatherBQSRReports)
+            "analyze_covariates"# Step 9: Generate covariate analysis plots comparing before/after BQSR
         )
         
         # Total number of BQSR pipeline steps for progress reporting and loop control
@@ -4273,7 +4273,12 @@ new_recal_gatk=function(
                   .main.step$out_files$genome_bed=.this.step$out_files$genome_bed
                     
                   regions=read.table(.main.step$out_files$genome_bed,
-                  sep="\t",header=TRUE) %>% dplyr::filter(chr %in% chromosomes) %>% 
+                  sep="\t",header=TRUE)
+                  
+                  if(!is.null(chromosomes)){
+                      regions=regions %>% dplyr::filter(chr %in% chromosomes) 
+                  }
+                  regions=regions%>% 
                   dplyr::mutate(regions=paste0(chr,":",start+1,"-",end-1))
 
               }
@@ -4307,7 +4312,7 @@ new_recal_gatk=function(
                   .main.step$out_files$before_bqsr$table$scattered=get_variable_env(env=.this.step)
               }
 
-             # --- STEP 2: Compute base recalibration tables (BaseRecalibrator) ---
+              # --- STEP 3: Merge base recalibration tables (GatherBQSRReports) ---
               if(steps[step]=="before_merge_bqsr"){
                   .main.step$steps<-append(
                     .main.step$steps,
@@ -4336,7 +4341,7 @@ new_recal_gatk=function(
 
 
 
-              # --- STEP 3: Apply recalibration to BAM (ApplyBQSR) ---
+              # --- STEP 4: Apply recalibration to BAM (ApplyBQSR) ---
               if(steps[step]=="apply_bqsr"){
                 .main.step$steps$new_apply_BQSR_gatk<- 
                             new_apply_BQSR_gatk(
@@ -4363,7 +4368,7 @@ new_recal_gatk=function(
                 .main.step$out_files$before_bqsr$bam=get_variable_env(env=.this.step)
               }
 
-              # --- STEP 4: Gather scattered BAMs into single file (Picard) ---
+              # --- STEP 5: Gather scattered BAMs into single file (Picard) ---
                 if(steps[step]=="gather_bam"){
                   
                   .main.step$steps <-append(
@@ -4392,8 +4397,7 @@ new_recal_gatk=function(
               }
 
 
-              ### STEP 5
-
+              # --- STEP 6: Sort and index the final recalibrated BAM (Samtools) ---
               if(steps[step]=="sort_bam"){
 
                   .main.step$steps <-append(
@@ -4425,8 +4429,7 @@ new_recal_gatk=function(
 
 
 
-              # --- STEP 6: Re-analyze recalibration on recalibrated BAM (BaseRecalibrator) ---
-
+              # --- STEP 7: Re-analyze recalibration on recalibrated BAM (BaseRecalibrator) ---
               if(steps[step]=="after_bqsr"){
                   .main.step$steps$new_generate_BQSR_gatk.after <-
                             new_generate_BQSR_gatk(
@@ -4456,7 +4459,7 @@ new_recal_gatk=function(
 
 
 
-              # --- STEP 2: Compute base recalibration tables (BaseRecalibrator) ---
+              # --- STEP 8: Merge recalibration tables from recalibrated BAM (GatherBQSRReports) ---
               if(steps[step]=="after_merge_bqsr"){
                   .main.step$steps<-append(
                     .main.step$steps,
@@ -4484,8 +4487,7 @@ new_recal_gatk=function(
               }
 
 
-              ###STEP 7
-
+              # --- STEP 9: Generate covariate analysis plots (AnalyzeCovariates) ---
               if(steps[step]=="analyze_covariates"){
                   .main.step$steps <-append(
                           .main.step$steps,
