@@ -640,7 +640,7 @@ new_gather_BQSR_reports_gatk=function(
         )
 
         if(clean_reports){
-          .main$exec_code=paste(.main$exec_code, " && ",paste(paste0(report,"*"),collapse=" "))
+          .main$exec_code=paste(.main$exec_code, " && rm ",paste(paste0(report,"*"),collapse=" "))
         }
           
         run_job(.env=.this.env)
