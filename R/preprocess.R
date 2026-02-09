@@ -729,6 +729,7 @@ preprocess_umi=function(
     run_id=NULL,
     flowcell_id=NULL,
     lane_id=NULL,
+    chromosomes=c(1:22,"X","Y"),
     ...
 ){
     

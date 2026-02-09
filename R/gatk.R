@@ -4121,6 +4121,7 @@ new_recal_gatk=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
   ref_genome=build_default_reference_list()$HG19$reference$genome,
   dbsnp=build_default_reference_list()$HG19$database$all_common,
+  chromosomes=c(1:22,"X","Y"),
   bam=NULL,
   ...
   ){
@@ -4193,7 +4194,7 @@ new_recal_gatk=function(
                   .main.step$out_files$genome_bed=.this.step$out_files$genome_bed
                     
                   regions=read.table(.main.step$out_files$genome_bed,
-                  sep="\t",header=TRUE) %>% dplyr::mutate(regions=paste0(chr,":",start+1,"-",end-1))
+                  sep="\t",header=TRUE) %>% dplyr::filter(chr %in% chromosomes) %>% dplyr::mutate(regions=paste0(chr,":",start+1,"-",end-1))
 
               }
 
