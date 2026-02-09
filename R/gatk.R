@@ -4698,15 +4698,13 @@ new_apply_BQSR_gatk=function(
       }
 
 
-      reg=paste0(" -L ",input)
-      recal=rec_table[grepl(input,rec_table)]
       .main$out_files$recal_bam=paste0(out_file_dir,"/",get_file_name(bam),".",input,".recal.",get_file_ext(bam))
   
 
       .main$exec_code=paste0(
         "singularity run ",sif_gatk, " /gatk/gatk ApplyBQSR -I ", bam,
         " -R ", ref_genome, 
-        " --bqsr-recal-file ", recal ,reg,
+        " --bqsr-recal-file ", rec_table ,reg,
         " -O ", .main$out_files$recal_bam,tmp_dir
       )
 
