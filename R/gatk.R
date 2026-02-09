@@ -4698,6 +4698,7 @@ new_apply_BQSR_gatk=function(
       }
 
 
+      reg=paste0(" -L ",input)
       .main$out_files$recal_bam=paste0(out_file_dir,"/",get_file_name(bam),".",input,".recal.",get_file_ext(bam))
   
 
