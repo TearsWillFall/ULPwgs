@@ -4207,6 +4207,7 @@ new_recal_gatk=function(
             .env
       ){
 
+
               # Copy environment variables from parent scope to current environment
               .this.env=environment()
               append_env(to=.this.env,from=.env)
@@ -4496,7 +4497,7 @@ new_recal_gatk=function(
                             sif_gatk=sif_gatk,
                             before=.main.step$out_files$before_bqsr$table$merged,
                             after=.main.step$out_files$after_bqsr$table$merged,
-                            output_dir=paste0(out_file_dir),
+                            output_dir=paste0(out_file_dir,"/covariates"),
                             output_name=paste0(input_id),
                             tmp_dir=tmp_dir,
                             env_dir=env_dir,

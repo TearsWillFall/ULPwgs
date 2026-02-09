@@ -2331,8 +2331,6 @@ get_variable_env=function(envs,variable="out_files"){
 
 
 
-
-
 #' Extract genome BED from a BAM header
 #'
 #' Read the header of a BAM/SAM file and produce a genome BED file

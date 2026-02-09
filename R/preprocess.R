@@ -714,6 +714,7 @@ preprocess_umi=function(
     bin_bedtools=build_default_tool_binary_list()$bin_bedtools,
     bin_samtools=build_default_binary_list()$alignment$bin_samtool,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
+    dbsnp=build_default_reference_list()$HG19$database$all_common,
     bi=build_default_reference_list()$HG19$panel$PCF_V3$intervals$bi,
     ti=build_default_reference_list()$HG19$panel$PCF_V3$intervals$ti,
     fastq_r1=NULL,
@@ -733,8 +734,6 @@ preprocess_umi=function(
     ...
 ){
     
-
-
       run_main=function(
             .env
       ){
@@ -823,8 +822,9 @@ preprocess_umi=function(
                 "collapse_consensus",       # Step 11: Generate consensus sequences from UMI-grouped reads
                 "consensus_bam_to_fastq",   # Step 12: Convert consensus BAM to FASTQ for remapping
                 "remap_consensus",          # Step 13: Realign consensus sequences to reference genome
-                "tag_consensus",           # Step 14: Merge and tag final consensus BAM with read group info
-                "index_consensus"           # Step 15: Index Tagged Consensus File
+                "tag_consensus",            # Step 14: Merge and tag final consensus BAM with read group info
+                "index_consensus",          # Step 15: Index tagged consensus BAM file
+                "recal_bam"                 # Step 16: Perform BQSR on consensus BAM
             )
             
             # Total number of pipeline steps for progress reporting and loop control
@@ -841,7 +841,7 @@ preprocess_umi=function(
                 tryCatch({
 
 
-                ### Step 1
+                ### STEP 1: Convert raw FASTQ to unmapped BAM format
                 if(steps[step]=="raw_fastq_to_bam"){
                     
                     .main.step$steps <-append(
@@ -871,7 +871,7 @@ preprocess_umi=function(
 
                
 
-                    ### STEP 2
+                    ### STEP 2: Extract molecular barcodes (UMI) from reads
                     .main.step$steps <-append(
                     .main.step$steps,
                     extract_umi_fgbio(
@@ -894,8 +894,7 @@ preprocess_umi=function(
                     .main.step$out_files$raw$bam$unmapped$umi=.this.step$out_files
                 }
 
-                ### STEP 3
-
+                ### STEP 3: Convert UMI-tagged BAM back to FASTQ for processing
                 if(steps[step]=="raw_bam_to_fastq"){
 
                     .main.step$steps <-append(
@@ -921,8 +920,7 @@ preprocess_umi=function(
                     .main.step$out_files$raw$fastq$untrimmed=.this.step$out_files
                 }
 
-                ### STEP 4
-
+                ### STEP 4: Trim sequencing adapters and low-quality bases with fastp
                 if(steps[step]=="trim_adapt"){
                 
                     .main.step$steps <-append(
@@ -946,8 +944,7 @@ preprocess_umi=function(
                     .this.step=.main.step$steps$trim_umi_fastp
                     .main.step$out_files$raw$fastq$trimmed=.this.step$out_files
                 }
-                ### STEP 5
-
+                ### STEP 5: Align trimmed reads to reference genome with BWA
                 if(steps[step]=="map_trimmed"){
                 
                     .main.step$steps <-append(
@@ -977,9 +974,7 @@ preprocess_umi=function(
 
                 }
 
-                ### STEP 6
-
-                
+                ### STEP 6: Merge mapped/unmapped BAM files and tag with attributes
                 if(steps[step]=="tag_trimmed"){
                 
                     .main.step$steps <-append(
@@ -1015,8 +1010,7 @@ preprocess_umi=function(
                 }
 
 
-                ### STEP 7
-
+                ### STEP 7: Filter for properly paired reads (flag -f 2)
                 if(steps[step]=="filter_paired"){
 
                     .main.step$steps <-append(
@@ -1043,9 +1037,7 @@ preprocess_umi=function(
 
                 }
 
-                ### STEP 8
-
-
+                ### STEP 8: Sort and index filtered BAM file by coordinate
                 if(steps[step]=="sort_filtered"){
                      .main.step$steps <-append(
                         .main.step$steps,
@@ -1076,8 +1068,7 @@ preprocess_umi=function(
                 }
 
 
-                ### STEP 9
-                
+                ### STEP 9: Generate QC metrics before deduplication
                 if(steps[step]=="pre_dedup_qc"){
                      .main.step$steps <-append(
                         .main.step$steps,
@@ -1110,9 +1101,6 @@ preprocess_umi=function(
 
                 }
 
-
-               
-
              
                 if(steps[step]=="group_umi"){
                     
@@ -1137,8 +1125,7 @@ preprocess_umi=function(
                     .this.step=.main.step$steps$group_by_umi_fgbio
                     .main.step$out_files$raw$bam$mapped$tagged$filtered$grouped=.this.step$out_files
                 }
-                ### STEP 10
-
+                ### STEP 11: Generate consensus sequences from UMI-grouped reads
                 if(steps[step]=="collapse_consensus"){
                     
                     .main.step$steps <-append(
@@ -1164,9 +1151,7 @@ preprocess_umi=function(
                 }
 
 
-                ### STEP 11
-
-
+                ### STEP 12: Convert consensus BAM to FASTQ for remapping
                 if(steps[step]=="consensus_bam_to_fastq"){
                 
                     .main.step$steps <-append(
@@ -1192,9 +1177,8 @@ preprocess_umi=function(
                     .main.step$out_files$consensus$fastq=.this.step$out_files
                 }
 
-                ### STEP 12
-
-                if(steps[step]=="remap_consensus"){
+                ### STEP 12: Convert consensus BAM to FASTQ for remapping
+                if(steps[step]=="consensus_bam_to_fastq"){
 
                     .main.step$steps <-append(
                     .main.step$steps,
@@ -1229,9 +1213,8 @@ preprocess_umi=function(
                 }
         
 
-                ### STEP 13
-
-                if(steps[step]=="tag_consensus"){
+                ### STEP 13: Realign consensus sequences to reference genome
+                if(steps[step]=="remap_consensus"){
 
                     .main.step$steps <-append(
                     .main.step$steps,
@@ -1261,20 +1244,18 @@ preprocess_umi=function(
                     )
 
                     .this.step=.main.step$steps$merge_bam_umi_gatk.consensus
-                    .main.step$out_files$consensus$bam$mapped$tagged=.this.step$out_files
+                    .main.step$out_files$consensus$bam$mapped$tagged$bam=.this.step$out_files
                 }
 
                 
 
-                ### STEP 14
-
-                
+                ### STEP 15: Index tagged consensus BAM file
                 if(steps[step]=="index_consensus"){
                      .main.step$steps <-append(
                         .main.step$steps,
                             new_sort_and_index_bam_samtools(
                                     bin_samtools=bin_samtools,
-                                    bam=.main.step$out_files$consensus$bam$mapped$tagged,
+                                    bam=.main.step$out_files$consensus$bam$mapped$tagged$bam,
                                     sort=FALSE,
                                     index=TRUE,
                                     stats=FALSE,
@@ -1291,10 +1272,36 @@ preprocess_umi=function(
                      )
 
                     .this.step=.main.step$steps$new_sort_and_index_bam_samtools.post
-                    .main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$sorted=append(
-                        .main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$sorted,
-                        .this.step$out_files
-                    )
+                    .main.step$out_files$consensus$bam$mapped$tagged$index=.this.step$out_files
+
+
+                }
+
+                ### STEP 16: Perform BQSR on consensus BAM
+                if(steps[step]=="recal_bam"){
+                     .main.step$steps <-append(
+                        .main.step$steps,
+                            new_recal_gatk(
+                                    bin_samtools=bin_samtools,
+                                    sif_gatk=sif_gatk,
+                                    bin_picard=bin_picard,
+                                    ref_genome=ref_genome,
+                                    dbsnp=dbsnp,
+                                    chromosomes=chromosomes,
+                                    bam=.main.step$out_files$consensus$bam$mapped$tagged$bam,
+                                    tmp_dir=tmp_dir,
+                                    env_dir=env_dir,
+                                    batch_dir=batch_dir,
+                                    err_msg=err_msg,
+                                    verbose=verbose,
+                                    threads=threads,
+                                    ram=ram,
+                                    executor_id=task_id
+                            )
+                     )
+
+                    .this.step=.main.step$steps$new_recal_bam
+                    .main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$sorted$recal=.this.step$out_files
 
                 }
 
