@@ -613,7 +613,7 @@ gather_BQSR_reports_gatk=function(
 
 new_gather_BQSR_reports_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
-  report=NULL,
+  rec_table=NULL,
   output_name="Report",
   clean_reports=FALSE,
   ...
@@ -635,12 +635,12 @@ new_gather_BQSR_reports_gatk=function(
 
         .main$exec_code=paste0(
           "singularity run ",sif_gatk, " /gatk/gatk GatherBQSRReports ",
-          paste(" -I ",report,collapse=" "),
+          paste(" -I ",rec_table,collapse=" "),
           " -O ", .main$out_files$rec_table,tmp_dir
         )
 
         if(clean_reports){
-          .main$exec_code=paste(.main$exec_code, " && ",paste(paste0(report,"*"),collapse=" "))
+          .main$exec_code=paste(.main$exec_code, " && ",paste(paste0(rec_table,"*"),collapse=" "))
         }
           
         run_job(.env=.this.env)
