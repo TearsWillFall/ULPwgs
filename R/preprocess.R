@@ -777,7 +777,7 @@ preprocess_umi=function(
         
         # Construct hierarchical output directory structure based on sample metadata
         # Format: project/patient/sample/sequencing_type/method_type/method_version/reference/library/run/flowcell/lane
-        out_file_dir=set_dir(
+        output_dir=set_dir(
             output_dir,
             name=paste0(
                 project_id,"/",
@@ -793,6 +793,7 @@ preprocess_umi=function(
                 lane_id
             )
         )
+
 
         # Initialize main job structure and set primary execution environment
         set_main(.env=.this.env)
