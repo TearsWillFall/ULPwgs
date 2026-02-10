@@ -730,7 +730,8 @@ preprocess_umi=function(
     run_id=NULL,
     flowcell_id=NULL,
     lane_id=NULL,
-    chromosomes=c(1:22,"X","Y"),
+    chromosomes=NULL,
+    clean_tmp=TRUE,
     ...
 ){
     
@@ -827,7 +828,13 @@ preprocess_umi=function(
                 "recal_bam",                # Step 16: Perform BQSR on consensus BAM
                 "post_dedup_qc"             # Step 17: Generate QC metrics after deduplication
             )
+
+            # Append cleaning step if required
             
+            if(clean_tmp){
+                steps=append(steps,"clean_tmp")
+            }
+        
             # Total number of pipeline steps for progress reporting and loop control
             total_steps=length(steps)
 
@@ -850,7 +857,14 @@ preprocess_umi=function(
                         fastq_to_sam_gatk(
                                 sif_gatk=sif_gatk,
                                 fastq=list(fastq),
-                                output_dir=paste0(out_file_dir),
+                                tags=list(
+                                    id_tag=patient_id,
+                                    pu_tag="TPU",
+                                    pl_tag="ILLUMINA",
+                                    lb_tag=library_id,
+                                    sm_tag=input_id
+                                ),
+                                output_dir=tmp_dir,
                                 output_name=paste0(input_id,".unmapped"),
                                 tmp_dir=tmp_dir,
                                 env_dir=env_dir,
@@ -878,7 +892,7 @@ preprocess_umi=function(
                     extract_umi_fgbio(
                         env_fgbio = env_fgbio,
                         bam=.main.step$out_files$raw$bam$unmapped,
-                        output_dir=paste0(out_file_dir),
+                        output_dir=tmp_dir,
                         output_name=paste0(input_id,".unmapped"),
                         tmp_dir=tmp_dir,
                         env_dir=env_dir,
@@ -903,7 +917,7 @@ preprocess_umi=function(
                         sam_to_fastq_gatk(
                                 sif_gatk=sif_gatk,
                                 bam=.main.step$out_files$raw$bam$unmapped$umi,
-                                output_dir=out_file_dir,
+                                output_dir=tmp_dir,
                                 output_name=paste0(input_id,".unmapped.umi"),
                                 tmp_dir=tmp_dir,
                                 env_dir=env_dir,
@@ -955,8 +969,14 @@ preprocess_umi=function(
                                     bin_samtools=bin_samtools,
                                     ref_genome=ref_genome,
                                     fastq=list(.main.step$out_files$raw$fastq$trimmed),
-                                    tags=NULL,
-                                    output_dir=out_file_dir,
+                                    tags= list(
+                                        id_tag=patient_id,
+                                        pu_tag="TPU",
+                                        pl_tag="ILLUMINA",
+                                        lb_tag=library_id,
+                                        sm_tag=input_id
+                                    ),
+                                    output_dir=tmp_dir,
                                     output_name=paste0(input_id,".mapped.umi"),
                                     tmp_dir=tmp_dir,
                                     env_dir=env_dir,
@@ -991,7 +1011,7 @@ preprocess_umi=function(
                                     sort_order="queryname",
                                     aligned_reads_only=TRUE,
                                     add_mate_cigar=FALSE,
-                                    output_dir=out_file_dir,
+                                    output_dir=tmp_dir,
                                     output_name=paste0(input_id,".mapped.umi"),
                                     tmp_dir=tmp_dir,
                                     env_dir=env_dir,
@@ -1021,7 +1041,7 @@ preprocess_umi=function(
                                 bam=.main.step$out_files$raw$bam$mapped$tagged$raw,
                                 flag=2,
                                 chromosomes=chromosomes,
-                                output_dir=out_file_dir,
+                                output_dir=tmp_dir,
                                 output_name=paste0(input_id,".mapped.umi.tagged"),
                                 tmp_dir=tmp_dir,
                                 env_dir=env_dir,
@@ -1111,7 +1131,7 @@ preprocess_umi=function(
                         group_by_umi_fgbio(
                                 env_fgbio=env_fgbio,
                                 bam=.main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$unsorted,
-                                output_dir=out_file_dir,
+                                output_dir=tmp_dir,
                                 output_name=paste0(input_id,".mapped.umi.tagged.filtered"),
                                 tmp_dir=tmp_dir,
                                 env_dir=env_dir,
@@ -1135,8 +1155,8 @@ preprocess_umi=function(
                         call_consensus_fgbio(
                                 env_fgbio=env_fgbio,
                                 bam=.main.step$out_files$raw$bam$mapped$tagged$filtered$grouped$bam,
-                                output_dir=out_file_dir,
-                                output_name=paste0(input_id),
+                                output_dir=tmp_dir,
+                                output_name=input_id,
                                 tmp_dir=tmp_dir,
                                 env_dir=env_dir,
                                 batch_dir=batch_dir,
@@ -1161,7 +1181,14 @@ preprocess_umi=function(
                     sam_to_fastq_gatk(
                                 sif_gatk=sif_gatk,
                                 bam= .main.step$out_files$consensus$bam$unmapped$bam,
-                                output_dir=out_file_dir,
+                                tags= list(
+                                        id_tag=patient_id,
+                                        pu_tag="TPU",
+                                        pl_tag="ILLUMINA",
+                                        lb_tag=library_id,
+                                        sm_tag=input_id
+                                    ),
+                                output_dir=tmp_dir,
                                 output_name=paste0(input_id,".consensus"),
                                 tmp_dir=tmp_dir,
                                 env_dir=env_dir,
@@ -1196,7 +1223,7 @@ preprocess_umi=function(
                                     lb_tag=library_id,
                                     sm_tag=input_id
                                 ),
-                                output_dir=out_file_dir,
+                                output_dir=tmp_dir,
                                 output_name=paste0(input_id,".consensus.mapped.untagged"),
                                 tmp_dir=tmp_dir,
                                 env_dir=env_dir,
@@ -1231,7 +1258,7 @@ preprocess_umi=function(
                             sort_order="coordinate",
                             aligned_reads_only=FALSE,
                             add_mate_cigar=TRUE,
-                            output_dir=out_file_dir,
+                            output_dir=tmp_dir,
                             output_name=paste0(input_id,".consensus.mapped.tagged"),
                             tmp_dir=tmp_dir,
                             env_dir=env_dir,
@@ -1275,7 +1302,6 @@ preprocess_umi=function(
 
                     .this.step=.main.step$steps$new_sort_and_index_bam_samtools.post
                     .main.step$out_files$consensus$bam$mapped$tagged$index=.this.step$out_files
-
 
                 }
 
@@ -1342,7 +1368,10 @@ preprocess_umi=function(
 
                     .this.step=.main.step$steps$new_metrics_alignqc.raw
                     .main.step$out_files$raw$alignqc=.this.step$out_files
+                }
 
+                if(steps[step]=="clean_tmp"){
+                    unlink(tmp_dir,recursive = TRUE,force=TRUE)
                 }
 
 

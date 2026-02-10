@@ -3946,6 +3946,12 @@ filter_variant_tranches_gatk=function(
 fastq_to_sam_gatk=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
   fastq=NULL,
+   tags=list(
+    id_tag="NA",
+    pu_tag="NA",
+    pl_tag="ILLUMINA",
+    lb_tag="NA",
+    sm_tag="NA"),
   ...
 ){
 
@@ -3959,6 +3965,16 @@ fastq_to_sam_gatk=function(
 
     .main$out_files$bam=paste0(out_file_dir,"/",input_id,".bam")
 
+      if(!is.null(tags)){
+        tag_annot=paste0(
+          " -R \"@RG\\tID:",tags$id_tag,
+          "\\tPL:",tags$pl_tag,
+          "\\tPU:",tags$pu_tag,
+          "\\tLB:",tags$lb_tag,
+          "\\tSM:",tags$sm_tag,"\""
+          )
+    }
+
 
     .main$exec_code=paste(
       "singularity exec ",sif_gatk,
@@ -3966,7 +3982,10 @@ fastq_to_sam_gatk=function(
       " -F1", input$fastq_r1,
       " -F2 ",input$fastq_r2,
       " -O ",.main$out_files$bam,
-      " -SM ",input_id
+      " -RG ",tags$id_tag,
+      " -SM ",tags$sm_tag,
+      " -PL ",tags$pl_tag,
+      " -LB ",tags$lb_tag
     )
 
      run_job(.env=.this.env)
