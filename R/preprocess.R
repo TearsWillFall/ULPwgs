@@ -1279,6 +1279,8 @@ preprocess_umi=function(
 
                 }
 
+
+                ### This step will fail if there is not enough reads to recalibrate
                 ### STEP 16: Perform BQSR on consensus BAM
                 if(steps[step]=="recal_bam"){
                      .main.step$steps <-append(
