@@ -216,8 +216,7 @@ call_consensus_fgbio=function(
       " --min-input-base-quality 20 ",
       " --read-name-prefix=\'consensus\' ; ",
       bin_samtools, " addreplacerg ", tag_annot,
-      .main$out_files$bam, " -o ",   tmp_bam, "; rm ", tmp_bam
-      
+      tmp_bam, " -o ",  .main$out_files$bam, "; rm ", tmp_bam
     )
 
      run_job(.env=.this.env)
