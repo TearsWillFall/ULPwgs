@@ -1290,7 +1290,8 @@ preprocess_umi=function(
                                     dbsnp=dbsnp,
                                     chromosomes=chromosomes,
                                     bam=.main.step$out_files$consensus$bam$mapped$tagged$bam,
-                                    output_ir=paste0(out_file_dir,"/",)
+                                    output_ir=paste0(out_file_dir),
+                                    output_name=input_id,
                                     tmp_dir=tmp_dir,
                                     env_dir=env_dir,
                                     batch_dir=batch_dir,
@@ -1303,7 +1304,7 @@ preprocess_umi=function(
                      )
 
                     .this.step=.main.step$steps$new_recal_bam
-                    .main.step$out_files$consensus$bam$mapped$tagged$recal=.this.step$out_files$before_bqsr$bam$sorted$srt_bam
+                    .main.step$out_files$recal=.this.step$out_files$recal
 
                 }
 
@@ -1319,7 +1320,7 @@ preprocess_umi=function(
                                     ref_genome=ref_genome,
                                     bi=bi,
                                     ti=ti,
-                                    bam=.main.step$out_files$consensus$bam$mapped$tagged$recal,
+                                    bam=.main.step$out_files$recal$sorted$srt_bam,
                                     mapq=0,
                                     method=tolower(method_type),
                                     output_dir=paste0(out_file_dir,"/alignqc/post_dedup"),
@@ -1330,7 +1331,7 @@ preprocess_umi=function(
                                     err_msg=err_msg,
                                     verbose=verbose,
                                     threads=threads,
-                                    fn_id="raw",
+                                    fn_id="consensus",
                                     ram=ram,
                                     executor_id=task_id
                             )

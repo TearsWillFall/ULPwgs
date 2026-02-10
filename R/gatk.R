@@ -4393,7 +4393,7 @@ new_recal_gatk=function(
                   )
 
                   .this.step=.main.step$steps$new_gather_bam_files_picard
-                  .main.step$out_files$before_bqsr$bam$unsorted=.this.step$out_files$bam
+                  .main.step$out_files$recal$unsorted=.this.step$out_files$bam
                 
               }
 
@@ -4405,7 +4405,7 @@ new_recal_gatk=function(
                       .main.step$steps,
                           new_sort_and_index_bam_samtools(
                                   bin_samtools=bin_samtools,
-                                  bam=.main.step$out_files$before_bqsr$bam$unsorted,
+                                  bam=.main.step$out_files$recal$unsorted,
                                   sort=TRUE,
                                   index=TRUE,
                                   coord_sort=TRUE,
@@ -4425,7 +4425,7 @@ new_recal_gatk=function(
                     )
 
                   .this.step=.main.step$steps$new_sort_and_index_bam_samtools
-                  .main.step$out_files$before_bqsr$bam$sorted=.this.step$out_files
+                  .main.step$out_files$recal$sorted=.this.step$out_files
               }
 
 
@@ -4438,7 +4438,7 @@ new_recal_gatk=function(
                             sif_gatk=sif_gatk,
                             ref_genome=ref_genome,
                             dbsnp=dbsnp,
-                            bam=.main.step$out_files$before_bqsr$bam$sorted$srt_bam,
+                            bam=.main.step$out_files$recal$sorted$srt_bam,
                             region=regions$regions,
                             output_dir=paste0(out_file_dir,"/recal/after_recal/tables"),
                             output_name=paste0(input_id),
