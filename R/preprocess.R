@@ -1155,7 +1155,15 @@ preprocess_umi=function(
                     .main.step$steps,
                         call_consensus_fgbio(
                                 env_fgbio=env_fgbio,
+                                bin_samtools = bin_samtools,
                                 bam=.main.step$out_files$raw$bam$mapped$tagged$filtered$grouped$bam,
+                                tags= list(
+                                        id_tag=patient_id,
+                                        pu_tag="TPU",
+                                        pl_tag="ILLUMINA",
+                                        lb_tag=library_id,
+                                        sm_tag=input_id
+                                    ),
                                 output_dir=tmp_dir,
                                 output_name=input_id,
                                 tmp_dir=tmp_dir,
@@ -1182,13 +1190,6 @@ preprocess_umi=function(
                     sam_to_fastq_gatk(
                                 sif_gatk=sif_gatk,
                                 bam= .main.step$out_files$consensus$bam$unmapped$bam,
-                                tags= list(
-                                        id_tag=patient_id,
-                                        pu_tag="TPU",
-                                        pl_tag="ILLUMINA",
-                                        lb_tag=library_id,
-                                        sm_tag=input_id
-                                    ),
                                 output_dir=tmp_dir,
                                 output_name=paste0(input_id,".consensus"),
                                 tmp_dir=tmp_dir,

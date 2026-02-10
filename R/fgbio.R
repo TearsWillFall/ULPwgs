@@ -171,7 +171,15 @@ group_by_umi_fgbio=function(
 
 call_consensus_fgbio=function(
   env_fgbio=build_default_python_enviroment_list()$env_fgbio,
+  bin_samtools=build_default_tool_binary_list()$bin_samtools,
   bam=NULL,
+  tags=list(
+    id_tag="NA",
+    pu_tag="NA",
+    pl_tag="ILLUMINA",
+    lb_tag="NA",
+    sm_tag="NA"
+  ),
   ...
 ){
    run_main=function(
@@ -181,13 +189,24 @@ call_consensus_fgbio=function(
     append_env(to=.this.env,from=.env)
     set_main(.env=.this.env)
 
-    .main$out_files$bam=paste0(out_file_dir,"/",input_id,".consensus.unmapped.bam")
+    .main$out_files$bam=paste0(out_file_dir,"/",input_id,".consensus.unmapped.rg_fix.bam")
+    tmp_bam=paste0(out_file_dir,"/",input_id,".consensus.unmapped.bam")
+    
+    if(!is.null(tags)){
+        tag_annot=paste0(
+          " -r \"@RG\\tID:",tags$id_tag,
+          "\\tPL:",tags$pl_tag,
+          "\\tPU:",tags$pu_tag,
+          "\\tLB:",tags$lb_tag,
+          "\\tSM:",tags$sm_tag,"\""
+          )
+    }
    
     .main$exec_code=paste(
       "conda activate ",env_fgbio,
       "; fgbio CallMolecularConsensusReads ", 
       paste0(" --input=" ,input),
-      paste0(" --output=",.main$out_files$bam),
+      paste0(" --output=",tmp_bam),
       " --error-rate-post-umi 40 ",
       " --error-rate-pre-umi 45 ",
       " --output-per-base-tags false ",
@@ -195,7 +214,10 @@ call_consensus_fgbio=function(
       " --sort-order=queryname",
       " --max-reads 50 ",
       " --min-input-base-quality 20 ",
-      " --read-name-prefix=\'consensus\'"
+      " --read-name-prefix=\'consensus\' ; ",
+      bin_samtools, " addreplacerg ", tag_annot,
+      .main$out_files$bam, " -o ",   tmp_bam, "; rm ", tmp_bam
+      
     )
 
      run_job(.env=.this.env)

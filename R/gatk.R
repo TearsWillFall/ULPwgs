@@ -3967,12 +3967,12 @@ fastq_to_sam_gatk=function(
 
       if(!is.null(tags)){
         tag_annot=paste0(
-          " -R \"@RG\\tID:",tags$id_tag,
-          "\\tPL:",tags$pl_tag,
-          "\\tPU:",tags$pu_tag,
-          "\\tLB:",tags$lb_tag,
-          "\\tSM:",tags$sm_tag,"\""
-          )
+                " -RG ",tags$id_tag,
+                " -SM ",tags$sm_tag,
+                " -PL ",tags$pl_tag,
+                " -LB ",tags$lb_tag,
+                " -PU ",tags$pu_tag
+        )
     }
 
 
