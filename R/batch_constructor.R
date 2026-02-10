@@ -750,6 +750,37 @@ set_env_vars=function(
 }
 
 
+#' Set steps enviroment for use
+#' 
+#' @param .env Environment
+#' @export
+
+set_env_dirs<-function(.env,name){
+
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+
+      .env$out_file_dir=set_dir(
+            out_file_dir,
+            name=name
+        )  
+
+      .env$tmp_dir <- set_dir(
+          dir=tmp_dir,
+          name=name
+      )
+  
+      .env$env_dir<- set_dir(
+          dir=env_dir,
+          name=name
+      )
+      
+      .env$batch_dir<- set_dir(
+        dir=batch_dir,
+        name=name
+      )
+  
+}
 
 
 
