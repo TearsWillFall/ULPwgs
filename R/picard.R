@@ -359,6 +359,7 @@ if(wait&&mode=="batch"){
 
 new_summary_metrics_bam_picard=function(
   bin_picard=build_default_tool_binary_list()$bin_picard,
+  ref_genome=build_default_reference_list()$HG19$reference$genome,
   bam=NULL,
   ...
 ){
@@ -375,7 +376,7 @@ new_summary_metrics_bam_picard=function(
               .main$exec_code=paste0("java -Xmx",ram,"g",
                     " -Djava.io.tmpdir=",tmp_dir,
                     " -jar ",bin_picard," CollectAlignmentSummaryMetrics ",
-                    " VALIDATION_STRINGENCY=SILENT I=",input,
+                    " VALIDATION_STRINGENCY=SILENT I=",input, " R=",ref_genome, 
                     " O=",.main$out_files$summary_metrics," TMP_DIR=",tmp_dir)
 
               run_job(

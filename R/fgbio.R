@@ -192,6 +192,7 @@ call_consensus_fgbio=function(
       " --error-rate-pre-umi 45 ",
       " --output-per-base-tags false ",
       " --min-reads 2 ",
+      " --sort-order=queryname",
       " --max-reads 50 ",
       " --min-input-base-quality 20 ",
       " --read-name-prefix=\'consensus\'"
