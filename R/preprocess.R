@@ -734,6 +734,8 @@ preprocess_umi=function(
     clean_tmp=TRUE,
     ...
 ){
+
+
     
       run_main=function(
             .env
@@ -775,24 +777,7 @@ preprocess_umi=function(
             )
         }
         
-        # Construct hierarchical output directory structure based on sample metadata
-        # Format: project/patient/sample/sequencing_type/method_type/method_version/reference/library/run/flowcell/lane
-        output_dir=set_dir(
-            output_dir,
-            name=paste0(
-                project_id,"/",
-                patient_id,"/",
-                sample_id,"/",
-                sequencing_type,"/",
-                method_type,"/",
-                method_version,"/",
-                reference,"/",
-                library_id,"/",
-                run_id,"/",
-                flowcell_id,"/",
-                lane_id
-            )
-        )
+
 
 
         # Initialize main job structure and set primary execution environment
@@ -1403,6 +1388,25 @@ preprocess_umi=function(
     .base.env=environment()
     # Merge additional parameters passed via ... into execution environment
     list2env(list(...),envir=.base.env)
+    # Construct hierarchical output directory structure based on sample metadata
+    # Format: project/patient/sample/sequencing_type/method_type/method_version/reference/library/run/flowcell/lane
+    output_dir=set_dir(
+        output_dir,
+        name=paste0(
+            project_id,"/",
+            patient_id,"/",
+            sample_id,"/",
+            sequencing_type,"/",
+            method_type,"/",
+            method_version,"/",
+            reference,"/",
+            library_id,"/",
+            run_id,"/",
+            flowcell_id,"/",
+            lane_id
+        )
+    )
+
     # Configure environment variables required for batch processing and temp directories
     set_env_vars(
         .env= .base.env,

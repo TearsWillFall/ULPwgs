@@ -698,7 +698,7 @@ set_env_vars=function(
       inputs_id <- set_input_id(
           inputs=inputs,
           ids=output_name
-        )
+      )
 
       if(all(sapply(inputs,typeof)=="character")){
           inputs_ext <- unname(Vectorize(get_file_ext)(inputs))
