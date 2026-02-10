@@ -4544,17 +4544,18 @@ new_recal_gatk=function(
                                     "\nReview input files and parameters before retrying."))
         
         })
-
-        # Log pipeline completion with total runtime
-        total_elapsed <- as.numeric(difftime(Sys.time(), start_time, units="secs"))
-        total_elapsed_str <- sprintf("%.1f", total_elapsed)
-        logger(paste("GATK Recalibration pipeline completed successfully."),start_time)
-        logger(paste("Total steps executed:", total_steps, "| Total runtime:", total_elapsed_str, "seconds"),start_time)
           
         # Return main object to parent environment for job tracking and output reporting
         .env$.main <- .main
 
       }
+
+        # Log pipeline completion with total runtime
+      total_elapsed <- as.numeric(difftime(Sys.time(), start_time, units="secs"))
+      total_elapsed_str <- sprintf("%.1f", total_elapsed)
+      logger(paste("GATK Recalibration pipeline completed successfully."),start_time)
+      logger(paste("Total steps executed:", total_steps, "| Total runtime:", total_elapsed_str, "seconds"),start_time)
+
   }
 
 

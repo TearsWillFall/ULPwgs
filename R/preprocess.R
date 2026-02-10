@@ -713,6 +713,7 @@ preprocess_umi=function(
     bin_picard=build_default_tool_binary_list()$bin_picard,
     bin_bedtools=build_default_tool_binary_list()$bin_bedtools,
     bin_samtools=build_default_binary_list()$alignment$bin_samtool,
+    bin_fastqc=build_default_tool_binary_list()$bin_fastqc,
     ref_genome=build_default_reference_list()$HG19$reference$genome,
     dbsnp=build_default_reference_list()$HG19$database$all_common,
     bi=build_default_reference_list()$HG19$panel$PCF_V3$intervals$bi,
@@ -811,10 +812,12 @@ preprocess_umi=function(
             # Each step name directly corresponds to conditional processing blocks below
             # Steps are designed to handle: raw reads → UMI extraction → trimming → mapping → deduplication → consensus → remapping
             steps=c(
+                "pre_trim_fastqc",
                 "raw_fastq_to_bam",        # Step 1: Convert raw FASTQ to unmapped BAM format
                 "extract_umi",              # Step 2: Extract molecular barcodes (UMI) from reads
                 "raw_bam_to_fastq",         # Step 3: Convert UMI-tagged BAM back to FASTQ for processing
-                "trim_adapt",               # Step 4: Trim sequencing adapters and low-quality bases with fastp
+                "trim_adapt",
+                "post_trim_fastqc",               # Step 4: Trim sequencing adapters and low-quality bases with fastp
                 "map_trimmed",              # Step 5: Align trimmed reads to reference genome with BWA
                 "tag_trimmed",              # Step 6: Merge mapped/unmapped BAM files and tag with attributes
                 "filter_paired",            # Step 7: Filter for properly paired reads (flag -f 2)
@@ -822,12 +825,13 @@ preprocess_umi=function(
                 "pre_dedup_qc",             # Step 9: Generate QC metrics before deduplication
                 "group_umi",                # Step 10: Group reads by UMI/molecular barcode for deduplication
                 "collapse_consensus",       # Step 11: Generate consensus sequences from UMI-grouped reads
-                "consensus_bam_to_fastq",   # Step 12: Convert consensus BAM to FASTQ for remapping
+                "consensus_bam_to_fastq",           # Step 16: Perform BQSR on consensus BAM
+                "post_dedup_qc",
+                "post_dedup_fastqc",   # Step 12: Convert consensus BAM to FASTQ for remapping
                 "remap_consensus",          # Step 13: Realign consensus sequences to reference genome
                 "tag_consensus",            # Step 14: Merge and tag final consensus BAM with read group info
                 "index_consensus",          # Step 15: Index tagged consensus BAM file
-                "recal_bam",                # Step 16: Perform BQSR on consensus BAM
-                "post_dedup_qc"             # Step 17: Generate QC metrics after deduplication
+                "recal_bam"             # Step 17: Generate QC metrics after deduplication
             )
 
             # Append cleaning step if required
@@ -848,6 +852,36 @@ preprocess_umi=function(
                 # Wrap step execution in error handling to enable graceful failure reporting
                 # If tryCatch catches error, it logs the step and error message, then aborts
                 tryCatch({
+
+
+
+                
+                ### STEP 1: Convert raw FASTQ to unmapped BAM format
+                if(steps[step]=="pre_trim_fastqc"){
+                    
+                    .main.step$steps <-append(
+                        .main.step$steps,
+                        new_qc_fastqc(
+                                bin_fastqc=bin_fastqc,
+                                fastq=list(fastq),
+                                output_dir=paste0(out_file_dir,"/fastqc/pre_trim"),
+                                output_name=paste0(input_id),
+                                tmp_dir=tmp_dir,
+                                env_dir=env_dir,
+                                batch_dir=batch_dir,
+                                err_msg=err_msg,
+                                verbose=verbose,
+                                threads=threads,
+                                fn_id="pre_trim",
+                                ram=ram,
+                                executor_id=task_id
+                        )
+                    )
+
+                  
+                    .this.step=.main.step$steps$new_qc_fastqc.pre_trim
+                    .main.step$out_files$fastqc$pre_trim=.this.step$out_files
+                }
 
 
                 ### STEP 1: Convert raw FASTQ to unmapped BAM format
@@ -960,6 +994,38 @@ preprocess_umi=function(
                     .this.step=.main.step$steps$trim_umi_fastp
                     .main.step$out_files$raw$fastq$trimmed=.this.step$out_files
                 }
+
+                           ### STEP 1: Convert raw FASTQ to unmapped BAM format
+                if(steps[step]=="post_trim_fastqc"){
+                    
+                    .main.step$steps <-append(
+                        .main.step$steps,
+                        new_qc_fastqc(
+                                bin_fastqc=bin_fastqc,
+                                fastq=list(.main.step$out_files$raw$fastq$trimmed),
+                                output_dir=paste0(out_file_dir,"/fastqc/post_trim"),
+                                output_name=paste0(input_id),
+                                tmp_dir=tmp_dir,
+                                env_dir=env_dir,
+                                batch_dir=batch_dir,
+                                err_msg=err_msg,
+                                verbose=verbose,
+                                threads=threads,
+                                fn_id="post_trim",
+                                ram=ram,
+                                executor_id=task_id
+                        )
+                    )
+
+                    .this.step=.main.step$steps$new_qc_fastqc.post_trim
+                    .main.step$out_files$fastqc$post_trim=.this.step$out_files
+                }
+
+
+
+
+
+
                 ### STEP 5: Align trimmed reads to reference genome with BWA
                 if(steps[step]=="map_trimmed"){
                 
@@ -1208,6 +1274,33 @@ preprocess_umi=function(
                     .main.step$out_files$consensus$fastq=.this.step$out_files
                 }
 
+
+                if(steps[step]=="post_dedup_fastqc"){
+                    
+                    .main.step$steps <-append(
+                        .main.step$steps,
+                        new_qc_fastqc(
+                                bin_fastqc=bin_fastqc,
+                                fastq=list(.main.step$out_files$consensus$fastq),
+                                output_dir=paste0(out_file_dir,"/fastqc/post_dedup"),
+                                output_name=paste0(input_id),
+                                tmp_dir=tmp_dir,
+                                env_dir=env_dir,
+                                batch_dir=batch_dir,
+                                err_msg=err_msg,
+                                verbose=verbose,
+                                threads=threads,
+                                fn_id="post_dedup",
+                                ram=ram,
+                                executor_id=task_id
+                        )
+                    )
+
+                  
+                    .this.step=.main.step$steps$new_qc_fastqc.pre_trim
+                    .main.step$out_files$fastqc$pre_trim=.this.step$out_files
+                }
+
                 ### STEP 13: Realign consensus sequences to reference genome
                 if(steps[step]=="remap_consensus"){
 
@@ -1334,7 +1427,7 @@ preprocess_umi=function(
                             )
                      )
 
-                    .this.step=.main.step$steps$new_recal_bam
+                    .this.step=.main.step$steps$new_recal_gatk
                     .main.step$out_files$recal=.this.step$out_files$recal
 
                 }
@@ -1371,6 +1464,10 @@ preprocess_umi=function(
                     .this.step=.main.step$steps$new_metrics_alignqc.raw
                     .main.step$out_files$raw$alignqc=.this.step$out_files
                 }
+
+
+                
+
 
                 if(steps[step]=="clean_tmp"){
                     unlink(tmp_dir,recursive = TRUE,force=TRUE)

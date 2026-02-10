@@ -13,6 +13,7 @@ preprocess_umi(
   bin_bedtools = build_default_tool_binary_list()$bin_bedtools,
   bin_samtools = build_default_binary_list()$alignment$bin_samtool,
   ref_genome = build_default_reference_list()$HG19$reference$genome,
+  dbsnp = build_default_reference_list()$HG19$database$all_common,
   bi = build_default_reference_list()$HG19$panel$PCF_V3$intervals$bi,
   ti = build_default_reference_list()$HG19$panel$PCF_V3$intervals$ti,
   fastq_r1 = NULL,
@@ -28,7 +29,8 @@ preprocess_umi(
   run_id = NULL,
   flowcell_id = NULL,
   lane_id = NULL,
-  chromosomes = c(1:22, "X", "Y"),
+  chromosomes = NULL,
+  clean_tmp = TRUE,
   ...
 )
 }

@@ -6,6 +6,7 @@
 \usage{
 new_summary_metrics_bam_picard(
   bin_picard = build_default_tool_binary_list()$bin_picard,
+  ref_genome = build_default_reference_list()$HG19$reference$genome,
   bam = NULL,
   ...
 )

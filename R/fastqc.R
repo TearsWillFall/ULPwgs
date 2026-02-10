@@ -92,3 +92,76 @@ time="48:0:0",update_time=60,wait=FALSE,hold=NULL){
 
 
 
+
+
+
+#' Generate a quality control (QC) report from a fastaqc file
+#'
+#' This function takes a set of sequence files (fastq,SAM,BAM...) and
+#' returns a report in HTML format.
+#'
+#'
+#' @param file_R1 Path to the input file with the sequence.
+#' @param file_R2 [Optional] Path to the input with the reverse read sequence.
+#' @param bin_fastqc Path to fastQC executable. Default path tools/FastQC/bin/fastqc.
+#' @param threads Number of CPU cores to use. Default 3.
+#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
+#' @param executor_id Executor ID. Default "fastQC"
+#' @param task_name Name of the task. Default "fastQC"
+#' @param ram RAM memory for batched job. Default 4
+#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
+#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
+#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
+#' @param output_dir Path to the output directory.
+#' @param verbose Enables progress messages. Default False.
+#' @param hold Job to hold on in batched mode.
+#' @export
+
+
+new_qc_fastqc=function(
+  bin_fastqc=build_default_tool_binary_list()$bin_fastqc,
+  fastq=NULL,
+  ...
+){
+
+
+   run_main=function(
+    .env
+  ){
+
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+    set_main(.env=.this.env)
+    .main$out_files$fastqc=list(
+        r1=list( 
+          zip=paste0(out_file_dir,"/",get_file_name(input$file_r1),"_fastqc.zip"),
+          html=paste0(out_file_dir,"/",get_file_name(input$file_r1),"_fastqc.html")
+        ),
+        r2=list(
+          zip=paste0(out_file_dir,"/",get_file_name(input$file_r1),"_fastqc.zip"),
+          html=paste0(out_file_dir,"/",get_file_name(input$file_r2),"_fastqc.html")
+        )
+     )
+
+    .main$exec_code=paste(bin_fastqc,"-o ", out_file_dir,"-t ",threads,"--noextract",input$file_r1,input$file_r2)
+
+    run_job(.env=.this.env)
+
+    .env$.main<-.main
+  } 
+    
+   .base.env=environment()
+    list2env(list(...),envir=.base.env)
+    set_env_vars(
+      .env= .base.env,
+      vars="fastq"
+    )
+
+    launch(.env=.base.env)
+  
+  }
+
+
+
+
+

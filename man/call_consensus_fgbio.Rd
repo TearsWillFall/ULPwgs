@@ -6,7 +6,10 @@
 \usage{
 call_consensus_fgbio(
   env_fgbio = build_default_python_enviroment_list()$env_fgbio,
+  bin_samtools = build_default_tool_binary_list()$bin_samtools,
   bam = NULL,
+  tags = list(id_tag = "NA", pu_tag = "NA", pl_tag = "ILLUMINA", lb_tag = "NA", sm_tag =
+    "NA"),
   ...
 )
 }

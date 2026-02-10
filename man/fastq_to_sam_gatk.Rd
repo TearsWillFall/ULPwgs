@@ -7,6 +7,8 @@
 fastq_to_sam_gatk(
   sif_gatk = build_default_sif_list()$sif_gatk,
   fastq = NULL,
+  tags = list(id_tag = "NA", pu_tag = "NA", pl_tag = "ILLUMINA", lb_tag = "NA", sm_tag =
+    "NA"),
   ...
 )
 }
