@@ -721,24 +721,15 @@ set_env_vars=function(
     )
 
     if(is.null(tmp_dir)){
-        tmp_dir <- set_dir(
-          dir=out_file_dir,
-          name="tmp"
-      )
+        tmp_dir <- out_file_dir
     }
 
     if(is.null(env_dir)){
-          env_dir<- set_dir(
-            dir=out_file_dir,
-            name="env"
-        )
+          env_dir<- out_file_dir
       }
 
     if(is.null(batch_dir)){
-        batch_dir<- set_dir(
-          dir=out_file_dir,
-          name="batch"
-      )
+        batch_dir<- out_file_dir
     }
   
     task_id <- make_unique_id(fn)
@@ -755,9 +746,39 @@ set_env_vars=function(
     set_main_env(.env=.this.env)
 
     .env$self.envs<-.this.env
-
   
 }
+
+
+#' Set steps enviroment for use
+#' 
+#' @param .env Environment
+#' @export
+
+set_env_dirs<-function(.env){
+
+    .this.env=environment()
+    append_env(to=.this.env,from=.env)
+
+
+      .env$tmp_dir <- set_dir(
+          dir=out_file_dir,
+          name="tmp"
+      )
+  
+      .env$env_dir<- set_dir(
+          dir=out_file_dir,
+          name="env"
+      )
+      
+      .env$batch_dir<- set_dir(
+        dir=out_file_dir,
+        name="batch"
+      )
+  
+}
+
+
 
 
 #' Set steps enviroment for use
