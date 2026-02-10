@@ -792,11 +792,9 @@ preprocess_umi=function(
                 flowcell_id,"/",
                 lane_id
             )
-        )  
+        )
+        
 
-
-        # Set env directories
-        set_env_dirs(.this.env)
 
         # Initialize main job structure and set primary execution environment
         set_main(.env=.this.env)
