@@ -1020,6 +1020,7 @@ preprocess_umi=function(
                                 bin_samtools=bin_samtools,
                                 bam=.main.step$out_files$raw$bam$mapped$tagged$raw,
                                 flag=2,
+                                chromosomes=chromosomes,
                                 output_dir=out_file_dir,
                                 output_name=paste0(input_id,".mapped.umi.tagged"),
                                 tmp_dir=tmp_dir,
