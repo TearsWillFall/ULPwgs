@@ -132,11 +132,11 @@ new_markdups_gatk=function(
     .this.env=environment()
     append_env(to=.this.env,from=.env)
     set_main(.env=.this.env)
-    
+
 
     .main$out_files$bam=paste0(out_file_dir,"/",input_id,".sorted.rmdup.",get_file_ext(bam))
     
-    .main$out_files$stats=paste0(out_file_dir,"/",input,".gatk_rmdup.txt")
+    .main$out_files$stats=paste0(out_file_dir,"/",input_id,".gatk_rmdup.txt")
 
     .main$exec_code=paste0(
       " singularity run ",
