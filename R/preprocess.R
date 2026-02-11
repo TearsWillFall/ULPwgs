@@ -826,12 +826,12 @@ preprocess_umi=function(
                 "group_umi",                # Step 10: Group reads by UMI/molecular barcode for deduplication
                 "collapse_consensus",       # Step 11: Generate consensus sequences from UMI-grouped reads
                 "consensus_bam_to_fastq",           # Step 16: Perform BQSR on consensus BAM
-                "post_dedup_qc",
                 "post_dedup_fastqc",   # Step 12: Convert consensus BAM to FASTQ for remapping
                 "remap_consensus",          # Step 13: Realign consensus sequences to reference genome
                 "tag_consensus",            # Step 14: Merge and tag final consensus BAM with read group info
                 "index_consensus",          # Step 15: Index tagged consensus BAM file
-                "recal_bam"             # Step 17: Generate QC metrics after deduplication
+                "recal_bam",
+                "post_dedup_qc"          # Step 17: Generate QC metrics after deduplication
             )
 
             # Append cleaning step if required
@@ -929,6 +929,7 @@ preprocess_umi=function(
                         bam=.main.step$out_files$raw$bam$unmapped,
                         output_dir=tmp_dir,
                         output_name=paste0(input_id,".unmapped"),
+                        clean=TRUE,
                         tmp_dir=tmp_dir,
                         env_dir=env_dir,
                         batch_dir=batch_dir,
@@ -980,6 +981,7 @@ preprocess_umi=function(
                                 fastq=list(.main.step$out_files$raw$fastq$untrimmed),
                                 output_dir=paste0(out_file_dir,"/fastp"),
                                 output_name=paste0(input_id,".unmapped.umi"),
+                                clean=TRUE,
                                 tmp_dir=tmp_dir,
                                 env_dir=env_dir,
                                 batch_dir=batch_dir,
@@ -1023,9 +1025,6 @@ preprocess_umi=function(
 
 
 
-
-
-
                 ### STEP 5: Align trimmed reads to reference genome with BWA
                 if(steps[step]=="map_trimmed"){
                 
@@ -1043,6 +1042,7 @@ preprocess_umi=function(
                                         lb_tag=library_id,
                                         sm_tag=input_id
                                     ),
+                                    clean=TRUE,
                                     output_dir=tmp_dir,
                                     output_name=paste0(input_id,".mapped.umi"),
                                     tmp_dir=tmp_dir,
@@ -1108,6 +1108,7 @@ preprocess_umi=function(
                                 bin_samtools=bin_samtools,
                                 bam=.main.step$out_files$raw$bam$mapped$tagged$raw,
                                 flag=2,
+                                clean=TRUE,
                                 chromosomes=chromosomes,
                                 output_dir=tmp_dir,
                                 output_name=paste0(input_id,".mapped.umi.tagged"),
@@ -1201,7 +1202,7 @@ preprocess_umi=function(
                                 bam=.main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$unsorted,
                                 output_dir=tmp_dir,
                                 output_name=paste0(input_id,".mapped.umi.tagged.filtered"),
-                                clean_input=TRUE,
+                                clean=TRUE,
                                 tmp_dir=tmp_dir,
                                 env_dir=env_dir,
                                 batch_dir=batch_dir,
@@ -1232,7 +1233,7 @@ preprocess_umi=function(
                                         lb_tag=library_id,
                                         sm_tag=input_id
                                     ),
-                                clean_input=TRUE,
+                                clean=TRUE,
                                 output_dir=tmp_dir,
                                 output_name=input_id,
                                 tmp_dir=tmp_dir,
@@ -1321,6 +1322,7 @@ preprocess_umi=function(
                                     lb_tag=library_id,
                                     sm_tag=input_id
                                 ),
+                                clean=TRUE,
                                 output_dir=tmp_dir,
                                 output_name=paste0(input_id,".consensus.mapped.untagged"),
                                 tmp_dir=tmp_dir,
@@ -1356,7 +1358,7 @@ preprocess_umi=function(
                             sort_order="coordinate",
                             aligned_reads_only=FALSE,
                             add_mate_cigar=TRUE,
-                            clean_input=TRUE,
+                            clean=TRUE,
                             output_dir=tmp_dir,
                             output_name=paste0(input_id,".consensus.mapped.tagged"),
                             tmp_dir=tmp_dir,

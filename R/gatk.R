@@ -3982,10 +3982,7 @@ fastq_to_sam_gatk=function(
       " -F1", input$fastq_r1,
       " -F2 ",input$fastq_r2,
       " -O ",.main$out_files$bam,
-      " -RG ",tags$id_tag,
-      " -SM ",tags$sm_tag,
-      " -PL ",tags$pl_tag,
-      " -LB ",tags$lb_tag
+      tag_annot
     )
 
      run_job(.env=.this.env)
