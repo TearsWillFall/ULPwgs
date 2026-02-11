@@ -132,29 +132,20 @@ new_markdups_gatk=function(
     .this.env=environment()
     append_env(to=.this.env,from=.env)
     set_main(.env=.this.env)
-
-
-
-    tmp=""
-    if(!is.null(tmp_dir)){
-    tmp=paste0(" --tmp-dir ",tmp_dir)
-    }
-
-
-    dups=""
-    if(remove_duplicates){
-        dups=" --remove-all-duplicates"
-    }
+    
 
     .main$out_files$bam=paste0(out_file_dir,"/",input_id,".sorted.rmdup.",get_file_ext(bam))
     
     .main$out_files$stats=paste0(out_file_dir,"/",input,".gatk_rmdup.txt")
 
     .main$exec_code=paste0(
-      " singularity run ",sif_gatk," /gatk/gatk MarkDuplicatesSpark -I ",
-      input, " -O ", .main$out_files$bam,
-      " -M ", .main$out_files$stats," ",
-      tmp," --conf \'spark.executor.cores=",threads,"\'", dups
+      " singularity run ",
+      sif_gatk," /gatk/gatk MarkDuplicatesSpark",
+      " -I ",input, 
+      " -O ", .main$out_files$bam,
+      ifelse(!is.null(tmp_dir),paste0(" --tmp-dir ",tmp_dir)," "),
+      ifelse(remove_duplicates," --remove-all-duplicates"," "),
+      " --conf \'spark.executor.cores=",threads,"\'",
     )
 
 
