@@ -90,6 +90,7 @@ extract_umi_fgbio=function(
 group_by_umi_fgbio=function(
   env_fgbio=build_default_python_enviroment_list()$env_fgbio,
   bam=NULL,
+  clean_input=TRUE,
   ...
 ){
    run_main=function(
@@ -111,6 +112,10 @@ group_by_umi_fgbio=function(
       " -t RX",
       " -f ",.main$out_files$family_size_counts
     )
+
+    if(clean_input){
+       .main$exec_code=paste(.main$exec_code,"; rm",input)
+    }
 
      run_job(.env=.this.env)
 
@@ -180,6 +185,7 @@ call_consensus_fgbio=function(
     lb_tag="NA",
     sm_tag="NA"
   ),
+  clean_input=FALSE,
   ...
 ){
    run_main=function(
@@ -218,6 +224,10 @@ call_consensus_fgbio=function(
       bin_samtools, " addreplacerg ", tag_annot,
       tmp_bam, " -o ",  .main$out_files$bam, "; rm ", tmp_bam
     )
+
+    if(clean_input){
+       .main$exec_code=paste(.main$exec_code,"; rm",input)
+    }
 
      run_job(.env=.this.env)
 

@@ -1078,6 +1078,7 @@ preprocess_umi=function(
                                     sort_order="queryname",
                                     aligned_reads_only=TRUE,
                                     add_mate_cigar=FALSE,
+                                    clean_input=TRUE,
                                     output_dir=tmp_dir,
                                     output_name=paste0(input_id,".mapped.umi"),
                                     tmp_dir=tmp_dir,
@@ -1200,6 +1201,7 @@ preprocess_umi=function(
                                 bam=.main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$unsorted,
                                 output_dir=tmp_dir,
                                 output_name=paste0(input_id,".mapped.umi.tagged.filtered"),
+                                clean_input=TRUE,
                                 tmp_dir=tmp_dir,
                                 env_dir=env_dir,
                                 batch_dir=batch_dir,
@@ -1230,6 +1232,7 @@ preprocess_umi=function(
                                         lb_tag=library_id,
                                         sm_tag=input_id
                                     ),
+                                clean_input=TRUE,
                                 output_dir=tmp_dir,
                                 output_name=input_id,
                                 tmp_dir=tmp_dir,
@@ -1353,6 +1356,7 @@ preprocess_umi=function(
                             sort_order="coordinate",
                             aligned_reads_only=FALSE,
                             add_mate_cigar=TRUE,
+                            clean_input=TRUE,
                             output_dir=tmp_dir,
                             output_name=paste0(input_id,".consensus.mapped.tagged"),
                             tmp_dir=tmp_dir,
@@ -1429,7 +1433,6 @@ preprocess_umi=function(
 
                     .this.step=.main.step$steps$new_recal_gatk
                     .main.step$out_files$recal=.this.step$out_files$recal
-
                 }
 
 

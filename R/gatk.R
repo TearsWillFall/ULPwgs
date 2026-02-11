@@ -4123,6 +4123,7 @@ merge_bam_umi_gatk=function(
   sort_order="queryname",
   aligned_reads_only=TRUE,
   add_mate_cigar=FALSE,
+  clean_input=FALSE,
   ...
 ){
 
@@ -4152,6 +4153,10 @@ merge_bam_umi_gatk=function(
       " --ALIGNER_PROPER_PAIR_FLAGS true ",
       " --CLIP_OVERLAPPING_READS false "
       )
+
+     if(clean_input){
+        .main$exec_code=paste(.main$exec_code,"; rm ",input$mapped,input$unmapped)
+     }
 
      run_job(.env=.this.env)
 
