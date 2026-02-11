@@ -47,8 +47,8 @@ trim_umi_fastp=function(
     append_env(to=.this.env,from=.env)
     set_main(.env=.this.env)
 
-    .main$out_files$fastq_r1=paste0(out_file_dir,"/",input_id,".trimmed_R1.fastq")
-    .main$out_files$fastq_r2=paste0(out_file_dir,"/",input_id,".trimmed_R2.fastq")
+    .main$out_files$fastq$fastq_r1=paste0(out_file_dir,"/",input_id,".trimmed_R1.fastq")
+    .main$out_files$fastq$fastq_r2=paste0(out_file_dir,"/",input_id,".trimmed_R2.fastq")
     .main$out_files$fastp_json=paste0(out_file_dir,"/",input_id,".fastp.json")
     .main$out_files$fastp_html=paste0(out_file_dir,"/",input_id,".fastp.html")
 

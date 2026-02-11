@@ -1004,7 +1004,7 @@ preprocess_umi=function(
                         .main.step$steps,
                         new_qc_fastqc(
                                 bin_fastqc=bin_fastqc,
-                                fastq=list(.main.step$out_files$raw$fastq$trimmed),
+                                fastq=list(.main.step$out_files$raw$fastq$trimmed$fastq),
                                 output_dir=paste0(out_file_dir,"/fastqc/post_trim"),
                                 output_name=paste0(input_id),
                                 tmp_dir=tmp_dir,
@@ -1034,7 +1034,7 @@ preprocess_umi=function(
                                     bin_bwa=bin_bwa,
                                     bin_samtools=bin_samtools,
                                     ref_genome=ref_genome,
-                                    fastq=list(.main.step$out_files$raw$fastq$trimmed),
+                                    fastq=list(.main.step$out_files$raw$fastq$trimmed$fastq),
                                     tags= list(
                                         id_tag=patient_id,
                                         pu_tag="TPU",
