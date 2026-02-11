@@ -299,6 +299,12 @@ new_metrics_alignqc=function(
                     }
 
 
+                    ### Remove input after processing
+                    if(clean){
+                        file.remove(c(input,paste0(input,".bai")))
+                    }
+
+
                     # Log successful step completion
                     logger(paste("Completed step", step, "of", total_steps, ":", steps[step]),start_time)
 
