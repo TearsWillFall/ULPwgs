@@ -7,14 +7,16 @@
 build_default_sif_list(
   sifs = list(sif_clonet = list(V2 =
     "/myriadfs/home/regmova/Scratch/Singularity_Images/pcf_select_v2_14_11_2022.sif",
-    V3_old =
+    V1_avida =
+    "/myriadfs/home/regmova/Scratch/Singularity_Images/avida_v1_11_02_2026.sif", V3_old =
     "/myriadfs/home/regmova/Scratch/Singularity_Images/pcf_select_v3_14_11_2022.sif", V3
     = "/myriadfs/home/regmova/Scratch/Singularity_Images/pcf_select_v3_05_06_2025.sif"),
     sif_bamql = "/myriadfs/home/regmova/Scratch/Singularity_Images/bamql.sif",
     sif_preprocess =
-    "/myriadfs/home/regmova/Scratch/Singularity_Images/preProcess_latest.sif", sif_aa =
-    "/myriadfs/home/regmova/Scratch/Singularity_Images/ampliconsuite-pipeline.sif", 
+    "/myriadfs/home/regmova/Scratch/Singularity_Images/preProcess_latest.sif", 
     
+    sif_aa =
+    "/myriadfs/home/regmova/Scratch/Singularity_Images/ampliconsuite-pipeline.sif",
     sif_gatk = "/myriadfs/home/regmova/Scratch/Singularity_Images/gatk_latest.sif",
     sif_cnvkit = "/myriadfs/home/regmova/Scratch/Singularity_Images/cnvkit_latest.sif")
 )
