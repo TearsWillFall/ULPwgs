@@ -105,7 +105,7 @@ new_metrics_alignqc=function(
 
             # Add method-specific metrics based on analysis type
             if(!is.null(method)){
-                    if(method=="tg"){
+                    if(method=="targeted"){
                         steps=append(steps,"tg_qc")  # Add targeted/panel metrics
                     }else if (method=="wgs"){
                         steps=append(steps,"wgs_qc")  # Add whole genome metrics

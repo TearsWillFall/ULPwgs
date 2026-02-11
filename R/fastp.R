@@ -37,6 +37,7 @@
 trim_umi_fastp=function(
   env_fastp=build_default_python_enviroment_list()$env_fastp,
   fastq=NULL,
+  umi=FALSE,
   output_name="sample",
   ...
 ){
@@ -52,12 +53,14 @@ trim_umi_fastp=function(
     .main$out_files$fastp_json=paste0(out_file_dir,"/",input_id,".fastp.json")
     .main$out_files$fastp_html=paste0(out_file_dir,"/",input_id,".fastp.html")
 
+    
+
     .main$exec_code=paste(
         "conda activate ",env_fastp,
         "; fastp -i ", input$fastq_r1, "-I ", input$fastq_r2, 
-        " -o ", .main$out_files$fastq_r1,
-        " --out2 ", .main$out_files$fastq_r2,
-        " -g -W 5 -q 20 -u 40 -x -3 -l 75 -c",
+        " -o ", .main$out_files$fastq$fastq_r1,
+        " --out2 ", .main$out_files$fastq$fastq_r2,
+        ifelse(umi," -g -W 5 -q 20 -u 40 -x -3 -l 75 -c",""),
         " -j ",.main$out_files$fastp_json,
         " -h ",.main$out_files$fastp_html, 
         " -w ",threads

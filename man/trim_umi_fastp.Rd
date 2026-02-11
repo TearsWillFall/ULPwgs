@@ -7,6 +7,7 @@
 trim_umi_fastp(
   env_fastp = build_default_python_enviroment_list()$env_fastp,
   fastq = NULL,
+  umi = FALSE,
   output_name = "sample",
   ...
 )

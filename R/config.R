@@ -996,7 +996,17 @@ build_default_reference_list=function(
                             bed="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/msi/regions.bed",
                             baseline="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/msi/baseline.txt"
                         )
+                        ),
+                    AVIDA_V1=list(
+                         intervals=list(
+                            bi="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/avida/cap_tg.interval_list",
+                            ti="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/avida/prim_tg.interval_list"
+                        ),
+                        bed=list(
+                            bait="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/avida/cap_tg.bed",
+                            target="/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/avida/prim_tg.bed"
                         )
+                    )
 
                 ),
                 rnaseq=list(
@@ -1019,7 +1029,6 @@ build_default_reference_list=function(
                     genome="/myriadfs/home/regmova/Scratch/PCF/references/hg19_alt/reference/human_g1k_v37.fasta"
                 )
 
-
             ),
             HG38=list(
                 reference=list(
@@ -1035,7 +1044,6 @@ build_default_reference_list=function(
                         )
                     )
                 ),
-
                 database=list(
                     all_snps="/myriadfs/home/regmova/Scratch/PCF/references/hg38/database/00-All.vcf.gz",
                     all_common="/myriadfs/home/regmova/Scratch/PCF/references/hg38/database/00-common_all.vcf.gz"

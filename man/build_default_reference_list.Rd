@@ -147,15 +147,23 @@ build_default_reference_list(
     list(bed =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/msi/regions.bed",
     baseline =
-    "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/msi/baseline.txt"))),
+    "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/v3/msi/baseline.txt")),
+    AVIDA_V1 = list(intervals = list(bi =
+    "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/avida/cap_tg.interval_list",
+    ti =
+    "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/avida/prim_tg.interval_list"),
+    
+         bed = list(bait =
+    "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/avida/cap_tg.bed", target =
+    "/myriadfs/home/regmova/Scratch/PCF/references/hg19/panel/avida/prim_tg.bed"))),
     rnaseq = list(intervals = list(ri =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/rnaseq//intervals/rRNA.interval_list"),
     reference = list(ref_flat =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/rnaseq/reference/refFlat.txt")),
-    
-     variant = list(germ_reference =
+    variant = list(germ_reference =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/variant/af-only-gnomad.raw.sites.vcf",
-    biallelic_reference =
+    
+         biallelic_reference =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/variant/small_exac_common_3.vcf",
     hapmap_reference =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/variant/hapmap_3.3.b37.vcf",
@@ -163,18 +171,17 @@ build_default_reference_list(
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19/variant/Mills_and_1000G_gold_standard.indels.b37.vcf")),
     HG19_ALT = list(reference = list(genome =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19_alt/reference/human_g1k_v37.fasta")),
+    HG38 = list(reference = list(genome =
+    "/myriadfs/home/regmova/Scratch/PCF/references/hg38/reference/ucsc.hg38.fa"), 
     
-     HG38 = list(reference = list(genome =
-    "/myriadfs/home/regmova/Scratch/PCF/references/hg38/reference/ucsc.hg38.fa"),
     griffin_gc = "/myriadfs/home/regmova/Scratch/tools/Griffin/Ref/genome_GC_frequency",
     panel = list(PCF_V3 = list(intervals = list(bi =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19_alt/panel/v3/cap_tg.interval_list",
     ti =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg19_alt/panel/v3/prim_tg.interval_list"))),
     database = list(all_snps =
-    "/myriadfs/home/regmova/Scratch/PCF/references/hg38/database/00-All.vcf.gz", 
-       
-     all_common =
+    "/myriadfs/home/regmova/Scratch/PCF/references/hg38/database/00-All.vcf.gz",
+    all_common =
     "/myriadfs/home/regmova/Scratch/PCF/references/hg38/database/00-common_all.vcf.gz")))
 )
 }

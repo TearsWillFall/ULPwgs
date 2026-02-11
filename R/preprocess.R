@@ -645,6 +645,7 @@ process_sample=function(rdata=""){
         save(report,file=paste0(out_file_dir_job_report,"/",new_name,".job_report.RData"))
        
 }
+
 #' Process UMI-tagged sequencing data
 #'
 #' Processes sequencing data that include Unique Molecular Identifiers (UMIs).
@@ -718,8 +719,7 @@ preprocess_umi=function(
     dbsnp=build_default_reference_list()$HG19$database$all_common,
     bi=build_default_reference_list()$HG19$panel$PCF_V3$intervals$bi,
     ti=build_default_reference_list()$HG19$panel$PCF_V3$intervals$ti,
-    fastq_r1=NULL,
-    fastq_r2=NULL,
+    fastq=NULL,
     project_id=NULL,
     patient_id=NULL,
     sample_id=NULL,
@@ -740,7 +740,830 @@ preprocess_umi=function(
             .env
       ){
 
+
         # Copy environment variables from parent scope to current environment
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+        # Initialize main job structure and set primary execution environment
+        set_main(.env=.this.env)
+
+
+        # Store this function's environment in main steps registry
+        .main$steps[[fn_id]]<-.this.env
+        # Reference the current processing step for appending results
+        .main.step=.main$steps[[fn_id]]
+
+        # Record pipeline start time for elapsed time tracking
+        start_time <- Sys.time()
+    
+
+        # Define UMI processing pipeline steps in logical execution order
+        # Each step name directly corresponds to conditional processing blocks below
+        # Steps are designed to handle: raw reads → UMI extraction → trimming → mapping → deduplication → consensus → remapping
+        steps=c(
+            "pre_trim_fastqc",
+            "raw_fastq_to_bam",        # Step 1: Convert raw FASTQ to unmapped BAM format
+            "extract_umi",              # Step 2: Extract molecular barcodes (UMI) from reads
+            "raw_bam_to_fastq",         # Step 3: Convert UMI-tagged BAM back to FASTQ for processing
+            "trim_adapt",
+            "post_trim_fastqc",               # Step 4: Trim sequencing adapters and low-quality bases with fastp
+            "map_trimmed",              # Step 5: Align trimmed reads to reference genome with BWA
+            "tag_trimmed",              # Step 6: Merge mapped/unmapped BAM files and tag with attributes
+            "filter_paired",            # Step 7: Filter for properly paired reads (flag -f 2)
+            "sort_filtered",            # Step 8: Sort and index filtered BAM file by coordinate
+            "pre_dedup_qc",             # Step 9: Generate QC metrics before deduplication
+            "group_umi",                # Step 10: Group reads by UMI/molecular barcode for deduplication
+            "collapse_consensus",       # Step 11: Generate consensus sequences from UMI-grouped reads
+            "consensus_bam_to_fastq",           # Step 16: Perform BQSR on consensus BAM
+            "post_dedup_fastqc",   # Step 12: Convert consensus BAM to FASTQ for remapping
+            "remap_consensus",          # Step 13: Realign consensus sequences to reference genome
+            "tag_consensus",            # Step 14: Merge and tag final consensus BAM with read group info
+            "index_consensus",          # Step 15: Index tagged consensus BAM file
+            "recal_bam",
+            "post_dedup_qc"          # Step 17: Generate QC metrics after deduplication
+        )
+
+        # Append cleaning step if required
+        
+        if(clean_tmp){
+            steps=append(steps,"clean_tmp")
+        }
+    
+        # Total number of pipeline steps for progress reporting and loop control
+        total_steps=length(steps)
+
+        # Execute each pipeline step in order with progress logging
+        for(step in 1:total_steps){
+            
+            # Log pipeline progress with current step number and name
+            logger(paste("Running step", step, "of", total_steps, ":", steps[step]),start_time)
+            
+            # Wrap step execution in error handling to enable graceful failure reporting
+            # If tryCatch catches error, it logs the step and error message, then aborts
+            tryCatch({
+
+
+
+            
+            ### STEP 1: Convert raw FASTQ to unmapped BAM format
+            if(steps[step]=="pre_trim_fastqc"){
+                
+                .main.step$steps <-append(
+                    .main.step$steps,
+                    new_qc_fastqc(
+                            bin_fastqc=bin_fastqc,
+                            fastq=list(fastq),
+                            output_dir=paste0(out_file_dir,"/fastqc/pre_trim"),
+                            output_name=paste0(input_id),
+                            tmp_dir=tmp_dir,
+                            env_dir=env_dir,
+                            batch_dir=batch_dir,
+                            err_msg=err_msg,
+                            verbose=verbose,
+                            threads=threads,
+                            fn_id="pre_trim",
+                            ram=ram,
+                            executor_id=task_id
+                    )
+                )
+
+                
+                .this.step=.main.step$steps$new_qc_fastqc.pre_trim
+                .main.step$out_files$fastqc$pre_trim=.this.step$out_files
+            }
+
+
+            ### STEP 1: Convert raw FASTQ to unmapped BAM format
+            if(steps[step]=="raw_fastq_to_bam"){
+                
+                .main.step$steps <-append(
+                    .main.step$steps,
+                    fastq_to_sam_gatk(
+                            sif_gatk=sif_gatk,
+                            fastq=list(fastq),
+                            tags=list(
+                                id_tag=patient_id,
+                                pu_tag="TPU",
+                                pl_tag="ILLUMINA",
+                                lb_tag=library_id,
+                                sm_tag=input_id
+                            ),
+                            output_dir=tmp_dir,
+                            output_name=paste0(input_id,".unmapped"),
+                            tmp_dir=tmp_dir,
+                            env_dir=env_dir,
+                            batch_dir=batch_dir,
+                            err_msg=err_msg,
+                            verbose=verbose,
+                            threads=threads,
+                            fn_id="raw",
+                            ram=ram,
+                            executor_id=task_id
+                    )
+                )
+
+                .this.step=.main.step$steps$fastq_to_sam_gatk.raw
+                .main.step$out_files$raw$bam$unmapped=.this.step$out_files
+            }
+
+            if(steps[step]=="extract_umi"){
+
+            
+
+                ### STEP 2: Extract molecular barcodes (UMI) from reads
+                .main.step$steps <-append(
+                .main.step$steps,
+                extract_umi_fgbio(
+                    env_fgbio = env_fgbio,
+                    bam=.main.step$out_files$raw$bam$unmapped,
+                    output_dir=tmp_dir,
+                    output_name=paste0(input_id,".unmapped"),
+                    clean=TRUE,
+                    tmp_dir=tmp_dir,
+                    env_dir=env_dir,
+                    batch_dir=batch_dir,
+                    err_msg=err_msg,
+                    verbose=verbose,
+                    threads=threads,
+                    ram=ram,
+                    executor_id=task_id
+                    )
+                )
+
+                .this.step=.main.step$steps$extract_umi_fgbio
+                .main.step$out_files$raw$bam$unmapped$umi=.this.step$out_files
+            }
+
+            ### STEP 3: Convert UMI-tagged BAM back to FASTQ for processing
+            if(steps[step]=="raw_bam_to_fastq"){
+
+                .main.step$steps <-append(
+                    .main.step$steps,
+                    sam_to_fastq_gatk(
+                            sif_gatk=sif_gatk,
+                            bam=.main.step$out_files$raw$bam$unmapped$umi,
+                            output_dir=tmp_dir,
+                            output_name=paste0(input_id,".unmapped.umi"),
+                            tmp_dir=tmp_dir,
+                            env_dir=env_dir,
+                            batch_dir=batch_dir,
+                            err_msg=err_msg,
+                            verbose=verbose,
+                            threads=threads,
+                            fn_id="raw",
+                            ram=ram,
+                            executor_id=task_id
+                    )
+                )
+
+                .this.step=.main.step$steps$sam_to_fastq_gatk.raw
+                .main.step$out_files$raw$fastq$untrimmed=.this.step$out_files
+            }
+
+            ### STEP 4: Trim sequencing adapters and low-quality bases with fastp
+            if(steps[step]=="trim_adapt"){
+            
+                .main.step$steps <-append(
+                        .main.step$steps,
+                    trim_umi_fastp(
+                            env_fastp=env_fastp,
+                            fastq=list(.main.step$out_files$raw$fastq$untrimmed),
+                            output_dir=paste0(out_file_dir,"/fastp"),
+                            output_name=paste0(input_id,".unmapped.umi"),
+                            umi=TRUE,
+                            clean=TRUE,
+                            tmp_dir=tmp_dir,
+                            env_dir=env_dir,
+                            batch_dir=batch_dir,
+                            err_msg=err_msg,
+                            verbose=verbose,
+                            threads=threads,
+                            ram=ram,
+                            executor_id=task_id
+                    )
+                )
+
+                .this.step=.main.step$steps$trim_umi_fastp
+                .main.step$out_files$raw$fastq$trimmed=.this.step$out_files
+            }
+
+                        ### STEP 1: Convert raw FASTQ to unmapped BAM format
+            if(steps[step]=="post_trim_fastqc"){
+                
+                .main.step$steps <-append(
+                    .main.step$steps,
+                    new_qc_fastqc(
+                            bin_fastqc=bin_fastqc,
+                            fastq=list(.main.step$out_files$raw$fastq$trimmed$fastq),
+                            output_dir=paste0(out_file_dir,"/fastqc/post_trim"),
+                            output_name=paste0(input_id),
+                            tmp_dir=tmp_dir,
+                            env_dir=env_dir,
+                            batch_dir=batch_dir,
+                            err_msg=err_msg,
+                            verbose=verbose,
+                            threads=threads,
+                            fn_id="post_trim",
+                            ram=ram,
+                            executor_id=task_id
+                    )
+                )
+
+                .this.step=.main.step$steps$new_qc_fastqc.post_trim
+                .main.step$out_files$fastqc$post_trim=.this.step$out_files
+            }
+
+
+
+            ### STEP 5: Align trimmed reads to reference genome with BWA
+            if(steps[step]=="map_trimmed"){
+            
+                .main.step$steps <-append(
+                        .main.step$steps,
+                        new_alignment_bwa(
+                                bin_bwa=bin_bwa,
+                                bin_samtools=bin_samtools,
+                                ref_genome=ref_genome,
+                                fastq=list(.main.step$out_files$raw$fastq$trimmed$fastq),
+                                tags= list(
+                                    id_tag=patient_id,
+                                    pu_tag="TPU",
+                                    pl_tag="ILLUMINA",
+                                    lb_tag=library_id,
+                                    sm_tag=input_id
+                                ),
+                                clean=TRUE,
+                                output_dir=tmp_dir,
+                                output_name=paste0(input_id,".mapped.umi"),
+                                tmp_dir=tmp_dir,
+                                env_dir=env_dir,
+                                batch_dir=batch_dir,
+                                err_msg=err_msg,
+                                verbose=verbose,
+                                threads=threads,
+                                ram=ram,
+                                fn_id="raw",
+                                executor_id=task_id
+                        )
+                )
+
+                .this.step=.main.step$steps$new_alignment_bwa.raw
+                .main.step$out_files$raw$bam$mapped$untagged=.this.step$out_files$bam
+
+            }
+
+            ### STEP 6: Merge mapped/unmapped BAM files and tag with attributes
+            if(steps[step]=="tag_trimmed"){
+            
+                .main.step$steps <-append(
+                        .main.step$steps,
+                        merge_bam_umi_gatk(
+                                sif_gatk=sif_gatk,
+                                bin_samtools = bin_samtools,
+                                ref_genome=ref_genome,
+                                bam=list(list(
+                                    mapped=.main.step$out_files$raw$bam$mapped$untagged,
+                                    unmapped=.main.step$out_files$raw$bam$unmapped$umi)),
+                                attributes=c("XO","NM","MD"),
+                                sort_order="queryname",
+                                aligned_reads_only=TRUE,
+                                add_mate_cigar=FALSE,
+                                clean=TRUE,
+                                output_dir=tmp_dir,
+                                output_name=paste0(input_id,".mapped.umi"),
+                                tmp_dir=tmp_dir,
+                                env_dir=env_dir,
+                                batch_dir=batch_dir,
+                                err_msg=err_msg,
+                                verbose=verbose,
+                                threads=threads,
+                                ram=ram,
+                                fn_id="raw",
+                                executor_id=task_id
+                        )
+                )
+
+                .this.step=.main.step$steps$merge_bam_umi_gatk.raw
+                .main.step$out_files$raw$bam$mapped$tagged$raw=.this.step$out_files$bam
+
+            }
+
+
+            ### STEP 7: Filter for properly paired reads (flag -f 2)
+            if(steps[step]=="filter_paired"){
+
+                .main.step$steps <-append(
+                    .main.step$steps,
+                    filter_samtools(
+                            bin_samtools=bin_samtools,
+                            bam=.main.step$out_files$raw$bam$mapped$tagged$raw,
+                            flag=2,
+                            clean=TRUE,
+                            chromosomes=chromosomes,
+                            output_dir=tmp_dir,
+                            output_name=paste0(input_id,".mapped.umi.tagged"),
+                            tmp_dir=tmp_dir,
+                            env_dir=env_dir,
+                            batch_dir=batch_dir,
+                            err_msg=err_msg,
+                            verbose=verbose,
+                            threads=threads,
+                            ram=ram,
+                            executor_id=task_id
+                    )
+                )
+                
+                .this.step=.main.step$steps$filter_samtools
+                .main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$unsorted=.this.step$out_files$bam
+
+            }
+
+            ### STEP 8: Sort and index filtered BAM file by coordinate
+            if(steps[step]=="sort_filtered"){
+                    .main.step$steps <-append(
+                    .main.step$steps,
+                        new_sort_and_index_bam_samtools(
+                                bin_samtools=bin_samtools,
+                                bam=.main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$unsorted,
+                                sort=TRUE,
+                                index=TRUE,
+                                coord_sort=TRUE,
+                                stats=TRUE,
+                                output_dir=paste0(out_file_dir,"/raw"),
+                                output_name=paste0(input_id,".mapped.umi.tagged.filtered"),
+                                tmp_dir=tmp_dir,
+                                env_dir=env_dir,
+                                batch_dir=batch_dir,
+                                err_msg=err_msg,
+                                verbose=verbose,
+                                threads=threads,
+                                ram=ram,
+                                fn_id="pre",
+                                executor_id=task_id
+                        )
+                    )
+
+                .this.step=.main.step$steps$new_sort_and_index_bam_samtools.pre
+                .main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$sorted=.this.step$out_files
+
+            }
+
+
+            ### STEP 9: Generate QC metrics before deduplication
+            if(steps[step]=="pre_dedup_qc"){
+                    .main.step$steps <-append(
+                    .main.step$steps,
+                        new_metrics_alignqc(
+                                bin_samtools=bin_samtools,
+                                bin_picard=bin_picard,
+                                bin_bedtools=bin_bedtools,
+                                ref_genome=ref_genome,
+                                bi=bi,
+                                ti=ti,
+                                bam=.main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$sorted$srt_bam,
+                                mapq=0,
+                                clean=TRUE,
+                                method=tolower(method_type),
+                                output_dir=paste0(out_file_dir,"/alignqc/pre_dedup"),
+                                output_name=paste0(input_id),
+                                tmp_dir=tmp_dir,
+                                env_dir=env_dir,
+                                batch_dir=batch_dir,
+                                err_msg=err_msg,
+                                verbose=verbose,
+                                threads=threads,
+                                fn_id="pre",
+                                ram=ram,
+                                executor_id=task_id
+                        )
+                    )
+
+                .this.step=.main.step$steps$new_metrics_alignqc.pre
+                .main.step$out_files$alignqc$pre_dedup=.this.step$out_files
+
+            }
+
+            ### STEP 10: Group reads by UMI/molecular barcode for deduplication
+            if(steps[step]=="group_umi"){
+                
+                .main.step$steps <-append(
+                    .main.step$steps,
+                    group_by_umi_fgbio(
+                            env_fgbio=env_fgbio,
+                            bam=.main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$unsorted,
+                            output_dir=tmp_dir,
+                            output_name=paste0(input_id,".mapped.umi.tagged.filtered"),
+                            clean=TRUE,
+                            tmp_dir=paste0(out_file_dir,"/consensus"),
+                            env_dir=env_dir,
+                            batch_dir=batch_dir,
+                            err_msg=err_msg,
+                            verbose=verbose,
+                            threads=threads,
+                            ram=ram,
+                            executor_id=task_id
+                    )
+                )
+                
+                .this.step=.main.step$steps$group_by_umi_fgbio
+                .main.step$out_files$raw$bam$mapped$tagged$filtered$grouped=.this.step$out_files
+            }
+
+            ### STEP 11: Generate consensus sequences from UMI-grouped reads
+            if(steps[step]=="collapse_consensus"){
+                
+                .main.step$steps <-append(
+                .main.step$steps,
+                    call_consensus_fgbio(
+                            env_fgbio=env_fgbio,
+                            bin_samtools = bin_samtools,
+                            bam=.main.step$out_files$raw$bam$mapped$tagged$filtered$grouped$bam,
+                            tags= list(
+                                    id_tag=patient_id,
+                                    pu_tag="TPU",
+                                    pl_tag="ILLUMINA",
+                                    lb_tag=library_id,
+                                    sm_tag=input_id
+                                ),
+                            clean=TRUE,
+                            output_dir=paste0(out_file_dir,"/consensus"),
+                            output_name=input_id,
+                            tmp_dir=tmp_dir,
+                            env_dir=env_dir,
+                            batch_dir=batch_dir,
+                            err_msg=err_msg,
+                            verbose=verbose,
+                            threads=threads,
+                            ram=ram,
+                            executor_id=task_id
+                    )
+                )
+                
+                .this.step=.main.step$steps$call_consensus_fgbio
+                .main.step$out_files$consensus$bam$unmapped=.this.step$out_files
+            }
+
+
+            ### STEP 12: Convert consensus BAM to FASTQ for remapping
+            if(steps[step]=="consensus_bam_to_fastq"){
+            
+                .main.step$steps <-append(
+                    .main.step$steps,
+                sam_to_fastq_gatk(
+                            sif_gatk=sif_gatk,
+                            bam= .main.step$out_files$consensus$bam$unmapped$bam,
+                            output_dir=tmp_dir,
+                            output_name=paste0(input_id,".consensus"),
+                            tmp_dir=tmp_dir,
+                            env_dir=env_dir,
+                            batch_dir=batch_dir,
+                            err_msg=err_msg,
+                            verbose=verbose,
+                            threads=threads,
+                            fn_id="consensus",
+                            ram=ram,
+                            executor_id=task_id
+                    )
+                )
+
+                .this.step=.main.step$steps$sam_to_fastq_gatk.consensus
+                .main.step$out_files$consensus$fastq=.this.step$out_files
+            }
+
+
+            if(steps[step]=="post_dedup_fastqc"){
+                
+                .main.step$steps <-append(
+                    .main.step$steps,
+                    new_qc_fastqc(
+                            bin_fastqc=bin_fastqc,
+                            fastq=list(.main.step$out_files$consensus$fastq),
+                            output_dir=paste0(out_file_dir,"/fastqc/post_dedup"),
+                            output_name=paste0(input_id),
+                            tmp_dir=tmp_dir,
+                            env_dir=env_dir,
+                            batch_dir=batch_dir,
+                            err_msg=err_msg,
+                            verbose=verbose,
+                            threads=threads,
+                            fn_id="post_dedup",
+                            ram=ram,
+                            executor_id=task_id
+                    )
+                )
+
+                
+                .this.step=.main.step$steps$new_qc_fastqc.pre_trim
+                .main.step$out_files$fastqc$pre_trim=.this.step$out_files
+            }
+
+            ### STEP 13: Realign consensus sequences to reference genome
+            if(steps[step]=="remap_consensus"){
+
+                .main.step$steps <-append(
+                .main.step$steps,
+                    new_alignment_bwa(
+                            bin_bwa=bin_bwa,
+                            bin_samtools=bin_samtools,
+                            ref_genome=ref_genome,
+                            fastq=list(.main.step$out_files$consensus$fastq),
+                            tags=list(
+                                id_tag=patient_id,
+                                pu_tag="TPU",
+                                pl_tag="ILLUMINA",
+                                lb_tag=library_id,
+                                sm_tag=input_id
+                            ),
+                            clean=TRUE,
+                            output_dir=tmp_dir,
+                            output_name=paste0(input_id,".consensus.mapped.untagged"),
+                            tmp_dir=tmp_dir,
+                            env_dir=env_dir,
+                            batch_dir=batch_dir,
+                            err_msg=err_msg,
+                            verbose=verbose,
+                            threads=threads,
+                            ram=ram,
+                            fn_id="consensus",
+                            executor_id=task_id
+                            )
+                    )
+
+                .this.step=.main.step$steps$new_alignment_bwa.consensus
+                .main.step$out_files$consensus$bam$mapped$untagged=.this.step$out_files
+            }
+    
+
+            ### STEP 14: Merge and tag final consensus BAM with read group info
+            if(steps[step]=="tag_consensus"){
+
+                .main.step$steps <-append(
+                .main.step$steps,
+                merge_bam_umi_gatk(
+                        sif_gatk=sif_gatk,
+                        bin_samtools = bin_samtools,
+                        ref_genome=ref_genome,
+                        bam=list(list(
+                            mapped=.main.step$out_files$consensus$bam$mapped$untagged,
+                            unmapped=.main.step$out_files$consensus$bam$unmapped)),
+                        attributes=c("X0","RX"),
+                        sort_order="coordinate",
+                        aligned_reads_only=FALSE,
+                        add_mate_cigar=TRUE,
+                        clean=TRUE,
+                        output_dir=tmp_dir,
+                        output_name=paste0(input_id,".consensus.mapped.tagged"),
+                        tmp_dir=tmp_dir,
+                        env_dir=env_dir,
+                        batch_dir=batch_dir,
+                        err_msg=err_msg,
+                        verbose=verbose,
+                        threads=threads,
+                        ram=ram,
+                        fn_id="consensus",
+                        executor_id=task_id
+                        )
+                )
+
+                .this.step=.main.step$steps$merge_bam_umi_gatk.consensus
+                .main.step$out_files$consensus$bam$mapped$tagged$bam=.this.step$out_files
+            }
+
+            
+
+            ### STEP 15: Index tagged consensus BAM file
+            if(steps[step]=="index_consensus"){
+                    .main.step$steps <-append(
+                    .main.step$steps,
+                        new_sort_and_index_bam_samtools(
+                                bin_samtools=bin_samtools,
+                                bam=.main.step$out_files$consensus$bam$mapped$tagged$bam,
+                                sort=FALSE,
+                                index=TRUE,
+                                stats=FALSE,
+                                tmp_dir=tmp_dir,
+                                env_dir=env_dir,
+                                batch_dir=batch_dir,
+                                err_msg=err_msg,
+                                verbose=verbose,
+                                threads=threads,
+                                ram=ram,
+                                fn_id="post",
+                                executor_id=task_id
+                        )
+                    )
+
+                .this.step=.main.step$steps$new_sort_and_index_bam_samtools.post
+                .main.step$out_files$consensus$bam$mapped$tagged$index=.this.step$out_files
+
+            }
+
+
+            ### This step will fail if there is not enough reads to recalibrate
+            ### STEP 16: Perform BQSR on consensus BAM
+            if(steps[step]=="recal_bam"){
+                    .main.step$steps <-append(
+                    .main.step$steps,
+                        new_recal_gatk(
+                                bin_samtools=bin_samtools,
+                                sif_gatk=sif_gatk,
+                                bin_picard=bin_picard,
+                                ref_genome=ref_genome,
+                                dbsnp=dbsnp,
+                                chromosomes=chromosomes,
+                                bam=.main.step$out_files$consensus$bam$mapped$tagged$bam,
+                                clean=TRUE,
+                                output_dir=paste0(out_file_dir),
+                                output_name=input_id,
+                                tmp_dir=tmp_dir,
+                                env_dir=env_dir,
+                                batch_dir=batch_dir,
+                                err_msg=err_msg,
+                                verbose=verbose,
+                                threads=threads,
+                                ram=ram,
+                                executor_id=task_id
+                        )
+                    )
+
+                .this.step=.main.step$steps$new_recal_gatk
+                .main.step$out_files$recal=.this.step$out_files$recal
+            }
+
+
+            ### STEP 17: Generate QC metrics after deduplication
+            if(steps[step]=="post_dedup_qc"){
+                    .main.step$steps <-append(
+                    .main.step$steps,
+                        new_metrics_alignqc(
+                                bin_samtools=bin_samtools,
+                                bin_picard=bin_picard,
+                                bin_bedtools=bin_bedtools,
+                                ref_genome=ref_genome,
+                                bi=bi,
+                                ti=ti,
+                                bam=.main.step$out_files$recal$sorted$srt_bam,
+                                mapq=0,
+                                method=tolower(method_type),
+                                output_dir=paste0(out_file_dir,"/alignqc/post_dedup"),
+                                output_name=paste0(input_id),
+                                tmp_dir=tmp_dir,
+                                env_dir=env_dir,
+                                batch_dir=batch_dir,
+                                err_msg=err_msg,
+                                verbose=verbose,
+                                threads=threads,
+                                fn_id="post",
+                                ram=ram,
+                                executor_id=task_id
+                        )
+                    )
+                .this.step=.main.step$steps$new_metrics_alignqc.post
+                .main.step$out_files$alignqc$post=.this.step$out_files
+            }
+
+
+            
+
+
+            if(steps[step]=="clean_tmp"){
+                unlink(tmp_dir,recursive = TRUE,force=TRUE)
+            }
+
+
+                # Log successful step completion
+                logger(paste("Completed step", step, "of", total_steps, ":", steps[step]),start_time)
+                
+            }, error=function(e){
+                # Handle step execution errors with informative message
+                logger(paste("ERROR in step", step, ":", steps[step]),start_time)
+                stop(paste("Step '" , steps[step], "' failed. Error:", e$message,
+                            "\nReview input files and parameters before retrying."))
+            })
+    
+    }
+        
+    # Log pipeline completion with total runtime
+    total_elapsed <- as.numeric(difftime(Sys.time(), start_time, units="secs"))
+    total_elapsed_str <- sprintf("%.1f", total_elapsed)
+    logger(paste("UMI processing pipeline completed successfully."),start_time)
+    logger(paste("Total steps executed:", total_steps, "| Total runtime:", total_elapsed_str, "seconds"),start_time)
+        
+    # Return main object to parent environment for job tracking and output reporting
+    .env$.main <- .main
+
+    }
+    
+    # Setup execution environment by copying parent scope variables
+    .base.env=environment()
+    # Merge additional parameters passed via ... into execution environment
+    list2env(list(...),envir=.base.env)
+    # Configure environment variables required for batch processing and temp directories
+    set_env_vars(
+        .env= .base.env,
+        vars="fastq"
+    )
+
+    # Launch the UMI processing pipeline with fully prepared environment
+    launch(.env=.base.env)
+}
+
+
+
+
+#' Process UMI-tagged sequencing data
+#'
+#' Processes sequencing data that include Unique Molecular Identifiers (UMIs).
+#' The function runs a multi-step pipeline that extracts UMIs, trims adapters,
+#' aligns reads, groups reads by UMI, collapses UMIs to consensus sequences and
+#' remaps consensus reads. It is intended to reduce PCR and sequencing errors
+#' by collapsing reads originating from the same original molecule.
+#'
+#' @details
+#' The pipeline performs the following logical stages (implemented as ordered
+#' steps in the function): extraction of UMIs, read trimming, mapping of
+#' trimmed reads, tagging/merging to preserve UMI information, grouping by UMI,
+#' consensus calling (with fgbio), conversion between BAM/FASTQ where necessary,
+#' remapping consensus reads and final tagging/merging.
+#'
+#' Each step logs progress and is wrapped in error handling so failures report
+#' which pipeline step failed and abort early.
+#'
+#' @param sif_gatk Path to the GATK Singularity image (used for GATK-based helpers).
+#'   Defaults to \code{build_default_sif_list()$sif_gatk}.
+#' @param env_fgbio Python environment identifier for fgbio tools. Defaults to
+#'   \code{build_default_python_enviroment_list()$env_fg_bio}.
+#' @param env_fastp Python environment identifier for fastp. Defaults to
+#'   \code{build_default_python_enviroment_list()$env_fastp}.
+#' @param bin_bwa Path or identifier for the BWA binary. Defaults to
+#'   \code{build_default_binary_list()$alignment$bin_bwa}.
+#' @param bin_samtools Path or identifier for the samtools binary. Defaults to
+#'   \code{build_default_binary_list()$alignment$bin_samtool}.
+#' @param ref_genome Path to the reference genome FASTA used for alignments.
+#'   Defaults to \code{build_default_reference_list()$HG19$reference$genome}.
+#' @param fastq Named list or object with FASTQ file paths. Expected keys are
+#'   \code{fastq_r1} and \code{fastq_r2} (or a single fastq value for single-end).
+#' @param project_id Optional project identifier used when constructing output
+#'   directory structure.
+#' @param patient_id Optional patient identifier used when constructing output
+#'   directory structure and read-group tags.
+#' @param sample_id Optional sample identifier; used as \code{input_id} when
+#'   building output filenames and read-group tags.
+#' @param sequencing_type method_type,method_version,reference Optional strings
+#'   describing sequencing assay details (used in output path creation).
+#' @param library_id,run_id,flowcell_id,lane_id Optional run/library identifiers.
+#'   If not provided the function attempts to infer them from the FASTQ files
+#'   using \code{new_check_seq_info}.
+#' @param ... Additional arguments forwarded to internal helper functions (for
+#'   example \code{tmp_dir}, \code{batch_dir}, \code{threads}, \code{ram},
+#'   \code{verbose}, \code{executor_id} and \code{batch_config}).
+#'
+#' @return Invisibly returns the internal `.main` object containing pipeline
+#'   steps and collected output paths; the function primarily writes files and
+#'   job reports to the specified output directories.
+#'
+#' @examples
+#' \dontrun{
+#' fastq <- list(fastq_r1 = "sample_R1.fastq.gz", fastq_r2 = "sample_R2.fastq.gz")
+#' preprocess_umi(fastq = fastq, patient_id = "P001", sample_id = "S001",
+#'                output_dir = "./results", threads = 8, ram = 16)
+#' }
+#'
+#' @export
+
+
+preprocess_any=function(
+    sif_gatk=build_default_sif_list()$sif_gatk,
+    env_fgbio=build_default_python_enviroment_list()$env_fgbio,
+    env_fastp=build_default_python_enviroment_list()$env_fastp,
+    bin_bwa=build_default_binary_list()$alignment$bin_bwa,
+    bin_picard=build_default_tool_binary_list()$bin_picard,
+    bin_bedtools=build_default_tool_binary_list()$bin_bedtools,
+    bin_samtools=build_default_binary_list()$alignment$bin_samtool,
+    bin_fastqc=build_default_tool_binary_list()$bin_fastqc,
+    fastq_r1=NULL,
+    fastq_r2=NULL,
+    project_id=NULL,
+    patient_id=NULL,
+    sample_id=NULL,
+    sequencing_type=NULL,
+    method_type=NULL,
+    method_version=NULL,
+    reference=NULL,
+    library_id=NULL,
+    run_id=NULL,
+    flowcell_id=NULL,
+    lane_id=NULL,
+    umi=FALSE,
+    ... 
+){  
+
+
+      run_main=function(
+            .env
+      ){
+
+      # Copy environment variables from parent scope to current environment
         .this.env=environment()
         append_env(to=.this.env,from=.env)
 
@@ -757,7 +1580,34 @@ preprocess_umi=function(
                 if(is.null(get(id))){
                         stop("Variable ",id, " required to continue. Please assign a value")}
         }
-        
+
+        avail_methods=c("TARGETED","WGS")
+        avail_method_version=c("PCF_V2","PCF_V3","AVIDA_V1")
+        if(!any(avail_methods %in% c(method_type))){
+            stop(paste("Unsupported sequencing method type selected ",method_type,". Currently supported methods for this workflow are ", paste0(avail_methods,collapse=" , ")))
+        }
+
+        if(method_type=="TARGETED"){
+             if(!any( avail_method_version %in% c(method_version))){
+                stop(paste("Unsupported targeted approach selected ", method_version,". Currently supported methods for this workflow are ", paste0(avail_method_version,collapse=" , ")))
+             }
+        }
+
+
+        ### Get reference for specificied genome
+        ref_genome=build_default_reference_list()[[reference]]$reference$genome
+
+
+        ### Get references if targeted method is selected
+        if(method_type=="TARGETED"){
+            bi=build_default_reference_list()[[reference]]$panel[[method_version]]$intervals$bi
+            ti=build_default_reference_list()[[reference]]$panel[[method_version]]$intervals$bi
+        }
+
+        ### Get dbsnp database
+        dbsnp=build_default_reference_list()[[reference]]$database$all_common
+
+     
         # Organize input FASTQ files into named list structure
         # Supports both paired-end (R1/R2) and single-end (fastq_r1 only) sequencing
         fastq=list(fastq_r1=fastq_r1,fastq_r2=fastq_r2)
@@ -775,7 +1625,7 @@ preprocess_umi=function(
                     (info %>% dplyr::filter(name==id))$r1,get(id))
             )
         }
-        
+
         # Construct hierarchical output directory structure based on sample metadata
         # Format: project/patient/sample/sequencing_type/method_type/method_version/reference/library/run/flowcell/lane
         
@@ -799,213 +1649,461 @@ preprocess_umi=function(
         # Initialize main job structure and set primary execution environment
         set_main(.env=.this.env)
 
+
         # Store this function's environment in main steps registry
         .main$steps[[fn_id]]<-.this.env
         # Reference the current processing step for appending results
         .main.step=.main$steps[[fn_id]]
 
-            # Record pipeline start time for elapsed time tracking
-            start_time <- Sys.time()
-        
 
-            # Define UMI processing pipeline steps in logical execution order
-            # Each step name directly corresponds to conditional processing blocks below
-            # Steps are designed to handle: raw reads → UMI extraction → trimming → mapping → deduplication → consensus → remapping
-            steps=c(
-                "pre_trim_fastqc",
-                "raw_fastq_to_bam",        # Step 1: Convert raw FASTQ to unmapped BAM format
-                "extract_umi",              # Step 2: Extract molecular barcodes (UMI) from reads
-                "raw_bam_to_fastq",         # Step 3: Convert UMI-tagged BAM back to FASTQ for processing
-                "trim_adapt",
-                "post_trim_fastqc",               # Step 4: Trim sequencing adapters and low-quality bases with fastp
-                "map_trimmed",              # Step 5: Align trimmed reads to reference genome with BWA
-                "tag_trimmed",              # Step 6: Merge mapped/unmapped BAM files and tag with attributes
-                "filter_paired",            # Step 7: Filter for properly paired reads (flag -f 2)
-                "sort_filtered",            # Step 8: Sort and index filtered BAM file by coordinate
-                "pre_dedup_qc",             # Step 9: Generate QC metrics before deduplication
-                "group_umi",                # Step 10: Group reads by UMI/molecular barcode for deduplication
-                "collapse_consensus",       # Step 11: Generate consensus sequences from UMI-grouped reads
-                "consensus_bam_to_fastq",           # Step 16: Perform BQSR on consensus BAM
-                "post_dedup_fastqc",   # Step 12: Convert consensus BAM to FASTQ for remapping
-                "remap_consensus",          # Step 13: Realign consensus sequences to reference genome
-                "tag_consensus",            # Step 14: Merge and tag final consensus BAM with read group info
-                "index_consensus",          # Step 15: Index tagged consensus BAM file
-                "recal_bam",
-                "post_dedup_qc"          # Step 17: Generate QC metrics after deduplication
+        if(umi){
+        .main.step$steps <-append(
+                .main.step$steps,
+                preprocess_umi(
+                    sif_gatk=sif_gatk,
+                    env_fgbio=env_fgbio,
+                    env_fastp=env_fastp,
+                    bin_bwa=bin_bwa,
+                    bin_picard=bin_picard,
+                    bin_bedtools=bin_bedtools,
+                    bin_samtools=bin_samtools,
+                    bin_fastqc=bin_fastqc,
+                    ref_genome=ref_genome,
+                    dbsnp=dbsnp,
+                    bi=bi,
+                    ti=ti,
+                    fastq=list(fastq),
+                    project_id=project_id,
+                    patient_id=patient_id,
+                    sample_id=sample_id,
+                    sequencing_type=sequencing_type,
+                    method_type=method_type,
+                    method_version=method_version,
+                    reference=reference,
+                    library_id=library_id,
+                    run_id=run_id,
+                    flowcell_id=flowcell_id,
+                    lane_id=lane_id,
+                    output_dir=out_file_dir,
+                    output_name=input_id,
+                    tmp_dir=tmp_dir,
+                    env_dir=env_dir,
+                    batch_dir=batch_dir,
+                    err_msg=err_msg,
+                    verbose=verbose,
+                    threads=threads,
+                    ram=ram,
+                    executor_id=task_id
+                )
             )
+        }else{
+        .main.step$steps <-append(
+                .main.step$steps,
+                    preprocess_default(
+                    sif_gatk=sif_gatk,
+                    env_fastp=env_fastp,
+                    bin_bwa=bin_bwa,
+                    bin_picard=bin_picard,
+                    bin_bedtools=bin_bedtools,
+                    bin_samtools=bin_samtools,
+                    bin_fastqc=bin_fastqc,
+                    ref_genome=ref_genome,
+                    dbsnp=dbsnp,
+                    bi=bi,
+                    ti=ti,
+                    fastq=list(fastq),
+                    project_id=project_id,
+                    patient_id=patient_id,
+                    sample_id=sample_id,
+                    sequencing_type=sequencing_type,
+                    method_type=method_type,
+                    method_version=method_version,
+                    reference=reference,
+                    library_id=library_id,
+                    run_id=run_id,
+                    flowcell_id=flowcell_id,
+                    lane_id=lane_id,
+                    output_dir=out_file_dir,
+                    output_name=input_id,
+                    tmp_dir=tmp_dir,
+                    env_dir=env_dir,
+                    batch_dir=batch_dir,
+                    err_msg=err_msg,
+                    verbose=verbose,
+                    threads=threads,
+                    ram=ram,
+                    executor_id=task_id
+                )
+            )
+        }
 
-            # Append cleaning step if required
-            
-            if(clean_tmp){
-                steps=append(steps,"clean_tmp")
-            }
+
+        # Return main object to parent environment for job tracking and output reporting
+        .env$.main <- .main
+
+        }
         
-            # Total number of pipeline steps for progress reporting and loop control
-            total_steps=length(steps)
+        # Setup execution environment by copying parent scope variables
+        .base.env=environment()
+        # Merge additional parameters passed via ... into execution environment
+        list2env(list(...),envir=.base.env)
+        # Configure environment variables required for batch processing and temp directories
+        set_env_vars(
+            .env= .base.env,
+            vars="fastq_r1"
+        )
 
-            # Execute each pipeline step in order with progress logging
-            for(step in 1:total_steps){
+        # Launch the UMI processing pipeline with fully prepared environment
+        launch(.env=.base.env)
+
+}
+
+
+
+
+
+
+
+#' Process UMI-tagged sequencing data
+#'
+#' Processes sequencing data that include Unique Molecular Identifiers (UMIs).
+#' The function runs a multi-step pipeline that extracts UMIs, trims adapters,
+#' aligns reads, groups reads by UMI, collapses UMIs to consensus sequences and
+#' remaps consensus reads. It is intended to reduce PCR and sequencing errors
+#' by collapsing reads originating from the same original molecule.
+#'
+#' @details
+#' The pipeline performs the following logical stages (implemented as ordered
+#' steps in the function): extraction of UMIs, read trimming, mapping of
+#' trimmed reads, tagging/merging to preserve UMI information, grouping by UMI,
+#' consensus calling (with fgbio), conversion between BAM/FASTQ where necessary,
+#' remapping consensus reads and final tagging/merging.
+#'
+#' Each step logs progress and is wrapped in error handling so failures report
+#' which pipeline step failed and abort early.
+#'
+#' @param sif_gatk Path to the GATK Singularity image (used for GATK-based helpers).
+#'   Defaults to \code{build_default_sif_list()$sif_gatk}.
+#' @param env_fgbio Python environment identifier for fgbio tools. Defaults to
+#'   \code{build_default_python_enviroment_list()$env_fg_bio}.
+#' @param env_fastp Python environment identifier for fastp. Defaults to
+#'   \code{build_default_python_enviroment_list()$env_fastp}.
+#' @param bin_bwa Path or identifier for the BWA binary. Defaults to
+#'   \code{build_default_binary_list()$alignment$bin_bwa}.
+#' @param bin_samtools Path or identifier for the samtools binary. Defaults to
+#'   \code{build_default_binary_list()$alignment$bin_samtool}.
+#' @param ref_genome Path to the reference genome FASTA used for alignments.
+#'   Defaults to \code{build_default_reference_list()$HG19$reference$genome}.
+#' @param fastq Named list or object with FASTQ file paths. Expected keys are
+#'   \code{fastq_r1} and \code{fastq_r2} (or a single fastq value for single-end).
+#' @param project_id Optional project identifier used when constructing output
+#'   directory structure.
+#' @param patient_id Optional patient identifier used when constructing output
+#'   directory structure and read-group tags.
+#' @param sample_id Optional sample identifier; used as \code{input_id} when
+#'   building output filenames and read-group tags.
+#' @param sequencing_type method_type,method_version,reference Optional strings
+#'   describing sequencing assay details (used in output path creation).
+#' @param library_id,run_id,flowcell_id,lane_id Optional run/library identifiers.
+#'   If not provided the function attempts to infer them from the FASTQ files
+#'   using \code{new_check_seq_info}.
+#' @param ... Additional arguments forwarded to internal helper functions (for
+#'   example \code{tmp_dir}, \code{batch_dir}, \code{threads}, \code{ram},
+#'   \code{verbose}, \code{executor_id} and \code{batch_config}).
+#'
+#' @return Invisibly returns the internal `.main` object containing pipeline
+#'   steps and collected output paths; the function primarily writes files and
+#'   job reports to the specified output directories.
+#'
+#' @examples
+#' \dontrun{
+#' fastq <- list(fastq_r1 = "sample_R1.fastq.gz", fastq_r2 = "sample_R2.fastq.gz")
+#' preprocess_umi(fastq = fastq, patient_id = "P001", sample_id = "S001",
+#'                output_dir = "./results", threads = 8, ram = 16)
+#' }
+#'
+#' @export
+
+preprocess_default=function(
+    sif_gatk=build_default_sif_list()$sif_gatk,
+    env_fastp=build_default_python_enviroment_list()$env_fastp,
+    bin_bwa=build_default_binary_list()$alignment$bin_bwa,
+    bin_picard=build_default_tool_binary_list()$bin_picard,
+    bin_bedtools=build_default_tool_binary_list()$bin_bedtools,
+    bin_samtools=build_default_binary_list()$alignment$bin_samtool,
+    bin_fastqc=build_default_tool_binary_list()$bin_fastqc,
+    ref_genome=build_default_reference_list()$HG19$reference$genome,
+    dbsnp=build_default_reference_list()$HG19$database$all_common,
+    bi=build_default_reference_list()$HG19$panel$PCF_V3$intervals$bi,
+    ti=build_default_reference_list()$HG19$panel$PCF_V3$intervals$ti,
+    fastq=NULL,
+    project_id=NULL,
+    patient_id=NULL,
+    sample_id=NULL,
+    sequencing_type=NULL,
+    method_type=NULL,
+    method_version=NULL,
+    reference=NULL,
+    library_id=NULL,
+    run_id=NULL,
+    flowcell_id=NULL,
+    lane_id=NULL,
+    chromosomes=NULL,
+    clean_tmp=TRUE,
+    ...
+){
+    
+      run_main=function(
+            .env
+      ){
+
+
+        # Copy environment variables from parent scope to current environment
+        .this.env=environment()
+        append_env(to=.this.env,from=.env)
+        # Initialize main job structure and set primary execution environment
+        set_main(.env=.this.env)
+
+
+        # Store this function's environment in main steps registry
+        .main$steps[[fn_id]]<-.this.env
+        # Reference the current processing step for appending results
+        .main.step=.main$steps[[fn_id]]
+
+        # Record pipeline start time for elapsed time tracking
+        start_time <- Sys.time()
+    
+
+        # Define UMI processing pipeline steps in logical execution order
+        # Each step name directly corresponds to conditional processing blocks below
+        # Steps are designed to handle: raw reads → UMI extraction → trimming → mapping → deduplication → consensus → remapping
+        steps=c(
+            "pre_trim_fastqc",
+            "trim_adapt",
+            "post_trim_fastqc",         # Step 4: Trim sequencing adapters and low-quality bases with fastp
+            "map_trimmed",              # Step 5: Align trimmed reads to reference genome with BWA
+            "filter_paired",            # Step 7: Filter for properly paired reads (flag -f 2)
+            "sort_filtered",            # Step 8: Sort and index filtered BAM file by coordinate
+            "pre_dedup_qc",             # Step 9: Generate QC metrics before deduplication
+            "dedup_markdups",
+            "recal_bam",
+            "post_dedup_qc"          # Step 17: Generate QC metrics after deduplication
+        )
+
+        # Append cleaning step if required
+        
+        if(clean_tmp){
+            steps=append(steps,"clean_tmp")
+        }
+    
+        # Total number of pipeline steps for progress reporting and loop control
+        total_steps=length(steps)
+
+        # Execute each pipeline step in order with progress logging
+        for(step in 1:total_steps){
+            
+            # Log pipeline progress with current step number and name
+            logger(paste("Running step", step, "of", total_steps, ":", steps[step]),start_time)
+            
+            # Wrap step execution in error handling to enable graceful failure reporting
+            # If tryCatch catches error, it logs the step and error message, then aborts
+            tryCatch({
+
+
+
+            
+            ### STEP 1: Convert raw FASTQ to unmapped BAM format
+            if(steps[step]=="pre_trim_fastqc"){
                 
-                # Log pipeline progress with current step number and name
-                logger(paste("Running step", step, "of", total_steps, ":", steps[step]),start_time)
-                
-                # Wrap step execution in error handling to enable graceful failure reporting
-                # If tryCatch catches error, it logs the step and error message, then aborts
-                tryCatch({
-
-
-
-                
-                ### STEP 1: Convert raw FASTQ to unmapped BAM format
-                if(steps[step]=="pre_trim_fastqc"){
-                    
-                    .main.step$steps <-append(
-                        .main.step$steps,
-                        new_qc_fastqc(
-                                bin_fastqc=bin_fastqc,
-                                fastq=list(fastq),
-                                output_dir=paste0(out_file_dir,"/fastqc/pre_trim"),
-                                output_name=paste0(input_id),
-                                tmp_dir=tmp_dir,
-                                env_dir=env_dir,
-                                batch_dir=batch_dir,
-                                err_msg=err_msg,
-                                verbose=verbose,
-                                threads=threads,
-                                fn_id="pre_trim",
-                                ram=ram,
-                                executor_id=task_id
-                        )
+                .main.step$steps <-append(
+                    .main.step$steps,
+                    new_qc_fastqc(
+                            bin_fastqc=bin_fastqc,
+                            fastq=list(fastq),
+                            output_dir=paste0(out_file_dir,"/fastqc/pre_trim"),
+                            output_name=paste0(input_id),
+                            tmp_dir=tmp_dir,
+                            env_dir=env_dir,
+                            batch_dir=batch_dir,
+                            err_msg=err_msg,
+                            verbose=verbose,
+                            threads=threads,
+                            fn_id="pre_trim",
+                            ram=ram,
+                            executor_id=task_id
                     )
+                )
 
-                  
-                    .this.step=.main.step$steps$new_qc_fastqc.pre_trim
-                    .main.step$out_files$fastqc$pre_trim=.this.step$out_files
-                }
+                
+                .this.step=.main.step$steps$new_qc_fastqc.pre_trim
+                .main.step$out_files$fastqc$pre_trim=.this.step$out_files
+            }
 
 
-                ### STEP 1: Convert raw FASTQ to unmapped BAM format
-                if(steps[step]=="raw_fastq_to_bam"){
-                    
-                    .main.step$steps <-append(
+            ### STEP 4: Trim sequencing adapters and low-quality bases with fastp
+            if(steps[step]=="trim_adapt"){
+            
+                .main.step$steps <-append(
                         .main.step$steps,
-                        fastq_to_sam_gatk(
-                                sif_gatk=sif_gatk,
-                                fastq=list(fastq),
-                                tags=list(
+                    trim_umi_fastp(
+                            env_fastp=env_fastp,
+                            fastq=list(.main.step$out_files$raw$fastq$untrimmed),
+                            output_dir=paste0(out_file_dir,"/fastp"),
+                            output_name=paste0(input_id),
+                            tmp_dir=tmp_dir,
+                            env_dir=env_dir,
+                            batch_dir=batch_dir,
+                            err_msg=err_msg,
+                            verbose=verbose,
+                            threads=threads,
+                            ram=ram,
+                            executor_id=task_id
+                    )
+                )
+
+                .this.step=.main.step$steps$trim_umi_fastp
+                .main.step$out_files$raw$fastq$trimmed=.this.step$out_files
+            }
+
+            ### STEP 1: Convert raw FASTQ to unmapped BAM format
+            if(steps[step]=="post_trim_fastqc"){
+                .main.step$steps <-append(
+                    .main.step$steps,
+                    new_qc_fastqc(
+                            bin_fastqc=bin_fastqc,
+                            fastq=list(.main.step$out_files$raw$fastq$trimmed$fastq),
+                            output_dir=paste0(out_file_dir,"/fastqc/post_trim"),
+                            output_name=paste0(input_id),
+                            tmp_dir=tmp_dir,
+                            env_dir=env_dir,
+                            batch_dir=batch_dir,
+                            err_msg=err_msg,
+                            verbose=verbose,
+                            threads=threads,
+                            fn_id="post_trim",
+                            ram=ram,
+                            executor_id=task_id
+                    )
+                )
+
+                .this.step=.main.step$steps$new_qc_fastqc.post_trim
+                .main.step$out_files$fastqc$post_trim=.this.step$out_files
+            }
+
+
+            ### STEP 5: Align trimmed reads to reference genome with BWA
+            if(steps[step]=="map_trimmed"){
+            
+                .main.step$steps <-append(
+                        .main.step$steps,
+                        new_alignment_bwa(
+                                bin_bwa=bin_bwa,
+                                bin_samtools=bin_samtools,
+                                ref_genome=ref_genome,
+                                fastq=list(.main.step$out_files$raw$fastq$trimmed$fastq),
+                                tags= list(
                                     id_tag=patient_id,
                                     pu_tag="TPU",
                                     pl_tag="ILLUMINA",
                                     lb_tag=library_id,
                                     sm_tag=input_id
                                 ),
+                                clean=TRUE,
                                 output_dir=tmp_dir,
-                                output_name=paste0(input_id,".unmapped"),
+                                output_name=paste0(input_id,".mapped"),
                                 tmp_dir=tmp_dir,
                                 env_dir=env_dir,
                                 batch_dir=batch_dir,
                                 err_msg=err_msg,
                                 verbose=verbose,
                                 threads=threads,
-                                fn_id="raw",
                                 ram=ram,
+                                fn_id="raw",
                                 executor_id=task_id
                         )
+                )
+
+                .this.step=.main.step$steps$new_alignment_bwa.raw
+                .main.step$out_files$raw$bam$mapped$unfiltered=.this.step$out_files$bam
+            }
+
+
+            ### STEP 7: Filter for properly paired reads (flag -f 2)
+            if(steps[step]=="filter_paired"){
+
+                .main.step$steps <-append(
+                    .main.step$steps,
+                    filter_samtools(
+                            bin_samtools=bin_samtools,
+                            bam=.main.step$out_files$raw$bam$mapped$unfiltered,
+                            flag=2,
+                            clean=TRUE,
+                            chromosomes=chromosomes,
+                            output_dir=tmp_dir,
+                            output_name=paste0(input_id,".mapped"),
+                            tmp_dir=tmp_dir,
+                            env_dir=env_dir,
+                            batch_dir=batch_dir,
+                            err_msg=err_msg,
+                            verbose=verbose,
+                            threads=threads,
+                            ram=ram,
+                            executor_id=task_id
                     )
+                )
+                
+                .this.step=.main.step$steps$filter_samtools
+                .main.step$out_files$raw$bam$mapped$filtered=.this.step$out_files$bam
 
-                    .this.step=.main.step$steps$fastq_to_sam_gatk.raw
-                    .main.step$out_files$raw$bam$unmapped=.this.step$out_files
-                }
+            }
 
-                if(steps[step]=="extract_umi"){
-
-               
-
-                    ### STEP 2: Extract molecular barcodes (UMI) from reads
+            ### STEP 8: Sort and index filtered BAM file by coordinate
+            if(steps[step]=="sort_filtered"){
                     .main.step$steps <-append(
                     .main.step$steps,
-                    extract_umi_fgbio(
-                        env_fgbio = env_fgbio,
-                        bam=.main.step$out_files$raw$bam$unmapped,
-                        output_dir=tmp_dir,
-                        output_name=paste0(input_id,".unmapped"),
-                        clean=TRUE,
-                        tmp_dir=tmp_dir,
-                        env_dir=env_dir,
-                        batch_dir=batch_dir,
-                        err_msg=err_msg,
-                        verbose=verbose,
-                        threads=threads,
-                        ram=ram,
-                        executor_id=task_id
-                        )
-                    )
-
-                    .this.step=.main.step$steps$extract_umi_fgbio
-                    .main.step$out_files$raw$bam$unmapped$umi=.this.step$out_files
-                }
-
-                ### STEP 3: Convert UMI-tagged BAM back to FASTQ for processing
-                if(steps[step]=="raw_bam_to_fastq"){
-
-                    .main.step$steps <-append(
-                        .main.step$steps,
-                        sam_to_fastq_gatk(
-                                sif_gatk=sif_gatk,
-                                bam=.main.step$out_files$raw$bam$unmapped$umi,
-                                output_dir=tmp_dir,
-                                output_name=paste0(input_id,".unmapped.umi"),
+                        new_sort_and_index_bam_samtools(
+                                bin_samtools=bin_samtools,
+                                bam=.main.step$out_files$raw$bam$mapped$filtered,
+                                sort=TRUE,
+                                index=TRUE,
+                                coord_sort=TRUE,
+                                stats=TRUE,
+                                output_dir=paste0(out_file_dir,"/raw"),
+                                output_name=paste0(input_id,".mapped.filtered"),
                                 tmp_dir=tmp_dir,
                                 env_dir=env_dir,
                                 batch_dir=batch_dir,
                                 err_msg=err_msg,
                                 verbose=verbose,
                                 threads=threads,
-                                fn_id="raw",
                                 ram=ram,
+                                fn_id="pre",
                                 executor_id=task_id
                         )
                     )
 
-                    .this.step=.main.step$steps$sam_to_fastq_gatk.raw
-                    .main.step$out_files$raw$fastq$untrimmed=.this.step$out_files
-                }
+                .this.step=.main.step$steps$new_sort_and_index_bam_samtools.pre
+                .main.step$out_files$raw$bam$mapped$filtered$sorted=.this.step$out_files
 
-                ### STEP 4: Trim sequencing adapters and low-quality bases with fastp
-                if(steps[step]=="trim_adapt"){
-                
+            }
+
+
+            ### STEP 9: Generate QC metrics before deduplication
+            if(steps[step]=="pre_dedup_qc"){
                     .main.step$steps <-append(
-                            .main.step$steps,
-                        trim_umi_fastp(
-                                env_fastp=env_fastp,
-                                fastq=list(.main.step$out_files$raw$fastq$untrimmed),
-                                output_dir=paste0(out_file_dir,"/fastp"),
-                                output_name=paste0(input_id,".unmapped.umi"),
+                    .main.step$steps,
+                        new_metrics_alignqc(
+                                bin_samtools=bin_samtools,
+                                bin_picard=bin_picard,
+                                bin_bedtools=bin_bedtools,
+                                ref_genome=ref_genome,
+                                bi=bi,
+                                ti=ti,
+                                bam=.main.step$out_files$raw$bam$mapped$filtered$sorted$srt_bam,
+                                mapq=0,
                                 clean=TRUE,
-                                tmp_dir=tmp_dir,
-                                env_dir=env_dir,
-                                batch_dir=batch_dir,
-                                err_msg=err_msg,
-                                verbose=verbose,
-                                threads=threads,
-                                ram=ram,
-                                executor_id=task_id
-                        )
-                    )
-
-                    .this.step=.main.step$steps$trim_umi_fastp
-                    .main.step$out_files$raw$fastq$trimmed=.this.step$out_files
-                }
-
-                           ### STEP 1: Convert raw FASTQ to unmapped BAM format
-                if(steps[step]=="post_trim_fastqc"){
-                    
-                    .main.step$steps <-append(
-                        .main.step$steps,
-                        new_qc_fastqc(
-                                bin_fastqc=bin_fastqc,
-                                fastq=list(.main.step$out_files$raw$fastq$trimmed$fastq),
-                                output_dir=paste0(out_file_dir,"/fastqc/post_trim"),
+                                method=tolower(method_type),
+                                output_dir=paste0(out_file_dir,"/alignqc/pre_dedup"),
                                 output_name=paste0(input_id),
                                 tmp_dir=tmp_dir,
                                 env_dir=env_dir,
@@ -1013,105 +2111,26 @@ preprocess_umi=function(
                                 err_msg=err_msg,
                                 verbose=verbose,
                                 threads=threads,
-                                fn_id="post_trim",
+                                fn_id="pre",
                                 ram=ram,
                                 executor_id=task_id
                         )
                     )
 
-                    .this.step=.main.step$steps$new_qc_fastqc.post_trim
-                    .main.step$out_files$fastqc$post_trim=.this.step$out_files
-                }
+                .this.step=.main.step$steps$new_metrics_alignqc.pre
+                .main.step$out_files$alignqc$pre_dedup=.this.step$out_files
+            }
 
 
-
-                ### STEP 5: Align trimmed reads to reference genome with BWA
-                if(steps[step]=="map_trimmed"){
-                
-                    .main.step$steps <-append(
-                            .main.step$steps,
-                            new_alignment_bwa(
-                                    bin_bwa=bin_bwa,
-                                    bin_samtools=bin_samtools,
-                                    ref_genome=ref_genome,
-                                    fastq=list(.main.step$out_files$raw$fastq$trimmed$fastq),
-                                    tags= list(
-                                        id_tag=patient_id,
-                                        pu_tag="TPU",
-                                        pl_tag="ILLUMINA",
-                                        lb_tag=library_id,
-                                        sm_tag=input_id
-                                    ),
-                                    clean=TRUE,
-                                    output_dir=tmp_dir,
-                                    output_name=paste0(input_id,".mapped.umi"),
-                                    tmp_dir=tmp_dir,
-                                    env_dir=env_dir,
-                                    batch_dir=batch_dir,
-                                    err_msg=err_msg,
-                                    verbose=verbose,
-                                    threads=threads,
-                                    ram=ram,
-                                    fn_id="raw",
-                                    executor_id=task_id
-                            )
-                    )
-
-                    .this.step=.main.step$steps$new_alignment_bwa.raw
-                    .main.step$out_files$raw$bam$mapped$untagged=.this.step$out_files$bam
-
-                }
-
-                ### STEP 6: Merge mapped/unmapped BAM files and tag with attributes
-                if(steps[step]=="tag_trimmed"){
-                
-                    .main.step$steps <-append(
-                            .main.step$steps,
-                            merge_bam_umi_gatk(
-                                    sif_gatk=sif_gatk,
-                                    bin_samtools = bin_samtools,
-                                    ref_genome=ref_genome,
-                                    bam=list(list(
-                                        mapped=.main.step$out_files$raw$bam$mapped$untagged,
-                                        unmapped=.main.step$out_files$raw$bam$unmapped$umi)),
-                                    attributes=c("XO","NM","MD"),
-                                    sort_order="queryname",
-                                    aligned_reads_only=TRUE,
-                                    add_mate_cigar=FALSE,
-                                    clean=TRUE,
-                                    output_dir=tmp_dir,
-                                    output_name=paste0(input_id,".mapped.umi"),
-                                    tmp_dir=tmp_dir,
-                                    env_dir=env_dir,
-                                    batch_dir=batch_dir,
-                                    err_msg=err_msg,
-                                    verbose=verbose,
-                                    threads=threads,
-                                    ram=ram,
-                                    fn_id="raw",
-                                    executor_id=task_id
-                            )
-                    )
-
-                    .this.step=.main.step$steps$merge_bam_umi_gatk.raw
-                    .main.step$out_files$raw$bam$mapped$tagged$raw=.this.step$out_files$bam
-
-                }
-
-
-                ### STEP 7: Filter for properly paired reads (flag -f 2)
-                if(steps[step]=="filter_paired"){
-
-                    .main.step$steps <-append(
-                        .main.step$steps,
-                        filter_samtools(
-                                bin_samtools=bin_samtools,
-                                bam=.main.step$out_files$raw$bam$mapped$tagged$raw,
-                                flag=2,
-                                clean=TRUE,
-                                chromosomes=chromosomes,
-                                output_dir=tmp_dir,
-                                output_name=paste0(input_id,".mapped.umi.tagged"),
+            if(steps[step]=="dedup_markdups"){
+                  .main.step$steps <-append(
+                    .main.step$steps,
+                        new_markdups_gatk(
+                                sif_gatk = sif_gatk,
+                                bam=.main.step$out_files$raw$bam$mapped$filtered$sorted$srt_bam,
+                                remove_duplicates = TRUE,
+                                output_dir=paste0(out_file_dir,"/markdups"),
+                                output_name=paste0(input_id,".mapped.filtered.sorted"),
                                 tmp_dir=tmp_dir,
                                 env_dir=env_dir,
                                 batch_dir=batch_dir,
@@ -1121,122 +2140,29 @@ preprocess_umi=function(
                                 ram=ram,
                                 executor_id=task_id
                         )
-                    )
-                    
-                    .this.step=.main.step$steps$filter_samtools
-                    .main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$unsorted=.this.step$out_files$bam
+                  )
 
-                }
-
-                ### STEP 8: Sort and index filtered BAM file by coordinate
-                if(steps[step]=="sort_filtered"){
-                     .main.step$steps <-append(
-                        .main.step$steps,
-                            new_sort_and_index_bam_samtools(
-                                    bin_samtools=bin_samtools,
-                                    bam=.main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$unsorted,
-                                    sort=TRUE,
-                                    index=TRUE,
-                                    coord_sort=TRUE,
-                                    stats=TRUE,
-                                    output_dir=paste0(out_file_dir,"/raw"),
-                                    output_name=paste0(input_id,".mapped.umi.tagged.filtered"),
-                                    tmp_dir=tmp_dir,
-                                    env_dir=env_dir,
-                                    batch_dir=batch_dir,
-                                    err_msg=err_msg,
-                                    verbose=verbose,
-                                    threads=threads,
-                                    ram=ram,
-                                    fn_id="pre",
-                                    executor_id=task_id
-                            )
-                     )
-
-                    .this.step=.main.step$steps$new_sort_and_index_bam_samtools.pre
-                    .main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$sorted=.this.step$out_files
-
-                }
+                .this.step=.main.step$steps$new_markdups_gatk
+                .main.step$out_files$deduped=.this.step$out_files
+            }
 
 
-                ### STEP 9: Generate QC metrics before deduplication
-                if(steps[step]=="pre_dedup_qc"){
-                     .main.step$steps <-append(
-                        .main.step$steps,
-                            new_metrics_alignqc(
-                                    bin_samtools=bin_samtools,
-                                    bin_picard=bin_picard,
-                                    bin_bedtools=bin_bedtools,
-                                    ref_genome=ref_genome,
-                                    bi=bi,
-                                    ti=ti,
-                                    bam=.main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$sorted$srt_bam,
-                                    mapq=0,
-                                    clean=TRUE,
-                                    method=tolower(method_type),
-                                    output_dir=paste0(out_file_dir,"/alignqc/pre_dedup"),
-                                    output_name=paste0(input_id),
-                                    tmp_dir=tmp_dir,
-                                    env_dir=env_dir,
-                                    batch_dir=batch_dir,
-                                    err_msg=err_msg,
-                                    verbose=verbose,
-                                    threads=threads,
-                                    fn_id="raw",
-                                    ram=ram,
-                                    executor_id=task_id
-                            )
-                     )
-
-                    .this.step=.main.step$steps$new_metrics_alignqc.raw
-                    .main.step$out_files$raw$alignqc=.this.step$out_files
-
-                }
-
-                ### STEP 10: Group reads by UMI/molecular barcode for deduplication
-                if(steps[step]=="group_umi"){
-                    
-                    .main.step$steps <-append(
-                        .main.step$steps,
-                        group_by_umi_fgbio(
-                                env_fgbio=env_fgbio,
-                                bam=.main.step$out_files$raw$bam$mapped$tagged$filtered$ungrouped$unsorted,
-                                output_dir=tmp_dir,
-                                output_name=paste0(input_id,".mapped.umi.tagged.filtered"),
-                                clean=TRUE,
-                                tmp_dir=paste0(out_file_dir,"/consensus"),
-                                env_dir=env_dir,
-                                batch_dir=batch_dir,
-                                err_msg=err_msg,
-                                verbose=verbose,
-                                threads=threads,
-                                ram=ram,
-                                executor_id=task_id
-                        )
-                    )
-                    
-                    .this.step=.main.step$steps$group_by_umi_fgbio
-                    .main.step$out_files$raw$bam$mapped$tagged$filtered$grouped=.this.step$out_files
-                }
-
-                ### STEP 11: Generate consensus sequences from UMI-grouped reads
-                if(steps[step]=="collapse_consensus"){
-                    
+            
+            ### This step will fail if there is not enough reads to recalibrate
+            ### STEP 16: Perform BQSR on consensus BAM
+            if(steps[step]=="recal_bam"){
                     .main.step$steps <-append(
                     .main.step$steps,
-                        call_consensus_fgbio(
-                                env_fgbio=env_fgbio,
-                                bin_samtools = bin_samtools,
-                                bam=.main.step$out_files$raw$bam$mapped$tagged$filtered$grouped$bam,
-                                tags= list(
-                                        id_tag=patient_id,
-                                        pu_tag="TPU",
-                                        pl_tag="ILLUMINA",
-                                        lb_tag=library_id,
-                                        sm_tag=input_id
-                                    ),
+                        new_recal_gatk(
+                                bin_samtools=bin_samtools,
+                                sif_gatk=sif_gatk,
+                                bin_picard=bin_picard,
+                                ref_genome=ref_genome,
+                                dbsnp=dbsnp,
+                                chromosomes=chromosomes,
+                                bam=.main.step$out_files$deduped$bam,
                                 clean=TRUE,
-                                output_dir=paste0(out_file_dir,"/consensus"),
+                                output_dir=paste0(out_file_dir),
                                 output_name=input_id,
                                 tmp_dir=tmp_dir,
                                 env_dir=env_dir,
@@ -1248,47 +2174,27 @@ preprocess_umi=function(
                                 executor_id=task_id
                         )
                     )
-                    
-                    .this.step=.main.step$steps$call_consensus_fgbio
-                    .main.step$out_files$consensus$bam$unmapped=.this.step$out_files
-                }
+
+                .this.step=.main.step$steps$new_recal_gatk
+                .main.step$out_files$recal=.this.step$out_files$recal
+            }
 
 
-                ### STEP 12: Convert consensus BAM to FASTQ for remapping
-                if(steps[step]=="consensus_bam_to_fastq"){
-                
+            ### STEP 17: Generate QC metrics after deduplication
+            if(steps[step]=="post_dedup_qc"){
                     .main.step$steps <-append(
-                        .main.step$steps,
-                    sam_to_fastq_gatk(
-                                sif_gatk=sif_gatk,
-                                bam= .main.step$out_files$consensus$bam$unmapped$bam,
-                                output_dir=tmp_dir,
-                                output_name=paste0(input_id,".consensus"),
-                                tmp_dir=tmp_dir,
-                                env_dir=env_dir,
-                                batch_dir=batch_dir,
-                                err_msg=err_msg,
-                                verbose=verbose,
-                                threads=threads,
-                                fn_id="consensus",
-                                ram=ram,
-                                executor_id=task_id
-                        )
-                    )
-
-                    .this.step=.main.step$steps$sam_to_fastq_gatk.consensus
-                    .main.step$out_files$consensus$fastq=.this.step$out_files
-                }
-
-
-                if(steps[step]=="post_dedup_fastqc"){
-                    
-                    .main.step$steps <-append(
-                        .main.step$steps,
-                        new_qc_fastqc(
-                                bin_fastqc=bin_fastqc,
-                                fastq=list(.main.step$out_files$consensus$fastq),
-                                output_dir=paste0(out_file_dir,"/fastqc/post_dedup"),
+                    .main.step$steps,
+                        new_metrics_alignqc(
+                                bin_samtools=bin_samtools,
+                                bin_picard=bin_picard,
+                                bin_bedtools=bin_bedtools,
+                                ref_genome=ref_genome,
+                                bi=bi,
+                                ti=ti,
+                                bam=.main.step$out_files$recal$sorted$srt_bam,
+                                mapq=0,
+                                method=tolower(method_type),
+                                output_dir=paste0(out_file_dir,"/alignqc/post_dedup"),
                                 output_name=paste0(input_id),
                                 tmp_dir=tmp_dir,
                                 env_dir=env_dir,
@@ -1296,211 +2202,41 @@ preprocess_umi=function(
                                 err_msg=err_msg,
                                 verbose=verbose,
                                 threads=threads,
-                                fn_id="post_dedup",
+                                fn_id="post",
                                 ram=ram,
                                 executor_id=task_id
                         )
                     )
-
-                  
-                    .this.step=.main.step$steps$new_qc_fastqc.pre_trim
-                    .main.step$out_files$fastqc$pre_trim=.this.step$out_files
-                }
-
-                ### STEP 13: Realign consensus sequences to reference genome
-                if(steps[step]=="remap_consensus"){
-
-                    .main.step$steps <-append(
-                    .main.step$steps,
-                        new_alignment_bwa(
-                                bin_bwa=bin_bwa,
-                                bin_samtools=bin_samtools,
-                                ref_genome=ref_genome,
-                                fastq=list(.main.step$out_files$consensus$fastq),
-                                tags=list(
-                                    id_tag=patient_id,
-                                    pu_tag="TPU",
-                                    pl_tag="ILLUMINA",
-                                    lb_tag=library_id,
-                                    sm_tag=input_id
-                                ),
-                                clean=TRUE,
-                                output_dir=tmp_dir,
-                                output_name=paste0(input_id,".consensus.mapped.untagged"),
-                                tmp_dir=tmp_dir,
-                                env_dir=env_dir,
-                                batch_dir=batch_dir,
-                                err_msg=err_msg,
-                                verbose=verbose,
-                                threads=threads,
-                                ram=ram,
-                                fn_id="consensus",
-                                executor_id=task_id
-                                )
-                        )
-
-                    .this.step=.main.step$steps$new_alignment_bwa.consensus
-                    .main.step$out_files$consensus$bam$mapped$untagged=.this.step$out_files
-                }
-        
-
-                ### STEP 14: Merge and tag final consensus BAM with read group info
-                if(steps[step]=="tag_consensus"){
-
-                    .main.step$steps <-append(
-                    .main.step$steps,
-                    merge_bam_umi_gatk(
-                            sif_gatk=sif_gatk,
-                            bin_samtools = bin_samtools,
-                            ref_genome=ref_genome,
-                            bam=list(list(
-                                mapped=.main.step$out_files$consensus$bam$mapped$untagged,
-                                unmapped=.main.step$out_files$consensus$bam$unmapped)),
-                            attributes=c("X0","RX"),
-                            sort_order="coordinate",
-                            aligned_reads_only=FALSE,
-                            add_mate_cigar=TRUE,
-                            clean=TRUE,
-                            output_dir=tmp_dir,
-                            output_name=paste0(input_id,".consensus.mapped.tagged"),
-                            tmp_dir=tmp_dir,
-                            env_dir=env_dir,
-                            batch_dir=batch_dir,
-                            err_msg=err_msg,
-                            verbose=verbose,
-                            threads=threads,
-                            ram=ram,
-                            fn_id="consensus",
-                            executor_id=task_id
-                            )
-                    )
-
-                    .this.step=.main.step$steps$merge_bam_umi_gatk.consensus
-                    .main.step$out_files$consensus$bam$mapped$tagged$bam=.this.step$out_files
-                }
-
-                
-
-                ### STEP 15: Index tagged consensus BAM file
-                if(steps[step]=="index_consensus"){
-                     .main.step$steps <-append(
-                        .main.step$steps,
-                            new_sort_and_index_bam_samtools(
-                                    bin_samtools=bin_samtools,
-                                    bam=.main.step$out_files$consensus$bam$mapped$tagged$bam,
-                                    sort=FALSE,
-                                    index=TRUE,
-                                    stats=FALSE,
-                                    tmp_dir=tmp_dir,
-                                    env_dir=env_dir,
-                                    batch_dir=batch_dir,
-                                    err_msg=err_msg,
-                                    verbose=verbose,
-                                    threads=threads,
-                                    ram=ram,
-                                    fn_id="post",
-                                    executor_id=task_id
-                            )
-                     )
-
-                    .this.step=.main.step$steps$new_sort_and_index_bam_samtools.post
-                    .main.step$out_files$consensus$bam$mapped$tagged$index=.this.step$out_files
-
-                }
-
-
-                ### This step will fail if there is not enough reads to recalibrate
-                ### STEP 16: Perform BQSR on consensus BAM
-                if(steps[step]=="recal_bam"){
-                     .main.step$steps <-append(
-                        .main.step$steps,
-                            new_recal_gatk(
-                                    bin_samtools=bin_samtools,
-                                    sif_gatk=sif_gatk,
-                                    bin_picard=bin_picard,
-                                    ref_genome=ref_genome,
-                                    dbsnp=dbsnp,
-                                    chromosomes=chromosomes,
-                                    bam=.main.step$out_files$consensus$bam$mapped$tagged$bam,
-                                    clean=TRUE,
-                                    output_dir=paste0(out_file_dir),
-                                    output_name=input_id,
-                                    tmp_dir=tmp_dir,
-                                    env_dir=env_dir,
-                                    batch_dir=batch_dir,
-                                    err_msg=err_msg,
-                                    verbose=verbose,
-                                    threads=threads,
-                                    ram=ram,
-                                    executor_id=task_id
-                            )
-                     )
-
-                    .this.step=.main.step$steps$new_recal_gatk
-                    .main.step$out_files$recal=.this.step$out_files$recal
-                }
-
-
-                ### STEP 17: Generate QC metrics after deduplication
-                if(steps[step]=="post_dedup_qc"){
-                     .main.step$steps <-append(
-                        .main.step$steps,
-                            new_metrics_alignqc(
-                                    bin_samtools=bin_samtools,
-                                    bin_picard=bin_picard,
-                                    bin_bedtools=bin_bedtools,
-                                    ref_genome=ref_genome,
-                                    bi=bi,
-                                    ti=ti,
-                                    bam=.main.step$out_files$recal$sorted$srt_bam,
-                                    mapq=0,
-                                    method=tolower(method_type),
-                                    output_dir=paste0(out_file_dir,"/alignqc/post_dedup"),
-                                    output_name=paste0(input_id),
-                                    tmp_dir=tmp_dir,
-                                    env_dir=env_dir,
-                                    batch_dir=batch_dir,
-                                    err_msg=err_msg,
-                                    verbose=verbose,
-                                    threads=threads,
-                                    fn_id="consensus",
-                                    ram=ram,
-                                    executor_id=task_id
-                            )
-                     )
-                    .this.step=.main.step$steps$new_metrics_alignqc.raw
-                    .main.step$out_files$raw$alignqc=.this.step$out_files
-                }
-
-
-                
-
-
-                if(steps[step]=="clean_tmp"){
-                    unlink(tmp_dir,recursive = TRUE,force=TRUE)
-                }
-
-
-                    # Log successful step completion
-                    logger(paste("Completed step", step, "of", total_steps, ":", steps[step]),start_time)
-                    
-                }, error=function(e){
-                    # Handle step execution errors with informative message
-                    logger(paste("ERROR in step", step, ":", steps[step]),start_time)
-                    stop(paste("Step '" , steps[step], "' failed. Error:", e$message,
-                              "\nReview input files and parameters before retrying."))
-                })
-        
-        }
             
-        # Log pipeline completion with total runtime
-        total_elapsed <- as.numeric(difftime(Sys.time(), start_time, units="secs"))
-        total_elapsed_str <- sprintf("%.1f", total_elapsed)
-        logger(paste("UMI processing pipeline completed successfully."),start_time)
-        logger(paste("Total steps executed:", total_steps, "| Total runtime:", total_elapsed_str, "seconds"),start_time)
-          
-        # Return main object to parent environment for job tracking and output reporting
-        .env$.main <- .main
+                .this.step=.main.step$steps$new_metrics_alignqc.post
+                .main.step$out_files$alignqc$post_dedup=.this.step$out_files
+            }
+
+            if(steps[step]=="clean_tmp"){
+                unlink(tmp_dir,recursive = TRUE,force=TRUE)
+            }
+
+
+                # Log successful step completion
+                logger(paste("Completed step", step, "of", total_steps, ":", steps[step]),start_time)
+                
+            }, error=function(e){
+                # Handle step execution errors with informative message
+                logger(paste("ERROR in step", step, ":", steps[step]),start_time)
+                stop(paste("Step '" , steps[step], "' failed. Error:", e$message,
+                            "\nReview input files and parameters before retrying."))
+            })
+    
+    }
+        
+    # Log pipeline completion with total runtime
+    total_elapsed <- as.numeric(difftime(Sys.time(), start_time, units="secs"))
+    total_elapsed_str <- sprintf("%.1f", total_elapsed)
+    logger(paste("UMI processing pipeline completed successfully."),start_time)
+    logger(paste("Total steps executed:", total_steps, "| Total runtime:", total_elapsed_str, "seconds"),start_time)
+        
+    # Return main object to parent environment for job tracking and output reporting
+    .env$.main <- .main
 
     }
     
@@ -1511,18 +2247,12 @@ preprocess_umi=function(
     # Configure environment variables required for batch processing and temp directories
     set_env_vars(
         .env= .base.env,
-        vars="fastq_r1"
+        vars="fastq"
     )
 
     # Launch the UMI processing pipeline with fully prepared environment
     launch(.env=.base.env)
-        
 
 }
-
-
-        
-       
-
 
 
