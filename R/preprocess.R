@@ -812,7 +812,7 @@ preprocess_umi=function(
                     .main.step$steps,
                     new_qc_fastqc(
                             bin_fastqc=bin_fastqc,
-                            fastq=list(fastq),
+                            fastq=list(input),
                             output_dir=paste0(out_file_dir,"/fastqc/pre_trim"),
                             output_name=paste0(input_id),
                             tmp_dir=tmp_dir,
@@ -840,7 +840,7 @@ preprocess_umi=function(
                     .main.step$steps,
                     fastq_to_sam_gatk(
                             sif_gatk=sif_gatk,
-                            fastq=list(fastq),
+                            fastq=list(input),
                             tags=list(
                                 id_tag=patient_id,
                                 pu_tag="TPU",
@@ -1919,7 +1919,7 @@ preprocess_default=function(
                     .main.step$steps,
                     new_qc_fastqc(
                             bin_fastqc=bin_fastqc,
-                            fastq=list(fastq),
+                            fastq=list(input),
                             output_dir=paste0(out_file_dir,"/fastqc/pre_trim"),
                             output_name=paste0(input_id),
                             tmp_dir=tmp_dir,
@@ -1947,7 +1947,7 @@ preprocess_default=function(
                         .main.step$steps,
                     trim_umi_fastp(
                             env_fastp=env_fastp,
-                            fastq=list(.main.step$out_files$raw$fastq$untrimmed),
+                            fastq=list(input),
                             output_dir=paste0(out_file_dir,"/fastp"),
                             output_name=paste0(input_id),
                             tmp_dir=tmp_dir,
