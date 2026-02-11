@@ -153,9 +153,10 @@ new_markdups_gatk=function(
     .main$exec_code=paste0(
       " singularity run ",sif_gatk," /gatk/gatk MarkDuplicatesSpark -I ",
       input, " -O ", .main$out_files$bam,
-      " -M ",.main$out_files$stats," ",
+      " -M ", .main$out_files$stats," ",
       tmp," --conf \'spark.executor.cores=",threads,"\'", dups
     )
+
 
     run_job(.env=.this.env)
 
