@@ -141,7 +141,8 @@ new_markdups_gatk=function(
     .main$exec_code=paste0(
       " singularity run ",
       sif_gatk," /gatk/gatk MarkDuplicatesSpark",
-      " -I ",input, 
+      " -I ",input,
+      " -M ", .main$out_files$stats,
       " -O ", .main$out_files$bam,
       ifelse(!is.null(tmp_dir),paste0(" --tmp-dir ",tmp_dir)," "),
       ifelse(remove_duplicates," --remove-all-duplicates"," "),
