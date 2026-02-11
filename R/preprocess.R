@@ -1454,7 +1454,6 @@ preprocess_umi=function(
                                     ti=ti,
                                     bam=.main.step$out_files$recal$sorted$srt_bam,
                                     mapq=0,
-                                    clean=TRUE,
                                     method=tolower(method_type),
                                     output_dir=paste0(out_file_dir,"/alignqc/post_dedup"),
                                     output_name=paste0(input_id),
