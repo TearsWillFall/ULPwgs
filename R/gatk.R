@@ -146,14 +146,13 @@ new_markdups_gatk=function(
         dups=" --remove-all-duplicates"
     }
 
-
-    .main$out_files$bam=paste0(out_file_dir,"/",get_file_name(bam),".sorted.rmdup.",get_file_ext(bam))
+    .main$out_files$bam=paste0(out_file_dir,"/",input_id,".sorted.rmdup.",get_file_ext(bam))
     
-    .main$out_files$stats=paste0(out_file_dir,"/",get_file_name(bam),".gatk_rmdup.txt")
+    .main$out_files$stats=paste0(out_file_dir,"/",input,".gatk_rmdup.txt")
 
     .main$exec_code=paste0(
       " singularity run ",sif_gatk," /gatk/gatk MarkDuplicatesSpark -I ",
-      input, " -O ",  main$out_files$bam,
+      input, " -O ", .main$out_files$bam,
       " -M ",.main$out_files$stats," ",
       tmp," --conf \'spark.executor.cores=",threads,"\'", dups
     )
