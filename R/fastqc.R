@@ -134,16 +134,16 @@ new_qc_fastqc=function(
     set_main(.env=.this.env)
     .main$out_files$fastqc=list(
         r1=list( 
-          zip=paste0(out_file_dir,"/",get_file_name(input$file_r1),"_fastqc.zip"),
-          html=paste0(out_file_dir,"/",get_file_name(input$file_r1),"_fastqc.html")
+          zip=paste0(out_file_dir,"/",get_file_name(input$fastq_r1),"_fastqc.zip"),
+          html=paste0(out_file_dir,"/",get_file_name(input$fastq_r1),"_fastqc.html")
         ),
         r2=list(
-          zip=paste0(out_file_dir,"/",get_file_name(input$file_r1),"_fastqc.zip"),
-          html=paste0(out_file_dir,"/",get_file_name(input$file_r2),"_fastqc.html")
+          zip=paste0(out_file_dir,"/",get_file_name(input$fastq_r1),"_fastqc.zip"),
+          html=paste0(out_file_dir,"/",get_file_name(input$fastq_r2),"_fastqc.html")
         )
      )
 
-    .main$exec_code=paste(bin_fastqc,"-o ", out_file_dir,"-t ",threads,"--noextract",input$file_r1,input$file_r2)
+    .main$exec_code=paste(bin_fastqc,"-o ", out_file_dir,"-t ",threads,"--noextract",input$fastq_r1,input$fastq_r2)
 
     run_job(.env=.this.env)
 
