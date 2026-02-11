@@ -90,7 +90,6 @@ extract_umi_fgbio=function(
 group_by_umi_fgbio=function(
   env_fgbio=build_default_python_enviroment_list()$env_fgbio,
   bam=NULL,
-  clean_input=TRUE,
   ...
 ){
    run_main=function(
@@ -112,10 +111,6 @@ group_by_umi_fgbio=function(
       " -t RX",
       " -f ",.main$out_files$family_size_counts
     )
-
-    if(clean_input){
-       .main$exec_code=paste(.main$exec_code,"; rm",input)
-    }
 
      run_job(.env=.this.env)
 
@@ -185,7 +180,6 @@ call_consensus_fgbio=function(
     lb_tag="NA",
     sm_tag="NA"
   ),
-  clean_input=FALSE,
   ...
 ){
    run_main=function(
@@ -196,6 +190,7 @@ call_consensus_fgbio=function(
     set_main(.env=.this.env)
 
     .main$out_files$bam=paste0(out_file_dir,"/",input_id,".consensus.unmapped.rg_fix.bam")
+    .main$out_files$stats=paste0(out_file_dir,"/",input_id,".consensus.unmapped.stats")
     tmp_bam=paste0(out_file_dir,"/",input_id,".consensus.unmapped.bam")
     
     if(!is.null(tags)){
@@ -213,6 +208,7 @@ call_consensus_fgbio=function(
       "; fgbio CallMolecularConsensusReads ", 
       paste0(" --input=" ,input),
       paste0(" --output=",tmp_bam),
+      paste0(" --stats=",.main$out_files$stats),
       " --error-rate-post-umi 40 ",
       " --error-rate-pre-umi 45 ",
       " --output-per-base-tags false ",
@@ -225,9 +221,7 @@ call_consensus_fgbio=function(
       tmp_bam, " -o ",  .main$out_files$bam, "; rm ", tmp_bam
     )
 
-    if(clean_input){
-       .main$exec_code=paste(.main$exec_code,"; rm",input)
-    }
+  
 
      run_job(.env=.this.env)
 

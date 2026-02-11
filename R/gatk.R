@@ -4120,7 +4120,6 @@ merge_bam_umi_gatk=function(
   sort_order="queryname",
   aligned_reads_only=TRUE,
   add_mate_cigar=FALSE,
-  clean_input=FALSE,
   ...
 ){
 
@@ -4150,10 +4149,6 @@ merge_bam_umi_gatk=function(
       " --ALIGNER_PROPER_PAIR_FLAGS true ",
       " --CLIP_OVERLAPPING_READS false "
       )
-
-     if(clean_input){
-        .main$exec_code=paste(.main$exec_code,"; rm ",input$mapped,input$unmapped)
-     }
 
      run_job(.env=.this.env)
 
@@ -4385,6 +4380,13 @@ new_recal_gatk=function(
                             ram=ram,
                             executor_id=task_id
                     )
+
+
+                  ## At this point the input bam is not needed we can remove it
+
+                  if(clean){
+                    file.remove(c(input,paste0(input,".bai")))
+                  }
 
                 .this.step=.main.step$steps$new_apply_BQSR_gatk
                 .main.step$out_files$before_bqsr$bam=get_variable_env(env=.this.step)

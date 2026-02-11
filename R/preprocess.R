@@ -1078,7 +1078,7 @@ preprocess_umi=function(
                                     sort_order="queryname",
                                     aligned_reads_only=TRUE,
                                     add_mate_cigar=FALSE,
-                                    clean_input=TRUE,
+                                    clean=TRUE,
                                     output_dir=tmp_dir,
                                     output_name=paste0(input_id,".mapped.umi"),
                                     tmp_dir=tmp_dir,
@@ -1203,7 +1203,7 @@ preprocess_umi=function(
                                 output_dir=tmp_dir,
                                 output_name=paste0(input_id,".mapped.umi.tagged.filtered"),
                                 clean=TRUE,
-                                tmp_dir=tmp_dir,
+                                tmp_dir=paste0(out_file_dir,"/consensus"),
                                 env_dir=env_dir,
                                 batch_dir=batch_dir,
                                 err_msg=err_msg,
@@ -1217,6 +1217,7 @@ preprocess_umi=function(
                     .this.step=.main.step$steps$group_by_umi_fgbio
                     .main.step$out_files$raw$bam$mapped$tagged$filtered$grouped=.this.step$out_files
                 }
+
                 ### STEP 11: Generate consensus sequences from UMI-grouped reads
                 if(steps[step]=="collapse_consensus"){
                     
@@ -1234,7 +1235,7 @@ preprocess_umi=function(
                                         sm_tag=input_id
                                     ),
                                 clean=TRUE,
-                                output_dir=tmp_dir,
+                                output_dir=paste0(out_file_dir,"/consensus"),
                                 output_name=input_id,
                                 tmp_dir=tmp_dir,
                                 env_dir=env_dir,
@@ -1420,6 +1421,7 @@ preprocess_umi=function(
                                     dbsnp=dbsnp,
                                     chromosomes=chromosomes,
                                     bam=.main.step$out_files$consensus$bam$mapped$tagged$bam,
+                                    clean=TRUE,
                                     output_dir=paste0(out_file_dir),
                                     output_name=input_id,
                                     tmp_dir=tmp_dir,
@@ -1465,7 +1467,6 @@ preprocess_umi=function(
                                     executor_id=task_id
                             )
                      )
-
                     .this.step=.main.step$steps$new_metrics_alignqc.raw
                     .main.step$out_files$raw$alignqc=.this.step$out_files
                 }
