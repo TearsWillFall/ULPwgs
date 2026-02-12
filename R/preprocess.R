@@ -2175,7 +2175,7 @@ preprocess_default=function(
                         )
                     )
 
-                .this.step=.main.step$steps$new_recal_gatk
+                .this.step=.main.step$steps$new_recal_gatk2
                 .main.step$out_files$recal=.this.step$out_files$recal
             }
 
