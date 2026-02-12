@@ -145,7 +145,7 @@ new_markdups_gatk2=function(
       " -O ", .main$out_files$bam,
       ifelse(!is.null(tmp_dir),paste0(" --tmp-dir ",tmp_dir)," "),
       ifelse(remove_duplicates," --remove-all-duplicates"," "),
-      " --conf \'spark.executor.cores=",threads,"\'",
+      " --conf \'spark.executor.cores=",threads,"\'"
     )
 
     run_job(.env=.this.env)
