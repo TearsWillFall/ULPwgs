@@ -225,31 +225,40 @@ multisample_clonet_trento=function(
 
 
 
-#' Process a pair of tumour-normal samples using CLONET
+#' the CLONET (Clonality Estimate in Tumors) pipeline via a Singularity container. 
+#' It estimates genomic parameters such as tumour purity and ploidy.
+#' 
+#' @note 
+#' This is the legacy version of the CLONET wrapper maintained for backward 
+#' compatibility. For the modernized version featuring updated parameter 
+#' handling, please see \code{\link{new_clonet_trento}}.
 #'
-#' This function takes a pair of tumour and 
-#' normal BAMS and applies the CLONET pipeline
+#' @param sif_clonet Path to the CLONET Singularity Image File (.sif). 
+#'   Defaults to the V3 image from the internal SIF list.
+#' @param version PCF Select panel version to use (e.g., "V3").
+#' @param tumour Path to the tumour BAM file.
+#' @param normal Path to the matching germline/normal BAM file.
+#' @param patient_id Unique identifier for the patient/sample pair.
+#' @param tc Numeric. Pre-computed tumour content (0-1). If NULL, CLONET estimates it.
+#' @param ploidy Numeric. Pre-computed ploidy value. If NULL, CLONET estimates it.
+#' @param tmp_dir Path to the directory for temporary files. Defaults to current directory.
+#' @param threads Integer. Number of CPU cores to use. Default is 3.
+#' @param ram Integer. RAM memory (in GB) to request for batched jobs. Default is 4.
+#' @param output_dir Path to the directory where results will be stored.
+#' @param verbose Logical. Enables detailed progress messages in the console. Default is FALSE.
+#' @param batch_config Configuration script/commands to initialize the environment 
+#'   in batch mode (e.g., loading bashrc).
+#' @param executor_id Unique ID for the execution engine. Defaults to a random "clonet" ID.
+#' @param task_name Human-readable name for the task. Default is "clonet".
+#' @param mode Character. Where to execute the process: "local" (run immediately) 
+#'   or "batch" (submit to cluster).
+#' @param time Character. Max run time for batch jobs (HH:MM:SS). Default "48:0:0".
+#' @param update_time Integer. Frequency in seconds to check job status in wait mode. Default 60.
+#' @param wait Logical. If TRUE and mode is "batch", the R session will block until 
+#'   the job completes. Default is FALSE.
+#' @param hold Character. Optional job ID(s) that this task must wait for before starting.
 #'
-#'
-#' @param sif_path Path to singularity image file
-#' @param version PCF Select panel version to use
-#' @param tumour Path to tumour BAM file 
-#' @param normal Path to normal BAM file
-#' @param patient_id Patient id. 
-#' @param tc Pre-computed tumour content. Default NULL.
-#' @param ploidy Pre-computed ploidy. Default NULL.
-#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
-#' @param executor_id Executor ID. Default "clonet"
-#' @param task_name Name of the task. Default "clonet"
-#' @param threads Number of CPU cores to use. Default 3.
-#' @param ram RAM memory for batched job. Default 4
-#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
-#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
-#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
-#' @param output_dir Path to the output directory.
-#' @param tmp_dir Path to temporary file directory.
-#' @param verbose Enables progress messages. Default False.
-#' @param hold Job to hold on in batched mode.
+#' @return A `job_report` object containing the task ID, execution code, and output directory.
 #' @export
 
 
@@ -341,33 +350,41 @@ clonet_trento=function(
 
 
 
-
-
-#' Process a pair of tumour-normal samples using CLONET
+#' Process a pair of tumour-normal samples using CLONET (Modernized)
 #'
-#' This function takes a pair of tumour and 
-#' normal BAMS and applies the CLONET pipeline
+#' This function executes the CLONET pipeline to estimate tumour purity and 
+#' ploidy. It utilizes a nested environment structure to manage job execution 
+#' and supports both local and cluster-based (batch) processing via Singularity.
 #'
+#' @note 
+#' This is the **updated version** of the CLONET wrapper. It uses the new 
+#' pipeline execution framework. For the legacy version, see \code{\link{clonet_trento}}.
 #'
-#' @param sif_path Path to singularity image file
-#' @param version PCF Select panel version to use
-#' @param tumour Path to tumour BAM file 
-#' @param normal Path to normal BAM file
-#' @param patient_id Patient id. 
-#' @param tc Pre-computed tumour content. Default NULL.
-#' @param ploidy Pre-computed ploidy. Default NULL.
-#' @param mode [REQUIRED] Where to parallelize. Default local. Options ["local","batch"]
-#' @param executor_id Executor ID. Default "clonet"
-#' @param task_name Name of the task. Default "clonet"
-#' @param threads Number of CPU cores to use. Default 3.
-#' @param ram RAM memory for batched job. Default 4
-#' @param time [OPTIONAL] If batch mode. Max run time per job. Default "48:0:0"
-#' @param update_time [OPTIONAL] If batch mode. Job update time in seconds. Default 60.
-#' @param wait [OPTIONAL] If batch mode wait for batch to finish. Default FALSE
-#' @param output_dir Path to the output directory.
-#' @param tmp_dir Path to temporary file directory.
-#' @param verbose Enables progress messages. Default False.
-#' @param hold Job to hold on in batched mode.
+#' @param sif_clonet Path to the CLONET Singularity Image File (.sif). 
+#'   Defaults to the V3 image from the internal SIF list.
+#' @param version Character. PCF Select panel version to use (e.g., "V3").
+#' @param tumour Path to the tumour BAM file.
+#' @param normal Path to the matching germline/normal BAM file.
+#' @param patient_id Unique identifier for the patient.
+#' @param tc Numeric. Pre-computed tumour content (0-1). If NULL, CLONET estimates it.
+#' @param ploidy Numeric. Pre-computed ploidy value. If NULL, CLONET estimates it.
+#' @param ... Additional arguments passed to \code{\link{launch}}, including:
+#'   \itemize{
+#'     \item \code{mode}: "local" or "batch" (REQUIRED).
+#'     \item \code{threads}: Number of CPU cores.
+#'     \item \code{output_dir}: Base directory for results.
+#'     \item \code{tmp_dir}: Base directory for temporary files.
+#'     \item \code{ram}: RAM for batch jobs.
+#'     \item \code{time}: Walltime for batch jobs.
+#'     \item \code{wait}: Logical; wait for batch job completion.
+#'   }
+#'
+#' @details 
+#' The function sets up a specific directory hierarchy: 
+#' \code{output_dir/patient_id/clonet_reports/input_id}. 
+#' It generates a temporary sample sheet required by the CLONET Singularity 
+#' application before triggering the \code{launch} sequence.
+#'
 #' @export
 
 
