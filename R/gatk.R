@@ -118,7 +118,7 @@ markdups_gatk=function(
 #' @export
 
 
-new_markdups_gatk=function(
+new_markdups_gatk2=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
   bam=NULL,
   remove_duplicates=TRUE,
@@ -148,7 +148,6 @@ new_markdups_gatk=function(
       ifelse(remove_duplicates," --remove-all-duplicates"," "),
       " --conf \'spark.executor.cores=",threads,"\'",
     )
-
 
     run_job(.env=.this.env)
 
