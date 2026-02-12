@@ -2125,7 +2125,7 @@ preprocess_default=function(
             if(steps[step]=="dedup_markdups"){
                   .main.step$steps <-append(
                     .main.step$steps,
-                        new_markdups_gatk(
+                        new_markdups_gatk2(
                                 sif_gatk = sif_gatk,
                                 bam=.main.step$out_files$raw$bam$mapped$filtered$sorted$srt_bam,
                                 remove_duplicates = TRUE,

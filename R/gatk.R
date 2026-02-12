@@ -117,7 +117,6 @@ markdups_gatk=function(
 #' @import tidyverse
 #' @export
 
-
 new_markdups_gatk2=function(
   sif_gatk=build_default_sif_list()$sif_gatk,
   bam=NULL,
