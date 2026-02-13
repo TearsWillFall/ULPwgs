@@ -257,6 +257,8 @@ new_metrics_alignqc=function(
                                     new_tg_summary_metrics_bam_picard(
                                         bin_picard=bin_picard,
                                         bam=input,
+                                        bi=bi,
+                                        ti=ti,
                                         output_dir=paste0(out_file_dir,"/tg_metrics"),
                                         output_name=input_id,
                                         tmp_dir=tmp_dir,
