@@ -30,7 +30,9 @@ extract_umi_fgbio=function(
 
     .main$exec_code=paste(
       "conda activate ",env_fgbio,
-      "; fgbio ExtractUmisFromBam -i",input,
+      "; fgbio ",
+      ifelse(!is.null(tmp_dir),paste0("--tmp-dir=",tmp_dir),""),
+      " ExtractUmisFromBam -i",input,
       " -o ",.main$out_files$bam,
       " -r 3M3S+T 3M3S+T -t RX -a true"
     )
@@ -103,7 +105,9 @@ group_by_umi_fgbio=function(
     .main$out_files$family_size_counts=paste0(out_file_dir,"/",input_id,".family_size_counts.txt")
     .main$exec_code=paste(
       "conda activate ",env_fgbio,
-      "; fgbio GroupReadsByUmi ",
+      "; fgbio ",
+      ifelse(!is.null(tmp_dir),paste0("--tmp-dir=",tmp_dir),""),
+      " GroupReadsByUmi ",
       paste0(" --input=",input),
       paste0(" --output=",.main$out_files$bam),
       " --strategy=adjacency",
@@ -205,7 +209,9 @@ call_consensus_fgbio=function(
    
     .main$exec_code=paste(
       "conda activate ",env_fgbio,
-      "; fgbio CallMolecularConsensusReads ", 
+      "; fgbio ",
+      ifelse(!is.null(tmp_dir),paste0("--tmp-dir=",tmp_dir),""),
+      " CallMolecularConsensusReads ", 
       paste0(" --input=" ,input),
       paste0(" --output=",tmp_bam),
       paste0(" --stats=",.main$out_files$stats),
