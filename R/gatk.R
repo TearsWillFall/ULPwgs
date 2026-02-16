@@ -4053,6 +4053,7 @@ fastq_to_sam_gatk=function(
       " -F1", input$fastq_r1,
       " -F2 ",input$fastq_r2,
       " -O ",.main$out_files$bam,
+      if(!is.null(tmp_dir),paste(" --TMP_DIR ",tmp_dir)," "),
       tag_annot
     )
 
@@ -4113,6 +4114,7 @@ sam_to_fastq_gatk=function(
       " /gatk/gatk  SamToFastq -F",.main$out_files$fastq_r1,
       " -F2 ",.main$out_files$fastq_r2,
       " -I ", input,
+      if(!is.null(tmp_dir),paste(" --TMP_DIR ",tmp_dir)," "),
       ifelse(clipping_attribute," --CLIPPING_ATTRIBUTE XT --CLIPPING_ACTION 2 "," ")
 
     )
