@@ -93,6 +93,7 @@ build_flowcell_id=function(flowcells=list(
       "NovaSeq 6000",
       "NovaSeq 6000",
       "NovaSeq 6000",
+      "NovaSeq 6000",
       "NovaSeq X Plus"
 
     ),flowcell=c(
@@ -125,6 +126,7 @@ build_flowcell_id=function(flowcells=list(
         "MiSeq micro flow cell",
         "S2 flow cell",
         "S2 flow cell",
+        "S2 flow cell",
         "S4 flow cell",
         "S4 flow cell",
         "S4 flow cell",
@@ -132,9 +134,6 @@ build_flowcell_id=function(flowcells=list(
         "S4 flow cell",
         "SP flow cell",
         "S4 flow cell"
-
-        
-
 
     ),pattern=c(
       "000000000-[A-Z][A-Z][A-Z][A-Z][A-Z]$",
@@ -165,6 +164,7 @@ build_flowcell_id=function(flowcells=list(
       "D[A-Z,0-9]{4}[A-Z][A-Z][A-Z][A-Z]$",
       "G[A-Z,0-9]{4}[A-Z][A-Z][A-Z][A-Z]$",
       "H[A-Z,0-9]{4}DMXX$",
+      "H[A-Z,0-9]{4}DMX[1-9]$",
       "H[A-Z,0-9]{4}DMXY$",
       "H[A-Z,0-9]{4}DSXX$",
       "H[A-Z,0-9]{4}DSX[1-9]$",
@@ -173,7 +173,6 @@ build_flowcell_id=function(flowcells=list(
       "H[A-Z,0-9]{4}DSX[A-Z]$",
       "H[A-Z,0-9]{4}DRX[0-9,A-Z]$",
       "[0-9][0-9][A-Z,0-9]{7}"
-
 
     )
   )
