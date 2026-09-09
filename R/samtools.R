@@ -2360,7 +2360,7 @@ new_get_insert_size_samtools=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env=.base.env,
-      vars=ifelse(!is.null(region),region,bam)
+      vars=ifelse(!is.null(region),"region","bam")
     )
 
   launch(.env=.base.env)
