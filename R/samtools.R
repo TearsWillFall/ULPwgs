@@ -2268,7 +2268,7 @@ new_get_insert_size_samtools=function(
           threads=1
         }
         
-      .main$exec_code=paste(bin_samtools,"view ",add,bam,input," -@ ",threads,
+      .main$exec_code=paste(bin_samtools,"view ",add,bam,region," -@ ",threads,
       " | gawk '{
           mot = substr($10, 1, 4);
           fl=($9^2)^(1/2);",
