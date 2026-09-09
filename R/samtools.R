@@ -2249,15 +2249,15 @@ new_get_insert_size_samtools=function(
           add=paste0(" -q ",mapq)
         }
        
-        if(!is.null(input)){
-          .main$out_files$frags=paste0(out_file_dir,"/",get_file_name(bam),".",input,".fragments.txt")
+        if(!is.null(region)){
+          .main$out_files$frags=paste0(out_file_dir,"/",get_file_name(bam),".",region,".fragments.txt")
         }else{
           .main$out_files$frags=paste0(out_file_dir,"/",get_file_name(bam),".fragments.txt")
         }
 
         position="GENOME"
-        if(!is.null(input)){
-          position=input
+        if(!is.null(region)){
+          position=region
         }
         reg=""
         if(ignore_N_bases){
@@ -2350,7 +2350,7 @@ new_get_insert_size_samtools=function(
                 }
             };
           printf(\"ID\\tFLAGS\\tMAPQ\\tREGION\\tTOTAL\\tfl_median\\tfl_mode\\tfl_max\\tfl_average\\tfl_sd\\tmotif_mode\\tmotif_max\\tfl_str_dist\\tmotif_str_dist\\n\");
-          printf(\"",input_id,"\\t",paste0(flags,collapse=","),"\\t",mapq,"\\t",position,
+          printf(\"",get_file_name(bam),"\\t",paste0(flags,collapse=","),"\\t",mapq,"\\t",position,
           "\\t%d\\t%d\\t%d\\t%d\\t%d\\t%d\\t%s\\t%s\\t%s\\t%s\\n\", NR , fl_median, fl_mode, fl_max, fl_average , fl_sd , motif_mode , motif_max, fl_str_dist , motif_str_dist);}'> ",.main$out_files$frags
       )
       run_job(.env=.this.env)
@@ -2360,7 +2360,7 @@ new_get_insert_size_samtools=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env=.base.env,
-      vars="region"
+      vars=ifelse(!is.null(region),region,bam)
     )
 
   launch(.env=.base.env)
