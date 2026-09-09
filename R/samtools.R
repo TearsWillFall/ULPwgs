@@ -2008,9 +2008,9 @@ new_get_insert_size_samtools=function(
         }
        
         if(!is.null(input)){
-          .main$out_files$frags=paste0(out_file_dir,"/",input_id,".",input,".fragments.txt")
+          .main$out_files$frags=paste0(out_file_dir,"/",get_file_name(bam),".",input,".fragments.txt")
         }else{
-          .main$out_files$frags=paste0(out_file_dir,"/",input_id,".fragments.txt")
+          .main$out_files$frags=paste0(out_file_dir,"/",get_file_name(bam),".fragments.txt")
         }
 
         position="GENOME"
@@ -2118,7 +2118,6 @@ new_get_insert_size_samtools=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env=.base.env,
-      output_name=get_file_name(bam),
       vars="region"
     )
 
