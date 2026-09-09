@@ -2250,9 +2250,9 @@ new_get_insert_size_samtools=function(
         }
        
         if(!is.null(region)){
-          .main$out_files$frags=paste0(out_file_dir,"/",get_file_name(bam),".",region,".fragments.txt")
+          .main$out_files$frags=paste0(out_file_dir,"/",input_id,".",region,".fragments.txt")
         }else{
-          .main$out_files$frags=paste0(out_file_dir,"/",get_file_name(bam),".fragments.txt")
+          .main$out_files$frags=paste0(out_file_dir,"/",input_id,".fragments.txt")
         }
 
         position="GENOME"
@@ -2268,7 +2268,7 @@ new_get_insert_size_samtools=function(
           threads=1
         }
         
-      .main$exec_code=paste(bin_samtools,"view ",add,bam,region," -@ ",threads,
+      .main$exec_code=paste(bin_samtools,"view ",add,input,region," -@ ",threads,
       " | gawk '{
           mot = substr($10, 1, 4);
           fl=($9^2)^(1/2);",
@@ -2350,7 +2350,7 @@ new_get_insert_size_samtools=function(
                 }
             };
           printf(\"ID\\tFLAGS\\tMAPQ\\tREGION\\tTOTAL\\tfl_median\\tfl_mode\\tfl_max\\tfl_average\\tfl_sd\\tmotif_mode\\tmotif_max\\tfl_str_dist\\tmotif_str_dist\\n\");
-          printf(\"",get_file_name(bam),"\\t",paste0(flags,collapse=","),"\\t",mapq,"\\t",position,
+          printf(\"",input_id,"\\t",paste0(flags,collapse=","),"\\t",mapq,"\\t",position,
           "\\t%d\\t%d\\t%d\\t%d\\t%d\\t%d\\t%s\\t%s\\t%s\\t%s\\n\", NR , fl_median, fl_mode, fl_max, fl_average , fl_sd , motif_mode , motif_max, fl_str_dist , motif_str_dist);}'> ",.main$out_files$frags
       )
       run_job(.env=.this.env)
@@ -2360,7 +2360,7 @@ new_get_insert_size_samtools=function(
     list2env(list(...),envir=.base.env)
     set_env_vars(
       .env=.base.env,
-      vars=ifelse(!is.null(region),"region","bam")
+      vars="bam"
     )
 
   launch(.env=.base.env)
