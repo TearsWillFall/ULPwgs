@@ -2,7 +2,7 @@
 % Please edit documentation in R/trento.R
 \name{new_clonet_trento}
 \alias{new_clonet_trento}
-\title{Process a pair of tumour-normal samples using CLONET}
+\title{Process a pair of tumour-normal samples using CLONET (Modernized)}
 \usage{
 new_clonet_trento(
   sif_clonet = build_default_sif_list()$sif_clonet$V3,
@@ -16,45 +16,44 @@ new_clonet_trento(
 )
 }
 \arguments{
-\item{version}{PCF Select panel version to use}
+\item{sif_clonet}{Path to the CLONET Singularity Image File (.sif).
+Defaults to the V3 image from the internal SIF list.}
 
-\item{tumour}{Path to tumour BAM file}
+\item{version}{Character. PCF Select panel version to use (e.g., "V3").}
 
-\item{normal}{Path to normal BAM file}
+\item{tumour}{Path to the tumour BAM file.}
 
-\item{patient_id}{Patient id.}
+\item{normal}{Path to the matching germline/normal BAM file.}
 
-\item{tc}{Pre-computed tumour content. Default NULL.}
+\item{patient_id}{Unique identifier for the patient.}
 
-\item{ploidy}{Pre-computed ploidy. Default NULL.}
+\item{tc}{Numeric. Pre-computed tumour content (0-1). If NULL, CLONET estimates it.}
 
-\item{sif_path}{Path to singularity image file}
+\item{ploidy}{Numeric. Pre-computed ploidy value. If NULL, CLONET estimates it.}
 
-\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
-
-\item{executor_id}{Executor ID. Default "clonet"}
-
-\item{task_name}{Name of the task. Default "clonet"}
-
-\item{threads}{Number of CPU cores to use. Default 3.}
-
-\item{ram}{RAM memory for batched job. Default 4}
-
-\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
-
-\item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
-
-\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
-
-\item{output_dir}{Path to the output directory.}
-
-\item{tmp_dir}{Path to temporary file directory.}
-
-\item{verbose}{Enables progress messages. Default False.}
-
-\item{hold}{Job to hold on in batched mode.}
+\item{...}{Additional arguments passed to \code{\link{launch}}, including:
+\itemize{
+\item \code{mode}: "local" or "batch" (REQUIRED).
+\item \code{threads}: Number of CPU cores.
+\item \code{output_dir}: Base directory for results.
+\item \code{tmp_dir}: Base directory for temporary files.
+\item \code{ram}: RAM for batch jobs.
+\item \code{time}: Walltime for batch jobs.
+\item \code{wait}: Logical; wait for batch job completion.
+}}
 }
 \description{
-This function takes a pair of tumour and
-normal BAMS and applies the CLONET pipeline
+This function executes the CLONET pipeline to estimate tumour purity and
+ploidy. It utilizes a nested environment structure to manage job execution
+and supports both local and cluster-based (batch) processing via Singularity.
+}
+\details{
+The function sets up a specific directory hierarchy:
+\code{output_dir/patient_id/clonet_reports/input_id}.
+It generates a temporary sample sheet required by the CLONET Singularity
+application before triggering the \code{launch} sequence.
+}
+\note{
+This is the \strong{updated version} of the CLONET wrapper. It uses the new
+pipeline execution framework. For the legacy version, see \code{\link{clonet_trento}}.
 }

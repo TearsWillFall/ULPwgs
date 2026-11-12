@@ -2,7 +2,8 @@
 % Please edit documentation in R/trento.R
 \name{clonet_trento}
 \alias{clonet_trento}
-\title{Process a pair of tumour-normal samples using CLONET}
+\title{the CLONET (Clonality Estimate in Tumors) pipeline via a Singularity container.
+It estimates genomic parameters such as tumour purity and ploidy.}
 \usage{
 clonet_trento(
   sif_clonet = build_default_sif_list()$sif_clonet$V3,
@@ -28,45 +29,59 @@ clonet_trento(
 )
 }
 \arguments{
-\item{version}{PCF Select panel version to use}
+\item{sif_clonet}{Path to the CLONET Singularity Image File (.sif).
+Defaults to the V3 image from the internal SIF list.}
 
-\item{tumour}{Path to tumour BAM file}
+\item{version}{PCF Select panel version to use (e.g., "V3").}
 
-\item{normal}{Path to normal BAM file}
+\item{tumour}{Path to the tumour BAM file.}
 
-\item{patient_id}{Patient id.}
+\item{normal}{Path to the matching germline/normal BAM file.}
 
-\item{tc}{Pre-computed tumour content. Default NULL.}
+\item{patient_id}{Unique identifier for the patient/sample pair.}
 
-\item{ploidy}{Pre-computed ploidy. Default NULL.}
+\item{tc}{Numeric. Pre-computed tumour content (0-1). If NULL, CLONET estimates it.}
 
-\item{tmp_dir}{Path to temporary file directory.}
+\item{ploidy}{Numeric. Pre-computed ploidy value. If NULL, CLONET estimates it.}
 
-\item{threads}{Number of CPU cores to use. Default 3.}
+\item{tmp_dir}{Path to the directory for temporary files. Defaults to current directory.}
 
-\item{ram}{RAM memory for batched job. Default 4}
+\item{threads}{Integer. Number of CPU cores to use. Default is 3.}
 
-\item{output_dir}{Path to the output directory.}
+\item{ram}{Integer. RAM memory (in GB) to request for batched jobs. Default is 4.}
 
-\item{verbose}{Enables progress messages. Default False.}
+\item{output_dir}{Path to the directory where results will be stored.}
 
-\item{executor_id}{Executor ID. Default "clonet"}
+\item{verbose}{Logical. Enables detailed progress messages in the console. Default is FALSE.}
 
-\item{task_name}{Name of the task. Default "clonet"}
+\item{batch_config}{Configuration script/commands to initialize the environment
+in batch mode (e.g., loading bashrc).}
 
-\item{mode}{\link{REQUIRED} Where to parallelize. Default local. Options \link{"local","batch"}}
+\item{executor_id}{Unique ID for the execution engine. Defaults to a random "clonet" ID.}
 
-\item{time}{\link{OPTIONAL} If batch mode. Max run time per job. Default "48:0:0"}
+\item{task_name}{Human-readable name for the task. Default is "clonet".}
 
-\item{update_time}{\link{OPTIONAL} If batch mode. Job update time in seconds. Default 60.}
+\item{mode}{Character. Where to execute the process: "local" (run immediately)
+or "batch" (submit to cluster).}
 
-\item{wait}{\link{OPTIONAL} If batch mode wait for batch to finish. Default FALSE}
+\item{time}{Character. Max run time for batch jobs (HH:MM:SS). Default "48:0:0".}
 
-\item{hold}{Job to hold on in batched mode.}
+\item{update_time}{Integer. Frequency in seconds to check job status in wait mode. Default 60.}
 
-\item{sif_path}{Path to singularity image file}
+\item{wait}{Logical. If TRUE and mode is "batch", the R session will block until
+the job completes. Default is FALSE.}
+
+\item{hold}{Character. Optional job ID(s) that this task must wait for before starting.}
+}
+\value{
+A \code{job_report} object containing the task ID, execution code, and output directory.
 }
 \description{
-This function takes a pair of tumour and
-normal BAMS and applies the CLONET pipeline
+the CLONET (Clonality Estimate in Tumors) pipeline via a Singularity container.
+It estimates genomic parameters such as tumour purity and ploidy.
+}
+\note{
+This is the legacy version of the CLONET wrapper maintained for backward
+compatibility. For the modernized version featuring updated parameter
+handling, please see \code{\link{new_clonet_trento}}.
 }

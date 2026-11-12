@@ -6,15 +6,16 @@
 \usage{
 build_default_python_enviroment_list(
   enviroments = list(env_circlemap = "/myriadfs/home/regmova/miniconda3/envs/circle-map",
-    env_hatchet = "/myriadfs/home/regmova/miniconda3/envs/hatchet", env_lumpy =
+    env_aasuite = "/myriadfs/home/regmova/miniconda3/envs/ampsuite", env_hatchet =
+    "/myriadfs/home/regmova/miniconda3/envs/hatchet", env_lumpy =
     "/myriadfs/home/regmova/miniconda3/envs/lumpy", env_cov =
     "/myriadfs/home/regmova/miniconda3/envs/cov", env_griffin =
     "/myriadfs/home/regmova/miniconda3/envs/griffin", env_triton =
     "/myriadfs/home/regmova/miniconda3/envs/triton", env_medicc2 =
-    "/myriadfs/home/regmova/miniconda3/envs/medicc_env", env_msing =
-    "/myriadfs/home/regmova/Scratch/tools/msings/msings-env/bin/activate", 
-    
-    env_fgbio = "/myriadfs/home/regmova/miniconda3/envs/fgbio", env_fastp =
+    "/myriadfs/home/regmova/miniconda3/envs/medicc_env", 
+     env_msing =
+    "/myriadfs/home/regmova/Scratch/tools/msings/msings-env/bin/activate", env_fgbio =
+    "/myriadfs/home/regmova/miniconda3/envs/fgbio", env_fastp =
     "/myriadfs/home/regmova/miniconda3/envs/fastp")
 )
 }

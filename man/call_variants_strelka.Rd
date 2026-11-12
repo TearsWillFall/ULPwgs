@@ -13,12 +13,12 @@ call_variants_strelka(
   bin_strelka_somatic = build_default_tool_binary_list()$bin_strelka$somatic,
   bin_strelka_germline = build_default_tool_binary_list()$bin_strelka$germline,
   bin_manta = build_default_tool_binary_list()$bin_manta,
+  ref_genome = build_default_reference_list()$HG19$reference$genome,
   tumour = NULL,
   normal = NULL,
   patient_id = NULL,
   tumour_id = NULL,
   normal_id = NULL,
-  ref_genome = build_default_reference_list()$HG19$reference$genome,
   annotate = TRUE,
   tabulate = TRUE,
   targeted = TRUE,
@@ -32,11 +32,11 @@ call_variants_strelka(
 
 \item{bin_manta}{Path to manta pipeline binary}
 
+\item{ref_genome}{\link{REQUIRED} Path to reference genome FASTA}
+
 \item{tumour}{\link{OPTIONAL} Path to tumour BAM file. If not given will assume germline variant calling.}
 
 \item{normal}{\link{REQUIRED} Path to tumour BAM file.}
-
-\item{ref_genome}{\link{REQUIRED} Path to reference genome FASTA}
 
 \item{targeted}{\link{REQUIRED} Remove coverage filtering for exome/targeted data. Default TRUE}
 
