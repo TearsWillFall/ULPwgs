@@ -672,6 +672,7 @@ build_default_python_enviroment_list=function(
     enviroments=
         list(
                 env_circlemap="/myriadfs/home/regmova/miniconda3/envs/circle-map",
+                env_aasuite="/myriadfs/home/regmova/miniconda3/envs/ampsuite",
                 env_hatchet="/myriadfs/home/regmova/miniconda3/envs/hatchet",
                 env_lumpy="/myriadfs/home/regmova/miniconda3/envs/lumpy",
                 env_cov="/myriadfs/home/regmova/miniconda3/envs/cov",
