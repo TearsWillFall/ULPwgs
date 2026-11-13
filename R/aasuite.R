@@ -120,7 +120,7 @@ call_aasuite2=function(
             set_main(.env=.this.env)
             .main$exec_code=paste(
             set_conda_envir(env_aasuite),
-            "AmpliconSuite-pipeline.py "    
+            "AmpliconSuite-pipeline.py " ,   
             " -s ",input_id, 
             " -t ", threads,
             " --cnv_bed ",cns, 
