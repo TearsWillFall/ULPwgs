@@ -1032,10 +1032,14 @@ build_default_reference_list=function(
                 )
 
             ),
+            HG38_ALT=list(
+                reference=list(
+                    genome="/myriadfs/home/regmova/Scratch/PCF/references/hg38_alt/reference/hs38DH.fa"
+                )
+            ),
             HG38=list(
                 reference=list(
-                    genome="/myriadfs/home/regmova/Scratch/PCF/references/hg38/reference/ucsc.hg38.fa"
-                    
+                    genome="/myriadfs/home/regmova/Scratch/PCF/references/hg38/reference/ucsc.hg38.fa"    
                 ),
                 griffin_gc="/myriadfs/home/regmova/Scratch/tools/Griffin/Ref/genome_GC_frequency",
                 panel=list(
